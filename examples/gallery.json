@@ -151,9 +151,9 @@
     {
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
-      "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
-      "alt": "Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it.",
-      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
+      "teaches": "A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh.",
+      "alt": "One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar's belly around the tallest.",
+      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the lifted, flared rim ring.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",
       "tags": [

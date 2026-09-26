@@ -74,6 +74,7 @@ SELECT = {
     "degenerate-bevel-weld": (r"^CaseSafe\.", None),
     "mesh-hygiene-audit": (r"^Valve\.", None),
     "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
+    "shape-key-blend": (r"^Vase$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)

@@ -1,14 +1,27 @@
 # Shape-Key Blend
 
 A runnable example that authors a relative shape key entirely through the data
-API — `shape_key_add`, per-vertex `key_blocks["Tall"].data[i].co`, and
-`.value` — then reads the blend back from the depsgraph-evaluated mesh. The Tall
-key both lifts and flares the top face, so the silhouette is a truncated pyramid.
+API — `shape_key_add`, `key_blocks["Tall"].data` (bulk `foreach_get` /
+`foreach_set` on the key's `co`), and `.value` — then reads the blend back from
+the depsgraph-evaluated mesh. The subject is a lathe-turned ceramic vase: its
+Basis is a squat jar, and the Tall key lifts the rim (stretching the neck),
+flares the lip into a trumpet, and slims the belly.
 
 **What it witnesses:** shape keys do not rewrite `mesh.vertices`. The undeformed
-mesh stays at Basis; every evaluated vertex matches the closed-form blend
-`co = basis + value × (key − basis)`. The check also asserts the flared top half-extent
-(`0.5 + value × flare`) so a uniform-scale mistake cannot pass.
+mesh stays at Basis (every vertex, plus the rim ring at `z = 1.0`, `r = 0.335`);
+every evaluated vertex matches the closed-form blend
+`co = basis + value × (key − basis)`. The check also pins the rim ring — lifted
+to `1.0 + value × 1.5` and flared to `0.335 + value × 0.38` — with the foot
+still on the floor, so a uniform scale or a lift without the flare cannot pass.
+
+## The render
+
+The same vase at `Tall.value` 0, 0.5 (the checked object) and 1, left to right:
+squat jar, amphora, trumpet vase. The ochre band is part of the lathe profile,
+so it rides the key — thin on the jar's shoulder, stretched tall and higher on
+the full key. Around the full-key vase, three thin pale rings are read straight
+from the `Basis` key block: the jar's belly it was blended from. If the blend
+broke, the three vases would render as three identical jars.
 
 ## Run
 
@@ -27,7 +40,7 @@ blender --background --python shape_key_blend.py -- --output blend.png --engine 
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it.
+against it. `10` and `11` are the shared render-path gates' own codes.
 
 | Code | Meaning |
 | --- | --- |
@@ -40,8 +53,10 @@ against it.
 | 6 | Undeformed `mesh.vertices` not at Basis |
 | 7 | Evaluated vert off closed-form blend |
 | 8 | Evaluated Z span off closed form |
-| 9 | Top flare off closed form |
-| 10 | `--output` produced no file |
+| 9 | Rim radius (flare) off closed form |
+| 10 | Framing gate (`gallery_framing`, `--output` only) |
+| 11 | Asset-quality gate (`gallery_asset_quality`, `--output` only) |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

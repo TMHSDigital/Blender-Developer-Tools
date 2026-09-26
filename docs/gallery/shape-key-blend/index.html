@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>shape-key-blend — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
+  <meta name="description" content="A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shape-key-blend/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="shape-key-blend — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
+  <meta property="og:description" content="A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shape-key-blend/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
+  <meta property="og:image:alt" content="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="shape-key-blend — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
+  <meta name="twitter:description" content="A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
-  <meta name="twitter:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
+  <meta name="twitter:image:alt" content="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,21 +265,23 @@
   </div>
   <header class="hero">
     <h1>shape-key-blend</h1>
-    <p>A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.</p>
+    <p>A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it.">
-      <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest.">
+      <img src="../assets/shape-key-blend-hero.webp" alt="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.</div>
+    <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the lifted, flared rim ring.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/shape-key-blend/shape_key_blend.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that authors a relative shape key entirely through the data API — <code>shape_key_add</code>, per-vertex <code>key_blocks[&quot;Tall&quot;].data[i].co</code>, and <code>.value</code> — then reads the blend back from the depsgraph-evaluated mesh. The Tall key both lifts and flares the top face, so the silhouette is a truncated pyramid.</p>
-<p><strong>What it witnesses:</strong> shape keys do not rewrite <code>mesh.vertices</code>. The undeformed mesh stays at Basis; every evaluated vertex matches the closed-form blend <code>co = basis + value × (key − basis)</code>. The check also asserts the flared top half-extent (<code>0.5 + value × flare</code>) so a uniform-scale mistake cannot pass.</p>
+<p>A runnable example that authors a relative shape key entirely through the data API — <code>shape_key_add</code>, <code>key_blocks[&quot;Tall&quot;].data</code> (bulk <code>foreach_get</code> / <code>foreach_set</code> on the key&#x27;s <code>co</code>), and <code>.value</code> — then reads the blend back from the depsgraph-evaluated mesh. The subject is a lathe-turned ceramic vase: its Basis is a squat jar, and the Tall key lifts the rim (stretching the neck), flares the lip into a trumpet, and slims the belly.</p>
+<p><strong>What it witnesses:</strong> shape keys do not rewrite <code>mesh.vertices</code>. The undeformed mesh stays at Basis (every vertex, plus the rim ring at <code>z = 1.0</code>, <code>r = 0.335</code>); every evaluated vertex matches the closed-form blend <code>co = basis + value × (key − basis)</code>. The check also pins the rim ring — lifted to <code>1.0 + value × 1.5</code> and flared to <code>0.335 + value × 0.38</code> — with the foot still on the floor, so a uniform scale or a lift without the flare cannot pass.</p>
+<h2>The render</h2>
+<p>The same vase at <code>Tall.value</code> 0, 0.5 (the checked object) and 1, left to right: squat jar, amphora, trumpet vase. The ochre band is part of the lathe profile, so it rides the key — thin on the jar&#x27;s shoulder, stretched tall and higher on the full key. Around the full-key vase, three thin pale rings are read straight from the <code>Basis</code> key block: the jar&#x27;s belly it was blended from. If the blend broke, the three vases would render as three identical jars.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shape_key_blend.py --
@@ -291,8 +293,8 @@ blender --background --python shape_key_blend.py -- --zero-blend
 blender --background --python shape_key_blend.py -- --output blend.png
 blender --background --python shape_key_blend.py -- --output blend.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>No shape keys on mesh</td></tr><tr><td>4</td><td>Key names ≠ Basis, Tall</td></tr><tr><td>5</td><td>Tall.value ≠ 0.5 (<code>--zero-blend</code> lands here)</td></tr><tr><td>6</td><td>Undeformed <code>mesh.vertices</code> not at Basis</td></tr><tr><td>7</td><td>Evaluated vert off closed-form blend</td></tr><tr><td>8</td><td>Evaluated Z span off closed form</td></tr><tr><td>9</td><td>Top flare off closed form</td></tr><tr><td>10</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> and <code>11</code> are the shared render-path gates&#x27; own codes.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>No shape keys on mesh</td></tr><tr><td>4</td><td>Key names ≠ Basis, Tall</td></tr><tr><td>5</td><td>Tall.value ≠ 0.5 (<code>--zero-blend</code> lands here)</td></tr><tr><td>6</td><td>Undeformed <code>mesh.vertices</code> not at Basis</td></tr><tr><td>7</td><td>Evaluated vert off closed-form blend</td></tr><tr><td>8</td><td>Evaluated Z span off closed form</td></tr><tr><td>9</td><td>Rim radius (flare) off closed form</td></tr><tr><td>10</td><td>Framing gate (<code>gallery_framing</code>, <code>--output</code> only)</td></tr><tr><td>11</td><td>Asset-quality gate (<code>gallery_asset_quality</code>, <code>--output</code> only)</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-blend</code>.</p>
     </section>
     <section class="detail-section src">
@@ -304,14 +306,16 @@ blender --background --python shape_key_blend.py -- --output blend.png --engine 
       <pre><span class="s">&quot;&quot;&quot;Relative shape-key blend via the data API — a runnable example.
 
 Witnesses that shape keys are authored and driven on the mesh datablock
-(`shape_key_add`, `key_blocks[&quot;Name&quot;].data[i].co`, `.value`), not through
+(`shape_key_add`, `key_blocks[&quot;Tall&quot;].data`, `.value`), not through
 operators, and that the depsgraph-evaluated mesh matches the closed-form
 relative blend: co = basis + value * (key - basis). AI often keys the
 wrong block, forgets Basis, or reads undeformed `mesh.vertices` instead of
 the evaluated mesh.
 
-The Tall key both lifts and flares the top face, so the silhouette is a
-truncated pyramid — clearly a blend, not a uniformly scaled box.
+The subject is a lathe-turned ceramic vase. Its Basis is a squat jar; the
+Tall key lifts the rim (stretching the neck), flares the lip into a
+trumpet, and slims the belly — a real morph, not a uniform scale. The
+check pins the lift and the flare at the rim ring in closed form.
 
 ``--zero-blend`` sets Tall.value to 0 and still asserts the 0.5 closed form.
 That is the falsifier (``--same-axis`` in export-preset-axis).
@@ -325,47 +329,164 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
-CUBE_SIZE = <span class="n">1.0</span>
-LIFT = <span class="n">2.0</span>
-FLARE = <span class="n">0.45</span>  <span class="c"># extra half-extent on top face in XY at full key</span>
+SEGMENTS = <span class="n">64</span>      <span class="c"># lathe resolution around Z</span>
+H0 = <span class="n">1.0</span>           <span class="c"># Basis rim height (the lip&#x27;s top ring)</span>
+R_LIP0 = <span class="n">0.335</span>     <span class="c"># Basis rim radius</span>
+WALL = <span class="n">0.03</span>        <span class="c"># ceramic wall thickness</span>
+LIFT = <span class="n">1.5</span>         <span class="c"># Tall key: rim rises by this much</span>
+FLARE = <span class="n">0.38</span>       <span class="c"># Tall key: rim radius grows by this much</span>
+SLIM = <span class="n">0.28</span>        <span class="c"># Tall key: belly narrows by up to this fraction</span>
 BLEND = <span class="n">0.5</span>
-HALF = CUBE_SIZE / <span class="n">2</span>
-EXPECT_TOP_Z = HALF + BLEND * LIFT
-EXPECT_BOT_Z = -HALF
-EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top verts</span>
+EXPECT_TOP_Z = H0 + BLEND * LIFT
+EXPECT_BOT_Z = <span class="n">0.0</span>                      <span class="c"># the foot never moves</span>
+EXPECT_RIM_R = R_LIP0 + BLEND * FLARE   <span class="c"># radius of the rim ring</span>
+
+<span class="c"># Outer wall control points (radius, z) from the foot to the shoulder of the</span>
+<span class="c"># lip, Catmull-Rom interpolated. A squat, round-bellied jar.</span>
+_OUTER_CTRL = [(<span class="n">0.300</span>, <span class="n">0.080</span>), (<span class="n">0.420</span>, <span class="n">0.160</span>), (<span class="n">0.540</span>, <span class="n">0.270</span>), (<span class="n">0.605</span>, <span class="n">0.370</span>),
+               (<span class="n">0.620</span>, <span class="n">0.450</span>), (<span class="n">0.590</span>, <span class="n">0.540</span>), (<span class="n">0.500</span>, <span class="n">0.640</span>), (<span class="n">0.380</span>, <span class="n">0.720</span>),
+               (<span class="n">0.290</span>, <span class="n">0.790</span>), (<span class="n">0.262</span>, <span class="n">0.850</span>), (<span class="n">0.272</span>, <span class="n">0.910</span>), (<span class="n">0.305</span>, <span class="n">0.955</span>),
+               (<span class="n">0.345</span>, <span class="n">0.985</span>)]
+BAND = (<span class="n">0.530</span>, <span class="n">0.600</span>, <span class="n">0.014</span>)   <span class="c"># raised ochre band: z0, z1, relief</span>
+GHOST_RINGS = (<span class="n">0.22</span>, <span class="n">0.34</span>, <span class="n">0.45</span>)  <span class="c"># Basis heights drawn as the ghost</span>
+
+<span class="c"># material slots</span>
+M_GLAZE, M_BISQUE, M_GILT, M_INNER = range(<span class="n">4</span>)
+
+
+<span class="k">def</span> _smoothstep(a, b, x):
+    t = min(<span class="n">1.0</span>, max(<span class="n">0.0</span>, (x - a) / (b - a)))
+    <span class="k">return</span> t * t * (<span class="n">3.0</span> - <span class="n">2.0</span> * t)
+
+
+<span class="k">def</span> _catmull(pts, per_span=<span class="n">8</span>):
+    out = []
+    ext = [pts[<span class="n">0</span>]] + pts + [pts[-<span class="n">1</span>]]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(ext) - <span class="n">2</span>):
+        p0, p1, p2, p3 = ext[i - <span class="n">1</span>], ext[i], ext[i + <span class="n">1</span>], ext[i + <span class="n">2</span>]
+        <span class="k">for</span> s <span class="k">in</span> range(per_span):
+            t = s / per_span
+            t2, t3 = t * t, t * t * t
+            out.append(tuple(<span class="n">0.5</span> * ((<span class="n">2</span> * p1[k]) + (-p0[k] + p2[k]) * t
+                                    + (<span class="n">2</span> * p0[k] - <span class="n">5</span> * p1[k] + <span class="n">4</span> * p2[k] - p3[k]) * t2
+                                    + (-p0[k] + <span class="n">3</span> * p1[k] - <span class="n">3</span> * p2[k] + p3[k]) * t3)
+                             <span class="k">for</span> k <span class="k">in</span> range(<span class="n">2</span>)))
+    out.append(pts[-<span class="n">1</span>])
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> _radius_at(dense, z):
+    <span class="k">for</span> (r0, z0), (r1, z1) <span class="k">in</span> zip(dense, dense[<span class="n">1</span>:]):
+        <span class="k">if</span> z0 &lt;= z &lt;= z1:
+            <span class="k">return</span> r0 + (r1 - r0) * (z - z0) / (z1 - z0)
+    <span class="k">return</span> dense[-<span class="n">1</span>][<span class="n">0</span>] <span class="k">if</span> z &gt; dense[-<span class="n">1</span>][<span class="n">1</span>] <span class="k">else</span> dense[<span class="n">0</span>][<span class="n">0</span>]
+
+
+<span class="k">def</span> vase_profile():
+    <span class="s">&quot;&quot;&quot;Closed lathe profile [(r, z, material)] from the underside pole, up the
+    outer wall, over the lip, down the inner wall to the inner floor pole.&quot;&quot;&quot;</span>
+    dense = _catmull(_OUTER_CTRL)
+    prof = [(<span class="n">0.0</span>, <span class="n">0.0</span>, M_BISQUE), (<span class="n">0.235</span>, <span class="n">0.0</span>, M_BISQUE), (<span class="n">0.262</span>, <span class="n">0.008</span>, M_BISQUE),
+            (<span class="n">0.272</span>, <span class="n">0.030</span>, M_BISQUE), (<span class="n">0.276</span>, <span class="n">0.060</span>, M_BISQUE), (<span class="n">0.290</span>, <span class="n">0.075</span>, M_GLAZE)]
+    zs = [<span class="n">0.080</span> + i * <span class="n">0.015</span> <span class="k">for</span> i <span class="k">in</span> range(int((<span class="n">0.970</span> - <span class="n">0.080</span>) / <span class="n">0.015</span>) + <span class="n">1</span>)]
+    b0, b1, relief = BAND
+    zs = sorted(set([z <span class="k">for</span> z <span class="k">in</span> zs <span class="k">if</span> <span class="k">not</span> (b0 - <span class="n">0.012</span> &lt; z &lt; b1 + <span class="n">0.012</span>)]
+                    + [b0 - <span class="n">0.008</span>, b0, b0 + <span class="n">0.006</span>, b1 - <span class="n">0.006</span>, b1, b1 + <span class="n">0.008</span>]))
+    <span class="k">for</span> z <span class="k">in</span> zs:
+        r = _radius_at(dense, z)
+        mat = M_GLAZE
+        <span class="k">if</span> b0 &lt;= z &lt; b1:
+            mat = M_GILT
+        <span class="k">if</span> b0 + <span class="n">0.006</span> - <span class="n">1e-9</span> &lt;= z &lt;= b1 - <span class="n">0.006</span> + <span class="n">1e-9</span>:
+            r += relief
+        <span class="k">elif</span> abs(z - b0) &lt; <span class="n">1e-9</span> <span class="k">or</span> abs(z - b1) &lt; <span class="n">1e-9</span>:
+            r += relief * <span class="n">0.55</span>
+        prof.append((r, z, mat))
+    prof += [(<span class="n">0.345</span>, <span class="n">0.985</span>, M_GLAZE), (R_LIP0, H0, M_INNER), (<span class="n">0.312</span>, <span class="n">0.990</span>, M_INNER)]
+    z = <span class="n">0.975</span>
+    <span class="k">while</span> z &gt; <span class="n">0.14</span>:
+        prof.append((_radius_at(dense, z) - WALL, z, M_INNER))
+        z -= <span class="n">0.018</span>
+    prof += [(_radius_at(dense, <span class="n">0.135</span>) - WALL - <span class="n">0.03</span>, <span class="n">0.120</span>, M_INNER), (<span class="n">0.0</span>, <span class="n">0.120</span>, M_INNER)]
+    <span class="k">return</span> prof
+
+
+<span class="k">def</span> tall_offset(x, y, z):
+    <span class="s">&quot;&quot;&quot;The Tall key as a function of the Basis position: lift the neck, flare
+    the lip, slim the belly. Zero at the foot; exactly (+FLARE, +LIFT) at the
+    rim ring (u == 1).&quot;&quot;&quot;</span>
+    u = z / H0
+    r = math.hypot(x, y)
+    <span class="k">if</span> r &lt; <span class="n">1e-9</span>:
+        <span class="k">return</span> x, y, z + LIFT * _smoothstep(<span class="n">0.30</span>, <span class="n">1.0</span>, u)
+    w = <span class="n">0.0</span>
+    <span class="k">if</span> <span class="n">0.08</span> &lt; u &lt; <span class="n">0.75</span>:
+        w = math.sin(math.pi * (u - <span class="n">0.08</span>) / <span class="n">0.67</span>) ** <span class="n">2</span>
+    nr = r * (<span class="n">1.0</span> - SLIM * w) + FLARE * _smoothstep(<span class="n">0.78</span>, <span class="n">1.0</span>, u) ** <span class="n">2</span>
+    <span class="k">return</span> x / r * nr, y / r * nr, z + LIFT * _smoothstep(<span class="n">0.30</span>, <span class="n">1.0</span>, u)
+
+
+<span class="k">def</span> build_vase_mesh(name):
+    prof = vase_profile()
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = []
+        <span class="k">for</span> r, z, _m <span class="k">in</span> prof:
+            <span class="k">if</span> r == <span class="n">0.0</span>:
+                rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+            <span class="k">else</span>:
+                rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SEGMENTS),
+                                            r * math.sin(<span class="n">2</span> * math.pi * s / SEGMENTS), z))
+                              <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS)])
+        <span class="k">for</span> i <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+            a, b, mat = rings[i], rings[i + <span class="n">1</span>], prof[i][<span class="n">2</span>]
+            <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
+                t = (s + <span class="n">1</span>) % SEGMENTS
+                <span class="k">if</span> len(a) == <span class="n">1</span>:
+                    f = bm.faces.new((a[<span class="n">0</span>], b[s], b[t]))
+                <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                    f = bm.faces.new((a[s], b[<span class="n">0</span>], a[t]))
+                <span class="k">else</span>:
+                    f = bm.faces.new((a[s], b[s], b[t], a[t]))
+                f.material_index = mat
+                f.smooth = <span class="k">True</span>
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
 
 
 <span class="k">def</span> build(zero_blend=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    me = bpy.data.meshes.new(<span class="s">&quot;Block&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=CUBE_SIZE)
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
-
-    obj = bpy.data.objects.new(<span class="s">&quot;ShapeBlock&quot;</span>, me)
+    me = build_vase_mesh(<span class="s">&quot;Vase&quot;</span>)
+    obj = bpy.data.objects.new(<span class="s">&quot;Vase&quot;</span>, me)
     bpy.context.collection.objects.link(obj)
 
     <span class="c"># data-level shape keys — no bpy.ops.object.shape_key_*</span>
     obj.shape_key_add(name=<span class="s">&quot;Basis&quot;</span>)
     tall = obj.shape_key_add(name=<span class="s">&quot;Tall&quot;</span>)
-    <span class="k">for</span> i, _v <span class="k">in</span> enumerate(me.vertices):
-        co = tall.data[i].co
-        <span class="k">if</span> co.z &gt; <span class="n">0.0</span>:
-            co.z += LIFT
-            <span class="c"># flare top face outward so the blend reads as a taper, not a box</span>
-            co.x = math.copysign(HALF + FLARE, co.x)
-            co.y = math.copysign(HALF + FLARE, co.y)
+    n = len(me.vertices)
+    co = [<span class="n">0.0</span>] * (<span class="n">3</span> * n)
+    tall.data.foreach_get(<span class="s">&quot;co&quot;</span>, co)          <span class="c"># starts as a copy of Basis</span>
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        co[<span class="n">3</span> * i:<span class="n">3</span> * i + <span class="n">3</span>] = tall_offset(*co[<span class="n">3</span> * i:<span class="n">3</span> * i + <span class="n">3</span>])
+    tall.data.foreach_set(<span class="s">&quot;co&quot;</span>, co)
     tall.value = <span class="n">0.0</span> <span class="k">if</span> zero_blend <span class="k">else</span> BLEND
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> blended_co(basis_kb, key_kb, i, value):
-    b = basis_kb.data[i].co
-    k = key_kb.data[i].co
-    <span class="k">return</span> b + value * (k - b)
+<span class="k">def</span> _coords(seq):
+    flat = [<span class="n">0.0</span>] * (<span class="n">3</span> * len(seq))
+    seq.foreach_get(<span class="s">&quot;co&quot;</span>, flat)
+    <span class="k">return</span> [tuple(flat[i:i + <span class="n">3</span>]) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">0</span>, len(flat), <span class="n">3</span>)]
+
+
+<span class="k">def</span> _rim(coords):
+    <span class="s">&quot;&quot;&quot;(top z, max radius of the ring at the top z).&quot;&quot;&quot;</span>
+    top = max(c[<span class="n">2</span>] <span class="k">for</span> c <span class="k">in</span> coords)
+    <span class="k">return</span> top, max(math.hypot(c[<span class="n">0</span>], c[<span class="n">1</span>]) <span class="k">for</span> c <span class="k">in</span> coords <span class="k">if</span> c[<span class="n">2</span>] &gt; top - <span class="n">1e-6</span>)
 
 
 <span class="k">def</span> check(obj):
@@ -377,18 +498,20 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     <span class="k">if</span> names != [<span class="s">&quot;Basis&quot;</span>, <span class="s">&quot;Tall&quot;</span>]:
         print(<span class="s">f&quot;</span><span class="s">ERROR: key names </span>{names}<span class="s"> != [&#x27;Basis&#x27;, &#x27;Tall&#x27;]</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
-    basis = keys.key_blocks[<span class="s">&quot;Basis&quot;</span>]
-    tall = keys.key_blocks[<span class="s">&quot;Tall&quot;</span>]
-    <span class="k">if</span> abs(tall.value - BLEND) &gt; <span class="n">1e-6</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: Tall.value </span>{tall.value}<span class="s"> != </span>{BLEND}<span class="s">&quot;</span>, file=sys.stderr)
+    basis = _coords(keys.key_blocks[<span class="s">&quot;Basis&quot;</span>].data)
+    tall_kb = keys.key_blocks[<span class="s">&quot;Tall&quot;</span>]
+    tall = _coords(tall_kb.data)
+    <span class="k">if</span> abs(tall_kb.value - BLEND) &gt; <span class="n">1e-6</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: Tall.value </span>{tall_kb.value}<span class="s"> != </span>{BLEND}<span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
 
     <span class="c"># undeformed mesh.vertices stay at Basis — the trap this example catches</span>
-    raw_top = max(v.co.z <span class="k">for</span> v <span class="k">in</span> obj.data.vertices)
-    raw_xy = max(max(abs(v.co.x), abs(v.co.y)) <span class="k">for</span> v <span class="k">in</span> obj.data.vertices)
-    <span class="k">if</span> abs(raw_top - HALF) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(raw_xy - HALF) &gt; <span class="n">1e-4</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: undeformed mesh not at Basis </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">(top_z=</span>{raw_top}<span class="s">, xy=</span>{raw_xy}<span class="s">, expected half=</span>{HALF}<span class="s">)</span><span class="s">&quot;</span>,
+    raw = _coords(obj.data.vertices)
+    raw_top, raw_rim = _rim(raw)
+    worst = max(math.dist(a, b) <span class="k">for</span> a, b <span class="k">in</span> zip(raw, basis))
+    <span class="k">if</span> worst &gt; <span class="n">1e-5</span> <span class="k">or</span> abs(raw_top - H0) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(raw_rim - R_LIP0) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: undeformed mesh not at Basis (off by </span>{worst:<span class="s">.5f</span>}<span class="s">, </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">rim z=</span>{raw_top:<span class="s">.4f</span>}<span class="s"> r=</span>{raw_rim:<span class="s">.4f</span>}<span class="s">, expected </span>{H0}<span class="s">, </span>{R_LIP0}<span class="s">)</span><span class="s">&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
@@ -397,32 +520,28 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     ev = obj.evaluated_get(dg)
     em = ev.to_mesh()
     <span class="k">try</span>:
-        <span class="c"># every evaluated vert must match the closed-form blend from key_blocks</span>
-        <span class="k">for</span> i, v <span class="k">in</span> enumerate(em.vertices):
-            expect = blended_co(basis, tall, i, BLEND)
-            <span class="k">if</span> (v.co - expect).length &gt; <span class="n">1e-4</span>:
-                print(<span class="s">f&quot;</span><span class="s">ERROR: vert </span>{i}<span class="s"> evaluated </span>{tuple(v.co)}<span class="s"> != </span><span class="s">&quot;</span>
-                      <span class="s">f&quot;</span><span class="s">blend </span>{tuple(expect)}<span class="s">&quot;</span>, file=sys.stderr)
-                <span class="k">return</span> <span class="n">7</span>
-        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices]
-        top_xy = [max(abs(v.co.x), abs(v.co.y)) <span class="k">for</span> v <span class="k">in</span> em.vertices <span class="k">if</span> v.co.z &gt; <span class="n">0.0</span>]
-        top = max(zs)
-        bot = min(zs)
-        flare = max(top_xy)
+        evald = _coords(em.vertices)
     <span class="k">finally</span>:
         ev.to_mesh_clear()
 
+    <span class="c"># every evaluated vert must match the closed-form blend from key_blocks</span>
+    <span class="k">for</span> i, (v, b, k) <span class="k">in</span> enumerate(zip(evald, basis, tall)):
+        expect = tuple(b[j] + BLEND * (k[j] - b[j]) <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>))
+        <span class="k">if</span> math.dist(v, expect) &gt; <span class="n">1e-4</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: vert </span>{i}<span class="s"> evaluated </span>{v}<span class="s"> != blend </span>{expect}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+    top, rim = _rim(evald)
+    bot = min(c[<span class="n">2</span>] <span class="k">for</span> c <span class="k">in</span> evald)
     <span class="k">if</span> abs(top - EXPECT_TOP_Z) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(bot - EXPECT_BOT_Z) &gt; <span class="n">1e-4</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated z [</span>{bot:<span class="s">.4f</span>}<span class="s">, </span>{top:<span class="s">.4f</span>}<span class="s">] != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">[</span>{EXPECT_BOT_Z:<span class="s">.4f</span>}<span class="s">, </span>{EXPECT_TOP_Z:<span class="s">.4f</span>}<span class="s">]</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">8</span>
-    <span class="k">if</span> abs(flare - EXPECT_TOP_HALF) &gt; <span class="n">1e-4</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: top flare </span>{flare:<span class="s">.4f</span>}<span class="s"> != </span>{EXPECT_TOP_HALF:<span class="s">.4f</span>}<span class="s">&quot;</span>,
-              file=sys.stderr)
+    <span class="k">if</span> abs(rim - EXPECT_RIM_R) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: rim radius </span>{rim:<span class="s">.4f</span>}<span class="s"> != </span>{EXPECT_RIM_R:<span class="s">.4f</span>}<span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">9</span>
 
-    print(<span class="s">f&quot;</span><span class="s">keys=</span>{names}<span class="s"> value=</span>{BLEND}<span class="s"> eval_z=</span>{bot:<span class="s">.3f</span>}<span class="s">..</span>{top:<span class="s">.3f</span>}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">top_half=</span>{flare:<span class="s">.3f</span>}<span class="s"> undeformed_top=</span>{raw_top:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">keys=</span>{names}<span class="s"> value=</span>{BLEND}<span class="s"> verts=</span>{len(evald)}<span class="s"> eval_z=</span>{bot:<span class="s">.3f</span>}<span class="s">..</span>{top:<span class="s">.3f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">rim_r=</span>{rim:<span class="s">.3f</span>}<span class="s"> undeformed_rim=</span>{raw_top:<span class="s">.3f</span>}<span class="s">/</span>{raw_rim:<span class="s">.3f</span>}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -430,59 +549,112 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(obj, path, engine):
-    scene = bpy.context.scene
-    <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
-        poly.use_smooth = <span class="k">False</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;Violet&quot;</span>)
+<span class="k">def</span> _principled(name, color, rough, metal=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.52</span>, <span class="n">0.06</span>, <span class="n">0.98</span>, <span class="n">1.0</span>)  <span class="c"># violet</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
-    obj.data.materials.clear()
-    obj.data.materials.append(mat)
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">return</span> mat, b
 
-    <span class="c"># the still shows the blend as a progression: Basis (0), half blend, and</span>
-    <span class="c"># the checked BLEND value, left to right — one silhouette per key value,</span>
-    <span class="c"># so a failed blend is visible as three identical boxes. The two extra</span>
-    <span class="c"># blocks are render-only copies; the check already ran on `obj`.</span>
-    blocks = []
-    <span class="k">for</span> value, x <span class="k">in</span> ((<span class="n">0.0</span>, -<span class="n">1.9</span>), (BLEND / <span class="n">2</span>, <span class="n">0.0</span>), (<span class="k">None</span>, <span class="n">1.9</span>)):
+
+<span class="k">def</span> _vase_materials():
+    <span class="c"># Reactive cobalt glaze: object-space noise mottles two blues so the</span>
+    <span class="c"># glaze pools darker and breaks lighter, like a real kiln glaze.</span>
+    glaze, gb = _principled(<span class="s">&quot;CobaltGlaze&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.12</span>, <span class="n">0.55</span>), <span class="n">0.22</span>)
+    nt = glaze.node_tree
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">5.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.38</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.02</span>, <span class="n">0.075</span>, <span class="n">0.40</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.62</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.045</span>, <span class="n">0.17</span>, <span class="n">0.66</span>, <span class="n">1.0</span>)
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], gb.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bisque, _ = _principled(<span class="s">&quot;Bisque&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.30</span>, <span class="n">0.18</span>), <span class="n">0.85</span>)
+    gilt, _ = _principled(<span class="s">&quot;OchreBand&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.55</span>, <span class="n">0.12</span>), <span class="n">0.35</span>)
+    inner, _ = _principled(<span class="s">&quot;CreamGlaze&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.72</span>, <span class="n">0.55</span>), <span class="n">0.3</span>)
+    <span class="k">return</span> [glaze, bisque, gilt, inner]
+
+
+<span class="k">def</span> _basis_ghost(src_obj, name, loc, mat):
+    <span class="s">&quot;&quot;&quot;Contour rings of the Basis, read from the Basis key block: the squat
+    jar&#x27;s belly drawn as three thin lines around the full key.&quot;&quot;&quot;</span>
+    basis = _coords(src_obj.data.shape_keys.key_blocks[<span class="s">&quot;Basis&quot;</span>].data)
+    prof = vase_profile()
+    starts, idx = [], <span class="n">0</span>
+    <span class="k">for</span> r, _z, _m <span class="k">in</span> prof:
+        starts.append(idx)
+        idx += SEGMENTS <span class="k">if</span> r &gt; <span class="n">0.0</span> <span class="k">else</span> <span class="n">1</span>
+    apex = next(i <span class="k">for</span> i, (_r, z, _m) <span class="k">in</span> enumerate(prof) <span class="k">if</span> z == H0)
+    cu = bpy.data.curves.new(name, <span class="s">&#x27;CURVE&#x27;</span>)
+    cu.dimensions = <span class="s">&#x27;3D&#x27;</span>
+    cu.bevel_depth = <span class="n">0.006</span>
+    cu.bevel_resolution = <span class="n">2</span>
+    <span class="k">for</span> zt <span class="k">in</span> GHOST_RINGS:
+        i = min(range(<span class="n">1</span>, apex), key=<span class="k">lambda</span> k: abs(prof[k][<span class="n">1</span>] - zt))
+        sp = cu.splines.new(<span class="s">&#x27;POLY&#x27;</span>)
+        sp.points.add(SEGMENTS - <span class="n">1</span>)
+        <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
+            sp.points[s].co = (*basis[starts[i] + s], <span class="n">1.0</span>)
+        sp.use_cyclic_u = <span class="k">True</span>
+    cu.materials.append(mat)
+    ob = bpy.data.objects.new(name, cu)
+    ob.location = loc
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    <span class="c"># Shared Layer 1 gates (render path only) — see gallery_framing.py</span>
+    sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+    sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+    <span class="k">import</span> gallery_framing
+    <span class="k">import</span> gallery_asset_quality
+
+    scene = bpy.context.scene
+    <span class="c"># No clear() first: the mesh has no slots yet, and Mesh.materials.clear()</span>
+    <span class="c"># drops the per-face material_index the lathe build assigned.</span>
+    <span class="k">for</span> m <span class="k">in</span> _vase_materials():
+        obj.data.materials.append(m)
+
+    <span class="c"># The still is the blend as a progression, left to right: Basis (0), the</span>
+    <span class="c"># checked object at BLEND, and the full key (1). Same mesh, same key —</span>
+    <span class="c"># only Tall.value differs, so a broken blend reads as three identical</span>
+    <span class="c"># jars. The two outer vases are render-only copies; the check already</span>
+    <span class="c"># ran on `obj`.</span>
+    vases = []
+    <span class="k">for</span> value, x <span class="k">in</span> ((<span class="n">0.0</span>, -<span class="n">1.85</span>), (<span class="k">None</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">1.95</span>)):
         <span class="k">if</span> value <span class="k">is</span> <span class="k">None</span>:
             ob = obj
         <span class="k">else</span>:
             me = obj.data.copy()
             me.shape_keys.key_blocks[<span class="s">&quot;Tall&quot;</span>].value = value
-            ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">ShapeBlock_</span>{value}<span class="s">&quot;</span>, me)
+            ob = bpy.data.objects.new(<span class="s">&quot;Vase.Basis&quot;</span> <span class="k">if</span> value == <span class="n">0.0</span> <span class="k">else</span> <span class="s">&quot;Vase.Full&quot;</span>, me)
             bpy.context.collection.objects.link(ob)
-        <span class="c"># bottom verts stay at -HALF; lift so each block rests on the floor</span>
-        ob.location = (x, <span class="n">0.0</span>, HALF)
-        ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
-        blocks.append(ob)
+        ob.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        vases.append(ob)
 
-    <span class="c"># Endpoint cages on the checked block: its Basis and its full Tall key as</span>
-    <span class="c"># pale wireframes, so the solid visibly sits halfway between the two —</span>
-    <span class="c"># the closed-form blend the check asserts, not just &quot;a taller box&quot;.</span>
-    <span class="c"># Render-only copies with their own key value; `obj` is untouched.</span>
-    cage_mat = bpy.data.materials.new(<span class="s">&quot;Cage&quot;</span>)
-    cage_mat.use_nodes = <span class="k">True</span>
-    cbsdf = cage_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    cbsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.92</span>, <span class="n">0.84</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
-    cbsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.4</span>
-    cages = []
-    <span class="k">for</span> end <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">1.0</span>):
-        me = obj.data.copy()
-        me.materials.clear()
-        me.materials.append(cage_mat)
-        me.shape_keys.key_blocks[<span class="s">&quot;Tall&quot;</span>].value = end
-        cage = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Cage_</span>{end}<span class="s">&quot;</span>, me)
-        cage.location = obj.location
-        cage.rotation_euler = obj.rotation_euler
-        wire = cage.modifiers.new(<span class="s">&quot;cage&quot;</span>, <span class="s">&quot;WIREFRAME&quot;</span>)
-        wire.thickness = <span class="n">0.02</span>
-        wire.use_even_offset = <span class="k">True</span>
-        bpy.context.collection.objects.link(cage)
-        cages.append(cage)
+    <span class="c"># A faint contour cage of the Basis around the full-key vase: the squat</span>
+    <span class="c"># jar it was blended from, so the lift, flare and slimmed belly read on</span>
+    <span class="c"># the one object.</span>
+    ghost_mat = bpy.data.materials.new(<span class="s">&quot;BasisGhost&quot;</span>)
+    ghost_mat.use_nodes = <span class="k">True</span>
+    gnt = ghost_mat.node_tree
+    <span class="k">for</span> n <span class="k">in</span> list(gnt.nodes):
+        <span class="k">if</span> n.type != <span class="s">&#x27;OUTPUT_MATERIAL&#x27;</span>:
+            gnt.nodes.remove(n)
+    em = gnt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+    em.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.86</span>, <span class="n">0.62</span>, <span class="n">1.0</span>)
+    em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.9</span>
+    gnt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>],
+                  next(n <span class="k">for</span> n <span class="k">in</span> gnt.nodes <span class="k">if</span> n.type == <span class="s">&#x27;OUTPUT_MATERIAL&#x27;</span>).inputs[<span class="s">&quot;Surface&quot;</span>])
+    ghost = _basis_ghost(obj, <span class="s">&quot;Vase.BasisGhost&quot;</span>, vases[<span class="n">2</span>].location, ghost_mat)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -509,55 +681,40 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    world_top = HALF + EXPECT_TOP_Z
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    <span class="c"># Aimed above the checked block&#x27;s middle: the full-key cage over it is</span>
-    <span class="c"># taller than any solid, and centring on the solids clipped it.</span>
-    aim.location = (<span class="n">0.35</span>, <span class="n">0.0</span>, world_top * <span class="n">0.62</span>)
+    aim.location = (<span class="n">0.05</span>, <span class="n">0.0</span>, <span class="n">1.12</span>)
     scene.collection.objects.link(aim)
 
-    <span class="k">def</span> light(name, loc, energy, size, col):
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
-        ld.energy = energy
-        ld.size = size
-        ld.color = col
+        ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
-        lc = ob.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
-        lc.target = aim
-        lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
-        lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge pooling on the</span>
-    <span class="c"># back wall (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">4.5</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
-    wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
-    wedge.energy = <span class="n">380.0</span>
-    wedge.size = <span class="n">6.0</span>
-    wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
-    wob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
-    wob.location = (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>)
-    wob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
-    scene.collection.objects.link(wob)
+    <span class="c"># default-stage rig per docs/VISUAL-STYLE.md</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">480.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.0</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">340.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Pulled back so the full-key cage on the right block stays in frame.</span>
-    cam.location = (<span class="n">0.35</span>, -<span class="n">10.4</span>, <span class="n">2.5</span>)
+    <span class="c"># A little above the rims so each mouth opens into an ellipse and the</span>
+    <span class="c"># cream interior reads.</span>
+    cam.location = (<span class="n">0.05</span>, -<span class="n">8.2</span>, <span class="n">3.9</span>)
     scene.collection.objects.link(cam)
-    scene.camera = cam
-    track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)  <span class="c"># data API, not bpy.ops</span>
     track.target = aim
     track.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
     track.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    scene.camera = cam
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -566,11 +723,24 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
-    <span class="c"># AgX would wash the violet toward pastel grey (docs/VISUAL-STYLE.md)</span>
-    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX would wash the cobalt glaze toward slate (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+
+    code = gallery_framing.check_framing(scene, cam, hero=vases, elements=vases + [ghost],
+                                         stage=[floor, wall])
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    code = gallery_asset_quality.check_asset_quality(scene, cam, hero=[obj],
+                                                     stage=[floor, wall])
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -589,9 +759,9 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">10</span>
+        code = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;shape-key-blend OK&quot;</span>)
@@ -608,7 +778,7 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
+    <img src="../assets/shape-key-blend-hero.webp" alt="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." />
   </dialog>
   <footer>
     <div class="statusbar">
