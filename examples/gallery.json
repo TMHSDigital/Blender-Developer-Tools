@@ -380,7 +380,7 @@
       "name": "triangulate-tangents",
       "dir": "examples/triangulate-tangents",
       "teaches": "A machined buckler verifying the tangent-space contract a game engine's normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance.",
-      "alt": "A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight.",
+      "alt": "A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets.",
       "witnessesFix": "calc_tangents aborts on any ngon; planar UVs on a cylindrical wall collapse tangents onto normals; a MeshUVLoopLayer handle held across calc_tangents dangles on 4.5 (471 phantom flips, silent exit 0) while the mikktspace math is byte-identical on both versions.",
       "hero": "docs/gallery/assets/triangulate-tangents-hero.webp",
       "preview": "examples/triangulate-tangents/preview.webp",

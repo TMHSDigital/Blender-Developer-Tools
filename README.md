@@ -916,7 +916,7 @@ blend skinning read back from the mesh's own deform layer.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/triangulate-tangents/"><img src="examples/triangulate-tangents/preview.webp" alt="Triangulate and tangents: a machined steel buckler on a dark cradle - brushed grooves circulating the boss with an anisotropic sweep - proving the mikktspace tangent field a normal map depends on" /></a>
+<a href="examples/triangulate-tangents/"><img src="examples/triangulate-tangents/preview.webp" alt="Triangulate and tangents: a machined steel buckler on a walnut stand - pointed brass boss, domed face cut with concentric lathe grooves, riveted brass rim - proving the mikktspace tangent field a normal map depends on" /></a>
 </td>
 <td valign="middle">
 
