@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>attribute-domain-shear — Examples — Blender Developer Tools</title>
-  <meta name="description" content="POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form." />
+  <meta name="description" content="POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/attribute-domain-shear/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="attribute-domain-shear — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form." />
+  <meta property="og:description" content="POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/attribute-domain-shear/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
+  <meta property="og:image:alt" content="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="attribute-domain-shear — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form." />
+  <meta name="twitter:description" content="POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
-  <meta name="twitter:image:alt" content="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
+  <meta name="twitter:image:alt" content="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>attribute-domain-shear</h1>
-    <p>POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form.</p>
+    <p>POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub.">
-      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream.">
+      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Authoring per-face colors into a POINT-domain attribute overwrites shared vertices once per neighbor; the last write wins and intended colors shear across every shared vertex.</div>
@@ -284,16 +284,17 @@
 <ul><li><strong>Storage sizes.</strong> CORNER attr data == <code>len(loops)</code> == 3K; POINT attr == <code>len(vertices)</code> == K+1.</li><li><strong>CORNER authoring is exact.</strong> The hub corner of wedge i reads palette[i] within 1e-6 — K faces at one vertex may disagree there.</li><li><strong>POINT naive authoring shears by construction.</strong> A per-wedge authoring loop (&quot;paint each wedge its color&quot;) rewrites every shared vertex once per neighbor, and the <strong>last write wins</strong>: the hub reads palette[K-1], ring vert i reads palette[i] — except ring vert 0, which the wrap-around last wedge rewrites to palette[K-1]. The measured mean deviation from intended equals the palette closed form (0.751031) exactly.</li></ul>
 <p><strong>What each check catches on failure:</strong> wedge 3 miscolored in the CORNER pass (exit 4); naive writes reversed, so the hub reads palette[0] (exit 5); a ring vert corrupted, breaking the overwrite-ordering witness (exit 6); a constant palette, collapsing the shear so the probe cannot distinguish naive from correct (exit 7). Sizes wrong for the declared domain (exit 3).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — the <code>color_attributes</code> domain API is stable across both.</p>
-<p><strong>Render as proof:</strong> dual pinwheel from the same closed-form palette the check asserts. CORNER (left) holds eight crisp petals to the hub; naive POINT (right) smears — petal colors bleed across the shared hub and ring verts into a swirl. The broken state is in-frame by design: the right fan <em>is</em> the falsification variant. Fully matte petal materials (<code>Specular IOR Level = 0</code>) so the flat color data carries no specular line, per <code>docs/VISUAL-STYLE.md</code>.</p>
-<p>The staging is render-only and does not touch the checked mesh. The two stands are 2.72 m apart so their canopies read as two objects; at 2.30 m the petal tips met at the centre of the frame. Each stand&#x27;s wooden stick runs from just below the floor into the hub it carries, both ends derived from the stand&#x27;s tilt. The old dark steel stick stopped 0.6 m short of the hub, under the canopy, and disappeared into the stage.</p>
+<p><strong>Render as proof:</strong> two striped patio parasols, painted by the same two authoring functions the check asserts. The canopy is the check&#x27;s fan grown into fabric: eight gores around <strong>one shared apex vertex</strong>, each gore a strip of faces whose vertices all sit on the two seams it shares with its neighbours, so the naive loop touches exactly the kind of shared vertex the check measures. CORNER (left) keeps crisp crimson and cream stripes. Naive POINT (right) rewrites every seam and the apex with the later gore&#x27;s color: the stripes smear pink along the seams, and gore 0, crimson by intent, renders cream because its seam and the apex were last written by gore 7. That gore is turned to face the camera. The broken state is in frame by design: the right parasol <em>is</em> the falsification variant. The canopy fabric is fully matte (<code>Specular IOR Level = 0</code>) so the flat color data carries no specular line, per <code>docs/VISUAL-STYLE.md</code>.</p>
+<p>The render uses a two-tone palette (crimson and cream, alternating). It is not the check&#x27;s palette. The check keeps its eight distinct hues because an off-by-two ordering bug would pass unnoticed under a period-2 palette. A parasol reads as broken only when stripes everyone expects to be crisp go soft. Both palettes go through the same <code>assign_corner</code> and <code>assign_point_naive</code>. Those functions take a <code>faces_per_wedge</code> stride (gore-major face order). It is 1 on the check&#x27;s fan, so the check&#x27;s writes are unchanged, and its output is identical before and after.</p>
+<p>The staging is render-only and does not touch the checked mesh. Each parasol is eight named parts with five materials: canopy, aluminium ribs and stretchers, brass runner, finial and tilt knuckle, teak upper and lower pole, and a cast-iron base. The canopy tilts 24 degrees toward the camera about the knuckle so the whole top reads. One bold label stands in front of each base. The render path runs the framing gate (exit 10) and the asset-quality floors on one parasol (exit 11).</p>
 <h2>Run</h2>
 <pre><code>blender --background --python attribute_domain_shear.py --
 blender --background --python attribute_domain_shear.py -- --no-overwrite
 blender --background --python attribute_domain_shear.py -- --output shear.png
 blender --background --python attribute_domain_shear.py -- --output shear.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>CORNER or POINT attribute size wrong</td></tr><tr><td>4</td><td>CORNER hub corners off wedge color</td></tr><tr><td>5</td><td>POINT hub is not last-write (<code>--no-overwrite</code> lands here)</td></tr><tr><td>6</td><td>Outer ring verts off last-write order</td></tr><tr><td>7</td><td>Measured shear off palette closed form, or ~0</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper and <code>11</code> the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>CORNER or POINT attribute size wrong</td></tr><tr><td>4</td><td>CORNER hub corners off wedge color</td></tr><tr><td>5</td><td>POINT hub is not last-write (<code>--no-overwrite</code> lands here)</td></tr><tr><td>6</td><td>Outer ring verts off last-write order</td></tr><tr><td>7</td><td>Measured shear off palette closed form, or ~0</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Asset-quality floor violation (render path only)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-overwrite</code>.</p>
     </section>
     <section class="detail-section src">
@@ -339,6 +340,7 @@ check. Pass --output to also render a still:
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 K = <span class="n">8</span>                 <span class="c"># pinwheel wedges; hub vertex is shared by all K</span>
 HUB_Z = <span class="n">0.55</span>          <span class="c"># raised hub: folded-paper pinwheel, not a flat disc</span>
@@ -391,30 +393,33 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> me
 
 
-<span class="k">def</span> assign_corner(me, pal):
-    <span class="s">&quot;&quot;&quot;Correct path: CORNER domain, one exact wedge color per loop.&quot;&quot;&quot;</span>
+<span class="k">def</span> assign_corner(me, pal, faces_per_wedge=<span class="n">1</span>):
+    <span class="s">&quot;&quot;&quot;Correct path: CORNER domain, one exact wedge color per loop. Faces are
+    wedge-major (wedge w owns faces w*n .. w*n+n-1); the check&#x27;s fan has n=1.&quot;&quot;&quot;</span>
     attr = me.color_attributes.new(ATTR_C, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=<span class="s">&#x27;CORNER&#x27;</span>)
     colors = [<span class="n">0.0</span>] * (len(me.loops) * <span class="n">4</span>)
     <span class="k">for</span> poly <span class="k">in</span> me.polygons:
         <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
-            colors[li * <span class="n">4</span>: li * <span class="n">4</span> + <span class="n">4</span>] = pal[poly.index]
+            colors[li * <span class="n">4</span>: li * <span class="n">4</span> + <span class="n">4</span>] = pal[poly.index // faces_per_wedge]
     attr.data.foreach_set(<span class="s">&quot;color&quot;</span>, colors)
     me.color_attributes.active_color = attr
     <span class="k">return</span> attr
 
 
-<span class="k">def</span> assign_point_naive(me, pal, overwrite=<span class="k">True</span>):
+<span class="k">def</span> assign_point_naive(me, pal, overwrite=<span class="k">True</span>, faces_per_wedge=<span class="n">1</span>):
     <span class="s">&quot;&quot;&quot;The AI mistake: author per-wedge colors into a POINT-domain attribute.
-    Every wedge rewrites the shared hub (and its leading ring vert), so the
-    last wedge wins — colors shear across every shared vertex.&quot;&quot;&quot;</span>
+    A per-wedge pass paints every vertex of the wedge&#x27;s faces its color, so a
+    vertex shared by two wedges is rewritten by the later one: the shared hub
+    and every seam vert take the LAST write, and colors shear across them.
+    On the check&#x27;s fan (n=1) wedge i writes hub, ring i, ring i+1 in order.&quot;&quot;&quot;</span>
     attr = me.color_attributes.new(ATTR_P, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=<span class="s">&#x27;POINT&#x27;</span>)
-    hub_index = <span class="n">0</span>  <span class="c"># build_fan creates the hub first</span>
     last = K <span class="k">if</span> overwrite <span class="k">else</span> <span class="n">1</span>
-    <span class="k">for</span> i <span class="k">in</span> range(last):
-        <span class="c"># naive per-wedge pass: set the hub and both ring verts to palette[i]</span>
-        attr.data[hub_index].color = pal[i]
-        attr.data[<span class="n">1</span> + i].color = pal[i]
-        attr.data[<span class="n">1</span> + (i + <span class="n">1</span>) % K].color = pal[i]
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        wedge = poly.index // faces_per_wedge
+        <span class="k">if</span> wedge &gt;= last:
+            <span class="k">break</span>
+        <span class="k">for</span> vi <span class="k">in</span> poly.vertices:
+            attr.data[vi].color = pal[wedge]
     me.color_attributes.active_color = attr
     <span class="k">return</span> attr
 
@@ -488,17 +493,17 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> <span class="n">0</span>
 
 
-<span class="k">def</span> make_attr_material(name, attr_name, matte=<span class="k">True</span>):
+<span class="k">def</span> make_attr_material(name, attr_name):
+    <span class="s">&quot;&quot;&quot;Canopy fabric: base color read straight from the color attribute.
+    Fully matte (flat color data carries no specular line, VISUAL-STYLE).&quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    <span class="k">if</span> matte:
-        <span class="c"># flat color data: no specular line across the petals (VISUAL-STYLE)</span>
-        spec = bsdf.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>)
-        <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-            spec.default_value = <span class="n">0.0</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    spec = bsdf.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>)
+    <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        spec.default_value = <span class="n">0.0</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.8</span>
     node = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
     node.attribute_type = <span class="s">&quot;GEOMETRY&quot;</span>
     node.attribute_name = attr_name
@@ -506,79 +511,247 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.35</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.35</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
     b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
     b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
-    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
-        sock.default_value = (*emit, <span class="n">1.0</span>)
-        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
     <span class="k">return</span> mat
 
 
-STAND_TILT = math.radians(<span class="n">12</span>)
-STEM_BURY = <span class="n">0.02</span>
+<span class="c"># --- Render-only prop: a striped patio parasol ------------------------------</span>
+<span class="c"># The canopy is the check&#x27;s fan grown into fabric: the same K wedges (gores)</span>
+<span class="c"># around ONE shared apex vertex, each gore a strip of faces whose vertices all</span>
+<span class="c"># sit on the two seam lines it shares with its neighbours. The same two</span>
+<span class="c"># authoring functions the check asserts paint it, one wedge per gore. A</span>
+<span class="c"># striped parasol is chosen because everyone knows its stripes must be crisp:</span>
+<span class="c"># CORNER keeps them; naive POINT rewrites every seam and the apex with the</span>
+<span class="c"># last gore&#x27;s color, so the stripes smear pink and one red gore goes white.</span>
+
+CANOPY_R = <span class="n">1.18</span>        <span class="c"># rim radius</span>
+CANOPY_RISE = <span class="n">0.52</span>     <span class="c"># apex height above the rim</span>
+CANOPY_RINGS = <span class="n">7</span>       <span class="c"># vertex rings along each seam, apex excluded</span>
+VALANCE_DROP = <span class="n">0.11</span>    <span class="c"># hem hanging below the rim, flared slightly out</span>
+RIM_Z = <span class="n">0.62</span>           <span class="c"># rim height above the tilt joint (canopy-local)</span>
+JOINT_Z = <span class="n">1.28</span>         <span class="c"># tilt-joint height on the pole (world)</span>
+TILT = math.radians(<span class="n">24</span>)
+
+<span class="c"># Two-tone render palette, one entry per gore (K=8): crimson and sailcloth.</span>
+<span class="c"># Render-only — the check keeps its eight distinct hues, which catch</span>
+<span class="c"># ordering bugs a period-2 palette could not.</span>
+CRIMSON = (<span class="n">0.60</span>, <span class="n">0.018</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
+SAILCLOTH = (<span class="n">0.70</span>, <span class="n">0.64</span>, <span class="n">0.50</span>, <span class="n">1.0</span>)
+PARASOL_PAL = [CRIMSON <span class="k">if</span> i % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> SAILCLOTH <span class="k">for</span> i <span class="k">in</span> range(K)]
 
 
-<span class="k">def</span> _pinwheel_obj(sc, name, me, loc, rot_z):
-    ob = bpy.data.objects.new(name, me)
-    ob.location = loc
-    ob.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
-    sc.collection.objects.link(ob)
-    <span class="c"># stem + hub cap: a garden pinwheel on a stick, not a floating disc. The</span>
-    <span class="c"># stick runs from just under the floor to the hub it carries, both ends</span>
-    <span class="c"># derived from the stand&#x27;s own tilt; it used to stop 0.6 below the hub,</span>
-    <span class="c"># hidden under the canopy, holding nothing.</span>
-    stem_lo = -(loc[<span class="n">2</span>] / math.cos(STAND_TILT)) - STEM_BURY
-    stem_hi = HUB_Z
-    stem_me = bpy.data.meshes.new(name + <span class="s">&quot;Stem&quot;</span>)
+<span class="k">def</span> _profile(t):
+    <span class="s">&quot;&quot;&quot;Canopy seam profile, t in (0, 1]: radius and height (canopy-local).&quot;&quot;&quot;</span>
+    <span class="k">return</span> CANOPY_R * t, RIM_Z + CANOPY_RISE * (<span class="n">1.0</span> - t ** <span class="n">1.8</span>)
+
+
+<span class="k">def</span> build_canopy(name):
+    <span class="s">&quot;&quot;&quot;Gore-major fan: gore i owns CANOPY_RINGS + 1 faces (apex triangle,
+    quads down the canopy, one valance quad), every vertex on a seam.
+    Returns (mesh, faces_per_gore).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">10</span>, radius1=<span class="n">0.045</span>,
-                              radius2=<span class="n">0.035</span>, depth=stem_hi - stem_lo)
-        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span> * (stem_lo + stem_hi)),
-                            verts=bm.verts)
-        bm.to_mesh(stem_me)
+        apex = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, RIM_Z + CANOPY_RISE))
+        seams = []
+        <span class="k">for</span> i <span class="k">in</span> range(K):
+            a = <span class="n">2.0</span> * math.pi * i / K
+            c, s = math.cos(a), math.sin(a)
+            col = []
+            <span class="k">for</span> r <span class="k">in</span> range(<span class="n">1</span>, CANOPY_RINGS + <span class="n">1</span>):
+                rad, z = _profile(r / CANOPY_RINGS)
+                col.append(bm.verts.new((rad * c, rad * s, z)))
+            col.append(bm.verts.new((<span class="n">1.03</span> * CANOPY_R * c, <span class="n">1.03</span> * CANOPY_R * s,
+                                     RIM_Z - VALANCE_DROP)))
+            seams.append(col)
+        <span class="k">for</span> i <span class="k">in</span> range(K):
+            a, b = seams[i], seams[(i + <span class="n">1</span>) % K]
+            bm.faces.new((apex, a[<span class="n">0</span>], b[<span class="n">0</span>]))
+            <span class="k">for</span> r <span class="k">in</span> range(len(a) - <span class="n">1</span>):
+                bm.faces.new((a[r], a[r + <span class="n">1</span>], b[r + <span class="n">1</span>], b[r]))
+        bm.normal_update()
+        bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
-    <span class="c"># a painted wooden dowel: near-black steel vanished into the dark stage</span>
-    stem_me.materials.append(make_material(<span class="s">&quot;StemDowel&quot;</span>, (<span class="n">0.46</span>, <span class="n">0.30</span>, <span class="n">0.16</span>),
-                                           rough=<span class="n">0.55</span>, metallic=<span class="n">0.0</span>))
-    stem = bpy.data.objects.new(name + <span class="s">&quot;Stem&quot;</span>, stem_me)
-    stem.location = loc
-    stem.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
-    sc.collection.objects.link(stem)
-    cap_me = bpy.data.meshes.new(name + <span class="s">&quot;Cap&quot;</span>)
+    me.shade_smooth()
+    <span class="c"># soft dome across the gores, crisp fold where the hem drops</span>
+    <span class="k">if</span> hasattr(me, <span class="s">&quot;set_sharp_from_angle&quot;</span>):
+        me.set_sharp_from_angle(angle=math.radians(<span class="n">50</span>))
+    <span class="k">return</span> me, CANOPY_RINGS + <span class="n">1</span>
+
+
+<span class="k">def</span> lathe(name, profile, segs=<span class="n">24</span>, sharp_deg=<span class="n">40.0</span>):
+    <span class="s">&quot;&quot;&quot;Revolve (radius, z) profile points about Z; closed where radius is 0.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">12</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.075</span>)
-        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, HUB_Z + <span class="n">0.02</span>), verts=bm.verts)
-        bm.to_mesh(cap_me)
+        rings = []
+        <span class="k">for</span> rad, z <span class="k">in</span> profile:
+            <span class="k">if</span> rad &lt;= <span class="n">1e-6</span>:
+                rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+                <span class="k">continue</span>
+            rings.append([bm.verts.new((rad * math.cos(<span class="n">2</span> * math.pi * j / segs),
+                                        rad * math.sin(<span class="n">2</span> * math.pi * j / segs), z))
+                          <span class="k">for</span> j <span class="k">in</span> range(segs)])
+        <span class="k">for</span> lo, hi <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            <span class="k">if</span> len(lo) == <span class="n">1</span> <span class="k">and</span> len(hi) == <span class="n">1</span>:
+                <span class="k">continue</span>
+            <span class="k">for</span> j <span class="k">in</span> range(segs):
+                jn = (j + <span class="n">1</span>) % segs
+                <span class="k">if</span> len(lo) == <span class="n">1</span>:
+                    bm.faces.new((lo[<span class="n">0</span>], hi[j], hi[jn]))
+                <span class="k">elif</span> len(hi) == <span class="n">1</span>:
+                    bm.faces.new((lo[j], lo[jn], hi[<span class="n">0</span>]))
+                <span class="k">else</span>:
+                    bm.faces.new((lo[j], lo[jn], hi[jn], hi[j]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
-    cap_me.materials.append(make_material(<span class="s">&quot;CapMetal&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">0.095</span>),
-                                          rough=<span class="n">0.35</span>, metallic=<span class="n">0.85</span>))
-    cap = bpy.data.objects.new(name + <span class="s">&quot;Cap&quot;</span>, cap_me)
-    cap.location = loc
-    cap.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
-    sc.collection.objects.link(cap)
-    <span class="k">return</span> ob
+    me.shade_smooth()
+    <span class="k">if</span> hasattr(me, <span class="s">&quot;set_sharp_from_angle&quot;</span>):
+        me.set_sharp_from_angle(angle=math.radians(sharp_deg))
+    <span class="k">return</span> me
 
 
-<span class="k">def</span> placard(sc, text, loc, size=<span class="n">0.18</span>):
-    cu = bpy.data.curves.new(text, <span class="s">&quot;FONT&quot;</span>)
+<span class="k">def</span> _tube(bm, pts, radius, segs=<span class="n">8</span>):
+    <span class="s">&quot;&quot;&quot;Sweep a round tube through pts (list of Vector), capped at both ends.&quot;&quot;&quot;</span>
+    <span class="k">from</span> mathutils <span class="k">import</span> Vector
+    rings = []
+    <span class="k">for</span> k, p <span class="k">in</span> enumerate(pts):
+        tan = (pts[min(k + <span class="n">1</span>, len(pts) - <span class="n">1</span>)] - pts[max(k - <span class="n">1</span>, <span class="n">0</span>)]).normalized()
+        ref = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)) <span class="k">if</span> abs(tan.z) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        u = tan.cross(ref).normalized()
+        v = tan.cross(u).normalized()
+        rings.append([bm.verts.new(p + radius * (math.cos(<span class="n">2</span> * math.pi * j / segs) * u
+                                                 + math.sin(<span class="n">2</span> * math.pi * j / segs) * v))
+                      <span class="k">for</span> j <span class="k">in</span> range(segs)])
+    <span class="k">for</span> lo, hi <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> j <span class="k">in</span> range(segs):
+            jn = (j + <span class="n">1</span>) % segs
+            bm.faces.new((lo[j], lo[jn], hi[jn], hi[j]))
+    bm.faces.new(list(reversed(rings[<span class="n">0</span>])))
+    bm.faces.new(rings[-<span class="n">1</span>])
+
+
+RUNNER_Z = <span class="n">0.20</span>        <span class="c"># sliding runner on the upper pole (canopy-local)</span>
+
+
+<span class="k">def</span> build_ribs(name):
+    <span class="s">&quot;&quot;&quot;K ribs tucked under the seams, with the tip caps poking past the hem,
+    plus K stretchers from the runner up to mid-rib.&quot;&quot;&quot;</span>
+    <span class="k">from</span> mathutils <span class="k">import</span> Vector
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> i <span class="k">in</span> range(K):
+            a = <span class="n">2.0</span> * math.pi * i / K
+            c, s = math.cos(a), math.sin(a)
+            pts = []
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">2</span>, <span class="n">15</span>):
+                t = k / <span class="n">14.0</span>
+                rad, z = _profile(t)
+                pts.append(Vector((rad * c, rad * s, z - <span class="n">0.035</span>)))
+            <span class="c"># tip: a short drop past the rim so the rib end reads at the hem</span>
+            pts.append(Vector((CANOPY_R * <span class="n">1.01</span> * c, CANOPY_R * <span class="n">1.01</span> * s, RIM_Z - <span class="n">0.06</span>)))
+            _tube(bm, pts, <span class="n">0.013</span>, segs=<span class="n">8</span>)
+            rad, z = _profile(<span class="n">0.55</span>)
+            _tube(bm, [Vector((<span class="n">0.035</span> * c, <span class="n">0.035</span> * s, RUNNER_Z + <span class="n">0.03</span>)),
+                       Vector((rad * c, rad * s, z - <span class="n">0.05</span>))], <span class="n">0.009</span>, segs=<span class="n">6</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.shade_smooth()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> build_parasol(sc, tag, attr_fn, attr_name, loc, spin_z, mats):
+    <span class="s">&quot;&quot;&quot;One patio parasol at loc. attr_fn authors the canopy color attribute
+    (the CORNER or naive POINT path under test). Returns the hero parts.&quot;&quot;&quot;</span>
+    parts = []
+    root = <span class="s">f&quot;</span><span class="s">Parasol</span>{tag}<span class="s">&quot;</span>
+
+    <span class="k">def</span> link(ob_name, me, mat, location, rot):
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(ob_name, me)
+        ob.location = location
+        <span class="c"># spin about the pole first, then tilt about world X toward the camera</span>
+        ob.rotation_mode = <span class="s">&quot;ZYX&quot;</span>
+        ob.rotation_euler = rot
+        sc.collection.objects.link(ob)
+        parts.append(ob)
+        <span class="k">return</span> ob
+
+    upright = (<span class="n">0.0</span>, <span class="n">0.0</span>, spin_z)
+    x, y = loc
+    <span class="c"># weighted cast-iron base: skirt, stepped dome, socket neck</span>
+    base = lathe(<span class="s">f&quot;</span>{root}<span class="s">.Base</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.34</span>, <span class="n">0.0</span>), (<span class="n">0.355</span>, <span class="n">0.012</span>), (<span class="n">0.355</span>, <span class="n">0.04</span>), (<span class="n">0.335</span>, <span class="n">0.055</span>),
+        (<span class="n">0.25</span>, <span class="n">0.075</span>), (<span class="n">0.235</span>, <span class="n">0.095</span>), (<span class="n">0.14</span>, <span class="n">0.125</span>), (<span class="n">0.075</span>, <span class="n">0.15</span>),
+        (<span class="n">0.06</span>, <span class="n">0.2</span>), (<span class="n">0.068</span>, <span class="n">0.215</span>), (<span class="n">0.068</span>, <span class="n">0.25</span>), (<span class="n">0.05</span>, <span class="n">0.262</span>), (<span class="n">0.0</span>, <span class="n">0.262</span>)],
+        segs=<span class="n">40</span>, sharp_deg=<span class="n">35</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.Base</span><span class="s">&quot;</span>, base, mats[<span class="s">&quot;iron&quot;</span>], (x, y, <span class="n">0.0</span>), upright)
+    <span class="c"># lower pole, then the brass tilt knuckle it hinges at</span>
+    pole_lo = lathe(<span class="s">f&quot;</span>{root}<span class="s">.PoleLower</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, <span class="n">0.22</span>), (<span class="n">0.03</span>, <span class="n">0.22</span>), (<span class="n">0.03</span>, JOINT_Z - <span class="n">0.05</span>), (<span class="n">0.0</span>, JOINT_Z - <span class="n">0.05</span>)],
+        segs=<span class="n">20</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.PoleLower</span><span class="s">&quot;</span>, pole_lo, mats[<span class="s">&quot;teak&quot;</span>], (x, y, <span class="n">0.0</span>), upright)
+    knuckle = lathe(<span class="s">f&quot;</span>{root}<span class="s">.TiltKnuckle</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, -<span class="n">0.09</span>), (<span class="n">0.036</span>, -<span class="n">0.09</span>), (<span class="n">0.042</span>, -<span class="n">0.075</span>), (<span class="n">0.042</span>, -<span class="n">0.035</span>),
+        (<span class="n">0.05</span>, -<span class="n">0.02</span>), (<span class="n">0.052</span>, <span class="n">0.0</span>), (<span class="n">0.05</span>, <span class="n">0.02</span>), (<span class="n">0.042</span>, <span class="n">0.035</span>), (<span class="n">0.042</span>, <span class="n">0.075</span>),
+        (<span class="n">0.036</span>, <span class="n">0.09</span>), (<span class="n">0.0</span>, <span class="n">0.09</span>)], segs=<span class="n">24</span>, sharp_deg=<span class="n">30</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.TiltKnuckle</span><span class="s">&quot;</span>, knuckle, mats[<span class="s">&quot;brass&quot;</span>], (x, y, JOINT_Z), upright)
+
+    <span class="c"># everything above the knuckle tilts toward the camera about the joint</span>
+    tilt = (TILT, <span class="n">0.0</span>, spin_z)
+    jloc = (x, y, JOINT_Z)
+    pole_up = lathe(<span class="s">f&quot;</span>{root}<span class="s">.PoleUpper</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, <span class="n">0.05</span>), (<span class="n">0.027</span>, <span class="n">0.05</span>), (<span class="n">0.027</span>, RIM_Z + CANOPY_RISE), (<span class="n">0.0</span>, RIM_Z + CANOPY_RISE)],
+        segs=<span class="n">20</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.PoleUpper</span><span class="s">&quot;</span>, pole_up, mats[<span class="s">&quot;teak&quot;</span>], jloc, tilt)
+    runner = lathe(<span class="s">f&quot;</span>{root}<span class="s">.Runner</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, RUNNER_Z - <span class="n">0.05</span>), (<span class="n">0.04</span>, RUNNER_Z - <span class="n">0.05</span>), (<span class="n">0.046</span>, RUNNER_Z - <span class="n">0.035</span>),
+        (<span class="n">0.046</span>, RUNNER_Z + <span class="n">0.035</span>), (<span class="n">0.04</span>, RUNNER_Z + <span class="n">0.05</span>), (<span class="n">0.0</span>, RUNNER_Z + <span class="n">0.05</span>)],
+        segs=<span class="n">24</span>, sharp_deg=<span class="n">30</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.Runner</span><span class="s">&quot;</span>, runner, mats[<span class="s">&quot;brass&quot;</span>], jloc, tilt)
+    ribs = build_ribs(<span class="s">f&quot;</span>{root}<span class="s">.Ribs</span><span class="s">&quot;</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.Ribs</span><span class="s">&quot;</span>, ribs, mats[<span class="s">&quot;rib&quot;</span>], jloc, tilt)
+    top = RIM_Z + CANOPY_RISE
+    finial = lathe(<span class="s">f&quot;</span>{root}<span class="s">.Finial</span><span class="s">&quot;</span>, [
+        (<span class="n">0.0</span>, top - <span class="n">0.01</span>), (<span class="n">0.07</span>, top - <span class="n">0.01</span>), (<span class="n">0.075</span>, top + <span class="n">0.005</span>), (<span class="n">0.05</span>, top + <span class="n">0.02</span>),
+        (<span class="n">0.026</span>, top + <span class="n">0.045</span>), (<span class="n">0.024</span>, top + <span class="n">0.07</span>), (<span class="n">0.04</span>, top + <span class="n">0.085</span>),
+        (<span class="n">0.052</span>, top + <span class="n">0.11</span>), (<span class="n">0.048</span>, top + <span class="n">0.135</span>), (<span class="n">0.032</span>, top + <span class="n">0.155</span>),
+        (<span class="n">0.012</span>, top + <span class="n">0.17</span>), (<span class="n">0.0</span>, top + <span class="n">0.175</span>)], segs=<span class="n">24</span>, sharp_deg=<span class="n">30</span>)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.Finial</span><span class="s">&quot;</span>, finial, mats[<span class="s">&quot;brass&quot;</span>], jloc, tilt)
+
+    canopy, per_gore = build_canopy(<span class="s">f&quot;</span>{root}<span class="s">.Canopy</span><span class="s">&quot;</span>)
+    attr_fn(canopy, PARASOL_PAL, faces_per_wedge=per_gore)
+    link(<span class="s">f&quot;</span>{root}<span class="s">.Canopy</span><span class="s">&quot;</span>, canopy, make_attr_material(<span class="s">f&quot;</span>{root}<span class="s">.Fabric</span><span class="s">&quot;</span>, attr_name),
+         jloc, tilt)
+    <span class="k">return</span> parts
+
+
+<span class="k">def</span> floor_letters(sc, text, x, mat):
+    <span class="s">&quot;&quot;&quot;One bold label per parasol: extruded block letters standing on the
+    floor in front of the base, readable at card size.&quot;&quot;&quot;</span>
+    cu = bpy.data.curves.new(<span class="s">f&quot;</span><span class="s">Label</span>{text.title()}<span class="s">&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
     cu.body = text
-    cu.size = size
+    cu.size = <span class="n">0.29</span>
+    cu.extrude = <span class="n">0.03</span>
+    cu.bevel_depth = <span class="n">0.004</span>
+    cu.offset = <span class="n">0.012</span>          <span class="c"># thicken the stroke: the stock font is thin</span>
     cu.align_x = <span class="s">&quot;CENTER&quot;</span>
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
+    ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Label</span>{text.title()}<span class="s">&quot;</span>, cu)
+    ob.location = (x, -<span class="n">1.0</span>, <span class="n">0.0</span>)
+    ob.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    ob.data.materials.append(mat)
     sc.collection.objects.link(ob)
-    ob.data.materials.append(make_material(<span class="s">&quot;Label&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.9</span>, <span class="n">0.92</span>),
-                                           rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>))
     <span class="k">return</span> ob
 
 
@@ -595,7 +768,7 @@ STEM_BURY = <span class="n">0.02</span>
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     sc.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     sc.collection.objects.link(wall)
 
@@ -616,48 +789,47 @@ STEM_BURY = <span class="n">0.02</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         sc.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">45</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">320.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.5</span>, <span class="n">5.0</span>, <span class="n">4.2</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">180</span>))
     <span class="k">return</span> floor, wall
 
 
-PAIR_X = <span class="n">1.36</span>
+PAIR_X = <span class="n">1.42</span>
 
 
 <span class="k">def</span> render_still(path, engine):
-    <span class="s">&quot;&quot;&quot;Dual pinwheel: CORNER (crisp petals to the hub) vs naive POINT (last
-    write smears the shared hub + ring verts). Colors come from the same
-    closed-form palette the check asserts.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Two striped parasols from the same authoring functions the check
+    asserts, one wedge per gore: CORNER (left) keeps crisp crimson/sailcloth
+    stripes; naive POINT (right) smears every seam and the apex to the last
+    write, and gore 0 — crimson by intent — renders white.&quot;&quot;&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
-    pal = palette()
-
-    me_c = build_fan()
-    assign_corner(me_c, pal)
-    me_c.materials.append(make_attr_material(<span class="s">&quot;MatCorner&quot;</span>, ATTR_C))
-    <span class="c"># Spread so the two canopies read as two objects: at +/-1.15 their</span>
-    <span class="c"># tips met at x=0 and the pair read as one shape.</span>
-    left = _pinwheel_obj(sc, <span class="s">&quot;Corner&quot;</span>, me_c, (-PAIR_X, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(-<span class="n">8</span>))
-
-    me_p = build_fan()
-    assign_point_naive(me_p, pal)
-    me_p.materials.append(make_attr_material(<span class="s">&quot;MatPoint&quot;</span>, ATTR_P))
-    right = _pinwheel_obj(sc, <span class="s">&quot;Point&quot;</span>, me_p, (PAIR_X, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(<span class="n">8</span>))
-
-    p_corner = placard(sc, <span class="s">&quot;CORNER&quot;</span>, (-PAIR_X, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.13</span>)
-    p_point = placard(sc, <span class="s">&quot;POINT — last write wins&quot;</span>, (PAIR_X, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.10</span>)
+    mats = {
+        <span class="s">&quot;teak&quot;</span>: make_material(<span class="s">&quot;Teak&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.105</span>, <span class="n">0.04</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.0</span>),
+        <span class="s">&quot;brass&quot;</span>: make_material(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.52</span>, <span class="n">0.2</span>), rough=<span class="n">0.28</span>, metallic=<span class="n">1.0</span>),
+        <span class="s">&quot;iron&quot;</span>: make_material(<span class="s">&quot;CastIron&quot;</span>, (<span class="n">0.1</span>, <span class="n">0.1</span>, <span class="n">0.11</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.75</span>),
+        <span class="s">&quot;rib&quot;</span>: make_material(<span class="s">&quot;RibAluminium&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.62</span>, <span class="n">0.64</span>), rough=<span class="n">0.32</span>, metallic=<span class="n">1.0</span>),
+    }
+    <span class="c"># gore 0 spans angles 0..45 deg; spin so the red-by-intent gore faces</span>
+    <span class="c"># the camera on both parasols (the one the POINT loop turns white)</span>
+    spin = math.radians(-<span class="n">90</span> - <span class="n">22.5</span>)
+    left = build_parasol(sc, <span class="s">&quot;Corner&quot;</span>, assign_corner, ATTR_C, (-PAIR_X, <span class="n">0.0</span>), spin, mats)
+    right = build_parasol(sc, <span class="s">&quot;Point&quot;</span>, assign_point_naive, ATTR_P, (PAIR_X, <span class="n">0.0</span>), spin, mats)
+    label_mat = make_material(<span class="s">&quot;LabelEnamel&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.345</span>, <span class="n">0.32</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>)
+    labels = [floor_letters(sc, <span class="s">&quot;CORNER&quot;</span>, -PAIR_X, label_mat),
+              floor_letters(sc, <span class="s">&quot;POINT&quot;</span>, PAIR_X, label_mat)]
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">44.0</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">6.4</span>, <span class="n">4.6</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">9.2</span>, <span class="n">3.75</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.8</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.25</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
@@ -679,19 +851,24 @@ PAIR_X = <span class="n">1.36</span>
     sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     sc.render.filepath = path
-    <span class="c"># Standard, always: AgX would bend the closed-form palette the check asserts</span>
+    <span class="c"># Standard, always: AgX would bend the palette the attributes carry</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation.</span>
-    hero = [left, right]
-    elements = hero + [p_corner, p_point]
+    hero = left + right
     fcode = gallery_framing.check_framing(
         sc, cam,
         hero=hero,
-        elements=elements,
+        elements=hero + labels,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (naming, material variation, edge treatment),</span>
+    <span class="c"># measured on one parasol — exit 11 on violation</span>
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=left, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -739,7 +916,7 @@ PAIR_X = <span class="n">1.36</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
+    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
   </dialog>
   <footer>
     <div class="statusbar">
