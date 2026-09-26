@@ -125,9 +125,9 @@
     {
       "name": "gn-instance-grid",
       "dir": "examples/gn-instance-grid",
-      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.",
-      "alt": "A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor.",
-      "witnessesFix": "Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.",
+      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry.",
+      "alt": "A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right.",
+      "witnessesFix": "Realized instances produce closed-form topology (9 keycaps × 121 = 1089 verts, 1089 faces), Set Material carries the keycap plastic, a position-field Set Material lands the accent on exactly one keycap, and the corner keycap sits at its closed-form grid coordinate.",
       "hero": "docs/gallery/assets/gn-instance-grid-hero.webp",
       "preview": "examples/gn-instance-grid/preview.webp",
       "tags": [
