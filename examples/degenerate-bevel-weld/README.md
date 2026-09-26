@@ -39,11 +39,18 @@ future Blender changes triangulation — re-measure and update deliberately).
 **Version witness:** output is byte-identical on Blender 4.5.11 LTS and
 5.1.2 — same counts, same min_area values, same GLB triangle census.
 
-**Render as proof:** dual tray from the same `DIMS`/offsets the check
-asserts. Left keeps a soft rounded bevel; right collapses to a knife edge,
-with an emissive seam marker at every zero-area face centroid — the markers
-are placed from live mesh data, so a change in the data moves them. The
-broken state is in-frame by design.
+**Render as proof:** two rugged hard-shell equipment cases whose shells
+*are* the check's two meshes — `beveled_box(DIMS, 0.10)` and
+`beveled_box(DIMS, 0.20)` — with every fitting (handle, latches, molded
+frame, purge valve, ID plate, feet) kept inside the flat front land that
+survives both offsets, so the bevel is the only difference. The cases turn
+their end panels to the camera: the left keeps a flat end framed by clean
+chamfer bands; on the right the end and top lands are gone and the band
+rolls into a knife ridge at mid-depth. That collapsed seam is traced in hot
+red from live mesh data (every edge of every face thinner than 1e-6), with
+an orange bead on each of the 12 zero-area faces the check counts — change
+the offset and the overlay moves or disappears. The clean case is the
+designed asset and passes the asset-quality floors (exit 11).
 
 ## Run
 
@@ -57,7 +64,8 @@ blender --background --python degenerate_bevel_weld.py -- --output bevel.png --e
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it. `10` is the shared framing helper.
+against it. `10` is the shared framing helper, `11` the shared
+asset-quality helper.
 
 | Code | Meaning |
 | --- | --- |
@@ -72,6 +80,7 @@ against it. `10` is the shared framing helper.
 | 8 | Degenerate GLB triangle or position count drifted |
 | 9 | `--output` produced no file |
 | 10 | Gallery framing violation |
+| 11 | Asset-quality floor violation (render path only) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

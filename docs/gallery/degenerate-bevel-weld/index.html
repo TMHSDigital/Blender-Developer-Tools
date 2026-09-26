@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>degenerate-bevel-weld — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data." />
+  <meta name="description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/degenerate-bevel-weld/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="degenerate-bevel-weld — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data." />
+  <meta property="og:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/degenerate-bevel-weld/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/degenerate-bevel-weld-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." />
+  <meta property="og:image:alt" content="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="degenerate-bevel-weld — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data." />
+  <meta name="twitter:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/degenerate-bevel-weld-hero.webp" />
-  <meta name="twitter:image:alt" content="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." />
+  <meta name="twitter:image:alt" content="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>degenerate-bevel-weld</h1>
-    <p>Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data.</p>
+    <p>Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners.">
-      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads.">
+      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.</div>
@@ -284,15 +284,15 @@
 <ul><li><strong>Threshold.</strong> Offset 0.10 (&lt; 0.2) yields <strong>zero</strong> zero-area faces; offset 0.20 (== min/2) yields exactly <strong>12</strong> == 4 min-axis edges × 3 segments. <code>min_area</code> collapses 3.2e5× (5.8e-04 → 1.8e-09).</li><li><strong>Collapse witness.</strong> Coincident-position verts == <strong>16</strong> == 4 edges × (segments + 1), re-derived by 6-decimal position grouping — the loops a merge-by-distance welds.</li><li><strong>Export crossing.</strong> A stdlib re-parse of the GLB recomputes every triangle area from the raw POSITION + indices buffers: <strong>32</strong> degenerate triangles ship (the 12 collapsed faces, triangulated — a MEASURED regression constant like curve-bevel-arc&#x27;s <code>EXPECT_VERTS</code>; re-measure recipe in <code>check()</code>), versus 0 for the safe mesh. The exporter ships every loop (positions == 384 loops) — nothing warns you.</li></ul>
 <p><strong>What each check catches on failure:</strong> safe offset pushed to the threshold (exit 3); degenerate offset backed below it (exit 4); coincident closed form corrupted (exit 6); GLB degenerate-tri expectation off (exit 8, e.g. if a future Blender changes triangulation — re-measure and update deliberately).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same min_area values, same GLB triangle census.</p>
-<p><strong>Render as proof:</strong> dual tray from the same <code>DIMS</code>/offsets the check asserts. Left keeps a soft rounded bevel; right collapses to a knife edge, with an emissive seam marker at every zero-area face centroid — the markers are placed from live mesh data, so a change in the data moves them. The broken state is in-frame by design.</p>
+<p><strong>Render as proof:</strong> two rugged hard-shell equipment cases whose shells <em>are</em> the check&#x27;s two meshes — <code>beveled_box(DIMS, 0.10)</code> and <code>beveled_box(DIMS, 0.20)</code> — with every fitting (handle, latches, molded frame, purge valve, ID plate, feet) kept inside the flat front land that survives both offsets, so the bevel is the only difference. The cases turn their end panels to the camera: the left keeps a flat end framed by clean chamfer bands; on the right the end and top lands are gone and the band rolls into a knife ridge at mid-depth. That collapsed seam is traced in hot red from live mesh data (every edge of every face thinner than 1e-6), with an orange bead on each of the 12 zero-area faces the check counts — change the offset and the overlay moves or disappears. The clean case is the designed asset and passes the asset-quality floors (exit 11).</p>
 <h2>Run</h2>
 <pre><code>blender --background --python degenerate_bevel_weld.py --
 blender --background --python degenerate_bevel_weld.py -- --both-safe
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Safe bevel produced zero-area faces</td></tr><tr><td>4</td><td>Degenerate bevel zero-area count ≠ closed form (<code>--both-safe</code> lands here)</td></tr><tr><td>5</td><td>min_area collapse under 1e5×</td></tr><tr><td>6</td><td>Coincident-position count off the closed form</td></tr><tr><td>7</td><td>Safe GLB carries degenerate triangles</td></tr><tr><td>8</td><td>Degenerate GLB triangle or position count drifted</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper, <code>11</code> the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Safe bevel produced zero-area faces</td></tr><tr><td>4</td><td>Degenerate bevel zero-area count ≠ closed form (<code>--both-safe</code> lands here)</td></tr><tr><td>5</td><td>min_area collapse under 1e5×</td></tr><tr><td>6</td><td>Coincident-position count off the closed form</td></tr><tr><td>7</td><td>Safe GLB carries degenerate triangles</td></tr><tr><td>8</td><td>Degenerate GLB triangle or position count drifted</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Asset-quality floor violation (render path only)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--both-safe</code>.</p>
     </section>
     <section class="detail-section src">
@@ -334,11 +334,13 @@ check. Pass --output to also render a still:
     blender --background --python degenerate_bevel_weld.py -- --output b.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, json, struct, tempfile
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 DIMS = (<span class="n">1.6</span>, <span class="n">0.4</span>, <span class="n">1.0</span>)          <span class="c"># min dim 0.4 -&gt; half = 0.2, the threshold</span>
 SAFE_OFFSET = <span class="n">0.10</span>
@@ -539,60 +541,235 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> _degen_face_centers(me, eps=AREA_EPS):
-    <span class="k">return</span> [p.center.copy() <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.area &lt;= eps]
+SEAM_AREA = <span class="n">1e-6</span>   <span class="c"># render overlay: faces this thin are drawn as the weld seam</span>
+CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases present an end panel to the camera</span>
+
+
+<span class="k">def</span> _mesh_from_bm(name, build):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        build(bm)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _part(sc, name, me, mat, parent, loc=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    <span class="k">if</span> parent <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        ob.parent = parent
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> _block(name, dims, bevel=<span class="n">0.012</span>, segs=<span class="n">2</span>):
+    <span class="s">&quot;&quot;&quot;Small hardware block with worn (beveled) edges.&quot;&quot;&quot;</span>
+    <span class="k">def</span> build(bm):
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= dims[<span class="n">0</span>]
+            v.co.y *= dims[<span class="n">1</span>]
+            v.co.z *= dims[<span class="n">2</span>]
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=segs,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+    <span class="k">return</span> _mesh_from_bm(name, build)
+
+
+<span class="k">def</span> _tube_path(bm, pts, radius, sides=<span class="n">12</span>, cap=<span class="k">True</span>):
+    <span class="s">&quot;&quot;&quot;Sweep a circular section along a polyline (rotation-minimising).&quot;&quot;&quot;</span>
+    pts = [Vector(p) <span class="k">for</span> p <span class="k">in</span> pts]
+    rings = []
+    ref = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(pts):
+        a = pts[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        b = pts[min(i + <span class="n">1</span>, len(pts) - <span class="n">1</span>)]
+        t = (b - a).normalized()
+        <span class="k">if</span> abs(t.dot(ref)) &gt; <span class="n">0.95</span>:
+            ref = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        u = t.cross(ref).normalized()
+        w = u.cross(t).normalized()
+        ref = w
+        ring = []
+        <span class="k">for</span> k <span class="k">in</span> range(sides):
+            ang = <span class="n">2.0</span> * math.pi * k / sides
+            ring.append(bm.verts.new(p + radius * (math.cos(ang) * u + math.sin(ang) * w)))
+        rings.append(ring)
+    <span class="k">for</span> r0, r1 <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> k <span class="k">in</span> range(sides):
+            bm.faces.new((r0[k], r0[(k + <span class="n">1</span>) % sides], r1[(k + <span class="n">1</span>) % sides], r1[k]))
+    <span class="k">if</span> cap:
+        bm.faces.new(list(reversed(rings[<span class="n">0</span>])))
+        bm.faces.new(rings[-<span class="n">1</span>])
+
+
+<span class="k">def</span> build_case(sc, prefix, offset, mats, loc, rot_z):
+    <span class="s">&quot;&quot;&quot;A rugged hard-shell equipment case whose shell IS the checked mesh:
+    beveled_box(DIMS, offset) — the same data the check asserts on. All
+    fittings sit inside the flat front/top area that survives both
+    offsets, so the only difference between the two cases is the bevel.&quot;&quot;&quot;</span>
+    shell_me = beveled_box(DIMS, offset)
+    shell_me.name = <span class="s">f&quot;</span>{prefix}<span class="s">.Shell</span><span class="s">&quot;</span>
+    shell = _part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.Shell</span><span class="s">&quot;</span>, shell_me, mats[<span class="s">&quot;shell&quot;</span>], <span class="k">None</span>, loc)
+    shell.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(rot_z))
+    hx, hy, hz = (d / <span class="n">2</span> <span class="k">for</span> d <span class="k">in</span> DIMS)
+    parts = [shell]
+
+    <span class="c"># carry handle: two pivot blocks + a swept D-grip on the top ridge</span>
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.HandlePivot</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.HandlePivot</span><span class="s">&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.12</span>, <span class="n">0.07</span>), <span class="n">0.015</span>),
+                           mats[<span class="s">&quot;steel&quot;</span>], shell, (sx * <span class="n">0.30</span>, <span class="n">0.0</span>, hz + <span class="n">0.02</span>)))
+
+    <span class="k">def</span> grip(bm):
+        pts = []
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">25</span>):
+            t = math.pi * i / <span class="n">24</span>
+            pts.append((-<span class="n">0.30</span> * math.cos(t), <span class="n">0.0</span>,
+                        hz + <span class="n">0.04</span> + <span class="n">0.13</span> * math.sin(t) ** <span class="n">0.55</span>))
+        _tube_path(bm, pts, <span class="n">0.028</span>, sides=<span class="n">14</span>)
+    parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.HandleGrip</span><span class="s">&quot;</span>, _mesh_from_bm(<span class="s">f&quot;</span>{prefix}<span class="s">.Grip</span><span class="s">&quot;</span>, grip),
+                       mats[<span class="s">&quot;rubber&quot;</span>], shell))
+
+    <span class="c"># front fittings — lid seam strip, twin draw latches across it, a</span>
+    <span class="c"># molded rib pair and an ID plate (asymmetric, inside the flat land)</span>
+    fy = -hy
+    parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.LidSeam</span><span class="s">&quot;</span>,
+                       _block(<span class="s">f&quot;</span>{prefix}<span class="s">.LidSeam</span><span class="s">&quot;</span>, (<span class="n">1.16</span>, <span class="n">0.02</span>, <span class="n">0.035</span>), <span class="n">0.008</span>),
+                       mats[<span class="s">&quot;shell_dark&quot;</span>], shell, (<span class="n">0.0</span>, fy - <span class="n">0.004</span>, <span class="n">0.17</span>)))
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.LatchBase</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.LatchBase</span><span class="s">&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.04</span>, <span class="n">0.22</span>), <span class="n">0.012</span>),
+                           mats[<span class="s">&quot;steel&quot;</span>], shell, (sx * <span class="n">0.40</span>, fy - <span class="n">0.01</span>, <span class="n">0.17</span>)))
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.LatchLever</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.LatchLever</span><span class="s">&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.035</span>, <span class="n">0.13</span>), <span class="n">0.014</span>),
+                           mats[<span class="s">&quot;accent&quot;</span>], shell, (sx * <span class="n">0.40</span>, fy - <span class="n">0.045</span>, <span class="n">0.15</span>)))
+    <span class="c"># molded reinforcement frame around the front land</span>
+    <span class="k">for</span> nm, dims, pos <span class="k">in</span> ((<span class="s">&quot;FrameTop&quot;</span>, (<span class="n">1.17</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, <span class="n">0.28</span>)),
+                          (<span class="s">&quot;FrameBottom&quot;</span>, (<span class="n">1.17</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, -<span class="n">0.28</span>)),
+                          (<span class="s">&quot;FrameL&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.03</span>, <span class="n">0.595</span>), (-<span class="n">0.57</span>, <span class="n">0.0</span>)),
+                          (<span class="s">&quot;FrameR&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.03</span>, <span class="n">0.595</span>), (<span class="n">0.57</span>, <span class="n">0.0</span>))):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.</span>{nm}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.</span>{nm}<span class="s">&quot;</span>, dims, <span class="n">0.01</span>),
+                           mats[<span class="s">&quot;shell&quot;</span>], shell, (pos[<span class="n">0</span>], fy - <span class="n">0.008</span>, pos[<span class="n">1</span>])))
+    <span class="k">for</span> z <span class="k">in</span> (-<span class="n">0.10</span>, -<span class="n">0.20</span>):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.Rib</span>{int(abs(z) * <span class="n">100</span>)}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.Rib</span><span class="s">&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.03</span>, <span class="n">0.04</span>), <span class="n">0.012</span>),
+                           mats[<span class="s">&quot;shell_dark&quot;</span>], shell, (-<span class="n">0.29</span>, fy - <span class="n">0.005</span>, z)))
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.Hasp</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.Hasp</span><span class="s">&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.03</span>, <span class="n">0.09</span>), <span class="n">0.01</span>),
+                           mats[<span class="s">&quot;steel&quot;</span>], shell, (sx * <span class="n">0.27</span>, fy - <span class="n">0.01</span>, <span class="n">0.17</span>)))
+    <span class="k">for</span> nm, rad, depth, yoff, mat <span class="k">in</span> ((<span class="s">&quot;PurgeValve&quot;</span>, <span class="n">0.06</span>, <span class="n">0.03</span>, <span class="n">0.010</span>, <span class="s">&quot;steel&quot;</span>),
+                                      (<span class="s">&quot;PurgeCap&quot;</span>, <span class="n">0.042</span>, <span class="n">0.05</span>, <span class="n">0.022</span>, <span class="s">&quot;rubber&quot;</span>)):
+        <span class="k">def</span> valve(bm, rad=rad, depth=depth):
+            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">24</span>, radius1=rad,
+                                  radius2=rad, depth=depth,
+                                  matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>))
+            bmesh.ops.bevel(bm, geom=[e <span class="k">for</span> e <span class="k">in</span> bm.edges
+                                      <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span>
+                                      e.calc_face_angle(<span class="n">0.0</span>) &gt; <span class="n">1.0</span>],
+                            offset=<span class="n">0.006</span>, segments=<span class="n">2</span>, profile=<span class="n">0.5</span>,
+                            affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.</span>{nm}<span class="s">&quot;</span>, _mesh_from_bm(<span class="s">f&quot;</span>{prefix}<span class="s">.</span>{nm}<span class="s">&quot;</span>, valve),
+                           mats[mat], shell, (<span class="n">0.10</span>, fy - yoff, -<span class="n">0.15</span>)))
+    parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.IdPlate</span><span class="s">&quot;</span>,
+                       _block(<span class="s">f&quot;</span>{prefix}<span class="s">.IdPlate</span><span class="s">&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.02</span>, <span class="n">0.13</span>), <span class="n">0.008</span>),
+                       mats[<span class="s">&quot;plate&quot;</span>], shell, (<span class="n">0.40</span>, fy - <span class="n">0.004</span>, -<span class="n">0.15</span>)))
+
+    <span class="c"># rubber feet on the bottom ridge line</span>
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.Foot</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _block(<span class="s">f&quot;</span>{prefix}<span class="s">.Foot</span><span class="s">&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.16</span>, <span class="n">0.06</span>), <span class="n">0.02</span>),
+                           mats[<span class="s">&quot;rubber&quot;</span>], shell, (sx * <span class="n">0.52</span>, <span class="n">0.0</span>, -hz - <span class="n">0.01</span>)))
+    <span class="k">return</span> shell, parts
+
+
+<span class="k">def</span> build_weld_overlay(sc, shell, mat_seam, mat_hot):
+    <span class="s">&quot;&quot;&quot;Hot overlay drawn from live mesh data on the degenerate shell:
+    the seam tube runs along every edge of every face thinner than
+    SEAM_AREA (the collapsed top/end lands and corner bands meeting at
+    mid-depth), and a glow bead sits on each zero-area face the check
+    counts. Change the offset and the overlay moves or disappears.&quot;&quot;&quot;</span>
+    me = shell.data
+    thin = [p <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.area &lt;= SEAM_AREA]
+    counted = [p <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.area &lt;= AREA_EPS]
+    edges = set()
+    <span class="k">for</span> p <span class="k">in</span> thin:
+        <span class="k">for</span> ek <span class="k">in</span> p.edge_keys:
+            edges.add(tuple(sorted(ek)))
+    segs = []
+    <span class="k">for</span> a, b <span class="k">in</span> edges:
+        va, vb = me.vertices[a].co, me.vertices[b].co
+        <span class="k">if</span> (vb - va).length &gt; <span class="n">1e-4</span>:
+            segs.append((va.copy(), vb.copy()))
+    print(<span class="s">f&quot;</span><span class="s">render_defects thin_faces=</span>{len(thin)}<span class="s"> zero_area_faces=</span>{len(counted)}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">seam_segments=</span>{len(segs)}<span class="s">&quot;</span>)
+
+    <span class="k">def</span> seam(bm):
+        <span class="k">for</span> va, vb <span class="k">in</span> segs:
+            _tube_path(bm, [va, vb], <span class="n">0.018</span>, sides=<span class="n">10</span>)
+        joints = {tuple(round(c, <span class="n">5</span>) <span class="k">for</span> c <span class="k">in</span> v) <span class="k">for</span> s <span class="k">in</span> segs <span class="k">for</span> v <span class="k">in</span> s}
+        <span class="k">for</span> j <span class="k">in</span> joints:
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">10</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.020</span>,
+                                      matrix=Matrix.Translation(j))
+    seam_ob = _part(sc, <span class="s">&quot;WeldSeam&quot;</span>, _mesh_from_bm(<span class="s">&quot;WeldSeam&quot;</span>, seam), mat_seam, shell)
+
+    <span class="k">def</span> beads(bm):
+        <span class="k">for</span> p <span class="k">in</span> counted:
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">12</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.038</span>,
+                                      matrix=Matrix.Translation(p.center))
+    bead_ob = _part(sc, <span class="s">&quot;PinchBeads&quot;</span>, _mesh_from_bm(<span class="s">&quot;PinchBeads&quot;</span>, beads), mat_hot, shell)
+    <span class="k">return</span> [seam_ob, bead_ob]
 
 
 <span class="k">def</span> render_still(path, engine):
-    <span class="s">&quot;&quot;&quot;Dual tray: clean bevel vs collapsed band, with the zero-area faces
-    marked from live mesh data — the seam markers ARE the check&#x27;s numbers.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Two rugged cases whose shells are the check&#x27;s two meshes. Left:
+    offset 0.10 — flat top land, crisp chamfer bands. Right: offset 0.20
+    == min/2 — the lands vanish, the band rolls into a knife ridge at
+    mid-depth, and that collapsed seam glows hot from live mesh data.&quot;&quot;&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
 
-    tray_mat = make_material(<span class="s">&quot;Tray&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.34</span>, <span class="n">0.34</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.75</span>)
-    seam_mat = make_material(<span class="s">&quot;SeamMark&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.25</span>, <span class="n">0.1</span>), rough=<span class="n">0.4</span>,
-                             metallic=<span class="n">0.1</span>, emit=(<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>), estr=<span class="n">1.2</span>)
+    <span class="k">def</span> mats(tag):
+        <span class="k">return</span> {
+            <span class="s">&quot;shell&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.Polymer</span><span class="s">&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.16</span>, <span class="n">0.42</span>), rough=<span class="n">0.42</span>,
+                                   metallic=<span class="n">0.0</span>),
+            <span class="s">&quot;shell_dark&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.PolymerRib</span><span class="s">&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.075</span>, <span class="n">0.20</span>),
+                                        rough=<span class="n">0.55</span>, metallic=<span class="n">0.0</span>),
+            <span class="s">&quot;steel&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.Steel</span><span class="s">&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.63</span>, <span class="n">0.66</span>), rough=<span class="n">0.32</span>,
+                                   metallic=<span class="n">1.0</span>),
+            <span class="s">&quot;accent&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.LatchAnodized</span><span class="s">&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.52</span>, <span class="n">0.06</span>),
+                                    rough=<span class="n">0.35</span>, metallic=<span class="n">0.6</span>),
+            <span class="s">&quot;rubber&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.Rubber</span><span class="s">&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.025</span>, <span class="n">0.028</span>), rough=<span class="n">0.8</span>,
+                                    metallic=<span class="n">0.0</span>),
+            <span class="s">&quot;plate&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.IdPlate</span><span class="s">&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.78</span>, <span class="n">0.70</span>), rough=<span class="n">0.3</span>,
+                                   metallic=<span class="n">0.9</span>),
+        }
 
-    safe_me = beveled_box(DIMS, SAFE_OFFSET)
-    safe_me.materials.append(tray_mat)
-    safe_ob = bpy.data.objects.new(<span class="s">&quot;SafeTray&quot;</span>, safe_me)
-    safe_ob.location = (-<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
-    sc.collection.objects.link(safe_ob)
-
-    degen_me = beveled_box(DIMS, DEGEN_OFFSET)
-    degen_me.materials.append(tray_mat)
-    degen_ob = bpy.data.objects.new(<span class="s">&quot;DegenTray&quot;</span>, degen_me)
-    degen_ob.location = (<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
-    sc.collection.objects.link(degen_ob)
-
-    <span class="c"># seam markers at every zero-area face centroid — overlay from live data</span>
-    centers = _degen_face_centers(degen_me)
-    print(<span class="s">f&quot;</span><span class="s">render_defects zero_area_faces=</span>{len(centers)}<span class="s">&quot;</span>)
-    <span class="k">for</span> i, co <span class="k">in</span> enumerate(centers):
-        sme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Seam</span>{i}<span class="s">&quot;</span>)
-        sbm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_uvsphere(sbm, u_segments=<span class="n">8</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.022</span>)
-            sbm.to_mesh(sme)
-        <span class="k">finally</span>:
-            sbm.free()
-        sme.materials.append(seam_mat)
-        sob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Seam</span>{i}<span class="s">&quot;</span>, sme)
-        sob.location = degen_ob.location + co
-        sc.collection.objects.link(sob)
-
-    p_safe = placard(sc, <span class="s">&quot;BEVEL 0.10&quot;</span>, (-<span class="n">1.15</span>, -<span class="n">1.1</span>, <span class="n">0.02</span>), size=<span class="n">0.13</span>)
-    p_degen = placard(sc, <span class="s">&quot;BEVEL 0.20 = min/2&quot;</span>, (<span class="n">1.15</span>, -<span class="n">1.1</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
+    hz = DIMS[<span class="n">2</span>] / <span class="n">2</span> + <span class="n">0.04</span>    <span class="c"># feet lift the shell</span>
+    safe, safe_parts = build_case(sc, <span class="s">&quot;CaseSafe&quot;</span>, SAFE_OFFSET, mats(<span class="s">&quot;Safe&quot;</span>),
+                                  (-<span class="n">0.95</span>, <span class="n">0.2</span>, hz), CASE_YAW)
+    degen, degen_parts = build_case(sc, <span class="s">&quot;CaseDegen&quot;</span>, DEGEN_OFFSET, mats(<span class="s">&quot;Degen&quot;</span>),
+                                    (<span class="n">0.95</span>, -<span class="n">0.2</span>, hz), CASE_YAW)
+    seam_mat = make_material(<span class="s">&quot;WeldSeam&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.06</span>, <span class="n">0.02</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
+                             emit=(<span class="n">1.0</span>, <span class="n">0.05</span>, <span class="n">0.02</span>), estr=<span class="n">2.2</span>)
+    hot_mat = make_material(<span class="s">&quot;PinchHot&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.2</span>, <span class="n">0.05</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
+                            emit=(<span class="n">1.0</span>, <span class="n">0.16</span>, <span class="n">0.04</span>), estr=<span class="n">3.0</span>)
+    overlay = build_weld_overlay(sc, degen, seam_mat, hot_mat)
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">6.6</span>, <span class="n">2.9</span>)
+    cam.location = (-<span class="n">0.6</span>, -<span class="n">4.9</span>, <span class="n">3.1</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.6</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.1</span>, <span class="n">0.55</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
@@ -616,35 +793,35 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
     sc.render.filepath = path
     <span class="c"># Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    <span class="c"># Turn the stage, not the props: every root object swings by -CASE_YAW,</span>
+    <span class="c"># which leaves the image unchanged but the cases axis-aligned in world</span>
+    <span class="c"># space (as shipped assets are, and as the asset-sheet panel expects).</span>
+    turn = Matrix.Rotation(math.radians(-CASE_YAW), <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+    bpy.context.view_layer.update()
+    <span class="k">for</span> ob <span class="k">in</span> list(sc.objects):
+        <span class="k">if</span> ob.parent <span class="k">is</span> <span class="k">None</span>:
+            ob.matrix_world = turn @ ob.matrix_world
+    bpy.context.view_layer.update()
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation.</span>
-    hero = [safe_ob, degen_ob]
-    seams = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name.startswith(<span class="s">&quot;Seam&quot;</span>)]
+    hero = safe_parts + degen_parts
     fcode = gallery_framing.check_framing(
         sc, cam,
         hero=hero,
-        elements=hero + [p_safe, p_degen] + seams,
+        elements=hero + overlay,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># Asset-quality floors on the designed prop (the clean case) — exit 11.</span>
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=safe_parts, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">9</span>
     <span class="k">return</span> <span class="n">0</span>
-
-
-<span class="k">def</span> placard(sc, text, loc, size=<span class="n">0.18</span>):
-    cu = bpy.data.curves.new(text, <span class="s">&quot;FONT&quot;</span>)
-    cu.body = text
-    cu.size = size
-    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
-    sc.collection.objects.link(ob)
-    ob.data.materials.append(make_material(<span class="s">&quot;Label&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.9</span>, <span class="n">0.92</span>),
-                                           rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>))
-    <span class="k">return</span> ob
 
 
 <span class="k">def</span> build_studio(sc):
@@ -683,8 +860,8 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
 
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">200.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.0</span>, <span class="n">6.0</span>, <span class="n">3.6</span>), <span class="n">450.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">62</span>, <span class="n">0</span>, <span class="n">190</span>))
     <span class="k">return</span> floor, wall
 
 
@@ -728,7 +905,7 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." />
+    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
   </dialog>
   <footer>
     <div class="statusbar">

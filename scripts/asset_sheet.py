@@ -71,6 +71,7 @@ SELECT = {
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
     "prop-origin-transform": (r"^(Pedestal|Conduit)\.Keep$", None),
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
+    "degenerate-bevel-weld": (r"^CaseSafe\.", None),
     "mesh-hygiene-audit": (r"^Valve\.", None),
 }
 
