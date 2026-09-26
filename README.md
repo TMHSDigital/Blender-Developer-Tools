@@ -514,7 +514,7 @@ honors linking too (measured), with Cycles pinned for deterministic samples.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vse-gamma-cross/"><img src="examples/vse-gamma-cross/preview.webp" alt="VSE gamma cross: a calibration lightbox in a dark studio - four backlit chips fading crimson to teal set into bezels on a bolted steel swatch board, with the true midpoint chip beside the brighter naive-lerp midpoint framed in hazard orange, shot at a three-quarter angle" /></a>
+<a href="examples/vse-gamma-cross/"><img src="examples/vse-gamma-cross/preview.webp" alt="VSE gamma cross: a hooded grading monitor on a walnut riser beside a three-trackball control surface, its screen showing every frame of an orange-to-azure cross as two filmstrips - the GAMMA_CROSS strip on top sinking to dark grey at mid-cross, the linear CROSS strip beneath passing through violet" /></a>
 </td>
 <td valign="middle">
 
@@ -523,7 +523,7 @@ honors linking too (measured), with Cycles pinned for deterministic samples.
 The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5
 space, `((1-t)·√A + t·√B)²` with `t = (frame − start) / duration` — never 1
 inside the effect. Per-frame sample renders assert the closed form (mid dips
-0.115 below the sRGB lerp), and the AgX-default sampling trap is documented
+0.250 below the sRGB lerp), and the AgX-default sampling trap is documented
 (`view_transform = 'Standard'` is mandatory for any pixel witness).
 
 </td>

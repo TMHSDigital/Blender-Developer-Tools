@@ -1,20 +1,23 @@
 # VSE GAMMA_CROSS Blend Curve
 
 A runnable follow-up to [`vse-cut-list`](../vse-cut-list/): the check renders
-tiny frames across a GAMMA_CROSS between crimson and teal strips and asserts
-every sample against the fade's actual math — because AI-generated sequencer
-code assumes the cross is the naive linear mix, and it is not.
+tiny frames across a GAMMA_CROSS between signal-orange and azure strips and
+asserts every sample against the fade's actual math — because AI-generated
+sequencer code assumes the cross is the naive linear mix, and it is not.
 
 **What it witnesses:** the fade math and the frame convention behind it.
 
 - **The cross blends in a gamma-0.5 space.** Not `(1-t)·A + t·B` but
-  `((1-t)·√A + t·√B)²` — the mid-cross dips below the sRGB lerp. From crimson
-  `(0.85, 0.10, 0.22)` and teal `(0.06, 0.75, 0.80)` the midpoint is
-  `(0.341, 0.349, 0.463)`: **0.115 darker** on red than the lerp
-  `(0.455, 0.425, 0.510)`. The check renders and asserts nine samples
+  `((1-t)·√A + t·√B)²` — the mid-cross dips below the sRGB lerp. The
+  endpoints are chosen to make that dip as large as a cross can: orange
+  `(1.0, 0.36, 0.0)` and azure `(0.0, 0.16, 1.0)` have per-channel square
+  roots summing to 1, so the gamma midpoint is the neutral
+  `(0.25, 0.25, 0.25)` while the lerp midpoint is the violet
+  `(0.5, 0.26, 0.5)`: **0.25 darker** on red and blue, the per-channel
+  maximum. The check renders and asserts nine samples
   (t = 0, 1/8, …, 7/8, 31/32) within 5e-3
-  (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that
-  the mid lerp deviation is material (≥0.05).
+  (2× the 8-bit quantization step + fit residual; measured 2.71e-3) and that
+  the mid lerp deviation is material (≥0.05; measured 0.250).
 - **`t = (frame − start) / duration`, and it never reaches 1 inside the
   effect.** The last frame of the span blends at `(duration−1)/duration`;
   B arrives only when the effect ends. That final frame (frame 32,
@@ -29,22 +32,31 @@ code assumes the cross is the naive linear mix, and it is not.
   scene`) — remove effects before their inputs.
 
 **What each check catches on failure:** asserting the naive lerp as the
-expectation (exit 6, deviation 0.1138 at mid), the endpoint-inclusive t
+expectation (exit 6, deviation 0.2490 at mid), the endpoint-inclusive t
 convention (exit 5), and swapped cross inputs (exit 4, `input1=T2`).
 
-**Version witness:** the blend math is identical on Blender 4.5 LTS and 5.1 —
-every sample matches to the quantization step. The creation contract from
+**Version witness:** the blend math is identical on Blender 4.5 LTS, 5.1 and
+5.2 LTS — every sample matches to the quantization step. The creation contract from
 `vse-cut-list` still gates the timeline: `strips` (never `.sequences`), and
 `new_effect` ending in `length=` on 5.x vs `frame_end=` on 4.5.
 
-The render is a calibration lightbox: the authentic fade as four backlit
-chips (t = 0, 1/4, 1/2, 3/4) set into bezels on a bolted steel swatch board
-— cap rails, panel seam, corner bolts, rear struts down to a plinth — shot
-at a 3/4 angle so it reads as a staged object. Below the fade row sits the
-contrast pair: the true mid chip directly beside the naive lerp mid, the
-impostor framed in hazard orange. The gamma dip reads as an adjacency
-contrast even at card scale: a naive-lerp cross would make the pair
-identical, so the still visibly breaks with the contract.
+The render is the evidence itself, mounted. All 32 frames of the cross are
+rendered by the sequencer and laid side by side as a filmstrip: the
+GAMMA_CROSS strip on top, and directly beneath it the same two strips
+crossed by the sequencer's linear `CROSS` effect, frame for frame. Both
+filmstrips are authentic sequencer pixels shown unaltered (closest-texel
+sampling, emission only, Standard view) on a hooded grading monitor beside a
+three-ball control surface. The gamma strip sinks into a dark neutral valley
+at mid-cross where the linear strip passes through violet; three small warm
+ticks mark the t = 1/2 column. A GAMMA_CROSS that was really a lerp would
+make the two strips identical, so the still visibly breaks with the contract.
+
+Before shooting, the render path guards its own comparison (exit 9): every
+frame must fill its tile edge to edge — a 5.2 COLOR strip bakes the scene
+size into its width/height at creation, so strips built before the tile
+resolution is set letterbox into black bars (probe: in-frame spread 1.0) —
+and each strip's mid frame must match its closed form, so the lower strip
+really is the lerp (probe: wiring GAMMA_CROSS in its place fails at 0.249).
 
 ## Run
 
@@ -55,7 +67,7 @@ blender --background --python vse_gamma_cross.py --
 # Falsifier: GC T2 -> T1. Must exit non-zero (inputs).
 blender --background --python vse_gamma_cross.py -- --swap-inputs
 
-# Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
+# Also render the grading-monitor still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles
 ```
@@ -76,6 +88,8 @@ against it.
 | 6 | Cross sample off the gamma-0.5 closed form |
 | 7 | Mid-cross lerp deviation missing (naive mix) |
 | 8 | `--output` produced no file |
+| 9 | `--output` filmstrip guard: a frame not uniform, or a strip's mid frame off its closed form |
+| 10 | `--output` framing violation (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
