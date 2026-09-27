@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>36 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>36 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 36 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 36 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -75,7 +75,7 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 
 ## Falsifiers
 
-Every one of the 59 examples carries a **falsifier**: a flag that changes the
+Every one of the 60 examples carries a **falsifier**: a flag that changes the
 input so a real assertion fails. It never disables the assertion, skips the
 check, or short-circuits to an error — it feeds the script something the
 contract says must not pass, and the same check that guards the happy path
@@ -556,7 +556,7 @@ exits 0 on all three. `--assume-present` is red only on 5.2.
 </details>
 
 <details>
-<summary><strong>Geometry Nodes</strong> — 6 examples</summary>
+<summary><strong>Geometry Nodes</strong> — 7 examples</summary>
 
 <table>
 <tr>
@@ -616,6 +616,23 @@ evaluated cubes against closed forms — Repeat `8×(1+N)` with X-centers at
 `k×1.2`, For Each `8×P` with Z-centers at `i×0.6+0.21` — not that the zone
 nodes exist. Unpaired evaluates empty; For Each's main Geometry socket is a
 passthrough.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-sim-fountain/"><img src="examples/gn-sim-fountain/preview.webp" alt="GN simulation fountain: a two-tier sandstone fountain whose twenty jets are strings of cyan droplet beads, each bead a stepped Simulation Zone position threaded on its thin closed-form ballistic arc" /></a>
+</td>
+<td valign="middle">
+
+### [gn-sim-fountain](examples/gn-sim-fountain/)
+
+A Simulation Zone integrates twenty jets under gravity with the exact
+constant-g update, and every stepped frame lands on `p0 + v0 t - g t^2/2`
+(worst 6.6e-7 m). Two silent traps, identical on 4.5, 5.1 and 5.2: a direct
+`frame_set(N)` jump runs one step, not N; and `calculate_to_frame` returns
+`PASS_THROUGH` headless and leaves interpolated frames. Only a bake gives
+random access.
 
 </td>
 </tr>

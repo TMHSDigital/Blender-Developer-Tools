@@ -102,6 +102,7 @@
     "examples/gn-instance-grid",
     "examples/gn-modifier-inputs",
     "examples/gn-sdf-remesh",
+    "examples/gn-sim-fountain",
     "examples/gn-socket-rename",
     "examples/gn-zone-iterate",
     "examples/gp-lineart-contour",
