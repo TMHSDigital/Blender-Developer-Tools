@@ -757,6 +757,29 @@ Hero stills live at `docs/gallery/assets/<name>-hero.webp` like examples.
 `scripts/build_gallery.py` merges `showcase/gallery.json` into the same
 `docs/gallery/` site as examples, tagged `showcase`.
 
+## Categories
+
+Every entry in `showcase/gallery.json` carries a `category`. The gallery
+renders one filter button per category that has pieces (deep link
+`#k=showcase&c=<key>`), and the build fails on a missing or unknown key.
+The keys live in `CATEGORIES` in `scripts/build_gallery.py`, which the
+`validate` workflow imports; add a category there, nowhere else.
+
+| Key | Holds |
+| --- | --- |
+| `village` | Pre-industrial settlement props: timber, stone, forged iron, rope, cloth. |
+| `sports` | Equipment and field furniture for a game or training: goals, hoops, nets, racks. |
+| `nature` | Organic forms with no maker: trees, rocks, logs, fungi, plants. |
+| `household` | Modern domestic and office objects: furniture, lamps, appliances, kitchenware. |
+| `vehicles` | Things that move or direct movement, present-day or sci-fi: drones, bikes, cones, loaders. |
+
+A category changes the subject, not the bar. Every piece still asserts
+recomputed budgets, proves each falsifier fails once, clears the framing
+helper and the asset-sheet gate. Nature pieces have no joinery to test, so
+their piece-specific falsifier targets a measured organic invariant instead
+(branch tiers seated on the trunk, rocks resting on each other, a log's
+contact patch on the ground).
+
 ## Smoke
 
 `tests/smoke/catalog.json` takes opaque script paths. A showcase row is

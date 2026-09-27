@@ -256,6 +256,16 @@ jobs:
                   if path.replace('\\', '/') not in listed:
                       errors.append(f'{key}: {path} on disk but not in manifest')
 
+          # Every showcase piece names a category the gallery build knows.
+          sys.path.insert(0, 'scripts')
+          from build_gallery import CATEGORIES
+          for piece in json.load(open('showcase/gallery.json', encoding='utf-8'))['pieces']:
+              if piece.get('category') not in CATEGORIES:
+                  errors.append(
+                      f"showcase/gallery.json: {piece['name']} category "
+                      f"{piece.get('category')!r} not in {sorted(CATEGORIES)}"
+                  )
+
           if errors:
               for e in errors:
                   print(f'::error::{e}', file=sys.stderr)

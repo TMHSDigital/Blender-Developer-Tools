@@ -54,6 +54,16 @@ OG_CARD_ALT = ("Four renders from the examples gallery: a red low-poly hatchback
 # Upper bound for an entry's ``alt`` (one descriptive sentence, never truncated).
 ALT_MAX = 200
 
+# Showcase categories, in display order: key -> chip label. Every showcase
+# piece must carry one of these keys as ``category``; examples carry none.
+CATEGORIES = {
+    "village": "Village",
+    "sports": "Sports",
+    "nature": "Nature",
+    "household": "Household",
+    "vehicles": "Vehicles",
+}
+
 
 def load_gallery_entries() -> tuple[dict, list]:
     """Examples gallery metadata plus concatenated example + showcase cards."""
@@ -96,6 +106,22 @@ def check_alts(entries: list) -> None:
         if len(alt) > ALT_MAX:
             raise SystemExit(f"gallery entry {e['name']!r} alt is {len(alt)} chars "
                              f"(max {ALT_MAX}); describe the still in one sentence")
+
+
+def check_categories(entries: list) -> None:
+    """Every showcase piece names a known ``category``; no example names one.
+
+    The category chips are built from the values present, so a typo would
+    silently spawn a one-card chip instead of failing.
+    """
+    for e in entries:
+        cat = e.get("category")
+        if kind_noun(e) == "showcase piece":
+            if cat not in CATEGORIES:
+                raise SystemExit(f"showcase piece {e['name']!r} has category {cat!r}; "
+                                 f"expected one of {', '.join(CATEGORIES)}")
+        elif cat is not None:
+            raise SystemExit(f"example {e['name']!r} has a 'category'; only showcase pieces do")
 
 # ---------------------------------------------------------------------------
 # Shared page shell. __ROOT__ is the relative prefix from the page to the
@@ -209,6 +235,14 @@ __TOKENS__
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -489,6 +523,9 @@ INDEX_JS = """
       var resetFilters = document.getElementById('resetFilters');
       var densityBtns = Array.prototype.slice.call(document.querySelectorAll('[data-density]'));
       var kindBtns = Array.prototype.slice.call(document.querySelectorAll('[data-kind-filter]'));
+      var catRow = document.getElementById('cats');
+      var catBtns = Array.prototype.slice.call(document.querySelectorAll('[data-cat-filter]'));
+      var CATS = catBtns.map(function (b) { return b.getAttribute('data-cat-filter'); });
       var sortSel = document.getElementById('sort');
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
@@ -505,7 +542,7 @@ INDEX_JS = """
       var cardTags = cards.map(function (c) { return (c.getAttribute('data-tags') || '').split(' '); });
       var knownTags = chips.map(function (c) { return c.getAttribute('data-tag') || ''; })
         .filter(function (t) { return t; });
-      var state = { q: '', tags: [], kind: '', sort: 'default', density: 'compact' };
+      var state = { q: '', tags: [], kind: '', cat: '', sort: 'default', density: 'compact' };
 
       // Fade card renders in once decoded; images already complete (cache,
       // eager) are marked immediately so nothing stays invisible.
@@ -524,7 +561,7 @@ INDEX_JS = """
           if (i < 0) return;
           var k = kv.slice(0, i), v = kv.slice(i + 1);
           try { v = decodeURIComponent(v); } catch (e) {}
-          if (k === 'q' || k === 'tag' || k === 'd' || k === 'k' || k === 's') out[k] = v;
+          if (k === 'q' || k === 'tag' || k === 'd' || k === 'k' || k === 'c' || k === 's') out[k] = v;
         });
         return out;
       }
@@ -534,6 +571,7 @@ INDEX_JS = """
         if (state.q) parts.push('q=' + encodeURIComponent(state.q));
         if (state.tags.length) parts.push('tag=' + state.tags.map(encodeURIComponent).join(','));
         if (state.kind) parts.push('k=' + state.kind);
+        if (state.cat) parts.push('c=' + state.cat);
         if (state.sort !== 'default') parts.push('s=' + state.sort);
         parts.push('d=' + state.density);
         history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
@@ -586,18 +624,24 @@ INDEX_JS = """
       function applyFilters() {
         var query = state.q.trim().toLowerCase();
         var shown = 0;
+        // Categories only partition showcase pieces; the examples view has
+        // none, so it hides the row and drops any category left selected.
+        if (state.kind === 'examples') state.cat = '';
+        if (catRow) catRow.hidden = state.kind === 'examples';
         cards.forEach(function (card, i) {
           var kindOK = !state.kind || card.getAttribute('data-kind') === state.kind;
+          var catOK = !state.cat || card.getAttribute('data-category') === state.cat;
           var tagOK = state.tags.every(function (t) { return cardTags[i].indexOf(t) !== -1; });
           var qOK = !query || haystacks[i].indexOf(query) !== -1;
-          var show = kindOK && tagOK && qOK;
+          var show = kindOK && catOK && tagOK && qOK;
           card.classList.toggle('hidden', !show);
           if (show) shown++;
         });
-        count.textContent = (query || state.tags.length || state.kind) ? (shown + ' of ' + total) : COUNT_LABEL;
+        count.textContent = (query || state.tags.length || state.kind || state.cat) ? (shown + ' of ' + total) : COUNT_LABEL;
         noResults.hidden = shown !== 0;
         qClear.hidden = !state.q;
         syncSeg(kindBtns, 'data-kind-filter', state.kind);
+        syncSeg(catBtns, 'data-cat-filter', state.cat);
       }
 
       q.addEventListener('input', function () {
@@ -628,6 +672,12 @@ INDEX_JS = """
           applyFilters(); writeHash();
         });
       });
+      catBtns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.cat = b.getAttribute('data-cat-filter');
+          applyFilters(); writeHash();
+        });
+      });
       sortSel.addEventListener('change', function () {
         state.sort = SORTS.indexOf(sortSel.value) !== -1 ? sortSel.value : 'default';
         applySort(); writeHash();
@@ -639,7 +689,7 @@ INDEX_JS = """
         });
       });
       resetFilters.addEventListener('click', function () {
-        state.q = ''; state.tags = []; state.kind = ''; q.value = '';
+        state.q = ''; state.tags = []; state.kind = ''; state.cat = ''; q.value = '';
         syncChips(); applyFilters(); writeHash(); q.focus();
       });
       tagsToggle.addEventListener('click', function () {
@@ -672,6 +722,7 @@ INDEX_JS = """
       var h = parseHash();
       state.q = h.q || '';
       state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
+      state.cat = h.c && CATS.indexOf(h.c) !== -1 ? h.c : '';
       state.sort = SORTS.indexOf(h.s) !== -1 ? h.s : 'default';
       // Tags arrive comma-separated. "showcase" is the kind filter now, not
       // a chip, but older links (the landing page's among them) still say
@@ -799,7 +850,7 @@ DETAIL_JS = """
     })();
 """
 
-CARD = """      <article class="card" data-tags="__TAGS__" data-kind="__KINDKEY__" data-name="__NAME__">
+CARD = """      <article class="card" data-tags="__TAGS__" data-kind="__KINDKEY__"__CATATTR__ data-name="__NAME__">
         <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
           <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="__LOADING__" decoding="async" />
         </a>
@@ -1168,6 +1219,11 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     parts.append("    </button>")
     parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself — click to zoom.</p>')
     parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
+    cat = ex.get("category")
+    if cat:
+        parts.append(f'    <p class="taglist"><span class="tag">category</span> '
+                     f'<a href="../#k=showcase&amp;c={html.escape(cat, quote=True)}">'
+                     f'{html.escape(CATEGORIES[cat])}</a></p>')
     tags = ex.get("tags") or []
     if tags:
         links = " ".join(
@@ -1274,6 +1330,25 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">\n        '
                       + "\n        ".join(chips) + "\n      </div>\n")
 
+    # Category row: only categories that have pieces get a button, in
+    # CATEGORIES order, each labelled with its piece count.
+    cat_counts: dict[str, int] = {}
+    for ex in examples:
+        if ex.get("category"):
+            cat_counts[ex["category"]] = cat_counts.get(ex["category"], 0) + 1
+    cats_html = ""
+    if cat_counts:
+        btns = ['          <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>']
+        btns += [
+            f'          <button class="density-btn" data-cat-filter="{key}" type="button" aria-pressed="false">'
+            f'{html.escape(label)} <span aria-hidden="true">{cat_counts[key]}</span></button>'
+            for key, label in CATEGORIES.items() if key in cat_counts
+        ]
+        cats_html = ('      <div class="controls-row cats" id="cats">\n'
+                     '        <span class="cats-label" id="catsLabel">Showcase category</span>\n'
+                     '        <div class="density" role="group" aria-labelledby="catsLabel">\n'
+                     + "\n".join(btns) + "\n        </div>\n      </div>\n")
+
     # Sticky controls bar. Every control is inert but harmless with JS
     # disabled: the search box and toggles do nothing, the count already reads
     # correctly, and all cards render expanded (the compact class is JS-only).
@@ -1304,6 +1379,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         '        </div>\n'
         '        <button class="tags-toggle" id="tagsToggle" type="button" aria-expanded="false" aria-controls="chips">Tags</button>\n'
         '      </div>\n'
+        + cats_html
         + chips_html +
         '    </div>\n'
         '  </div>\n'
@@ -1321,6 +1397,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
             .replace("__ALT__", html.escape(alt, quote=True))
             .replace("__NAME__", html.escape(ex["name"]))
             .replace("__KINDKEY__", "showcase" if kind_noun(ex) == "showcase piece" else "examples")
+            .replace("__CATATTR__", f' data-category="{html.escape(ex["category"], quote=True)}"'
+                     if ex.get("category") else "")
             .replace("__KIND__", kind_noun(ex))
             .replace("__TEACHES__", html.escape(ex["teaches"]))
             .replace("__WITNESSES__", html.escape(ex["witnessesFix"]))
@@ -1382,6 +1460,7 @@ def main() -> int:
             return 4
 
     check_alts(examples)
+    check_categories(examples)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "index.html").write_text(

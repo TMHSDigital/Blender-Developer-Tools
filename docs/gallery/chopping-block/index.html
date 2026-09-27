@@ -116,6 +116,14 @@
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -356,6 +364,7 @@
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1800 tris, four materials with 180 bark / 216 grain / 404 metal / 176 haft faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.006 m, LOD ratios in band, convex collider 538 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7, oval haft 1.35 wide-to-thick. Joint fit: six shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.2 mm into the log on every segment, two lap rivets seated 1.50 and 1.54 mm. --fat-haft exits 17 on eye clearance; --round-band and --float-rivets exit 18 on their seats; --round-haft exits 19 on the haft section.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/chopping-block/chopping_block.py --</pre>

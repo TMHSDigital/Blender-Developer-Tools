@@ -116,6 +116,14 @@
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -356,6 +364,7 @@
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/stone-archway/stone_archway.py --</pre>

@@ -155,6 +155,11 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Tiered skep beehive on a stand as a game-prop showcase piece — coiled straw courses as stacked tori: each course seated on the one below, the dome closing on its axis
 - Rowboat with oars in oarlocks as a game-prop showcase piece — oar shafts passing through the oarlock horns with clearance inside a band, hull resting on its keel line on a flat deck/floor
 - Weathervane as a game-prop showcase piece — arrow and cardinal arms on a spindle: the arrow's pivot bore coaxial with the spindle and the arrow statically balanced (centroid on the pivot axis within a band)
+- Showcase pieces above this line are category `village`. Candidates for the other categories (`showcase/README.md` § Categories):
+  - **Sports:** basketball hoop (pole, backboard, rim, hung net), soccer goal (tube frame, netting), tennis net on posts, weight rack with plates and dumbbells; alternates bowling pins and ball, skateboard
+  - **Nature:** pine tree (trunk, tiered branch whorls), boulder cluster, fallen log with fungus, tree stump with mushrooms; alternates flowering shrub, cattail reeds
+  - **Household:** articulated desk lamp, office chair (five-star base, casters), kitchen stool, mini fridge; alternates floor fan, laundry basket
+  - **Vehicles:** traffic cone and barrier set, quad drone, hover bike, sci-fi cargo loader; alternates sci-fi supply crate
 - `persistent` app-handler witness — handlers registered without `@bpy.app.handlers.persistent` are dropped by `wm.read_homefile`/file load while persistent ones survive; assert the registered-handler set before and after a reload (silent loss AI code hits)
 - Link vs append witness — `bpy.data.libraries.load(link=True)` yields a linked, non-editable datablock (`library` set, `is_editable` False) while append yields a local copy; write a temp .blend with `bpy.data.libraries.write`, then assert both paths
 - Orphan purge witness — `bpy.data.orphans_purge(do_recursive=...)` removes exactly the zero-user datablocks computed independently beforehand, and `bpy.data.batch_remove` removes a given set in one call (counts closed-form)

@@ -116,6 +116,14 @@
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -356,6 +364,7 @@
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 8768 tris, two materials with 1356 timber and 3348 rope faces, UVs in 0..1 with zero AABB overlap and 18.8 baked texels per island, outer AABB 4.619×1.073×1.480 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four posts and four stakes grounded, every rope end and sill tenon biting its host, all 20 planks seated 4.0 mm on both foot ropes, 12 lashing turns hooped 2.4 mm, one connected assembly of 60 shells, posts plumb, plank pitch within 0.08 mm, hand ropes 0.87 m over the deck, and every plank top within 2.97 mm of a least-squares parabola with a 0.220 m sag. --vee-deck exits 19 on the parabola fit with its sag still in band; --float-suspenders exits 18 on the contact graph.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/rope-bridge/rope_bridge.py --</pre>

@@ -116,6 +116,14 @@
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -356,6 +364,7 @@
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 10456 tris, six materials with a face floor each, UVs in 0..1 with zero AABB overlap, outer AABB 0.876×0.274×1.076 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides grounded, seven cross members housed 8 mm into each side and 14 mm clear of its far face, fifteen vessels seated 1.0–1.8 mm into their shelves, every cork and lid biting 5 mm, every label 0.3 mm into its body and 0.8 mm proud, no vessel touching another or the carcass, and at least 24 mm of headroom between every vessel and the member above it. --tall-flask exits 20 at −5.5 mm while every seat and the envelope still pass; --short-shelves exits 17 on the dado bite.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/apothecary-shelf/apothecary_shelf.py --</pre>

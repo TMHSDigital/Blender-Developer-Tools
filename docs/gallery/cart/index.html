@@ -116,6 +116,14 @@
       border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
+    /* Category row: one segmented group that scrolls sideways on narrow
+       screens rather than wrapping its bordered buttons. */
+    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent; }
+    .cats[hidden] { display: none; }
+    .cats .density { flex: 0 0 auto; }
+    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -356,6 +364,7 @@
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 5284 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.580×0.842×0.640 m, LOD ratios in band, convex collider 192 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres and both prop legs grounded, two wall boards per side with 3 mm seams, tyre seat depth in band over 48 angular stations, every shell in one BVH-contact assembly, the two wheels mirrored within 5e-5 m, no unchamfered right-angle edge, 17.45 bake texels per UV cell, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --float-wheel and --short-props exit 16 on the named-support budget; --wide-seams exits 17 on the board seams; --sink-tyre exits 18 on the tyre seat band; --lift-bed exits 18 on the one-assembly budget; --skew-wheel exits 19 on the wheel mirror; --sharp-bar exits 20 on edge treatment; --low-bake exits 21 on texel density; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/cart/cart.py --</pre>

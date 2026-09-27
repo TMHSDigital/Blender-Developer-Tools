@@ -1,5 +1,5 @@
 {
-  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, teaches, witnessesFix, hero, preview, tags?}. dir/hero/preview are repo-root-relative.",
+  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, category, teaches, witnessesFix, hero, preview, tags?}; category is one of village|sports|nature|household|vehicles (CATEGORIES in scripts/build_gallery.py). dir/hero/preview are repo-root-relative.",
   "title": "Showcase",
   "description": "Budget-conformance props that compose shipped Blender Developer Tools skills. Not API-contract examples.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
@@ -8,6 +8,7 @@
     {
       "name": "shipping-crate",
       "dir": "showcase/shipping-crate",
+      "category": "village",
       "teaches": "A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end.",
       "witnessesFix": "Recomputed: 3388 tris, two materials with 1170 wood and 904 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 116 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.",
@@ -21,6 +22,7 @@
     {
       "name": "stone-well",
       "dir": "showcase/stone-well",
+      "category": "village",
       "teaches": "A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside.",
       "witnessesFix": "Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.312×1.312×1.761 m, LOD ratios in band, convex collider 346 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, all 12 bottom-course stones on the floor, each post tenoned 18 mm into the measured coping and standing under a roof hip corner, the bucket hanging 0.10 m clear of the coping, grounded zmin, non-empty glTF. --stand-posts exits 15 on the z-fight budget; --float-stone exits 16 on the named-support budget; --shallow-tenon and --drop-bucket exit 18; --turn-posts exits 19 on post placement; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
@@ -35,6 +37,7 @@
     {
       "name": "wooden-barrel",
       "dir": "showcase/wooden-barrel",
+      "category": "village",
       "teaches": "A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden stave barrel bound by four iron hoops, its head made of boards.",
       "witnessesFix": "Recomputed: 7312 tris, two materials with 2584 wood and 1440 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.714×0.880 m, 20 grounded staves, hoop bite 0.003 m, head-croze gap 0.007 m, four boards per head with 1.5 mm seams, LOD ratios in band, convex collider 238 tris, non-empty glTF. --skip-decimate exits 9; --round-band exits 18 on the hoop-seat budget; --one-piece-head exits 17 on the head-board budget.",
@@ -48,6 +51,7 @@
     {
       "name": "campfire",
       "dir": "showcase/campfire",
+      "category": "village",
       "teaches": "A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones.",
       "witnessesFix": "Recomputed: 2760 tris, three materials with 216 wood, 48 ash and 1416 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.802×0.802×0.404 m, LOD ratios in band, convex collider 162 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00034 m, course seat 0, stone variation 0.01269 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18; --uniform-stones 20.",
@@ -61,6 +65,7 @@
     {
       "name": "market-stall",
       "dir": "showcase/market-stall",
+      "category": "village",
       "teaches": "A procedural timber market stall through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A grained timber market stall with diagonal side braces, a red and cream striped canvas awning and a counter with shelves.",
       "witnessesFix": "Recomputed: 4324 tris, three materials with 34 faces per awning stripe slot, UVs in 0..1 with zero AABB overlap, outer AABB 1.389×1.011×1.740 m, grounded zmin, 4 wrap feet, brace-counter overlap 0, both side braces seated 0.0418 m into their posts, awning seat 4 mm, post plumb 0, LOD ratios in band, convex collider 58 tris, non-empty glTF. Hygiene all zero. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-feet 16; --low-brace/--short-brace 17; --float-awning 18; --rake-posts 19.",
@@ -75,6 +80,7 @@
     {
       "name": "street-lantern",
       "dir": "showcase/street-lantern",
+      "category": "village",
       "teaches": "A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside.",
       "witnessesFix": "Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.",
@@ -88,6 +94,7 @@
     {
       "name": "treasure-chest",
       "dir": "showcase/treasure-chest",
+      "category": "village",
       "teaches": "A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "An open grained wooden treasure chest with iron bands following its barrel-vaulted lid.",
       "witnessesFix": "Recomputed: 3852 tris, two materials with 1608 wood and 318 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.764×0.542×0.691 m, LOD ratios in band, convex collider 176 tris, non-empty glTF. Hygiene all zero, four feet at zmin 0, lid-knuckle to hinge barrel 7 mm, band-wall gap 0. --float-hinge exits 17 on the hinge join; --narrow-bands exits 18 on the band seat.",
@@ -101,6 +108,7 @@
     {
       "name": "terrain-scatter",
       "dir": "showcase/terrain-scatter",
+      "category": "village",
       "teaches": "A Geometry Nodes hill tile with embedded, varied stone scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles.",
       "witnessesFix": "Recomputed: 2398 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800x1.800x0.570 m, grounded zmin, 9 stones of >=80 faces each sealed into the ground in 8/8 sectors, footprint ratio 9.8, rim tilt step 33.5 deg, no stone pairs overlapping, LOD ratios in band, convex collider 36 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19; --pile-rocks 20; --perch-rocks 21; --uniform-rocks 22; --sharp-rim 23.",
@@ -114,6 +122,7 @@
     {
       "name": "fence-kit",
       "dir": "showcase/fence-kit",
+      "category": "village",
       "teaches": "A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands.",
       "witnessesFix": "Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.",
@@ -127,6 +136,7 @@
     {
       "name": "watchtower",
       "dir": "showcase/watchtower",
+      "category": "village",
       "teaches": "A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof.",
       "witnessesFix": "Recomputed: 6840 tris, three materials with 300 metal and 126 roof faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.594×1.594×2.973 m, grounded zmin, 4 iron shoes, rail engage 18 mm, all four side rails tenoned at both ends, both joists bearing 31 mm into deck girts, collar standoff 2 mm, post plumb 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 150 tris, non-empty glTF. Hygiene all zero. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-rails/--open-sides/--short-joists 17; --float-band 18; --rake-posts 19.",
@@ -140,6 +150,7 @@
     {
       "name": "cart",
       "dir": "showcase/cart",
+      "category": "village",
       "teaches": "A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar.",
       "witnessesFix": "Recomputed: 5284 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.580×0.842×0.640 m, LOD ratios in band, convex collider 192 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres and both prop legs grounded, two wall boards per side with 3 mm seams, tyre seat depth in band over 48 angular stations, every shell in one BVH-contact assembly, the two wheels mirrored within 5e-5 m, no unchamfered right-angle edge, 17.45 bake texels per UV cell, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --float-wheel and --short-props exit 16 on the named-support budget; --wide-seams exits 17 on the board seams; --sink-tyre exits 18 on the tyre seat band; --lift-bed exits 18 on the one-assembly budget; --skew-wheel exits 19 on the wheel mirror; --sharp-bar exits 20 on edge treatment; --low-bake exits 21 on texel density; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
@@ -154,6 +165,7 @@
     {
       "name": "park-bench",
       "dir": "showcase/park-bench",
+      "category": "village",
       "teaches": "A procedural wrought-iron park bench whose legs are each one bent bar from scroll toe to reclined back, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A park bench of grained wooden slats with a reclined back, on a dark wrought-iron frame whose round-bar legs curl into scrolled feet, with armrests on curved brackets.",
       "witnessesFix": "Recomputed: 3272 tris, two materials with 1008 metal and 756 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.295×0.632×0.887 m, grounded zmin, 4 named toes, 4 legs each one bar from toe to seat, back reclined 12°, 28 slat and armrest bites of at least 2.0 mm, stretcher gap 1.1 mm, seat span 1.272 m, LOD ratios in band, convex collider 64 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-feet 16; --float-stretcher 17; --gap-slats 18; --narrow-seat/--upright-back 19; --float-slats 20; --split-feet 21.",
@@ -168,6 +180,7 @@
     {
       "name": "wheelbarrow",
       "dir": "showcase/wheelbarrow",
+      "category": "village",
       "teaches": "A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden wheelbarrow with a flared tray of stacked boards held by iron straps, its front raked out over a spoked wheel, and two long shafts running from the handles under the tray to the axle.",
       "witnessesFix": "Recomputed: 2440 tris, two materials with 1085 wood and 214 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.563x0.594x0.577 m, zmin 0, hygiene 0, both shafts one timber from grip to axle, tray flared 15 deg and raked 30 deg, wall-floor seat 8 mm, spoke clearance 52 mm, two boards per side and front wall with 2 mm seams measured in the wall's plane, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 80 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --fat-spokes / --float-walls / --wide-seams exit 17 on joint fit; --pipe-rim exits 18 on tread aspect; --split-shafts exits 20 on shaft runs; --box-tray exits 21 on tray flare.",
@@ -181,6 +194,7 @@
     {
       "name": "anvil",
       "dir": "showcase/anvil",
+      "category": "village",
       "teaches": "A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank.",
       "witnessesFix": "Recomputed: 3052 tris, two materials with 1040 wood and 854 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.",
@@ -194,6 +208,7 @@
     {
       "name": "water-trough",
       "dir": "showcase/water-trough",
+      "category": "village",
       "teaches": "A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A staved wooden water trough on pegged trestle legs, iron straps bolted and clipped over its rim, half full of rippled dark water, a bung in one end.",
       "witnessesFix": "Recomputed: 3316 tris, three materials with 1482 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093x0.552x0.5055 m, zmin 0, four shoes planted, each end three lapped boards, end rim span 21 mm, strap BVH gap 0, water-hull gap 2.6 mm, water contained on 66 of 66 rays, hull 1.045x0.466 m, LOD ratios in band, convex collider 68 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap/--open-ends 18; --narrow-hull 19; --slab-ends 20.",
@@ -207,6 +222,7 @@
     {
       "name": "hitching-post",
       "dir": "showcase/hitching-post",
+      "category": "village",
       "teaches": "A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes, a face-nailed horseshoe) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face.",
       "witnessesFix": "Recomputed: 1852 tris, two materials with 114 wood and 828 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, horseshoe biting 1.5 mm and 7.5 mm proud, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring, --sunk-bands and --float-horseshoe exit 18; --short-post exits 19.",
@@ -220,6 +236,7 @@
     {
       "name": "grindstone",
       "dir": "showcase/grindstone",
+      "category": "village",
       "teaches": "A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes.",
       "witnessesFix": "Recomputed: 1668 tris, three materials with 400 wood / 240 stone / 364 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.419×0.610 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four shoes planted, trough seated in the sills and biting both stretchers 4 mm, stone dip 24 mm, no unchamfered right-angle edge, 29.44 bake texels per UV cell, LOD ratios in band, convex collider 304 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert / --flush-shoes exit 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough / --low-stretchers exit 18 on seat; --sharp-handle exits 20 on edge treatment; --low-bake exits 21 on texel density.",
@@ -233,6 +250,7 @@
     {
       "name": "hand-pump",
       "dir": "showcase/hand-pump",
+      "category": "village",
       "teaches": "A procedural village hand pump whose gooseneck is a 6-gon tube from the lower-column radius, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A green-enamelled cast-iron village pump with a fluted barrel, ball finial and counterweighted handle on a wooden plinth, a hooped bucket under its spout.",
       "witnessesFix": "Recomputed: 1064 tris, two materials with 564 metal and 144 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.382×1.052 m, grounded zmin, spout-to-column gap 2.7 mm, flange-to-plinth gap 6.0 mm, column radius 62 mm, LOD ratios in band, convex collider 114 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-spout 17; --float-flange 18; --skinny-col 19.",
@@ -246,6 +264,7 @@
     {
       "name": "signpost",
       "dir": "showcase/signpost",
+      "category": "village",
       "teaches": "A procedural timber fingerboard signpost through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden crossroads signpost with three pointed cream finger boards painted MILLBROOK 2, OAKHAM 5 and FORD 1, rusted iron collars and bands on the post.",
       "witnessesFix": "Recomputed: 432 tris, three materials with 126 metal, 33 board and 60 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.260×0.142×1.551 m at zmin 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD1/LOD2), convex collider 56 tris, non-empty glTF. Hygiene all zero. Board-to-post gap 5 mm, strap gap 3 mm, board AABB Y 28 mm. --skip-decimate exits 9; --stray-vert 15; --lift-z / --short-shoe 16; --gap-board 17; --float-strap 18; --yaw-boards 19.",
@@ -259,6 +278,7 @@
     {
       "name": "chopping-block",
       "dir": "showcase/chopping-block",
+      "category": "village",
       "teaches": "A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A log-round chopping block bound with a riveted iron hoop, a felling axe buried in its ringed top, split billets and wood chips scattered at its foot.",
       "witnessesFix": "Recomputed: 1800 tris, four materials with 180 bark / 216 grain / 404 metal / 176 haft faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.006 m, LOD ratios in band, convex collider 538 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7, oval haft 1.35 wide-to-thick. Joint fit: six shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.2 mm into the log on every segment, two lap rivets seated 1.50 and 1.54 mm. --fat-haft exits 17 on eye clearance; --round-band and --float-rivets exit 18 on their seats; --round-haft exits 19 on the haft section.",
@@ -272,6 +292,7 @@
     {
       "name": "wooden-bucket",
       "dir": "showcase/wooden-bucket",
+      "category": "village",
       "teaches": "A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings.",
       "witnessesFix": "Recomputed: 5458 tris, three materials with 1448 wood, 1020 metal, and 486 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.396×0.346×0.534 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0011 m, three bottom boards, no rope vertex inside an ear plate, LOD ratios in band, convex collider 276 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget; --sunk-rope exits 17 on the rope-clearance budget.",
@@ -285,6 +306,7 @@
     {
       "name": "wall-torch",
       "dir": "showcase/wall-torch",
+      "category": "village",
       "teaches": "A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice.",
       "witnessesFix": "Recomputed: 2004 tris, five materials with 540 stone, 318 metal, 50 wood, 180 flame and 60 pitch faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.322×0.485 m at zmin 0, LOD ratios in band, convex collider 116 tris, non-empty glTF. Hygiene all zero. Arm level 0.000°, plate 13 mm proud of the stones and 3 mm into them, arm-to-cup gap 0.07 mm, plaque width 0.280 m, bake 27.7 texels per UV cell. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19; --droop-arm 20; --sink-plate 21; --low-bake 22.",
@@ -299,6 +321,7 @@
     {
       "name": "tavern-stool",
       "dir": "showcase/tavern-stool",
+      "category": "village",
       "teaches": "A procedural tavern stool with a lathed seat, turned splayed legs, staggered stretchers, and iron ferrules gripping each leg on its own axis over a level tread, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden tavern stool with a grained, dished round seat holding a pewter tankard, turned splayed legs, stretcher rungs at two heights, and dark iron ferrules on flat treads.",
       "witnessesFix": "Recomputed: 3040 tris, two materials with 1168 wood and 576 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.341×0.341×0.470 m, LOD ratios in band, convex collider 468 tris, non-empty glTF. Hygiene all zero, four treads at zmin 0, stretcher-leg gap 0, ferrule grip 1.20 mm on each leg's axis, leg ends 1.1 mm above their treads, bake 22.4 texels per UV cell. --float-stretchers exits 17; --pipe-ferrule 18; --sink-legs 20; --low-bake 21.",
@@ -312,6 +335,7 @@
     {
       "name": "iron-cauldron",
       "dir": "showcase/iron-cauldron",
+      "category": "village",
       "teaches": "A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles.",
       "witnessesFix": "Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.053 m, pot base radius 0.075 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, bail threads both ear rings, mesh hygiene all zero, LOD ratios in band, convex collider 246 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook/--edge-on-ears 17; --pipe-ferrule 18; --pointed-pot 19.",
@@ -325,6 +349,7 @@
     {
       "name": "wooden-ladder",
       "dir": "showcase/wooden-ladder",
+      "category": "village",
       "teaches": "A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "An oak ladder with six pale turned hickory rungs through-tenoned into its rails, iron tie-rods under the end rungs, leaning on a board wall with a rope coil on a rung.",
       "witnessesFix": "Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.",
@@ -338,6 +363,7 @@
     {
       "name": "hay-bale",
       "dir": "showcase/hay-bale",
+      "category": "village",
       "teaches": "A bound hay bale whose twine belts follow the loaf's own raycast cross-section, asserting recomputed geometry budgets, not an API contract.",
       "alt": "A golden fibrous hay bale, square-edged and slightly bulging, bound by two orange twine cords with a small knot loop standing on each.",
       "witnessesFix": "Recomputed: 2044 tris, two materials with 1436 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.508x0.417 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 1.5 mm, banded belt seat depth 4.0-11.1 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 10.5 mm, loaf 0.921x0.393 m, 22.4 bake texels per UV cell, LOD ratios in band, convex collider 140 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt and --odd-loaf 19; --low-bake 20.",
@@ -351,6 +377,7 @@
     {
       "name": "crate-stack",
       "dir": "showcase/crate-stack",
+      "category": "village",
       "teaches": "A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "Three grained wooden shipping crates stacked, each turned slightly differently, with nailed iron corner straps.",
       "witnessesFix": "Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
@@ -364,6 +391,7 @@
     {
       "name": "stone-archway",
       "dir": "showcase/stone-archway",
+      "category": "village",
       "teaches": "A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints.",
       "witnessesFix": "Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.",
@@ -378,6 +406,7 @@
     {
       "name": "rope-bridge",
       "dir": "showcase/rope-bridge",
+      "category": "village",
       "teaches": "A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes.",
       "witnessesFix": "Recomputed: 8768 tris, two materials with 1356 timber and 3348 rope faces, UVs in 0..1 with zero AABB overlap and 18.8 baked texels per island, outer AABB 4.619×1.073×1.480 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four posts and four stakes grounded, every rope end and sill tenon biting its host, all 20 planks seated 4.0 mm on both foot ropes, 12 lashing turns hooped 2.4 mm, one connected assembly of 60 shells, posts plumb, plank pitch within 0.08 mm, hand ropes 0.87 m over the deck, and every plank top within 2.97 mm of a least-squares parabola with a 0.220 m sag. --vee-deck exits 19 on the parabola fit with its sag still in band; --float-suspenders exits 18 on the contact graph.",
@@ -391,6 +420,7 @@
     {
       "name": "grain-sacks",
       "dir": "showcase/grain-sacks",
+      "category": "village",
       "teaches": "A procedural pile of burlap grain sacks — settled onto flat bases, pressed into one another, gathered under twine ties with pleated crowns — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other.",
       "witnessesFix": "Recomputed: 8640 tris, two materials with 3264 burlap and 1152 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.914×0.905×0.636 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all three sacks grounded, every tie in a neck waist 13–15 mm narrower than the cloth 40 mm either side, six twine turns seated 3.6–5.2 mm into the cloth, sacks pressing 12 mm into one another, bellies settled low (0.25–0.32 of the body), and flat contact patches of 0.035, 0.099 and 0.117 m² under the three sacks. --round-bottom exits 19 with every patch at 0 while zmin and the supports still pass; --slip-tie exits 17 on the waist.",
@@ -404,6 +434,7 @@
     {
       "name": "brazier",
       "dir": "showcase/brazier",
+      "category": "village",
       "teaches": "A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks.",
       "witnessesFix": "Recomputed: 6960 tris, three materials with 1680 iron, 2880 coal and 448 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.696×0.696×0.612 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, three feet grounded, every leg biting 2.6 mm into the bowl wall, 36 coals seated 6.4–15.7 mm into the ash with none interpenetrating, 54 mm of freeboard under the rim, and a 51.9 kg density-weighted mass centre 0.466 m up and 154 mm inside the support polygon — an 18.3° tip angle. --tuck-legs exits 19 at 10.2° while the feet still ground and the envelope is unchanged; --overfill exits 18 on the freeboard.",
@@ -417,6 +448,7 @@
     {
       "name": "apothecary-shelf",
       "dir": "showcase/apothecary-shelf",
+      "category": "village",
       "teaches": "A procedural apothecary shelf — housed shelves, gallery rails, a drawer bank and an arched crest, stocked with fifteen lathed bottles, flasks and glazed jars, each corked or lidded and labelled — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars.",
       "witnessesFix": "Recomputed: 10456 tris, six materials with a face floor each, UVs in 0..1 with zero AABB overlap, outer AABB 0.876×0.274×1.076 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides grounded, seven cross members housed 8 mm into each side and 14 mm clear of its far face, fifteen vessels seated 1.0–1.8 mm into their shelves, every cork and lid biting 5 mm, every label 0.3 mm into its body and 0.8 mm proud, no vessel touching another or the carcass, and at least 24 mm of headroom between every vessel and the member above it. --tall-flask exits 20 at −5.5 mm while every seat and the envelope still pass; --short-shelves exits 17 on the dado bite.",
@@ -430,6 +462,7 @@
     {
       "name": "wooden-yoke",
       "dir": "showcase/wooden-yoke",
+      "category": "village",
       "teaches": "A procedural double ox yoke — a carved oak beam with neck saddles and upturned ends on two bent hickory bows pinned above it, with a staple and a hung iron ring — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A carved oak ox yoke with upturned ends standing on two bent hickory bows pinned above the beam, with a rusted iron ring hung from a staple under its centre.",
       "witnessesFix": "Recomputed: 5288 tris, three materials with 1088 oak, 720 hickory and 936 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.424×0.140×0.640 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both bows standing on the floor, every leg 52.7 mm proud of the beam, the staple 17.5 mm into it, four pins resting 1.5 mm into its crown, a ring threaded along the staple's bar and hung 1.0 mm onto it, two mirrored bows, and each neck opening 266 mm wide and 371 mm high. --pinch-bows exits 19 at 196 mm while the bows still ground and the envelope is unchanged; --edge-on-ring exits 17.",
@@ -443,6 +476,7 @@
     {
       "name": "butter-churn",
       "dir": "showcase/butter-churn",
+      "category": "village",
       "teaches": "A procedural plunge butter churn — sixteen tapered oak staves, three iron hoops, a three-board bottom, a two-board lid and a maple cross dasher — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A tall staved oak butter churn narrowing toward the top, bound by three dark iron hoops, with a two-board lid and a pale maple dasher handle rising through it.",
       "witnessesFix": "Recomputed: 5684 tris, three materials with 2240 oak, 160 maple and 576 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.340×0.340×1.050 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all sixteen staves on the floor, three bottom boards with 1.2 mm seams, the handle 14 mm into the slats, three hoops 2.5 mm into the staves and 4.9 mm proud, the lid 1.4–2.0 mm onto the stave tops, 5 mm of clearance round the handle, and a 514 mm plunge stroke for a 101 mm reach. --wide-dasher exits 20 at 140 mm while the plunger still clears the staves at rest; --tight-hole exits 18.",
@@ -456,6 +490,7 @@
     {
       "name": "bookshelf",
       "dir": "showcase/bookshelf",
+      "category": "village",
       "teaches": "A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours.",
       "witnessesFix": "Recomputed: 10908 tris, five materials with 338 wood, 2050 cloth, 1066 leather, 228 paper and 1976 gilt faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.972×0.332×1.176 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides on the floor, four cross members 8 mm into both sides, 38 books each with one page block 0.6 mm into its boards and two gilt bands 0.3 mm into the spine and 0.8 mm proud, every book seated 1.0–3.2 mm, 44 mm headroom, thickness and height spread 2.90 and 1.65, both leaning books 0.8 mm onto their neighbour's head edge, zero unplanned book overlaps, zero right-angle wood edges, convex collider 68 tris. --air-lean and --deep-lean exit 22 on the lean contact while every seat, the envelope and the overlap budget still pass; --crowd-books exits 23; --uniform-books 21; --tall-book 20.",
@@ -469,6 +504,7 @@
     {
       "name": "book-trolley",
       "dir": "showcase/book-trolley",
+      "category": "village",
       "teaches": "A procedural library book truck — arched end panels standing in skids on four swivel casters, a flat deck, and on each side two sloped troughs, a tilted shelf and a backrest square to it, filled with forty-seven rounded-spine hardbacks spines out and two loose stacks — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A double-sided wooden library book trolley on four casters, its two sloped troughs of cloth and leather hardbacks leaning back spines out, with loose books stacked on the bottom deck.",
       "witnessesFix": "Recomputed: 17704 tris, seven materials with 568 wood, 2788 cloth, 1476 leather, 312 paper, 2704 gilt, 932 iron and 656 rubber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.768×0.530×1.000 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four wheels on the floor, ten cross members 8 mm into both end panels, four caster plates 1.0 mm into their skids, carcass and casters mirror-exact in X and Y, 52 books each with one page block 0.6 mm into its boards and two gilt bands 0.3 mm into the spine and 0.8 mm proud, every book seated 1.0–3.2 mm, four troughs each with one backrest and all 47 trough books 0.8 mm into it, thickness and height spread 2.75 and 1.64, zero unplanned book overlaps, zero right-angle wood edges, convex collider 308 tris. --off-back and --deep-back exit 21 on the backrest contact while every seat, the envelope and the overlap budget still pass; --crowd-books exits 22; --skew-caster 19; --drop-plates 18.",
