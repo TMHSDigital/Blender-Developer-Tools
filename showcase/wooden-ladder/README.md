@@ -7,6 +7,16 @@ level shoe plates under sleeves that follow the rake. Then the shipped
 pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain,
 convex collider, Unity glTF export.
 
+**Hero.** The ladder leans on a render-only barn wall of staggered
+weathered boards (a Brick texture turned onto the wall plane, with a
+stretched noise for grain), and a hand-coiled rope hangs over the
+second-highest rung. The rung is found the way `rung_pitch` finds rungs:
+the wooden shells wide in X and short in Z. The coil is a teardrop laid
+from a three-lobed section, per the showcase rope rule. It hangs forward of
+the rung, away from the wall. The wall and the coil are staging, not part
+of the asset, its budgets or its export. The asset sheet judges the bare
+`LadderLow`.
+
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
 

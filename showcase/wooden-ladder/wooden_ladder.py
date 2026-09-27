@@ -990,9 +990,9 @@ def wood_material(name):
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[0].color = (0.10, 0.056, 0.028, 1.0)
     ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    ramp.color_ramp.elements[1].color = (0.33, 0.19, 0.095, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
@@ -1423,6 +1423,136 @@ def wire_normal(mat, tex):
     nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
+def barn_wall_material():
+    """Render-only lean surface: staggered weathered boards, dark seams."""
+    mat = bpy.data.materials.new("BarnBoards")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    # Brick rows run along the texture's Y; turn the wall's Z onto it.
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Rotation"].default_value = (math.radians(90.0), 0.0, 0.0)
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    boards = nt.nodes.new("ShaderNodeTexBrick")
+    boards.offset = 0.37
+    boards.inputs["Scale"].default_value = 1.0
+    boards.inputs["Brick Width"].default_value = 1.35
+    boards.inputs["Row Height"].default_value = 0.17
+    boards.inputs["Mortar Size"].default_value = 0.006
+    boards.inputs["Mortar Smooth"].default_value = 0.3
+    boards.inputs["Bias"].default_value = 0.0
+    boards.inputs["Color1"].default_value = (0.070, 0.052, 0.038, 1.0)
+    boards.inputs["Color2"].default_value = (0.105, 0.080, 0.058, 1.0)
+    boards.inputs["Mortar"].default_value = (0.008, 0.007, 0.006, 1.0)
+    nt.links.new(mapping.outputs["Vector"], boards.inputs["Vector"])
+    grain = nt.nodes.new("ShaderNodeTexNoise")
+    grain.inputs["Scale"].default_value = 6.0
+    grain.inputs["Detail"].default_value = 8.0
+    stretch = nt.nodes.new("ShaderNodeMapping")
+    stretch.inputs["Scale"].default_value = (0.12, 1.0, 6.0)
+    nt.links.new(coord.outputs["Object"], stretch.inputs["Vector"])
+    nt.links.new(stretch.outputs["Vector"], grain.inputs["Vector"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 0.55
+    nt.links.new(boards.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(grain.outputs["Color"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.88
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.6
+    bump.inputs["Distance"].default_value = 0.004
+    nt.links.new(boards.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def rope_coil(low, turns=3, loop_r=0.135, rope_r=0.012):
+    """A hand-coiled rope hung over the second-highest rung (ladder frame).
+
+    Rungs are read off the mesh the way ``rung_pitch`` reads them: the
+    wooden shells wide across X and short in Z. The coil's loops hang in
+    the plane across the rung, their tops draped over it, and are laid
+    from a three-lobed section turned one step per ring, as the showcase
+    rope rule asks.
+    """
+    me = low.data
+    rungs = []
+    for g in _vertex_shells(me):
+        pts = [me.vertices[i].co for i in g]
+        if (max(p.x for p in pts) - min(p.x for p in pts) > 0.25
+                and max(p.z for p in pts) - min(p.z for p in pts) < 0.08):
+            rungs.append(pts)
+    rungs.sort(key=lambda pts: sum(p.z for p in pts))
+    rung = rungs[-2]
+    rz = sum(p.z for p in rung) / len(rung)
+    ry = sum(p.y for p in rung) / len(rung)
+    rr = (max(p.z for p in rung) - min(p.z for p in rung)) / 2.0
+    # The wall stands on the side the rails rake toward; the coil hangs
+    # forward of the rung, away from it, so it never meets the boards.
+    top_band = [v.co.y for v in me.vertices if v.co.z > max(p.z for p in rung) + 0.3]
+    foot_band = [v.co.y for v in me.vertices if v.co.z < 0.08]
+    wall_side = 1.0 if sum(top_band) / len(top_band) > sum(foot_band) / len(foot_band) else -1.0
+    ztop = rz + rr + rope_r
+    x0 = 0.035
+
+    steps, sides = 36 * turns, 9
+    pitch = 2.3 * rope_r
+
+    def centre(i):
+        # a hanging loop is a teardrop: pinched over the rung, full below;
+        # it reaches far forward of the rung and barely behind it
+        t = i / 36.0 * 2.0 * math.pi
+        fan = 1.0 - 0.06 * (i / steps)                 # turns read as separate
+        s = math.sin(t)
+        reach = (loop_r * 0.9 if s > 0 else loop_r * 0.28) * fan
+        y = ry - wall_side * reach * s
+        z = ztop - loop_r * 1.35 * fan * (1.0 - math.cos(t))
+        return Vector((x0 + pitch * i / 36.0, y, z))
+
+    bm = bmesh.new()
+    try:
+        rings = []
+        for i in range(steps + 1):
+            c = centre(i)
+            tang = (centre(i + 1) - centre(i - 1)).normalized()
+            n = tang.cross(Vector((1.0, 0.0, 0.0))).normalized()
+            b = tang.cross(n)
+            ring = []
+            for k in range(sides):
+                a = 2 * math.pi * k / sides + i * (2 * math.pi / sides)
+                lobe = 1.0 + 0.16 * math.cos(3 * (2 * math.pi * k / sides))
+                ring.append(bm.verts.new(c + rope_r * lobe * (n * math.cos(a) + b * math.sin(a))))
+            rings.append(ring)
+        for r0, r1 in zip(rings, rings[1:]):
+            for k in range(sides):
+                f = bm.faces.new((r0[k], r0[(k + 1) % sides], r1[(k + 1) % sides], r1[k]))
+                f.smooth = True
+        bm.faces.new(list(reversed(rings[0])))
+        bm.faces.new(rings[-1])
+        cme = bpy.data.meshes.new("RopeCoil")
+        bm.to_mesh(cme)
+    finally:
+        bm.free()
+    rmat = bpy.data.materials.new("Hemp")
+    rmat.use_nodes = True
+    rnt = rmat.node_tree
+    rb = rnt.nodes["Principled BSDF"]
+    rnoise = rnt.nodes.new("ShaderNodeTexNoise")
+    rnoise.inputs["Scale"].default_value = 90.0
+    rnoise.inputs["Detail"].default_value = 6.0
+    rramp = rnt.nodes.new("ShaderNodeValToRGB")
+    rramp.color_ramp.elements[0].color = (0.16, 0.115, 0.065, 1.0)
+    rramp.color_ramp.elements[1].color = (0.40, 0.31, 0.18, 1.0)
+    rnt.links.new(rnoise.outputs["Fac"], rramp.inputs["Fac"])
+    rnt.links.new(rramp.outputs["Color"], rb.inputs["Base Color"])
+    rb.inputs["Roughness"].default_value = 0.9
+    cme.materials.append(rmat)
+    return bpy.data.objects.new("RopeCoil", cme)
+
+
 def render_still(low, wood, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(wood, tex)
@@ -1447,21 +1577,23 @@ def render_still(low, wood, tex, path, engine):
     try:
         bmesh.ops.create_cube(bm, size=1.0)
         for v in bm.verts:
-            v.co.x *= 1.4
+            v.co.x *= 3.8
             v.co.y = top_y + lean * (v.co.y + 0.5) * 0.10
-            v.co.z = (v.co.z + 0.5) * 1.75
+            v.co.z = (v.co.z + 0.5) * 1.95
         bm.to_mesh(panel_me)
     finally:
         bm.free()
-    pmat = bpy.data.materials.new("LeanWall")
-    pmat.use_nodes = True
-    pb = pmat.node_tree.nodes["Principled BSDF"]
-    pb.inputs["Base Color"].default_value = (0.034, 0.032, 0.031, 1.0)
-    pb.inputs["Roughness"].default_value = 0.85
-    panel_me.materials.append(pmat)
+    panel_me.materials.append(barn_wall_material())
     panel = bpy.data.objects.new("LeanWall", panel_me)
     panel.rotation_euler.z = low.rotation_euler.z
     scene.collection.objects.link(panel)
+
+    # A laid-rope coil hung over the second-highest rung: the ladder in use,
+    # not in a catalogue. Render-only, parented to the ladder so it turns
+    # with it; not part of the asset, its budgets or its export.
+    coil = rope_coil(low)
+    coil.parent = low
+    scene.collection.objects.link(coil)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1540,7 +1672,7 @@ def render_still(low, wood, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall, panel],
+        scene, cam, hero=[low], elements=[low, coil], stage=[floor, wall, panel],
     )
     if fcode:
         return fcode
