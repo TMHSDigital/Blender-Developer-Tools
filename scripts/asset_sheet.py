@@ -67,6 +67,9 @@ SELECT = {
     "grain-sacks": (r"^SacksLow$", None),
     "rope-bridge": (r"^BridgeLow$", None),
     "wheelbarrow": (r"^BarrowLow$", None),
+    "street-lantern": (r"^LanternLow$", None),
+    "hand-pump": (r"^HandPumpLow$", None),
+    "anvil": (r"^AnvilLow$", None),
     # the hero shows a three-section run; the sheet judges the one asset
     "fence-kit": (r"^FenceLow$", None),
     "wooden-ladder": (r"^LadderLow$", None),

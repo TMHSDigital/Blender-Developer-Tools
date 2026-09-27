@@ -639,7 +639,7 @@ def lantern_materials():
         (0.62, 0.32, 0.08, 1.0),
         0.0,
         0.22,
-        emission=((0.85, 0.42, 0.10, 1.0), 0.45),
+        emission=((0.95, 0.50, 0.14, 1.0), 1.6),
     )
     brass = principled("LanternBrass", (0.44, 0.29, 0.10, 1.0), 0.9, 0.44, roughness_var=0.14)
     return metal, glass, brass
@@ -1363,17 +1363,37 @@ def render_still(low, metal, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.8), 680.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.6, 2.6), 48.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
-    light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    light("Key", (-3.6, -5.0, 5.8), 520.0, 3.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Fill", (5.0, -3.6, 2.6), 40.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Rim", (-1.5, 3.0, 3.2), 160.0, 2.5, (0.62, 0.78, 1.0), (-55, 0, 200))
+    light("Wedge", (2.4, 4.2, 4.1), 520.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+
+    # the lit lamp: a warm, shadowless point at the centre of the glazing,
+    # so the cage throws its glow onto the post, the arm and the floor
+    bpy.context.view_layer.update()
+    me = low.data
+    glass_pts = [me.vertices[vi].co for p in me.polygons if p.material_index == GLASS_IDX
+                 for vi in p.vertices]
+    if glass_pts:
+        centre = sum(glass_pts, Vector()) / len(glass_pts)
+        ld = bpy.data.lights.new("Lamp", "POINT")
+        ld.energy = 22.0
+        ld.color = (1.0, 0.58, 0.22)
+        ld.shadow_soft_size = 0.05
+        ld.use_shadow = False
+        lob = bpy.data.objects.new("Lamp", ld)
+        lob.location = low.matrix_world @ centre
+        scene.collection.objects.link(lob)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 40.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.55, -3.70, 1.85)
+    # closer and lower than the first hero, which left the lantern small in
+    # a mostly empty frame; the wider lens keeps the foot in shot
+    cam.location = (1.80, -2.70, 1.20)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.72)
+    aim.location = (0.0, 0.12, 0.64)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

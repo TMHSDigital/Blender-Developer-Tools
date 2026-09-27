@@ -24,6 +24,12 @@ the arm's centre-line side, and the brace-bite budget below asserts
 that each end is actually inside its host. Brass is aged and rougher
 (it was bright polished gold at roughness 0.28).
 
+The hero is lit from inside: a shadowless warm point light sits at the
+centroid of the glass faces and the panes emit at 1.6, so the lantern
+throws its glow onto the post, arm and floor. The camera is closer and
+lower on a 40 mm lens; the first hero left the lantern small in an
+empty frame. Render path only; geometry and budgets are unchanged.
+
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
 
