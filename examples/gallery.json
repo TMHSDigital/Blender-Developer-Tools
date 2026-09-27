@@ -572,7 +572,7 @@
       "name": "modular-kit-snap",
       "dir": "examples/modular-kit-snap",
       "teaches": "A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.",
-      "alt": "A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end.",
+      "alt": "A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end.",
       "witnessesFix": "16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.",
       "hero": "docs/gallery/assets/modular-kit-snap-hero.webp",
       "preview": "examples/modular-kit-snap/preview.webp",

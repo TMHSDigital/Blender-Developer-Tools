@@ -399,10 +399,20 @@ def check():
 # Render
 # ---------------------------------------------------------------------------
 
-def make_material(name, rgb, rough=0.45, metallic=0.6, emit=None, estr=0.0):
+def make_material(name, rgb, rough=0.45, metallic=0.6, emit=None, estr=0.0,
+                  wear=0.0, tread=False, stripes=None):
+    """Principled material; optional procedural surface language.
+
+    Every texture reads Object coordinates, and every kit part's origin is the
+    segment pivot, so the patterns are functions of segment-local position:
+    identical in each instance and continuous across a snapped joint, exactly
+    like the geometry. wear mottles colour and roughness; tread adds a
+    diamond-plate bump; stripes=(rgb_b, period) paints diagonal hazard bands.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    b = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1.0)
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metallic
@@ -410,18 +420,97 @@ def make_material(name, rgb, rough=0.45, metallic=0.6, emit=None, estr=0.0):
         sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
         sock.default_value = (*emit, 1.0)
         b.inputs["Emission Strength"].default_value = estr
+    if not (wear or tread or stripes):
+        return mat
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    color_out = None
+    if stripes:
+        rgb_b, period = stripes
+        wave = nt.nodes.new("ShaderNodeTexWave")
+        wave.wave_type = "BANDS"
+        wave.bands_direction = "DIAGONAL"
+        # Blender wave phase is 20 * scale * coordinate: one band per `period` metres
+        wave.inputs["Scale"].default_value = 2.0 * math.pi / (20.0 * period)
+        wave.inputs["Distortion"].default_value = 0.0
+        nt.links.new(coord, wave.inputs["Vector"])
+        step = nt.nodes.new("ShaderNodeMath")
+        step.operation = "GREATER_THAN"
+        step.inputs[1].default_value = 0.5
+        nt.links.new(wave.outputs["Fac"], step.inputs[0])
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs[6].default_value = (*rgb, 1.0)
+        mix.inputs[7].default_value = (*rgb_b, 1.0)
+        nt.links.new(step.outputs["Value"], mix.inputs[0])
+        color_out = mix.outputs[2]
+    if wear:
+        noise = nt.nodes.new("ShaderNodeTexNoise")
+        noise.inputs["Scale"].default_value = 3.5
+        noise.inputs["Detail"].default_value = 8.0
+        nt.links.new(coord, noise.inputs["Vector"])
+        dirt = nt.nodes.new("ShaderNodeMix")
+        dirt.data_type = "RGBA"
+        dirt.blend_type = "MULTIPLY"
+        dirt.inputs[0].default_value = wear
+        if color_out is not None:
+            nt.links.new(color_out, dirt.inputs[6])
+        else:
+            dirt.inputs[6].default_value = (*rgb, 1.0)
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].position = 0.38
+        ramp.color_ramp.elements[0].color = (0.45, 0.42, 0.38, 1.0)
+        ramp.color_ramp.elements[1].position = 0.68
+        ramp.color_ramp.elements[1].color = (1.0, 1.0, 1.0, 1.0)
+        nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+        nt.links.new(ramp.outputs["Color"], dirt.inputs[7])
+        color_out = dirt.outputs[2]
+        rmap = nt.nodes.new("ShaderNodeMapRange")
+        rmap.inputs["To Min"].default_value = rough + 0.15
+        rmap.inputs["To Max"].default_value = rough - 0.10
+        nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+        nt.links.new(rmap.outputs["Result"], b.inputs["Roughness"])
+    if color_out is not None:
+        nt.links.new(color_out, b.inputs["Base Color"])
+    if tread:
+        # diamond plate: two crossed wave bands make a lozenge lattice bump
+        bump = nt.nodes.new("ShaderNodeBump")
+        bump.inputs["Strength"].default_value = 1.0
+        bump.inputs["Distance"].default_value = 0.012
+        mul = nt.nodes.new("ShaderNodeMath")
+        mul.operation = "MULTIPLY"
+        for i, rot in enumerate((0.785, -0.785)):
+            mapping = nt.nodes.new("ShaderNodeMapping")
+            mapping.inputs["Rotation"].default_value = (0.0, 0.0, rot)
+            nt.links.new(coord, mapping.inputs["Vector"])
+            wv = nt.nodes.new("ShaderNodeTexWave")
+            wv.wave_type = "BANDS"
+            wv.bands_direction = "X"
+            wv.wave_profile = "SAW"
+            wv.inputs["Scale"].default_value = 6.0
+            wv.inputs["Distortion"].default_value = 0.0
+            nt.links.new(mapping.outputs["Vector"], wv.inputs["Vector"])
+            gt = nt.nodes.new("ShaderNodeMath")
+            gt.operation = "GREATER_THAN"
+            gt.inputs[1].default_value = 0.72
+            nt.links.new(wv.outputs["Fac"], gt.inputs[0])
+            nt.links.new(gt.outputs["Value"], mul.inputs[i])
+        nt.links.new(mul.outputs["Value"], bump.inputs["Height"])
+        nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
     return mat
 
 
+# (name, rgb, roughness, metallic, emission rgb, emission strength, extras)
 SEGMENT_MATS = {
-    "Shell": ("Shell", (0.075, 0.095, 0.115), 0.5, 0.8, None, 0.0),
-    "Rib": ("Rib", (0.05, 0.05, 0.06), 0.45, 0.85, None, 0.0),
-    "FloorPlate": ("FloorPlate", (0.06, 0.075, 0.09), 0.6, 0.7, None, 0.0),
-    "Panel": ("Panel", (0.10, 0.21, 0.26), 0.42, 0.6, None, 0.0),
-    "PanelBack": ("PanelBack", (0.06, 0.10, 0.13), 0.5, 0.75, None, 0.0),
-    "PanelBolts": ("PanelBolts", (0.35, 0.38, 0.42), 0.3, 0.9, None, 0.0),
-    "Trim": ("Trim", (0.85, 0.35, 0.08), 0.35, 0.3, None, 0.0),
-    "Light": ("LightStrip", (0.30, 0.25, 0.18), 0.5, 0.2, (1.0, 0.75, 0.4), 8.0),
+    "Shell": ("Shell", (0.055, 0.062, 0.072), 0.55, 0.55, None, 0.0, dict(wear=0.55)),
+    "Rib": ("Rib", (0.16, 0.13, 0.09), 0.42, 0.85, None, 0.0, dict(wear=0.5)),
+    "FloorPlate": ("FloorPlate", (0.20, 0.205, 0.21), 0.38, 0.9, None, 0.0,
+                   dict(wear=0.6, tread=True)),
+    "Panel": ("Panel", (0.05, 0.12, 0.125), 0.62, 0.05, None, 0.0, dict(wear=0.45)),
+    "PanelBack": ("PanelBack", (0.045, 0.05, 0.058), 0.48, 0.7, None, 0.0, dict(wear=0.4)),
+    "PanelBolts": ("PanelBolts", (0.62, 0.58, 0.50), 0.3, 1.0, None, 0.0, {}),
+    "Trim": ("Trim", (0.90, 0.42, 0.05), 0.45, 0.1, None, 0.0,
+             dict(wear=0.35, stripes=((0.02, 0.02, 0.022), 0.16))),
+    "Light": ("LightStrip", (0.30, 0.25, 0.18), 0.5, 0.2, (1.0, 0.78, 0.48), 14.0, {}),
 }
 
 
@@ -433,8 +522,8 @@ def mat_for(suffix):
     revision instantiated a duplicate material per part per segment)."""
     key = suffix.split(".")[0]
     if key not in _mat_cache:
-        name, rgb, rough, metal, emit, estr = SEGMENT_MATS[key]
-        _mat_cache[key] = make_material(name, rgb, rough, metal, emit, estr)
+        name, rgb, rough, metal, emit, estr, extra = SEGMENT_MATS[key]
+        _mat_cache[key] = make_material(name, rgb, rough, metal, emit, estr, **extra)
     return _mat_cache[key]
 
 
@@ -513,7 +602,8 @@ def build_bulkhead(sc):
     Not part of the kit — the corridor's destination for this still."""
     frame_mat = make_material("Bulkhead", (0.06, 0.06, 0.07), rough=0.4, metallic=0.85)
     door_mat = make_material("BulkheadDoor", (0.30, 0.16, 0.07), rough=0.5,
-                             metallic=0.3, emit=(1.0, 0.42, 0.12), estr=0.5)
+                             metallic=0.3, emit=(1.0, 0.42, 0.12), estr=0.22,
+                             wear=0.5)
     inner_y = WIDTH / 2 - WALL
     end_x = TILE * 4
     parts = []
@@ -560,6 +650,9 @@ def render_still(path, engine, falsify=False, close_camera=False):
     steps, so every joint reads as a seam — the render-scale exaggeration of
     the failure the check measures at 3 mm (probe_unsnapped)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    # the factory reset freed every cached material; --output then --falsify
+    # in one run would otherwise hand the second scene dead RNA references
+    _mat_cache.clear()
     sc = bpy.context.scene
 
     all_parts = []

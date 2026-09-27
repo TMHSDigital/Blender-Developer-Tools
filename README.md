@@ -1141,7 +1141,7 @@ check first caught the weld) and [`mesh-hygiene-audit`](examples/mesh-hygiene-au
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/modular-kit-snap/"><img src="examples/modular-kit-snap/preview.webp" alt="Modular kit snap: a corridor run of four tiling segments — dark steel walls with blue-gray panels, orange trim rails, and ceiling light strips converging on a glowing amber doorway, with every joint seamless because the boundary verts snap exactly to the tile grid" /></a>
+<a href="examples/modular-kit-snap/"><img src="examples/modular-kit-snap/preview.webp" alt="Modular kit snap: a corridor run of four tiling segments — dark steel walls with painted teal panels, diamond-plate walkways, hazard-striped orange trim rails, and ceiling light strips converging on a glowing amber doorway, with every joint seamless because the boundary verts snap exactly to the tile grid" /></a>
 </td>
 <td valign="middle">
 

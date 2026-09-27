@@ -66,7 +66,11 @@ is now an assembly (backing plate + inset panel + four bolt heads), the
 palette shifted teal-slate so the card does not twin with
 `lightmap-uv-channel`'s warm cart, and mean luminance was brought into the
 calibration range (82.7 → 66.1, ceiling 77.7) — no luminance deviation
-needed.
+needed. The surface language is procedural and reads **Object** coordinates:
+every part's origin is the segment pivot, so painted-panel wear, the walkway's
+diamond-plate bump and the diagonal hazard stripes on the trim rails are
+functions of segment-local position — identical in every instance and
+continuous across a snapped joint, exactly like the geometry.
 
 **Framing deviation:** the still is an interior corridor run — the envelope
 surrounds the camera on five sides and the tiling joints are the proof, so
