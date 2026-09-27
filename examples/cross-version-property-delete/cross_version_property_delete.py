@@ -14,9 +14,10 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python cross_version_property_delete.py --
-    blender --background --python cross_version_property_delete.py -- --output t.png
+    blender --background --python cross_version_property_delete.py -- --output lamps.png
 """
 import bpy, bmesh, sys, os, math, argparse
+from mathutils import Vector
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True
@@ -65,39 +66,68 @@ def cylinder(name, radius, depth, loc, segs=24):
     return ob
 
 
-def build_tag(name, x, yaw):
-    """Machined specimen tag: plate, pocket, hanging ring. No ID property yet."""
-    plate = beveled_box(f"{name}Plate", (1.70, 0.10, 1.05), 0.035)
-    plate.location = (x, 0.0, 1.15)
-    plate.rotation_euler = (0.0, 0.0, yaw)
-    pocket = beveled_box(f"{name}Pocket", (0.92, 0.04, 0.48), 0.02)
-    pocket.parent = plate
-    pocket.location = (0.18, -0.05, -0.03)
-    ring = cylinder(f"{name}Ring", 0.11, 0.05, (0.0, 0.0, 0.0), segs=20)
-    ring.parent = plate
-    ring.location = (-0.68, 0.0, 0.33)
-    ring.rotation_euler = (math.pi / 2, 0.0, 0.0)
-    return plate, pocket, ring
+LAMP_X = 1.25          # lamps hang at x = -/+ LAMP_X from the stand's crossbar
+PIVOT_Z = 1.80         # yoke pivot height (housing centre)
+TILT_DEG = 30.0        # beam tipped from straight down toward the camera side
 
 
-def add_inlay(name, plate):
-    """Emissive enamel only when the ID property is still on the plate."""
-    inlay = beveled_box(f"{name}Inlay", (0.82, 0.03, 0.40), 0.015)
-    inlay.parent = plate
-    inlay.location = (0.18, -0.07, -0.03)
-    return inlay
+def lathe(name, profile, segs=48):
+    """Revolve an (r, z) profile about local +Z; r == 0 makes a pole."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        rings = []
+        for r, z in profile:
+            if r == 0.0:
+                rings.append([bm.verts.new((0.0, 0.0, z))])
+            else:
+                rings.append([bm.verts.new((r * math.cos(2 * math.pi * s / segs),
+                                            r * math.sin(2 * math.pi * s / segs), z))
+                              for s in range(segs)])
+        for a, b in zip(rings, rings[1:]):
+            for s in range(segs):
+                t = (s + 1) % segs
+                if len(a) == 1:
+                    f = bm.faces.new((a[0], b[t], b[s]))
+                elif len(b) == 1:
+                    f = bm.faces.new((a[s], a[t], b[0]))
+                else:
+                    f = bm.faces.new((a[s], a[t], b[t], b[s]))
+                f.smooth = True
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.set_sharp_from_angle(angle=math.radians(40.0))
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    return ob
+
+
+# Stage-lamp can along local +Z (the beam axis): domed back cap, a finned
+# body, a flared front rim. The lens sits just inside the rim.
+LAMP_PROFILE = [(0.0, -0.36), (0.14, -0.35), (0.24, -0.31), (0.29, -0.24)]
+for _k in range(5):                                   # five cooling fins
+    _z = -0.20 + 0.075 * _k
+    LAMP_PROFILE += [(0.29, _z), (0.335, _z + 0.012), (0.335, _z + 0.03), (0.29, _z + 0.042)]
+LAMP_PROFILE += [(0.30, 0.20), (0.35, 0.24), (0.36, 0.30), (0.33, 0.31),
+                 (0.30, 0.27), (0.0, 0.27)]
+
+
+def build_lamp(name, x):
+    """The ID under test: a stage-lamp housing. No ID property yet."""
+    housing = lathe(f"{name}Lamp", LAMP_PROFILE)
+    housing.location = (x, 0.0, PIVOT_Z)
+    # beam axis (+Z) tipped down toward -Y (the camera side)
+    housing.rotation_euler = (math.radians(180.0 - TILT_DEG), 0.0, 0.0)
+    return housing
 
 
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    keep_parts = build_tag("Keep", -1.15, 0.0)
-    clear_parts = build_tag("Clear", 1.15, 0.0)
-    post = cylinder("StandPost", 0.07, 1.55, (0.0, 0.22, 0.78))
-    base = beveled_box("StandBase", (3.4, 0.9, 0.12), 0.04)
-    base.location = (0.0, 0.15, 0.06)
-    bar = beveled_box("StandBar", (2.6, 0.08, 0.08), 0.02)
-    bar.location = (0.0, 0.22, 1.52)
-    return keep_parts, clear_parts, [post, base, bar]
+    keep = build_lamp("Keep", -LAMP_X)
+    clear = build_lamp("Clear", LAMP_X)
+    return keep, clear
 
 
 def remove_custom_property(id_block, key):
@@ -119,10 +149,10 @@ def check(keep_plate, clear_plate, skip_delete=False, unset_instead=False):
     keep_plate[KEY] = VALUE
     clear_plate[KEY] = VALUE
     if KEY not in keep_plate.keys() or keep_plate[KEY] != VALUE:
-        print(f"ERROR: ID property {KEY} did not land on Keep plate", file=sys.stderr)
+        print(f"ERROR: ID property {KEY} did not land on Keep lamp", file=sys.stderr)
         return 3
     if KEY not in clear_plate.keys():
-        print(f"ERROR: ID property {KEY} did not land on Clear plate", file=sys.stderr)
+        print(f"ERROR: ID property {KEY} did not land on Clear lamp", file=sys.stderr)
         return 3
 
     try:
@@ -153,11 +183,11 @@ def check(keep_plate, clear_plate, skip_delete=False, unset_instead=False):
         f"skip_delete={skip_delete} unset_instead={unset_instead}"
     )
     if not keep_has:
-        print("ERROR: Keep plate lost the ID property", file=sys.stderr)
+        print("ERROR: Keep lamp lost the ID property", file=sys.stderr)
         return 6
     if clear_has:
         print(
-            "ERROR: Clear plate still has the ID property — del did not run "
+            "ERROR: Clear lamp still has the ID property — del did not run "
             "(property_unset is not a delete)",
             file=sys.stderr,
         )
@@ -169,7 +199,7 @@ def eevee_engine_id():
     return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
 
 
-def principled(name, color, metallic, roughness, emission=None):
+def principled(name, color, metallic, roughness, emission=None, strength=4.5):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
@@ -179,7 +209,7 @@ def principled(name, color, metallic, roughness, emission=None):
     if emission is not None:
         sock = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
         sock.default_value = emission
-        bsdf.inputs["Emission Strength"].default_value = 4.5
+        bsdf.inputs["Emission Strength"].default_value = strength
     return mat
 
 
@@ -188,57 +218,121 @@ def assign(ob, mat):
     ob.data.materials.append(mat)
 
 
-def render_still(keep_parts, clear_parts, stand, path, engine):
+def label_font():
+    """DejaVu Sans Mono ships in datafiles/fonts on 4.5 and 5.2 — code on the
+    placards reads as code. system_resource resolves directories only."""
+    fonts = bpy.utils.system_resource("DATAFILES", path="fonts")
+    path = os.path.join(fonts, "DejaVuSansMono.woff2") if fonts else ""
+    if path and os.path.exists(path):
+        try:
+            return bpy.data.fonts.load(path, check_existing=True)
+        except RuntimeError:
+            pass
+    return None
+
+
+def placard(name, text, x, mat_plate, mat_ink, scene):
+    """A dark steel plate leaning on the floor under its lamp, code inlaid in brass."""
+    plate = beveled_box(name, (2.05, 0.07, 0.42), 0.02)
+    assign(plate, mat_plate)
+    plate.location = (x, -1.05, 0.20)
+    plate.rotation_euler = (math.radians(-40), 0.0, 0.0)
+    cu = bpy.data.curves.new(f"{name}.Text", "FONT")
+    cu.body = text
+    cu.size = 0.15
+    cu.align_x = "CENTER"
+    cu.align_y = "CENTER"
+    cu.extrude = 0.004
+    font = label_font()
+    if font is not None:
+        cu.font = font
+    cu.materials.append(mat_ink)
+    t = bpy.data.objects.new(f"{name}.Text", cu)
+    t.parent = plate
+    t.location = (0.0, -0.04, 0.0)
+    t.rotation_euler = (math.radians(90), 0.0, 0.0)
+    scene.collection.objects.link(t)
+    return [plate, t]
+
+
+def render_still(keep, clear, path, engine):
+    """Two stage lamps on one stand. Each lamp object is the ID the check
+    ran against; the render reads its keys() and lights it only if the
+    custom property is still there — an emissive lens and a real spot pool
+    on the floor. Nothing here is staged from the expected outcome."""
     scene = bpy.context.scene
-    brass = principled("Brass", (0.78, 0.50, 0.18, 1.0), 1.0, 0.22)
-    pocket = principled("Pocket", (0.04, 0.042, 0.05, 1.0), 0.2, 0.55)
-    enamel = principled(
-        "Enamel", (0.02, 0.35, 0.55, 1.0), 0.0, 0.35,
-        emission=(0.05, 0.55, 0.85, 1.0),
-    )
-    steel = principled("Steel", (0.18, 0.19, 0.21, 1.0), 1.0, 0.38)
+    powder = principled("PowderCoat", (0.028, 0.03, 0.034, 1.0), 0.35, 0.42)
+    steel = principled("Steel", (0.20, 0.205, 0.22, 1.0), 1.0, 0.34)
+    brass = principled("Brass", (0.86, 0.60, 0.26, 1.0), 1.0, 0.26)
+    lens_on = principled("LensLit", (1.0, 0.86, 0.62, 1.0), 0.0, 0.1,
+                         emission=(1.0, 0.72, 0.40, 1.0), strength=1.4)
+    lens_off = principled("LensDark", (0.02, 0.022, 0.026, 1.0), 0.0, 0.06)
+    plate_mat = principled("Placard", (0.035, 0.036, 0.04, 1.0), 0.7, 0.42)
 
-    keep_plate, keep_pocket, keep_ring = keep_parts
-    clear_plate, clear_pocket, clear_ring = clear_parts
-    for ob in (keep_plate, keep_ring, clear_plate, clear_ring):
-        assign(ob, brass)
-    assign(keep_pocket, pocket)
-    assign(clear_pocket, pocket)
-    for ob in stand:
+    # stand: weighted base, post, crossbar, a drop stem per lamp
+    parts = []
+    base = lathe("StandBase", [(0.0, 0.0), (0.78, 0.0), (0.82, 0.03), (0.82, 0.09),
+                               (0.74, 0.12), (0.16, 0.14), (0.0, 0.14)], segs=64)
+    bar_z = PIVOT_Z + 0.57
+    post = cylinder("StandPost", 0.06, bar_z - 0.10, (0.0, 0.0, 0.5 * (bar_z + 0.10)), segs=24)
+    bar = cylinder("StandBar", 0.05, 2 * LAMP_X + 0.5, (0.0, 0.0, bar_z), segs=24)
+    bar.rotation_euler = (0.0, math.pi / 2, 0.0)
+    for ob in (base, post, bar):
         assign(ob, steel)
+    parts += [base, post, bar]
 
-    # Render-only staging: the check reads ID properties, never geometry.
-    # The build left the bar 0.17 m behind the plates with nothing joining
-    # them, and the "rings" are solid discs, so the plates hung on air.
-    # Here the bar runs in the plates' plane above their tops, spans both,
-    # and each plate hangs from it on two rods; the post rises to the bar
-    # and the base is as wide as what it carries.
-    post, base, bar = stand
-    plate_top = keep_plate.location.z + 0.525
-    bar_z = plate_top + 0.16
-    bar.location = (0.0, 0.0, bar_z)
-    bar.scale.x = 4.4 / 2.6
-    post.location = (0.0, 0.0, 0.5 * bar_z)
-    post.scale.z = bar_z / 1.55
-    base.location = (0.0, 0.0, 0.06)
-    base.scale.x = 4.6 / 3.4
-    hangers = []
-    for plate in (keep_plate, clear_plate):
-        for dx in (-0.62, 0.62):
-            rod = cylinder(f"Hanger{len(hangers)}", 0.018, bar_z - plate_top + 0.05,
-                           (plate.location.x + dx, 0.0, 0.5 * (plate_top - 0.03 + bar_z)), segs=12)
-            assign(rod, steel)
-            hangers.append(rod)
-    for ring in (keep_ring, clear_ring):
-        ring.hide_render = True
+    lit = []
+    for lamp in (keep, clear):
+        assign(lamp, powder)
+        x = lamp.location.x
+        stem = cylinder(f"{lamp.name}Stem", 0.035, 0.18, (x, 0.0, PIVOT_Z + 0.47), segs=16)
+        # U-yoke: a top strap plus two cheeks bolted to the housing's sides
+        strap = beveled_box(f"{lamp.name}Strap", (0.86, 0.10, 0.05), 0.012)
+        strap.location = (x, 0.0, PIVOT_Z + 0.37)
+        cheeks = []
+        for sx in (-1.0, 1.0):
+            ch = beveled_box(f"{lamp.name}Cheek", (0.05, 0.10, 0.40), 0.012)
+            ch.location = (x + sx * 0.405, 0.0, PIVOT_Z + 0.18)
+            knob = cylinder(f"{lamp.name}Knob", 0.06, 0.05, (x + sx * 0.45, 0.0, PIVOT_Z), segs=20)
+            knob.rotation_euler = (0.0, math.pi / 2, 0.0)
+            assign(knob, brass)
+            cheeks += [ch, knob]
+        for ob in (stem, strap) + tuple(c for c in cheeks if "Cheek" in c.name):
+            assign(ob, steel)
+        # lens and a brass bezel, parented to the housing along its +Z
+        lens = cylinder(f"{lamp.name}Lens", 0.29, 0.02, (0.0, 0.0, 0.0), segs=48)
+        lens.parent = lamp
+        lens.location = (0.0, 0.0, 0.262)
+        bezel = lathe(f"{lamp.name}Bezel", [(0.36, 0.30), (0.375, 0.315), (0.36, 0.33),
+                                            (0.33, 0.33), (0.32, 0.31), (0.33, 0.30)],
+                      segs=48)
+        bezel.parent = lamp
+        assign(bezel, brass)
+        on = KEY in lamp.keys()
+        assign(lens, lens_on if on else lens_off)
+        parts += [stem, strap, lens, bezel] + cheeks
+        if on:
+            lit.append(lamp)
 
-    inlay = None
-    if KEY in keep_plate.keys():
-        inlay = add_inlay("Keep", keep_plate)
-        assign(inlay, enamel)
-    if KEY in clear_plate.keys():
-        ghost = add_inlay("Clear", clear_plate)
-        assign(ghost, enamel)
+    bpy.context.view_layer.update()
+    for lamp in lit:
+        axis = (lamp.matrix_world.to_3x3() @ Vector((0.0, 0.0, 1.0))).normalized()
+        sd = bpy.data.lights.new(f"{lamp.name}Beam", "SPOT")
+        sd.energy = 1100.0
+        sd.color = (1.0, 0.8, 0.52)
+        sd.spot_size = math.radians(64.0)
+        sd.spot_blend = 0.55
+        sd.shadow_soft_size = 0.2
+        beam = bpy.data.objects.new(f"{lamp.name}Beam", sd)
+        beam.location = lamp.matrix_world.translation + axis * 0.36
+        beam.rotation_euler = axis.to_track_quat("-Z", "Y").to_euler()
+        scene.collection.objects.link(beam)
+
+    labels = []
+    labels += placard("KeepPlacard", f'obj["{KEY}"] = {VALUE}', keep.location.x,
+                      plate_mat, brass, scene)
+    labels += placard("ClearPlacard", f'del obj["{KEY}"]', clear.location.x,
+                      plate_mat, brass, scene)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -272,19 +366,19 @@ def render_still(keep_parts, clear_parts, stand, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), 520.0, 5.0, (1.0, 0.96, 0.9), (46, 0, -35))
-    light("Fill", (5.0, -3.5, 3.0), 110.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
-    light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
-    light("Glint", (1.6, -5.0, 6.0), 850.0, 0.9, (1.0, 0.9, 0.7), (40, 0, 18))
+    light("Key", (-4.0, -5.0, 6.0), 380.0, 4.0, (1.0, 0.96, 0.9), (46, 0, -35))
+    light("Fill", (5.0, -3.5, 3.0), 70.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
+    light("Rim", (0.0, 3.5, 5.5), 220.0, 4.0, (0.62, 0.78, 1.0), (-42, 0, 180))
+    light("Wedge", (2.5, 5.5, 4.0), 420.0, 6.0, (1.0, 0.72, 0.45), (-68, 0, 190))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.95)
+    aim.location = (0.0, -0.3, 1.05)
     aim.hide_render = True
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 45.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.95, -7.35, 3.3)
+    cam.location = (1.3, -7.2, 2.3)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
@@ -306,11 +400,9 @@ def render_still(keep_parts, clear_parts, stand, path, engine):
     scene.render.filepath = path
     scene.view_settings.view_transform = "Standard"
 
-    hero = [keep_plate, clear_plate] + list(stand) + hangers
-    if inlay is not None:
-        hero.append(inlay)
+    hero = [keep, clear] + parts
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=hero, elements=hero, stage=[floor, wall],
+        scene, cam, hero=hero, elements=hero + labels, stage=[floor, wall],
     )
     if fcode:
         return fcode
@@ -328,7 +420,7 @@ def main():
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
     p.add_argument(
         "--skip-delete", action="store_true",
-        help="falsification: leave the Clear plate tagged",
+        help="falsification: leave the Clear lamp tagged",
     )
     p.add_argument(
         "--unset-instead", action="store_true",
@@ -336,19 +428,16 @@ def main():
     )
     args = p.parse_args(argv)
 
-    keep_parts, clear_parts, stand = build()
+    keep, clear = build()
     code = check(
-        keep_parts[0], clear_parts[0],
+        keep, clear,
         skip_delete=args.skip_delete, unset_instead=args.unset_instead,
     )
     if code:
         return code
 
     if args.output:
-        rcode = render_still(
-            keep_parts, clear_parts, stand,
-            os.path.abspath(args.output), args.engine,
-        )
+        rcode = render_still(keep, clear, os.path.abspath(args.output), args.engine)
         if rcode:
             return rcode
         print(f"rendered still {args.output}")

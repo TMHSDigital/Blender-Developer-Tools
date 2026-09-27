@@ -1,15 +1,16 @@
 # Cross-version property delete
 
-A pair of machined specimen tags that witnesses the custom **ID-property**
+A pair of stage lamps that witnesses the custom **ID-property**
 delete contract from
 [`cross-version-property-delete.py`](../../snippets/cross-version-property-delete.py)
 and [`custom-properties`](../../skills/custom-properties/SKILL.md) — not the
 snippet's `__main__`, which keys off `context.active_object` and prints
 nothing in `--background`.
 
-The IDs are built with `bpy.data.objects.new`. The Keep tag still carries
-`["accession"] = 42` (emissive enamel). The Clear tag had `del obj["accession"]`
-(empty pocket). Same `del` on 4.5 LTS and 5.x; there is no version branch.
+The IDs are two stage-lamp housings built with `bpy.data.objects.new`. The
+Keep lamp still carries `["accession"] = 42`; the Clear lamp had
+`del obj["accession"]`. Same `del` on 4.5 LTS and 5.x; there is no version
+branch.
 
 **What it witnesses:** `property_unset` is a TypeError on a custom ID key and
 does **not** remove it. `del id_block[key]` does. After factory-empty, there is
@@ -26,22 +27,25 @@ no `active_object`.
 
 ## Staging
 
-The two tags now hang from the stand's bar on steel rods. The bar used
-to run 0.17 m behind the plates with nothing joining them, and the
-"rings" were solid discs, so the plates hung on air. The bar spans both
-plates, the post rises to it, and the base is as wide as what it
-carries. Render path only: the check reads ID properties, never
-geometry.
+Both lamps hang in U-yokes from one T-stand. The render path reads each
+housing's `keys()` after the check has run, so the still is driven by the
+checked IDs, not staged from the expected outcome. A lamp that still
+carries the property gets an emissive lens and a real SPOT light along its
+beam axis, which pools warm light on the placard below it. A lamp without
+the property keeps a dark lens and casts nothing. Each placard is set in
+the bundled DejaVu Sans Mono and shows the line of code that produced its
+lamp's state. Only render-side geometry (stand, yokes, lenses, placards) is
+added in the render path; the check reads ID properties, never geometry.
 
 ## Run
 
 ```bash
 blender --background --python cross_version_property_delete.py --
-blender --background --python cross_version_property_delete.py -- --output tags.png
+blender --background --python cross_version_property_delete.py -- --output lamps.png
 ```
 
 `--skip-delete` and `--unset-instead` are falsification switches: both leave
-the Clear plate tagged and exit 7.
+the Clear lamp tagged and exit 7.
 
 The `--output` render path measures framing against the Layer 1 band via
 `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
@@ -59,8 +63,8 @@ against it. `10` is the shared framing helper.
 | 3 | Custom ID property did not land |
 | 4 | `property_unset` on a custom ID key did not TypeError, or it deleted the key |
 | 5 | `del` did not report removal |
-| 6 | Keep plate lost the ID property |
-| 7 | Clear plate still has the ID property (`--skip-delete` / `--unset-instead` land here) |
+| 6 | Keep lamp lost the ID property |
+| 7 | Clear lamp still has the ID property (`--skip-delete` / `--unset-instead` land here) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 

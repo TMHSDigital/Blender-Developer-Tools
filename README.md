@@ -790,7 +790,7 @@ remains, sources are gone, and the five part materials merge with every face kep
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/cross-version-property-delete/"><img src="examples/cross-version-property-delete/preview.webp" alt="Cross-version property delete: two brass specimen tags hanging on rods from a dark studio stand — left tag with a cyan emissive enamel inlay (ID property kept), right tag with an empty grey pocket (ID property deleted)" /></a>
+<a href="examples/cross-version-property-delete/"><img src="examples/cross-version-property-delete/preview.webp" alt="Cross-version property delete: two stage lamps on one stand — the left lamp keeps its ID property and glows, lighting a placard reading obj[&quot;accession&quot;] = 42; the right lamp had del obj[&quot;accession&quot;] and stands dark" /></a>
 </td>
 <td valign="middle">
 
