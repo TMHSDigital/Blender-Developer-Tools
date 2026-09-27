@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-socket-rename-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A copper measuring column with graduated tick marks standing on a grey base plate." />
+  <meta property="og:image:alt" content="A copper height-gauge column engraved with graduations on a granite surface plate, its brass scriber carriage reaching out to touch a stack of steel gauge blocks." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-socket-rename — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-socket-rename-hero.webp" />
-  <meta name="twitter:image:alt" content="A copper measuring column with graduated tick marks standing on a grey base plate." />
+  <meta name="twitter:image:alt" content="A copper height-gauge column engraved with graduations on a granite surface plate, its brass scriber carriage reaching out to touch a stack of steel gauge blocks." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../bake-normal-high-to-low/" aria-label="Previous example: bake-normal-high-to-low"><span aria-hidden="true">&larr;</span> bake-normal-high-to-low</a><span class="pager-pos hud">52 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A copper measuring column with graduated tick marks standing on a grey base plate.">
-      <img src="../assets/gn-socket-rename-hero.webp" alt="A copper measuring column with graduated tick marks standing on a grey base plate." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A copper height-gauge column engraved with graduations on a granite surface plate, its brass scriber carriage reaching out to touch a stack of steel gauge blocks.">
+      <img src="../assets/gn-socket-rename-hero.webp" alt="A copper height-gauge column engraved with graduations on a granite surface plate, its brass scriber carriage reaching out to touch a stack of steel gauge blocks." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts; the still draws the column graduations from gauge_h, so an unwired Random Value renders a blank column</div>
@@ -377,6 +377,7 @@ blender --background --python gn_socket_rename.py -- --output gauge.png</code></
 <p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
 <h2 id="render">Render<a class="anchor" href="#render" aria-label="Link to this section">#</a></h2>
 <p>The still witnesses both axes, not only the Compare one. The column&#x27;s graduations — a tick every 0.1 m in from each vertical corner, a heavier one every 0.5 m — are drawn by the column shader from the evaluated POINT <code>gauge_h</code> attribute, and only up to its stored height. With Compare broken the column is missing; with Random Value unwired the Store default leaves <code>gauge_h</code> at 0 and the column renders blank copper. Both were rendered to confirm it. The shader is render-path only and nothing in it feeds back into <code>check()</code>; the column is also turned to 18° for the still so two faces show, which <code>check()</code> cannot see because it reads object-space vertices.</p>
+<p>The gauge is staged as a height gauge on a bench: it stands on a granite surface plate, and a brass scriber carriage clamped on the column reaches out to rest its point on a wrung stack of three steel gauge blocks. The bench props are built after <code>check()</code> in <code>dress_bench</code> and parented to the gauge object; no assertion reads them.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>4</td><td>Identifier inventory wrong for this Blender version</td></tr><tr><td>5</td><td>Pre-5.2 identifier missing (<code>--legacy-ids</code> on 5.2)</td></tr><tr><td>6</td><td>Enabled-name socket lookup failed</td></tr><tr><td>7</td><td>Evaluated vert count off (Compare did not switch the column in)</td></tr><tr><td>8</td><td>Evaluated zmax off closed form</td></tr><tr><td>9</td><td>POINT <code>gauge_h</code> not 1.80 on eight column verts</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
@@ -386,9 +387,9 @@ blender --background --python gn_socket_rename.py -- --output gauge.png</code></
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/gn-socket-rename/gn_socket_rename.py</code>
-        <span>565 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-socket-rename/gn_socket_rename.py">View on GitHub &rarr;</a></span>
+        <span>684 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-socket-rename/gn_socket_rename.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="565">
+      <div class="code" data-lines="684">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -953,7 +954,126 @@ blender --background --python gn_socket_rename.py -- --output gauge.png</code></
 562
 563
 564
-565</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;GN Compare / Random Value socket identifier rename — a runnable example.
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;GN Compare / Random Value socket identifier rename — a runnable example.
 
 Witnesses the 5.2 collapse of typed sockets onto reused identifiers.
 ``FunctionNodeRandomValue`` FLOAT used ``Min_001`` / ``Max_001`` / ``Value_001``
@@ -1364,7 +1484,7 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
     nt.links.new(enabled_sock(base, <span class="s">&quot;outputs&quot;</span>, <span class="s">&quot;Result&quot;</span>), emit)
     <span class="c"># Brushed, the copper reflects less of the key and went brown at</span>
     <span class="c"># thumbnail size; a little more of its own colour keeps it copper.</span>
-    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.24</span>
+    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.14</span>
 
     <span class="c"># Ground steel: lift it off the stage and give it a machined finish.</span>
     sb = steel.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
@@ -1372,6 +1492,124 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
     sb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.27</span>, <span class="n">0.28</span>, <span class="n">0.31</span>, <span class="n">1.0</span>)
     sb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.8</span>
     sb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
+
+
+<span class="c"># Render-only bench dressing: the gauge stands on a granite surface plate</span>
+<span class="c"># with a brass scriber carriage clamped on the column, its point resting on a</span>
+<span class="c"># stack of steel gauge blocks. Pure staging — built after check(), parented to</span>
+<span class="c"># the gauge object, never read by an assertion.</span>
+PLATE = (<span class="n">3.0</span>, <span class="n">1.9</span>, <span class="n">0.22</span>)
+SCRIBE_Z = <span class="n">0.62</span>                 <span class="c"># scriber height above the plinth top</span>
+
+
+<span class="k">def</span> _principled_noise(name, base, rough, metal, scale, amount, stretch=(<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>)):
+    mat = principled(name, (*base, <span class="n">1.0</span>), metal, rough)
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = stretch
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">10.0</span>
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.4</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = tuple(c * (<span class="n">1</span> - amount) <span class="k">for</span> c <span class="k">in</span> base) + (<span class="n">1.0</span>,)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.62</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = tuple(min(<span class="n">1.0</span>, c * (<span class="n">1</span> + amount)) <span class="k">for</span> c <span class="k">in</span> base) + (<span class="n">1.0</span>,)
+    nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> dress_bench(obj):
+    scene = bpy.context.scene
+    granite = _principled_noise(<span class="s">&quot;Granite&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.031</span>, <span class="n">0.034</span>), <span class="n">0.22</span>, <span class="n">0.0</span>, <span class="n">140.0</span>, <span class="n">0.85</span>)
+    brass = _principled_noise(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.60</span>, <span class="n">0.25</span>), <span class="n">0.28</span>, <span class="n">1.0</span>, <span class="n">30.0</span>, <span class="n">0.12</span>)
+    blocks = _principled_noise(<span class="s">&quot;GaugeSteel&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.63</span>, <span class="n">0.66</span>), <span class="n">0.16</span>, <span class="n">1.0</span>, <span class="n">12.0</span>, <span class="n">0.08</span>,
+                               stretch=(<span class="n">40.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>))
+    knob = principled(<span class="s">&quot;Knurl&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.03</span>, <span class="n">0.035</span>, <span class="n">1.0</span>), <span class="n">0.6</span>, <span class="n">0.4</span>)
+
+    <span class="k">def</span> part(name, build, mat, parent=obj):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            build(bm)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        me.set_sharp_from_angle(angle=math.radians(<span class="n">40</span>))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.use_smooth = <span class="k">True</span>
+        ob = bpy.data.objects.new(name, me)
+        scene.collection.objects.link(ob)
+        ob.parent = parent
+        <span class="k">return</span> ob
+
+    <span class="k">def</span> box(size, center, bevel=<span class="n">0.012</span>):
+        <span class="k">def</span> b(bm):
+            res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+                v.co = type(v.co)((v.co.x * size[<span class="n">0</span>] + center[<span class="n">0</span>], v.co.y * size[<span class="n">1</span>] + center[<span class="n">1</span>],
+                                   v.co.z * size[<span class="n">2</span>] + center[<span class="n">2</span>]))
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">2</span>,
+                            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        <span class="k">return</span> b
+
+    <span class="k">def</span> cyl(r, h, center, axis=<span class="s">&quot;Z&quot;</span>, segs=<span class="n">32</span>):
+        <span class="k">def</span> b(bm):
+            res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=segs,
+                                        radius1=r, radius2=r, depth=h)
+            <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+                x, y, z = v.co
+                <span class="k">if</span> axis == <span class="s">&quot;X&quot;</span>:
+                    x, z = z, x
+                <span class="k">elif</span> axis == <span class="s">&quot;Y&quot;</span>:
+                    y, z = z, y
+                v.co = type(v.co)((x + center[<span class="n">0</span>], y + center[<span class="n">1</span>], z + center[<span class="n">2</span>]))
+        <span class="k">return</span> b
+
+    <span class="c"># the surface plate; the gauge (and everything parented to it) rides up</span>
+    plate = part(<span class="s">&quot;SurfacePlate&quot;</span>, box(PLATE, (<span class="n">0.55</span>, <span class="n">0.15</span>, -PLATE[<span class="n">2</span>] / <span class="n">2</span>), <span class="n">0.03</span>),
+                 granite, parent=<span class="k">None</span>)
+    plate.rotation_euler = obj.rotation_euler
+    obj.location.z = PLATE[<span class="n">2</span>]
+    plate.location.z = PLATE[<span class="n">2</span>]
+
+    top = PLINTH_SIZE[<span class="n">2</span>]
+    z = top + SCRIBE_Z
+    half = COLUMN_XY / <span class="n">2</span>
+    parts = [plate]
+    <span class="c"># carriage collar around the column, a clamp knob, and the scriber arm</span>
+    parts.append(part(<span class="s">&quot;Carriage&quot;</span>, box((COLUMN_XY + <span class="n">0.16</span>, COLUMN_XY + <span class="n">0.16</span>, <span class="n">0.26</span>),
+                                      (<span class="n">0.0</span>, <span class="n">0.0</span>, z + <span class="n">0.06</span>), <span class="n">0.02</span>), brass))
+    parts.append(part(<span class="s">&quot;ClampKnob&quot;</span>, cyl(<span class="n">0.07</span>, <span class="n">0.12</span>, (<span class="n">0.0</span>, -(half + <span class="n">0.14</span>), z + <span class="n">0.06</span>), <span class="s">&quot;Y&quot;</span>),
+                      knob))
+    arm_len = <span class="n">0.95</span>
+    parts.append(part(<span class="s">&quot;ScriberArm&quot;</span>, box((arm_len, <span class="n">0.09</span>, <span class="n">0.07</span>),
+                                        (half + <span class="n">0.08</span> + arm_len / <span class="n">2</span>, <span class="n">0.0</span>, z + <span class="n">0.04</span>), <span class="n">0.01</span>),
+                      brass))
+
+    <span class="k">def</span> tip(bm):
+        res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">16</span>, radius1=<span class="n">0.035</span>,
+                                    radius2=<span class="n">0.0</span>, depth=<span class="n">0.22</span>)
+        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            x, y, zz = v.co
+            v.co = type(v.co)((zz + half + <span class="n">0.08</span> + arm_len + <span class="n">0.11</span>, y, -x + z + <span class="n">0.04</span>))
+    parts.append(part(<span class="s">&quot;ScriberPoint&quot;</span>, tip, blocks))
+    <span class="c"># a wrung stack of three gauge blocks whose top the scriber point touches</span>
+    stack = z + <span class="n">0.04</span> - <span class="n">0.035</span>          <span class="c"># up to the underside of the scriber point</span>
+    heights = (<span class="n">0.30</span>, <span class="n">0.20</span>, stack - <span class="n">0.50</span>)
+    bx = half + <span class="n">0.08</span> + arm_len + <span class="n">0.26</span>
+    zz = <span class="n">0.0</span>
+    <span class="k">for</span> i, h <span class="k">in</span> enumerate(heights):
+        parts.append(part(<span class="s">f&quot;</span><span class="s">GaugeBlock</span>{i}<span class="s">&quot;</span>, box((<span class="n">0.34</span>, <span class="n">0.26</span>, h - <span class="n">0.004</span>), (bx, <span class="n">0.0</span>, zz + h / <span class="n">2</span>),
+                                                <span class="n">0.006</span>), blocks))
+        zz += h
+    <span class="k">return</span> parts
 
 
 <span class="k">def</span> render_still(obj, path, engine):
@@ -1382,6 +1620,7 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
     <span class="c"># corner graduations wrap the edge. check() reads object-space vertices,</span>
     <span class="c"># so the turn cannot reach an assertion.</span>
     obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">18</span>))
+    props = dress_bench(obj)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1407,7 +1646,7 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, ZMAX_OK * <span class="n">0.45</span>)
+    aim.location = (<span class="n">0.3</span>, <span class="n">0.0</span>, ZMAX_OK * <span class="n">0.47</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
 
@@ -1424,13 +1663,13 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
         lc.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
         lc.up_axis = <span class="s">&quot;UP_Y&quot;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.4</span>, -<span class="n">4.6</span>, <span class="n">5.4</span>), <span class="n">680.0</span>, <span class="n">4.2</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.4</span>, -<span class="n">4.6</span>, <span class="n">5.4</span>), <span class="n">520.0</span>, <span class="n">3.4</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">3.0</span>, <span class="n">2.2</span>), <span class="n">140.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
     <span class="c"># At 300 W the rim&#x27;s glossy reflection off the floor lifted the stage</span>
     <span class="c"># right of the column to mid grey-blue (patch mean 104 against 62 with</span>
     <span class="c"># the rim off); the column edge still separates at this level.</span>
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.2</span>, <span class="n">5.8</span>, <span class="n">3.4</span>), <span class="n">120.0</span>, <span class="n">3.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.8</span>, -<span class="n">4.8</span>, <span class="n">5.6</span>), <span class="n">900.0</span>, <span class="n">0.85</span>, (<span class="n">1.0</span>, <span class="n">0.90</span>, <span class="n">0.70</span>))
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.8</span>, -<span class="n">4.8</span>, <span class="n">5.6</span>), <span class="n">560.0</span>, <span class="n">0.85</span>, (<span class="n">1.0</span>, <span class="n">0.90</span>, <span class="n">0.70</span>))
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
     wedge.energy = <span class="n">480.0</span>
     wedge.size = <span class="n">6.0</span>
@@ -1441,9 +1680,9 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
     scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">4.15</span>, -<span class="n">5.85</span>, <span class="n">2.55</span>)
+    cam.location = (<span class="n">4.5</span>, -<span class="n">6.6</span>, <span class="n">2.8</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -1557,7 +1796,7 @@ TICK_MAJOR_LEN = <span class="n">0.16</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-socket-rename-hero.webp" alt="A copper measuring column with graduated tick marks standing on a grey base plate." />
+    <img src="../assets/gn-socket-rename-hero.webp" alt="A copper height-gauge column engraved with graduations on a granite surface plate, its brass scriber carriage reaching out to touch a stack of steel gauge blocks." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/usd-export-evaluation-mode-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+  <meta property="og:image:alt" content="Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="usd-export-evaluation-mode — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/usd-export-evaluation-mode-hero.webp" />
-  <meta name="twitter:image:alt" content="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+  <meta name="twitter:image:alt" content="Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../cross-version-property-delete/" aria-label="Previous example: cross-version-property-delete"><span aria-hidden="true">&larr;</span> cross-version-property-delete</a><span class="pager-pos hud">48 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-zone-iterate/" aria-label="Next example: gn-zone-iterate">gn-zone-iterate <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right.">
-      <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right.">
+      <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.</div>
@@ -364,26 +364,26 @@
     <section class="detail-section md">
 <p>A SUBSURF cube exported through <code>wm.usd_export</code> that witnesses <code>evaluation_mode=&#x27;RENDER&#x27;</code> against <code>&#x27;VIEWPORT&#x27;</code> — the contract <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/usd-export-evaluation-mode.py"><code>usd-export-evaluation-mode.py</code></a> names but does not prove.</p>
 <p>Catmull-Clark on a cube is closed form: verts = <code>2 + 6 × 4^n</code> (n=1 → 26, n=2 → 98). TESSELLATE + VIEWPORT writes 26 points / 24 quads; TESSELLATE + RENDER writes 98 / 96. Default <code>export_subdivision=&#x27;BEST_MATCH&#x27;</code> writes the 8-vert cage plus <code>subdivisionScheme = catmullClark</code>, so evaluation_mode is silent — both files are the cage. TESSELLATE is what makes the mode observable.</p>
-<p>The still is numeric-adjacent: left is viewport tessellation (flat-shaded L1), right is render tessellation (smoothed L2). The USDA point counts are the evidence; the two balls depict the two qualities the exporter chooses between.</p>
+<p>The still shows the exported files themselves. The <code>--output</code> path builds a turned goblet on an 8-sided lathe cage with SUBSURF <code>levels=0</code> / <code>render_levels=3</code>, exports it twice through the same <code>wm.usd_export</code> call the check proves (TESSELLATE + VIEWPORT, TESSELLATE + RENDER), re-imports both USDA files with <code>wm.usd_import</code>, and stages the two imported meshes. Left is the VIEWPORT file (the raw 8-sided cage, 130 points), right the RENDER file (8450 points). Both are flat-shaded with the same material, so geometry is the only difference, and the point count on each placard is read from the re-imported mesh at render time. The goblet widens the cube&#x27;s L1/L2 split to L0/L3 so the difference reads at thumbnail size. The render path also asserts that the re-imported RENDER goblet is denser than the VIEWPORT one (exit 6). Placards use the bundled DejaVu Sans Mono, whose <code>1</code> cannot be misread as <code>I</code>.</p>
 <p><strong>What failure each check would catch:</strong></p>
 <ul><li>exit 3 — VIEWPORT TESSELLATE did not write the L1 closed form</li><li>exit 4 — RENDER TESSELLATE wrote viewport quality or the BEST_MATCH cage (<code>--evaluation-mode VIEWPORT</code> measured 26/24; <code>--subdivision BEST_MATCH</code> measured 8/6 <code>catmullClark</code>)</li><li>exit 5 — BEST_MATCH stopped writing the cage</li><li>exit 6 — RENDER and VIEWPORT files are identical</li></ul>
-<p>Staging: Catmull-Clark pulls the surface inside the 2 m cage, and level 1 and level 2 shrink by different amounts, so both balls used to hover about 0.16 m over the floor at the cage&#x27;s z = 1.0. The render path now rests each one on the floor from its own evaluated vertices (measured zmin 0.000000 for both), after the check has run.</p>
+<p>Staging: Catmull-Clark pulls the surface inside the cage, and each level shrinks it by a different amount, so each re-imported goblet is seated on its plinth from its own vertices rather than from the cage&#x27;s z.</p>
 <p>Probed on the CI Linux portables <strong>Blender 5.2.1 LTS</strong> (<code>9e2066aef7ef</code>) and <strong>Blender 4.5.13 LTS</strong> (<code>daeeeca98fb0</code>): <code>wm.usd_export</code> exists, <code>poll()</code> is true in <code>--background</code>, <code>evaluation_mode</code> is <code>{RENDER, VIEWPORT}</code>. The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python usd_export_evaluation_mode.py --
 blender --background --python usd_export_evaluation_mode.py -- --output u.png</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also base cube verts ≠ 8</td></tr><tr><td>3</td><td>VIEWPORT TESSELLATE point/face count off closed form</td></tr><tr><td>4</td><td>RENDER TESSELLATE point/face count or scheme off closed form</td></tr><tr><td>5</td><td>BEST_MATCH cage point count or scheme off</td></tr><tr><td>6</td><td>RENDER and VIEWPORT USDA point counts are identical</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also base cube verts ≠ 8</td></tr><tr><td>3</td><td>VIEWPORT TESSELLATE point/face count off closed form</td></tr><tr><td>4</td><td>RENDER TESSELLATE point/face count or scheme off closed form</td></tr><tr><td>5</td><td>BEST_MATCH cage point count or scheme off</td></tr><tr><td>6</td><td>RENDER and VIEWPORT USDA point counts are identical (check), or the re-imported RENDER goblet is not denser than the VIEWPORT one (<code>--output</code>)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--evaluation-mode</code>, or <code>--subdivision</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py</code>
-        <span>359 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py">View on GitHub &rarr;</a></span>
+        <span>536 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="359">
+      <div class="code" data-lines="536">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -742,7 +742,184 @@ blender --background --python usd_export_evaluation_mode.py -- --output u.png</c
 356
 357
 358
-359</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;USD evaluation_mode — a runnable example.
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;USD evaluation_mode — a runnable example.
 
 Witnesses ``bpy.ops.wm.usd_export`` ``evaluation_mode=&#x27;RENDER&#x27;`` against
 ``VIEWPORT``, which the snippet names but does not prove. A SUBSURF cube
@@ -762,7 +939,7 @@ check. Pass --output to also render a still:
     blender --background --python usd_export_evaluation_mode.py -- --output u.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile
-<span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
 
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>
@@ -943,43 +1120,214 @@ LEVEL_RD = <span class="n">2</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> render_still(obj, path, engine):
-    <span class="s">&quot;&quot;&quot;Left: viewport tessellation (levels=1). Right: render tessellation (levels=2).&quot;&quot;&quot;</span>
-    scene = bpy.context.scene
-    steel = principled(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.57</span>, <span class="n">0.60</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.58</span>)
+<span class="c"># Gallery subject: a turned goblet whose coarse lathe cage (GOBLET_SEGS</span>
+<span class="c"># around) carries the same SUBSURF split as the check&#x27;s cube. The render path</span>
+<span class="c"># exports it twice through the same exporter call the check proves, then</span>
+<span class="c"># re-imports both USDA files — the still shows the files, not the modifier.</span>
+GOBLET_SEGS = <span class="n">8</span>
+<span class="c"># The goblet widens the gap the check proves on the cube (levels 1 vs 2): an</span>
+<span class="c"># 8-sided cage at viewport level 0 against render level 3, so the difference</span>
+<span class="c"># between the two files reads at thumbnail size.</span>
+GOBLET_VP = <span class="n">0</span>
+GOBLET_RD = <span class="n">3</span>
+GOBLET_PROFILE = [            <span class="c"># (r, z) bottom -&gt; rim outside -&gt; rim inside -&gt; well</span>
+    (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.62</span>, <span class="n">0.0</span>), (<span class="n">0.66</span>, <span class="n">0.06</span>), (<span class="n">0.52</span>, <span class="n">0.14</span>), (<span class="n">0.20</span>, <span class="n">0.26</span>),
+    (<span class="n">0.14</span>, <span class="n">0.52</span>), (<span class="n">0.24</span>, <span class="n">0.64</span>), (<span class="n">0.13</span>, <span class="n">0.76</span>), (<span class="n">0.15</span>, <span class="n">1.02</span>), (<span class="n">0.46</span>, <span class="n">1.16</span>),
+    (<span class="n">0.72</span>, <span class="n">1.46</span>), (<span class="n">0.80</span>, <span class="n">1.86</span>), (<span class="n">0.84</span>, <span class="n">2.14</span>), (<span class="n">0.78</span>, <span class="n">2.16</span>),
+    (<span class="n">0.72</span>, <span class="n">1.88</span>), (<span class="n">0.62</span>, <span class="n">1.52</span>), (<span class="n">0.40</span>, <span class="n">1.30</span>), (<span class="n">0.0</span>, <span class="n">1.24</span>),
+]
 
-    left = obj
-    left.location = (-<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
-    left.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
-    left.data.materials.append(steel)
-    left.modifiers[<span class="s">&quot;Subsurf&quot;</span>].levels = LEVEL_VP
-    <span class="k">for</span> poly <span class="k">in</span> left.data.polygons:
-        poly.use_smooth = <span class="k">False</span>
 
-    right_me = left.data.copy()
-    right = bpy.data.objects.new(<span class="s">&quot;IngotRender&quot;</span>, right_me)
-    right.location = (<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
-    right.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
-    right.data.materials.append(steel)
-    bpy.context.collection.objects.link(right)
-    rm = right.modifiers.new(<span class="s">&quot;Subsurf&quot;</span>, <span class="s">&quot;SUBSURF&quot;</span>)
-    rm.levels = LEVEL_RD
-    rm.render_levels = LEVEL_RD
-    <span class="k">for</span> poly <span class="k">in</span> right.data.polygons:
-        poly.use_smooth = <span class="k">True</span>
-    <span class="c"># Subdivision pulls the surface inside the 2 m cage, so at z = 1.0 both</span>
-    <span class="c"># ingots hovered above the floor. Rest each on z = 0 from its own</span>
-    <span class="c"># evaluated bounds (level 1 and level 2 shrink by different amounts).</span>
-    bpy.context.view_layer.update()
-    dg = bpy.context.evaluated_depsgraph_get()
-    <span class="k">for</span> ob <span class="k">in</span> (left, right):
-        ev = ob.evaluated_get(dg)
-        em = ev.to_mesh()
+<span class="k">def</span> build_goblet():
+    me = bpy.data.meshes.new(<span class="s">&quot;Goblet&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = []
+        <span class="k">for</span> r, z <span class="k">in</span> GOBLET_PROFILE:
+            <span class="k">if</span> r == <span class="n">0.0</span>:
+                rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+            <span class="k">else</span>:
+                rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / GOBLET_SEGS),
+                                            r * math.sin(<span class="n">2</span> * math.pi * s / GOBLET_SEGS), z))
+                              <span class="k">for</span> s <span class="k">in</span> range(GOBLET_SEGS)])
+        <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            <span class="k">for</span> s <span class="k">in</span> range(GOBLET_SEGS):
+                t = (s + <span class="n">1</span>) % GOBLET_SEGS
+                <span class="k">if</span> len(a) == <span class="n">1</span>:
+                    bm.faces.new((a[<span class="n">0</span>], b[t], b[s]))
+                <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                    bm.faces.new((a[s], a[t], b[<span class="n">0</span>]))
+                <span class="k">else</span>:
+                    bm.faces.new((a[s], a[t], b[t], b[s]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    ob = bpy.data.objects.new(<span class="s">&quot;Goblet&quot;</span>, me)
+    bpy.context.collection.objects.link(ob)
+    mod = ob.modifiers.new(<span class="s">&quot;Subsurf&quot;</span>, <span class="s">&quot;SUBSURF&quot;</span>)
+    mod.levels = GOBLET_VP
+    mod.render_levels = GOBLET_RD
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> label_font():
+    <span class="s">&quot;&quot;&quot;DejaVu Sans Mono ships in datafiles/fonts on 4.5 and 5.2, and its 1 never
+    reads as I. (Inter ships too, but it is a variable font whose overlapping
+    contours render with holes on 4.5.)&quot;&quot;&quot;</span>
+    <span class="c"># system_resource resolves directories only; a file path returns &#x27;&#x27;</span>
+    fonts = bpy.utils.system_resource(<span class="s">&quot;DATAFILES&quot;</span>, path=<span class="s">&quot;fonts&quot;</span>)
+    path = os.path.join(fonts, <span class="s">&quot;DejaVuSansMono.woff2&quot;</span>) <span class="k">if</span> fonts <span class="k">else</span> <span class="s">&quot;&quot;</span>
+    <span class="k">if</span> path <span class="k">and</span> os.path.exists(path):
         <span class="k">try</span>:
-            zmin = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> em.vertices)
+            <span class="k">return</span> bpy.data.fonts.load(path, check_existing=<span class="k">True</span>)
+        <span class="k">except</span> RuntimeError:
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> import_usda(path):
+    before = set(bpy.data.objects)
+    <span class="k">if</span> bpy.ops.wm.usd_import(filepath=path) != {<span class="s">&quot;FINISHED&quot;</span>}:
+        <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span><span class="s">usd_import failed for </span>{path}<span class="s">&quot;</span>)
+    meshes = [o <span class="k">for</span> o <span class="k">in</span> set(bpy.data.objects) - before <span class="k">if</span> o.type == <span class="s">&quot;MESH&quot;</span>]
+    <span class="k">if</span> len(meshes) != <span class="n">1</span>:
+        <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span><span class="s">expected one mesh from </span>{path}<span class="s">, got </span>{len(meshes)}<span class="s">&quot;</span>)
+    ob = meshes[<span class="n">0</span>]
+    <span class="c"># bake whatever Xform chain the importer built into the mesh, so staging</span>
+    <span class="c"># below starts from identity like any other prop</span>
+    mw = ob.matrix_world.copy()
+    ob.parent = <span class="k">None</span>
+    ob.data.transform(mw)
+    ob.matrix_world = Matrix.Identity(<span class="n">4</span>)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> text_plate(name, lines, loc, mat_plate, mat_ink, scene):
+    <span class="s">&quot;&quot;&quot;A bevelled brass plate leaning back on the floor with engraved text.&quot;&quot;&quot;</span>
+    pme = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= <span class="n">1.7</span>
+            v.co.y *= <span class="n">0.06</span>
+            v.co.z *= <span class="n">0.52</span>
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.015</span>, segments=<span class="n">2</span>,
+                        affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(pme)
+    <span class="k">finally</span>:
+        bm.free()
+    pme.materials.append(mat_plate)
+    plate = bpy.data.objects.new(name, pme)
+    plate.location = loc
+    plate.rotation_euler = (math.radians(-<span class="n">14</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(plate)
+    objs = [plate]
+    <span class="k">for</span> i, (body, size) <span class="k">in</span> enumerate(lines):
+        cu = bpy.data.curves.new(<span class="s">f&quot;</span>{name}<span class="s">.T</span>{i}<span class="s">&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
+        cu.body = body
+        cu.size = size
+        cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+        cu.align_y = <span class="s">&quot;CENTER&quot;</span>
+        cu.extrude = <span class="n">0.004</span>
+        cu.materials.append(mat_ink)
+        font = label_font()
+        <span class="k">if</span> font <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            cu.font = font
+        t = bpy.data.objects.new(<span class="s">f&quot;</span>{name}<span class="s">.T</span>{i}<span class="s">&quot;</span>, cu)
+        t.parent = plate
+        t.location = (<span class="n">0.0</span>, -<span class="n">0.065</span>, <span class="n">0.10</span> <span class="k">if</span> i == <span class="n">0</span> <span class="k">else</span> -<span class="n">0.14</span>)
+        t.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+        scene.collection.objects.link(t)
+        objs.append(t)
+    <span class="k">return</span> objs
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    <span class="s">&quot;&quot;&quot;Left: the VIEWPORT USDA re-imported. Right: the RENDER USDA re-imported.&quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    scene = bpy.context.scene
+
+    goblet = build_goblet()
+    out_dir = tempfile.mkdtemp(prefix=<span class="s">&quot;bdt_usd_goblet_&quot;</span>)
+    p_vp = os.path.join(out_dir, <span class="s">&quot;goblet_viewport.usda&quot;</span>)
+    p_rd = os.path.join(out_dir, <span class="s">&quot;goblet_render.usda&quot;</span>)
+    export_usda(p_vp, <span class="s">&quot;VIEWPORT&quot;</span>, <span class="s">&quot;TESSELLATE&quot;</span>)
+    export_usda(p_rd, <span class="s">&quot;RENDER&quot;</span>, <span class="s">&quot;TESSELLATE&quot;</span>)
+    bpy.data.objects.remove(goblet)
+    left = import_usda(p_vp)
+    right = import_usda(p_rd)
+    n_vp, n_rd = len(left.data.vertices), len(right.data.vertices)
+    print(<span class="s">f&quot;</span><span class="s">goblet usda points viewport=</span>{n_vp}<span class="s"> render=</span>{n_rd}<span class="s">&quot;</span>)
+    <span class="k">if</span> n_rd &lt;= n_vp:
+        print(<span class="s">&quot;ERROR: re-imported RENDER goblet is not denser than VIEWPORT&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+
+    pewter = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.64</span>, <span class="n">0.30</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    stone = principled(<span class="s">&quot;Plinth&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.062</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.34</span>)
+    plate_mat = principled(<span class="s">&quot;Plate&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.036</span>, <span class="n">0.04</span>, <span class="n">1.0</span>), <span class="n">0.7</span>, <span class="n">0.42</span>)
+    ink = principled(<span class="s">&quot;Inlay&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.70</span>, <span class="n">0.36</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>)
+
+    <span class="c"># turned plinths: a stepped drum per goblet, the goblet seated on top</span>
+    PLINTH_H = <span class="n">0.62</span>
+    plinths = []
+    <span class="k">for</span> x <span class="k">in</span> (-<span class="n">1.75</span>, <span class="n">1.75</span>):
+        me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            prof = [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.12</span>, <span class="n">0.0</span>), (<span class="n">1.16</span>, <span class="n">0.04</span>), (<span class="n">1.16</span>, <span class="n">0.16</span>), (<span class="n">1.10</span>, <span class="n">0.20</span>),
+                    (<span class="n">1.02</span>, <span class="n">0.22</span>), (<span class="n">1.02</span>, PLINTH_H - <span class="n">0.06</span>), (<span class="n">1.06</span>, PLINTH_H - <span class="n">0.03</span>),
+                    (<span class="n">1.06</span>, PLINTH_H), (<span class="n">0.0</span>, PLINTH_H)]
+            rings = []
+            <span class="k">for</span> r, z <span class="k">in</span> prof:
+                rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))] <span class="k">if</span> r == <span class="n">0.0</span> <span class="k">else</span>
+                             [bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / <span class="n">64</span>),
+                                            r * math.sin(<span class="n">2</span> * math.pi * s / <span class="n">64</span>), z))
+                              <span class="k">for</span> s <span class="k">in</span> range(<span class="n">64</span>)])
+            <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+                <span class="k">for</span> s <span class="k">in</span> range(<span class="n">64</span>):
+                    t = (s + <span class="n">1</span>) % <span class="n">64</span>
+                    <span class="k">if</span> len(a) == <span class="n">1</span>:
+                        f = bm.faces.new((a[<span class="n">0</span>], b[t], b[s]))
+                    <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                        f = bm.faces.new((a[s], a[t], b[<span class="n">0</span>]))
+                    <span class="k">else</span>:
+                        f = bm.faces.new((a[s], a[t], b[t], b[s]))
+                    f.smooth = <span class="k">True</span>
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+            bm.to_mesh(me)
         <span class="k">finally</span>:
-            ev.to_mesh_clear()
-        ob.location.z -= zmin
+            bm.free()
+        me.set_sharp_from_angle(angle=math.radians(<span class="n">40.0</span>))
+        me.materials.append(stone)
+        pl = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, me)
+        pl.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        scene.collection.objects.link(pl)
+        plinths.append(pl)
+
+    <span class="c"># Both goblets are shaded identically (flat) — the only difference in the</span>
+    <span class="c"># picture is the geometry each USDA file carries.</span>
+    <span class="k">for</span> ob, x <span class="k">in</span> ((left, -<span class="n">1.75</span>), (right, <span class="n">1.75</span>)):
+        ob.data.materials.clear()
+        ob.data.materials.append(pewter)
+        <span class="k">for</span> poly <span class="k">in</span> ob.data.polygons:
+            poly.use_smooth = <span class="k">False</span>
+        ob.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">11.25</span>))
+        ob.scale = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    <span class="c"># Subdivision pulls the surface inside the cage by a level-dependent</span>
+    <span class="c"># amount, so each goblet is seated on its plinth from its own verts.</span>
+    bpy.context.view_layer.update()
+    <span class="k">for</span> ob <span class="k">in</span> (left, right):
+        zmin = min((ob.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> ob.data.vertices)
+        ob.location.z += PLINTH_H - zmin
+
+    labels = []
+    labels += text_plate(<span class="s">&quot;PlacardVP&quot;</span>, [(<span class="s">&quot;VIEWPORT&quot;</span>, <span class="n">0.30</span>), (<span class="s">f&quot;</span>{n_vp}<span class="s"> points</span><span class="s">&quot;</span>, <span class="n">0.17</span>)],
+                         (-<span class="n">1.75</span>, -<span class="n">1.45</span>, <span class="n">0.30</span>), plate_mat, ink, scene)
+    labels += text_plate(<span class="s">&quot;PlacardRD&quot;</span>, [(<span class="s">&quot;RENDER&quot;</span>, <span class="n">0.30</span>), (<span class="s">f&quot;</span>{n_rd}<span class="s"> points</span><span class="s">&quot;</span>, <span class="n">0.17</span>)],
+                         (<span class="n">1.75</span>, -<span class="n">1.45</span>, <span class="n">0.30</span>), plate_mat, ink, scene)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1013,18 +1361,23 @@ LEVEL_RD = <span class="n">2</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">180.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">360.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">3.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.0</span>, <span class="n">4.0</span>, <span class="n">5.5</span>), <span class="n">260.0</span>, <span class="n">4.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">42</span>, <span class="n">0</span>, <span class="n">180</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">520.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># a broad warm card low and front-left: polished brass mirrors its</span>
+    <span class="c"># surroundings, and on a near-black stage it otherwise reads olive-dark.</span>
+    <span class="c"># The card&#x27;s reflection is also what draws each facet on the viewport cup.</span>
+    light(<span class="s">&quot;Card&quot;</span>, (-<span class="n">3.2</span>, -<span class="n">4.2</span>, <span class="n">2.0</span>), <span class="n">380.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.82</span>, <span class="n">0.6</span>), (<span class="n">72</span>, <span class="n">0</span>, -<span class="n">38</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.78</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.25</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">4.16</span>, -<span class="n">5.85</span>, <span class="n">3.00</span>)
+    cam.location = (<span class="n">1.05</span>, -<span class="n">10.6</span>, <span class="n">3.7</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -1047,7 +1400,8 @@ LEVEL_RD = <span class="n">2</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[left, right], elements=[left, right], stage=[floor, wall],
+        scene, cam, hero=[left, right] + plinths, elements=[left, right] + plinths + labels,
+        stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -1140,7 +1494,7 @@ LEVEL_RD = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+    <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right." />
   </dialog>
   <footer>
     <div class="statusbar">

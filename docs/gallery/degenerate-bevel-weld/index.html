@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/degenerate-bevel-weld-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
+  <meta property="og:image:alt" content="Two blue hard-shell cases with steel latches: the left with clean chamfer bands, the right with its rim collapsed into a ridge traced by a thin red-orange seam and amber pins at the degenerate faces." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="degenerate-bevel-weld — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/degenerate-bevel-weld-hero.webp" />
-  <meta name="twitter:image:alt" content="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
+  <meta name="twitter:image:alt" content="Two blue hard-shell cases with steel latches: the left with clean chamfer bands, the right with its rim collapsed into a ridge traced by a thin red-orange seam and amber pins at the degenerate faces." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../attribute-domain-shear/" aria-label="Previous example: attribute-domain-shear"><span aria-hidden="true">&larr;</span> attribute-domain-shear</a><span class="pager-pos hud">42 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../modular-kit-snap/" aria-label="Next example: modular-kit-snap">modular-kit-snap <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads.">
-      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two blue hard-shell cases with steel latches: the left with clean chamfer bands, the right with its rim collapsed into a ridge traced by a thin red-orange seam and amber pins at the degenerate faces.">
+      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases with steel latches: the left with clean chamfer bands, the right with its rim collapsed into a ridge traced by a thin red-orange seam and amber pins at the degenerate faces." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.</div>
@@ -368,7 +368,7 @@
 <ul><li><strong>Threshold.</strong> Offset 0.10 (&lt; 0.2) yields <strong>zero</strong> zero-area faces; offset 0.20 (== min/2) yields exactly <strong>12</strong> == 4 min-axis edges × 3 segments. <code>min_area</code> collapses 3.2e5× (5.8e-04 → 1.8e-09).</li><li><strong>Collapse witness.</strong> Coincident-position verts == <strong>16</strong> == 4 edges × (segments + 1), re-derived by 6-decimal position grouping — the loops a merge-by-distance welds.</li><li><strong>Export crossing.</strong> A stdlib re-parse of the GLB recomputes every triangle area from the raw POSITION + indices buffers: <strong>32</strong> degenerate triangles ship (the 12 collapsed faces, triangulated — a MEASURED regression constant like curve-bevel-arc&#x27;s <code>EXPECT_VERTS</code>; re-measure recipe in <code>check()</code>), versus 0 for the safe mesh. The exporter ships every loop (positions == 384 loops) — nothing warns you.</li></ul>
 <p><strong>What each check catches on failure:</strong> safe offset pushed to the threshold (exit 3); degenerate offset backed below it (exit 4); coincident closed form corrupted (exit 6); GLB degenerate-tri expectation off (exit 8, e.g. if a future Blender changes triangulation — re-measure and update deliberately).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same min_area values, same GLB triangle census.</p>
-<p><strong>Render as proof:</strong> two rugged hard-shell equipment cases whose shells <em>are</em> the check&#x27;s two meshes — <code>beveled_box(DIMS, 0.10)</code> and <code>beveled_box(DIMS, 0.20)</code> — with every fitting (handle, latches, molded frame, purge valve, ID plate, feet) kept inside the flat front land that survives both offsets, so the bevel is the only difference. The cases turn their end panels to the camera: the left keeps a flat end framed by clean chamfer bands; on the right the end and top lands are gone and the band rolls into a knife ridge at mid-depth. That collapsed seam is traced in hot red from live mesh data (every edge of every face thinner than 1e-6), with an orange bead on each of the 12 zero-area faces the check counts — change the offset and the overlay moves or disappears. The clean case is the designed asset and passes the asset-quality floors (exit 11).</p>
+<p><strong>Render as proof:</strong> two rugged hard-shell equipment cases whose shells <em>are</em> the check&#x27;s two meshes — <code>beveled_box(DIMS, 0.10)</code> and <code>beveled_box(DIMS, 0.20)</code> — with every fitting (handle, steel draw latches with wire bails, rubber corner guards, molded frame, purge valve, ID plate, feet) kept inside the flat front land that survives both offsets, so the bevel is the only difference. The cases turn their end panels to the camera: the left keeps a flat end framed by clean chamfer bands; on the right the end and top lands are gone and the band rolls into a knife ridge at mid-depth. That collapsed seam is traced as a thin red-orange ink line (low emission, no neon halo) from live mesh data (every edge of every face thinner than 1e-6), with a small amber pin on each of the 12 zero-area faces the check counts — change the offset and the overlay moves or disappears. The clean case is the designed asset and passes the asset-quality floors (exit 11).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python degenerate_bevel_weld.py --
 blender --background --python degenerate_bevel_weld.py -- --both-safe
@@ -383,9 +383,9 @@ blender --background --python degenerate_bevel_weld.py -- --output bevel.png --e
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/degenerate-bevel-weld/degenerate_bevel_weld.py</code>
-        <span>599 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/degenerate-bevel-weld/degenerate_bevel_weld.py">View on GitHub &rarr;</a></span>
+        <span>627 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/degenerate-bevel-weld/degenerate_bevel_weld.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="599">
+      <div class="code" data-lines="627">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -984,7 +984,35 @@ blender --background --python degenerate_bevel_weld.py -- --output bevel.png --e
 596
 597
 598
-599</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Degenerate bevel weld — the half-dimension collapse that ships to disk.
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Degenerate bevel weld — the half-dimension collapse that ships to disk.
 
 Witnesses the bevel-threshold hazard a prop pipeline hits when a width is
 authored against one box and later used on a thinner one: `bmesh.ops.bevel`
@@ -1330,6 +1358,32 @@ CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases presen
         parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.LatchLever</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
                            _block(<span class="s">f&quot;</span>{prefix}<span class="s">.LatchLever</span><span class="s">&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.035</span>, <span class="n">0.13</span>), <span class="n">0.014</span>),
                            mats[<span class="s">&quot;accent&quot;</span>], shell, (sx * <span class="n">0.40</span>, fy - <span class="n">0.045</span>, <span class="n">0.15</span>)))
+        <span class="c"># wire draw-bail: a steel loop from the lever over the hasp</span>
+        <span class="k">def</span> bail(bm, sx=sx):
+            y = fy - <span class="n">0.032</span>
+            _tube_path(bm, [(sx * <span class="n">0.37</span>, y, <span class="n">0.195</span>), (sx * <span class="n">0.245</span>, y, <span class="n">0.215</span>),
+                            (sx * <span class="n">0.245</span>, y, <span class="n">0.125</span>), (sx * <span class="n">0.37</span>, y, <span class="n">0.105</span>)],
+                       <span class="n">0.008</span>, sides=<span class="n">8</span>)
+        parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.LatchBail</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                           _mesh_from_bm(<span class="s">f&quot;</span>{prefix}<span class="s">.LatchBail</span><span class="s">&quot;</span>, bail),
+                           mats[<span class="s">&quot;steel&quot;</span>], shell))
+    <span class="c"># rubber corner guards on the front land, capping the frame joints</span>
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        <span class="k">for</span> sz <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+            <span class="k">def</span> guard(bm, sx=sx, sz=sz):
+                <span class="k">for</span> dims, off <span class="k">in</span> (((<span class="n">0.13</span>, <span class="n">0.05</span>, <span class="n">0.05</span>), (-sx * <span class="n">0.04</span>, <span class="n">0.0</span>)),
+                                  ((<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.13</span>), (<span class="n">0.0</span>, -sz * <span class="n">0.04</span>))):
+                    res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+                    <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+                        v.co.x = v.co.x * dims[<span class="n">0</span>] + sx * <span class="n">0.565</span> + off[<span class="n">0</span>]
+                        v.co.y = v.co.y * dims[<span class="n">1</span>]
+                        v.co.z = v.co.z * dims[<span class="n">2</span>] + sz * <span class="n">0.275</span> + off[<span class="n">1</span>]
+                bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=<span class="n">1e-6</span>)
+                bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.012</span>, segments=<span class="n">2</span>,
+                                profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+            parts.append(_part(sc, <span class="s">f&quot;</span>{prefix}<span class="s">.CornerGuard</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}{<span class="s">&#x27;BT&#x27;</span>[sz &gt; <span class="n">0</span>]}<span class="s">&quot;</span>,
+                               _mesh_from_bm(<span class="s">f&quot;</span>{prefix}<span class="s">.CornerGuard</span><span class="s">&quot;</span>, guard),
+                               mats[<span class="s">&quot;rubber&quot;</span>], shell, (<span class="n">0.0</span>, fy - <span class="n">0.018</span>, <span class="n">0.0</span>)))
     <span class="c"># molded reinforcement frame around the front land</span>
     <span class="k">for</span> nm, dims, pos <span class="k">in</span> ((<span class="s">&quot;FrameTop&quot;</span>, (<span class="n">1.17</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, <span class="n">0.28</span>)),
                           (<span class="s">&quot;FrameBottom&quot;</span>, (<span class="n">1.17</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, -<span class="n">0.28</span>)),
@@ -1394,16 +1448,16 @@ CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases presen
 
     <span class="k">def</span> seam(bm):
         <span class="k">for</span> va, vb <span class="k">in</span> segs:
-            _tube_path(bm, [va, vb], <span class="n">0.018</span>, sides=<span class="n">10</span>)
+            _tube_path(bm, [va, vb], <span class="n">0.009</span>, sides=<span class="n">10</span>)
         joints = {tuple(round(c, <span class="n">5</span>) <span class="k">for</span> c <span class="k">in</span> v) <span class="k">for</span> s <span class="k">in</span> segs <span class="k">for</span> v <span class="k">in</span> s}
         <span class="k">for</span> j <span class="k">in</span> joints:
-            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">10</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.020</span>,
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">10</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.012</span>,
                                       matrix=Matrix.Translation(j))
     seam_ob = _part(sc, <span class="s">&quot;WeldSeam&quot;</span>, _mesh_from_bm(<span class="s">&quot;WeldSeam&quot;</span>, seam), mat_seam, shell)
 
     <span class="k">def</span> beads(bm):
         <span class="k">for</span> p <span class="k">in</span> counted:
-            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">12</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.038</span>,
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">12</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.019</span>,
                                       matrix=Matrix.Translation(p.center))
     bead_ob = _part(sc, <span class="s">&quot;PinchBeads&quot;</span>, _mesh_from_bm(<span class="s">&quot;PinchBeads&quot;</span>, beads), mat_hot, shell)
     <span class="k">return</span> [seam_ob, bead_ob]
@@ -1425,8 +1479,8 @@ CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases presen
                                         rough=<span class="n">0.55</span>, metallic=<span class="n">0.0</span>),
             <span class="s">&quot;steel&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.Steel</span><span class="s">&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.63</span>, <span class="n">0.66</span>), rough=<span class="n">0.32</span>,
                                    metallic=<span class="n">1.0</span>),
-            <span class="s">&quot;accent&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.LatchAnodized</span><span class="s">&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.52</span>, <span class="n">0.06</span>),
-                                    rough=<span class="n">0.35</span>, metallic=<span class="n">0.6</span>),
+            <span class="s">&quot;accent&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.LatchSteel</span><span class="s">&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.31</span>, <span class="n">0.33</span>),
+                                    rough=<span class="n">0.26</span>, metallic=<span class="n">1.0</span>),
             <span class="s">&quot;rubber&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.Rubber</span><span class="s">&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.025</span>, <span class="n">0.028</span>), rough=<span class="n">0.8</span>,
                                     metallic=<span class="n">0.0</span>),
             <span class="s">&quot;plate&quot;</span>: make_material(<span class="s">f&quot;</span>{tag}<span class="s">.IdPlate</span><span class="s">&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.78</span>, <span class="n">0.70</span>), rough=<span class="n">0.3</span>,
@@ -1438,10 +1492,12 @@ CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases presen
                                   (-<span class="n">0.95</span>, <span class="n">0.2</span>, hz), CASE_YAW)
     degen, degen_parts = build_case(sc, <span class="s">&quot;CaseDegen&quot;</span>, DEGEN_OFFSET, mats(<span class="s">&quot;Degen&quot;</span>),
                                     (<span class="n">0.95</span>, -<span class="n">0.2</span>, hz), CASE_YAW)
-    seam_mat = make_material(<span class="s">&quot;WeldSeam&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.06</span>, <span class="n">0.02</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
-                             emit=(<span class="n">1.0</span>, <span class="n">0.05</span>, <span class="n">0.02</span>), estr=<span class="n">2.2</span>)
-    hot_mat = make_material(<span class="s">&quot;PinchHot&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.2</span>, <span class="n">0.05</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
-                            emit=(<span class="n">1.0</span>, <span class="n">0.16</span>, <span class="n">0.04</span>), estr=<span class="n">3.0</span>)
+    <span class="c"># an inspector&#x27;s ink line, not a neon tube: thin red-orange seam, and a</span>
+    <span class="c"># small warm pin on each zero-area face the check counts</span>
+    seam_mat = make_material(<span class="s">&quot;WeldSeam&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.07</span>, <span class="n">0.02</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.0</span>,
+                             emit=(<span class="n">1.0</span>, <span class="n">0.12</span>, <span class="n">0.03</span>), estr=<span class="n">0.35</span>)
+    hot_mat = make_material(<span class="s">&quot;PinchHot&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.45</span>, <span class="n">0.10</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
+                            emit=(<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.10</span>), estr=<span class="n">0.6</span>)
     overlay = build_weld_overlay(sc, degen, seam_mat, hot_mat)
 
     floor, wall = build_studio(sc)
@@ -1622,7 +1678,7 @@ CASE_YAW = <span class="n">52.0</span>    <span class="c"># render: cases presen
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." />
+    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases with steel latches: the left with clean chamfer bands, the right with its rim collapsed into a ridge traced by a thin red-orange seam and amber pins at the degenerate faces." />
   </dialog>
   <footer>
     <div class="statusbar">

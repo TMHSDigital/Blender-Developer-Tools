@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
+  <meta property="og:image:alt" content="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
-  <meta name="twitter:image:alt" content="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
+  <meta name="twitter:image:alt" content="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span> vertex-color-ao</a><span class="pager-pos hud">47 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode">usd-export-evaluation-mode <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket.">
-      <img src="../assets/cross-version-property-delete-hero.webp" alt="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark.">
+      <img src="../assets/cross-version-property-delete-hero.webp" alt="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</div>
@@ -362,30 +362,30 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A pair of machined specimen tags that witnesses the custom <strong>ID-property</strong> delete contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/cross-version-property-delete.py"><code>cross-version-property-delete.py</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/custom-properties/SKILL.md"><code>custom-properties</code></a> — not the snippet&#x27;s <code>__main__</code>, which keys off <code>context.active_object</code> and prints nothing in <code>--background</code>.</p>
-<p>The IDs are built with <code>bpy.data.objects.new</code>. The Keep tag still carries <code>[&quot;accession&quot;] = 42</code> (emissive enamel). The Clear tag had <code>del obj[&quot;accession&quot;]</code> (empty pocket). Same <code>del</code> on 4.5 LTS and 5.x; there is no version branch.</p>
+<p>A pair of stage lamps that witnesses the custom <strong>ID-property</strong> delete contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/cross-version-property-delete.py"><code>cross-version-property-delete.py</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/custom-properties/SKILL.md"><code>custom-properties</code></a> — not the snippet&#x27;s <code>__main__</code>, which keys off <code>context.active_object</code> and prints nothing in <code>--background</code>.</p>
+<p>The IDs are two stage-lamp housings built with <code>bpy.data.objects.new</code>. The Keep lamp still carries <code>[&quot;accession&quot;] = 42</code>; the Clear lamp had <code>del obj[&quot;accession&quot;]</code>. Same <code>del</code> on 4.5 LTS and 5.x; there is no version branch.</p>
 <p><strong>What it witnesses:</strong> <code>property_unset</code> is a TypeError on a custom ID key and does <strong>not</strong> remove it. <code>del id_block[key]</code> does. After factory-empty, there is no <code>active_object</code>.</p>
 <p><strong>What failure each check would catch:</strong></p>
 <ul><li>exit 2 — someone set an active object; the snippet <code>__main__</code> would have been the only path</li><li>exit 3 — the ID property never landed</li><li>exit 4 — <code>property_unset</code> removed the key or failed to raise</li><li>exit 7 — <code>del</code> did not run (<code>--skip-delete</code> / <code>--unset-instead</code> falsify this: measured <code>clear_has=True</code>)</li></ul>
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
-<p>The two tags now hang from the stand&#x27;s bar on steel rods. The bar used to run 0.17 m behind the plates with nothing joining them, and the &quot;rings&quot; were solid discs, so the plates hung on air. The bar spans both plates, the post rises to it, and the base is as wide as what it carries. Render path only: the check reads ID properties, never geometry.</p>
+<p>Both lamps hang in U-yokes from one T-stand. The render path reads each housing&#x27;s <code>keys()</code> after the check has run, so the still is driven by the checked IDs, not staged from the expected outcome. A lamp that still carries the property gets an emissive lens and a real SPOT light along its beam axis, which pools warm light on the placard below it. A lamp without the property keeps a dark lens and casts nothing. Each placard is set in the bundled DejaVu Sans Mono and shows the line of code that produced its lamp&#x27;s state. Only render-side geometry (stand, yokes, lenses, placards) is added in the render path; the check reads ID properties, never geometry.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python cross_version_property_delete.py --
-blender --background --python cross_version_property_delete.py -- --output tags.png</code></pre>
-<p><code>--skip-delete</code> and <code>--unset-instead</code> are falsification switches: both leave the Clear plate tagged and exit 7.</p>
+blender --background --python cross_version_property_delete.py -- --output lamps.png</code></pre>
+<p><code>--skip-delete</code> and <code>--unset-instead</code> are falsification switches: both leave the Clear lamp tagged and exit 7.</p>
 <p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also an active object existed after the data-API build</td></tr><tr><td>3</td><td>Custom ID property did not land</td></tr><tr><td>4</td><td><code>property_unset</code> on a custom ID key did not TypeError, or it deleted the key</td></tr><tr><td>5</td><td><code>del</code> did not report removal</td></tr><tr><td>6</td><td>Keep plate lost the ID property</td></tr><tr><td>7</td><td>Clear plate still has the ID property (<code>--skip-delete</code> / <code>--unset-instead</code> land here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also an active object existed after the data-API build</td></tr><tr><td>3</td><td>Custom ID property did not land</td></tr><tr><td>4</td><td><code>property_unset</code> on a custom ID key did not TypeError, or it deleted the key</td></tr><tr><td>5</td><td><code>del</code> did not report removal</td></tr><tr><td>6</td><td>Keep lamp lost the ID property</td></tr><tr><td>7</td><td>Clear lamp still has the ID property (<code>--skip-delete</code> / <code>--unset-instead</code> land here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--skip-delete</code>, or <code>--unset-instead</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/cross-version-property-delete/cross_version_property_delete.py</code>
-        <span>367 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete/cross_version_property_delete.py">View on GitHub &rarr;</a></span>
+        <span>456 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete/cross_version_property_delete.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="367">
+      <div class="code" data-lines="456">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -752,7 +752,96 @@ blender --background --python cross_version_property_delete.py -- --output tags.
 364
 365
 366
-367</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Custom ID-property delete — a runnable example.
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Custom ID-property delete — a runnable example.
 
 Witnesses the contract the snippet ``cross-version-property-delete`` teaches,
 not the snippet&#x27;s ``__main__`` (which keys off ``context.active_object`` and
@@ -768,9 +857,10 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python cross_version_property_delete.py --
-    blender --background --python cross_version_property_delete.py -- --output t.png
+    blender --background --python cross_version_property_delete.py -- --output lamps.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>
@@ -819,39 +909,68 @@ VALUE = <span class="n">42</span>
     <span class="k">return</span> ob
 
 
-<span class="k">def</span> build_tag(name, x, yaw):
-    <span class="s">&quot;&quot;&quot;Machined specimen tag: plate, pocket, hanging ring. No ID property yet.&quot;&quot;&quot;</span>
-    plate = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Plate</span><span class="s">&quot;</span>, (<span class="n">1.70</span>, <span class="n">0.10</span>, <span class="n">1.05</span>), <span class="n">0.035</span>)
-    plate.location = (x, <span class="n">0.0</span>, <span class="n">1.15</span>)
-    plate.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, yaw)
-    pocket = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Pocket</span><span class="s">&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.04</span>, <span class="n">0.48</span>), <span class="n">0.02</span>)
-    pocket.parent = plate
-    pocket.location = (<span class="n">0.18</span>, -<span class="n">0.05</span>, -<span class="n">0.03</span>)
-    ring = cylinder(<span class="s">f&quot;</span>{name}<span class="s">Ring</span><span class="s">&quot;</span>, <span class="n">0.11</span>, <span class="n">0.05</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), segs=<span class="n">20</span>)
-    ring.parent = plate
-    ring.location = (-<span class="n">0.68</span>, <span class="n">0.0</span>, <span class="n">0.33</span>)
-    ring.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
-    <span class="k">return</span> plate, pocket, ring
+LAMP_X = <span class="n">1.25</span>          <span class="c"># lamps hang at x = -/+ LAMP_X from the stand&#x27;s crossbar</span>
+PIVOT_Z = <span class="n">1.80</span>         <span class="c"># yoke pivot height (housing centre)</span>
+TILT_DEG = <span class="n">30.0</span>        <span class="c"># beam tipped from straight down toward the camera side</span>
 
 
-<span class="k">def</span> add_inlay(name, plate):
-    <span class="s">&quot;&quot;&quot;Emissive enamel only when the ID property is still on the plate.&quot;&quot;&quot;</span>
-    inlay = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Inlay</span><span class="s">&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.03</span>, <span class="n">0.40</span>), <span class="n">0.015</span>)
-    inlay.parent = plate
-    inlay.location = (<span class="n">0.18</span>, -<span class="n">0.07</span>, -<span class="n">0.03</span>)
-    <span class="k">return</span> inlay
+<span class="k">def</span> lathe(name, profile, segs=<span class="n">48</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about local +Z; r == 0 makes a pole.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = []
+        <span class="k">for</span> r, z <span class="k">in</span> profile:
+            <span class="k">if</span> r == <span class="n">0.0</span>:
+                rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+            <span class="k">else</span>:
+                rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / segs),
+                                            r * math.sin(<span class="n">2</span> * math.pi * s / segs), z))
+                              <span class="k">for</span> s <span class="k">in</span> range(segs)])
+        <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            <span class="k">for</span> s <span class="k">in</span> range(segs):
+                t = (s + <span class="n">1</span>) % segs
+                <span class="k">if</span> len(a) == <span class="n">1</span>:
+                    f = bm.faces.new((a[<span class="n">0</span>], b[t], b[s]))
+                <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                    f = bm.faces.new((a[s], a[t], b[<span class="n">0</span>]))
+                <span class="k">else</span>:
+                    f = bm.faces.new((a[s], a[t], b[t], b[s]))
+                f.smooth = <span class="k">True</span>
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">40.0</span>))
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="c"># Stage-lamp can along local +Z (the beam axis): domed back cap, a finned</span>
+<span class="c"># body, a flared front rim. The lens sits just inside the rim.</span>
+LAMP_PROFILE = [(<span class="n">0.0</span>, -<span class="n">0.36</span>), (<span class="n">0.14</span>, -<span class="n">0.35</span>), (<span class="n">0.24</span>, -<span class="n">0.31</span>), (<span class="n">0.29</span>, -<span class="n">0.24</span>)]
+<span class="k">for</span> _k <span class="k">in</span> range(<span class="n">5</span>):                                   <span class="c"># five cooling fins</span>
+    _z = -<span class="n">0.20</span> + <span class="n">0.075</span> * _k
+    LAMP_PROFILE += [(<span class="n">0.29</span>, _z), (<span class="n">0.335</span>, _z + <span class="n">0.012</span>), (<span class="n">0.335</span>, _z + <span class="n">0.03</span>), (<span class="n">0.29</span>, _z + <span class="n">0.042</span>)]
+LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<span class="n">0.35</span>, <span class="n">0.24</span>), (<span class="n">0.36</span>, <span class="n">0.30</span>), (<span class="n">0.33</span>, <span class="n">0.31</span>),
+                 (<span class="n">0.30</span>, <span class="n">0.27</span>), (<span class="n">0.0</span>, <span class="n">0.27</span>)]
+
+
+<span class="k">def</span> build_lamp(name, x):
+    <span class="s">&quot;&quot;&quot;The ID under test: a stage-lamp housing. No ID property yet.&quot;&quot;&quot;</span>
+    housing = lathe(<span class="s">f&quot;</span>{name}<span class="s">Lamp</span><span class="s">&quot;</span>, LAMP_PROFILE)
+    housing.location = (x, <span class="n">0.0</span>, PIVOT_Z)
+    <span class="c"># beam axis (+Z) tipped down toward -Y (the camera side)</span>
+    housing.rotation_euler = (math.radians(<span class="n">180.0</span> - TILT_DEG), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="k">return</span> housing
 
 
 <span class="k">def</span> build():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    keep_parts = build_tag(<span class="s">&quot;Keep&quot;</span>, -<span class="n">1.15</span>, <span class="n">0.0</span>)
-    clear_parts = build_tag(<span class="s">&quot;Clear&quot;</span>, <span class="n">1.15</span>, <span class="n">0.0</span>)
-    post = cylinder(<span class="s">&quot;StandPost&quot;</span>, <span class="n">0.07</span>, <span class="n">1.55</span>, (<span class="n">0.0</span>, <span class="n">0.22</span>, <span class="n">0.78</span>))
-    base = beveled_box(<span class="s">&quot;StandBase&quot;</span>, (<span class="n">3.4</span>, <span class="n">0.9</span>, <span class="n">0.12</span>), <span class="n">0.04</span>)
-    base.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.06</span>)
-    bar = beveled_box(<span class="s">&quot;StandBar&quot;</span>, (<span class="n">2.6</span>, <span class="n">0.08</span>, <span class="n">0.08</span>), <span class="n">0.02</span>)
-    bar.location = (<span class="n">0.0</span>, <span class="n">0.22</span>, <span class="n">1.52</span>)
-    <span class="k">return</span> keep_parts, clear_parts, [post, base, bar]
+    keep = build_lamp(<span class="s">&quot;Keep&quot;</span>, -LAMP_X)
+    clear = build_lamp(<span class="s">&quot;Clear&quot;</span>, LAMP_X)
+    <span class="k">return</span> keep, clear
 
 
 <span class="k">def</span> remove_custom_property(id_block, key):
@@ -873,10 +992,10 @@ VALUE = <span class="n">42</span>
     keep_plate[KEY] = VALUE
     clear_plate[KEY] = VALUE
     <span class="k">if</span> KEY <span class="k">not</span> <span class="k">in</span> keep_plate.keys() <span class="k">or</span> keep_plate[KEY] != VALUE:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Keep plate</span><span class="s">&quot;</span>, file=sys.stderr)
+        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Keep lamp</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
     <span class="k">if</span> KEY <span class="k">not</span> <span class="k">in</span> clear_plate.keys():
-        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Clear plate</span><span class="s">&quot;</span>, file=sys.stderr)
+        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Clear lamp</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
 
     <span class="k">try</span>:
@@ -907,11 +1026,11 @@ VALUE = <span class="n">42</span>
         <span class="s">f&quot;</span><span class="s">skip_delete=</span>{skip_delete}<span class="s"> unset_instead=</span>{unset_instead}<span class="s">&quot;</span>
     )
     <span class="k">if</span> <span class="k">not</span> keep_has:
-        print(<span class="s">&quot;ERROR: Keep plate lost the ID property&quot;</span>, file=sys.stderr)
+        print(<span class="s">&quot;ERROR: Keep lamp lost the ID property&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
     <span class="k">if</span> clear_has:
         print(
-            <span class="s">&quot;ERROR: Clear plate still has the ID property — del did not run &quot;</span>
+            <span class="s">&quot;ERROR: Clear lamp still has the ID property — del did not run &quot;</span>
             <span class="s">&quot;(property_unset is not a delete)&quot;</span>,
             file=sys.stderr,
         )
@@ -923,7 +1042,7 @@ VALUE = <span class="n">42</span>
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness, emission=<span class="k">None</span>):
+<span class="k">def</span> principled(name, color, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">4.5</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
@@ -933,7 +1052,7 @@ VALUE = <span class="n">42</span>
     <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
         sock = bsdf.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> bsdf.inputs[<span class="s">&quot;Emission&quot;</span>]
         sock.default_value = emission
-        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">4.5</span>
+        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
     <span class="k">return</span> mat
 
 
@@ -942,57 +1061,121 @@ VALUE = <span class="n">42</span>
     ob.data.materials.append(mat)
 
 
-<span class="k">def</span> render_still(keep_parts, clear_parts, stand, path, engine):
+<span class="k">def</span> label_font():
+    <span class="s">&quot;&quot;&quot;DejaVu Sans Mono ships in datafiles/fonts on 4.5 and 5.2 — code on the
+    placards reads as code. system_resource resolves directories only.&quot;&quot;&quot;</span>
+    fonts = bpy.utils.system_resource(<span class="s">&quot;DATAFILES&quot;</span>, path=<span class="s">&quot;fonts&quot;</span>)
+    path = os.path.join(fonts, <span class="s">&quot;DejaVuSansMono.woff2&quot;</span>) <span class="k">if</span> fonts <span class="k">else</span> <span class="s">&quot;&quot;</span>
+    <span class="k">if</span> path <span class="k">and</span> os.path.exists(path):
+        <span class="k">try</span>:
+            <span class="k">return</span> bpy.data.fonts.load(path, check_existing=<span class="k">True</span>)
+        <span class="k">except</span> RuntimeError:
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> placard(name, text, x, mat_plate, mat_ink, scene):
+    <span class="s">&quot;&quot;&quot;A dark steel plate leaning on the floor under its lamp, code inlaid in brass.&quot;&quot;&quot;</span>
+    plate = beveled_box(name, (<span class="n">2.05</span>, <span class="n">0.07</span>, <span class="n">0.42</span>), <span class="n">0.02</span>)
+    assign(plate, mat_plate)
+    plate.location = (x, -<span class="n">1.05</span>, <span class="n">0.20</span>)
+    plate.rotation_euler = (math.radians(-<span class="n">40</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cu = bpy.data.curves.new(<span class="s">f&quot;</span>{name}<span class="s">.Text</span><span class="s">&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = text
+    cu.size = <span class="n">0.15</span>
+    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+    cu.align_y = <span class="s">&quot;CENTER&quot;</span>
+    cu.extrude = <span class="n">0.004</span>
+    font = label_font()
+    <span class="k">if</span> font <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        cu.font = font
+    cu.materials.append(mat_ink)
+    t = bpy.data.objects.new(<span class="s">f&quot;</span>{name}<span class="s">.Text</span><span class="s">&quot;</span>, cu)
+    t.parent = plate
+    t.location = (<span class="n">0.0</span>, -<span class="n">0.04</span>, <span class="n">0.0</span>)
+    t.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(t)
+    <span class="k">return</span> [plate, t]
+
+
+<span class="k">def</span> render_still(keep, clear, path, engine):
+    <span class="s">&quot;&quot;&quot;Two stage lamps on one stand. Each lamp object is the ID the check
+    ran against; the render reads its keys() and lights it only if the
+    custom property is still there — an emissive lens and a real spot pool
+    on the floor. Nothing here is staged from the expected outcome.&quot;&quot;&quot;</span>
     scene = bpy.context.scene
-    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.50</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.22</span>)
-    pocket = principled(<span class="s">&quot;Pocket&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.042</span>, <span class="n">0.05</span>, <span class="n">1.0</span>), <span class="n">0.2</span>, <span class="n">0.55</span>)
-    enamel = principled(
-        <span class="s">&quot;Enamel&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.35</span>, <span class="n">0.55</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
-        emission=(<span class="n">0.05</span>, <span class="n">0.55</span>, <span class="n">0.85</span>, <span class="n">1.0</span>),
-    )
-    steel = principled(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.19</span>, <span class="n">0.21</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.38</span>)
+    powder = principled(<span class="s">&quot;PowderCoat&quot;</span>, (<span class="n">0.028</span>, <span class="n">0.03</span>, <span class="n">0.034</span>, <span class="n">1.0</span>), <span class="n">0.35</span>, <span class="n">0.42</span>)
+    steel = principled(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.205</span>, <span class="n">0.22</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.34</span>)
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.60</span>, <span class="n">0.26</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.26</span>)
+    lens_on = principled(<span class="s">&quot;LensLit&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.86</span>, <span class="n">0.62</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.1</span>,
+                         emission=(<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.40</span>, <span class="n">1.0</span>), strength=<span class="n">1.4</span>)
+    lens_off = principled(<span class="s">&quot;LensDark&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.022</span>, <span class="n">0.026</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.06</span>)
+    plate_mat = principled(<span class="s">&quot;Placard&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.036</span>, <span class="n">0.04</span>, <span class="n">1.0</span>), <span class="n">0.7</span>, <span class="n">0.42</span>)
 
-    keep_plate, keep_pocket, keep_ring = keep_parts
-    clear_plate, clear_pocket, clear_ring = clear_parts
-    <span class="k">for</span> ob <span class="k">in</span> (keep_plate, keep_ring, clear_plate, clear_ring):
-        assign(ob, brass)
-    assign(keep_pocket, pocket)
-    assign(clear_pocket, pocket)
-    <span class="k">for</span> ob <span class="k">in</span> stand:
+    <span class="c"># stand: weighted base, post, crossbar, a drop stem per lamp</span>
+    parts = []
+    base = lathe(<span class="s">&quot;StandBase&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.78</span>, <span class="n">0.0</span>), (<span class="n">0.82</span>, <span class="n">0.03</span>), (<span class="n">0.82</span>, <span class="n">0.09</span>),
+                               (<span class="n">0.74</span>, <span class="n">0.12</span>), (<span class="n">0.16</span>, <span class="n">0.14</span>), (<span class="n">0.0</span>, <span class="n">0.14</span>)], segs=<span class="n">64</span>)
+    bar_z = PIVOT_Z + <span class="n">0.57</span>
+    post = cylinder(<span class="s">&quot;StandPost&quot;</span>, <span class="n">0.06</span>, bar_z - <span class="n">0.10</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span> * (bar_z + <span class="n">0.10</span>)), segs=<span class="n">24</span>)
+    bar = cylinder(<span class="s">&quot;StandBar&quot;</span>, <span class="n">0.05</span>, <span class="n">2</span> * LAMP_X + <span class="n">0.5</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, bar_z), segs=<span class="n">24</span>)
+    bar.rotation_euler = (<span class="n">0.0</span>, math.pi / <span class="n">2</span>, <span class="n">0.0</span>)
+    <span class="k">for</span> ob <span class="k">in</span> (base, post, bar):
         assign(ob, steel)
+    parts += [base, post, bar]
 
-    <span class="c"># Render-only staging: the check reads ID properties, never geometry.</span>
-    <span class="c"># The build left the bar 0.17 m behind the plates with nothing joining</span>
-    <span class="c"># them, and the &quot;rings&quot; are solid discs, so the plates hung on air.</span>
-    <span class="c"># Here the bar runs in the plates&#x27; plane above their tops, spans both,</span>
-    <span class="c"># and each plate hangs from it on two rods; the post rises to the bar</span>
-    <span class="c"># and the base is as wide as what it carries.</span>
-    post, base, bar = stand
-    plate_top = keep_plate.location.z + <span class="n">0.525</span>
-    bar_z = plate_top + <span class="n">0.16</span>
-    bar.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, bar_z)
-    bar.scale.x = <span class="n">4.4</span> / <span class="n">2.6</span>
-    post.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span> * bar_z)
-    post.scale.z = bar_z / <span class="n">1.55</span>
-    base.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.06</span>)
-    base.scale.x = <span class="n">4.6</span> / <span class="n">3.4</span>
-    hangers = []
-    <span class="k">for</span> plate <span class="k">in</span> (keep_plate, clear_plate):
-        <span class="k">for</span> dx <span class="k">in</span> (-<span class="n">0.62</span>, <span class="n">0.62</span>):
-            rod = cylinder(<span class="s">f&quot;</span><span class="s">Hanger</span>{len(hangers)}<span class="s">&quot;</span>, <span class="n">0.018</span>, bar_z - plate_top + <span class="n">0.05</span>,
-                           (plate.location.x + dx, <span class="n">0.0</span>, <span class="n">0.5</span> * (plate_top - <span class="n">0.03</span> + bar_z)), segs=<span class="n">12</span>)
-            assign(rod, steel)
-            hangers.append(rod)
-    <span class="k">for</span> ring <span class="k">in</span> (keep_ring, clear_ring):
-        ring.hide_render = <span class="k">True</span>
+    lit = []
+    <span class="k">for</span> lamp <span class="k">in</span> (keep, clear):
+        assign(lamp, powder)
+        x = lamp.location.x
+        stem = cylinder(<span class="s">f&quot;</span>{lamp.name}<span class="s">Stem</span><span class="s">&quot;</span>, <span class="n">0.035</span>, <span class="n">0.18</span>, (x, <span class="n">0.0</span>, PIVOT_Z + <span class="n">0.47</span>), segs=<span class="n">16</span>)
+        <span class="c"># U-yoke: a top strap plus two cheeks bolted to the housing&#x27;s sides</span>
+        strap = beveled_box(<span class="s">f&quot;</span>{lamp.name}<span class="s">Strap</span><span class="s">&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.10</span>, <span class="n">0.05</span>), <span class="n">0.012</span>)
+        strap.location = (x, <span class="n">0.0</span>, PIVOT_Z + <span class="n">0.37</span>)
+        cheeks = []
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            ch = beveled_box(<span class="s">f&quot;</span>{lamp.name}<span class="s">Cheek</span><span class="s">&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.10</span>, <span class="n">0.40</span>), <span class="n">0.012</span>)
+            ch.location = (x + sx * <span class="n">0.405</span>, <span class="n">0.0</span>, PIVOT_Z + <span class="n">0.18</span>)
+            knob = cylinder(<span class="s">f&quot;</span>{lamp.name}<span class="s">Knob</span><span class="s">&quot;</span>, <span class="n">0.06</span>, <span class="n">0.05</span>, (x + sx * <span class="n">0.45</span>, <span class="n">0.0</span>, PIVOT_Z), segs=<span class="n">20</span>)
+            knob.rotation_euler = (<span class="n">0.0</span>, math.pi / <span class="n">2</span>, <span class="n">0.0</span>)
+            assign(knob, brass)
+            cheeks += [ch, knob]
+        <span class="k">for</span> ob <span class="k">in</span> (stem, strap) + tuple(c <span class="k">for</span> c <span class="k">in</span> cheeks <span class="k">if</span> <span class="s">&quot;Cheek&quot;</span> <span class="k">in</span> c.name):
+            assign(ob, steel)
+        <span class="c"># lens and a brass bezel, parented to the housing along its +Z</span>
+        lens = cylinder(<span class="s">f&quot;</span>{lamp.name}<span class="s">Lens</span><span class="s">&quot;</span>, <span class="n">0.29</span>, <span class="n">0.02</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), segs=<span class="n">48</span>)
+        lens.parent = lamp
+        lens.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.262</span>)
+        bezel = lathe(<span class="s">f&quot;</span>{lamp.name}<span class="s">Bezel</span><span class="s">&quot;</span>, [(<span class="n">0.36</span>, <span class="n">0.30</span>), (<span class="n">0.375</span>, <span class="n">0.315</span>), (<span class="n">0.36</span>, <span class="n">0.33</span>),
+                                            (<span class="n">0.33</span>, <span class="n">0.33</span>), (<span class="n">0.32</span>, <span class="n">0.31</span>), (<span class="n">0.33</span>, <span class="n">0.30</span>)],
+                      segs=<span class="n">48</span>)
+        bezel.parent = lamp
+        assign(bezel, brass)
+        on = KEY <span class="k">in</span> lamp.keys()
+        assign(lens, lens_on <span class="k">if</span> on <span class="k">else</span> lens_off)
+        parts += [stem, strap, lens, bezel] + cheeks
+        <span class="k">if</span> on:
+            lit.append(lamp)
 
-    inlay = <span class="k">None</span>
-    <span class="k">if</span> KEY <span class="k">in</span> keep_plate.keys():
-        inlay = add_inlay(<span class="s">&quot;Keep&quot;</span>, keep_plate)
-        assign(inlay, enamel)
-    <span class="k">if</span> KEY <span class="k">in</span> clear_plate.keys():
-        ghost = add_inlay(<span class="s">&quot;Clear&quot;</span>, clear_plate)
-        assign(ghost, enamel)
+    bpy.context.view_layer.update()
+    <span class="k">for</span> lamp <span class="k">in</span> lit:
+        axis = (lamp.matrix_world.to_3x3() @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))).normalized()
+        sd = bpy.data.lights.new(<span class="s">f&quot;</span>{lamp.name}<span class="s">Beam</span><span class="s">&quot;</span>, <span class="s">&quot;SPOT&quot;</span>)
+        sd.energy = <span class="n">1100.0</span>
+        sd.color = (<span class="n">1.0</span>, <span class="n">0.8</span>, <span class="n">0.52</span>)
+        sd.spot_size = math.radians(<span class="n">64.0</span>)
+        sd.spot_blend = <span class="n">0.55</span>
+        sd.shadow_soft_size = <span class="n">0.2</span>
+        beam = bpy.data.objects.new(<span class="s">f&quot;</span>{lamp.name}<span class="s">Beam</span><span class="s">&quot;</span>, sd)
+        beam.location = lamp.matrix_world.translation + axis * <span class="n">0.36</span>
+        beam.rotation_euler = axis.to_track_quat(<span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
+        scene.collection.objects.link(beam)
+
+    labels = []
+    labels += placard(<span class="s">&quot;KeepPlacard&quot;</span>, <span class="s">f&#x27;</span><span class="s">obj[&quot;</span>{KEY}<span class="s">&quot;] = </span>{VALUE}<span class="s">&#x27;</span>, keep.location.x,
+                      plate_mat, brass, scene)
+    labels += placard(<span class="s">&quot;ClearPlacard&quot;</span>, <span class="s">f&#x27;</span><span class="s">del obj[&quot;</span>{KEY}<span class="s">&quot;]</span><span class="s">&#x27;</span>, clear.location.x,
+                      plate_mat, brass, scene)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1026,19 +1209,19 @@ VALUE = <span class="n">42</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.6</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">850.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.7</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">18</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">380.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">70.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.0</span>, <span class="n">3.5</span>, <span class="n">5.5</span>), <span class="n">220.0</span>, <span class="n">4.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">42</span>, <span class="n">0</span>, <span class="n">180</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.95</span>)
+    aim.location = (<span class="n">0.0</span>, -<span class="n">0.3</span>, <span class="n">1.05</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">45.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.95</span>, -<span class="n">7.35</span>, <span class="n">3.3</span>)
+    cam.location = (<span class="n">1.3</span>, -<span class="n">7.2</span>, <span class="n">2.3</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -1060,11 +1243,9 @@ VALUE = <span class="n">42</span>
     scene.render.filepath = path
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
-    hero = [keep_plate, clear_plate] + list(stand) + hangers
-    <span class="k">if</span> inlay <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        hero.append(inlay)
+    hero = [keep, clear] + parts
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=hero, elements=hero, stage=[floor, wall],
+        scene, cam, hero=hero, elements=hero + labels, stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -1082,7 +1263,7 @@ VALUE = <span class="n">42</span>
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
     p.add_argument(
         <span class="s">&quot;--skip-delete&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: leave the Clear plate tagged&quot;</span>,
+        help=<span class="s">&quot;falsification: leave the Clear lamp tagged&quot;</span>,
     )
     p.add_argument(
         <span class="s">&quot;--unset-instead&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
@@ -1090,19 +1271,16 @@ VALUE = <span class="n">42</span>
     )
     args = p.parse_args(argv)
 
-    keep_parts, clear_parts, stand = build()
+    keep, clear = build()
     code = check(
-        keep_parts[<span class="n">0</span>], clear_parts[<span class="n">0</span>],
+        keep, clear,
         skip_delete=args.skip_delete, unset_instead=args.unset_instead,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        rcode = render_still(
-            keep_parts, clear_parts, stand,
-            os.path.abspath(args.output), args.engine,
-        )
+        rcode = render_still(keep, clear, os.path.abspath(args.output), args.engine)
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
@@ -1140,7 +1318,7 @@ VALUE = <span class="n">42</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/cross-version-property-delete-hero.webp" alt="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
+    <img src="../assets/cross-version-property-delete-hero.webp" alt="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
   </dialog>
   <footer>
     <div class="statusbar">

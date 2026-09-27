@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>driver-wave — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated." />
+  <meta name="description" content="A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/driver-wave/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="driver-wave — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated." />
+  <meta property="og:description" content="A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/driver-wave/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/driver-wave-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
+  <meta property="og:image:alt" content="A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="driver-wave — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated." />
+  <meta name="twitter:description" content="A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/driver-wave-hero.webp" />
-  <meta name="twitter:image:alt" content="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
+  <meta name="twitter:image:alt" content="A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -347,12 +347,12 @@
   </div>
   <header class="hero">
     <h1>driver-wave</h1>
-    <p>A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.</p>
+    <p>A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated.</p>
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../wave-displace/" aria-label="Previous example: wave-displace"><span aria-hidden="true">&larr;</span> wave-displace</a><span class="pager-pos hud">6 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../bmesh-gear/" aria-label="Next example: bmesh-gear">bmesh-gear <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor.">
-      <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle.">
+      <img src="../assets/driver-wave-hero.webp" alt="A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.</div>
@@ -362,11 +362,11 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that drives sixteen column heights from a custom function registered in <code>bpy.app.driver_namespace</code> — the pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/drivers-and-app-handlers/SKILL.md"><code>drivers-and-app-handlers</code></a>. Each column gets a SCRIPTED driver on Z scale whose expression calls <code>wave_scale(i)</code>, producing a sine skyline.</p>
+<p>A runnable example that drives sixteen organ-pipe heights from a custom function registered in <code>bpy.app.driver_namespace</code> — the pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/drivers-and-app-handlers/SKILL.md"><code>drivers-and-app-handlers</code></a>. Each column gets a SCRIPTED driver on Z scale whose expression calls <code>wave_scale(i)</code>, producing a sine skyline.</p>
 <p><strong>What it witnesses:</strong> the driver evaluation contract. Driven values appear only after a view-layer update, and they land in <strong>two</strong> places that must agree: the depsgraph-evaluated copy (<code>evaluated_get(dg).scale</code>) and the original datablock, which the animation system flushes for display. The check asserts both against the closed-form profile.</p>
 <p>Note for real add-ons: <code>driver_namespace</code> entries do <strong>not</strong> persist in <code>.blend</code> files — re-register them from a <code>load_post</code> handler, or every driver that calls them fails on file open. Headless, registering before driver creation (as here) is enough.</p>
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
-<p>The camera is raised to look down about 18 degrees, so the column tops and their shadows read as a wave. From nearly level (86 degrees) the skyline flattened into a bar chart. Render path only.</p>
+<p>The sixteen driven objects are the speaking pipes of a small organ facade. They share one open-tube body mesh of unit height (<code>z</code> 0..1), so the driven Z scale <strong>is</strong> each pipe&#x27;s speaking length and the pipe tops trace <code>wave_scale</code> directly; the rim annulus is horizontal and stays crisp under any Z scale. Everything else — the walnut windchest and case back, the side towers with brass finials, a brass foot cone and a mouth under each pipe — is render-only staging built around the driven bodies. The case back sits behind the pipes so their tops read as a wave against wood rather than fading into the stage. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python driver_wave.py --
@@ -386,9 +386,9 @@ blender --background --python driver_wave.py -- --output driver.png --engine cyc
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/driver-wave/driver_wave.py</code>
-        <span>223 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/driver-wave/driver_wave.py">View on GitHub &rarr;</a></span>
+        <span>396 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/driver-wave/driver_wave.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="223">
+      <div class="code" data-lines="396">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -611,7 +611,180 @@ blender --background --python driver_wave.py -- --output driver.png --engine cyc
 220
 221
 222
-223</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Driver-namespace scale drivers, evaluated through the depsgraph — a runnable example.
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Driver-namespace scale drivers, evaluated through the depsgraph — a runnable example.
 
 Witnesses the drivers-and-app-handlers contract end to end: a custom function
 is registered in `bpy.app.driver_namespace`, sixteen columns get a SCRIPTED
@@ -632,6 +805,7 @@ check. Pass --output to also render a still:
     blender --background --python driver_wave.py -- --output d.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -648,6 +822,35 @@ BASE = <span class="n">0.28</span>
     <span class="k">return</span> <span class="n">1.4</span> + math.sin(i * <span class="n">0.6</span>)
 
 
+<span class="c"># Organ-pipe body profile (r, z) in mesh units; BASE x/y scale makes the</span>
+<span class="c"># outer radius ~0.26. Bottom closed, open mouth at the top with a wall.</span>
+PIPE_PROFILE = [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.92</span>, <span class="n">0.0</span>), (<span class="n">0.92</span>, <span class="n">1.0</span>), (<span class="n">0.80</span>, <span class="n">1.0</span>), (<span class="n">0.80</span>, <span class="n">0.94</span>), (<span class="n">0.0</span>, <span class="n">0.94</span>)]
+
+
+<span class="k">def</span> lathe(bm, profile, segs=<span class="n">32</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about Z; r == 0 points become poles.&quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> r, z <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt; <span class="n">1e-9</span>:
+            rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+        <span class="k">else</span>:
+            rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / segs),
+                                        r * math.sin(<span class="n">2</span> * math.pi * s / segs), z))
+                          <span class="k">for</span> s <span class="k">in</span> range(segs)])
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> s <span class="k">in</span> range(segs):
+            t = (s + <span class="n">1</span>) % segs
+            <span class="k">if</span> len(a) == <span class="n">1</span> <span class="k">and</span> len(b) == <span class="n">1</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> len(a) == <span class="n">1</span>:
+                bm.faces.new((a[<span class="n">0</span>], b[t], b[s]))
+            <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                bm.faces.new((a[s], a[t], b[<span class="n">0</span>]))
+            <span class="k">else</span>:
+                bm.faces.new((a[s], a[t], b[t], b[s]))
+    <span class="k">return</span> rings
+
+
 <span class="k">def</span> build_columns(flat_expr=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     <span class="c"># driver_namespace entries do not persist in .blend files; real add-ons</span>
@@ -655,13 +858,20 @@ BASE = <span class="n">0.28</span>
     <span class="c"># driver creation is enough.</span>
     bpy.app.driver_namespace[<span class="s">&quot;wave_scale&quot;</span>] = wave_scale
 
+    <span class="c"># one shared organ-pipe body: an open tube of unit height (z 0..1), so the</span>
+    <span class="c"># driven Z scale IS the speaking length; the rim annulus is horizontal and</span>
+    <span class="c"># stays crisp under any Z scale</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Column&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        lathe(bm, PIPE_PROFILE, segs=<span class="n">32</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">50.0</span>))
 
     objs = []
     x0 = -(COUNT - <span class="n">1</span>) * SPACING / <span class="n">2</span>
@@ -703,18 +913,155 @@ BASE = <span class="n">0.28</span>
 
 
 <span class="k">def</span> render_still(objs, path, engine):
-    scene = bpy.context.scene
-    mat = bpy.data.materials.new(<span class="s">&quot;ColMat&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.26</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)  <span class="c"># selection orange</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
-    objs[<span class="n">0</span>].data.materials.append(mat)  <span class="c"># shared mesh -&gt; all columns</span>
+    <span class="s">&quot;&quot;&quot;A pipe-organ facade: the sixteen driven bodies are the speaking pipes.
 
-    <span class="c"># columns stand on the floor: lift each by its DRIVEN half-height</span>
+    Everything added here is render-only staging around the driven objects:
+    a walnut windchest, a brass foot cone and a mouth under each pipe. The
+    pipe bodies keep their SCRIPTED drivers; their tops trace wave_scale.
+    &quot;&quot;&quot;</span>
+    scene = bpy.context.scene
+
+    <span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, grain=<span class="k">None</span>, noise=<span class="k">None</span>):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = <span class="k">True</span>
+        nt = m.node_tree
+        b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+        coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+        <span class="k">if</span> grain:
+            <span class="c"># walnut: stretched noise bands along X, dark/light figure</span>
+            mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+            mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.6</span>, <span class="n">14.0</span>, <span class="n">14.0</span>)
+            nt.links.new(coord, mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+            tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+            tex.wave_type = <span class="s">&quot;BANDS&quot;</span>
+            tex.bands_direction = <span class="s">&quot;Y&quot;</span>
+            tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">0.35</span>
+            tex.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">6.0</span>
+            tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+            nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+            ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+            ramp.color_ramp.elements[<span class="n">0</span>].color = (*(c * <span class="n">0.55</span> <span class="k">for</span> c <span class="k">in</span> base), <span class="n">1.0</span>)
+            ramp.color_ramp.elements[<span class="n">1</span>].color = (*(min(<span class="n">1.0</span>, c * <span class="n">1.45</span>) <span class="k">for</span> c <span class="k">in</span> base), <span class="n">1.0</span>)
+            nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+            nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        <span class="k">if</span> noise:
+            <span class="c"># handling wear on the brass: mottled roughness, never a flat slot</span>
+            tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+            tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise
+            tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+            nt.links.new(coord, tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+            mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+            mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = rough - <span class="n">0.08</span>
+            mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough + <span class="n">0.16</span>
+            nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+            nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+        <span class="k">return</span> m
+
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.62</span>, <span class="n">0.30</span>), <span class="n">0.24</span>, metal=<span class="n">1.0</span>, noise=<span class="n">9.0</span>)
+    walnut = principled(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.075</span>, <span class="n">0.03</span>), <span class="n">0.48</span>, grain=<span class="k">True</span>)
+    mouth_mat = principled(<span class="s">&quot;PipeMouth&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.010</span>, <span class="n">0.009</span>), <span class="n">0.7</span>)
+    objs[<span class="n">0</span>].data.materials.append(brass)  <span class="c"># shared mesh -&gt; all sixteen pipes</span>
+
+    <span class="k">def</span> box(name, dims, loc, mat, bevel=<span class="n">0.02</span>):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> bm.verts:
+                v.co.x *= dims[<span class="n">0</span>]; v.co.y *= dims[<span class="n">1</span>]; v.co.z *= dims[<span class="n">2</span>]
+            <span class="k">if</span> bevel:
+                bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">2</span>,
+                                profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    <span class="c"># the windchest: a walnut cabinet the pipe feet stand in</span>
+    span = (COUNT - <span class="n">1</span>) * SPACING
+    chest_w, chest_d = span + <span class="n">0.95</span>, <span class="n">1.1</span>
+    parts = [
+        box(<span class="s">&quot;Chest.Plinth&quot;</span>, (chest_w + <span class="n">0.12</span>, chest_d + <span class="n">0.12</span>, <span class="n">0.14</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.07</span>), walnut),
+        box(<span class="s">&quot;Chest.Body&quot;</span>, (chest_w, chest_d, <span class="n">0.78</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.53</span>), walnut, bevel=<span class="n">0.015</span>),
+        box(<span class="s">&quot;Chest.Rail&quot;</span>, (chest_w + <span class="n">0.10</span>, chest_d + <span class="n">0.10</span>, <span class="n">0.08</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.96</span>), walnut),
+        box(<span class="s">&quot;Chest.Toe&quot;</span>, (chest_w - <span class="n">0.2</span>, chest_d - <span class="n">0.4</span>, <span class="n">0.06</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.03</span>), walnut),
+    ]
+    <span class="c"># raised front panels with brass pulls, one per four pipes</span>
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+        px = -span / <span class="n">2</span> + span * (k + <span class="n">0.5</span>) / <span class="n">4</span>
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Chest.Panel.</span>{k}<span class="s">&quot;</span>, (span / <span class="n">4</span> - <span class="n">0.32</span>, <span class="n">0.04</span>, <span class="n">0.5</span>),
+                         (px, -chest_d / <span class="n">2</span> - <span class="n">0.015</span>, <span class="n">0.53</span>), walnut, bevel=<span class="n">0.012</span>))
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Chest.Pull.</span>{k}<span class="s">&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.04</span>, <span class="n">0.04</span>),
+                         (px, -chest_d / <span class="n">2</span> - <span class="n">0.05</span>, <span class="n">0.53</span>), brass, bevel=<span class="n">0.01</span>))
+
+    <span class="c"># the case back: a dark walnut screen behind the pipes, so the driven</span>
+    <span class="c"># tops trace their wave against wood rather than fading into the stage;</span>
+    <span class="c"># two side towers with brass finials close the facade</span>
+    dark_walnut = principled(<span class="s">&quot;WalnutDark&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.032</span>, <span class="n">0.014</span>), <span class="n">0.55</span>, grain=<span class="k">True</span>)
+    parts.append(box(<span class="s">&quot;Case.Back&quot;</span>, (chest_w - <span class="n">0.2</span>, <span class="n">0.12</span>, <span class="n">3.05</span>),
+                     (<span class="n">0</span>, <span class="n">0.42</span>, <span class="n">1.06</span> + <span class="n">1.525</span>), dark_walnut, bevel=<span class="n">0.02</span>))
+    parts.append(box(<span class="s">&quot;Case.Cornice&quot;</span>, (chest_w + <span class="n">0.1</span>, <span class="n">0.36</span>, <span class="n">0.14</span>),
+                     (<span class="n">0</span>, <span class="n">0.40</span>, <span class="n">1.06</span> + <span class="n">3.12</span>), walnut, bevel=<span class="n">0.02</span>))
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        tx = sx * (chest_w / <span class="n">2</span> - <span class="n">0.05</span>)
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Case.Tower.</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>, (<span class="n">0.34</span>, <span class="n">0.62</span>, <span class="n">3.3</span>),
+                         (tx, <span class="n">0.18</span>, <span class="n">1.06</span> + <span class="n">1.65</span>), walnut, bevel=<span class="n">0.025</span>))
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Case.Cap.</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>, (<span class="n">0.44</span>, <span class="n">0.72</span>, <span class="n">0.1</span>),
+                         (tx, <span class="n">0.18</span>, <span class="n">1.06</span> + <span class="n">3.35</span>), walnut, bevel=<span class="n">0.02</span>))
+        fin_me = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Finial.</span>{<span class="s">&#x27;LR&#x27;</span>[sx &gt; <span class="n">0</span>]}<span class="s">&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.12</span>, <span class="n">0.0</span>), (<span class="n">0.12</span>, <span class="n">0.05</span>), (<span class="n">0.06</span>, <span class="n">0.09</span>),
+                       (<span class="n">0.10</span>, <span class="n">0.18</span>), (<span class="n">0.07</span>, <span class="n">0.27</span>), (<span class="n">0.02</span>, <span class="n">0.33</span>), (<span class="n">0.0</span>, <span class="n">0.36</span>)], segs=<span class="n">24</span>)
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+            bm.to_mesh(fin_me)
+        <span class="k">finally</span>:
+            bm.free()
+        <span class="k">for</span> poly <span class="k">in</span> fin_me.polygons:
+            poly.use_smooth = <span class="k">True</span>
+        fin_me.materials.append(brass)
+        fin = bpy.data.objects.new(fin_me.name, fin_me)
+        fin.location = (tx, <span class="n">0.18</span>, <span class="n">1.06</span> + <span class="n">3.40</span>)
+        scene.collection.objects.link(fin)
+        parts.append(fin)
+
+    <span class="c"># brass foot cone + mouth per pipe; the driven body starts above the foot</span>
+    foot_h = <span class="n">0.50</span>
+    chest_top = <span class="n">1.06</span>
+    foot_me = bpy.data.meshes.new(<span class="s">&quot;PipeFoot&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.05</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.03</span>), (<span class="n">0.24</span>, foot_h - <span class="n">0.04</span>), (<span class="n">0.258</span>, foot_h),
+                   (<span class="n">0.0</span>, foot_h)], segs=<span class="n">32</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(foot_me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> foot_me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    foot_me.materials.append(brass)
     dg = bpy.context.evaluated_depsgraph_get()
     <span class="k">for</span> obj <span class="k">in</span> objs:
-        obj.location.z = obj.evaluated_get(dg).scale[<span class="n">2</span>] / <span class="n">2</span>
+        x = obj.location.x
+        foot = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Foot.</span>{obj.name[-<span class="n">2</span>:]}<span class="s">&quot;</span>, foot_me)
+        foot.location = (x, <span class="n">0.0</span>, chest_top)
+        scene.collection.objects.link(foot)
+        parts.append(foot)
+        <span class="c"># body stands on its foot; its height is the DRIVEN Z scale</span>
+        obj.location.z = chest_top + foot_h
+        z0 = chest_top + foot_h
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Mouth.</span>{obj.name[-<span class="n">2</span>:]}<span class="s">&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.04</span>, <span class="n">0.15</span>),
+                         (x, -<span class="n">0.238</span>, z0 + <span class="n">0.10</span>), mouth_mat, bevel=<span class="n">0.008</span>))
+        parts.append(box(<span class="s">f&quot;</span><span class="s">Lip.</span>{obj.name[-<span class="n">2</span>:]}<span class="s">&quot;</span>, (<span class="n">0.23</span>, <span class="n">0.05</span>, <span class="n">0.035</span>),
+                         (x, -<span class="n">0.245</span>, z0 + <span class="n">0.19</span>), brass, bevel=<span class="n">0.01</span>))
+    heights = [obj.evaluated_get(dg).scale[<span class="n">2</span>] <span class="k">for</span> obj <span class="k">in</span> objs]
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -732,7 +1079,7 @@ BASE = <span class="n">0.28</span>
     floor_me.materials.append(fmat)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -741,41 +1088,38 @@ BASE = <span class="n">0.28</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="c"># warm shaped key, faint cool fill, warm wedge pooling on the back wall</span>
-    <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    key = bpy.data.lights.new(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); key.energy = <span class="n">650.0</span>; key.size = <span class="n">4.5</span>
-    key.color = (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)
-    key_ob = bpy.data.objects.new(<span class="s">&quot;Key&quot;</span>, key)
-    key_ob.location = (-<span class="n">4.5</span>, -<span class="n">5.5</span>, <span class="n">6.5</span>)
-    key_ob.rotation_euler = (math.radians(<span class="n">46</span>), <span class="n">0.0</span>, math.radians(-<span class="n">33</span>))
-    scene.collection.objects.link(key_ob)
-    fill = bpy.data.lights.new(<span class="s">&quot;Fill&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); fill.energy = <span class="n">110.0</span>; fill.size = <span class="n">8.0</span>
-    fill.color = (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)
-    fill_ob = bpy.data.objects.new(<span class="s">&quot;Fill&quot;</span>, fill)
-    fill_ob.location = (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">3.5</span>)
-    fill_ob.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, math.radians(<span class="n">48</span>))
-    scene.collection.objects.link(fill_ob)
-    wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); wedge.energy = <span class="n">380.0</span>; wedge.size = <span class="n">6.0</span>
-    wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
-    wedge_ob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
-    wedge_ob.location = (<span class="n">2.5</span>, <span class="n">6.0</span>, <span class="n">4.0</span>)
-    wedge_ob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
-    scene.collection.objects.link(wedge_ob)
+    <span class="k">def</span> light(name, loc, energy, size, col, at):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        scene.collection.objects.link(ob)
 
-    <span class="c"># lens/distance chosen so all sixteen columns (span 11.1 units) sit inside</span>
-    <span class="c"># the frame with a small margin -- the skyline must not clip</span>
-    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>); cam_data.lens = <span class="n">42.0</span>
+    <span class="c"># warm shaped key, faint cool fill, a broad soft card the brass can</span>
+    <span class="c"># mirror (bare metal in a dark studio otherwise reads black), a cool rim</span>
+    <span class="c"># on the pipe edges and a warm wedge pooling on the back wall</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.0</span>, -<span class="n">6.5</span>, <span class="n">7.0</span>), <span class="n">900.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (-<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">2.0</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">6.5</span>, -<span class="n">5.0</span>, <span class="n">3.0</span>), <span class="n">160.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.0</span>))
+    light(<span class="s">&quot;Card&quot;</span>, (<span class="n">1.5</span>, -<span class="n">9.0</span>, <span class="n">4.5</span>), <span class="n">260.0</span>, <span class="n">10.0</span>, (<span class="n">1.0</span>, <span class="n">0.92</span>, <span class="n">0.80</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.2</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">2.0</span>, <span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.2</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">5.5</span>, <span class="n">1.5</span>, <span class="n">3.2</span>), <span class="n">650.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.42</span>), (<span class="n">7.0</span>, <span class="n">7.0</span>, <span class="n">1.4</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">45.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># raised so the column tops and their shadows read as a wave; from</span>
-    <span class="c"># nearly level (86 deg) it flattened into a bar chart</span>
-    cam.location = (<span class="n">0.0</span>, -<span class="n">14.2</span>, <span class="n">5.6</span>)
-    cam.rotation_euler = (math.radians(<span class="n">72</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (-<span class="n">4.3</span>, -<span class="n">18.2</span>, <span class="n">3.2</span>)
     scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (-<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">2.25</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = aim
     scene.camera = cam
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">48</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -785,14 +1129,16 @@ BASE = <span class="n">0.28</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the orange columns toward tan (docs/VISUAL-STYLE.md)</span>
+    <span class="c"># AgX would wash the brass toward tan (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    print(<span class="s">f&quot;</span><span class="s">pipe speaking lengths (driven) </span>{min(heights):<span class="s">.3f</span>}<span class="s">..</span>{max(heights):<span class="s">.3f</span>}<span class="s">&quot;</span>)
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact.</span>
     fcode = gallery_framing.check_framing(
         scene, cam,
-        hero=list(objs),
-        elements=list(objs),
+        hero=list(objs) + parts,
+        elements=list(objs) + parts,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -864,7 +1210,7 @@ BASE = <span class="n">0.28</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
+    <img src="../assets/driver-wave-hero.webp" alt="A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle." />
   </dialog>
   <footer>
     <div class="statusbar">

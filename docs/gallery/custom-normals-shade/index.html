@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
+  <meta property="og:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin amber lines." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="custom-normals-shade — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
-  <meta name="twitter:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
+  <meta name="twitter:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin amber lines." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../collision-hull-proxy/" aria-label="Previous example: collision-hull-proxy"><span aria-hidden="true">&larr;</span> collision-hull-proxy</a><span class="pager-pos hud">34 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../sky-texture-sun-elevation/" aria-label="Next example: sky-texture-sun-elevation">sky-texture-sun-elevation <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines.">
-      <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin amber lines.">
+      <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin amber lines." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (1304 of 4738 edges over 3 meshes).</div>
@@ -369,7 +369,7 @@
 <ul><li><strong>The legacy shading API is gone — on both supported versions.</strong> <code>use_auto_smooth</code>, <code>use_custom_normals</code>, and <code>calc_normals</code> are AttributeError on 4.5 LTS <em>and</em> 5.1. AI-generated Blender code still emits <code>mesh.use_auto_smooth = True</code> constantly; any script carrying that habit dies immediately, and this check keeps it dead.</li><li><strong>Shade-by-angle is exact.</strong> <code>mesh.set_sharp_from_angle(30°)</code> (which also sets the face smooth flags — probed on both versions) marks sharp exactly the edges whose <em>independently recomputed</em> dihedral angle crosses the threshold: Shell 1144 of 4098 edges, Handle 32 of 368, Neck 128 of 272 (1304 of 4738) — an exact set match, not a count approximation.</li><li><strong>The evaluated shading matches the attribute&#x27;s promise.</strong> Through depsgraph evaluation, loop normals across a smooth edge are welded (deviation 0.0, tol 1e-3) and loop normals across a sharp edge are split by the dihedral (angle error 1.898e-03 rad, tol 5e-3 — the curved side band and the panels&#x27; rounded wall corners average a fan whose facets step at most 22.5 and 10 deg), all unit length (err 1.0e-07).</li><li><strong>Custom split normals survive depsgraph evaluation</strong> — with a quantization budget, not float precision: <code>normals_split_custom_set</code> stores per-loop normals in int16, so an 8196-loop round-trip reads back within <strong>3.904e-05</strong> (tol 2e-4), unit length within 1.7e-07. Asserting float-exact custom normals is a real bug this check catches. Each corner requests its face normal tilted 20 deg toward the corner bisector. The pattern matters: Blender&#x27;s lnor encoder merges requests within one fan that sit closer than ~0.81 deg and snaps an in-plane angle under 0.81 deg to zero. On this shell an index-swept pattern measured the merge (1.38e-02) and a 144-direction cycle hit the snap on 13 corners (9.1e-03). Neither is storage precision, so the check keeps clear of both.</li><li><strong>The divergence: the legacy <code>shade_auto_smooth</code> OPERATOR is a version-split trap.</strong> It builds the Smooth-by-Angle node-group modifier from a bundled asset. Headless on <strong>4.5 LTS the asset load never finishes</strong>: the op returns <code>{&#x27;CANCELLED&#x27;}</code> — no exception — and the mesh stays <strong>untouched</strong> (measured: 0 smooth faces, 0 modifiers). Any script that ignores the return set ships flat shading and never knows. On <strong>5.1</strong> it FINISHES and adds the <code>Smooth by Angle</code> NODES modifier. The portable path is the data API above, version-gated here explicitly.</li></ul>
 <p><strong>What each check catches on failure:</strong> author/audit threshold drift (probe: sharp marks applied at 20° but audited at 30°, exit 5, 48 extra edges on the shell); the two halves of the contract out of sync (probe: <code>sharp_edge</code> set but face smooth flags lost, exit 6, smooth-edge loops split by 3.902e-01); float-exactness assumed of custom normals (probe: tolerance 1e-6, exit 7, measured 3.904e-05); and any future version that resurrects the legacy API or changes the operator&#x27;s headless behavior (exit 3/8). The render path adds the Layer 1 gates: framing (exit 10) and asset quality (exit 11).</p>
 <p><strong>Version witness:</strong> every value above is identical on Blender 4.5.11 LTS, 5.1.2 and 5.2.1 LTS except the <code>shade_auto_smooth</code> operator behavior, which is asserted per version (CANCELLED + untouched on 4.5, FINISHED + NODES modifier on 5.1 and 5.2).</p>
-<p>The render shows three fresh builds of the same can, one per shading treatment. Left, flat: the side-band corners, cap and handle break into facets. Middle, smooth-everywhere (the shade-smooth-and-forget AI habit): the flat fields smear into gradients and the pressed panels go pillowy. Right, by-angle (the contract): crisp creases and smooth rounds, with the <code>sharp_edge</code> attribute read back from the mesh and traced as thin cyan lines, so the viewer sees exactly which edges the data marked hard. A low strip light makes the highlight shapes diverge between the three.</p>
+<p>The render shows three fresh builds of the same can, one per shading treatment. Left, flat: the side-band corners, cap and handle break into facets. Middle, smooth-everywhere (the shade-smooth-and-forget AI habit): the flat fields smear into gradients and the pressed panels go pillowy. Right, by-angle (the contract): crisp creases and smooth rounds, with the <code>sharp_edge</code> attribute read back from the mesh and traced as thin amber drafting lines (low emission, no bloom halo), so the viewer sees exactly which edges the data marked hard. A low strip light makes the highlight shapes diverge between the three.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python custom_normals_shade.py --
@@ -389,9 +389,9 @@ blender --background --python custom_normals_shade.py -- --output cans.png --eng
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/custom-normals-shade/custom_normals_shade.py</code>
-        <span>953 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/custom-normals-shade/custom_normals_shade.py">View on GitHub &rarr;</a></span>
+        <span>956 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/custom-normals-shade/custom_normals_shade.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="953">
+      <div class="code" data-lines="956">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1344,7 +1344,10 @@ blender --background --python custom_normals_shade.py -- --output cans.png --eng
 950
 951
 952
-953</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A jerry can prop shaded three ways — a runnable example.
+953
+954
+955
+956</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A jerry can prop shaded three ways — a runnable example.
 
 Witnesses the shading contract a game prop&#x27;s silhouette depends on (engines
 generally, FiveM/GTA-style prop workflows specifically): which edges read
@@ -2103,7 +2106,7 @@ PART_MATERIAL = {<span class="s">&quot;CamLever&quot;</span>: <span class="s">&q
             me.set_sharp_from_angle(angle=ANGLE)
 
 
-<span class="k">def</span> sharp_edge_overlay(parts, name, radius=<span class="n">0.0026</span>):
+<span class="k">def</span> sharp_edge_overlay(parts, name, radius=<span class="n">0.0019</span>):
     <span class="s">&quot;&quot;&quot;Thin tubes along every edge the `sharp_edge` attribute marks — the
     contract&#x27;s own output drawn onto the by-angle can, read back from the
     mesh rather than recomputed.&quot;&quot;&quot;</span>
@@ -2161,12 +2164,15 @@ PART_MATERIAL = {<span class="s">&quot;CamLever&quot;</span>: <span class="s">&q
         variants[mode] = built
     hero = [o <span class="k">for</span> objs <span class="k">in</span> variants.values() <span class="k">for</span> o <span class="k">in</span> objs]
     edges = sharp_edge_overlay(variants[<span class="s">&quot;byangle&quot;</span>], <span class="s">&quot;SharpEdgeOverlay&quot;</span>)
-    glow = bpy.data.materials.new(<span class="s">&quot;SharpEdgeGlow&quot;</span>)
+    <span class="c"># a drafting line, not a glow: warm amber ink with just enough emission</span>
+    <span class="c"># to stay legible on the shadow side of the can, no bloom halo</span>
+    glow = bpy.data.materials.new(<span class="s">&quot;SharpEdgeInk&quot;</span>)
     glow.use_nodes = <span class="k">True</span>
     gb = glow.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    gb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">0.85</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
-    gb.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">0.85</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
-    gb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    gb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.85</span>, <span class="n">0.40</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
+    gb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    gb.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.50</span>, <span class="n">0.08</span>, <span class="n">1.0</span>)
+    gb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.25</span>
     edges.data.materials.append(glow)
     edges.location = variants[<span class="s">&quot;byangle&quot;</span>][<span class="n">0</span>].location
     edges.rotation_euler = variants[<span class="s">&quot;byangle&quot;</span>][<span class="n">0</span>].rotation_euler
@@ -2305,7 +2311,7 @@ PART_MATERIAL = {<span class="s">&quot;CamLever&quot;</span>: <span class="s">&q
       <div class="related-grid">
         <article class="card mini">
           <a class="card-media" href="../color-attribute-wheel/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/color-attribute-wheel-hero.webp" alt="A domed ceramic plate glazed with a full hue wheel that fades to white at the centre, ringed in a brass bezel and standing on a walnut easel." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../color-attribute-wheel/">color-attribute-wheel</a></h3>
@@ -2336,7 +2342,7 @@ PART_MATERIAL = {<span class="s">&quot;CamLever&quot;</span>: <span class="s">&q
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
+    <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin amber lines." />
   </dialog>
   <footer>
     <div class="statusbar">

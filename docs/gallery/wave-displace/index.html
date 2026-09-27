@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wave-displace-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor." />
+  <meta property="og:image:alt" content="A cast bronze tile in a walnut frame whose top is a grid displaced into rolling sine-wave crests, polished on the peaks with green verdigris pooled in the troughs." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wave-displace — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wave-displace-hero.webp" />
-  <meta name="twitter:image:alt" content="A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor." />
+  <meta name="twitter:image:alt" content="A cast bronze tile in a walnut frame whose top is a grid displaced into rolling sine-wave crests, polished on the peaks with green verdigris pooled in the troughs." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../depsgraph-export/" aria-label="Previous example: depsgraph-export"><span aria-hidden="true">&larr;</span> depsgraph-export</a><span class="pager-pos hud">5 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../driver-wave/" aria-label="Next example: driver-wave">driver-wave <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor.">
-      <img src="../assets/wave-displace-hero.webp" alt="A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cast bronze tile in a walnut frame whose top is a grid displaced into rolling sine-wave crests, polished on the peaks with green verdigris pooled in the troughs.">
+      <img src="../assets/wave-displace-hero.webp" alt="A cast bronze tile in a walnut frame whose top is a grid displaced into rolling sine-wave crests, polished on the peaks with green verdigris pooled in the troughs." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> The bulk path is correct, not just fast: the Z span matches the wave amplitude and every vertex matches the closed-form wave, so a stride bug in the flat buffer cannot hide.</div>
@@ -366,7 +366,7 @@
 <p><strong>What it witnesses:</strong> the bulk path is not just faster, it is <em>correct</em> — the check asserts the flat grid gained the expected Z span (the write actually landed) and that <strong>every</strong> vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer cannot hide behind a lucky probe.</p>
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
 <p>The still used to be an edge-to-edge field: the sheet cropped at the left, right and bottom edges on a black void, so nothing showed where the surface ended or what it stood on. <code>gallery_framing</code> has no <code>deviation=</code> flag any more, so that framing could not be gated at all.</p>
-<p>The render path now stages a <strong>copy</strong> of the checked grid. Its boundary is extruded straight down to a flat base 0.30 m below the deepest trough, so the wave is the top face of a cast tile standing on the studio floor, framed whole. The checked <code>Wave</code> object is left exactly as asserted and hidden from the render. The copy is render-only and never enters <code>check()</code>. Measured framing on 5.2.1: fill 0.753 x / 0.761 y, every margin ≥ 0.117.</p>
+<p>The render path now stages a <strong>copy</strong> of the checked grid. Its boundary is extruded straight down to a flat base 0.30 m below the deepest trough, so the wave is the top face of a cast bronze tile, set in a walnut frame whose rails stop at mid-wave height: crests rise proud of the frame, troughs sink below it. The bronze is polished on the crests and carries verdigris in the troughs — the patina mask is the tile&#x27;s own object-space Z, so the colouring is a readout of the displaced height the check asserts. The checked <code>Wave</code> object is left exactly as asserted and hidden from the render. The copy and frame are render-only and never enter <code>check()</code>. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10); measured on 5.2.1: fill 0.856 x / 0.850 y, every margin ≥ 0.050.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python wave_displace.py --
@@ -379,16 +379,16 @@ blender --background --python wave_displace.py -- --output wave.png
 blender --background --python wave_displace.py -- --output wave.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>4</td><td>Z-span not in the closed-form band (<code>--flat</code> lands here)</td></tr><tr><td>5</td><td>A vertex is off the closed-form wave</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>4</td><td>Z-span not in the closed-form band (<code>--flat</code> lands here)</td></tr><tr><td>5</td><td>A vertex is off the closed-form wave</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (<code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--flat</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/wave-displace/wave_displace.py</code>
-        <span>217 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/wave-displace/wave_displace.py">View on GitHub &rarr;</a></span>
+        <span>345 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/wave-displace/wave_displace.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="217">
+      <div class="code" data-lines="345">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -605,7 +605,135 @@ blender --background --python wave_displace.py -- --output wave.png --engine cyc
 214
 215
 216
-217</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Bulk vertex displacement via foreach_get / foreach_set — a runnable example.
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Bulk vertex displacement via foreach_get / foreach_set — a runnable example.
 
 Witnesses the use-foreach-set rule at real scale: a 96x96 grid (9409 verts) is
 displaced into a standing wave by reading every coordinate with one
@@ -624,6 +752,11 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> array <span class="k">import</span> array
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 GRID = <span class="n">96</span>          <span class="c"># segments per side -&gt; (GRID+1)^2 verts</span>
 SIZE = <span class="n">6.0</span>
@@ -682,16 +815,93 @@ FREQ = <span class="n">1.6</span>
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
+<span class="k">def</span> bronze_material():
+    <span class="s">&quot;&quot;&quot;Cast bronze: polished on the crests, verdigris pooled in the troughs.
+
+    The patina mask is the tile&#x27;s own object-space Z — the displaced wave
+    height the check asserts — so the colouring is a readout of the wave.
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;CastBronze&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    out = nt.nodes[<span class="s">&quot;Material Output&quot;</span>]
+    metal = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    metal.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.82</span>, <span class="n">0.52</span>, <span class="n">0.23</span>, <span class="n">1.0</span>)
+    metal.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    metal.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.26</span>
+    patina = nt.nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    patina.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.07</span>, <span class="n">0.24</span>, <span class="n">0.19</span>, <span class="n">1.0</span>)
+    patina.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.72</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord, sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    band = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)          <span class="c"># trough (z=-AMP) -&gt; 1, mid -&gt; 0</span>
+    band.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = -AMP
+    band.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = -<span class="n">0.05</span>
+    band.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.85</span>
+    band.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], band.inputs[<span class="s">&quot;Value&quot;</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.5</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    nt.links.new(coord, noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    speck = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    speck.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.55</span>
+    speck.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.25</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], speck.inputs[<span class="s">&quot;Value&quot;</span>])
+    fac = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    fac.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    fac.use_clamp = <span class="k">True</span>
+    nt.links.new(band.outputs[<span class="s">&quot;Result&quot;</span>], fac.inputs[<span class="n">0</span>])
+    nt.links.new(speck.outputs[<span class="s">&quot;Result&quot;</span>], fac.inputs[<span class="n">1</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)          <span class="c"># hand-polish wear on the metal</span>
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.20</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.40</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], metal.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    nt.links.new(fac.outputs[<span class="s">&quot;Value&quot;</span>], mix.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(metal.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">1</span>])
+    nt.links.new(patina.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">2</span>])
+    nt.links.new(mix.outputs[<span class="s">&quot;Shader&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> walnut_material():
+    mat = bpy.data.materials.new(<span class="s">&quot;Walnut&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    base = (<span class="n">0.15</span>, <span class="n">0.065</span>, <span class="n">0.026</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.5</span>, <span class="n">12.0</span>, <span class="n">12.0</span>)
+    nt.links.new(coord, mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    tex.wave_type = <span class="s">&quot;BANDS&quot;</span>
+    tex.bands_direction = <span class="s">&quot;Y&quot;</span>
+    tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">0.35</span>
+    tex.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">6.0</span>
+    tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (*(c * <span class="n">0.55</span> <span class="k">for</span> c <span class="k">in</span> base), <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (*(c * <span class="n">1.5</span> <span class="k">for</span> c <span class="k">in</span> base), <span class="n">1.0</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
 <span class="k">def</span> render_still(obj, path, engine):
     scene = bpy.context.scene
-    <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
-        poly.use_smooth = <span class="k">True</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;WaveMat&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.09</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)  <span class="c"># deep sapphire</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.18</span>
-    obj.data.materials.append(mat)
+    bronze = bronze_material()
+    cast = bpy.data.materials.new(<span class="s">&quot;CastSide&quot;</span>)      <span class="c"># sand-cast flanks, no polish</span>
+    cast.use_nodes = <span class="k">True</span>
+    cb = cast.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    cb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.30</span>, <span class="n">0.17</span>, <span class="n">0.08</span>, <span class="n">1.0</span>)
+    cb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
 
     <span class="c"># render-only staging: the displaced grid is the contract and stays as</span>
     <span class="c"># checked. A copy of it gets a skirt, its boundary extruded straight</span>
@@ -702,6 +912,8 @@ FREQ = <span class="n">1.6</span>
     bm = bmesh.new()
     <span class="k">try</span>:
         bm.from_mesh(tile_me)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
         rim = [e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> e.is_boundary]
         ret = bmesh.ops.extrude_edge_only(bm, edges=rim)
         skirt = [g <span class="k">for</span> g <span class="k">in</span> ret[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(g, bmesh.types.BMFace)]
@@ -709,17 +921,50 @@ FREQ = <span class="n">1.6</span>
             <span class="k">if</span> isinstance(g, bmesh.types.BMVert):
                 g.co.z = -AMP - base
         bottom = [g <span class="k">for</span> g <span class="k">in</span> ret[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(g, bmesh.types.BMEdge) <span class="k">and</span> g.is_boundary]
-        bmesh.ops.holes_fill(bm, edges=bottom, sides=<span class="n">0</span>)
+        filled = bmesh.ops.holes_fill(bm, edges=bottom, sides=<span class="n">0</span>)[<span class="s">&quot;faces&quot;</span>]
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        <span class="k">for</span> f <span class="k">in</span> skirt:
+        <span class="k">for</span> f <span class="k">in</span> skirt + filled:
             f.smooth = <span class="k">False</span>
+            f.material_index = <span class="n">1</span>
         bm.to_mesh(tile_me)
     <span class="k">finally</span>:
         bm.free()
+    tile_me.materials.append(bronze)   <span class="c"># 0: the displaced wave face</span>
+    tile_me.materials.append(cast)     <span class="c"># 1: skirt and base</span>
     tile = bpy.data.objects.new(<span class="s">&quot;WaveTile&quot;</span>, tile_me)
     tile.location.z = AMP + base
     scene.collection.objects.link(tile)
     obj.hide_render = <span class="k">True</span>
+
+    <span class="c"># a walnut frame around the cast tile: its rails stop at mid-wave height,</span>
+    <span class="c"># so the crests rise proud of the frame and the troughs sink below it</span>
+    walnut = walnut_material()
+    rail_w, rail_h, half = <span class="n">0.42</span>, AMP + base + <span class="n">0.02</span>, SIZE / <span class="n">2</span>
+    frame = []
+    <span class="k">for</span> name, dims, loc <span class="k">in</span> (
+        (<span class="s">&quot;Frame.Front&quot;</span>, (SIZE + <span class="n">2</span> * rail_w, rail_w, rail_h), (<span class="n">0</span>, -half - rail_w / <span class="n">2</span>, rail_h / <span class="n">2</span>)),
+        (<span class="s">&quot;Frame.Back&quot;</span>, (SIZE + <span class="n">2</span> * rail_w, rail_w, rail_h), (<span class="n">0</span>, half + rail_w / <span class="n">2</span>, rail_h / <span class="n">2</span>)),
+        (<span class="s">&quot;Frame.Left&quot;</span>, (SIZE, rail_w, rail_h), (-half - rail_w / <span class="n">2</span>, <span class="n">0</span>, rail_h / <span class="n">2</span>)),
+        (<span class="s">&quot;Frame.Right&quot;</span>, (SIZE, rail_w, rail_h), (half + rail_w / <span class="n">2</span>, <span class="n">0</span>, rail_h / <span class="n">2</span>)),
+    ):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> bm.verts:
+                v.co.x *= dims[<span class="n">0</span>]; v.co.y *= dims[<span class="n">1</span>]; v.co.z *= dims[<span class="n">2</span>]
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.035</span>, segments=<span class="n">3</span>,
+                            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(walnut)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        <span class="k">if</span> name <span class="k">in</span> (<span class="s">&quot;Frame.Left&quot;</span>, <span class="s">&quot;Frame.Right&quot;</span>):
+            ob.rotation_euler.z = math.radians(<span class="n">90</span>)   <span class="c"># grain runs along each rail</span>
+        scene.collection.objects.link(ob)
+        frame.append(ob)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -760,6 +1005,9 @@ FREQ = <span class="n">1.6</span>
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">9.0</span>, -<span class="n">6.0</span>, <span class="n">3.0</span>), <span class="n">120.0</span>, <span class="n">10.0</span>, (<span class="n">0.78</span>, <span class="n">0.86</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">55</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">5.0</span>, <span class="n">7.5</span>, <span class="n">4.0</span>), <span class="n">1800.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.68</span>, <span class="n">0.38</span>), (-<span class="n">62</span>, <span class="n">0</span>, <span class="n">148</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">4.0</span>, <span class="n">10.5</span>, <span class="n">7.0</span>), <span class="n">1500.0</span>, <span class="n">9.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">65</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># a broad soft overhead card the polished bronze can mirror; bare metal</span>
+    <span class="c"># in a dark studio otherwise goes muddy on every face turned from the key</span>
+    light(<span class="s">&quot;Card&quot;</span>, (<span class="n">1.0</span>, -<span class="n">3.0</span>, <span class="n">9.0</span>), <span class="n">220.0</span>, <span class="n">14.0</span>, (<span class="n">1.0</span>, <span class="n">0.93</span>, <span class="n">0.82</span>), (<span class="n">15</span>, <span class="n">0</span>, <span class="n">0</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.0</span>, -<span class="n">0.4</span>, <span class="n">0.05</span>)
@@ -787,8 +1035,14 @@ FREQ = <span class="n">1.6</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate before the beauty render (exit 10 on violation)</span>
+    fcode = gallery_framing.check_framing(scene, cam, hero=[tile] + frame,
+                                          elements=[tile] + frame, stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">6</span>
 
 
 <span class="k">def</span> main():
@@ -808,9 +1062,11 @@ FREQ = <span class="n">1.6</span>
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">if</span> rcode == <span class="n">6</span>:
+                print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;wave-displace OK&quot;</span>)
@@ -848,7 +1104,7 @@ FREQ = <span class="n">1.6</span>
         </article>
         <article class="card mini">
           <a class="card-media" href="../color-attribute-wheel/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/color-attribute-wheel-hero.webp" alt="A domed ceramic plate glazed with a full hue wheel that fades to white at the centre, ringed in a brass bezel and standing on a walnut easel." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../color-attribute-wheel/">color-attribute-wheel</a></h3>
@@ -861,7 +1117,7 @@ FREQ = <span class="n">1.6</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wave-displace-hero.webp" alt="A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor." />
+    <img src="../assets/wave-displace-hero.webp" alt="A cast bronze tile in a walnut frame whose top is a grid displaced into rolling sine-wave crests, polished on the peaks with green verdigris pooled in the troughs." />
   </dialog>
   <footer>
     <div class="statusbar">

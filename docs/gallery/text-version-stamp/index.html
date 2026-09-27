@@ -388,9 +388,9 @@ blender --background --python text_version_stamp.py -- --output stamp.png --engi
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/text-version-stamp/text_version_stamp.py</code>
-        <span>404 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/text-version-stamp/text_version_stamp.py">View on GitHub &rarr;</a></span>
+        <span>407 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/text-version-stamp/text_version_stamp.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="404">
+      <div class="code" data-lines="407">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -794,7 +794,10 @@ blender --background --python text_version_stamp.py -- --output stamp.png --engi
 401
 402
 403
-404</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A beveled 3D stamp of the running Blender version — a runnable example.
+404
+405
+406
+407</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A beveled 3D stamp of the running Blender version — a runnable example.
 
 Witnesses the TextCurve data-API contract: `bpy.data.curves.new(type=&#x27;FONT&#x27;)`
 returns a Curve subclass whose `body` is plain assignable text, whose default
@@ -945,10 +948,13 @@ TOL = <span class="n">1e-4</span>
     txt.space_character = <span class="n">1.05</span>
     <span class="c"># Render only (the check above asserts the built-in Bfont): Bfont&#x27;s &quot;1&quot;</span>
     <span class="c"># is a bare stem that reads as a capital I (&quot;5.2.I LTS&quot;). Inter, shipped</span>
-    <span class="c"># with Blender, gives the numeral its flag.</span>
-    inter = bundled_font(<span class="s">&quot;Inter.woff2&quot;</span>)
+    <span class="c"># with Blender, gives the numeral its flag. 4.5 LTS builds Inter&#x27;s</span>
+    <span class="c"># variable-font outlines with broken counters (the &quot;4&quot; fills its hole),</span>
+    <span class="c"># so 4.x falls back to DejaVuSansMono, whose &quot;1&quot; also carries a flag.</span>
+    font_name = <span class="s">&quot;Inter.woff2&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;DejaVuSansMono.woff2&quot;</span>
+    inter = bundled_font(font_name)
     <span class="k">if</span> inter <span class="k">is</span> <span class="k">None</span>:
-        print(<span class="s">&quot;ERROR: bundled datafiles/fonts/Inter.woff2 not found&quot;</span>, file=sys.stderr)
+        print(<span class="s">f&quot;</span><span class="s">ERROR: bundled datafiles/fonts/</span>{font_name}<span class="s"> not found</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">13</span>
     txt.font = inter
 
