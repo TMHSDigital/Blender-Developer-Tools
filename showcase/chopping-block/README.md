@@ -14,6 +14,14 @@ bit with its chamfers modelled into the section profile, and the haft is
 swept through the eye rather than pushed into it. The haft is oval,
 bows away from the bit, and hooks toward it at the knob.
 
+The hero sets the block to work: three split billets lie at its foot, each a
+quarter of a small round laid on one split face or the other so some show
+bark and some the split, among sixteen seeded chips. The dressing is
+render-only with its own materials (the block's materials sample its baked
+normal map through UVs the dressing does not have). It is not part of the
+asset: no budget reads it, the export does not carry it, and the asset sheet
+renders the block alone.
+
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
 

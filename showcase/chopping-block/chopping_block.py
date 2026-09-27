@@ -36,6 +36,7 @@ not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -1790,6 +1791,99 @@ def wire_normal(mat, tex):
     nt.links.new(nrm.outputs["Normal"], target)
 
 
+def _dressing_materials():
+    """Split face and bark for the render-only kindling and chips. Their own
+    materials: the block's are wired to its baked normal map through UVs the
+    dressing does not have."""
+    def mat(name, base, rough, stripes):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = True
+        nt = m.node_tree
+        b = nt.nodes["Principled BSDF"]
+        b.inputs["Roughness"].default_value = rough
+        coord = nt.nodes.new("ShaderNodeTexCoord")
+        wave = nt.nodes.new("ShaderNodeTexWave")
+        wave.wave_type = "BANDS"
+        wave.bands_direction = "Z" if stripes else "X"
+        wave.inputs["Scale"].default_value = 6.0 if stripes else 2.0
+        wave.inputs["Distortion"].default_value = 6.0
+        wave.inputs["Detail"].default_value = 3.0
+        nt.links.new(coord.outputs["Object"], wave.inputs["Vector"])
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].color = tuple(c * 0.72 for c in base) + (1.0,)
+        ramp.color_ramp.elements[1].color = base + (1.0,)
+        nt.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+        nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+        return m
+    split = mat("KindlingSplit", (0.62, 0.46, 0.28), 0.72, True)
+    bark = mat("KindlingBark", (0.16, 0.11, 0.075), 0.9, False)
+    return split, bark
+
+
+def add_split_kindling(scene):
+    """Render-only dressing: split billets and chips at the block's foot.
+
+    A chopping block is read by what it splits. Each billet is a quarter of
+    a small round (two split faces meeting at the pith, bark on the arc),
+    laid on the floor; chips are thin seeded slivers. None of it is part of
+    the asset: no budget reads it, the export does not carry it, and the
+    asset sheet renders the block alone.
+    """
+    split, bark = _dressing_materials()
+    rng = random.Random(71)
+    me = bpy.data.meshes.new("Kindling")
+    me.materials.append(split)
+    me.materials.append(bark)
+    bm = bmesh.new()
+    try:
+        def billet(cx, cy, yaw, r, length, roll):
+            segs = 6
+            rings = []
+            for end in (-0.5, 0.5):
+                ring = [Vector((end * length, 0.0, 0.0))]
+                for k in range(segs + 1):
+                    a = (math.pi / 2.0) * k / segs
+                    ring.append(Vector((end * length, r * math.cos(a), r * math.sin(a))))
+                rings.append(ring)
+            rot = Matrix.Rotation(yaw, 3, "Z") @ Matrix.Rotation(roll, 3, "X")
+            vs = [[bm.verts.new(rot @ p + Vector((cx, cy, 0.0))) for p in ring] for ring in rings]
+            a, b = vs
+            n = len(a)
+            for k in range(n):
+                j = (k + 1) % n
+                f = bm.faces.new((a[k], a[j], b[j], b[k]))
+                # faces between arc vertices carry bark; the two through the
+                # pith are split faces
+                f.material_index = 1 if (k >= 1 and j >= 2) else 0
+            bm.faces.new(list(reversed(a))).material_index = 0
+            bm.faces.new(b).material_index = 0
+
+        # three billets beside the foot, two left and one right;
+        # roll 0 or +90 degrees lays a billet on one split face or the other, so\n        # some show their bark and some their split face
+        billet(-0.45, -0.02, math.radians(62.0), 0.088, 0.31, 0.0)
+        billet(-0.43, -0.19, math.radians(38.0), 0.080, 0.28, math.radians(90.0))
+        billet(0.42, -0.12, math.radians(118.0), 0.084, 0.29, math.radians(90.0))
+        for i in range(16):
+            ang = rng.uniform(math.radians(200.0), math.radians(340.0))
+            d = rng.uniform(0.31, 0.42)
+            cx, cy = d * math.cos(ang), d * math.sin(ang)
+            sx, sy, sz = rng.uniform(0.020, 0.045), rng.uniform(0.008, 0.018), 0.003
+            geo = bmesh.ops.create_cube(bm, size=1.0)
+            rot = Matrix.Rotation(rng.uniform(0.0, math.pi), 3, "Z")
+            for v in geo["verts"]:
+                v.co = rot @ Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz + sz / 2.0)) \
+                    + Vector((cx, cy, 0.0))
+            for f in {f for v in geo["verts"] for f in v.link_faces}:
+                f.material_index = 0
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    ob = bpy.data.objects.new("Kindling", me)
+    scene.collection.objects.link(ob)
+    return ob
+
+
 def render_still(low, wood, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(wood, tex)
@@ -1802,6 +1896,7 @@ def render_still(low, wood, tex, path, engine):
     # vector or the axe reads as a dark blob seen down its own length; the
     # haft then falls across frame as a diagonal instead of a vertical stick.
     low.rotation_euler.z = math.radians(2.0)
+    kindling = add_split_kindling(scene)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1841,9 +1936,9 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.1, -4.3, 4.6), 900.0, 3.4, (1.0, 0.94, 0.86), (46, 0, -36))
+    light("Key", (-3.1, -4.3, 4.6), 760.0, 3.4, (1.0, 0.94, 0.86), (46, 0, -36))
     light("Fill", (5.0, -3.4, 2.4), 60.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
-    light("Wedge", (2.35, 2.5, 1.55), 900.0, 2.4, (1.0, 0.68, 0.38), (-64, 0, 218))
+    light("Wedge", (2.35, 2.5, 1.55), 700.0, 2.4, (1.0, 0.68, 0.38), (-64, 0, 218))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
@@ -1851,7 +1946,7 @@ def render_still(low, wood, tex, path, engine):
     cam.location = (1.72, -2.34, 1.96)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.42)
+    aim.location = (0.0, 0.0, 0.40)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1879,7 +1974,7 @@ def render_still(low, wood, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, kindling], stage=[floor, wall],
     )
     if fcode:
         return fcode
