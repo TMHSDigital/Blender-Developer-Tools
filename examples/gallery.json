@@ -190,9 +190,9 @@
     {
       "name": "damped-track-aim",
       "dir": "examples/damped-track-aim",
-      "teaches": "Aim constraints via the data API — Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.",
-      "alt": "Gold spikes arranged around a glowing sphere, every tip aimed at the sphere.",
-      "witnessesFix": "Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.",
+      "teaches": "Aim constraints via the data API — Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb.",
+      "alt": "Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal.",
+      "witnessesFix": "Every lamp head has one unmuted DAMPED_TRACK on the orb; evaluated local +Z (the lens) aligns toward the orb (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.",
       "hero": "docs/gallery/assets/damped-track-aim-hero.webp",
       "preview": "examples/damped-track-aim/preview.webp",
       "tags": [

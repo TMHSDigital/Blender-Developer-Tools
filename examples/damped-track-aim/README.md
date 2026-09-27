@@ -1,24 +1,26 @@
 # Damped Track Aim
 
-A runnable example that aims twelve brass spikes at an ember core with
+A runnable example that swings twelve spotlight heads onto one glowing orb with
 `Object.constraints.new('DAMPED_TRACK')` — the data-API path, not
 `bpy.ops.object.constraint_add` (which needs an active object and fails in
 headless loops). Damped Track is the twist-stable aim constraint: it points one
 local axis at a target without the roll fights Track To is known for.
 
-**What it witnesses:** every spike carries exactly one unmuted `DAMPED_TRACK`
-bound to the core on `TRACK_Z`. After a depsgraph update, each evaluated local
-`+Z` aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3.6°). A missing
+Each head is lathed with its lens on local `+Z` and created with an identity
+rotation, standing in an open ring at alternating low and high heights. Only the
+constraint turns the lenses onto the orb, so heads above it aim down and heads
+below it aim up. In the still, every lens facing the orb is the aim.
+
+**What it witnesses:** every lamp head carries exactly one unmuted `DAMPED_TRACK`
+bound to the orb on `TRACK_Z`. After a depsgraph update, each evaluated local
+`+Z` aligns with the world vector toward the orb (dot ≥ 0.998 ≈ 3.6°). A missing
 constraint, a muted one, a `TRACK_TO` stand-in, or a flipped axis fails the
 check.
 
-## Framing deviation
-
-Radiating composition — the twelve spikes read as converging on the core from
-beyond the frame, so their tails bleed past the left, right, and bottom edges
-by design (measured fill 1.000x/0.917y with edge touch on three sides). If
-wired to `examples/gallery_framing.py`, call it with
-`deviation="radiating composition; spikes read as extending past frame"`.
+The stands, ball pivots and the orb's pedestal are render-only staging, built after
+the check. The ring opens toward the camera so no head hides the orb. The render
+path gates framing through `examples/gallery_framing.py` (exit 10) before writing the
+still.
 
 ## Run
 
@@ -44,16 +46,16 @@ against it.
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Needle count ≠ 12 |
-| 4 | Needle does not carry exactly one DAMPED_TRACK |
-| 5 | Constraint target is not Core |
+| 3 | Lamp count ≠ 12 |
+| 4 | Lamp does not carry exactly one DAMPED_TRACK |
+| 5 | Constraint target is not Orb |
 | 6 | `track_axis` is not TRACK_Z |
 | 7 | Constraint muted or influence < 1 (`--mute` lands here) |
 | 8 | TRACK_TO still present |
 | 9 | Evaluated aim dot below 0.998 |
-| 10 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
 Smoke does not pass `--output` or `--mute`.
-

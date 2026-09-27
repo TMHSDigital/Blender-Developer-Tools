@@ -720,7 +720,7 @@ harness asserts `exit_pre-ok` after the process exits. Skips 4.5
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/damped-track-aim/"><img src="examples/damped-track-aim/preview.webp" alt="Damped Track aim: brass spikes in a tilted cage around an ember core on a dark studio plinth, each tip constrained toward the center" /></a>
+<a href="examples/damped-track-aim/"><img src="examples/damped-track-aim/preview.webp" alt="Damped Track aim: twelve red-and-brass spotlight heads on stands in an open ring, each lens constrained to face a glowing amber orb on a brass pedestal" /></a>
 </td>
 <td valign="middle">
 
