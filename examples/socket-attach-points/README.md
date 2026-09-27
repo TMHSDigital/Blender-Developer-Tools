@@ -107,8 +107,13 @@ socket drift (exit 8).
 5.1.2 — same counts, same measured deviations to every printed digit, and the
 same framing numbers on the render path.
 
-**Render as proof:** the drone on the dark stage with every module seated, the
-orange mount pads reading as the socket signature. The falsification variant
+**Render as proof:** the drone hovering over the dark stage with every module
+seated, the orange mount pads reading as the socket signature. The livery is
+two-tone — a gloss cobalt fuselage shell (the pads' complement, so the sockets
+pop), off-white arm fairings and spinners, graphite deck and trim — and the
+booms carry a procedural twill carbon weave under a clear coat. The camera
+looks down at the airframe, so the floor is the backdrop: a small close key
+keeps its falloff on the drone and the warm wedge pools on the floor behind it. The falsification variant
 (`--falsify`) parents the sockets without `matrix_parent_inverse`: the pads
 are left bare, the rotors and mast vanish from the airframe, and the camera
 pod and battery hang in space near the top of frame. A broken matrix is not a
@@ -124,8 +129,9 @@ blender --background --python socket_attach_points.py -- --probe
 ```
 
 The `--output` render path additionally gates framing via
-`examples/gallery_framing.py` (fill **0.881x**, margins
-**0.066/0.053/0.122/0.106**, no edge touched) and the asset floors via
+`examples/gallery_framing.py` (fill **0.741x**, margins
+**0.131/0.128/0.172/0.156**, no edge touched — pulled back from 0.881x so the
+rotor tips clear gallery card crops) and the asset floors via
 `examples/gallery_asset_quality.py` (32 materials, `edge90` **0.027**, no
 default names). `--falsify` is a diagnostic, not a gallery hero: it
 measures and prints framing but does not enforce the Layer 1 band —

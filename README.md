@@ -1181,7 +1181,7 @@ by an independent SAT scan, and a measured min island distance of
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/socket-attach-points/"><img src="examples/socket-attach-points/preview.webp" alt="Socket attach points: a dark carbon survey quadcopter hovering on a studio stage, orange mount pads ringing each canted rotor, a gimbal camera pod under the belly and a sensor mast on the deck — every module seated exactly on its named socket" /></a>
+<a href="examples/socket-attach-points/"><img src="examples/socket-attach-points/preview.webp" alt="Socket attach points: a cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a studio stage, orange mount pads ringing each canted rotor, a gimbal camera pod under the belly and a sensor mast on the deck — every module seated exactly on its named socket" /></a>
 </td>
 <td valign="middle">
 

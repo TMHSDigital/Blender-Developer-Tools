@@ -912,13 +912,17 @@ def make_material(name, rgb, rough=0.45, metallic=0.6, emit=None, estr=0.0):
 # One entry per material slot name used by the Part builders above:
 # (base rgb, roughness, metallic, emission rgb or None, emission strength).
 SLOT_MATS = {
-    "Carbon":     ((0.044, 0.049, 0.060), 0.62, 0.22, None, 0.0),
-    "Deck":       ((0.058, 0.067, 0.080), 0.52, 0.55, None, 0.0),
-    "Canopy":     ((0.020, 0.048, 0.062), 0.14, 0.30, None, 0.0),
-    "Vent":       ((0.066, 0.074, 0.086), 0.58, 0.70, None, 0.0),
-    "Trim":       ((0.046, 0.052, 0.062), 0.72, 0.30, None, 0.0),
-    "Boom":       ((0.040, 0.045, 0.055), 0.40, 0.60, None, 0.0),
-    "Fairing":    ((0.050, 0.056, 0.068), 0.64, 0.45, None, 0.0),
+    # two-tone survey livery: a gloss cobalt fuselage shell with off-white arm fairings and spinners
+    # over a graphite deck and trim, so the airframe separates from the dark
+    # stage and the orange mount pads read against both tones
+    "Carbon":     ((0.030, 0.120, 0.360), 0.26, 0.00, None, 0.0),
+    "Deck":       ((0.050, 0.056, 0.066), 0.44, 0.55, None, 0.0),
+    "Canopy":     ((0.012, 0.030, 0.042), 0.08, 0.30, None, 0.0),
+    "Vent":       ((0.030, 0.033, 0.040), 0.50, 0.70, None, 0.0),
+    "Trim":       ((0.036, 0.040, 0.048), 0.46, 0.30, None, 0.0),
+    # booms are woven carbon fibre (see WEAVE_SLOTS), not flat grey
+    "Boom":       ((0.022, 0.024, 0.028), 0.30, 0.20, None, 0.0),
+    "Fairing":    ((0.600, 0.610, 0.600), 0.30, 0.00, None, 0.0),
     "Motor":      ((0.150, 0.158, 0.172), 0.26, 0.92, None, 0.0),
     "MotorFin":   ((0.108, 0.114, 0.126), 0.30, 0.90, None, 0.0),
     "NavFwd":     ((0.060, 0.140, 0.090), 0.30, 0.10, (0.30, 1.00, 0.55), 2.6),
@@ -931,7 +935,7 @@ SLOT_MATS = {
     "SocketPad":  ((0.640, 0.250, 0.045), 0.34, 0.40, None, 0.0),
     "Fixing":     ((0.170, 0.176, 0.188), 0.24, 0.95, None, 0.0),
     "Hub":        ((0.120, 0.126, 0.138), 0.28, 0.90, None, 0.0),
-    "Spinner":    ((0.520, 0.200, 0.038), 0.26, 0.55, None, 0.0),
+    "Spinner":    ((0.600, 0.610, 0.600), 0.28, 0.00, None, 0.0),
     "Blade":      ((0.072, 0.076, 0.086), 0.26, 0.40, None, 0.0),
     "PodYoke":    ((0.096, 0.102, 0.114), 0.34, 0.85, None, 0.0),
     "PodBall":    ((0.038, 0.052, 0.062), 0.22, 0.45, None, 0.0),
@@ -950,11 +954,40 @@ SLOT_MATS = {
 
 _mat_cache = {}
 
+# slots that get a procedural 2x2 twill weave: alternating tows at two
+# roughnesses and tones, under a clear coat, in object space so the weave
+# follows each boom rather than the world
+WEAVE_SLOTS = {"Boom"}
+
+
+def add_weave(mat, rgb, rough):
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    chk = nt.nodes.new("ShaderNodeTexChecker")
+    chk.inputs["Scale"].default_value = 180.0
+    chk.inputs["Color1"].default_value = (*rgb, 1.0)
+    chk.inputs["Color2"].default_value = (*(c * 2.6 for c in rgb), 1.0)
+    nt.links.new(tc.outputs["Object"], chk.inputs["Vector"])
+    nt.links.new(chk.outputs["Color"], b.inputs["Base Color"])
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = rough + 0.18
+    mr.inputs["To Max"].default_value = rough - 0.08
+    nt.links.new(chk.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], b.inputs["Roughness"])
+    coat = b.inputs.get("Coat Weight")
+    if coat is not None:
+        coat.default_value = 0.8
+        b.inputs["Coat Roughness"].default_value = 0.06
+
 
 def mat_for_slot(slot):
     if slot not in _mat_cache:
         rgb, rough, metal, emit, estr = SLOT_MATS[slot]
-        _mat_cache[slot] = make_material(slot, rgb, rough, metal, emit, estr)
+        mat = make_material(slot, rgb, rough, metal, emit, estr)
+        if slot in WEAVE_SLOTS:
+            add_weave(mat, rgb, rough)
+        _mat_cache[slot] = mat
     return _mat_cache[slot]
 
 
@@ -975,7 +1008,7 @@ def build_studio(sc):
         bm.to_mesh(floor_me)
     finally:
         bm.free()
-    fmat = make_material("Studio", (0.030, 0.032, 0.037), rough=0.7, metallic=0.0)
+    fmat = make_material("Studio", (0.020, 0.021, 0.025), rough=0.7, metallic=0.0)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     sc.collection.objects.link(floor)
@@ -1004,14 +1037,16 @@ def build_studio(sc):
         return ob
 
     # VISUAL-STYLE Layer 2 rig, energies scaled to a 0.86 m subject
-    light("Key", (-1.30, -0.80, 2.30), 150.0, 1.4, (1.0, 0.96, 0.9), (26, 0, -58))
-    light("Fill", (1.70, -1.00, 0.90), 14.0, 2.6, (0.75, 0.85, 1.0), (66, 0, 54))
-    light("Rim", (-0.35, 1.60, 1.40), 55.0, 1.2, (0.6, 0.78, 1.0), (-50, 0, 196))
-    # Wedge sits between subject and wall, aimed at the wall, not the drone.
-    # Draft 3 put it high and hot: the pool blew to white and was clipped by
-    # the top-right corner. Low, larger and softer keeps the pool contained
-    # behind the subject where it lifts the silhouette.
-    light("Wedge", (0.10, 3.30, 0.34), 70.0, 3.0, (1.0, 0.76, 0.5), (-88, 0, 182))
+    # Key is small and close so its falloff stays on the airframe: the old
+    # 150 W / 1.4 m key washed the whole floor to mid grey under the
+    # three-quarter-down camera (the white livery needs far less light)
+    light("Key", (-1.00, -0.70, 1.90), 60.0, 0.9, (1.0, 0.95, 0.88), (30, 0, -55))
+    light("Fill", (1.70, -1.00, 0.90), 8.0, 2.6, (0.75, 0.85, 1.0), (66, 0, 54))
+    light("Rim", (-0.35, 1.60, 1.40), 45.0, 1.2, (0.6, 0.78, 1.0), (-50, 0, 196))
+    # The camera looks down at the drone, so the floor is the backdrop: the
+    # warm wedge pools on the floor behind and under the airframe, where its
+    # shadow and the pool frame the silhouette (the back wall barely shows)
+    light("Wedge", (-0.10, 1.10, 1.70), 65.0, 1.6, (1.0, 0.56, 0.26), (-18, 0, 180))
     return floor, wall
 
 
@@ -1030,6 +1065,13 @@ def render_still(path, engine, falsify=False):
     hero = parts + list(modules.values())
     for ob in hero:
         bind_materials(ob)
+    # render-only shading: the lofted fuselage shell reads as a moulded part,
+    # smooth across its loft bands, while box edges stay crisp. Positions are
+    # untouched, so nothing the socket checks measure changes.
+    hull = next(ob for ob in hero if ob.data.name.endswith("Hull"))
+    for poly in hull.data.polygons:
+        poly.use_smooth = True
+    hull.data.set_sharp_from_angle(angle=math.radians(38.0))
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
@@ -1038,7 +1080,7 @@ def render_still(path, engine, falsify=False):
     # three-quarter from above: the deck, the canted rotor pads and the belly
     # pod all read from here; a level side-on view (draft 2) flattened the
     # airframe into a silhouette
-    cam.location = (1.28, -1.42, 1.44)
+    cam.location = (1.445, -1.612, 1.558)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (0.10, -0.05, 0.60)
