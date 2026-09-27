@@ -1417,6 +1417,70 @@ def check(
     return 0, low, high, wood, tex, collider
 
 
+def polish_face(mat):
+    """Render only: up-facing steel (the working face and horn top) is worn
+    bright by the hammer, the flanks keep the dark forge scale."""
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(geo.outputs["Normal"], sep.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeMapRange")
+    ramp.inputs["From Min"].default_value = 0.82
+    ramp.inputs["From Max"].default_value = 0.97
+    nt.links.new(sep.outputs["Z"], ramp.inputs["Value"])
+    for sock_name, bright in (("Base Color", (0.50, 0.50, 0.52, 1.0)), ("Roughness", 0.16)):
+        sock = bsdf.inputs[sock_name]
+        src = sock.links[0].from_socket if sock.is_linked else None
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA" if sock_name == "Base Color" else "FLOAT"
+        a_in, b_in = mix.inputs["A"], mix.inputs["B"]
+        if mix.data_type == "RGBA":
+            a_in = [i for i in mix.inputs if i.name == "A" and i.type == "RGBA"][0]
+            b_in = [i for i in mix.inputs if i.name == "B" and i.type == "RGBA"][0]
+        else:
+            a_in = [i for i in mix.inputs if i.name == "A" and i.type == "VALUE"][0]
+            b_in = [i for i in mix.inputs if i.name == "B" and i.type == "VALUE"][0]
+        if src is not None:
+            nt.links.new(src, a_in)
+        else:
+            a_in.default_value = sock.default_value
+        b_in.default_value = bright
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(ramp.outputs["Result"], fac)
+        out = [o for o in mix.outputs if o.name == "Result" and
+               o.type == ("RGBA" if mix.data_type == "RGBA" else "VALUE")][0]
+        nt.links.new(out, sock)
+
+
+def build_hammer(scene, steel, wood):
+    """Render only: a cross-peen hammer lying on the floor against the stump."""
+    me = bpy.data.meshes.new("Hammer")
+    bm = bmesh.new()
+    try:
+        res = bmesh.ops.create_cone(bm, cap_ends=True, segments=12, radius1=0.013,
+                                    radius2=0.015, depth=0.34)
+        for v in res["verts"]:
+            v.co = Vector((v.co.z, v.co.y, v.co.x))       # handle along +X
+        head = bmesh.ops.create_cube(bm, size=1.0)
+        for v in head["verts"]:
+            v.co = Vector((v.co.x * 0.036 + 0.17, v.co.y * 0.115, v.co.z * 0.036))
+        head_faces = {f for v in head["verts"] for f in v.link_faces}
+        for f in bm.faces:
+            f.material_index = 1 if f in head_faces else 0
+            f.smooth = f not in head_faces
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.materials.append(wood)
+    me.materials.append(steel)
+    ob = bpy.data.objects.new("Hammer", me)
+    ob.location = (0.27, 0.10, 0.036)
+    ob.rotation_euler = (0.0, 0.0, math.radians(62.0))
+    scene.collection.objects.link(ob)
+    return ob
+
+
 def render_still(low, _wood, _tex, path, engine):
     scene = bpy.context.scene
     for ob in list(scene.objects):
@@ -1465,9 +1529,21 @@ def render_still(low, _wood, _tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Key", (-3.6, -5.0, 5.4), 620.0, 3.0, (1.0, 0.94, 0.86), (50, 0, -36))
     light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    # an off-frame forge: a low warm point to one side, so the steel picks up
+    # an orange edge the way an anvil does in a working smithy
+    forge = bpy.data.lights.new("Forge", "POINT")
+    forge.energy = 55.0
+    forge.color = (1.0, 0.45, 0.14)
+    forge.shadow_soft_size = 0.25
+    forge_ob = bpy.data.objects.new("Forge", forge)
+    forge_ob.location = (0.95, 0.35, 0.42)
+    scene.collection.objects.link(forge_ob)
+
+    polish_face(low.data.materials[METAL_IDX])
+    hammer = build_hammer(scene, low.data.materials[METAL_IDX], _wood)
 
     bb = world_bbox(low)
     span = max(bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2], 0.2)
@@ -1505,7 +1581,7 @@ def render_still(low, _wood, _tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, hammer], stage=[floor, wall],
     )
     if fcode:
         return fcode

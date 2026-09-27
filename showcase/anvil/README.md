@@ -87,6 +87,13 @@ it is now dark forged steel with rust. Staves and head carry their own
 wood tone and grain. The stage grid grew from 14 to 60 m. The temp `.glb`
 is removed after its size is measured.
 
+The hero dresses the scene without touching the checked mesh: up-facing
+steel (the working face and the top of the horn) is mixed toward bright,
+low-roughness metal by the geometry normal, as a hammer polishes it; a
+render-only cross-peen hammer lies on the floor beside the stump; and a
+low warm point light off frame stands in for the forge. The hammer is in
+the framing gate's element set, so it has to clear the frame edges too.
+
 ### Falsifiers
 
 Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and
