@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>damped-track-aim — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
+  <meta name="description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/damped-track-aim/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="damped-track-aim — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
+  <meta property="og:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/damped-track-aim/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/damped-track-aim-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Gold spikes arranged around a glowing sphere, every tip aimed at the sphere." />
+  <meta property="og:image:alt" content="Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="damped-track-aim — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
+  <meta name="twitter:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/damped-track-aim-hero.webp" />
-  <meta name="twitter:image:alt" content="Gold spikes arranged around a glowing sphere, every tip aimed at the sphere." />
+  <meta name="twitter:image:alt" content="Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -347,25 +347,25 @@
   </div>
   <header class="hero">
     <h1>damped-track-aim</h1>
-    <p>Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.</p>
+    <p>Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb.</p>
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../compositor-glare/" aria-label="Previous example: compositor-glare"><span aria-hidden="true">&larr;</span> compositor-glare</a><span class="pager-pos hud">15 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../color-attribute-wheel/" aria-label="Next example: color-attribute-wheel">color-attribute-wheel <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Gold spikes arranged around a glowing sphere, every tip aimed at the sphere.">
-      <img src="../assets/damped-track-aim-hero.webp" alt="Gold spikes arranged around a glowing sphere, every tip aimed at the sphere." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal.">
+      <img src="../assets/damped-track-aim-hero.webp" alt="Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.</div>
+    <div class="callout"><span class="tag">witnesses</span> Every lamp head has one unmuted DAMPED_TRACK on the orb; evaluated local +Z (the lens) aligns toward the orb (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=constraints">constraints</a> <a href="../#tag=animation">animation</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/damped-track-aim/damped_track_aim.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that aims twelve brass spikes at an ember core with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
-<p><strong>What it witnesses:</strong> every spike carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3.6°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
-<h2 id="framing-deviation">Framing deviation<a class="anchor" href="#framing-deviation" aria-label="Link to this section">#</a></h2>
-<p>Radiating composition — the twelve spikes read as converging on the core from beyond the frame, so their tails bleed past the left, right, and bottom edges by design (measured fill 1.000x/0.917y with edge touch on three sides). If wired to <code>examples/gallery_framing.py</code>, call it with <code>deviation=&quot;radiating composition; spikes read as extending past frame&quot;</code>.</p>
+<p>A runnable example that swings twelve spotlight heads onto one glowing orb with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
+<p>Each head is lathed with its lens on local <code>+Z</code> and created with an identity rotation, standing in an open ring at alternating low and high heights. Only the constraint turns the lenses onto the orb, so heads above it aim down and heads below it aim up. In the still, every lens facing the orb is the aim.</p>
+<p><strong>What it witnesses:</strong> every lamp head carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the orb on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the orb (dot ≥ 0.998 ≈ 3.6°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
+<p>The stands, ball pivots and the orb&#x27;s pedestal are render-only staging, built after the check. The ring opens toward the camera so no head hides the orb. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
@@ -378,16 +378,16 @@ blender --background --python damped_track_aim.py -- --output aim.png
 blender --background --python damped_track_aim.py -- --output aim.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Needle count ≠ 12</td></tr><tr><td>4</td><td>Needle does not carry exactly one DAMPED_TRACK</td></tr><tr><td>5</td><td>Constraint target is not Core</td></tr><tr><td>6</td><td><code>track_axis</code> is not TRACK_Z</td></tr><tr><td>7</td><td>Constraint muted or influence &lt; 1 (<code>--mute</code> lands here)</td></tr><tr><td>8</td><td>TRACK_TO still present</td></tr><tr><td>9</td><td>Evaluated aim dot below 0.998</td></tr><tr><td>10</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Lamp count ≠ 12</td></tr><tr><td>4</td><td>Lamp does not carry exactly one DAMPED_TRACK</td></tr><tr><td>5</td><td>Constraint target is not Orb</td></tr><tr><td>6</td><td><code>track_axis</code> is not TRACK_Z</td></tr><tr><td>7</td><td>Constraint muted or influence &lt; 1 (<code>--mute</code> lands here)</td></tr><tr><td>8</td><td>TRACK_TO still present</td></tr><tr><td>9</td><td>Evaluated aim dot below 0.998</td></tr><tr><td>10</td><td>Framing gate violation on the <code>--output</code> path (<code>gallery_framing</code>)</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--mute</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/damped-track-aim/damped_track_aim.py</code>
-        <span>414 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/damped-track-aim/damped_track_aim.py">View on GitHub &rarr;</a></span>
+        <span>461 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/damped-track-aim/damped_track_aim.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="414">
+      <div class="code" data-lines="461">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -801,7 +801,54 @@ blender --background --python damped_track_aim.py -- --output aim.png --engine c
 411
 412
 413
-414</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Damped Track needles aiming at an emissive core — a runnable example.
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Damped Track spotlight heads aiming at a glowing orb — a runnable example.
 
 Witnesses that aim constraints are authored on the data API
 (`Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)`, `target`, `track_axis`) — not via
@@ -809,11 +856,14 @@ Witnesses that aim constraints are authored on the data API
 headless loops). Damped Track is the twist-stable replacement for Track To
 when you only need an axis to point at a target.
 
-The check asserts every needle carries exactly one DAMPED_TRACK aimed at the
-core on TRACK_Z, then samples the evaluated depsgraph: local +Z must align
-with the world vector toward the core within a tight angular epsilon. If the
-constraint is missing, muted, mistyped as TRACK_TO, or the axis is flipped,
-the dot product fails.
+Twelve spotlight heads stand in an open ring around a glowing target orb, at
+alternating low and high stand heights. Each head is modeled with its lens on
+local +Z and created with an identity rotation, so the constraint alone must
+swing every lens onto the orb. The check asserts every head carries exactly
+one DAMPED_TRACK aimed at the orb on TRACK_Z, then samples the evaluated
+depsgraph: local +Z must align with the world vector toward the orb within a
+tight angular epsilon. If the constraint is missing, muted, mistyped as
+TRACK_TO, or the axis is flipped, the dot product fails.
 
 ``--mute`` mutes every DAMPED_TRACK and still asserts unmute. That is the
 falsifier (``--same-axis`` in export-preset-axis).
@@ -828,92 +878,111 @@ check. Pass --output to also render a still:
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
 
-N_NEEDLES = <span class="n">12</span>
-ORBIT_RADIUS = <span class="n">1.85</span>
-CORE_RADIUS = <span class="n">0.32</span>
-NEEDLE_DEPTH = <span class="n">1.05</span>
-NEEDLE_RADIUS = <span class="n">0.055</span>
-<span class="c"># Local +Z must face the core; 0.998 = cos(3.6°) — leave a little room for</span>
-<span class="c"># cone tessellation / float noise while still catching a flipped axis.</span>
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see</span>
+<span class="c"># gallery_framing.py for the __file__-relative import shim this relies on.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+N_LAMPS = <span class="n">12</span>
+RING_RADIUS = <span class="n">2.45</span>
+ORB_RADIUS = <span class="n">0.36</span>
+LIFT = <span class="n">1.55</span>                     <span class="c"># orb centre height</span>
+LOW_Z, HIGH_Z = <span class="n">0.72</span>, <span class="n">2.55</span>      <span class="c"># alternating stand heights: lamps aim up, then down</span>
+<span class="c"># The ring opens toward the camera (-Y) so no head hides the orb: the lamps</span>
+<span class="c"># span ARC_DEG centred on +Y.</span>
+ARC_DEG = <span class="n">210.0</span>
+<span class="c"># Local +Z must face the orb; 0.998 = cos(3.6°) — leave a little room for</span>
+<span class="c"># float noise while still catching a flipped axis.</span>
 MIN_AIM_DOT = <span class="n">0.998</span>
-LIFT = <span class="n">1.55</span>
+SEGS = <span class="n">40</span>
+
+<span class="c"># Spotlight head, lathed about local Z with the lens on +Z and the pivot at the</span>
+<span class="c"># origin: (r, z, material) rings back to front. Materials: 0 enamel body,</span>
+<span class="c"># 1 brass bezel, 2 lens, 3 steel cooling fins.</span>
+HEAD_PROFILE = [
+    (<span class="n">0.0</span>, -<span class="n">0.27</span>, <span class="n">3</span>), (<span class="n">0.11</span>, -<span class="n">0.27</span>, <span class="n">3</span>), (<span class="n">0.15</span>, -<span class="n">0.255</span>, <span class="n">3</span>),
+    (<span class="n">0.205</span>, -<span class="n">0.245</span>, <span class="n">3</span>), (<span class="n">0.205</span>, -<span class="n">0.225</span>, <span class="n">3</span>), (<span class="n">0.165</span>, -<span class="n">0.215</span>, <span class="n">3</span>), (<span class="n">0.165</span>, -<span class="n">0.2</span>, <span class="n">3</span>),
+    (<span class="n">0.205</span>, -<span class="n">0.19</span>, <span class="n">3</span>), (<span class="n">0.205</span>, -<span class="n">0.17</span>, <span class="n">3</span>), (<span class="n">0.165</span>, -<span class="n">0.16</span>, <span class="n">3</span>), (<span class="n">0.165</span>, -<span class="n">0.145</span>, <span class="n">3</span>),
+    (<span class="n">0.205</span>, -<span class="n">0.135</span>, <span class="n">3</span>), (<span class="n">0.205</span>, -<span class="n">0.115</span>, <span class="n">3</span>), (<span class="n">0.18</span>, -<span class="n">0.105</span>, <span class="n">3</span>),
+    (<span class="n">0.19</span>, -<span class="n">0.09</span>, <span class="n">0</span>), (<span class="n">0.195</span>, -<span class="n">0.07</span>, <span class="n">0</span>), (<span class="n">0.195</span>, <span class="n">0.10</span>, <span class="n">0</span>), (<span class="n">0.205</span>, <span class="n">0.12</span>, <span class="n">0</span>),
+    (<span class="n">0.228</span>, <span class="n">0.13</span>, <span class="n">1</span>), (<span class="n">0.238</span>, <span class="n">0.15</span>, <span class="n">1</span>), (<span class="n">0.238</span>, <span class="n">0.21</span>, <span class="n">1</span>), (<span class="n">0.225</span>, <span class="n">0.225</span>, <span class="n">1</span>),
+    (<span class="n">0.182</span>, <span class="n">0.228</span>, <span class="n">1</span>), (<span class="n">0.172</span>, <span class="n">0.22</span>, <span class="n">2</span>), (<span class="n">0.12</span>, <span class="n">0.232</span>, <span class="n">2</span>), (<span class="n">0.0</span>, <span class="n">0.238</span>, <span class="n">2</span>),
+]
 
 
-<span class="k">def</span> orbit_positions(n, radius):
-    <span class="s">&quot;&quot;&quot;Tilted equatorial ring + poles — readable as a cage, not a flat wreath.&quot;&quot;&quot;</span>
+<span class="k">def</span> lamp_positions():
+    <span class="s">&quot;&quot;&quot;Open ring of stand-top pivots, heights alternating low / high.&quot;&quot;&quot;</span>
     pts = []
-    ring = n - <span class="n">2</span>
-    tilt = math.radians(<span class="n">18.0</span>)
-    <span class="k">for</span> i <span class="k">in</span> range(ring):
-        a = <span class="n">2.0</span> * math.pi * i / ring + math.radians(<span class="n">9.0</span>)
-        x = radius * math.cos(a)
-        y = radius * math.sin(a) * math.cos(tilt)
-        z = radius * math.sin(a) * math.sin(tilt)
-        pts.append(Vector((x, y, z)))
-    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, radius * <span class="n">0.92</span>)))
-    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -radius * <span class="n">0.92</span>)))
+    start = <span class="n">90.0</span> - ARC_DEG / <span class="n">2.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(N_LAMPS):
+        a = math.radians(start + ARC_DEG * i / (N_LAMPS - <span class="n">1</span>))
+        z = LOW_Z <span class="k">if</span> i % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> HIGH_Z
+        pts.append(Vector((RING_RADIUS * math.cos(a), RING_RADIUS * math.sin(a), z)))
     <span class="k">return</span> pts
 
 
-<span class="k">def</span> make_needle_mesh():
-    <span class="s">&quot;&quot;&quot;Long tapered spike with tip on +Z — TRACK_Z aims the tip at the core.&quot;&quot;&quot;</span>
-    me = bpy.data.meshes.new(<span class="s">&quot;Needle&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cone(
-            bm,
-            cap_ends=<span class="k">True</span>,
-            segments=<span class="n">48</span>,
-            radius1=NEEDLE_RADIUS,
-            radius2=<span class="n">0.0</span>,
-            depth=NEEDLE_DEPTH,
-        )
-        <span class="c"># Slight belly toward the base so it reads as turned metal, not a pencil.</span>
-        <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            <span class="c"># Map z from [-d/2, +d/2] → t in [0,1] (base→tip).</span>
-            t = (v.co.z + NEEDLE_DEPTH * <span class="n">0.5</span>) / NEEDLE_DEPTH
-            flare = <span class="n">1.0</span> + <span class="n">0.55</span> * ((<span class="n">1.0</span> - t) ** <span class="n">2</span>)
-            v.co.x *= flare
-            v.co.y *= flare
-        bm.normal_update()
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">True</span>
+<span class="k">def</span> lathe(bm, profile, segs=SEGS):
+    <span class="s">&quot;&quot;&quot;Revolve (r, z, mat) rings about local Z; r == 0 rings become poles.
+    A band takes the material of its upper ring.&quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> r, z, _m <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt; <span class="n">1e-9</span>:
+            rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+        <span class="k">else</span>:
+            rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / segs),
+                                        r * math.sin(<span class="n">2</span> * math.pi * s / segs), z))
+                          <span class="k">for</span> s <span class="k">in</span> range(segs)])
+    <span class="k">for</span> k, (a, b) <span class="k">in</span> enumerate(zip(rings, rings[<span class="n">1</span>:])):
+        mat = profile[k + <span class="n">1</span>][<span class="n">2</span>]
+        <span class="k">for</span> s <span class="k">in</span> range(segs):
+            t = (s + <span class="n">1</span>) % segs
+            <span class="k">if</span> len(a) == <span class="n">1</span>:
+                vs = (a[<span class="n">0</span>], b[t], b[s])
+            <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                vs = (a[s], a[t], b[<span class="n">0</span>])
+            <span class="k">else</span>:
+                vs = (a[s], a[t], b[t], b[s])
+            f = bm.faces.new(vs)
+            f.material_index = mat
+            f.smooth = <span class="k">True</span>
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> finish(bm, me, sharp_deg=<span class="n">40.0</span>):
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    me.set_sharp_from_angle(angle=math.radians(sharp_deg))
     <span class="k">return</span> me
 
 
-<span class="k">def</span> make_core_mesh():
-    me = bpy.data.meshes.new(<span class="s">&quot;Core&quot;</span>)
+<span class="k">def</span> make_head_mesh():
+    <span class="s">&quot;&quot;&quot;Spotlight can with its lens on +Z — TRACK_Z swings the lens onto the orb.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;LampHead&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=CORE_RADIUS)
-        bm.to_mesh(me)
+        lathe(bm, HEAD_PROFILE)
+        <span class="c"># tilt-lock knobs on both flanks, where a yoke would pin the can</span>
+        <span class="k">for</span> side <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            vs = lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1</span>), (<span class="n">0.045</span>, <span class="n">0.0</span>, <span class="n">1</span>), (<span class="n">0.05</span>, <span class="n">0.02</span>, <span class="n">1</span>),
+                            (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">1</span>), (<span class="n">0.03</span>, <span class="n">0.065</span>, <span class="n">1</span>), (<span class="n">0.0</span>, <span class="n">0.065</span>, <span class="n">1</span>)], segs=<span class="n">16</span>)
+            <span class="k">for</span> v <span class="k">in</span> vs:
+                v.co = Vector((side * (<span class="n">0.195</span> + v.co.z), v.co.x, v.co.y - <span class="n">0.02</span>))
+        finish(bm, me)
     <span class="k">finally</span>:
         bm.free()
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">True</span>
     <span class="k">return</span> me
 
 
-<span class="k">def</span> make_plinth_mesh():
-    me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
+<span class="k">def</span> make_orb_mesh():
+    me = bpy.data.meshes.new(<span class="s">&quot;Orb&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cone(
-            bm,
-            cap_ends=<span class="k">True</span>,
-            segments=<span class="n">64</span>,
-            radius1=<span class="n">1.55</span>,
-            radius2=<span class="n">1.35</span>,
-            depth=<span class="n">0.12</span>,
-        )
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">64</span>, v_segments=<span class="n">32</span>, radius=ORB_RADIUS)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">True</span>
     <span class="k">return</span> me
 
 
@@ -926,45 +995,39 @@ LIFT = <span class="n">1.55</span>
         socks[<span class="s">&quot;Specular&quot;</span>].default_value = value
 
 
-<span class="k">def</span> make_metal(name, color, roughness=<span class="n">0.22</span>, metallic=<span class="n">1.0</span>):
+<span class="k">def</span> make_material(name, color, roughness, metallic=<span class="n">0.0</span>, noise=<span class="k">None</span>, emit=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     set_specular(bsdf, <span class="n">0.5</span>)
-    <span class="k">return</span> mat
-
-
-<span class="k">def</span> make_core_material():
-    <span class="s">&quot;&quot;&quot;Dark shell + ember emission so the core has form, not a clipped white blob.&quot;&quot;&quot;</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;CoreEmber&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.01</span>, <span class="n">0.015</span>, <span class="n">1.0</span>)
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.18</span>
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.85</span>
-    set_specular(bsdf, <span class="n">0.6</span>)
-    <span class="c"># Principled emission — present on both 4.5 and 5.x.</span>
-    <span class="k">if</span> <span class="s">&quot;Emission Color&quot;</span> <span class="k">in</span> bsdf.inputs:
-        bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.22</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
-        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">6.5</span>
-    <span class="k">elif</span> <span class="s">&quot;Emission&quot;</span> <span class="k">in</span> bsdf.inputs:
-        bsdf.inputs[<span class="s">&quot;Emission&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.22</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
-        <span class="k">if</span> <span class="s">&quot;Emission Strength&quot;</span> <span class="k">in</span> bsdf.inputs:
-            bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">6.5</span>
-    <span class="k">return</span> mat
-
-
-<span class="k">def</span> make_dielectric(name, color, roughness=<span class="n">0.35</span>):
-    mat = bpy.data.materials.new(name)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
-    set_specular(bsdf, <span class="n">0.45</span>)
+    <span class="k">if</span> noise:
+        <span class="c"># handling wear: noise-mottled roughness, never a flat slot</span>
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+        mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = max(<span class="n">0.0</span>, roughness - <span class="n">0.08</span>)
+        mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = roughness + <span class="n">0.14</span>
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">if</span> emit:
+        col, core, rim = emit
+        key = <span class="s">&quot;Emission Color&quot;</span> <span class="k">if</span> <span class="s">&quot;Emission Color&quot;</span> <span class="k">in</span> bsdf.inputs <span class="k">else</span> <span class="s">&quot;Emission&quot;</span>
+        bsdf.inputs[key].default_value = (*col, <span class="n">1.0</span>)
+        <span class="c"># hot where the surface faces the eye, cooling at the silhouette, so a</span>
+        <span class="c"># glowing sphere keeps its form instead of clipping to a flat disc</span>
+        lw = nt.nodes.new(<span class="s">&quot;ShaderNodeLayerWeight&quot;</span>)
+        lw.inputs[<span class="s">&quot;Blend&quot;</span>].default_value = <span class="n">0.25</span>
+        mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = core
+        mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rim
+        mr.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.6</span>
+        nt.links.new(lw.outputs[<span class="s">&quot;Facing&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -972,41 +1035,46 @@ LIFT = <span class="n">1.55</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     col = bpy.context.collection
 
-    core = bpy.data.objects.new(<span class="s">&quot;Core&quot;</span>, make_core_mesh())
-    core.data.materials.append(make_core_material())
-    core.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT)
-    col.objects.link(core)
+    orb = bpy.data.objects.new(<span class="s">&quot;Orb&quot;</span>, make_orb_mesh())
+    orb.data.materials.append(make_material(
+        <span class="s">&quot;OrbGlow&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.025</span>, <span class="n">0.01</span>), <span class="n">0.16</span>, emit=((<span class="n">1.0</span>, <span class="n">0.28</span>, <span class="n">0.03</span>), <span class="n">0.98</span>, <span class="n">0.3</span>)))
+    orb.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT)
+    col.objects.link(orb)
 
-    needle_me = make_needle_mesh()
-    <span class="c"># Warm brass — rim light + ember core will ping reflections hard.</span>
-    metal = make_metal(<span class="s">&quot;NeedleMetal&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.55</span>, <span class="n">0.28</span>), roughness=<span class="n">0.16</span>)
-    needle_me.materials.append(metal)
+    head_me = make_head_mesh()
+    head_me.materials.append(make_material(<span class="s">&quot;Enamel&quot;</span>, (<span class="n">0.34</span>, <span class="n">0.035</span>, <span class="n">0.03</span>), <span class="n">0.3</span>, noise=<span class="n">14.0</span>))
+    head_me.materials.append(make_material(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.8</span>, <span class="n">0.56</span>, <span class="n">0.24</span>), <span class="n">0.24</span>,
+                                           metallic=<span class="n">1.0</span>, noise=<span class="n">30.0</span>))
+    head_me.materials.append(make_material(<span class="s">&quot;Lens&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.75</span>, <span class="n">0.5</span>), <span class="n">0.08</span>,
+                                           emit=((<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.38</span>), <span class="n">0.7</span>, <span class="n">0.4</span>)))
+    head_me.materials.append(make_material(<span class="s">&quot;Fins&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">0.1</span>), <span class="n">0.42</span>,
+                                           metallic=<span class="n">0.9</span>, noise=<span class="n">22.0</span>))
 
-    needles = []
-    <span class="k">for</span> i, loc <span class="k">in</span> enumerate(orbit_positions(N_NEEDLES, ORBIT_RADIUS)):
-        ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Needle_</span>{i:<span class="s">02d</span>}<span class="s">&quot;</span>, needle_me)
-        ob.location = (loc.x, loc.y, loc.z + LIFT)
+    lamps = []
+    <span class="k">for</span> i, loc <span class="k">in</span> enumerate(lamp_positions()):
+        ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Lamp_</span>{i:<span class="s">02d</span>}<span class="s">&quot;</span>, head_me)
+        ob.location = loc
         <span class="c"># Deliberate identity rotation — the constraint alone must do the aiming.</span>
         ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
         col.objects.link(ob)
         con = ob.constraints.new(<span class="s">&quot;DAMPED_TRACK&quot;</span>)
-        con.name = <span class="s">&quot;AimCore&quot;</span>
-        con.target = core
+        con.name = <span class="s">&quot;AimOrb&quot;</span>
+        con.target = orb
         con.track_axis = <span class="s">&quot;TRACK_Z&quot;</span>
         <span class="k">if</span> mute:
             con.mute = <span class="k">True</span>
-        needles.append(ob)
+        lamps.append(ob)
 
     bpy.context.view_layer.update()
-    <span class="k">return</span> core, needles
+    <span class="k">return</span> orb, lamps
 
 
-<span class="k">def</span> check(core, needles):
-    <span class="k">if</span> len(needles) != N_NEEDLES:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: needle count </span>{len(needles)}<span class="s"> != </span>{N_NEEDLES}<span class="s">&quot;</span>, file=sys.stderr)
+<span class="k">def</span> check(orb, lamps):
+    <span class="k">if</span> len(lamps) != N_LAMPS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: lamp count </span>{len(lamps)}<span class="s"> != </span>{N_LAMPS}<span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
 
-    <span class="k">for</span> ob <span class="k">in</span> needles:
+    <span class="k">for</span> ob <span class="k">in</span> lamps:
         damped = [c <span class="k">for</span> c <span class="k">in</span> ob.constraints <span class="k">if</span> c.type == <span class="s">&quot;DAMPED_TRACK&quot;</span>]
         <span class="k">if</span> len(damped) != <span class="n">1</span>:
             print(
@@ -1016,8 +1084,8 @@ LIFT = <span class="n">1.55</span>
             )
             <span class="k">return</span> <span class="n">4</span>
         con = damped[<span class="n">0</span>]
-        <span class="k">if</span> con.target != core:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{ob.name}<span class="s"> target is </span>{con.target!r}<span class="s">, want Core</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">if</span> con.target != orb:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{ob.name}<span class="s"> target is </span>{con.target!r}<span class="s">, want Orb</span><span class="s">&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">5</span>
         <span class="k">if</span> con.track_axis != <span class="s">&quot;TRACK_Z&quot;</span>:
             print(
@@ -1039,15 +1107,15 @@ LIFT = <span class="n">1.55</span>
             <span class="k">return</span> <span class="n">8</span>
 
     dg = bpy.context.evaluated_depsgraph_get()
-    core_loc = core.evaluated_get(dg).matrix_world.translation
+    orb_loc = orb.evaluated_get(dg).matrix_world.translation
     worst = <span class="n">2.0</span>
-    worst_name = needles[<span class="n">0</span>].name
-    <span class="k">for</span> ob <span class="k">in</span> needles:
+    worst_name = lamps[<span class="n">0</span>].name
+    <span class="k">for</span> ob <span class="k">in</span> lamps:
         ev = ob.evaluated_get(dg)
         mw = ev.matrix_world
-        tip_dir = (mw.to_3x3() @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))).normalized()
-        to_core = (core_loc - mw.translation).normalized()
-        dot = tip_dir.dot(to_core)
+        lens_dir = (mw.to_3x3() @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))).normalized()
+        to_orb = (orb_loc - mw.translation).normalized()
+        dot = lens_dir.dot(to_orb)
         <span class="k">if</span> dot &lt; worst:
             worst = dot
             worst_name = ob.name
@@ -1061,7 +1129,7 @@ LIFT = <span class="n">1.55</span>
             <span class="k">return</span> <span class="n">9</span>
 
     print(
-        <span class="s">f&quot;</span><span class="s">OK: </span>{N_NEEDLES}<span class="s"> DAMPED_TRACK needles → Core on TRACK_Z; </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">OK: </span>{N_LAMPS}<span class="s"> DAMPED_TRACK lamp heads → Orb on TRACK_Z; </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">worst aim dot=</span>{worst:<span class="s">.6f</span>}<span class="s"> (</span>{worst_name}<span class="s">)</span><span class="s">&quot;</span>
     )
     <span class="k">return</span> <span class="n">0</span>
@@ -1071,10 +1139,44 @@ LIFT = <span class="n">1.55</span>
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
 
-<span class="k">def</span> render_still(core, needles, path, engine):
-    scene = bpy.context.scene
+<span class="k">def</span> build_stands(lamps):
+    <span class="s">&quot;&quot;&quot;Render-only: a floor foot, a steel post and a ball pivot under every head,
+    plus the turned pedestal the orb sits in.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Stands&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> ob <span class="k">in</span> lamps:
+            top = ob.location.z
+            vs = lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0</span>), (<span class="n">0.26</span>, <span class="n">0.0</span>, <span class="n">0</span>), (<span class="n">0.27</span>, <span class="n">0.02</span>, <span class="n">0</span>),
+                            (<span class="n">0.25</span>, <span class="n">0.05</span>, <span class="n">0</span>), (<span class="n">0.08</span>, <span class="n">0.07</span>, <span class="n">0</span>), (<span class="n">0.05</span>, <span class="n">0.1</span>, <span class="n">0</span>),
+                            (<span class="n">0.028</span>, <span class="n">0.12</span>, <span class="n">0</span>), (<span class="n">0.028</span>, top - <span class="n">0.13</span>, <span class="n">0</span>),
+                            (<span class="n">0.045</span>, top - <span class="n">0.12</span>, <span class="n">1</span>), (<span class="n">0.045</span>, top - <span class="n">0.07</span>, <span class="n">1</span>),
+                            (<span class="n">0.07</span>, top - <span class="n">0.05</span>, <span class="n">1</span>), (<span class="n">0.075</span>, top, <span class="n">1</span>),
+                            (<span class="n">0.05</span>, top + <span class="n">0.05</span>, <span class="n">1</span>), (<span class="n">0.0</span>, top + <span class="n">0.06</span>, <span class="n">1</span>)], segs=<span class="n">24</span>)
+            <span class="k">for</span> v <span class="k">in</span> vs:
+                v.co.x += ob.location.x
+                v.co.y += ob.location.y
+        base = LIFT - ORB_RADIUS
+        lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0</span>), (<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">0</span>), (<span class="n">0.52</span>, <span class="n">0.03</span>, <span class="n">0</span>), (<span class="n">0.5</span>, <span class="n">0.08</span>, <span class="n">0</span>),
+                   (<span class="n">0.3</span>, <span class="n">0.12</span>, <span class="n">1</span>), (<span class="n">0.1</span>, <span class="n">0.18</span>, <span class="n">1</span>), (<span class="n">0.06</span>, <span class="n">0.24</span>, <span class="n">1</span>), (<span class="n">0.05</span>, base - <span class="n">0.2</span>, <span class="n">1</span>),
+                   (<span class="n">0.08</span>, base - <span class="n">0.14</span>, <span class="n">1</span>), (<span class="n">0.2</span>, base - <span class="n">0.02</span>, <span class="n">1</span>), (<span class="n">0.23</span>, base + <span class="n">0.06</span>, <span class="n">1</span>),
+                   (<span class="n">0.21</span>, base + <span class="n">0.07</span>, <span class="n">1</span>), (<span class="n">0.0</span>, base + <span class="n">0.02</span>, <span class="n">1</span>)], segs=<span class="n">48</span>)
+        finish(bm, me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(make_material(<span class="s">&quot;StandSteel&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.062</span>, <span class="n">0.07</span>), <span class="n">0.36</span>,
+                                      metallic=<span class="n">0.85</span>, noise=<span class="n">18.0</span>))
+    me.materials.append(make_material(<span class="s">&quot;StandBrass&quot;</span>, (<span class="n">0.8</span>, <span class="n">0.56</span>, <span class="n">0.24</span>), <span class="n">0.26</span>,
+                                      metallic=<span class="n">1.0</span>, noise=<span class="n">30.0</span>))
+    ob = bpy.data.objects.new(<span class="s">&quot;Stands&quot;</span>, me)
+    bpy.context.scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
 
-    <span class="c"># Soft cyclorama — one curved-feeling backdrop via oversized floor + back plane.</span>
+
+<span class="k">def</span> render_still(orb, lamps, path, engine):
+    scene = bpy.context.scene
+    stands = build_stands(lamps)
+
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -1082,75 +1184,60 @@ LIFT = <span class="n">1.55</span>
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = make_dielectric(<span class="s">&quot;StudioFloor&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.037</span>, <span class="n">0.042</span>), roughness=<span class="n">0.22</span>)
-    floor_me.materials.append(fmat)
+    floor_me.materials.append(make_material(<span class="s">&quot;StudioFloor&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.55</span>))
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
-
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
     wall.data.materials.clear()
-    wall.data.materials.append(
-        make_dielectric(<span class="s">&quot;StudioWall&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.013</span>, <span class="n">0.016</span>), roughness=<span class="n">0.55</span>)
-    )
-    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
+    wall.data.materials.append(make_material(<span class="s">&quot;StudioWall&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.7</span>))
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
-    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, make_plinth_mesh())
-    plinth.data.materials.append(
-        make_metal(<span class="s">&quot;PlinthMetal&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.065</span>, <span class="n">0.07</span>), roughness=<span class="n">0.38</span>)
-    )
-    plinth.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.06</span>)
-    scene.collection.objects.link(plinth)
-
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    bg = world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>]
-    bg.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.004</span>, <span class="n">0.0045</span>, <span class="n">0.006</span>, <span class="n">1.0</span>)
-    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.35</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT)
-    scene.collection.objects.link(aim)
-
-    <span class="k">def</span> light(name, loc, energy, size, col):
-        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+    <span class="k">def</span> light(name, kind, loc, energy, col, at=(<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT), size=<span class="n">1.0</span>):
+        ld = bpy.data.lights.new(name, kind)
         ld.energy = energy
-        ld.size = size
         ld.color = col
+        <span class="k">if</span> kind == <span class="s">&quot;AREA&quot;</span>:
+            ld.size = size
+        <span class="k">else</span>:
+            ld.shadow_soft_size = size
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        <span class="c"># Illuminate without drawing the area-light quad into the beauty pass.</span>
+        ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat(<span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
         ob.visible_camera = <span class="k">False</span>
         scene.collection.objects.link(ob)
-        lc = ob.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
-        lc.target = aim
-        lc.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
-        lc.up_axis = <span class="s">&quot;UP_Y&quot;</span>
-        <span class="k">return</span> ob
+        <span class="k">return</span> ld
 
-    <span class="c"># Product lighting: soft warm key, cool fill, hot rim that skims the spikes.</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.8</span>, -<span class="n">5.2</span>, LIFT + <span class="n">3.2</span>), <span class="n">1100.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.9</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.2</span>, -<span class="n">2.8</span>, LIFT + <span class="n">1.4</span>), <span class="n">320.0</span>, <span class="n">9.0</span>, (<span class="n">0.6</span>, <span class="n">0.75</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.0</span>, <span class="n">4.5</span>, LIFT + <span class="n">1.8</span>), <span class="n">1200.0</span>, <span class="n">2.8</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.15</span>))
+    <span class="c"># shaped warm key, faint cool fill, cool rim on the far heads, warm wedge</span>
+    <span class="c"># raking the back wall (docs/VISUAL-STYLE.md); the orb itself is a point</span>
+    <span class="c"># glow, so it throws warm light onto every lens and bezel aimed at it</span>
+    light(<span class="s">&quot;Key&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">4.5</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), size=<span class="n">4.0</span>)
+    light(<span class="s">&quot;Fill&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">80.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), size=<span class="n">9.0</span>)
+    light(<span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">0.5</span>, <span class="n">5.5</span>, <span class="n">5.5</span>), <span class="n">260.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), size=<span class="n">3.5</span>)
+    light(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">2.6</span>, <span class="n">5.0</span>, <span class="n">4.2</span>), <span class="n">700.0</span>, (<span class="n">1.0</span>, <span class="n">0.7</span>, <span class="n">0.42</span>),
+          at=(<span class="n">3.5</span>, <span class="n">9.0</span>, <span class="n">0.6</span>), size=<span class="n">6.0</span>)
+    glow = light(<span class="s">&quot;OrbGlow&quot;</span>, <span class="s">&quot;POINT&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT), <span class="n">90.0</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.22</span>), size=<span class="n">0.3</span>)
+    glow.use_shadow = <span class="k">False</span>
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">65.0</span>
-    cam_data.dof.use_dof = <span class="k">False</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Offset three-quarter — full cage in frame, plinth reflection, not dead-center.</span>
-    cam.location = (<span class="n">5.1</span>, -<span class="n">5.6</span>, LIFT + <span class="n">1.15</span>)
+    cam.location = (<span class="n">1.8</span>, -<span class="n">10.8</span>, <span class="n">4.0</span>)
     scene.collection.objects.link(cam)
-    scene.camera = cam
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.3</span>)
+    scene.collection.objects.link(aim)
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
-    <span class="c"># Bias look-at slightly down so the floor reflection earns space.</span>
-    aim.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, LIFT - <span class="n">0.12</span>)
     track.target = aim
     track.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
     track.up_axis = <span class="s">&quot;UP_Y&quot;</span>
-
-    _ = (core, needles)
+    scene.camera = cam
 
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
@@ -1158,24 +1245,30 @@ LIFT = <span class="n">1.55</span>
         scene.cycles.use_denoising = <span class="k">True</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
-            scene.eevee.taa_render_samples = <span class="n">128</span>
+            scene.eevee.taa_render_samples = <span class="n">96</span>
         <span class="k">except</span> AttributeError:
             <span class="k">pass</span>
-        <span class="c"># No bloom here on purpose: EEVEE has no use_bloom on 4.2+ or 5.x —</span>
-        <span class="c"># glow lives in the compositor (see examples/compositor-glare).</span>
 
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.film_transparent = <span class="k">False</span>
-    scene.view_settings.view_transform = <span class="s">&quot;Filmic&quot;</span>
-    scene.view_settings.look = <span class="s">&quot;Medium High Contrast&quot;</span>
+    <span class="c"># Standard, not AgX/Filmic: the enamel and the amber glow stay saturated</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     <span class="c"># Blender resolves a relative filepath against the blend-file directory, which</span>
     <span class="c"># for a --background run with no .blend is the drive root, not the cwd.</span>
     path = os.path.abspath(path)
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate before the beauty render (exit 10 on violation)</span>
+    hero = [orb, stands] + lamps
+    fcode = gallery_framing.check_framing(scene, cam, hero=hero, elements=hero,
+                                          stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">12</span>
 
 
 <span class="k">def</span> main():
@@ -1192,16 +1285,17 @@ LIFT = <span class="n">1.55</span>
                    help=<span class="s">&quot;mute every DAMPED_TRACK (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    core, needles = build(mute=args.mute)
-    code = check(core, needles)
+    orb, lamps = build(mute=args.mute)
+    code = check(orb, lamps)
     <span class="k">if</span> code != <span class="n">0</span>:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        ok = render_still(core, needles, args.output, args.engine)
-        <span class="k">if</span> <span class="k">not</span> ok:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: render failed to write </span>{args.output}<span class="s">&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">10</span>
+        rcode = render_still(orb, lamps, args.output, args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">if</span> rcode == <span class="n">12</span>:
+                print(<span class="s">f&quot;</span><span class="s">ERROR: render failed to write </span>{args.output}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">Wrote </span>{args.output}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
@@ -1245,7 +1339,7 @@ LIFT = <span class="n">1.55</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/damped-track-aim-hero.webp" alt="Gold spikes arranged around a glowing sphere, every tip aimed at the sphere." />
+    <img src="../assets/damped-track-aim-hero.webp" alt="Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal." />
   </dialog>
   <footer>
     <div class="statusbar">

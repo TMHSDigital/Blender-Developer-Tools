@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/modular-kit-snap-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." />
+  <meta property="og:image:alt" content="A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="modular-kit-snap — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/modular-kit-snap-hero.webp" />
-  <meta name="twitter:image:alt" content="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." />
+  <meta name="twitter:image:alt" content="A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../degenerate-bevel-weld/" aria-label="Previous example: degenerate-bevel-weld"><span aria-hidden="true">&larr;</span> degenerate-bevel-weld</a><span class="pager-pos hud">43 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../lightmap-uv-channel/" aria-label="Next example: lightmap-uv-channel">lightmap-uv-channel <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end.">
-      <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end.">
+      <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> 16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.</div>
@@ -369,7 +369,7 @@
 <ul><li><strong>Snap.</strong> Exactly <strong>16</strong> boundary verts (8 per open end, from the hollow-rectangle profile), every one on its end plane <code>x ∈ {0, 4}</code> within <strong>1e-6 m</strong>; every boundary edge lies on an end plane.</li><li><strong>Loop coincidence.</strong> The two end rings, matched by nearest (y, z) key, agree within <strong>1e-6</strong> — opposing loops are coincident under the tile offset.</li><li><strong>Tiling.</strong> A linked duplicate offset by <code>(4, 0, 0)</code> places its start ring at world positions matching the original&#x27;s end ring within <strong>1e-6</strong> — no gap, no overlap at the joint.</li><li><strong>Bounding box.</strong> The shell&#x27;s local bbox equals the declared tile exactly (<code>0..4 × ±1.5 × 0..3</code>, all float32-exact values, deviation 0.0), and the whole-asset bbox matches it because detail is contained.</li><li><strong>Manifold.</strong> Every edge has exactly 2 link faces except the <strong>16</strong> boundary ring edges (1 face each) — the open ends are the only boundaries.</li><li><strong>Reuse hygiene.</strong> Identity scales, <code>Kit.CorridorSeg.*</code> names, all part origins at the pivot.</li></ul>
 <p><strong>What each check catches on failure</strong> (probed with an unsnapped variant built by the same code minus the snap pass — 3 mm end-ring skew, 2 mm y-nudge on two verts): boundary verts off the end planes, worst <strong>3.000e-03 m</strong> (exit 3); opposing rings displaced <strong>2.000e-03</strong> (exit 4); tiled joint gap/overlap (exit 5); bbox off the declared tile by <strong>3.000e-03</strong> (exit 6); boundary edges torn off the rim (exit 7); non-watertight detail (exit 8); detail escaping the tile (exit 9); unapplied transforms, default names, or wandering origins (exit 11).</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same zero measured deviations.</p>
-<p><strong>Render as proof:</strong> a four-segment run — the joints vanish. The falsification variant (<code>--falsify</code>) accumulates a 120 mm gap, 50 mm lateral jogs, and 40 mm floor steps at each joint: floor plates split with dark seams and the trim rails visibly break. The check measures the same failure class at 3 mm; the render exaggerates it to read at frame scale. The render path also gates the asset through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11). An earlier revision shipped flat grey wall panels and was remodeled under that gate: each panel is now an assembly (backing plate + inset panel + four bolt heads), the palette shifted teal-slate so the card does not twin with <code>lightmap-uv-channel</code>&#x27;s warm cart, and mean luminance was brought into the calibration range (82.7 → 66.1, ceiling 77.7) — no luminance deviation needed.</p>
+<p><strong>Render as proof:</strong> a four-segment run — the joints vanish. The falsification variant (<code>--falsify</code>) accumulates a 120 mm gap, 50 mm lateral jogs, and 40 mm floor steps at each joint: floor plates split with dark seams and the trim rails visibly break. The check measures the same failure class at 3 mm; the render exaggerates it to read at frame scale. The render path also gates the asset through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11). An earlier revision shipped flat grey wall panels and was remodeled under that gate: each panel is now an assembly (backing plate + inset panel + four bolt heads), the palette shifted teal-slate so the card does not twin with <code>lightmap-uv-channel</code>&#x27;s warm cart, and mean luminance was brought into the calibration range (82.7 → 66.1, ceiling 77.7) — no luminance deviation needed. The surface language is procedural and reads <strong>Object</strong> coordinates: every part&#x27;s origin is the segment pivot, so painted-panel wear, the walkway&#x27;s diamond-plate bump and the diagonal hazard stripes on the trim rails are functions of segment-local position — identical in every instance and continuous across a snapped joint, exactly like the geometry.</p>
 <p><strong>Framing deviation:</strong> the still is an interior corridor run — the envelope surrounds the camera on five sides and the tiling joints are the proof, so the subject reads as extending past the frame. The helper measures; this example enforces a projection-space fill-over cap (<code>FRAME_DEV_MAX = 8.0</code>). Gallery camera scores ~5.06 (pass). <code>--close-camera</code> scores ~30.9 and exits 10. Silhouette saturates at fill 1.0, so the cap is measured with <code>strategy=&quot;projection&quot;</code>.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python modular_kit_snap.py --
@@ -385,9 +385,9 @@ blender --background --python modular_kit_snap.py -- --output close.png --close-
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/modular-kit-snap/modular_kit_snap.py</code>
-        <span>686 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap/modular_kit_snap.py">View on GitHub &rarr;</a></span>
+        <span>779 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap/modular_kit_snap.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="686">
+      <div class="code" data-lines="779">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1073,7 +1073,100 @@ blender --background --python modular_kit_snap.py -- --output close.png --close-
 683
 684
 685
-686</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Modular kit snap — boundary vertices welded to the tile grid so segments tile seamlessly.
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Modular kit snap — boundary vertices welded to the tile grid so segments tile seamlessly.
 
 Witnesses the contract a tiling modular kit lives or dies by: a corridor
 segment whose open-end boundary vertices sit EXACTLY on the declared tile
@@ -1474,10 +1567,20 @@ PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per 
 <span class="c"># Render</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
-<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.6</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.6</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>,
+                  wear=<span class="n">0.0</span>, tread=<span class="k">False</span>, stripes=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Principled material; optional procedural surface language.
+
+    Every texture reads Object coordinates, and every kit part&#x27;s origin is the
+    segment pivot, so the patterns are functions of segment-local position:
+    identical in each instance and continuous across a snapped joint, exactly
+    like the geometry. wear mottles colour and roughness; tread adds a
+    diamond-plate bump; stripes=(rgb_b, period) paints diagonal hazard bands.
+    &quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
     b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
     b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
@@ -1485,18 +1588,97 @@ PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per 
         sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
         sock.default_value = (*emit, <span class="n">1.0</span>)
         b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">if</span> <span class="k">not</span> (wear <span class="k">or</span> tread <span class="k">or</span> stripes):
+        <span class="k">return</span> mat
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    color_out = <span class="k">None</span>
+    <span class="k">if</span> stripes:
+        rgb_b, period = stripes
+        wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+        wave.wave_type = <span class="s">&quot;BANDS&quot;</span>
+        wave.bands_direction = <span class="s">&quot;DIAGONAL&quot;</span>
+        <span class="c"># Blender wave phase is 20 * scale * coordinate: one band per `period` metres</span>
+        wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.0</span> * math.pi / (<span class="n">20.0</span> * period)
+        wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">0.0</span>
+        nt.links.new(coord, wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+        step = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        step.operation = <span class="s">&quot;GREATER_THAN&quot;</span>
+        step.inputs[<span class="n">1</span>].default_value = <span class="n">0.5</span>
+        nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], step.inputs[<span class="n">0</span>])
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="n">6</span>].default_value = (*rgb, <span class="n">1.0</span>)
+        mix.inputs[<span class="n">7</span>].default_value = (*rgb_b, <span class="n">1.0</span>)
+        nt.links.new(step.outputs[<span class="s">&quot;Value&quot;</span>], mix.inputs[<span class="n">0</span>])
+        color_out = mix.outputs[<span class="n">2</span>]
+    <span class="k">if</span> wear:
+        noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">3.5</span>
+        noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        nt.links.new(coord, noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+        dirt = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        dirt.data_type = <span class="s">&quot;RGBA&quot;</span>
+        dirt.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+        dirt.inputs[<span class="n">0</span>].default_value = wear
+        <span class="k">if</span> color_out <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            nt.links.new(color_out, dirt.inputs[<span class="n">6</span>])
+        <span class="k">else</span>:
+            dirt.inputs[<span class="n">6</span>].default_value = (*rgb, <span class="n">1.0</span>)
+        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+        ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.38</span>
+        ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.45</span>, <span class="n">0.42</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)
+        ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.68</span>
+        ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], dirt.inputs[<span class="n">7</span>])
+        color_out = dirt.outputs[<span class="n">2</span>]
+        rmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        rmap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = rough + <span class="n">0.15</span>
+        rmap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough - <span class="n">0.10</span>
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rmap.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(rmap.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">if</span> color_out <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        nt.links.new(color_out, b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">if</span> tread:
+        <span class="c"># diamond plate: two crossed wave bands make a lozenge lattice bump</span>
+        bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+        bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+        bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.012</span>
+        mul = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        mul.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+        <span class="k">for</span> i, rot <span class="k">in</span> enumerate((<span class="n">0.785</span>, -<span class="n">0.785</span>)):
+            mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+            mapping.inputs[<span class="s">&quot;Rotation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, rot)
+            nt.links.new(coord, mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+            wv = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+            wv.wave_type = <span class="s">&quot;BANDS&quot;</span>
+            wv.bands_direction = <span class="s">&quot;X&quot;</span>
+            wv.wave_profile = <span class="s">&quot;SAW&quot;</span>
+            wv.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">6.0</span>
+            wv.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">0.0</span>
+            nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], wv.inputs[<span class="s">&quot;Vector&quot;</span>])
+            gt = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+            gt.operation = <span class="s">&quot;GREATER_THAN&quot;</span>
+            gt.inputs[<span class="n">1</span>].default_value = <span class="n">0.72</span>
+            nt.links.new(wv.outputs[<span class="s">&quot;Fac&quot;</span>], gt.inputs[<span class="n">0</span>])
+            nt.links.new(gt.outputs[<span class="s">&quot;Value&quot;</span>], mul.inputs[i])
+        nt.links.new(mul.outputs[<span class="s">&quot;Value&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+        nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
 
 
+<span class="c"># (name, rgb, roughness, metallic, emission rgb, emission strength, extras)</span>
 SEGMENT_MATS = {
-    <span class="s">&quot;Shell&quot;</span>: (<span class="s">&quot;Shell&quot;</span>, (<span class="n">0.075</span>, <span class="n">0.095</span>, <span class="n">0.115</span>), <span class="n">0.5</span>, <span class="n">0.8</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Rib&quot;</span>: (<span class="s">&quot;Rib&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.45</span>, <span class="n">0.85</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;FloorPlate&quot;</span>: (<span class="s">&quot;FloorPlate&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.075</span>, <span class="n">0.09</span>), <span class="n">0.6</span>, <span class="n">0.7</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Panel&quot;</span>: (<span class="s">&quot;Panel&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.21</span>, <span class="n">0.26</span>), <span class="n">0.42</span>, <span class="n">0.6</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;PanelBack&quot;</span>: (<span class="s">&quot;PanelBack&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.10</span>, <span class="n">0.13</span>), <span class="n">0.5</span>, <span class="n">0.75</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;PanelBolts&quot;</span>: (<span class="s">&quot;PanelBolts&quot;</span>, (<span class="n">0.35</span>, <span class="n">0.38</span>, <span class="n">0.42</span>), <span class="n">0.3</span>, <span class="n">0.9</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Trim&quot;</span>: (<span class="s">&quot;Trim&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.35</span>, <span class="n">0.08</span>), <span class="n">0.35</span>, <span class="n">0.3</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Light&quot;</span>: (<span class="s">&quot;LightStrip&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.25</span>, <span class="n">0.18</span>), <span class="n">0.5</span>, <span class="n">0.2</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.4</span>), <span class="n">8.0</span>),
+    <span class="s">&quot;Shell&quot;</span>: (<span class="s">&quot;Shell&quot;</span>, (<span class="n">0.055</span>, <span class="n">0.062</span>, <span class="n">0.072</span>), <span class="n">0.55</span>, <span class="n">0.55</span>, <span class="k">None</span>, <span class="n">0.0</span>, dict(wear=<span class="n">0.55</span>)),
+    <span class="s">&quot;Rib&quot;</span>: (<span class="s">&quot;Rib&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.13</span>, <span class="n">0.09</span>), <span class="n">0.42</span>, <span class="n">0.85</span>, <span class="k">None</span>, <span class="n">0.0</span>, dict(wear=<span class="n">0.5</span>)),
+    <span class="s">&quot;FloorPlate&quot;</span>: (<span class="s">&quot;FloorPlate&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.205</span>, <span class="n">0.21</span>), <span class="n">0.38</span>, <span class="n">0.9</span>, <span class="k">None</span>, <span class="n">0.0</span>,
+                   dict(wear=<span class="n">0.6</span>, tread=<span class="k">True</span>)),
+    <span class="s">&quot;Panel&quot;</span>: (<span class="s">&quot;Panel&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.12</span>, <span class="n">0.125</span>), <span class="n">0.62</span>, <span class="n">0.05</span>, <span class="k">None</span>, <span class="n">0.0</span>, dict(wear=<span class="n">0.45</span>)),
+    <span class="s">&quot;PanelBack&quot;</span>: (<span class="s">&quot;PanelBack&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.058</span>), <span class="n">0.48</span>, <span class="n">0.7</span>, <span class="k">None</span>, <span class="n">0.0</span>, dict(wear=<span class="n">0.4</span>)),
+    <span class="s">&quot;PanelBolts&quot;</span>: (<span class="s">&quot;PanelBolts&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.58</span>, <span class="n">0.50</span>), <span class="n">0.3</span>, <span class="n">1.0</span>, <span class="k">None</span>, <span class="n">0.0</span>, {}),
+    <span class="s">&quot;Trim&quot;</span>: (<span class="s">&quot;Trim&quot;</span>, (<span class="n">0.90</span>, <span class="n">0.42</span>, <span class="n">0.05</span>), <span class="n">0.45</span>, <span class="n">0.1</span>, <span class="k">None</span>, <span class="n">0.0</span>,
+             dict(wear=<span class="n">0.35</span>, stripes=((<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.022</span>), <span class="n">0.16</span>))),
+    <span class="s">&quot;Light&quot;</span>: (<span class="s">&quot;LightStrip&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.25</span>, <span class="n">0.18</span>), <span class="n">0.5</span>, <span class="n">0.2</span>, (<span class="n">1.0</span>, <span class="n">0.78</span>, <span class="n">0.48</span>), <span class="n">14.0</span>, {}),
 }
 
 
@@ -1508,8 +1690,8 @@ _mat_cache = {}
     revision instantiated a duplicate material per part per segment).&quot;&quot;&quot;</span>
     key = suffix.split(<span class="s">&quot;.&quot;</span>)[<span class="n">0</span>]
     <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> _mat_cache:
-        name, rgb, rough, metal, emit, estr = SEGMENT_MATS[key]
-        _mat_cache[key] = make_material(name, rgb, rough, metal, emit, estr)
+        name, rgb, rough, metal, emit, estr, extra = SEGMENT_MATS[key]
+        _mat_cache[key] = make_material(name, rgb, rough, metal, emit, estr, **extra)
     <span class="k">return</span> _mat_cache[key]
 
 
@@ -1588,7 +1770,8 @@ _mat_cache = {}
     Not part of the kit — the corridor&#x27;s destination for this still.&quot;&quot;&quot;</span>
     frame_mat = make_material(<span class="s">&quot;Bulkhead&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.06</span>, <span class="n">0.07</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.85</span>)
     door_mat = make_material(<span class="s">&quot;BulkheadDoor&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.16</span>, <span class="n">0.07</span>), rough=<span class="n">0.5</span>,
-                             metallic=<span class="n">0.3</span>, emit=(<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.12</span>), estr=<span class="n">0.5</span>)
+                             metallic=<span class="n">0.3</span>, emit=(<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.12</span>), estr=<span class="n">0.22</span>,
+                             wear=<span class="n">0.5</span>)
     inner_y = WIDTH / <span class="n">2</span> - WALL
     end_x = TILE * <span class="n">4</span>
     parts = []
@@ -1635,6 +1818,9 @@ _mat_cache = {}
     steps, so every joint reads as a seam — the render-scale exaggeration of
     the failure the check measures at 3 mm (probe_unsnapped).&quot;&quot;&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    <span class="c"># the factory reset freed every cached material; --output then --falsify</span>
+    <span class="c"># in one run would otherwise hand the second scene dead RNA references</span>
+    _mat_cache.clear()
     sc = bpy.context.scene
 
     all_parts = []
@@ -1785,7 +1971,7 @@ _mat_cache = {}
         </article>
         <article class="card mini">
           <a class="card-media" href="../socket-attach-points/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/socket-attach-points-hero.webp" alt="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/socket-attach-points-hero.webp" alt="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../socket-attach-points/">socket-attach-points</a></h3>
@@ -1798,7 +1984,7 @@ _mat_cache = {}
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." />
+    <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end." />
   </dialog>
   <footer>
     <div class="statusbar">

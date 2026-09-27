@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/socket-attach-points-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." />
+  <meta property="og:image:alt" content="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="socket-attach-points — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/socket-attach-points-hero.webp" />
-  <meta name="twitter:image:alt" content="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." />
+  <meta name="twitter:image:alt" content="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../lightmap-uv-channel/" aria-label="Previous example: lightmap-uv-channel"><span aria-hidden="true">&larr;</span> lightmap-uv-channel</a><span class="pager-pos hud">45 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-color-ao/" aria-label="Next example: vertex-color-ao">vertex-color-ao <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts.">
-      <img src="../assets/socket-attach-points-hero.webp" alt="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets.">
+      <img src="../assets/socket-attach-points-hero.webp" alt="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> 7 socket world matrices within 1.788e-07 of the authored transform, socket +Z == the pad&#x27;s Newell normal (1.794e-07), seating offset 0.0; the no-parent-inverse probe jumps 0.690128 m.</div>
@@ -375,13 +375,13 @@
 <ul><li><strong>Applying a transform on an Empty root pushes it down into the children.</strong> An Empty has no object data to bake into, so <code>transform_apply</code> on the root resets <strong>7/7</strong> children&#x27;s <code>matrix_parent_inverse</code> to identity and hands each child the root&#x27;s scale locally (measured <strong>0.35</strong> for an applied 1.35). World matrices survive to float32; <em>local</em> transforms do not. A spawn system that reads <code>matrix_local</code>, or an exporter that trusts &quot;transforms are applied&quot;, reads different numbers after an artist freezes the rig. Both halves are asserted, so the behaviour cannot change under us silently.</li><li><strong>Only the root may be selected during the apply.</strong> A child left selected gets the parent transform applied twice — measured <strong>2.335 m</strong> of socket drift on this asset.</li><li><strong><code>bm.normal_update()</code> does not fix winding.</strong> It recomputes normals from the existing winding. The lofted fuselage wound its side quads inward and rendered as a flat unshaded white panel rather than an obvious hole; <code>bmesh.ops.recalc_face_normals</code> is what fixes it, and <code>Part.finish</code> now always calls it.</li><li><strong>Bevel offsets near half the local edge length collapse.</strong> The skid rails at a 5 mm offset on a 9.9 mm octagon edge produced 3 zero-area faces each — the collapse <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/degenerate-bevel-weld"><code>degenerate-bevel-weld</code></a> witnesses. 2.2 mm is clean. Note that <code>examples/gallery_asset_quality.py</code> raises <code>ValueError: zero length vectors have no valid angle</code> on such a mesh rather than reporting it.</li></ul>
 <p><strong>What each check catches on failure</strong> (every one probed, with the measured error): sockets parented without the parent-inverse — worst jump <strong>0.690128 m</strong> (exit 3); a left-handed basis from <code>z.cross(y)</code> — <code>det == −1.000000</code> (exit 3); a rotor pad built flat instead of canted — <strong>1.395e-01</strong> off the Newell normal (exit 4); an 11° roll on the basis — <strong>1.917e-01</strong> off the up rule (exit 4); a module nudged 4 mm off its socket (exit 5); a default <code>Cube</code> datablock name (exit 6); a socket left unparented so it ignores the re-pose — <strong>1.417e+00</strong> (exit 7); a child selected during the apply — <strong>1.252e+00</strong> to <strong>2.244e+00</strong> of socket drift (exit 8).</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same measured deviations to every printed digit, and the same framing numbers on the render path.</p>
-<p><strong>Render as proof:</strong> the drone on the dark stage with every module seated, the orange mount pads reading as the socket signature. The falsification variant (<code>--falsify</code>) parents the sockets without <code>matrix_parent_inverse</code>: the pads are left bare, the rotors and mast vanish from the airframe, and the camera pod and battery hang in space near the top of frame. A broken matrix is not a subtle pixel difference here — the asset comes apart.</p>
+<p><strong>Render as proof:</strong> the drone hovering over the dark stage with every module seated, the orange mount pads reading as the socket signature. The livery is two-tone — a gloss cobalt fuselage shell (the pads&#x27; complement, so the sockets pop), off-white arm fairings and spinners, graphite deck and trim — and the booms carry a procedural twill carbon weave under a clear coat. The camera looks down at the airframe, so the floor is the backdrop: a small close key keeps its falloff on the drone and the warm wedge pools on the floor behind it. The falsification variant (<code>--falsify</code>) parents the sockets without <code>matrix_parent_inverse</code>: the pads are left bare, the rotors and mast vanish from the airframe, and the camera pod and battery hang in space near the top of frame. A broken matrix is not a subtle pixel difference here — the asset comes apart.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python socket_attach_points.py --
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe</code></pre>
-<p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.881x</strong>, margins <strong>0.066/0.053/0.122/0.106</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). <code>--falsify</code> is a diagnostic, not a gallery hero: it measures and prints framing but does not enforce the Layer 1 band — modules leave the frame on purpose. <code>--falsify</code> and <code>--probe</code> still exit 0.</p>
+<p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.741x</strong>, margins <strong>0.131/0.128/0.172/0.156</strong>, no edge touched — pulled back from 0.881x so the rotor tips clear gallery card crops) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). <code>--falsify</code> is a diagnostic, not a gallery hero: it measures and prints framing but does not enforce the Layer 1 band — modules leave the frame on purpose. <code>--falsify</code> and <code>--probe</code> still exit 0.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Socket world matrix, orthonormal basis, or determinant</td></tr><tr><td>4</td><td>Socket pad normal, origin, or up-axis rule</td></tr><tr><td>5</td><td>Module seating / mount axis / leftover local transform</td></tr><tr><td>6</td><td>Population, namespace, default datablock name, SKT_ prefix, or skid plane</td></tr><tr><td>7</td><td>Re-pose: socket or module lost the root</td></tr><tr><td>8</td><td>Parent-inverse clear, child scale pushdown, or post-apply module drift</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
@@ -391,9 +391,9 @@ blender --background --python socket_attach_points.py -- --probe</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/socket-attach-points/socket_attach_points.py</code>
-        <span>1135 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/socket-attach-points/socket_attach_points.py">View on GitHub &rarr;</a></span>
+        <span>1177 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/socket-attach-points/socket_attach_points.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1135">
+      <div class="code" data-lines="1177">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1528,7 +1528,49 @@ blender --background --python socket_attach_points.py -- --probe</code></pre>
 1132
 1133
 1134
-1135</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Socket attach points — named empties parented into an asset as spawn mounts.
+1135
+1136
+1137
+1138
+1139
+1140
+1141
+1142
+1143
+1144
+1145
+1146
+1147
+1148
+1149
+1150
+1151
+1152
+1153
+1154
+1155
+1156
+1157
+1158
+1159
+1160
+1161
+1162
+1163
+1164
+1165
+1166
+1167
+1168
+1169
+1170
+1171
+1172
+1173
+1174
+1175
+1176
+1177</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Socket attach points — named empties parented into an asset as spawn mounts.
 
 Witnesses the contract a spawn system depends on when it bolts modules onto a
 prop at runtime: an attachment placed at socket S with an identity local
@@ -2442,13 +2484,17 @@ MODULE_MOUNT_AXIS = Vector((<span class="n">0.0</span>, <span class="n">0.0</spa
 <span class="c"># One entry per material slot name used by the Part builders above:</span>
 <span class="c"># (base rgb, roughness, metallic, emission rgb or None, emission strength).</span>
 SLOT_MATS = {
-    <span class="s">&quot;Carbon&quot;</span>:     ((<span class="n">0.044</span>, <span class="n">0.049</span>, <span class="n">0.060</span>), <span class="n">0.62</span>, <span class="n">0.22</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Deck&quot;</span>:       ((<span class="n">0.058</span>, <span class="n">0.067</span>, <span class="n">0.080</span>), <span class="n">0.52</span>, <span class="n">0.55</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Canopy&quot;</span>:     ((<span class="n">0.020</span>, <span class="n">0.048</span>, <span class="n">0.062</span>), <span class="n">0.14</span>, <span class="n">0.30</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Vent&quot;</span>:       ((<span class="n">0.066</span>, <span class="n">0.074</span>, <span class="n">0.086</span>), <span class="n">0.58</span>, <span class="n">0.70</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Trim&quot;</span>:       ((<span class="n">0.046</span>, <span class="n">0.052</span>, <span class="n">0.062</span>), <span class="n">0.72</span>, <span class="n">0.30</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Boom&quot;</span>:       ((<span class="n">0.040</span>, <span class="n">0.045</span>, <span class="n">0.055</span>), <span class="n">0.40</span>, <span class="n">0.60</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Fairing&quot;</span>:    ((<span class="n">0.050</span>, <span class="n">0.056</span>, <span class="n">0.068</span>), <span class="n">0.64</span>, <span class="n">0.45</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="c"># two-tone survey livery: a gloss cobalt fuselage shell with off-white arm fairings and spinners</span>
+    <span class="c"># over a graphite deck and trim, so the airframe separates from the dark</span>
+    <span class="c"># stage and the orange mount pads read against both tones</span>
+    <span class="s">&quot;Carbon&quot;</span>:     ((<span class="n">0.030</span>, <span class="n">0.120</span>, <span class="n">0.360</span>), <span class="n">0.26</span>, <span class="n">0.00</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Deck&quot;</span>:       ((<span class="n">0.050</span>, <span class="n">0.056</span>, <span class="n">0.066</span>), <span class="n">0.44</span>, <span class="n">0.55</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Canopy&quot;</span>:     ((<span class="n">0.012</span>, <span class="n">0.030</span>, <span class="n">0.042</span>), <span class="n">0.08</span>, <span class="n">0.30</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Vent&quot;</span>:       ((<span class="n">0.030</span>, <span class="n">0.033</span>, <span class="n">0.040</span>), <span class="n">0.50</span>, <span class="n">0.70</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Trim&quot;</span>:       ((<span class="n">0.036</span>, <span class="n">0.040</span>, <span class="n">0.048</span>), <span class="n">0.46</span>, <span class="n">0.30</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="c"># booms are woven carbon fibre (see WEAVE_SLOTS), not flat grey</span>
+    <span class="s">&quot;Boom&quot;</span>:       ((<span class="n">0.022</span>, <span class="n">0.024</span>, <span class="n">0.028</span>), <span class="n">0.30</span>, <span class="n">0.20</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Fairing&quot;</span>:    ((<span class="n">0.600</span>, <span class="n">0.610</span>, <span class="n">0.600</span>), <span class="n">0.30</span>, <span class="n">0.00</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;Motor&quot;</span>:      ((<span class="n">0.150</span>, <span class="n">0.158</span>, <span class="n">0.172</span>), <span class="n">0.26</span>, <span class="n">0.92</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;MotorFin&quot;</span>:   ((<span class="n">0.108</span>, <span class="n">0.114</span>, <span class="n">0.126</span>), <span class="n">0.30</span>, <span class="n">0.90</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;NavFwd&quot;</span>:     ((<span class="n">0.060</span>, <span class="n">0.140</span>, <span class="n">0.090</span>), <span class="n">0.30</span>, <span class="n">0.10</span>, (<span class="n">0.30</span>, <span class="n">1.00</span>, <span class="n">0.55</span>), <span class="n">2.6</span>),
@@ -2461,7 +2507,7 @@ SLOT_MATS = {
     <span class="s">&quot;SocketPad&quot;</span>:  ((<span class="n">0.640</span>, <span class="n">0.250</span>, <span class="n">0.045</span>), <span class="n">0.34</span>, <span class="n">0.40</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;Fixing&quot;</span>:     ((<span class="n">0.170</span>, <span class="n">0.176</span>, <span class="n">0.188</span>), <span class="n">0.24</span>, <span class="n">0.95</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;Hub&quot;</span>:        ((<span class="n">0.120</span>, <span class="n">0.126</span>, <span class="n">0.138</span>), <span class="n">0.28</span>, <span class="n">0.90</span>, <span class="k">None</span>, <span class="n">0.0</span>),
-    <span class="s">&quot;Spinner&quot;</span>:    ((<span class="n">0.520</span>, <span class="n">0.200</span>, <span class="n">0.038</span>), <span class="n">0.26</span>, <span class="n">0.55</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Spinner&quot;</span>:    ((<span class="n">0.600</span>, <span class="n">0.610</span>, <span class="n">0.600</span>), <span class="n">0.28</span>, <span class="n">0.00</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;Blade&quot;</span>:      ((<span class="n">0.072</span>, <span class="n">0.076</span>, <span class="n">0.086</span>), <span class="n">0.26</span>, <span class="n">0.40</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;PodYoke&quot;</span>:    ((<span class="n">0.096</span>, <span class="n">0.102</span>, <span class="n">0.114</span>), <span class="n">0.34</span>, <span class="n">0.85</span>, <span class="k">None</span>, <span class="n">0.0</span>),
     <span class="s">&quot;PodBall&quot;</span>:    ((<span class="n">0.038</span>, <span class="n">0.052</span>, <span class="n">0.062</span>), <span class="n">0.22</span>, <span class="n">0.45</span>, <span class="k">None</span>, <span class="n">0.0</span>),
@@ -2480,11 +2526,40 @@ SLOT_MATS = {
 
 _mat_cache = {}
 
+<span class="c"># slots that get a procedural 2x2 twill weave: alternating tows at two</span>
+<span class="c"># roughnesses and tones, under a clear coat, in object space so the weave</span>
+<span class="c"># follows each boom rather than the world</span>
+WEAVE_SLOTS = {<span class="s">&quot;Boom&quot;</span>}
+
+
+<span class="k">def</span> add_weave(mat, rgb, rough):
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    chk = nt.nodes.new(<span class="s">&quot;ShaderNodeTexChecker&quot;</span>)
+    chk.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">180.0</span>
+    chk.inputs[<span class="s">&quot;Color1&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    chk.inputs[<span class="s">&quot;Color2&quot;</span>].default_value = (*(c * <span class="n">2.6</span> <span class="k">for</span> c <span class="k">in</span> rgb), <span class="n">1.0</span>)
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], chk.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(chk.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = rough + <span class="n">0.18</span>
+    mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough - <span class="n">0.08</span>
+    nt.links.new(chk.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    coat = b.inputs.get(<span class="s">&quot;Coat Weight&quot;</span>)
+    <span class="k">if</span> coat <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        coat.default_value = <span class="n">0.8</span>
+        b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+
 
 <span class="k">def</span> mat_for_slot(slot):
     <span class="k">if</span> slot <span class="k">not</span> <span class="k">in</span> _mat_cache:
         rgb, rough, metal, emit, estr = SLOT_MATS[slot]
-        _mat_cache[slot] = make_material(slot, rgb, rough, metal, emit, estr)
+        mat = make_material(slot, rgb, rough, metal, emit, estr)
+        <span class="k">if</span> slot <span class="k">in</span> WEAVE_SLOTS:
+            add_weave(mat, rgb, rough)
+        _mat_cache[slot] = mat
     <span class="k">return</span> _mat_cache[slot]
 
 
@@ -2505,7 +2580,7 @@ _mat_cache = {}
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.020</span>, <span class="n">0.021</span>, <span class="n">0.025</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     sc.collection.objects.link(floor)
@@ -2534,14 +2609,16 @@ _mat_cache = {}
         <span class="k">return</span> ob
 
     <span class="c"># VISUAL-STYLE Layer 2 rig, energies scaled to a 0.86 m subject</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">1.30</span>, -<span class="n">0.80</span>, <span class="n">2.30</span>), <span class="n">150.0</span>, <span class="n">1.4</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">26</span>, <span class="n">0</span>, -<span class="n">58</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">1.70</span>, -<span class="n">1.00</span>, <span class="n">0.90</span>), <span class="n">14.0</span>, <span class="n">2.6</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">66</span>, <span class="n">0</span>, <span class="n">54</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.35</span>, <span class="n">1.60</span>, <span class="n">1.40</span>), <span class="n">55.0</span>, <span class="n">1.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">50</span>, <span class="n">0</span>, <span class="n">196</span>))
-    <span class="c"># Wedge sits between subject and wall, aimed at the wall, not the drone.</span>
-    <span class="c"># Draft 3 put it high and hot: the pool blew to white and was clipped by</span>
-    <span class="c"># the top-right corner. Low, larger and softer keeps the pool contained</span>
-    <span class="c"># behind the subject where it lifts the silhouette.</span>
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.10</span>, <span class="n">3.30</span>, <span class="n">0.34</span>), <span class="n">70.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">88</span>, <span class="n">0</span>, <span class="n">182</span>))
+    <span class="c"># Key is small and close so its falloff stays on the airframe: the old</span>
+    <span class="c"># 150 W / 1.4 m key washed the whole floor to mid grey under the</span>
+    <span class="c"># three-quarter-down camera (the white livery needs far less light)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">1.00</span>, -<span class="n">0.70</span>, <span class="n">1.90</span>), <span class="n">60.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">30</span>, <span class="n">0</span>, -<span class="n">55</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">1.70</span>, -<span class="n">1.00</span>, <span class="n">0.90</span>), <span class="n">8.0</span>, <span class="n">2.6</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">66</span>, <span class="n">0</span>, <span class="n">54</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.35</span>, <span class="n">1.60</span>, <span class="n">1.40</span>), <span class="n">45.0</span>, <span class="n">1.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">50</span>, <span class="n">0</span>, <span class="n">196</span>))
+    <span class="c"># The camera looks down at the drone, so the floor is the backdrop: the</span>
+    <span class="c"># warm wedge pools on the floor behind and under the airframe, where its</span>
+    <span class="c"># shadow and the pool frame the silhouette (the back wall barely shows)</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (-<span class="n">0.10</span>, <span class="n">1.10</span>, <span class="n">1.70</span>), <span class="n">65.0</span>, <span class="n">1.6</span>, (<span class="n">1.0</span>, <span class="n">0.56</span>, <span class="n">0.26</span>), (-<span class="n">18</span>, <span class="n">0</span>, <span class="n">180</span>))
     <span class="k">return</span> floor, wall
 
 
@@ -2560,6 +2637,13 @@ _mat_cache = {}
     hero = parts + list(modules.values())
     <span class="k">for</span> ob <span class="k">in</span> hero:
         bind_materials(ob)
+    <span class="c"># render-only shading: the lofted fuselage shell reads as a moulded part,</span>
+    <span class="c"># smooth across its loft bands, while box edges stay crisp. Positions are</span>
+    <span class="c"># untouched, so nothing the socket checks measure changes.</span>
+    hull = next(ob <span class="k">for</span> ob <span class="k">in</span> hero <span class="k">if</span> ob.data.name.endswith(<span class="s">&quot;Hull&quot;</span>))
+    <span class="k">for</span> poly <span class="k">in</span> hull.data.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    hull.data.set_sharp_from_angle(angle=math.radians(<span class="n">38.0</span>))
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
@@ -2568,7 +2652,7 @@ _mat_cache = {}
     <span class="c"># three-quarter from above: the deck, the canted rotor pads and the belly</span>
     <span class="c"># pod all read from here; a level side-on view (draft 2) flattened the</span>
     <span class="c"># airframe into a silhouette</span>
-    cam.location = (<span class="n">1.28</span>, -<span class="n">1.42</span>, <span class="n">1.44</span>)
+    cam.location = (<span class="n">1.445</span>, -<span class="n">1.612</span>, <span class="n">1.558</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.10</span>, -<span class="n">0.05</span>, <span class="n">0.60</span>)
@@ -2671,7 +2755,7 @@ _mat_cache = {}
       <div class="related-grid">
         <article class="card mini">
           <a class="card-media" href="../modular-kit-snap/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with painted teal wall panels, diamond-plate walkways, hazard-striped trim rails and a lit doorway at the far end." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../modular-kit-snap/">modular-kit-snap</a></h3>
@@ -2702,7 +2786,7 @@ _mat_cache = {}
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/socket-attach-points-hero.webp" alt="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." />
+    <img src="../assets/socket-attach-points-hero.webp" alt="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." />
   </dialog>
   <footer>
     <div class="statusbar">
