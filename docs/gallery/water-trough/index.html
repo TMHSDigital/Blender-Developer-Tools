@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water." />
+  <meta property="og:image:alt" content="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of rippled dark water." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="water-trough — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
-  <meta name="twitter:image:alt" content="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water." />
+  <meta name="twitter:image:alt" content="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of rippled dark water." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../anvil/" aria-label="Previous showcase piece: anvil"><span aria-hidden="true">&larr;</span> anvil</a><span class="pager-pos hud">15 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hitching-post/" aria-label="Next showcase piece: hitching-post">hitching-post <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water.">
-      <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of rippled dark water.">
+      <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of rippled dark water." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 3316 tris, three materials with 1482 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093x0.552x0.5055 m, zmin 0, four shoes planted, each end three lapped boards, end rim span 21 mm, strap BVH gap 0, water-hull gap 2.6 mm, water contained on 66 of 66 rays, hull 1.045x0.466 m, LOD ratios in band, convex collider 68 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap/--open-ends 18; --narrow-hull 19; --slab-ends 20.</div>
@@ -385,6 +385,7 @@
 <p>The third pass found each end was one D-shaped slab: a single board from rim to rim, one tone, no joint, the thing the showcase&#x27;s &quot;a head or bottom is boards, not a slab&quot; rule exists to prevent (end orthos, end-cap close-ups, the hero). Each end is now three vertical boards of uneven width (<code>END_BOARD_FRACS</code>), each with its own tone and grain, its bottom following the hull arc under its own span. Neighbours lap 1 mm into each other (<code>END_BOARD_LAP</code>), so the joint is tight: a through seam would let the water out and a containment ray through, and the bevel on each board&#x27;s face edges shows the joint as a groove. The rim span is now read on the union of an end&#x27;s boards, so the inner edge of a board at a joint is not taken for the end&#x27;s rim. Each board follows the arc with three samples (<code>END_BOARD_SAMPLES</code>); four cost 3556 triangles, over the 3500 ceiling. <code>--slab-ends</code> restores the one-piece board and exits 20.</p>
 <h3 id="surface">Surface<a class="anchor" href="#surface" aria-label="Link to this section">#</a></h3>
 <p>Staves, boards and legs came out of one flat material, so every board was the same board. <code>paint_planks</code> writes a seeded <code>PlankTone</code> and each shell&#x27;s own long axis as <code>GrainDir</code>, as face attributes. The wood shader stretches its grain along that axis. The water was a 0.08-roughness mirror that went near-white under the key. It is now a dark body with a facing-ratio sky tint toward grazing angles and a faint ripple bump. A light placed to reflect in the surface was tried first and rejected: it either mirrored as a white sheet or showed nothing, and its spill lifted the dark stage. The fill dropped from 68% to 50%, so the inner stave walls show above the waterline; at 68% the surface sat nearly flush with the rim and read as felt in a frame. Straps widened from 28 to 40 mm. The third pass darkened the grazing tint from a pale grey-blue (0.20, 0.27, 0.29) to a deep teal (0.055, 0.105, 0.115): the hero looks across the surface near grazing, where that tint wins, and it read as a painted slab.</p>
+<p>The fourth pass made the surface read as liquid rather than as a teal panel: larger ripples (noise scale 22 to 7) under a stronger bump (0.08 to 0.30) at roughness 0.03 catch the key as glints, and the render path turns on EEVEE screen-space raytracing (4.2+) so the staves mirror in the water. The iron gets vertically stretched rust runs that dull its metallic response. A lower camera was tried to show the hull straps and rejected: the water surface dropped out of view.</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--box-ends</code></td><td>end-cap rim span</td><td>17</td></tr><tr><td><code>--float-strap</code></td><td>strap-to-hull gap</td><td>18</td></tr><tr><td><code>--narrow-hull</code></td><td>hull plan vs stated size</td><td>19</td></tr><tr><td><code>--open-ends</code></td><td>water contained by the end boards (restores the open U-band ends)</td><td>18</td></tr><tr><td><code>--slab-ends</code></td><td>end boards per end (restores the one-piece D board; measures 1)</td><td>20</td></tr></tbody></table></div>
@@ -410,9 +411,9 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/water-trough/water_trough.py</code>
-        <span>1617 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/water-trough/water_trough.py">View on GitHub &rarr;</a></span>
+        <span>1652 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/water-trough/water_trough.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1617">
+      <div class="code" data-lines="1652">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2029,7 +2030,42 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
 1614
 1615
 1616
-1617</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden water trough — a showcase piece, not an example.
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
 stand (U-staves and board-built ends from one radius function, contained
@@ -2787,7 +2823,7 @@ TONE_SEED = <span class="n">61</span>
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.03</span>
     bsdf.inputs[<span class="s">&quot;IOR&quot;</span>].default_value = <span class="n">1.33</span>
     <span class="c"># Deep body where the view looks straight down, a pale sky tint toward</span>
     <span class="c"># grazing angles. A light placed to reflect in the surface was</span>
@@ -2805,12 +2841,12 @@ TONE_SEED = <span class="n">61</span>
     nt.links.new(_sock(tint.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
     noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
-    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">22.0</span>
-    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">7.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
     nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
-    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.08</span>
-    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.004</span>
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.30</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.006</span>
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
     nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
@@ -2820,8 +2856,39 @@ TONE_SEED = <span class="n">61</span>
     <span class="s">&quot;&quot;&quot;(wood, iron, water): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
     wood = wood_material(<span class="s">&quot;TroughWood&quot;</span>)
     metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.155</span>, <span class="n">0.15</span>, <span class="n">1.0</span>), <span class="n">0.85</span>, <span class="n">0.42</span>, roughness_var=<span class="n">0.10</span>)
+    rust_streaks(metal)
     water = water_material(<span class="s">&quot;TroughWater&quot;</span>)
     <span class="k">return</span> wood, metal, water
+
+
+<span class="k">def</span> rust_streaks(mat):
+    <span class="s">&quot;&quot;&quot;Wet iron rusts in runs down the strap: rust tone and dull roughness
+    wherever a vertically stretched noise crosses a threshold.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    stretch = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    stretch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.25</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], stretch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">26.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">5.0</span>
+    nt.links.new(stretch.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    ramp.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.46</span>
+    ramp.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.66</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Value&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Result&quot;</span>], _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>).default_value = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value
+    _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.20</span>, <span class="n">0.075</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    metal = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    metal.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.85</span>
+    metal.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.15</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Result&quot;</span>], metal.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(metal.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>])
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal, water):
@@ -3580,6 +3647,10 @@ TONE_SEED = <span class="n">61</span>
             scene.eevee.taa_render_samples = <span class="n">64</span>
         <span class="k">except</span> AttributeError:
             <span class="k">pass</span>
+        <span class="c"># screen-space raytracing lets the water mirror the staves above it,</span>
+        <span class="c"># which is what makes a dark surface read as liquid (EEVEE Next, 4.2+)</span>
+        <span class="k">if</span> hasattr(scene.eevee, <span class="s">&quot;use_raytracing&quot;</span>):
+            scene.eevee.use_raytracing = <span class="k">True</span>
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = (
@@ -3685,7 +3756,7 @@ TONE_SEED = <span class="n">61</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water." />
+    <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of rippled dark water." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front." />
+  <meta property="og:image:alt" content="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="swatch-grid — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
-  <meta name="twitter:image:alt" content="Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front." />
+  <meta name="twitter:image:alt" content="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><span></span><span class="pager-pos hud">1 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../turntable/" aria-label="Next example: turntable">turntable <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front.">
-      <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front.">
+      <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</div>
@@ -362,7 +362,7 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that renders a tiered 3×2 material library — one sphere per material, each seated in a chrome collar on a graphite plinth — to a single PNG. It demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> patterns end to end:</p>
+<p>A runnable example that renders a tiered 3×2 material library — one sphere per material, each seated in a gunmetal collar on a two-tier walnut riser behind an engraved brass name plaque — to a single PNG. It demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> patterns end to end:</p>
 <ul><li><strong>Principled BSDF</strong> metals (gold, copper: high metallic, low roughness) and dielectrics (red/blue plastic, white rough), configured with <strong>string socket lookups</strong> and <strong>4-tuple colors</strong>.</li><li>The <strong>emission</strong> pattern (an emissive orange swatch, its <code>ShaderNodeEmission</code> core mixed toward a dark dielectric shell at the silhouette so it reads as a glowing globe).</li><li>The cross-version <strong><code>set_specular</code> shim</strong> (<code>Specular</code> → <code>Specular IOR Level</code>, renamed in Blender 4.0).</li></ul>
 <p>It doubles as a live proof of the <strong>EEVEE engine-id</strong> behavior: the version-branch helper resolves <code>BLENDER_EEVEE</code> on Blender 5.x and <code>BLENDER_EEVEE_NEXT</code> on 4.2–4.5, and the check witnesses the inversion for real — the <em>other</em> era&#x27;s id must be <strong>rejected</strong> by the running build (assignment raises <code>TypeError</code>) and the helper&#x27;s id accepted — so a regression in that mapping fails the example, not just the docs.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
@@ -379,7 +379,7 @@ blender --background --python swatch_grid.py -- --output swatch.png
 # asserted; only the final pixels use Cycles.
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
-<p>The swatches stand as a tiered material library on the default stage (floor, wall at y = 9, warm key, cool fill and rim, warm wedge pooling on the floor behind the display). Each sphere sits in a gunmetal collar on a bevelled graphite plinth; the back row stands on tall plinths so every sphere clears the one in front of it. A 50 mm camera looks down on the display with a <code>TRACK_TO</code> aim, which keeps the floor/wall seam above the back row.</p>
+<p>The swatches stand as a tiered material library on the default stage (floor, wall at y = 9, warm key, cool fill and rim, warm wedge pooling on the floor behind the display). Each sphere sits in a gunmetal collar on a two-tier walnut riser (oiled-grain wave texture in object space); the back tier stands taller so every sphere clears the one in front of it. A brass plaque leans in front of each collar with the material&#x27;s name set into it as an extruded text object (<code>LABELS</code>, in grid order), so the display reads as a labelled sample case. The plaques sit below the sphere centres the pixel check samples, so <code>verify_png</code> is unaffected. A 50 mm camera looks down on the display with a <code>TRACK_TO</code> aim, which keeps the floor/wall seam above the back row.</p>
 <p>The emissive swatch used to be a bare <code>Emission</code> at strength 1.4: under the Standard view transform its red channel clipped across the whole face and it rendered as a flat orange disk. Now the same <code>ShaderNodeEmission</code> (color and strength asserted) owns the face toward the camera at strength 0.95, below clipping, and a <code>Layer Weight</code> facing ramp hands it over to a dark dielectric shell at the silhouette, so the globe has a limb. A shadowless warm point light at its center stands in for the glow it throws on its own collar, plinth and the floor; the shell is lit from inside only on back faces, so the ball itself still shows only the asserted emission.</p>
 <p>The world is a reflection-only sky: glossy rays see a warm overhead gradient above a dark horizon, and camera and diffuse rays see the dark stage. The mirror-finish gold otherwise reflects the near-black world as a black ball.</p>
 <p><code>verify_png</code> samples each swatch where the camera sees it: the sphere center is projected through the render camera (<code>world_to_camera_view</code>) rather than assumed to sit at the center of a third of the frame, so the six-region check follows the layout.</p>
@@ -395,9 +395,9 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/swatch-grid/swatch_grid.py</code>
-        <span>464 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid/swatch_grid.py">View on GitHub &rarr;</a></span>
+        <span>551 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid/swatch_grid.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="464">
+      <div class="code" data-lines="551">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -861,7 +861,94 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 461
 462
 463
-464</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Procedural-materials swatch grid -- a runnable BDT example.
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Procedural-materials swatch grid -- a runnable BDT example.
 
 Renders a tiered 3x2 display of material spheres on plinths, one per material, demonstrating the
 `procedural-materials-and-shaders` patterns end to end: Principled BSDF (metal +
@@ -1028,19 +1115,106 @@ ROWS = ((<span class="n">1.25</span>, <span class="n">1.02</span>), (-<span clas
     <span class="k">return</span> me
 
 
+LABELS = (<span class="s">&quot;GOLD&quot;</span>, <span class="s">&quot;COPPER&quot;</span>, <span class="s">&quot;RED PLASTIC&quot;</span>, <span class="s">&quot;BLUE PLASTIC&quot;</span>, <span class="s">&quot;EMISSIVE&quot;</span>, <span class="s">&quot;WHITE ROUGH&quot;</span>)
+TIER_DEPTH = <span class="n">1.30</span>      <span class="c"># front-to-back depth of each riser tier</span>
+TIER_HALF_W = <span class="n">2.28</span>     <span class="c"># half-width of the riser, past the outer spheres</span>
+
+
+<span class="k">def</span> make_block(name, sx, sy, sz, bevel):
+    <span class="s">&quot;&quot;&quot;A bevelled box standing on z=0, centred on x/y.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= sx
+            v.co.y *= sy
+            v.co.z = (v.co.z + <span class="n">0.5</span>) * sz
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">3</span>, profile=<span class="n">0.5</span>,
+                        affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">True</span>
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">40.0</span>))
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> make_walnut():
+    <span class="s">&quot;&quot;&quot;Oiled walnut: a stretched wave-texture grain over a noise-warped base.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;Walnut&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.25</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)  <span class="c"># stretched: grain runs along X</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">3.0</span>
+    wave.bands_direction = <span class="s">&#x27;Z&#x27;</span>
+    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">1.6</span>
+    wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.075</span>, <span class="n">0.037</span>, <span class="n">0.018</span>, <span class="n">1</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.13</span>, <span class="n">0.068</span>, <span class="n">0.034</span>, <span class="n">1</span>)
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> make_plaque(name, text, loc, brass, ink):
+    <span class="s">&quot;&quot;&quot;A brass plaque tilted toward the camera with the material&#x27;s name set
+    into it: a bevelled plate plus an extruded text object riding its face.&quot;&quot;&quot;</span>
+    <span class="k">import</span> mathutils
+    tilt = math.radians(<span class="n">58.0</span>)                 <span class="c"># plate leans back, face up-and-forward</span>
+    plate = bpy.data.objects.new(name, make_block(name, <span class="n">0.86</span>, <span class="n">0.20</span>, <span class="n">0.022</span>, <span class="n">0.006</span>))
+    plate.location = loc
+    plate.rotation_euler = (tilt, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    plate.data.materials.append(brass)
+    cu = bpy.data.curves.new(name + <span class="s">&quot;Text&quot;</span>, type=<span class="s">&#x27;FONT&#x27;</span>)
+    cu.body = text
+    cu.size = <span class="n">0.085</span>
+    cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+    cu.align_y = <span class="s">&#x27;CENTER&#x27;</span>
+    cu.extrude = <span class="n">0.0025</span>
+    cu.space_character = <span class="n">1.12</span>
+    txt = bpy.data.objects.new(name + <span class="s">&quot;Text&quot;</span>, cu)
+    txt.data.materials.append(ink)
+    <span class="c"># ride the plate&#x27;s top face: parent, then sit just proud of it</span>
+    txt.parent = plate
+    txt.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0245</span>)
+    <span class="k">return</span> plate, txt
+
+
 <span class="k">def</span> build_scene(mats):
     sc = bpy.context.scene
     coll = bpy.context.collection
-    plinth_mat, _ = make_principled(<span class="s">&quot;PlinthGraphite&quot;</span>, (<span class="n">0.055</span>, <span class="n">0.056</span>, <span class="n">0.062</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.42</span>,
-                                    specular=<span class="n">0.5</span>)
+    walnut = make_walnut()
     collar_mat, _ = make_principled(<span class="s">&quot;CollarGunmetal&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.30</span>, <span class="n">0.32</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.32</span>)
+    brass, _ = make_principled(<span class="s">&quot;PlaqueBrass&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.58</span>, <span class="n">0.28</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    ink, _ = make_principled(<span class="s">&quot;PlaqueInk&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.018</span>, <span class="n">0.016</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.6</span>)
     swatches, stands = [], []
+    <span class="c"># a two-tier walnut riser: each row of spheres stands on its own tier, so</span>
+    <span class="c"># the back row clears the front one (tier tops at the old plinth heights)</span>
+    <span class="k">for</span> r, (y, h) <span class="k">in</span> enumerate(ROWS):
+        tier = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Tier</span>{r}<span class="s">&quot;</span>, make_block(<span class="s">f&quot;</span><span class="s">Tier</span>{r}<span class="s">&quot;</span>, <span class="n">2</span> * TIER_HALF_W,
+                                                             TIER_DEPTH, h, <span class="n">0.03</span>))
+        tier.location = (<span class="n">0.0</span>, y + (<span class="n">0.12</span> <span class="k">if</span> r == <span class="n">0</span> <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.0</span>)
+        tier.data.materials.append(walnut)
+        coll.objects.link(tier)
+        stands.append(tier)
     i = <span class="n">0</span>
     <span class="k">for</span> r, (y, h) <span class="k">in</span> enumerate(ROWS):
         <span class="k">for</span> c, x <span class="k">in</span> enumerate(COL_X):
-            plinth = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>, make_cylinder(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>, <span class="n">0.44</span>, h, <span class="n">0.035</span>))
-            plinth.location = (x, y, <span class="n">0.0</span>)
-            plinth.data.materials.append(plinth_mat)
+            plaque, txt = make_plaque(<span class="s">f&quot;</span><span class="s">Plaque</span>{i}<span class="s">&quot;</span>, LABELS[i],
+                                      (x, y - <span class="n">0.52</span>, h + <span class="n">0.06</span>), brass, ink)
+            coll.objects.link(plaque)
+            coll.objects.link(txt)
+            stands += [plaque, txt]
             collar = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Collar</span>{i}<span class="s">&quot;</span>, make_cylinder(<span class="s">f&quot;</span><span class="s">Collar</span>{i}<span class="s">&quot;</span>, <span class="n">0.30</span>, <span class="n">0.07</span>, <span class="n">0.02</span>))
             collar.location = (x, y, h)
             collar.data.materials.append(collar_mat)
@@ -1059,10 +1233,10 @@ ROWS = ((<span class="n">1.25</span>, <span class="n">1.02</span>), (-<span clas
             seat = h + <span class="n">0.07</span> + math.sqrt(SPHERE_R ** <span class="n">2</span> - <span class="n">0.26</span> ** <span class="n">2</span>)
             ob.location = (x, y, seat)
             ob.data.materials.append(mats[i])
-            <span class="k">for</span> o <span class="k">in</span> (plinth, collar, ob):
+            <span class="k">for</span> o <span class="k">in</span> (collar, ob):
                 coll.objects.link(o)
             swatches.append(ob)
-            stands += [plinth, collar]
+            stands.append(collar)
             i += <span class="n">1</span>
 
     <span class="c"># default stage: floor + back wall share the studio material</span>
@@ -1364,7 +1538,7 @@ ROWS = ((<span class="n">1.25</span>, <span class="n">1.02</span>), (-<span clas
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front." />
+    <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." />
   </dialog>
   <footer>
     <div class="statusbar">

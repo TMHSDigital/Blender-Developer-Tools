@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hitching-post-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face." />
+  <meta property="og:image:alt" content="A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hitching-post — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes, a face-nailed horseshoe) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hitching-post-hero.webp" />
-  <meta name="twitter:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face." />
+  <meta name="twitter:image:alt" content="A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../water-trough/" aria-label="Previous showcase piece: water-trough"><span aria-hidden="true">&larr;</span> water-trough</a><span class="pager-pos hud">16 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grindstone/" aria-label="Next showcase piece: grindstone">grindstone <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face.">
-      <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face.">
+      <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1852 tris, two materials with 114 wood and 828 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, horseshoe biting 1.5 mm and 7.5 mm proud, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring, --sunk-bands and --float-horseshoe exit 18; --short-post exits 19.</div>
@@ -362,22 +362,25 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber hitching post: a 125 mm square post seated in a closed iron shoe, one cross-rail through the post, a pyramidal cap with eaves, two rings hung through eyes under the rail, and a horseshoe nailed heels-up to the post&#x27;s face. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural timber hitching post: a 125 mm square post seated in a closed iron shoe, one cross-rail through the post, carried on two raking knee braces and capped with iron end sleeves, a pyramidal cap with eaves, two rings hung through eyes under the rail, and a horseshoe nailed heels-up to the post&#x27;s face. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p>Intended size: post 0.125 m square and 1.16 m of timber, cap 0.096 m, cross-rail 0.50 m. Outer AABB 0.500 × 0.149 × 1.246 m.</p>
+<p>Intended size: post 0.125 m square and 1.16 m of timber, cap 0.096 m, cross-rail 0.50 m (0.506 m over its end caps). Outer AABB 0.506 × 0.149 × 1.246 m.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–2400</td><td>1852 / 1852</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2192 / 0.2192</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥70 wood, ≥560 metal</td><td>2 slots, 114 wood, 828 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.500, 0.149, 1.246) m ± 0.01</td><td>(0.5000, 0.1490, 1.2460)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0 / 0 / 0</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/coplanar pairs = 0</td><td>all 0</td></tr><tr><td>Post seat</td><td>world zmin in (0.004, 0.014), XY centroid within 0.010 of origin, arm axis cos ≥ cos(0.5°)</td><td>0.01000, 0, 1.000</td></tr><tr><td>Hung ring</td><td>centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye</td><td>0, 0, 0, 0, 40</td></tr><tr><td>Shoe</td><td>each band overlaps the post, shoe overlaps the sole</td><td>band gap 0, sole–shoe 8</td></tr><tr><td><strong>Band seat</strong></td><td>each band above the shoe stands ≥ 0.004 m proud of the post faces</td><td>0.00650</td></tr><tr><td><strong>Horseshoe seat</strong></td><td>exactly 1; back bites the post face 0.0005–0.004 m, face ≥ 0.004 m proud</td><td>1, 0.00150, 0.00750</td></tr><tr><td>Wood–metal gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00075</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>80</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>139464 / 139452 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–2400</td><td>2156 / 2156</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥70 wood, ≥560 metal</td><td>2 slots, 222 wood, 880 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.506, 0.149, 1.246) m ± 0.01</td><td>(0.5060, 0.1490, 1.2460)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0 / 0 / 0</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/coplanar pairs = 0</td><td>all 0</td></tr><tr><td>Post seat</td><td>world zmin in (0.004, 0.014), XY centroid within 0.010 of origin, arm axis cos ≥ cos(0.5°)</td><td>0.01000, 0, 1.000</td></tr><tr><td>Hung ring</td><td>centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye</td><td>0, 0, 0, 0, 40</td></tr><tr><td>Shoe</td><td>each band overlaps the post, shoe overlaps the sole</td><td>band gap 0, sole–shoe 8</td></tr><tr><td><strong>Band seat</strong></td><td>each band above the shoe stands ≥ 0.004 m proud of the post faces</td><td>0.00650</td></tr><tr><td><strong>Horseshoe seat</strong></td><td>exactly 1; back bites the post face 0.0005–0.004 m, face ≥ 0.004 m proud</td><td>1, 0.00150, 0.00750</td></tr><tr><td><strong>Brace seat</strong></td><td>exactly 2 knee braces, each housed in the post and in the rail (triangle overlap ≥ 1 with each); exactly 2 end caps, each gripping the rail</td><td>2 braces, worst post 12 / rail 16; 2 caps, worst 12</td></tr><tr><td>Wood–metal gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00075</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>72</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>160548 / 160532 bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>1598 to 1680</strong>. The old rings were faceted tori clipped into the arm; the new eyes, shanks, and 24-segment hung rings replace that mesh. Cylinder caps are triangulated so the n-gon budget stays at 0.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run; a Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 14 (12 before the horseshoe added one more closed shell) and is not gated to 2.</p>
 <h3 id="horseshoe">Horseshoe<a class="anchor" href="#horseshoe" aria-label="Link to this section">#</a></h3>
 <p>A lone post with a stub rail read as the plainest object in the showcase lineup. A horseshoe nailed heels-up to the post&#x27;s front face is what a real hitching post carries, and it is geometry, so it is budgeted: a flat iron bar (17 mm wide, 7.5 mm thick) swept around 290° of an arc, heels capped, centred on the post between the upper band and the rail and clear of the rings. Its back face bites the post face by 1.5 mm (<code>HS_BITE</code>); its face stands 7.5 mm proud. The shell classifier sets it apart from the hung rings, which are the same flat-loop shape class, by where it sits (on the post&#x27;s centre line, not at ±<code>EYE_X</code>). <strong>Horseshoe seat</strong> reads the bite and the stand-off against the post&#x27;s own front face off the mesh; <code>--float-horseshoe</code> pulls it 4 mm off the face and exits 18 (bite −0.0025 m). It moved the budgets it should: base triangles 1680 → 1852 (inside the declared 1400–2400) and metal faces 742 → 828. The outer AABB, collider (80 tris) and every other seat are unchanged. The hero key light rose from 660 to 960 W so the still sits in the calibration luma band.</p>
+<h3 id="knee-braces-and-end-caps">Knee braces and end caps<a class="anchor" href="#knee-braces-and-end-caps" aria-label="Link to this section">#</a></h3>
+<p>After the horseshoe the post was still among the simplest objects in the asset-sheet lineup: a stub rail pinned through a post reads as a cross, not as a load-bearing hitch. The rail now sits on two raking knee braces, one under each arm, as a hitch rail that takes a pulling horse needs. Each brace is a 40 × 50 mm strut from the post&#x27;s side face at 0.66 m up to the rail&#x27;s underside, housed 22 mm into both (<code>BRACE_BITE</code>), and it stops at x = 0.090, inboard of the hung rings. The ring–wood overlap gate now counts the braces as wood. Both rail ends carry an iron sleeve 36 mm long, with bevelled edges and 5 mm walls, standing 3 mm past the end grain.</p>
+<p><code>seat_audit</code> classifies the new shells by position. A wood shell off the post&#x27;s centre line is a brace; the cap sits on it. A metal shell out at the rail ends is an end cap, not a band. <strong>Brace seat</strong> asserts exactly two braces, each overlapping the post and the rail, and two caps gripping the rail. <code>--float-braces</code> drops each brace head 36 mm below the rail and exits 18 (brace_arm 0). The additions moved the budgets they should: base triangles 1852 → 2156 (inside the declared 1400–2400), wood faces 114 → 222, metal faces 828 → 880. The outer AABB widened by the caps&#x27; 3 mm standoff per end, from 0.500 to 0.506 m, and <code>OUTER_SIZE</code> follows the measurement. The collider went from 80 to 72 triangles.</p>
 <h3 id="bands-wood-and-stage">Bands, wood and stage<a class="anchor" href="#bands-wood-and-stage" aria-label="Link to this section">#</a></h3>
 <p>The two iron bands were sized from <code>half - grip</code>: an inner half-width of 53 mm and an outer one of 61 mm, against a 62.5 mm post face. They sat inside the post, and only the chamfered corners broke the surface, showing as small black slits up the post. They now wrap it: the inner face bites 1.5 mm into the post (<code>BAND_BITE</code>), so each band stands 6.5 mm proud. <strong>Band seat</strong> asserts it; <code>--sunk-bands</code> restores the old bands and exits 18 (proud −0.0015 m).</p>
 <p>The post, rail and cap each carry their own tone and grain, and the iron is rusted. The stage grid grew from 14 to 60 m, because the wall&#x27;s left edge showed as a bright band in the corner of the hero. The temp <code>.glb</code> is removed after its size is measured.</p>
 <p>Each falsifier violates exactly one named budget. Proven on Blender 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries&#x27; own <code>--version</code>):</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--clip-ring</code></td><td>Hung-ring centerline</td><td>18</td><td>ring_err 0.024, ring–wood overlap 32</td></tr><tr><td><code>--short-post</code></td><td>Seated post</td><td>19</td><td>post zmin 0.030</td></tr><tr><td><code>--sunk-bands</code></td><td>Band seat</td><td>18</td><td>band proud −0.0015</td></tr><tr><td><code>--float-horseshoe</code></td><td>Horseshoe seat</td><td>18</td><td>bite −0.0025</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--clip-ring</code></td><td>Hung-ring centerline</td><td>18</td><td>ring_err 0.024, ring–wood overlap 32</td></tr><tr><td><code>--short-post</code></td><td>Seated post</td><td>19</td><td>post zmin 0.030</td></tr><tr><td><code>--sunk-bands</code></td><td>Band seat</td><td>18</td><td>band proud −0.0015</td></tr><tr><td><code>--float-horseshoe</code></td><td>Horseshoe seat</td><td>18</td><td>bite −0.0025</td></tr><tr><td><code>--float-braces</code></td><td>Brace seat</td><td>18</td><td>brace_arm 0</td></tr></tbody></table></div>
 <p>Default exit is 0 on all three. <code>--clip-ring</code> also overlaps the rail; the centerline gate is the one that fires.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python hitching_post.py --
@@ -389,19 +392,20 @@ blender --background --python hitching_post.py -- --clip-ring
 blender --background --python hitching_post.py -- --short-post
 blender --background --python hitching_post.py -- --sunk-bands
 blender --background --python hitching_post.py -- --float-horseshoe
+blender --background --python hitching_post.py -- --float-braces
 blender --background --python hitching_post.py -- --output preview.webp --engine cycles</code></pre>
 <p>Smoke does not pass <code>--output</code> or a falsifier.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Wood–metal BVH gap above 8 mm</td></tr><tr><td>18</td><td>Hung ring, shoe, band or horseshoe seat (<code>--clip-ring</code>, <code>--sunk-bands</code>, <code>--float-horseshoe</code>)</td></tr><tr><td>19</td><td>Post plumb, origin, and cup seat (<code>--short-post</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Wood–metal BVH gap above 8 mm</td></tr><tr><td>18</td><td>Hung ring, shoe, band, horseshoe, brace or end-cap seat (<code>--clip-ring</code>, <code>--sunk-bands</code>, <code>--float-horseshoe</code>, <code>--float-braces</code>)</td></tr><tr><td>19</td><td>Post plumb, origin, and cup seat (<code>--short-post</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/hitching-post/hitching_post.py</code>
-        <span>1634 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hitching-post/hitching_post.py">View on GitHub &rarr;</a></span>
+        <span>1732 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hitching-post/hitching_post.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1634">
+      <div class="code" data-lines="1732">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2035,7 +2039,105 @@ blender --background --python hitching_post.py -- --output preview.webp --engine
 1631
 1632
 1633
-1634</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hitching post — a showcase piece, not an example.
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700
+1701
+1702
+1703
+1704
+1705
+1706
+1707
+1708
+1709
+1710
+1711
+1712
+1713
+1714
+1715
+1716
+1717
+1718
+1719
+1720
+1721
+1722
+1723
+1724
+1725
+1726
+1727
+1728
+1729
+1730
+1731
+1732</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hitching post — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural timber hitching post (square
 post, pyramidal cap, cross-arm, iron shoe, bands, hitching rings and a
@@ -2134,6 +2236,20 @@ HS_BITE_MIN = <span class="n">0.0005</span>
 HS_BITE_MAX = <span class="n">0.004</span>
 HS_PROUD_MIN = <span class="n">0.004</span>
 HS_FLOAT = <span class="n">0.004</span>              <span class="c"># --float-horseshoe pulls it off the face by this</span>
+
+<span class="c"># Knee braces: a raking strut each side, from the post&#x27;s side face up to the</span>
+<span class="c"># rail&#x27;s underside, housed BRACE_BITE into both. They stop inboard of the</span>
+<span class="c"># hung rings (ring inner edge at EYE_X - RING_MAJOR - RING_MINOR = 0.1175).</span>
+BRACE_Z0 = <span class="n">0.66</span>               <span class="c"># brace foot on the post side face</span>
+BRACE_X1 = <span class="n">0.090</span>              <span class="c"># brace head on the rail underside</span>
+BRACE_T = <span class="n">0.040</span>               <span class="c"># thickness in the XZ plane</span>
+BRACE_W = <span class="n">0.050</span>               <span class="c"># width along Y</span>
+BRACE_BITE = <span class="n">0.022</span>            <span class="c"># housing depth into the post and into the rail</span>
+BRACE_DROP = <span class="n">0.036</span>            <span class="c"># --float-braces drops each head off the rail</span>
+<span class="c"># Iron end caps sleeved over both rail ends.</span>
+ARM_CAP_L = <span class="n">0.036</span>
+ARM_CAP_T = <span class="n">0.005</span>
+ARM_CAP_PROUD = <span class="n">0.003</span>         <span class="c"># past the rail&#x27;s end grain</span>
 <span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
 PLANK_TONE_JITTER = <span class="n">0.28</span>
 TONE_SEED = <span class="n">29</span>
@@ -2147,7 +2263,7 @@ AXIS_COS_MIN = math.cos(math.radians(<span class="n">0.5</span>))
 POST_XY_MAX = <span class="n">0.010</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">0.500</span>, <span class="n">0.149</span>, <span class="n">1.246</span>)
+OUTER_SIZE = (<span class="n">0.506</span>, <span class="n">0.149</span>, <span class="n">1.246</span>)
 BASE_TRIS_MIN = <span class="n">1400</span>
 BASE_TRIS_MAX = <span class="n">2400</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
@@ -2492,6 +2608,7 @@ METAL_IDX = <span class="n">1</span>
     <span class="s">&quot;&quot;&quot;Recompute cup, hung-ring, and plumb budgets from the generated shells.&quot;&quot;&quot;</span>
     post = arm = cap = <span class="k">None</span>
     soles, rings, eyes, bands, shanks, shoes_hs = [], [], [], [], [], []
+    braces, arm_caps = [], []
     <span class="k">for</span> idxs, polys <span class="k">in</span> _face_shells(me):
         x0, x1, y0, y1, z0, z1 = _bounds(me, idxs)
         dx, dy, dz = x1 - x0, y1 - y0, z1 - z0
@@ -2506,10 +2623,16 @@ METAL_IDX = <span class="n">1</span>
                 post = rec
             <span class="k">elif</span> dx &gt; <span class="n">0.30</span>:
                 arm = rec
+            <span class="k">elif</span> abs(rec[<span class="s">&quot;c&quot;</span>].x) &gt; <span class="n">0.03</span>:
+                <span class="c"># off the post&#x27;s centre line: a knee brace, not the cap</span>
+                braces.append(rec)
             <span class="k">else</span>:
                 cap = rec
             <span class="k">continue</span>
-        <span class="k">if</span> z0 &lt; <span class="n">0.004</span> <span class="k">and</span> dz &lt; <span class="n">0.030</span> <span class="k">and</span> dx &gt; <span class="n">0.10</span>:
+        <span class="k">if</span> abs(rec[<span class="s">&quot;c&quot;</span>].x) &gt; ARM_L * <span class="n">0.5</span> - <span class="n">0.05</span>:
+            <span class="c"># out at the rail ends, beyond the hung rings: an end cap</span>
+            arm_caps.append(rec)
+        <span class="k">elif</span> z0 &lt; <span class="n">0.004</span> <span class="k">and</span> dz &lt; <span class="n">0.030</span> <span class="k">and</span> dx &gt; <span class="n">0.10</span>:
             soles.append(rec)
         <span class="k">elif</span> dy &lt; <span class="n">0.025</span> <span class="k">and</span> dx &gt; <span class="n">0.06</span> <span class="k">and</span> dz &gt; <span class="n">0.06</span> <span class="k">and</span> abs(rec[<span class="s">&quot;c&quot;</span>].x) &lt; <span class="n">0.06</span>:
             <span class="c"># flat, face-mounted, on the post&#x27;s centre line: the horseshoe</span>
@@ -2547,6 +2670,11 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">&quot;horseshoes&quot;</span>: len(shoes_hs),
         <span class="s">&quot;hs_bite&quot;</span>: -<span class="n">1.0</span>,
         <span class="s">&quot;hs_proud&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;braces&quot;</span>: len(braces),
+        <span class="s">&quot;brace_post&quot;</span>: <span class="n">0</span>,
+        <span class="s">&quot;brace_arm&quot;</span>: <span class="n">0</span>,
+        <span class="s">&quot;arm_caps&quot;</span>: len(arm_caps),
+        <span class="s">&quot;cap_arm&quot;</span>: <span class="n">0</span>,
     }
     <span class="k">if</span> (
         post <span class="k">is</span> <span class="k">None</span>
@@ -2560,7 +2688,17 @@ METAL_IDX = <span class="n">1</span>
     ):
         <span class="k">return</span> out
 
-    wood_bvh = _bvh(me, post[<span class="s">&quot;polys&quot;</span>] + arm[<span class="s">&quot;polys&quot;</span>] + cap[<span class="s">&quot;polys&quot;</span>])
+    wood_bvh = _bvh(
+        me, post[<span class="s">&quot;polys&quot;</span>] + arm[<span class="s">&quot;polys&quot;</span>] + cap[<span class="s">&quot;polys&quot;</span>] + [p <span class="k">for</span> b <span class="k">in</span> braces <span class="k">for</span> p <span class="k">in</span> b[<span class="s">&quot;polys&quot;</span>]]
+    )
+
+    <span class="c"># Brace seat: each brace is housed in the post and in the rail (the</span>
+    <span class="c"># worst brace counts). End caps: each sleeve grips the rail end.</span>
+    post_bvh = _bvh(me, post[<span class="s">&quot;polys&quot;</span>])
+    arm_bvh = _bvh(me, arm[<span class="s">&quot;polys&quot;</span>])
+    brace_post = min((len(post_bvh.overlap(_bvh(me, b[<span class="s">&quot;polys&quot;</span>]))) <span class="k">for</span> b <span class="k">in</span> braces), default=<span class="n">0</span>)
+    brace_arm = min((len(arm_bvh.overlap(_bvh(me, b[<span class="s">&quot;polys&quot;</span>]))) <span class="k">for</span> b <span class="k">in</span> braces), default=<span class="n">0</span>)
+    cap_arm = min((len(arm_bvh.overlap(_bvh(me, c[<span class="s">&quot;polys&quot;</span>]))) <span class="k">for</span> c <span class="k">in</span> arm_caps), default=<span class="n">0</span>)
     ring_wood = <span class="n">0</span>
     eye_wood = <span class="n">0</span>
     ring_err = <span class="n">0.0</span>
@@ -2643,6 +2781,9 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">&quot;band_proud&quot;</span>: band_proud,
         <span class="s">&quot;hs_bite&quot;</span>: hs_bite,
         <span class="s">&quot;hs_proud&quot;</span>: hs_proud,
+        <span class="s">&quot;brace_post&quot;</span>: brace_post,
+        <span class="s">&quot;brace_arm&quot;</span>: brace_arm,
+        <span class="s">&quot;cap_arm&quot;</span>: cap_arm,
     })
     <span class="k">return</span> out
 
@@ -2798,6 +2939,7 @@ METAL_IDX = <span class="n">1</span>
     small_cap=<span class="k">False</span>,
     sunk_bands=<span class="k">False</span>,
     float_horseshoe=<span class="k">False</span>,
+    float_braces=<span class="k">False</span>,
 ):
     <span class="s">&quot;&quot;&quot;Post on a closed shoe, one rail, rings hung through eyes under the rail.
 
@@ -2826,6 +2968,19 @@ METAL_IDX = <span class="n">1</span>
                 WOOD_IDX,
             )
         )
+        <span class="c"># knee braces: foot housed in the post side, head housed in the rail</span>
+        arm_under = ARM_Z - ARM_ZTH * <span class="n">0.5</span>
+        head_z = arm_under + BRACE_BITE - (BRACE_DROP <span class="k">if</span> float_braces <span class="k">else</span> <span class="n">0.0</span>)
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(
+                add_oriented_box(
+                    bm,
+                    (sx * (half - BRACE_BITE), <span class="n">0.0</span>, BRACE_Z0),
+                    (sx * BRACE_X1, <span class="n">0.0</span>, head_z),
+                    (BRACE_T, BRACE_W),
+                    WOOD_IDX,
+                )
+            )
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
             edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
             <span class="c"># set order follows memory addresses; sort so the bevel, and the</span>
@@ -2890,6 +3045,34 @@ METAL_IDX = <span class="n">1</span>
         hs_shift = -HS_FLOAT <span class="k">if</span> float_horseshoe <span class="k">else</span> <span class="n">0.0</span>
         hs_back = -half + HS_BITE + hs_shift
         add_horseshoe(bm, HS_Z, hs_back, hs_back - HS_BITE - HS_T, METAL_IDX)
+
+        <span class="c"># iron end caps sleeved over the rail ends, edges softened</span>
+        cap_verts = []
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            x_out = ARM_L * <span class="n">0.5</span> + ARM_CAP_PROUD
+            cap_verts.extend(
+                add_box(
+                    bm,
+                    (sx * (x_out - ARM_CAP_L * <span class="n">0.5</span>), <span class="n">0.0</span>, ARM_Z),
+                    (ARM_CAP_L, ARM_Y + <span class="n">2.0</span> * ARM_CAP_T, ARM_ZTH + <span class="n">2.0</span> * ARM_CAP_T),
+                    METAL_IDX,
+                )
+            )
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span> <span class="k">and</span> cap_verts:
+            cap_edges = list({e <span class="k">for</span> v <span class="k">in</span> cap_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            bm.edges.index_update()
+            cap_edges.sort(key=<span class="k">lambda</span> e: e.index)
+            ret = bmesh.ops.bevel(
+                bm,
+                geom=cap_edges,
+                offset=<span class="n">0.0018</span>,
+                segments=<span class="n">1</span>,
+                profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>,
+                clamp_overlap=<span class="k">True</span>,
+            )
+            <span class="k">for</span> face <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
+                face.material_index = METAL_IDX
 
         arm_bottom = ARM_Z - ARM_ZTH * <span class="n">0.5</span>
         eye_z = arm_bottom - EYE_MAJOR - EYE_MINOR - <span class="n">0.004</span>
@@ -3237,6 +3420,7 @@ METAL_IDX = <span class="n">1</span>
     short_post=<span class="k">False</span>,
     sunk_bands=<span class="k">False</span>,
     float_horseshoe=<span class="k">False</span>,
+    float_braces=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_hitching_post_mesh(
@@ -3248,6 +3432,7 @@ METAL_IDX = <span class="n">1</span>
         twin_sole=twin_sole,
         sunk_bands=sunk_bands,
         float_horseshoe=float_horseshoe,
+        float_braces=float_braces,
     )
     high = build_hitching_post_mesh(
         <span class="s">&quot;HitchPostHigh&quot;</span>, bevel_offset=<span class="n">0.008</span>, bevel_segments=<span class="n">4</span>, sunk_bands=sunk_bands,
@@ -3351,7 +3536,9 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">parts=</span>{seat[<span class="s">&#x27;post&#x27;</span>]}<span class="s">/</span>{seat[<span class="s">&#x27;arm&#x27;</span>]}<span class="s">/</span>{seat[<span class="s">&#x27;cap&#x27;</span>]}<span class="s">/</span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">soles=</span>{seat[<span class="s">&#x27;soles&#x27;</span>]}<span class="s">/rings=</span>{seat[<span class="s">&#x27;rings&#x27;</span>]}<span class="s">/eyes=</span>{seat[<span class="s">&#x27;eyes&#x27;</span>]}<span class="s">/bands=</span>{seat[<span class="s">&#x27;bands&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">band_proud=</span>{seat[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> horseshoes=</span>{seat[<span class="s">&#x27;horseshoes&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">hs_bite=</span>{seat[<span class="s">&#x27;hs_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> hs_proud=</span>{seat[<span class="s">&#x27;hs_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">hs_bite=</span>{seat[<span class="s">&#x27;hs_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> hs_proud=</span>{seat[<span class="s">&#x27;hs_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">braces=</span>{seat[<span class="s">&#x27;braces&#x27;</span>]}<span class="s"> brace_post=</span>{seat[<span class="s">&#x27;brace_post&#x27;</span>]}<span class="s"> brace_arm=</span>{seat[<span class="s">&#x27;brace_arm&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">arm_caps=</span>{seat[<span class="s">&#x27;arm_caps&#x27;</span>]}<span class="s"> cap_arm=</span>{seat[<span class="s">&#x27;cap_arm&#x27;</span>]}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -3461,6 +3648,11 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">or</span> seat[<span class="s">&quot;horseshoes&quot;</span>] != <span class="n">1</span>
         <span class="k">or</span> <span class="k">not</span> (HS_BITE_MIN &lt;= seat[<span class="s">&quot;hs_bite&quot;</span>] &lt;= HS_BITE_MAX)
         <span class="k">or</span> seat[<span class="s">&quot;hs_proud&quot;</span>] &lt; HS_PROUD_MIN
+        <span class="k">or</span> seat[<span class="s">&quot;braces&quot;</span>] != <span class="n">2</span>
+        <span class="k">or</span> seat[<span class="s">&quot;brace_post&quot;</span>] &lt; <span class="n">1</span>
+        <span class="k">or</span> seat[<span class="s">&quot;brace_arm&quot;</span>] &lt; <span class="n">1</span>
+        <span class="k">or</span> seat[<span class="s">&quot;arm_caps&quot;</span>] != <span class="n">2</span>
+        <span class="k">or</span> seat[<span class="s">&quot;cap_arm&quot;</span>] &lt; <span class="n">1</span>
     ):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">hung ring / shoe seat ring_err=</span>{seat[<span class="s">&#x27;ring_err&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
@@ -3470,7 +3662,9 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">band_proud=</span>{seat[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> (min </span>{BAND_PROUD_MIN}<span class="s">) </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">horseshoes=</span>{seat[<span class="s">&#x27;horseshoes&#x27;</span>]}<span class="s"> hs_bite=</span>{seat[<span class="s">&#x27;hs_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">(band [</span>{HS_BITE_MIN}<span class="s">, </span>{HS_BITE_MAX}<span class="s">]) hs_proud=</span>{seat[<span class="s">&#x27;hs_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">&quot;(--clip-ring / --sunk-bands / --float-horseshoe are the designed fails)&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">braces=</span>{seat[<span class="s">&#x27;braces&#x27;</span>]}<span class="s"> brace_post=</span>{seat[<span class="s">&#x27;brace_post&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">brace_arm=</span>{seat[<span class="s">&#x27;brace_arm&#x27;</span>]}<span class="s"> arm_caps=</span>{seat[<span class="s">&#x27;arm_caps&#x27;</span>]}<span class="s"> cap_arm=</span>{seat[<span class="s">&#x27;cap_arm&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--clip-ring / --sunk-bands / --float-horseshoe / --float-braces are the designed fails)&quot;</span>,
             <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
@@ -3639,6 +3833,11 @@ METAL_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: pull the horseshoe off the post face&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--float-braces&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: drop the knee-brace heads off the rail&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -3650,6 +3849,7 @@ METAL_IDX = <span class="n">1</span>
         short_post=args.short_post,
         sunk_bands=args.sunk_bands,
         float_horseshoe=args.float_horseshoe,
+        float_braces=args.float_braces,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -3708,7 +3908,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face." />
+    <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face." />
   </dialog>
   <footer>
     <div class="statusbar">

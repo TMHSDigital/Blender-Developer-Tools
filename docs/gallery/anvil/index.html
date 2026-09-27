@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
+  <meta property="og:image:alt" content="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="anvil — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
-  <meta name="twitter:image:alt" content="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
+  <meta name="twitter:image:alt" content="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../wheelbarrow/" aria-label="Previous showcase piece: wheelbarrow"><span aria-hidden="true">&larr;</span> wheelbarrow</a><span class="pager-pos hud">14 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../water-trough/" aria-label="Next showcase piece: water-trough">water-trough <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump.">
-      <img src="../assets/anvil-hero.webp" alt="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank.">
+      <img src="../assets/anvil-hero.webp" alt="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 3052 tris, two materials with 1040 wood and 854 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
@@ -379,6 +379,7 @@
 <h3 id="waist-steel-and-stump">Waist, steel and stump<a class="anchor" href="#waist-steel-and-stump" aria-label="Link to this section">#</a></h3>
 <p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through five stations that flare from the foot in to a pinch and out to the body. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
 <p>The steel was satin (metallic 0.92, roughness 0.32) and read as chrome; it is now dark forged steel with rust. Staves and head carry their own wood tone and grain. The stage grid grew from 14 to 60 m. The temp <code>.glb</code> is removed after its size is measured.</p>
+<p>The hero dresses the scene without touching the checked mesh: up-facing steel (the working face and the top of the horn) is mixed toward bright, low-roughness metal by the geometry normal, as a hammer polishes it; a render-only cross-peen hammer lies on the floor beside the stump; and a low warm point light off frame stands in for the forge. The hammer is in the framing gate&#x27;s element set, so it has to clear the frame edges too.</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-anvil</code></td><td>foot-on-head gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--round-waist</code></td><td>waist form</td><td>19</td></tr></tbody></table></div>
@@ -401,9 +402,9 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/anvil/anvil.py</code>
-        <span>1558 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
+        <span>1634 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1558">
+      <div class="code" data-lines="1634">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1961,7 +1962,83 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
 1555
 1556
 1557
-1558</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
+1558
+1559
+1560
+1561
+1562
+1563
+1564
+1565
+1566
+1567
+1568
+1569
+1570
+1571
+1572
+1573
+1574
+1575
+1576
+1577
+1578
+1579
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600
+1601
+1602
+1603
+1604
+1605
+1606
+1607
+1608
+1609
+1610
+1611
+1612
+1613
+1614
+1615
+1616
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural London-pattern anvil on a
 coopered timber stump (stave-chord hoops, sawn head, horn/face/heel
@@ -3380,6 +3457,70 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
+<span class="k">def</span> polish_face(mat):
+    <span class="s">&quot;&quot;&quot;Render only: up-facing steel (the working face and horn top) is worn
+    bright by the hammer, the flanks keep the dark forge scale.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    geo = nt.nodes.new(<span class="s">&quot;ShaderNodeNewGeometry&quot;</span>)
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(geo.outputs[<span class="s">&quot;Normal&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    ramp.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.82</span>
+    ramp.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.97</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], ramp.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="k">for</span> sock_name, bright <span class="k">in</span> ((<span class="s">&quot;Base Color&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.50</span>, <span class="n">0.52</span>, <span class="n">1.0</span>)), (<span class="s">&quot;Roughness&quot;</span>, <span class="n">0.16</span>)):
+        sock = bsdf.inputs[sock_name]
+        src = sock.links[<span class="n">0</span>].from_socket <span class="k">if</span> sock.is_linked <span class="k">else</span> <span class="k">None</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span> <span class="k">if</span> sock_name == <span class="s">&quot;Base Color&quot;</span> <span class="k">else</span> <span class="s">&quot;FLOAT&quot;</span>
+        a_in, b_in = mix.inputs[<span class="s">&quot;A&quot;</span>], mix.inputs[<span class="s">&quot;B&quot;</span>]
+        <span class="k">if</span> mix.data_type == <span class="s">&quot;RGBA&quot;</span>:
+            a_in = [i <span class="k">for</span> i <span class="k">in</span> mix.inputs <span class="k">if</span> i.name == <span class="s">&quot;A&quot;</span> <span class="k">and</span> i.type == <span class="s">&quot;RGBA&quot;</span>][<span class="n">0</span>]
+            b_in = [i <span class="k">for</span> i <span class="k">in</span> mix.inputs <span class="k">if</span> i.name == <span class="s">&quot;B&quot;</span> <span class="k">and</span> i.type == <span class="s">&quot;RGBA&quot;</span>][<span class="n">0</span>]
+        <span class="k">else</span>:
+            a_in = [i <span class="k">for</span> i <span class="k">in</span> mix.inputs <span class="k">if</span> i.name == <span class="s">&quot;A&quot;</span> <span class="k">and</span> i.type == <span class="s">&quot;VALUE&quot;</span>][<span class="n">0</span>]
+            b_in = [i <span class="k">for</span> i <span class="k">in</span> mix.inputs <span class="k">if</span> i.name == <span class="s">&quot;B&quot;</span> <span class="k">and</span> i.type == <span class="s">&quot;VALUE&quot;</span>][<span class="n">0</span>]
+        <span class="k">if</span> src <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            nt.links.new(src, a_in)
+        <span class="k">else</span>:
+            a_in.default_value = sock.default_value
+        b_in.default_value = bright
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(ramp.outputs[<span class="s">&quot;Result&quot;</span>], fac)
+        out = [o <span class="k">for</span> o <span class="k">in</span> mix.outputs <span class="k">if</span> o.name == <span class="s">&quot;Result&quot;</span> <span class="k">and</span>
+               o.type == (<span class="s">&quot;RGBA&quot;</span> <span class="k">if</span> mix.data_type == <span class="s">&quot;RGBA&quot;</span> <span class="k">else</span> <span class="s">&quot;VALUE&quot;</span>)][<span class="n">0</span>]
+        nt.links.new(out, sock)
+
+
+<span class="k">def</span> build_hammer(scene, steel, wood):
+    <span class="s">&quot;&quot;&quot;Render only: a cross-peen hammer lying on the floor against the stump.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Hammer&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">12</span>, radius1=<span class="n">0.013</span>,
+                                    radius2=<span class="n">0.015</span>, depth=<span class="n">0.34</span>)
+        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            v.co = Vector((v.co.z, v.co.y, v.co.x))       <span class="c"># handle along +X</span>
+        head = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> head[<span class="s">&quot;verts&quot;</span>]:
+            v.co = Vector((v.co.x * <span class="n">0.036</span> + <span class="n">0.17</span>, v.co.y * <span class="n">0.115</span>, v.co.z * <span class="n">0.036</span>))
+        head_faces = {f <span class="k">for</span> v <span class="k">in</span> head[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.material_index = <span class="n">1</span> <span class="k">if</span> f <span class="k">in</span> head_faces <span class="k">else</span> <span class="n">0</span>
+            f.smooth = f <span class="k">not</span> <span class="k">in</span> head_faces
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(wood)
+    me.materials.append(steel)
+    ob = bpy.data.objects.new(<span class="s">&quot;Hammer&quot;</span>, me)
+    ob.location = (<span class="n">0.27</span>, <span class="n">0.10</span>, <span class="n">0.036</span>)
+    ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">62.0</span>))
+    scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
 <span class="k">def</span> render_still(low, _wood, _tex, path, engine):
     scene = bpy.context.scene
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
@@ -3428,9 +3569,21 @@ METAL_IDX = <span class="n">1</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">660.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">620.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">46.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">600.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    <span class="c"># an off-frame forge: a low warm point to one side, so the steel picks up</span>
+    <span class="c"># an orange edge the way an anvil does in a working smithy</span>
+    forge = bpy.data.lights.new(<span class="s">&quot;Forge&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+    forge.energy = <span class="n">55.0</span>
+    forge.color = (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.14</span>)
+    forge.shadow_soft_size = <span class="n">0.25</span>
+    forge_ob = bpy.data.objects.new(<span class="s">&quot;Forge&quot;</span>, forge)
+    forge_ob.location = (<span class="n">0.95</span>, <span class="n">0.35</span>, <span class="n">0.42</span>)
+    scene.collection.objects.link(forge_ob)
+
+    polish_face(low.data.materials[METAL_IDX])
+    hammer = build_hammer(scene, low.data.materials[METAL_IDX], _wood)
 
     bb = world_bbox(low)
     span = max(bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>], <span class="n">0.2</span>)
@@ -3468,7 +3621,7 @@ METAL_IDX = <span class="n">1</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, hammer], stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -3558,7 +3711,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/anvil-hero.webp" alt="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
+    <img src="../assets/anvil-hero.webp" alt="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
   </dialog>
   <footer>
     <div class="statusbar">

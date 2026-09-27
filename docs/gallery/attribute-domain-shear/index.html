@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
+  <meta property="og:image:alt" content="Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="attribute-domain-shear — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
-  <meta name="twitter:image:alt" content="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
+  <meta name="twitter:image:alt" content="Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../car-mirror-symmetry/" aria-label="Previous example: car-mirror-symmetry"><span aria-hidden="true">&larr;</span> car-mirror-symmetry</a><span class="pager-pos hud">41 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../degenerate-bevel-weld/" aria-label="Next example: degenerate-bevel-weld">degenerate-bevel-weld <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream.">
-      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink.">
+      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Authoring per-face colors into a POINT-domain attribute overwrites shared vertices once per neighbor; the last write wins and intended colors shear across every shared vertex.</div>
@@ -370,7 +370,7 @@
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — the <code>color_attributes</code> domain API is stable across both.</p>
 <p><strong>Render as proof:</strong> two striped patio parasols, painted by the same two authoring functions the check asserts. The canopy is the check&#x27;s fan grown into fabric: eight gores around <strong>one shared apex vertex</strong>, each gore a strip of faces whose vertices all sit on the two seams it shares with its neighbours, so the naive loop touches exactly the kind of shared vertex the check measures. CORNER (left) keeps crisp crimson and cream stripes. Naive POINT (right) rewrites every seam and the apex with the later gore&#x27;s color: the stripes smear pink along the seams, and gore 0, crimson by intent, renders cream because its seam and the apex were last written by gore 7. That gore is turned to face the camera. The broken state is in frame by design: the right parasol <em>is</em> the falsification variant. The canopy fabric is fully matte (<code>Specular IOR Level = 0</code>) so the flat color data carries no specular line, per <code>docs/VISUAL-STYLE.md</code>.</p>
 <p>The render uses a two-tone palette (crimson and cream, alternating). It is not the check&#x27;s palette. The check keeps its eight distinct hues because an off-by-two ordering bug would pass unnoticed under a period-2 palette. A parasol reads as broken only when stripes everyone expects to be crisp go soft. Both palettes go through the same <code>assign_corner</code> and <code>assign_point_naive</code>. Those functions take a <code>faces_per_wedge</code> stride (gore-major face order). It is 1 on the check&#x27;s fan, so the check&#x27;s writes are unchanged, and its output is identical before and after.</p>
-<p>The staging is render-only and does not touch the checked mesh. Each parasol is eight named parts with five materials: canopy, aluminium ribs and stretchers, brass runner, finial and tilt knuckle, teak upper and lower pole, and a cast-iron base. The canopy tilts 24 degrees toward the camera about the knuckle so the whole top reads. One bold label stands in front of each base. The render path runs the framing gate (exit 10) and the asset-quality floors on one parasol (exit 11).</p>
+<p>The staging is render-only and does not touch the checked mesh. Each parasol is eight named parts with five materials: canopy, aluminium ribs and stretchers, brass runner, finial and tilt knuckle, teak upper and lower pole, and a cast-iron base. The canopy tilts 24 degrees toward the camera about the knuckle so the whole top reads. The pair stands on a terracotta paver patio (a render-only 10 x 5 deck of beveled pavers with grout joints, two tones alternated by a fixed index hash, passed to the framing gate as stage like the floor), and each base has a slate placard on a brass post in front of it, the domain name inlaid in cream enamel. The render path runs the framing gate (exit 10) and the asset-quality floors on one parasol (exit 11).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python attribute_domain_shear.py --
 blender --background --python attribute_domain_shear.py -- --no-overwrite
@@ -385,9 +385,9 @@ blender --background --python attribute_domain_shear.py -- --output shear.png --
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/attribute-domain-shear/attribute_domain_shear.py</code>
-        <span>608 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/attribute-domain-shear/attribute_domain_shear.py">View on GitHub &rarr;</a></span>
+        <span>695 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/attribute-domain-shear/attribute_domain_shear.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="608">
+      <div class="code" data-lines="695">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -995,7 +995,94 @@ blender --background --python attribute_domain_shear.py -- --output shear.png --
 605
 606
 607
-608</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Attribute domain shear — POINT vs CORNER color attributes on shared verts.
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Attribute domain shear — POINT vs CORNER color attributes on shared verts.
 
 Witnesses the domain-semantics contract of `Mesh.color_attributes` that
 AI-generated code trips on after learning `color_attributes.new()` exists:
@@ -1429,20 +1516,104 @@ RUNNER_Z = <span class="n">0.20</span>        <span class="c"># sliding runner o
     <span class="k">return</span> parts
 
 
-<span class="k">def</span> floor_letters(sc, text, x, mat):
-    <span class="s">&quot;&quot;&quot;One bold label per parasol: extruded block letters standing on the
-    floor in front of the base, readable at card size.&quot;&quot;&quot;</span>
-    cu = bpy.data.curves.new(<span class="s">f&quot;</span><span class="s">Label</span>{text.title()}<span class="s">&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
+<span class="k">def</span> _box_mesh(name, dims, bevel=<span class="n">0.0</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= dims[<span class="n">0</span>]
+            v.co.y *= dims[<span class="n">1</span>]
+            v.co.z *= dims[<span class="n">2</span>]
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">2</span>,
+                            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> placard(sc, text, x, mats):
+    <span class="s">&quot;&quot;&quot;One sign per parasol: a slate plaque on a brass post in front of the
+    base, tilted back toward the raised camera, the domain name inlaid in
+    cream enamel. Returns every part (they all count for the margin gate).&quot;&quot;&quot;</span>
+    parts = []
+    post = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Post</span><span class="s">&quot;</span>,
+                                _box_mesh(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Post</span><span class="s">&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.035</span>, <span class="n">0.24</span>), <span class="n">0.006</span>))
+    post.data.materials.append(mats[<span class="s">&quot;brass&quot;</span>])
+    post.location = (x, -<span class="n">1.40</span>, <span class="n">0.12</span>)
+    sc.collection.objects.link(post)
+    parts.append(post)
+    foot = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Foot</span><span class="s">&quot;</span>,
+                                _box_mesh(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Foot</span><span class="s">&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.20</span>, <span class="n">0.03</span>), <span class="n">0.008</span>))
+    foot.data.materials.append(mats[<span class="s">&quot;iron&quot;</span>])
+    foot.location = (x, -<span class="n">1.40</span>, <span class="n">0.015</span>)
+    sc.collection.objects.link(foot)
+    parts.append(foot)
+    root = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">&quot;</span>, <span class="k">None</span>)
+    root.location = (x, -<span class="n">1.42</span>, <span class="n">0.30</span>)
+    root.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(root)
+    plaque = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Plaque</span><span class="s">&quot;</span>,
+                                  _box_mesh(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Plaque</span><span class="s">&quot;</span>, (<span class="n">0.98</span>, <span class="n">0.30</span>, <span class="n">0.035</span>), <span class="n">0.012</span>))
+    plaque.data.materials.append(mats[<span class="s">&quot;slate&quot;</span>])
+    plaque.parent = root
+    sc.collection.objects.link(plaque)
+    parts.append(plaque)
+    cu = bpy.data.curves.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Text</span><span class="s">&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
     cu.body = text
-    cu.size = <span class="n">0.29</span>
-    cu.extrude = <span class="n">0.03</span>
-    cu.bevel_depth = <span class="n">0.004</span>
-    cu.offset = <span class="n">0.012</span>          <span class="c"># thicken the stroke: the stock font is thin</span>
+    cu.size = <span class="n">0.19</span>
+    cu.extrude = <span class="n">0.003</span>
+    cu.offset = <span class="n">0.006</span>          <span class="c"># thicken the stroke: the stock font is thin</span>
     cu.align_x = <span class="s">&quot;CENTER&quot;</span>
-    ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Label</span>{text.title()}<span class="s">&quot;</span>, cu)
-    ob.location = (x, -<span class="n">1.0</span>, <span class="n">0.0</span>)
-    ob.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    ob.data.materials.append(mat)
+    cu.align_y = <span class="s">&quot;CENTER&quot;</span>
+    ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Sign</span>{text.title()}<span class="s">.Text</span><span class="s">&quot;</span>, cu)
+    ob.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0185</span>)
+    ob.parent = root
+    ob.data.materials.append(mats[<span class="s">&quot;enamel&quot;</span>])
+    sc.collection.objects.link(ob)
+    parts.append(ob)
+    <span class="k">return</span> parts
+
+
+PAVER = <span class="n">0.6</span>          <span class="c"># terracotta paver pitch (m)</span>
+PAVER_GAP = <span class="n">0.018</span>    <span class="c"># grout joint</span>
+DECK_DEPTH = <span class="n">0.06</span>    <span class="c"># pavers sit flush at z=0; the studio floor drops below</span>
+
+
+<span class="k">def</span> build_patio(sc):
+    <span class="s">&quot;&quot;&quot;Render-only terracotta paver deck under both parasols: a 10 x 5 grid
+    of beveled pavers with grout joints, two tones alternated by a fixed
+    index hash so the deck is identical every run. Passed to the framing
+    gate as stage, like the floor.&quot;&quot;&quot;</span>
+    tones = [make_material(<span class="s">&quot;PaverA&quot;</span>, (<span class="n">0.19</span>, <span class="n">0.075</span>, <span class="n">0.04</span>), rough=<span class="n">0.72</span>, metallic=<span class="n">0.0</span>),
+             make_material(<span class="s">&quot;PaverB&quot;</span>, (<span class="n">0.15</span>, <span class="n">0.062</span>, <span class="n">0.034</span>), rough=<span class="n">0.78</span>, metallic=<span class="n">0.0</span>)]
+    me = bpy.data.meshes.new(<span class="s">&quot;Patio&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        s = (PAVER - PAVER_GAP) / <span class="n">2</span>
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">10</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">5</span>):
+                cx = (i - <span class="n">4.5</span>) * PAVER
+                cy = (j - <span class="n">2.0</span>) * PAVER
+                res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+                vs = res[<span class="s">&quot;verts&quot;</span>]
+                <span class="k">for</span> v <span class="k">in</span> vs:
+                    v.co.x = cx + v.co.x * <span class="n">2</span> * s
+                    v.co.y = cy + v.co.y * <span class="n">2</span> * s
+                    v.co.z = -DECK_DEPTH / <span class="n">2</span> + v.co.z * DECK_DEPTH
+                idx = <span class="n">1</span> <span class="k">if</span> (i * <span class="n">7</span> + j * <span class="n">3</span>) % <span class="n">5</span> &lt; <span class="n">2</span> <span class="k">else</span> <span class="n">0</span>
+                <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> vs <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+                    f.material_index = idx
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.012</span>, segments=<span class="n">2</span>,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> m <span class="k">in</span> tones:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(<span class="s">&quot;Patio&quot;</span>, me)
     sc.collection.objects.link(ob)
     <span class="k">return</span> ob
 
@@ -1509,11 +1680,14 @@ PAIR_X = <span class="n">1.42</span>
     spin = math.radians(-<span class="n">90</span> - <span class="n">22.5</span>)
     left = build_parasol(sc, <span class="s">&quot;Corner&quot;</span>, assign_corner, ATTR_C, (-PAIR_X, <span class="n">0.0</span>), spin, mats)
     right = build_parasol(sc, <span class="s">&quot;Point&quot;</span>, assign_point_naive, ATTR_P, (PAIR_X, <span class="n">0.0</span>), spin, mats)
-    label_mat = make_material(<span class="s">&quot;LabelEnamel&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.345</span>, <span class="n">0.32</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>)
-    labels = [floor_letters(sc, <span class="s">&quot;CORNER&quot;</span>, -PAIR_X, label_mat),
-              floor_letters(sc, <span class="s">&quot;POINT&quot;</span>, PAIR_X, label_mat)]
+    mats[<span class="s">&quot;slate&quot;</span>] = make_material(<span class="s">&quot;Slate&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.048</span>, <span class="n">0.055</span>), rough=<span class="n">0.55</span>, metallic=<span class="n">0.0</span>)
+    mats[<span class="s">&quot;enamel&quot;</span>] = make_material(<span class="s">&quot;SignEnamel&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.72</span>, <span class="n">0.58</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.0</span>)
+    labels = (placard(sc, <span class="s">&quot;CORNER&quot;</span>, -PAIR_X, mats)
+              + placard(sc, <span class="s">&quot;POINT&quot;</span>, PAIR_X, mats))
 
     floor, wall = build_studio(sc)
+    floor.location.z = -DECK_DEPTH
+    patio = build_patio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
@@ -1551,14 +1725,14 @@ PAIR_X = <span class="n">1.42</span>
         sc, cam,
         hero=hero,
         elements=hero + labels,
-        stage=[floor, wall],
+        stage=[floor, wall, patio],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
     <span class="c"># asset-quality floors (naming, material variation, edge treatment),</span>
     <span class="c"># measured on one parasol — exit 11 on violation</span>
     aqcode = gallery_asset_quality.check_asset_quality(
-        sc, cam, hero=left, stage=[floor, wall])
+        sc, cam, hero=left, stage=[floor, wall, patio])
     <span class="k">if</span> aqcode:
         <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
@@ -1642,7 +1816,7 @@ PAIR_X = <span class="n">1.42</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." />
+    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink." />
   </dialog>
   <footer>
     <div class="statusbar">

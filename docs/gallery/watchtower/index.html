@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
+  <meta property="og:image:alt" content="A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="watchtower — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
-  <meta name="twitter:image:alt" content="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
+  <meta name="twitter:image:alt" content="A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../fence-kit/" aria-label="Previous showcase piece: fence-kit"><span aria-hidden="true">&larr;</span> fence-kit</a><span class="pager-pos hud">10 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cart/" aria-label="Next showcase piece: cart">cart <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof.">
-      <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof.">
+      <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 6840 tris, three materials with 300 metal and 126 roof faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.594×1.594×2.973 m, grounded zmin, 4 iron shoes, rail engage 18 mm, all four side rails tenoned at both ends, both joists bearing 31 mm into deck girts, collar standoff 2 mm, post plumb 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 150 tris, non-empty glTF. Hygiene all zero. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-rails/--open-sides/--short-joists 17; --float-band 18; --rake-posts 19.</div>
@@ -396,14 +396,16 @@ blender --background --python watchtower.py -- --output tower.png</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or metal/roof faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: rail-to-post engage, side-rail engage, or deck bearing</td></tr><tr><td>18</td><td>Seat: girt-collar standoff</td></tr><tr><td>19</td><td>Post plumb or plan off the stated real-world size</td></tr></tbody></table></div>
+<h2 id="hero">Hero<a class="anchor" href="#hero" aria-label="Link to this section">#</a></h2>
+<p>The still used to tilt the tower 2° about X, which the showcase rule &quot;level on the stage&quot; forbids (it sinks one row of shoes and lifts the other); it now turns about Z only. The camera moved in and down (fill y 0.856, was ~0.77) so the tower reads as tall rather than lost in the frame, and the shake roof went from flat grey to weathered cedar brown with silvered wear. Geometry and budgets are unchanged.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/watchtower/watchtower.py</code>
-        <span>1643 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/watchtower/watchtower.py">View on GitHub &rarr;</a></span>
+        <span>1644 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/watchtower/watchtower.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1643">
+      <div class="code" data-lines="1644">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2046,7 +2048,8 @@ blender --background --python watchtower.py -- --output tower.png</code></pre>
 1640
 1641
 1642
-1643</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready timber watchtower — a showcase piece, not an example.
+1643
+1644</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready timber watchtower — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural lookout (posts, braces,
 platform, hatch ladder, coursed shake roof) after composing shipped pipeline
@@ -2872,8 +2875,8 @@ METAL_IDX = <span class="n">2</span>
     &quot;&quot;&quot;</span>
     wood = wood_material(<span class="s">&quot;TowerWood&quot;</span>)
     roof = principled(
-        <span class="s">&quot;TowerShake&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.24</span>, <span class="n">0.21</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.82</span>,
-        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.16</span>, <span class="n">0.15</span>, <span class="n">0.13</span>, <span class="n">1.0</span>),
+        <span class="s">&quot;TowerShake&quot;</span>, (<span class="n">0.15</span>, <span class="n">0.105</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.78</span>,
+        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.19</span>, <span class="n">0.175</span>, <span class="n">1.0</span>),
     )
     metal = principled(
         <span class="s">&quot;TowerIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
@@ -3550,8 +3553,9 @@ METAL_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
+    <span class="c"># turned about Z only: any tilt about X sinks one row of shoes into the</span>
+    <span class="c"># floor and lifts the other (showcase README, level on the stage)</span>
     low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
-    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -3599,13 +3603,13 @@ METAL_IDX = <span class="n">2</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (span * <span class="n">1.98</span>, -span * <span class="n">2.75</span>, span * <span class="n">1.13</span>)
+    cam.location = (span * <span class="n">1.78</span>, -span * <span class="n">2.50</span>, span * <span class="n">0.85</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (
         <span class="n">0.5</span> * (bb[<span class="n">0</span>] + bb[<span class="n">3</span>]),
         <span class="n">0.5</span> * (bb[<span class="n">1</span>] + bb[<span class="n">4</span>]),
-        <span class="n">0.42</span> * (bb[<span class="n">2</span>] + bb[<span class="n">5</span>]),
+        <span class="n">0.47</span> * (bb[<span class="n">2</span>] + bb[<span class="n">5</span>]),
     )
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -3728,7 +3732,7 @@ METAL_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
+    <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs, seen from low and close, with a ladder, a railed platform on deck girts, rusted iron collars and a weathered cedar shake roof." />
   </dialog>
   <footer>
     <div class="statusbar">

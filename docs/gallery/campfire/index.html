@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/campfire-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones." />
+  <meta property="og:image:alt" content="A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="campfire — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/campfire-hero.webp" />
-  <meta name="twitter:image:alt" content="A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones." />
+  <meta name="twitter:image:alt" content="A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../wooden-barrel/" aria-label="Previous showcase piece: wooden-barrel"><span aria-hidden="true">&larr;</span> wooden-barrel</a><span class="pager-pos hud">4 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../market-stall/" aria-label="Next showcase piece: market-stall">market-stall <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones.">
-      <img src="../assets/campfire-hero.webp" alt="A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones.">
+      <img src="../assets/campfire-hero.webp" alt="A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2760 tris, three materials with 216 wood, 48 ash and 1416 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.802×0.802×0.404 m, LOD ratios in band, convex collider 162 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00034 m, course seat 0, stone variation 0.01269 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18; --uniform-stones 20.</div>
@@ -379,6 +379,7 @@
 <h3 id="stones-wood-and-ash">Stones, wood and ash<a class="anchor" href="#stones-wood-and-ash" aria-label="Link to this section">#</a></h3>
 <p>The ring was 28 identical curved bricks: flat tops, flat faces, one height, one grey. It read as a concrete kerb. Each stone is now a chamfered octagon section lofted along its span, swelling to a seeded belly mid-stone and pinched and capped at the ends, with a seeded radial offset and outer-face wobble. Top-course stones get a seeded domed crown. The beds stay flat, and the bottom course&#x27;s crown stays at the bed height, so the upper course still seats (course seat 0.00000). The stated ring height rose from 0.156 to 0.176 m for the crowns.</p>
 <p><strong>Stone variation</strong> asserts the ring is not one stone repeated. <code>--uniform-stones</code> gives every stone the same draw — each jitter at its upper bound, so the ring keeps the envelope of its widest seeded stone and only this budget fails (exit 20, spread 0.00000).</p>
+<p><strong>Fire, char and soot (render and shaders only; no budget changed).</strong> The logs were a clean bark brown and the ring a pale concrete grey, so nothing in the still said the fire had ever been lit. A heat field (distance from a core just above the ash bed) now drives three things in the shared shaders: wood chars to near-black toward the flames, the hottest charred wood shows cracked embers (a Voronoi edge network, masked by a coarse noise so only some cracks are live), and stones are smoke-blackened where they face the fire. Stone base colours dropped to a warm dark fieldstone with a wider per-stone tone spread. The render adds a warm point light in the ember bed. Material slots and face counts are unchanged.</p>
 <p>Stone is isotropic mottling, speckle and pitting with a seeded tone per stone (<code>stone-archway</code>&#x27;s recipe, reading <code>PieceTone</code>); sticks and logs carry their own tone and grain along their axis; the ash has sparse ember glow. The temp <code>.glb</code> is removed after its size is measured.</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
@@ -402,9 +403,9 @@ blender --background --python campfire.py -- --output campfire.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/campfire/campfire.py</code>
-        <span>1424 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/campfire/campfire.py">View on GitHub &rarr;</a></span>
+        <span>1523 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/campfire/campfire.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1424">
+      <div class="code" data-lines="1523">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1828,7 +1829,106 @@ blender --background --python campfire.py -- --output campfire.png</code></pre>
 1421
 1422
 1423
-1424</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready campfire — a showcase piece, not an example.
+1424
+1425
+1426
+1427
+1428
+1429
+1430
+1431
+1432
+1433
+1434
+1435
+1436
+1437
+1438
+1439
+1440
+1441
+1442
+1443
+1444
+1445
+1446
+1447
+1448
+1449
+1450
+1451
+1452
+1453
+1454
+1455
+1456
+1457
+1458
+1459
+1460
+1461
+1462
+1463
+1464
+1465
+1466
+1467
+1468
+1469
+1470
+1471
+1472
+1473
+1474
+1475
+1476
+1477
+1478
+1479
+1480
+1481
+1482
+1483
+1484
+1485
+1486
+1487
+1488
+1489
+1490
+1491
+1492
+1493
+1494
+1495
+1496
+1497
+1498
+1499
+1500
+1501
+1502
+1503
+1504
+1505
+1506
+1507
+1508
+1509
+1510
+1511
+1512
+1513
+1514
+1515
+1516
+1517
+1518
+1519
+1520
+1521
+1522
+1523</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready campfire — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural campfire (two-course
 wedge-stone ring stacked on a shared plane, pit-floor cobbles and ash,
@@ -2669,10 +2769,77 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
     rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
     nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="c"># Char: heat falls off with distance from the fire&#x27;s core (the ash bed at</span>
+    <span class="c"># the ring centre), so the tripod blackens toward the flames and keeps its</span>
+    <span class="c"># bark colour at the far ends. Inside the char, cracked embers glow.</span>
+    heat = _heat_field(nt, coord)
+    char = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    char.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.12</span>
+    char.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(heat, char.inputs[<span class="s">&quot;Value&quot;</span>])
+    cmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    cmix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(char.outputs[<span class="s">&quot;Result&quot;</span>], _sock(cmix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(cmix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    _sock(cmix.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.016</span>, <span class="n">0.013</span>, <span class="n">0.011</span>, <span class="n">1.0</span>)
+    nt.links.new(_sock(cmix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    crack = nt.nodes.new(<span class="s">&quot;ShaderNodeTexVoronoi&quot;</span>)
+    crack.feature = <span class="s">&quot;DISTANCE_TO_EDGE&quot;</span>
+    crack.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">42.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], crack.inputs[<span class="s">&quot;Vector&quot;</span>])
+    seam = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    seam.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.0</span>
+    seam.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.035</span>
+    seam.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">1.0</span>
+    seam.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
+    nt.links.new(crack.outputs[<span class="s">&quot;Distance&quot;</span>], seam.inputs[<span class="s">&quot;Value&quot;</span>])
+    glow = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    glow.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(seam.outputs[<span class="s">&quot;Result&quot;</span>], glow.inputs[<span class="n">0</span>])
+    hot = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    hot.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.70</span>
+    hot.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.95</span>
+    nt.links.new(heat, hot.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(hot.outputs[<span class="s">&quot;Result&quot;</span>], glow.inputs[<span class="n">1</span>])
+    <span class="c"># only some of the cracks are live: a coarse noise mask breaks the net</span>
+    live = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    live.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">9.0</span>
+    live.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], live.inputs[<span class="s">&quot;Vector&quot;</span>])
+    lmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    lmap.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.48</span>
+    lmap.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(live.outputs[<span class="s">&quot;Fac&quot;</span>], lmap.inputs[<span class="s">&quot;Value&quot;</span>])
+    masked = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    masked.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(glow.outputs[<span class="s">&quot;Value&quot;</span>], masked.inputs[<span class="n">0</span>])
+    nt.links.new(lmap.outputs[<span class="s">&quot;Result&quot;</span>], masked.inputs[<span class="n">1</span>])
+    bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.30</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
+    estr = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    estr.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    estr.inputs[<span class="n">1</span>].default_value = <span class="n">3.5</span>
+    nt.links.new(masked.outputs[<span class="s">&quot;Value&quot;</span>], estr.inputs[<span class="n">0</span>])
+    nt.links.new(estr.outputs[<span class="s">&quot;Value&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>])
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> stone_material(name, light, dark, roughness, mottle, speck, bump):
+<span class="k">def</span> _heat_field(nt, coord):
+    <span class="s">&quot;&quot;&quot;0..1 heat: 1 at the fire&#x27;s core just above the ash bed, 0 by ~0.34 m out.&quot;&quot;&quot;</span>
+    off = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    off.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    off.inputs[<span class="n">1</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.06</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], off.inputs[<span class="n">0</span>])
+    dist = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dist.operation = <span class="s">&quot;LENGTH&quot;</span>
+    nt.links.new(off.outputs[<span class="s">&quot;Vector&quot;</span>], dist.inputs[<span class="n">0</span>])
+    heat = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    heat.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.34</span>
+    heat.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.04</span>
+    nt.links.new(dist.outputs[<span class="s">&quot;Value&quot;</span>], heat.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="k">return</span> heat.outputs[<span class="s">&quot;Result&quot;</span>]
+
+
+<span class="k">def</span> stone_material(name, light, dark, roughness, mottle, speck, bump, soot=<span class="n">0.0</span>, spread=<span class="n">0.8</span>):
     <span class="s">&quot;&quot;&quot;Fieldstone: isotropic mottling, speckle and pitting, a tone per stone.
 
     Copied from stone-archway, reading ``PieceTone`` for the per-stone
@@ -2713,8 +2880,8 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
     tone.attribute_name = <span class="s">&quot;PieceTone&quot;</span>
     shade = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     shade.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
-    shade.inputs[<span class="n">1</span>].default_value = <span class="n">0.8</span>
-    shade.inputs[<span class="n">2</span>].default_value = <span class="n">0.6</span>
+    shade.inputs[<span class="n">1</span>].default_value = spread
+    shade.inputs[<span class="n">2</span>].default_value = <span class="n">1.0</span> - <span class="n">0.5</span> * spread
     nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shade.inputs[<span class="n">0</span>])
     mix2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
     mix2.data_type = <span class="s">&quot;RGBA&quot;</span>
@@ -2723,6 +2890,29 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
     nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(mix2.inputs, <span class="s">&quot;A_Color&quot;</span>))
     nt.links.new(shade.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix2.inputs, <span class="s">&quot;B_Color&quot;</span>))
     nt.links.new(_sock(mix2.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">if</span> soot:
+        <span class="c"># smoke-blackened where the stones face the fire, patchy by mottle</span>
+        heat = _heat_field(nt, coord)
+        smap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        smap.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.05</span>
+        smap.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.40</span>
+        smap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = soot
+        nt.links.new(heat, smap.inputs[<span class="s">&quot;Value&quot;</span>])
+        patch = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        patch.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+        nt.links.new(smap.outputs[<span class="s">&quot;Result&quot;</span>], patch.inputs[<span class="n">0</span>])
+        nt.links.new(mot.outputs[<span class="s">&quot;Fac&quot;</span>], patch.inputs[<span class="n">1</span>])
+        pmul = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        pmul.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+        pmul.inputs[<span class="n">1</span>].default_value = <span class="n">1.6</span>
+        pmul.use_clamp = <span class="k">True</span>
+        nt.links.new(patch.outputs[<span class="s">&quot;Value&quot;</span>], pmul.inputs[<span class="n">0</span>])
+        smix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        smix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        nt.links.new(pmul.outputs[<span class="s">&quot;Value&quot;</span>], _sock(smix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+        nt.links.new(_sock(mix2.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(smix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+        _sock(smix.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.022</span>, <span class="n">0.019</span>, <span class="n">0.017</span>, <span class="n">1.0</span>)
+        nt.links.new(_sock(smix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
     rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = roughness - <span class="n">0.06</span>
     rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.08</span>)
@@ -2762,8 +2952,8 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
 <span class="k">def</span> campfire_materials():
     <span class="s">&quot;&quot;&quot;(stone, wood, ash): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
     stone = stone_material(
-        <span class="s">&quot;CampfireStone&quot;</span>, (<span class="n">0.44</span>, <span class="n">0.42</span>, <span class="n">0.38</span>, <span class="n">1.0</span>), (<span class="n">0.22</span>, <span class="n">0.215</span>, <span class="n">0.20</span>, <span class="n">1.0</span>),
-        <span class="n">0.86</span>, mottle=<span class="n">6.0</span>, speck=<span class="n">160.0</span>, bump=<span class="n">0.35</span>,
+        <span class="s">&quot;CampfireStone&quot;</span>, (<span class="n">0.24</span>, <span class="n">0.20</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), (<span class="n">0.085</span>, <span class="n">0.07</span>, <span class="n">0.055</span>, <span class="n">1.0</span>),
+        <span class="n">0.86</span>, mottle=<span class="n">6.0</span>, speck=<span class="n">160.0</span>, bump=<span class="n">0.6</span>, soot=<span class="n">0.85</span>, spread=<span class="n">1.3</span>,
     )
     wood = wood_material(<span class="s">&quot;CampfireWood&quot;</span>)
     ash = ash_material(<span class="s">&quot;CampfireAsh&quot;</span>)
@@ -3161,9 +3351,18 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">680.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">48.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">640.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">40.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    <span class="c"># the fire itself: a warm, shadow-soft point in the ember bed that lights</span>
+    <span class="c"># the tripod&#x27;s inner faces and the soot-dark inner ring (render only)</span>
+    fire = bpy.data.lights.new(<span class="s">&quot;FireGlow&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+    fire.energy = <span class="n">260.0</span>
+    fire.color = (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.12</span>)
+    fire.shadow_soft_size = <span class="n">0.08</span>
+    fob = bpy.data.objects.new(<span class="s">&quot;FireGlow&quot;</span>, fire)
+    fob.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.07</span>)
+    scene.collection.objects.link(fob)
 
     bb = world_bbox(low)
     span = max(bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>], <span class="n">0.2</span>)
@@ -3291,7 +3490,7 @@ WOOD_GRAIN_SCALE = <span class="n">45.0</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/campfire-hero.webp" alt="A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones." />
+    <img src="../assets/campfire-hero.webp" alt="A campfire of crossed logs in a teepee, the sticks charring toward the flames and the floor logs glowing through ember cracks, inside a two-course ring of warm fieldstones." />
   </dialog>
   <footer>
     <div class="statusbar">

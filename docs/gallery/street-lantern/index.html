@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
+  <meta property="og:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="street-lantern — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
-  <meta name="twitter:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
+  <meta name="twitter:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../market-stall/" aria-label="Previous showcase piece: market-stall"><span aria-hidden="true">&larr;</span> market-stall</a><span class="pager-pos hud">6 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../treasure-chest/" aria-label="Next showcase piece: treasure-chest">treasure-chest <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes.">
-      <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor.">
+      <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.</div>
@@ -365,6 +365,7 @@
 <p>A showcase piece, not an example. Procedural hanging street lantern (stepped iron foot, tapered octagonal post, brass collars, braced arm, muntined cage with amber panes, square pyramidal brass roof and finial) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The arm axis, drop length, and roof stack are one closed-form chain: the roof peak stays below the arm, the hanger is the arm&#x27;s far station, and the brace is an oriented box tenoned into the post wall and into the arm&#x27;s lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone. Cage posts and rails share a named overlap (<code>CAGE_JOINT</code>); glass sits behind the muntins by <code>PANE_REBATE</code>. Collars and the arm root evaluate <code>post_radius_at(z)</code>.</p>
 <p>The first build parked the brace&#x27;s post end 0.35 × <code>BRACE_T</code> outside the post and its arm end under the arm, so a single bevelled corner grazed each host and the brace read as a loose stick in both side elevations. The brace-to-arm gap budget passed anyway, because a grazing corner is a zero gap, and nothing measured the post end at all. The brace ends now start half a brace inside the post wall and on the arm&#x27;s centre-line side, and the brace-bite budget below asserts that each end is actually inside its host. Brass is aged and rougher (it was bright polished gold at roughness 0.28).</p>
+<p>The hero is lit from inside: a shadowless warm point light sits at the centroid of the glass faces and the panes emit at 1.6, so the lantern throws its glow onto the post, arm and floor. The camera is closer and lower on a 40 mm lens; the first hero left the lantern small in an empty frame. Render path only; geometry and budgets are unchanged.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
 <p>Intended size: 0.30 m square foot, 1.12 m octagonal post (0.10 m across at the base), 0.50 m arm, 0.24 × 0.30 m cage; outer AABB 0.300 × 0.786 × 1.287 m.</p>
@@ -402,9 +403,9 @@ blender --background --python street_lantern.py -- --output lantern.png</code></
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/street-lantern/street_lantern.py</code>
-        <span>1454 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/street-lantern/street_lantern.py">View on GitHub &rarr;</a></span>
+        <span>1474 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/street-lantern/street_lantern.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1454">
+      <div class="code" data-lines="1474">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1858,7 +1859,27 @@ blender --background --python street_lantern.py -- --output lantern.png</code></
 1451
 1452
 1453
-1454</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready street lantern — a showcase piece, not an example.
+1454
+1455
+1456
+1457
+1458
+1459
+1460
+1461
+1462
+1463
+1464
+1465
+1466
+1467
+1468
+1469
+1470
+1471
+1472
+1473
+1474</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready street lantern — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural hanging lantern after composing
 shipped pipeline pieces: bmesh construction, UVs, three materials,
@@ -2499,7 +2520,7 @@ BRASS_IDX = <span class="n">2</span>
         (<span class="n">0.62</span>, <span class="n">0.32</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
         <span class="n">0.0</span>,
         <span class="n">0.22</span>,
-        emission=((<span class="n">0.85</span>, <span class="n">0.42</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.45</span>),
+        emission=((<span class="n">0.95</span>, <span class="n">0.50</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">1.6</span>),
     )
     brass = principled(<span class="s">&quot;LanternBrass&quot;</span>, (<span class="n">0.44</span>, <span class="n">0.29</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.9</span>, <span class="n">0.44</span>, roughness_var=<span class="n">0.14</span>)
     <span class="k">return</span> metal, glass, brass
@@ -3223,17 +3244,37 @@ BRASS_IDX = <span class="n">2</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">680.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">48.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">520.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">40.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">1.5</span>, <span class="n">3.0</span>, <span class="n">3.2</span>), <span class="n">160.0</span>, <span class="n">2.5</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">200</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">520.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+
+    <span class="c"># the lit lamp: a warm, shadowless point at the centre of the glazing,</span>
+    <span class="c"># so the cage throws its glow onto the post, the arm and the floor</span>
+    bpy.context.view_layer.update()
+    me = low.data
+    glass_pts = [me.vertices[vi].co <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.material_index == GLASS_IDX
+                 <span class="k">for</span> vi <span class="k">in</span> p.vertices]
+    <span class="k">if</span> glass_pts:
+        centre = sum(glass_pts, Vector()) / len(glass_pts)
+        ld = bpy.data.lights.new(<span class="s">&quot;Lamp&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+        ld.energy = <span class="n">22.0</span>
+        ld.color = (<span class="n">1.0</span>, <span class="n">0.58</span>, <span class="n">0.22</span>)
+        ld.shadow_soft_size = <span class="n">0.05</span>
+        ld.use_shadow = <span class="k">False</span>
+        lob = bpy.data.objects.new(<span class="s">&quot;Lamp&quot;</span>, ld)
+        lob.location = low.matrix_world @ centre
+        scene.collection.objects.link(lob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">40.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.55</span>, -<span class="n">3.70</span>, <span class="n">1.85</span>)
+    <span class="c"># closer and lower than the first hero, which left the lantern small in</span>
+    <span class="c"># a mostly empty frame; the wider lens keeps the foot in shot</span>
+    cam.location = (<span class="n">1.80</span>, -<span class="n">2.70</span>, <span class="n">1.20</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.72</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.12</span>, <span class="n">0.64</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -3351,7 +3392,7 @@ BRASS_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
+    <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
   </dialog>
   <footer>
     <div class="statusbar">

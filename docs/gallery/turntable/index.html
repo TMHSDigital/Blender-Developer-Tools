@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/turntable-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
+  <meta property="og:image:alt" content="A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="turntable — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/turntable-hero.webp" />
-  <meta name="twitter:image:alt" content="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
+  <meta name="twitter:image:alt" content="A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../swatch-grid/" aria-label="Previous example: swatch-grid"><span aria-hidden="true">&larr;</span> swatch-grid</a><span class="pager-pos hud">2 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-sdf-remesh/" aria-label="Next example: gn-sdf-remesh">gn-sdf-remesh <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter.">
-      <img src="../assets/turntable-hero.webp" alt="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat.">
+      <img src="../assets/turntable-hero.webp" alt="A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</div>
@@ -375,19 +375,19 @@ blender --background --python turntable.py -- --no-keys
 blender --background --python turntable.py -- --output turntable.png
 blender --background --python turntable.py -- --output turntable.png --engine cycles</code></pre>
 <p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
-<p>The still&#x27;s staging is render-only and runs after the check. The head gets a subdivision modifier (the 500-face monkey read as faceted plates) and is seated 10 mm into the platter of a turntable plinth, lifted from its own lowest evaluated vertex. It used to hover just above the floor with nothing under it. The rotation keys, the sampled frames and every exit code are unchanged. This render path does not call <code>gallery_framing.check_framing</code>, because adding it would add exit code 10. The framing was measured with the helper out of band instead: fill y 0.789, minimum margin 0.050, ok.</p>
+<p>The still&#x27;s staging is render-only and runs after the check. The head gets a subdivision modifier (the 500-face monkey read as faceted plates) and is seated 10 mm into the rubber mat of a display turntable, lifted from its own lowest evaluated vertex. The turntable is lathed: a stepped, vented motor housing with a front status lamp, and a steel platter whose rim carries one brass tick per keyed frame — <code>FRAMES</code> ticks, 10° apart, a longer one every 90° — so the keyed 0→360° span over frames 1→<code>FRAMES</code> reads as a dial. An amber arc arrow on the mat sweeps the direction of the keyed +Z turn. The rotation keys and the sampled frames are unchanged. The render path gates framing through <code>examples/gallery_framing.py</code> before writing the still (exit 10 on violation; smoke never passes <code>--output</code>).</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Rotation keys do not drive playback (<code>--no-keys</code> lands here)</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Rotation keys do not drive playback (<code>--no-keys</code> lands here)</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted</td></tr><tr><td>10</td><td>Framing gate violation on the <code>--output</code> path (<code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-keys</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/turntable/turntable.py</code>
-        <span>228 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable/turntable.py">View on GitHub &rarr;</a></span>
+        <span>368 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable/turntable.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="228">
+      <div class="code" data-lines="368">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -615,7 +615,147 @@ blender --background --python turntable.py -- --output turntable.png --engine cy
 225
 226
 227
-228</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Slotted-actions turntable -- a runnable BDT example.
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Slotted-actions turntable -- a runnable BDT example.
 
 Keyframes a Z-rotation turntable through the slotted-actions cross-version channelbag path
 (`get_channelbag_for_slot`) and selects the engine with the version-branch EEVEE-id helper.
@@ -637,6 +777,12 @@ era check is untouched.
     blender --background --python turntable.py -- --output t.png --engine cycles  # GPU-less
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see</span>
+<span class="c"># gallery_framing.py for the __file__-relative import shim this relies on.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 FRAMES = <span class="n">36</span>
 
@@ -689,21 +835,92 @@ FRAMES = <span class="n">36</span>
     print(<span class="s">f&quot;</span><span class="s">branch=</span>{branch}<span class="s"> rot_z f1=</span>{r1}<span class="s"> fmid=</span>{rmid}<span class="s"> fend=</span>{rend}<span class="s"> drives=</span>{drives}<span class="s">&quot;</span>)
     <span class="k">return</span> drives
 
-PLINTH_R = <span class="n">1.15</span>
-PLINTH_H = <span class="n">0.28</span>
-PLATTER_R = <span class="n">1.05</span>
-PLATTER_H = <span class="n">0.05</span>
+<span class="c"># Render-only display turntable, sized around the head (Suzanne spans ~2.7 x 1.7).</span>
+BASE_R = <span class="n">1.32</span>          <span class="c"># motor housing radius at its widest</span>
+BASE_H = <span class="n">0.34</span>          <span class="c"># housing top (platter bearing seat)</span>
+PLATTER_R = <span class="n">1.18</span>
+PLATTER_Z0 = BASE_H + <span class="n">0.02</span>
+PLATTER_H = <span class="n">0.07</span>
+MAT_R = <span class="n">1.06</span>           <span class="c"># rubber mat inset into the platter</span>
 SEAT = <span class="n">0.01</span>
+TICK_STEP_DEG = <span class="n">360.0</span> / FRAMES   <span class="c"># one rim tick per keyed frame: the key span, made visible</span>
+
+
+<span class="k">def</span> _lathe(bm, profile, segs=<span class="n">96</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about Z; r == 0 points become poles.&quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> r, z <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt; <span class="n">1e-9</span>:
+            rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+        <span class="k">else</span>:
+            rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * i / segs),
+                                        r * math.sin(<span class="n">2</span> * math.pi * i / segs), z))
+                          <span class="k">for</span> i <span class="k">in</span> range(segs)])
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            j = (i + <span class="n">1</span>) % segs
+            <span class="k">if</span> len(a) == <span class="n">1</span>:
+                bm.faces.new((a[<span class="n">0</span>], b[j], b[i]))
+            <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                bm.faces.new((a[i], a[j], b[<span class="n">0</span>]))
+            <span class="k">else</span>:
+                bm.faces.new((a[i], a[j], b[j], b[i]))
+
+
+<span class="k">def</span> _material(name, base, rough, metal=<span class="n">0.0</span>, emit=<span class="k">None</span>, strength=<span class="n">0.0</span>, noise=<span class="k">None</span>):
+    mat = bpy.data.materials.new(name); mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    pb = nt.nodes[<span class="s">&#x27;Principled BSDF&#x27;</span>]
+    pb.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (*base, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&#x27;Metallic&#x27;</span>].default_value = metal
+    pb.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = rough
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        pb.inputs[<span class="s">&#x27;Emission Color&#x27;</span>].default_value = (*emit, <span class="n">1.0</span>)
+        pb.inputs[<span class="s">&#x27;Emission Strength&#x27;</span>].default_value = strength
+    <span class="k">if</span> noise:
+        <span class="c"># brushed / worn: noise-modulated roughness, never a flat slot</span>
+        tex = nt.nodes.new(<span class="s">&#x27;ShaderNodeTexNoise&#x27;</span>)
+        tex.inputs[<span class="s">&#x27;Scale&#x27;</span>].default_value = noise
+        tex.inputs[<span class="s">&#x27;Detail&#x27;</span>].default_value = <span class="n">8.0</span>
+        mr = nt.nodes.new(<span class="s">&#x27;ShaderNodeMapRange&#x27;</span>)
+        mr.inputs[<span class="s">&#x27;To Min&#x27;</span>].default_value = rough - <span class="n">0.08</span>
+        mr.inputs[<span class="s">&#x27;To Max&#x27;</span>].default_value = rough + <span class="n">0.12</span>
+        nt.links.new(tex.outputs[<span class="s">&#x27;Fac&#x27;</span>], mr.inputs[<span class="s">&#x27;Value&#x27;</span>])
+        nt.links.new(mr.outputs[<span class="s">&#x27;Result&#x27;</span>], pb.inputs[<span class="s">&#x27;Roughness&#x27;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> _mesh_object(name, build, mats, smooth_angle=<span class="n">35.0</span>):
+    <span class="k">import</span> bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        build(bm)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">True</span>
+    me.set_sharp_from_angle(angle=math.radians(smooth_angle))
+    <span class="k">for</span> m <span class="k">in</span> mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
 
 
 <span class="k">def</span> stage_turntable(obj):
-    <span class="s">&quot;&quot;&quot;Render-only staging, after the check has run: a turntable to turn on.
+    <span class="s">&quot;&quot;&quot;Render-only staging, after the check has run: a display turntable.
 
-    The head is smoothed by a subdivision modifier (the 500-face monkey read
-    as faceted plates), seated SEAT into a platter on a plinth, and lifted so
-    its lowest evaluated vertex lands there. It used to hover just above the
-    floor with nothing under it. Rotation keys and the correctness samples
-    are untouched; only location and a modifier change here.
+    A lathed motor housing (stepped foot, vented drum, front status lamp)
+    carries a steel platter with an inset rubber mat. Its rim carries one tick
+    per keyed frame (FRAMES ticks, 10 degrees apart, a longer tick every 90),
+    so the keyed 0..360 span over frames 1..FRAMES reads as a dial, and an
+    amber arc arrow on the mat sweeps the direction of the keyed turn. The
+    head is smoothed by a subdivision modifier and seated SEAT into the mat.
+    Rotation keys and the correctness samples are untouched; only location
+    and a modifier change on the checked object.
     &quot;&quot;&quot;</span>
     <span class="k">import</span> bmesh
     sub = obj.modifiers.new(<span class="s">&quot;Smooth&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>)
@@ -716,45 +933,99 @@ SEAT = <span class="n">0.01</span>
         zmin = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> me.vertices)
     <span class="k">finally</span>:
         ev.to_mesh_clear()
-    obj.location.z += (PLINTH_H + PLATTER_H - SEAT) - zmin
+    top = PLATTER_Z0 + PLATTER_H
+    obj.location.z += (top - SEAT) - zmin
     b = obj.active_material.node_tree.nodes[<span class="s">&#x27;Principled BSDF&#x27;</span>]
     <span class="c"># 0.25 blew every brow and ear edge out to white under the key</span>
-    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.38</span>
-    parts = []
-    <span class="k">for</span> nm, r, z0, h, col, metal, rough <span class="k">in</span> (
-        (<span class="s">&quot;Plinth&quot;</span>, PLINTH_R, <span class="n">0.0</span>, PLINTH_H, (<span class="n">0.035</span>, <span class="n">0.032</span>, <span class="n">0.03</span>), <span class="n">0.0</span>, <span class="n">0.55</span>),
-        (<span class="s">&quot;Platter&quot;</span>, PLATTER_R, PLINTH_H - <span class="n">0.004</span>, PLATTER_H + <span class="n">0.004</span>,
-         (<span class="n">0.42</span>, <span class="n">0.42</span>, <span class="n">0.44</span>), <span class="n">1.0</span>, <span class="n">0.45</span>),
-    ):
-        mesh = bpy.data.meshes.new(nm)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">64</span>, radius1=r,
-                                  radius2=r, depth=h)
-            bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, z0 + h / <span class="n">2.0</span>), verts=bm.verts)
-            bmesh.ops.bevel(bm, geom=[e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">2</span>
-                                      <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; <span class="n">1.0</span>],
-                            offset=<span class="n">0.012</span>, segments=<span class="n">2</span>, affect=<span class="s">&#x27;EDGES&#x27;</span>)
-            bm.to_mesh(mesh)
-        <span class="k">finally</span>:
-            bm.free()
-        mesh.shade_smooth()
-        mat = bpy.data.materials.new(nm); mat.use_nodes = <span class="k">True</span>
-        pb = mat.node_tree.nodes[<span class="s">&#x27;Principled BSDF&#x27;</span>]
-        pb.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (*col, <span class="n">1.0</span>)
-        pb.inputs[<span class="s">&#x27;Metallic&#x27;</span>].default_value = metal
-        pb.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = rough
-        mesh.materials.append(mat)
-        ob = bpy.data.objects.new(nm, mesh)
-        bpy.context.collection.objects.link(ob)
-        parts.append(ob)
-    <span class="k">return</span> parts
+    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.34</span>
+    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.80</span>, <span class="n">0.33</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)
+
+    housing = _material(<span class="s">&quot;Housing&quot;</span>, (<span class="n">0.028</span>, <span class="n">0.030</span>, <span class="n">0.034</span>), <span class="n">0.42</span>, metal=<span class="n">0.6</span>, noise=<span class="n">40.0</span>)
+    steel = _material(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.34</span>, <span class="n">0.34</span>, <span class="n">0.36</span>), <span class="n">0.40</span>, metal=<span class="n">1.0</span>, noise=<span class="n">90.0</span>)
+    rubber = _material(<span class="s">&quot;Rubber&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.012</span>, <span class="n">0.013</span>), <span class="n">0.78</span>)
+    brass = _material(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.56</span>, <span class="n">0.24</span>), <span class="n">0.26</span>, metal=<span class="n">1.0</span>, noise=<span class="n">60.0</span>)
+    lamp = _material(<span class="s">&quot;Lamp&quot;</span>, (<span class="n">0.1</span>, <span class="n">0.03</span>, <span class="n">0.0</span>), <span class="n">0.3</span>, emit=(<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.10</span>), strength=<span class="n">6.0</span>)
+    arrow = _material(<span class="s">&quot;Arrow&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.45</span>, <span class="n">0.1</span>), <span class="n">0.4</span>, emit=(<span class="n">1.0</span>, <span class="n">0.50</span>, <span class="n">0.14</span>), strength=<span class="n">2.2</span>)
+
+    <span class="k">def</span> build_housing(bm):
+        _lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (BASE_R, <span class="n">0.0</span>), (BASE_R, <span class="n">0.05</span>), (BASE_R - <span class="n">0.03</span>, <span class="n">0.07</span>),
+                    (BASE_R - <span class="n">0.08</span>, <span class="n">0.08</span>), (BASE_R - <span class="n">0.08</span>, <span class="n">0.10</span>),
+                    <span class="c"># vented drum: shallow grooves around the waist</span>
+                    *[(BASE_R - <span class="n">0.10</span> - (<span class="n">0.012</span> <span class="k">if</span> k % <span class="n">2</span> <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.12</span> + <span class="n">0.02</span> * k)
+                      <span class="k">for</span> k <span class="k">in</span> range(<span class="n">9</span>)],
+                    (BASE_R - <span class="n">0.10</span>, <span class="n">0.30</span>), (BASE_R - <span class="n">0.13</span>, <span class="n">0.33</span>), (<span class="n">0.62</span>, BASE_H),
+                    (<span class="n">0.60</span>, BASE_H + <span class="n">0.02</span>), (<span class="n">0.0</span>, BASE_H + <span class="n">0.02</span>)])
+    housing_ob = _mesh_object(<span class="s">&quot;Housing&quot;</span>, build_housing, [housing])
+
+    <span class="k">def</span> build_platter(bm):
+        z0, z1 = PLATTER_Z0, PLATTER_Z0 + PLATTER_H
+        _lathe(bm, [(<span class="n">0.0</span>, z0), (PLATTER_R - <span class="n">0.02</span>, z0), (PLATTER_R, z0 + <span class="n">0.015</span>),
+                    (PLATTER_R, z1 - <span class="n">0.015</span>), (PLATTER_R - <span class="n">0.015</span>, z1),
+                    (MAT_R + <span class="n">0.01</span>, z1), (MAT_R, z1 - <span class="n">0.006</span>), (<span class="n">0.0</span>, z1 - <span class="n">0.006</span>)])
+    platter_ob = _mesh_object(<span class="s">&quot;Platter&quot;</span>, build_platter, [steel])
+
+    <span class="k">def</span> build_mat(bm):
+        _lathe(bm, [(<span class="n">0.0</span>, top - <span class="n">0.006</span>), (MAT_R - <span class="n">0.004</span>, top - <span class="n">0.006</span>),
+                    (MAT_R - <span class="n">0.004</span>, top), (<span class="n">0.0</span>, top)], segs=<span class="n">96</span>)
+    mat_ob = _mesh_object(<span class="s">&quot;Mat&quot;</span>, build_mat, [rubber])
+
+    <span class="k">def</span> build_ticks(bm):
+        <span class="k">for</span> k <span class="k">in</span> range(FRAMES):
+            a = math.radians(k * TICK_STEP_DEG)
+            major = k % (FRAMES // <span class="n">4</span>) == <span class="n">0</span>
+            h = <span class="n">0.058</span> <span class="k">if</span> major <span class="k">else</span> <span class="n">0.036</span>
+            res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&#x27;verts&#x27;</span>]:
+                v.co.x *= <span class="n">0.016</span>
+                v.co.y *= <span class="n">0.026</span> <span class="k">if</span> major <span class="k">else</span> <span class="n">0.013</span>
+                v.co.z *= h
+                v.co.x += PLATTER_R + <span class="n">0.006</span>
+                v.co.z += PLATTER_Z0 + PLATTER_H / <span class="n">2.0</span>
+                x, y = v.co.x, v.co.y
+                v.co.x = x * math.cos(a) - y * math.sin(a)
+                v.co.y = x * math.sin(a) + y * math.cos(a)
+    ticks_ob = _mesh_object(<span class="s">&quot;Ticks&quot;</span>, build_ticks, [brass], smooth_angle=<span class="n">10.0</span>)
+
+    <span class="k">def</span> build_arrow(bm):
+        <span class="c"># a quarter-turn arc on the mat edge, counter-clockwise (+Z rotation),</span>
+        <span class="c"># ending in a flat arrowhead: the keyed direction of travel</span>
+        r, w, z = MAT_R - <span class="n">0.07</span>, <span class="n">0.022</span>, top + <span class="n">0.002</span>
+        a0, a1, n = math.radians(-<span class="n">150</span>), math.radians(-<span class="n">75</span>), <span class="n">24</span>
+        prev = <span class="k">None</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>):
+            a = a0 + (a1 - a0) * i / n
+            ring = [bm.verts.new(((r + s * w) * math.cos(a), (r + s * w) * math.sin(a), z + dz))
+                    <span class="k">for</span> s, dz <span class="k">in</span> ((-<span class="n">1</span>, <span class="n">0.0</span>), (<span class="n">1</span>, <span class="n">0.0</span>), (<span class="n">1</span>, <span class="n">0.008</span>), (-<span class="n">1</span>, <span class="n">0.008</span>))]
+            <span class="k">if</span> prev:
+                <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+                    bm.faces.new((prev[k], prev[(k + <span class="n">1</span>) % <span class="n">4</span>], ring[(k + <span class="n">1</span>) % <span class="n">4</span>], ring[k]))
+            prev = ring
+        tip = a1 + math.radians(<span class="n">9</span>)
+        head = [bm.verts.new(((r + s) * math.cos(a1), (r + s) * math.sin(a1), z + dz))
+                <span class="k">for</span> s, dz <span class="k">in</span> ((-<span class="n">0.06</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.008</span>), (-<span class="n">0.06</span>, <span class="n">0.008</span>))]
+        pt = [bm.verts.new((r * math.cos(tip), r * math.sin(tip), z)),
+              bm.verts.new((r * math.cos(tip), r * math.sin(tip), z + <span class="n">0.008</span>))]
+        bm.faces.new((head[<span class="n">0</span>], head[<span class="n">1</span>], pt[<span class="n">0</span>]))
+        bm.faces.new((head[<span class="n">3</span>], pt[<span class="n">1</span>], head[<span class="n">2</span>]))
+        bm.faces.new((head[<span class="n">1</span>], head[<span class="n">2</span>], pt[<span class="n">1</span>], pt[<span class="n">0</span>]))
+        bm.faces.new((head[<span class="n">0</span>], pt[<span class="n">0</span>], pt[<span class="n">1</span>], head[<span class="n">3</span>]))
+        bm.faces.new((head[<span class="n">0</span>], head[<span class="n">3</span>], head[<span class="n">2</span>], head[<span class="n">1</span>]))
+    arrow_ob = _mesh_object(<span class="s">&quot;Arrow&quot;</span>, build_arrow, [arrow], smooth_angle=<span class="n">10.0</span>)
+
+    <span class="k">def</span> build_lamp(bm):
+        <span class="c"># a status lamp on the housing front, facing the camera (-Y)</span>
+        res = bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">16</span>, v_segments=<span class="n">10</span>, radius=<span class="n">0.035</span>)
+        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&#x27;verts&#x27;</span>]:
+            v.co.y *= <span class="n">0.6</span>
+            v.co += Vector((<span class="n">0.0</span>, -(BASE_R - <span class="n">0.105</span>), <span class="n">0.21</span>))
+    lamp_ob = _mesh_object(<span class="s">&quot;Lamp&quot;</span>, build_lamp, [lamp])
+    <span class="k">return</span> [housing_ob, platter_ob, mat_ob, ticks_ob, arrow_ob, lamp_ob]
 
 
 <span class="k">def</span> render_still(obj, path, engine):
     <span class="k">import</span> bmesh
     sc = bpy.context.scene
-    stage_turntable(obj)
+    parts = stage_turntable(obj)
     fme = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>); bm = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme)
@@ -772,8 +1043,8 @@ SEAT = <span class="n">0.01</span>
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
     w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>); sc.world = w
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.1</span>); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">8.0</span>, <span class="n">3.4</span>)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.05</span>); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0.6</span>, -<span class="n">8.2</span>, <span class="n">3.2</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     <span class="k">for</span> nm, loc, en, size, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">620</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
@@ -787,10 +1058,10 @@ SEAT = <span class="n">0.01</span>
     wo.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0</span>, math.radians(<span class="n">190</span>)); bpy.context.collection.objects.link(wo)
     sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> get_eevee_engine_id()
     <span class="k">if</span> sc.render.engine == <span class="s">&#x27;CYCLES&#x27;</span>:
-        <span class="k">try</span>: sc.cycles.samples = <span class="n">16</span>
+        <span class="k">try</span>: sc.cycles.samples = <span class="n">48</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
     <span class="k">else</span>:
-        <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">16</span>
+        <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">64</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
     <span class="c"># pin the still to a deliberate pose: frame 4 is ~31 degrees of turn, a</span>
     <span class="c"># three-quarter view where ears and brow read instantly as Suzanne. An</span>
@@ -803,8 +1074,14 @@ SEAT = <span class="n">0.01</span>
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path
     <span class="c"># AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)</span>
     sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate before the beauty render (exit 10 on violation)</span>
+    fcode = gallery_framing.check_framing(sc, cam, hero=[obj] + parts,
+                                          elements=[obj] + parts, stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">4</span>
 
 <span class="k">def</span> main():
     argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
@@ -831,8 +1108,11 @@ SEAT = <span class="n">0.01</span>
         print(<span class="s">&quot;ERROR: rotation keys do not drive playback&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">3</span>
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, args.output, args.engine):
-            print(<span class="s">&quot;ERROR: still render produced no file&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">4</span>
+        rcode = render_still(obj, args.output, args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">if</span> rcode == <span class="n">4</span>:
+                print(<span class="s">&quot;ERROR: still render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s"> (</span>{os.path.getsize(args.output)}<span class="s"> bytes)</span><span class="s">&quot;</span>)
     print(<span class="s">&quot;turntable OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
@@ -873,7 +1153,7 @@ SEAT = <span class="n">0.01</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/turntable-hero.webp" alt="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
+    <img src="../assets/turntable-hero.webp" alt="A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat." />
   </dialog>
   <footer>
     <div class="statusbar">

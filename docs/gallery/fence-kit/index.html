@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
+  <meta property="og:image:alt" content="A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="fence-kit — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
-  <meta name="twitter:image:alt" content="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
+  <meta name="twitter:image:alt" content="A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span> terrain-scatter</a><span class="pager-pos hud">9 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower">watchtower <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands.">
-      <img src="../assets/fence-kit-hero.webp" alt="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands.">
+      <img src="../assets/fence-kit-hero.webp" alt="A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.</div>
@@ -364,7 +364,7 @@
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural post-and-rail fence section (two posts, pyramidal caps, three rails, a kickboard, a board brace, iron shoes and U-bands), then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
 <p>Posts, rails, kick, brace and bands share named stations (<code>POST_XS</code>, <code>RAIL_ZS</code>, <code>SHOE_H</code>). The post stations come from the tile. The outer faces of the iron bands sit <code>KIT_CLEAR</code> (2 mm) inside the tile edge, so copies placed at the 1.60 m pitch meet band to band without interpenetrating or sharing a plane. Each band is one shell, mitred at the corners. A rail band is a U open toward the span, with its arms stopped inside the post&#x27;s inner face. The brace is a board with plumb-cut ends, face-nailed to the middle rail and housed 12 mm into both posts. It clears the bottom rail at the left post and the top rail at the right one. Rails and kick tenon into the post volume.</p>
-<p><strong>Hero.</strong> The still shows the kit doing its job: three linked duplicates of the one checked mesh at the 1.60 m pitch, so every joint in the picture is the tile fit the budgets assert — the paired posts meet band to band, <code>KIT_CLEAR</code> apart. The run stands in a render-only packed-earth strip, and the wood weathers in broad silver-grey patches (object-space noise) over the per-member tone and grain. The strip and the duplicates are staging; the asset sheet judges the single <code>FenceLow</code> section.</p>
+<p><strong>Hero.</strong> The still shows a three-section run that reads as one fence, with one post at each joint. The leading section is the checked <code>FenceLow</code> mesh. Each follow-on section is a render-only copy with its first post group (post, cap, shoe and bands, found as mesh shells) removed, stepped at the post pitch <code>2·HX</code>. Its rails and brace then tenon into the previous section&#x27;s trailing post. Placed whole at the 1.60 m tile pitch, the sections meet band to band, which is the tile fit the budgets assert, but every joint shows a doubled post. The earlier hero did exactly that. The run stands in a render-only packed-earth strip, and the wood weathers in broad silver-grey patches (object-space noise) over the per-member tone and grain. The strip and the trimmed copies are staging; the asset sheet judges the single <code>FenceLow</code> section.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check. This piece does not re-witness the <code>modular-kit-snap</code> snap contract.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
 <p>Intended size: 1.60 m tile, 1.14 m posts, 0.11 m post stock. Outer AABB 1.596 × 0.134 × 1.232 m.</p>
@@ -404,9 +404,9 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/fence-kit/fence_kit.py</code>
-        <span>1453 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/fence-kit/fence_kit.py">View on GitHub &rarr;</a></span>
+        <span>1487 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/fence-kit/fence_kit.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1453">
+      <div class="code" data-lines="1487">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1859,7 +1859,41 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
 1450
 1451
 1452
-1453</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready post-and-rail fence kit — a showcase piece, not an example.
+1453
+1454
+1455
+1456
+1457
+1458
+1459
+1460
+1461
+1462
+1463
+1464
+1465
+1466
+1467
+1468
+1469
+1470
+1471
+1472
+1473
+1474
+1475
+1476
+1477
+1478
+1479
+1480
+1481
+1482
+1483
+1484
+1485
+1486
+1487</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready post-and-rail fence kit — a showcase piece, not an example.
 
 Asserts budget conformance of a tiling timber fence section after
 composing shipped pipeline pieces: bmesh construction, UVs, two
@@ -3123,19 +3157,53 @@ LONG_RAIL = <span class="n">0.08</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    <span class="c"># The hero is the kit doing its job: three sections at the tile pitch,</span>
-    <span class="c"># linked duplicates of the one checked mesh, so every joint in the</span>
-    <span class="c"># picture is the tile fit the check asserts (posts meet band to band,</span>
-    <span class="c"># KIT_CLEAR apart). A run parent carries the yaw; level on the floor,</span>
-    <span class="c"># since an X tilt sinks one face of the shoes.</span>
+    <span class="c"># The hero is a run that reads as one fence, not three panels parked end</span>
+    <span class="c"># to end: the leading section is the checked mesh itself, and each</span>
+    <span class="c"># follow-on section is a render-only copy of it with its first post</span>
+    <span class="c"># group (post, cap, shoe and bands, found as mesh shells) removed,</span>
+    <span class="c"># stepped at the post pitch 2*HX so its rails and brace tenon into the</span>
+    <span class="c"># previous section&#x27;s trailing post - one post per joint. Placed at the</span>
+    <span class="c"># 1.60 m tile pitch instead, whole sections meet band to band (the tile</span>
+    <span class="c"># fit the check asserts) but every joint shows a doubled post. A run</span>
+    <span class="c"># parent carries the yaw; level on the floor, since an X tilt sinks one</span>
+    <span class="c"># face of the shoes.</span>
     run = bpy.data.objects.new(<span class="s">&quot;FenceRun&quot;</span>, <span class="k">None</span>)
     scene.collection.objects.link(run)
     run.rotation_euler.z = math.radians(-<span class="n">24.0</span>)
+    follow_me = low.data.copy()
+    follow_me.name = <span class="s">f&quot;</span>{low.name}<span class="s">.Follow</span><span class="s">&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(follow_me)
+        post_edge = POST_XS[<span class="n">0</span>] + POST_W / <span class="n">2.0</span> + IRON_T + <span class="n">0.002</span>
+        seen = set()
+        doomed = []
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            <span class="k">if</span> v <span class="k">in</span> seen:
+                <span class="k">continue</span>
+            group, stack = [], [v]
+            seen.add(v)
+            <span class="k">while</span> stack:
+                cur = stack.pop()
+                group.append(cur)
+                <span class="k">for</span> e <span class="k">in</span> cur.link_edges:
+                    o = e.other_vert(cur)
+                    <span class="k">if</span> o <span class="k">not</span> <span class="k">in</span> seen:
+                        seen.add(o)
+                        stack.append(o)
+            <span class="k">if</span> max(g.co.x <span class="k">for</span> g <span class="k">in</span> group) &lt; post_edge:
+                doomed.extend(group)
+        bmesh.ops.delete(bm, geom=doomed, context=<span class="s">&quot;VERTS&quot;</span>)
+        bm.to_mesh(follow_me)
+    <span class="k">finally</span>:
+        bm.free()
+    pitch = <span class="n">2.0</span> * POST_XS[<span class="n">1</span>]
     sections = [low]
-    <span class="k">for</span> i <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-        dup = bpy.data.objects.new(<span class="s">f&quot;</span>{low.name}<span class="s">.Run</span>{i:<span class="s">+d</span>}<span class="s">&quot;</span>, low.data)
+    low.location.x = -pitch
+    <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+        dup = bpy.data.objects.new(<span class="s">f&quot;</span>{low.name}<span class="s">.Run</span>{i}<span class="s">&quot;</span>, follow_me)
         scene.collection.objects.link(dup)
-        dup.location.x = i * TILE
+        dup.location.x = i * pitch
         sections.append(dup)
     <span class="k">for</span> ob <span class="k">in</span> sections:
         ob.parent = run
@@ -3351,7 +3419,7 @@ LONG_RAIL = <span class="n">0.08</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/fence-kit-hero.webp" alt="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
+    <img src="../assets/fence-kit-hero.webp" alt="A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
+  <meta property="og:image:alt" content="A timber ladder with tapered stiles and six evenly spaced lathe-turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-ladder — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
-  <meta name="twitter:image:alt" content="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
+  <meta name="twitter:image:alt" content="A timber ladder with tapered stiles and six evenly spaced lathe-turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../iron-cauldron/" aria-label="Previous showcase piece: iron-cauldron"><span aria-hidden="true">&larr;</span> iron-cauldron</a><span class="pager-pos hud">25 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hay-bale/" aria-label="Next showcase piece: hay-bale">hay-bale <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung.">
-      <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A timber ladder with tapered stiles and six evenly spaced lathe-turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung.">
+      <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced lathe-turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.</div>
@@ -362,15 +362,16 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber ladder: two stiles tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, barrel thicker only in the clear span), iron ferrules at the top, and level shoe plates under sleeves that follow the rake. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural timber ladder: two stiles tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, a barrel that shoulders in just under its radius and swells 14 % at mid-span, the profile a lathe leaves on a ladder round), iron ferrules at the top, and level shoe plates under sleeves that follow the rake. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p><strong>Hero.</strong> The ladder leans on a render-only barn wall of staggered weathered boards (a Brick texture turned onto the wall plane, with a stretched noise for grain), and a hand-coiled rope hangs over the second-highest rung. The rung is found the way <code>rung_pitch</code> finds rungs: the wooden shells wide in X and short in Z. The coil is a teardrop laid from a three-lobed section, per the showcase rope rule. It hangs forward of the rung, away from the wall. The wall and the coil are staging, not part of the asset, its budgets or its export. The asset sheet judges the bare <code>LadderLow</code>.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p>Intended size: stile length 1.50 m, overall about 0.49 × 0.38 × 1.49 m. A household ladder, not a 3 m orchard ladder.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1800–2800</td><td>2536 / 2536 / 2536</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2192 / 0.2192 / 0.2192</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥280 wood, ≥180 metal</td><td>2 slots, 612 wood, 736 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.490, 0.376, 1.487) m ± 0.01</td><td>(0.4897, 0.3760, 1.4870)</td></tr><tr><td>Grounded</td><td><code>abs(zmin)</code> ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m</td><td>zmin 0, sole 0, rail 0.02037</td></tr><tr><td>Mesh hygiene</td><td>non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0</td><td>all 0</td></tr><tr><td>Parts</td><td>16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles)</td><td>16 (2 / 6 / 2 / 2)</td></tr><tr><td>Rung depth clearance</td><td>≥ 0.003 m inside the stile faces</td><td>0.00800</td></tr><tr><td>Tenon engagement</td><td>≥ 0.008 m past the stile inner face</td><td>0.01399</td></tr><tr><td>Tenon breakout margin</td><td>≥ 0.008 m short of the stile outer face</td><td>0.03780</td></tr><tr><td>Shoe bite / cover</td><td>bite ≥ 0.010 m, cover ≥ 0.016 m</td><td>0.02000 / 0.03800</td></tr><tr><td><strong>Rung pitch</strong></td><td>6 rungs; every rung-to-rung gap within 0.002 m of the mean</td><td>6; 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>24</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>187524 / 187524 / 187504 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.2.1; 5.1.2 not re-run after the turned-rung pass)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1800–2800</td><td>2680 / 2680</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2194 / 0.2194</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥280 wood, ≥180 metal</td><td>2 slots, 684 wood, 736 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.490, 0.376, 1.487) m ± 0.01</td><td>(0.4897, 0.3760, 1.4870)</td></tr><tr><td>Grounded</td><td><code>abs(zmin)</code> ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m</td><td>zmin 0, sole 0, rail 0.02037</td></tr><tr><td>Mesh hygiene</td><td>non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0</td><td>all 0</td></tr><tr><td>Parts</td><td>16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles)</td><td>16 (2 / 6 / 2 / 2)</td></tr><tr><td>Rung depth clearance</td><td>≥ 0.003 m inside the stile faces</td><td>0.00800</td></tr><tr><td>Tenon engagement</td><td>≥ 0.008 m past the stile inner face</td><td>0.01399</td></tr><tr><td>Tenon breakout margin</td><td>≥ 0.008 m short of the stile outer face</td><td>0.03787</td></tr><tr><td>Shoe bite / cover</td><td>bite ≥ 0.010 m, cover ≥ 0.016 m</td><td>0.02000 / 0.03800</td></tr><tr><td><strong>Rung pitch</strong></td><td>6 rungs; every rung-to-rung gap within 0.002 m of the mean</td><td>6; 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>24</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>197604 / 197584 bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>936 to 2536</strong>. The previous mesh was two boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon and barrel in one shell) plus ferrule collars and chamfered soles added the triangles. Nothing was removed as a hidden face.</p>
+<p>A later pass took them to <strong>2680</strong>. The bare ladder was still the plainest object in its asset-sheet lineup, and the parts budget is exact (16 shells), so the detail had to live inside existing shells. Each rung gained one ring at mid-span (+24 triangles per rung): the barrel shoulders in at 0.90 × its radius (<code>RUNG_SHOULDER</code>) and swells to 1.14 × (<code>RUNG_SWELL</code>). That turns a dowel into a lathe-turned round. The tenons are unchanged, so clearance, engagement and pitch read the same. The breakout margin moved 0.07 mm (0.03780 → 0.03787) because the shell&#x27;s worst vertex is now measured across seven rings. The wood shader also changed. The grain noise runs across the stile&#x27;s 50 mm width at a readable scale (<code>WOOD_GRAIN_SCALE</code> 34 → 95, streak stretch 0.94 → 0.985); before, about one noise period spanned a stile, so it rendered as flat tan. A short-range AO term darkens the rung housings and the wood under the iron sleeves.</p>
 <p>The joint budgets are measured per rung against each stile, from vertex positions in the un-raked construction frame, and the reported value is the worst case. Clearance is the tenon, not the barrel: the barrel is thicker only between the stiles.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run; a Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 24 (multi-body) and is not gated to 2.</p>
 <h3 id="rungs-wood-and-staging">Rungs, wood and staging<a class="anchor" href="#rungs-wood-and-staging" aria-label="Link to this section">#</a></h3>
@@ -398,9 +399,9 @@ blender --background --python wooden_ladder.py -- --output preview.webp --engine
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/wooden-ladder/wooden_ladder.py</code>
-        <span>1753 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/wooden-ladder/wooden_ladder.py">View on GitHub &rarr;</a></span>
+        <span>1776 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/wooden-ladder/wooden_ladder.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1753">
+      <div class="code" data-lines="1776">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2153,7 +2154,30 @@ blender --background --python wooden_ladder.py -- --output preview.webp --engine
 1750
 1751
 1752
-1753</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden ladder — a showcase piece, not an example.
+1753
+1754
+1755
+1756
+1757
+1758
+1759
+1760
+1761
+1762
+1763
+1764
+1765
+1766
+1767
+1768
+1769
+1770
+1771
+1772
+1773
+1774
+1775
+1776</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden ladder — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural timber ladder after composing
 shipped pipeline pieces: bmesh construction, UVs, two materials,
@@ -2220,6 +2244,8 @@ RUNG_R = <span class="n">0.011</span>
 BARREL_RATIO = <span class="n">1.34</span>
 RUNG_SEGS = <span class="n">12</span>
 RUNG_TENON = <span class="n">0.014</span>
+RUNG_SHOULDER = <span class="n">0.90</span>             <span class="c"># barrel radius at the shoulders, x r_barrel</span>
+RUNG_SWELL = <span class="n">1.14</span>                <span class="c"># barrel radius at mid-span, x r_barrel</span>
 <span class="c"># Rungs sit at one even pitch: a climber&#x27;s feet find them blind, so height</span>
 <span class="c"># jitter is a defect, not variation. Variation lives in the turning (a few</span>
 <span class="c"># percent of barrel) and the wood tone. --drift-rungs restores the old</span>
@@ -2230,7 +2256,7 @@ RUNG_PITCH_TOL = <span class="n">0.002</span>
 <span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
 PLANK_TONE_JITTER = <span class="n">0.28</span>
 TONE_SEED = <span class="n">29</span>
-WOOD_GRAIN_SCALE = <span class="n">34.0</span>
+WOOD_GRAIN_SCALE = <span class="n">95.0</span>
 BAND_Z0 = <span class="n">0.0</span>
 BAND_H = <span class="n">0.058</span>
 BAND_T = <span class="n">0.007</span>
@@ -2424,16 +2450,23 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> add_turned_rung(bm, z, x_left, x_right, tenon, r_tenon, r_barrel, segs, mat_idx):
-    <span class="s">&quot;&quot;&quot;One shell: thin tenon inside each stile, thicker barrel only in the clear span.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;One shell: thin tenon inside each stile, thicker barrel only in the clear span.
+
+    The barrel is turned, not a plain dowel: it starts at a shoulder just
+    under the barrel radius and swells to RUNG_SWELL at mid-span, the
+    profile a lathe leaves on a ladder round (one extra ring per rung).
+    &quot;&quot;&quot;</span>
     xs = (
         x_left - tenon,
         x_left - <span class="n">0.0015</span>,
         x_left + <span class="n">0.004</span>,
+        <span class="n">0.5</span> * (x_left + x_right),
         x_right - <span class="n">0.004</span>,
         x_right + <span class="n">0.0015</span>,
         x_right + tenon,
     )
-    rs = (r_tenon, r_tenon, r_barrel, r_barrel, r_tenon, r_tenon)
+    shoulder = r_barrel * RUNG_SHOULDER
+    rs = (r_tenon, r_tenon, shoulder, r_barrel * RUNG_SWELL, shoulder, r_tenon, r_tenon)
     rings = []
     <span class="k">for</span> x, radius <span class="k">in</span> zip(xs, rs):
         ring = []
@@ -3124,7 +3157,7 @@ METAL_IDX = <span class="n">1</span>
     nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
     squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
-    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.985</span>
     nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
     along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
     along.operation = <span class="s">&quot;SCALE&quot;</span>
@@ -3144,10 +3177,10 @@ METAL_IDX = <span class="n">1</span>
     noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
     nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
-    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.10</span>, <span class="n">0.056</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
-    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
-    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.33</span>, <span class="n">0.19</span>, <span class="n">0.095</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.38</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.055</span>, <span class="n">0.030</span>, <span class="n">0.014</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.62</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.34</span>, <span class="n">0.20</span>, <span class="n">0.10</span>, <span class="n">1.0</span>)
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
     gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
@@ -3160,7 +3193,21 @@ METAL_IDX = <span class="n">1</span>
     _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
     nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
     nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
-    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="c"># handling grime: short-range AO darkens where rungs enter the stiles</span>
+    <span class="c"># and under the iron sleeves, so the joints read at thumbnail scale</span>
+    ao = nt.nodes.new(<span class="s">&quot;ShaderNodeAmbientOcclusion&quot;</span>)
+    ao.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.035</span>
+    grime = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    grime.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.45</span>
+    grime.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(ao.outputs[<span class="s">&quot;AO&quot;</span>], grime.inputs[<span class="s">&quot;Value&quot;</span>])
+    dirt = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    dirt.data_type = <span class="s">&quot;RGBA&quot;</span>
+    dirt.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(dirt.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(dirt.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(grime.outputs[<span class="s">&quot;Result&quot;</span>], _sock(dirt.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(dirt.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
     rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
     rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
@@ -3945,7 +3992,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
+    <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced lathe-turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   </dialog>
   <footer>
     <div class="statusbar">

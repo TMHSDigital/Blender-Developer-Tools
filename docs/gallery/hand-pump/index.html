@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hand-pump-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth." />
+  <meta property="og:image:alt" content="A green-enamelled cast-iron village hand pump, rust worn at its edges, with a curved spout and lever handle on a stepped wooden plinth." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hand-pump — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural village hand pump whose gooseneck is a 6-gon tube from the lower-column radius, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hand-pump-hero.webp" />
-  <meta name="twitter:image:alt" content="A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth." />
+  <meta name="twitter:image:alt" content="A green-enamelled cast-iron village hand pump, rust worn at its edges, with a curved spout and lever handle on a stepped wooden plinth." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../grindstone/" aria-label="Previous showcase piece: grindstone"><span aria-hidden="true">&larr;</span> grindstone</a><span class="pager-pos hud">18 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../signpost/" aria-label="Next showcase piece: signpost">signpost <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth.">
-      <img src="../assets/hand-pump-hero.webp" alt="A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A green-enamelled cast-iron village hand pump, rust worn at its edges, with a curved spout and lever handle on a stepped wooden plinth.">
+      <img src="../assets/hand-pump-hero.webp" alt="A green-enamelled cast-iron village hand pump, rust worn at its edges, with a curved spout and lever handle on a stepped wooden plinth." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1064 tris, two materials with 564 metal and 144 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.382×1.052 m, grounded zmin, spout-to-column gap 2.7 mm, flange-to-plinth gap 6.0 mm, column radius 62 mm, LOD ratios in band, convex collider 114 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-spout 17; --float-flange 18; --skinny-col 19.</div>
@@ -373,7 +373,7 @@
 <p>Base triangles dropped from <strong>1164 to 1064</strong> in the quality pass: seven sausage cylinders became one gooseneck tube, and the wood grip is no longer beveled with the plinth. Outer AABB is 0.610 × 0.382 × 1.052 m (was 0.610 × 0.364 × 1.049 m).</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is slightly leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run; a Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3 id="surface-and-stage">Surface and stage<a class="anchor" href="#surface-and-stage" aria-label="Link to this section">#</a></h3>
-<p>The quality pass found no geometric defect: every joint checked in the inspection sheet (spout root, flange bolts, head and handle pivot, column step, plinth) seats as the joint budgets say. The defects were on the surface. The iron was polished metal (metallic 1.0, roughness 0.38) and read as chrome; it is now near-black painted cast iron with dark rust in the pores. The plinth slabs and the handle grip carry their own wood tone and grain. The stage grid grew from 14 to 60 m, because the wall&#x27;s left edge showed in the corner of the hero. The temp <code>.glb</code> is removed after its size is measured. With no new geometric defect, there is no new budget.</p>
+<p>The quality pass found no geometric defect: every joint checked in the inspection sheet (spout root, flange bolts, head and handle pivot, column step, plinth) seats as the joint budgets say. The defects were on the surface. The iron was polished metal (metallic 1.0, roughness 0.38) and read as chrome; the next pass painted it near-black, which vanished into the dark stage. It is now dark green enamelled cast iron with rust in the pores and at the edges, and a cool rim light aimed at the column lifts its silhouette off the backdrop. The plinth slabs and the handle grip carry their own wood tone and grain. The stage grid grew from 14 to 60 m, because the wall&#x27;s left edge showed in the corner of the hero. The temp <code>.glb</code> is removed after its size is measured. With no new geometric defect, there is no new budget.</p>
 <h3 id="hygiene">Hygiene<a class="anchor" href="#hygiene" aria-label="Link to this section">#</a></h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Plinth <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.00000</td></tr></tbody></table></div>
@@ -400,9 +400,9 @@ blender --background --python hand_pump.py -- --output hand-pump.png</code></pre
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/hand-pump/hand_pump.py</code>
-        <span>1381 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hand-pump/hand_pump.py">View on GitHub &rarr;</a></span>
+        <span>1394 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hand-pump/hand_pump.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1381">
+      <div class="code" data-lines="1394">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1783,7 +1783,20 @@ blender --background --python hand_pump.py -- --output hand-pump.png</code></pre
 1378
 1379
 1380
-1381</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready village hand pump — a showcase piece, not an example.
+1381
+1382
+1383
+1384
+1385
+1386
+1387
+1388
+1389
+1390
+1391
+1392
+1393
+1394</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready village hand pump — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural cast-iron hand pump (plinth,
 column, gooseneck, stuffing-box head, handle, wooden grip) after
@@ -2482,14 +2495,16 @@ SKINNY = <span class="n">0.028</span>
 <span class="k">def</span> pump_materials():
     <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.
 
-    A cast-iron pump is painted near-black and weathers to rust at the
+    A cast-iron village pump is painted in dark green enamel and weathers
+    to rust at the
     edges and pores; the first build was polished metal (metallic 1.0,
-    roughness 0.38) and read as chrome.
+    roughness 0.38) and read as chrome; the second build&#x27;s near-black
+    paint vanished into the dark stage.
     &quot;&quot;&quot;</span>
     wood = wood_material(<span class="s">&quot;HandPumpWood&quot;</span>)
     metal = principled(
-        <span class="s">&quot;HandPumpIron&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.047</span>, <span class="n">0.050</span>, <span class="n">1.0</span>), <span class="n">0.55</span>, <span class="n">0.52</span>,
-        noise_scale=<span class="n">24.0</span>, wear=(<span class="n">0.09</span>, <span class="n">0.05</span>, <span class="n">0.03</span>, <span class="n">1.0</span>),
+        <span class="s">&quot;HandPumpIron&quot;</span>, (<span class="n">0.020</span>, <span class="n">0.150</span>, <span class="n">0.075</span>, <span class="n">1.0</span>), <span class="n">0.25</span>, <span class="n">0.42</span>,
+        noise_scale=<span class="n">24.0</span>, wear=(<span class="n">0.16</span>, <span class="n">0.065</span>, <span class="n">0.025</span>, <span class="n">1.0</span>),
     )
     <span class="k">return</span> wood, metal
 
@@ -3077,8 +3092,19 @@ SKINNY = <span class="n">0.028</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">660.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">46.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">620.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">60.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    <span class="c"># cool rim from behind: lifts the column, handle and spout silhouettes</span>
+    <span class="c"># off the dark backdrop, where the first hero lost them</span>
+    rim = bpy.data.lights.new(<span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
+    rim.energy = <span class="n">140.0</span>
+    rim.size = <span class="n">1.2</span>
+    rim.color = (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>)
+    rim_ob = bpy.data.objects.new(<span class="s">&quot;Rim&quot;</span>, rim)
+    rim_ob.location = (-<span class="n">1.1</span>, <span class="n">1.6</span>, <span class="n">1.9</span>)
+    <span class="c"># aimed at the column so it grazes the silhouette, not the backdrop</span>
+    rim_ob.rotation_euler = (Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.7</span>)) - rim_ob.location).to_track_quat(<span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
+    scene.collection.objects.link(rim_ob)
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">600.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
@@ -3203,7 +3229,7 @@ SKINNY = <span class="n">0.028</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/hand-pump-hero.webp" alt="A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth." />
+    <img src="../assets/hand-pump-hero.webp" alt="A green-enamelled cast-iron village hand pump, rust worn at its edges, with a curved spout and lever handle on a stepped wooden plinth." />
   </dialog>
   <footer>
     <div class="statusbar">
