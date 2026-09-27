@@ -31,12 +31,15 @@ a showcase extra, not part of the CI check.
 
 The still's staging is render-only and runs after the check. The head gets a
 subdivision modifier (the 500-face monkey read as faceted plates) and is
-seated 10 mm into the platter of a turntable plinth, lifted from its own
-lowest evaluated vertex. It used to hover just above the floor with nothing
-under it. The rotation keys, the sampled frames and every exit code are
-unchanged. This render path does not call `gallery_framing.check_framing`,
-because adding it would add exit code 10. The framing was measured with the
-helper out of band instead: fill y 0.789, minimum margin 0.050, ok.
+seated 10 mm into the rubber mat of a display turntable, lifted from its own
+lowest evaluated vertex. The turntable is lathed: a stepped, vented motor
+housing with a front status lamp, and a steel platter whose rim carries one
+brass tick per keyed frame — `FRAMES` ticks, 10° apart, a longer one every
+90° — so the keyed 0→360° span over frames 1→`FRAMES` reads as a dial. An
+amber arc arrow on the mat sweeps the direction of the keyed +Z turn. The
+rotation keys and the sampled frames are unchanged. The render path gates
+framing through `examples/gallery_framing.py` before writing the still
+(exit 10 on violation; smoke never passes `--output`).
 
 ## Exit codes
 
@@ -51,6 +54,7 @@ against it.
 | 3 | Rotation keys do not drive playback (`--no-keys` lands here) |
 | 4 | `--output` produced no file |
 | 5 | Wrong-era EEVEE engine id was accepted |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

@@ -677,7 +677,7 @@ fails creating the 5.x RNA.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/turntable/"><img src="examples/turntable/preview.webp" alt="Turntable: a copper Suzanne mid-rotation on a dark studio floor, rendered with EEVEE" /></a>
+<a href="examples/turntable/"><img src="examples/turntable/preview.webp" alt="Turntable: a copper Suzanne on a lathed display turntable with a vented motor base, a platter rim ticked once per keyed frame, and an amber arrow showing the keyed turn" /></a>
 </td>
 <td valign="middle">
 
