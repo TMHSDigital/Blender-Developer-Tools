@@ -5,6 +5,10 @@
   "ogImageWidth": 1200,
   "ogImageHeight": 630,
   "ogImageAlt": "Four renders from the examples gallery: a red low-poly hatchback, a soccer ball, gold spikes aimed at a glowing sphere, and two spheres on pedestals labelled linked and unlinked",
+  "blender": {
+    "primary": "5.2 LTS",
+    "fallback": "4.5 LTS"
+  },
   "compatibility": {
     "claude": "Claude Code",
     "os": ["Windows", "macOS", "Linux"]
