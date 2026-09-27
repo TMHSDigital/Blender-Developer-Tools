@@ -13,7 +13,8 @@ chain of cylinders. The flange bites the plinth.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Hygiene family 15–19:
 ``--stray-vert``, ``--lift-z``, ``--float-spout``, ``--float-flange``,
-``--skinny-col``.
+``--skinny-col``; ``--shift-bucket`` (exit 20) sets the bucket out from
+under the spout.
 
 Construction is closed-form; the only RNG is the seeded per-piece wood
 tone. DECIMATE COLLAPSE triangle counts
@@ -56,7 +57,7 @@ LOWER_H = 0.40
 UPPER_H = 0.36
 COL_H = LOWER_H + UPPER_H
 SPOUT_Z = PLINTH_TOP + 0.36
-SPOUT_R = 0.13
+SPOUT_R = 0.17                   # reach carries the nozzle out over the bucket
 SPOUT_T = 0.036
 SPOUT_N = 10
 HANDLE_LIFT = 0.18
@@ -66,11 +67,43 @@ FLANGE_BITE = 0.006
 BOLT_N = 4
 BOLT_R = 0.008
 BOLT_H = 0.014
+# Cast detail. The foot and spout boss stay within COL_R_TOL of COL_R_LO so
+# the column-radius budget still reads the barrel, not its mouldings.
+FOOT_R = 0.068
+BOSS_R = 0.067
+RIB_N = 8                        # flutes on the upper barrel
+RIB_W = 0.010
+RIB_DEPTH = 0.008
+RIB_PROUD = 0.004                # rib face proud of the barrel
+TAIL_REACH = 0.085               # handle tail past the fulcrum, counterweighted
+# A coopered bucket stands on the ground under the spout, clear of the
+# plinth. Its profile is (r, z) from the foot up the outside, over the rim
+# and down the inside to the inner floor; two iron hoops bind the staves.
+BUCKET_PROFILE = (
+    (0.068, 0.000), (0.075, 0.004), (0.082, 0.142), (0.084, 0.150),
+    (0.077, 0.152), (0.073, 0.144), (0.068, 0.020),
+)
+BUCKET_SEGS = 16                 # one flat-shaded face per stave
+# The collider source turns the bucket at 8 staves and leaves the hoops off:
+# a convex collider does not need the cooperage, and at 16 staves the hull
+# ran to 267 triangles, past Unity's 255 convex-collider ceiling.
+BUCKET_PROXY_SEGS = 8
+BUCKET_CLEAR = 0.010             # bucket side off the plinth slab
+HOOP_Z = ((0.018, 0.034), (0.112, 0.128))
+HOOP_T = 0.003
+HOOP_BITE = 0.0008
+BUCKET_CATCH_MARGIN = 0.015      # nozzle axis inside the mouth by this much
+BUCKET_FREE_MIN = 0.004          # bucket shell to plinth: standing free
+SHIFT_BUCKET = 0.12              # --shift-bucket: set out from under the spout
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (0.610, 0.382, 1.052)
+# y grew 0.382 -> 0.521 for the bucket in front of the plinth; z 1.052 ->
+# 1.055 for the finial.
+OUTER_SIZE = (0.610, 0.521, 1.055)
 BASE_TRIS_MIN = 900
-BASE_TRIS_MAX = 2200
+# 2200 -> 2600: the cast mouldings, flutes, finial, turned grip, handle
+# tail and the hooped bucket take the pump from 1064 to 2412 triangles.
+BASE_TRIS_MAX = 2600
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -317,6 +350,81 @@ def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
+def add_ball(bm, loc, radius, mat_idx):
+    geo = bmesh.ops.create_uvsphere(bm, u_segments=8, v_segments=4, radius=radius)
+    verts = geo["verts"]
+    origin = Vector(loc)
+    for v in verts:
+        v.co = v.co + origin
+    for f in {f for v in verts for f in v.link_faces}:
+        f.material_index = mat_idx
+    return verts
+
+
+def add_lathe(bm, profile, segments, mat_idx, loc=(0.0, 0.0, 0.0), euler=(0.0, 0.0, 0.0)):
+    """One closed shell turned from an (r, z) profile about local Z.
+
+    Profile runs bottom to top; the two end rings are closed with triangle
+    fans, so the shell is watertight with no n-gons.
+    """
+    rings = []
+    for r, z in profile:
+        rings.append([
+            bm.verts.new((r * math.cos(2.0 * math.pi * k / segments),
+                          r * math.sin(2.0 * math.pi * k / segments), z))
+            for k in range(segments)
+        ])
+    faces = []
+    for a, b in zip(rings, rings[1:]):
+        for k in range(segments):
+            k2 = (k + 1) % segments
+            faces.append(bm.faces.new((a[k], a[k2], b[k2], b[k])))
+    for ring, z, bottom in ((rings[0], profile[0][1], True),
+                            (rings[-1], profile[-1][1], False)):
+        c = bm.verts.new((0.0, 0.0, z))
+        for k in range(segments):
+            k2 = (k + 1) % segments
+            faces.append(bm.faces.new((c, ring[k2], ring[k]) if bottom
+                                      else (c, ring[k], ring[k2])))
+    for f in faces:
+        f.material_index = mat_idx
+    verts = list({v for f in faces for v in f.verts})
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    for v in verts:
+        v.co = rot @ v.co + origin
+    return verts
+
+
+def add_hoop(bm, loc, r_lo, r_hi, z0, z1, t, segments, mat_idx):
+    """A closed rectangular-section ring, its inner face following a taper.
+
+    r_lo / r_hi are the inner radii at z0 / z1; t is the radial thickness.
+    Four section corners swept round the axis close on themselves, so the
+    ring is watertight without caps.
+    """
+    section = ((r_lo, z0), (r_lo + t, z0), (r_hi + t, z1), (r_hi, z1))
+    rings = []
+    for k in range(segments):
+        ang = 2.0 * math.pi * k / segments
+        c, s = math.cos(ang), math.sin(ang)
+        rings.append([bm.verts.new((loc[0] + r * c, loc[1] + r * s, loc[2] + z))
+                      for r, z in section])
+    for k in range(segments):
+        a, b = rings[k], rings[(k + 1) % segments]
+        for j in range(4):
+            j2 = (j + 1) % 4
+            f = bm.faces.new((a[j], b[j], b[j2], a[j2]))
+            f.material_index = mat_idx
+    return [v for ring in rings for v in ring]
+
+
+def bucket_wall_r(z):
+    """Outside radius of the bucket staves at height z (foot to rim)."""
+    (_r0, _z0), (r1, z1), (r2, z2) = BUCKET_PROFILE[0], BUCKET_PROFILE[1], BUCKET_PROFILE[2]
+    return r1 + (r2 - r1) * (z - z1) / (z2 - z1)
+
+
 def add_square_band(bm, z, half, t, h, mat_idx):
     metal = []
     metal.extend(add_box(bm, (0.0, half + t / 2.0, z), (2.0 * half + 2.0 * t, t, h), mat_idx))
@@ -376,7 +484,10 @@ def build_hand_pump_mesh(
     float_spout=False,
     float_flange=False,
     skinny_col=False,
+    shift_bucket=False,
+    proxy=False,
 ):
+    """The pump; ``proxy`` builds the collider source (8-stave bucket, no hoops)."""
     bm = bmesh.new()
     try:
         wood = []
@@ -420,14 +531,15 @@ def build_hand_pump_mesh(
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
+        # turned wooden grip: swells in the palm, necks at both ferrule ends
         wood.extend(
-            add_cyl(
+            add_lathe(
                 bm,
-                (grip_end.x, grip_end.y, grip_end.z),
-                0.018,
-                0.12,
+                [(0.012, -0.060), (0.016, -0.052), (0.019, -0.030), (0.0205, 0.0),
+                 (0.019, 0.030), (0.016, 0.050), (0.011, 0.060)],
                 12,
                 WOOD_IDX,
+                loc=(grip_end.x, grip_end.y, grip_end.z),
                 euler=(0.0, math.pi / 2.0, 0.0),
             )
         )
@@ -454,13 +566,21 @@ def build_hand_pump_mesh(
                 METAL_IDX,
             )
 
-        add_cyl(
+        # cast lower barrel, one turned shell: a moulded foot that steps down
+        # onto the flange, the plain barrel, and a boss where the spout is
+        # cast on. Every radius follows r_lo, so --skinny-col thins it all.
+        dr = COL_R_LO - r_lo
+        add_lathe(
             bm,
-            (0.0, 0.0, PLINTH_TOP + LOWER_H / 2.0),
-            r_lo,
-            LOWER_H,
+            [(r - dr, z) for r, z in (
+                (FOOT_R, 0.000), (FOOT_R, 0.016), (0.065, 0.028), (COL_R_LO, 0.050),
+                (COL_R_LO, SPOUT_Z - PLINTH_TOP - 0.030), (BOSS_R, SPOUT_Z - PLINTH_TOP - 0.018),
+                (BOSS_R, SPOUT_Z - PLINTH_TOP + 0.018), (COL_R_LO, SPOUT_Z - PLINTH_TOP + 0.030),
+                (COL_R_LO, LOWER_H),
+            )],
             COL_SEGS,
             METAL_IDX,
+            loc=(0.0, 0.0, PLINTH_TOP),
         )
         joint_z = PLINTH_TOP + LOWER_H
         add_cyl(
@@ -471,6 +591,29 @@ def build_hand_pump_mesh(
             COL_SEGS,
             METAL_IDX,
         )
+        # moulded collar where the upper barrel is socketed into the lower
+        add_cone(
+            bm,
+            (0.0, 0.0, joint_z + 0.004),
+            0.066 - dr,
+            r_hi + 0.006,
+            0.028,
+            COL_SEGS,
+            METAL_IDX,
+        )
+        # fluted upper barrel: raised ribs cast proud of the column
+        rib_z0 = joint_z + 0.045
+        rib_z1 = top_z - 0.030
+        for k in range(RIB_N):
+            ang = (k + 0.5) * (2.0 * math.pi / RIB_N)
+            rc = r_hi + RIB_PROUD - RIB_DEPTH / 2.0
+            add_box(
+                bm,
+                (rc * math.cos(ang), rc * math.sin(ang), 0.5 * (rib_z0 + rib_z1)),
+                (RIB_DEPTH, RIB_W, rib_z1 - rib_z0),
+                METAL_IDX,
+                euler=(0.0, 0.0, ang),
+            )
 
         add_cyl(
             bm,
@@ -488,6 +631,9 @@ def build_hand_pump_mesh(
             8,
             METAL_IDX,
         )
+        # domed cap and ball finial over the stuffing box
+        add_cone(bm, (0.0, 0.0, top_z + 0.065), 0.030, 0.012, 0.020, 16, METAL_IDX)
+        add_ball(bm, (0.0, 0.0, top_z + 0.087), 0.016, METAL_IDX)
 
         cheek_y = pivot.y
         add_box(
@@ -518,6 +664,17 @@ def build_hand_pump_mesh(
             (0.018, 0.014),
             METAL_IDX,
         )
+        # the handle's short tail runs on past the fulcrum and ends in a
+        # cast ball, the counterweight a village pump handle carries
+        tail_end = Vector((TAIL_REACH, pivot.y, pivot.z - 0.030))
+        add_oriented_box(
+            bm,
+            (pivot.x - 0.012, pivot.y, pivot.z + 0.004),
+            (tail_end.x, tail_end.y, tail_end.z),
+            (0.016, 0.013),
+            METAL_IDX,
+        )
+        add_ball(bm, (tail_end.x, tail_end.y, tail_end.z), 0.019, METAL_IDX)
 
         y0 = -r_lo
         z0 = SPOUT_Z
@@ -537,6 +694,30 @@ def build_hand_pump_mesh(
             12,
             METAL_IDX,
         )
+        # rolled drip lip at the mouth, so water leaves clean off the nozzle
+        add_cone(
+            bm,
+            (0.0, nozzle_y, nozzle_z - 0.051),
+            0.019,
+            0.016,
+            0.008,
+            12,
+            METAL_IDX,
+        )
+
+        # coopered bucket on the ground under the spout, stood just clear
+        # of the plinth slab; staves are the flat-shaded lathe faces
+        bucket_y = -(PLINTH_XY / 2.0 + BUCKET_CLEAR + BUCKET_PROFILE[3][0] + HOOP_T)
+        if shift_bucket:
+            bucket_y -= SHIFT_BUCKET
+        bucket_loc = (0.0, bucket_y, 0.0)
+        wood.extend(add_lathe(bm, list(BUCKET_PROFILE),
+                              BUCKET_PROXY_SEGS if proxy else BUCKET_SEGS,
+                              WOOD_IDX, loc=bucket_loc))
+        for z0, z1 in (() if proxy else HOOP_Z):
+            add_hoop(bm, bucket_loc, bucket_wall_r(z0) - HOOP_BITE,
+                     bucket_wall_r(z1) - HOOP_BITE, z0, z1, HOOP_T,
+                     BUCKET_SEGS, METAL_IDX)
 
         zs = [v.co.z for v in bm.verts]
         zmin = min(zs)
@@ -931,6 +1112,8 @@ def joint_audit(me):
     columns = []
     spouts = []
     flanges = []
+    buckets = []
+    nozzles = []
     for g in groups:
         a = shell_aabb(me, g)
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
@@ -941,8 +1124,15 @@ def joint_audit(me):
             columns.append((g, a))
         if mat == METAL_IDX and dy > 0.10 and dx < 0.10 and a[1] < -0.04:
             spouts.append((g, a))
-        if mat == METAL_IDX and dz < 0.05 and dx > 0.14 and a[2] < PLINTH_TOP + 0.05:
+        # centred on the column axis: the bucket's hoops are as wide and as low
+        if (mat == METAL_IDX and dz < 0.05 and dx > 0.14 and a[2] < PLINTH_TOP + 0.05
+                and abs(a[0] + a[3]) < 0.02 and abs(a[1] + a[4]) < 0.02):
             flanges.append((g, a))
+        if mat == WOOD_IDX and dz > 0.10 and 0.12 < dx < 0.22 and a[4] < 0.0:
+            buckets.append((g, a))
+        if (mat == METAL_IDX and dx < 0.05 and dy < 0.05 and a[2] > 0.15
+                and a[4] < -0.10):
+            nozzles.append((g, a))
     spout_gap = 99.0
     if spouts and columns:
         spout_gap = min(
@@ -961,6 +1151,27 @@ def joint_audit(me):
     plinth_z = 99.0
     if plinths:
         plinth_z = min(a[2] for _g, a in plinths)
+    # Bucket: where the nozzle's water falls against the bucket mouth. The
+    # mouth radius is the innermost vertex ring within 12 mm of the rim; the
+    # nozzle is the lowest small metal shell out on the spout side.
+    catch = -99.0
+    bucket_z = 99.0
+    bucket_free = -99.0
+    if buckets and nozzles:
+        bg, ba = buckets[0]
+        cx, cy = 0.5 * (ba[0] + ba[3]), 0.5 * (ba[1] + ba[4])
+        top = ba[5]
+        mouth = min(
+            math.hypot(me.vertices[i].co.x - cx, me.vertices[i].co.y - cy)
+            for i in bg if me.vertices[i].co.z > top - 0.012
+        )
+        ng, na = min(nozzles, key=lambda t: t[1][2])
+        nx, ny = 0.5 * (na[0] + na[3]), 0.5 * (na[1] + na[4])
+        nr = 0.5 * max(na[3] - na[0], na[4] - na[1])
+        catch = mouth - (math.hypot(nx - cx, ny - cy) + nr)
+        bucket_z = ba[2]
+        if plinths:
+            bucket_free = min(shell_bvh_gap(me, bg, p[0]) for p in plinths)
     return {
         "plinths": len(plinths),
         "columns": len(columns),
@@ -970,6 +1181,10 @@ def joint_audit(me):
         "flange_gap": flange_gap,
         "col_r": col_r,
         "plinth_z": plinth_z,
+        "buckets": len(buckets),
+        "catch": catch,
+        "bucket_z": bucket_z,
+        "bucket_free": bucket_free,
     }
 
 
@@ -1032,12 +1247,14 @@ def check(
     float_spout=False,
     float_flange=False,
     skinny_col=False,
+    shift_bucket=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     kw = dict(
         float_spout=float_spout,
         float_flange=float_flange,
         skinny_col=skinny_col,
+        shift_bucket=shift_bucket,
     )
     low = build_hand_pump_mesh("HandPumpLow", bevel_offset=0.004, bevel_segments=2, **kw)
     high = build_hand_pump_mesh("HandPumpHigh", bevel_offset=0.004, bevel_segments=4, **kw)
@@ -1085,7 +1302,7 @@ def check(
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
     collider_src = build_hand_pump_mesh(
-        "HandPumpColSrc", bevel_offset=0.0, bevel_segments=1, **kw
+        "HandPumpColSrc", bevel_offset=0.0, bevel_segments=1, proxy=True, **kw
     )
     collider = convex_hull_collider(collider_src, "HandPumpCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
@@ -1135,6 +1352,10 @@ def check(
         f"spouts={jnt['spouts']} flanges={jnt['flanges']} "
         f"spout_gap={jnt['spout_gap']:.5f} flange_gap={jnt['flange_gap']:.5f} "
         f"col_r={jnt['col_r']:.5f} plinth_z={jnt['plinth_z']:.5f}"
+    )
+    print(
+        f"measured bucket buckets={jnt['buckets']} catch={jnt['catch']:.5f} "
+        f"zmin={jnt['bucket_z']:.5f} clear={jnt['bucket_free']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1188,6 +1409,18 @@ def check(
         return fail(
             f"column radius {jnt['col_r']:.5f} off {COL_R_LO}",
             19,
+        ), None, None, None, None, None
+    if (
+        jnt["buckets"] != 1
+        or jnt["catch"] < BUCKET_CATCH_MARGIN
+        or jnt["bucket_z"] > ZMIN_EPS
+        or jnt["bucket_free"] < BUCKET_FREE_MIN
+    ):
+        return fail(
+            f"bucket under spout: buckets={jnt['buckets']} catch {jnt['catch']:.5f} "
+            f"< {BUCKET_CATCH_MARGIN}? zmin {jnt['bucket_z']:.5f} clear of plinth "
+            f"{jnt['bucket_free']:.5f} (--shift-bucket is the designed fail)",
+            20,
         ), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
@@ -1364,6 +1597,8 @@ def main():
     p.add_argument("--float-spout", action="store_true")
     p.add_argument("--float-flange", action="store_true")
     p.add_argument("--skinny-col", action="store_true")
+    p.add_argument("--shift-bucket", action="store_true",
+                   help="falsification: stand the bucket out from under the spout")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1373,6 +1608,7 @@ def main():
         float_spout=args.float_spout,
         float_flange=args.float_flange,
         skinny_col=args.skinny_col,
+        shift_bucket=args.shift_bucket,
     )
     if code:
         return code
