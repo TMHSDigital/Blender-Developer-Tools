@@ -432,20 +432,104 @@ def build_parasol(sc, tag, attr_fn, attr_name, loc, spin_z, mats):
     return parts
 
 
-def floor_letters(sc, text, x, mat):
-    """One bold label per parasol: extruded block letters standing on the
-    floor in front of the base, readable at card size."""
-    cu = bpy.data.curves.new(f"Label{text.title()}", "FONT")
+def _box_mesh(name, dims, bevel=0.0):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x *= dims[0]
+            v.co.y *= dims[1]
+            v.co.z *= dims[2]
+        if bevel > 0.0:
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=2,
+                            profile=0.5, affect="EDGES", clamp_overlap=True)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def placard(sc, text, x, mats):
+    """One sign per parasol: a slate plaque on a brass post in front of the
+    base, tilted back toward the raised camera, the domain name inlaid in
+    cream enamel. Returns every part (they all count for the margin gate)."""
+    parts = []
+    post = bpy.data.objects.new(f"Sign{text.title()}.Post",
+                                _box_mesh(f"Sign{text.title()}.Post", (0.035, 0.035, 0.24), 0.006))
+    post.data.materials.append(mats["brass"])
+    post.location = (x, -1.40, 0.12)
+    sc.collection.objects.link(post)
+    parts.append(post)
+    foot = bpy.data.objects.new(f"Sign{text.title()}.Foot",
+                                _box_mesh(f"Sign{text.title()}.Foot", (0.26, 0.20, 0.03), 0.008))
+    foot.data.materials.append(mats["iron"])
+    foot.location = (x, -1.40, 0.015)
+    sc.collection.objects.link(foot)
+    parts.append(foot)
+    root = bpy.data.objects.new(f"Sign{text.title()}", None)
+    root.location = (x, -1.42, 0.30)
+    root.rotation_euler = (math.radians(62), 0.0, 0.0)
+    sc.collection.objects.link(root)
+    plaque = bpy.data.objects.new(f"Sign{text.title()}.Plaque",
+                                  _box_mesh(f"Sign{text.title()}.Plaque", (0.98, 0.30, 0.035), 0.012))
+    plaque.data.materials.append(mats["slate"])
+    plaque.parent = root
+    sc.collection.objects.link(plaque)
+    parts.append(plaque)
+    cu = bpy.data.curves.new(f"Sign{text.title()}.Text", "FONT")
     cu.body = text
-    cu.size = 0.29
-    cu.extrude = 0.03
-    cu.bevel_depth = 0.004
-    cu.offset = 0.012          # thicken the stroke: the stock font is thin
+    cu.size = 0.19
+    cu.extrude = 0.003
+    cu.offset = 0.006          # thicken the stroke: the stock font is thin
     cu.align_x = "CENTER"
-    ob = bpy.data.objects.new(f"Label{text.title()}", cu)
-    ob.location = (x, -1.0, 0.0)
-    ob.rotation_euler = (math.radians(90), 0.0, 0.0)
-    ob.data.materials.append(mat)
+    cu.align_y = "CENTER"
+    ob = bpy.data.objects.new(f"Sign{text.title()}.Text", cu)
+    ob.location = (0.0, 0.0, 0.0185)
+    ob.parent = root
+    ob.data.materials.append(mats["enamel"])
+    sc.collection.objects.link(ob)
+    parts.append(ob)
+    return parts
+
+
+PAVER = 0.6          # terracotta paver pitch (m)
+PAVER_GAP = 0.018    # grout joint
+DECK_DEPTH = 0.06    # pavers sit flush at z=0; the studio floor drops below
+
+
+def build_patio(sc):
+    """Render-only terracotta paver deck under both parasols: a 10 x 5 grid
+    of beveled pavers with grout joints, two tones alternated by a fixed
+    index hash so the deck is identical every run. Passed to the framing
+    gate as stage, like the floor."""
+    tones = [make_material("PaverA", (0.19, 0.075, 0.04), rough=0.72, metallic=0.0),
+             make_material("PaverB", (0.15, 0.062, 0.034), rough=0.78, metallic=0.0)]
+    me = bpy.data.meshes.new("Patio")
+    bm = bmesh.new()
+    try:
+        s = (PAVER - PAVER_GAP) / 2
+        for i in range(10):
+            for j in range(5):
+                cx = (i - 4.5) * PAVER
+                cy = (j - 2.0) * PAVER
+                res = bmesh.ops.create_cube(bm, size=1.0)
+                vs = res["verts"]
+                for v in vs:
+                    v.co.x = cx + v.co.x * 2 * s
+                    v.co.y = cy + v.co.y * 2 * s
+                    v.co.z = -DECK_DEPTH / 2 + v.co.z * DECK_DEPTH
+                idx = 1 if (i * 7 + j * 3) % 5 < 2 else 0
+                for f in {f for v in vs for f in v.link_faces}:
+                    f.material_index = idx
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.012, segments=2,
+                        profile=0.5, affect="EDGES", clamp_overlap=True)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for m in tones:
+        me.materials.append(m)
+    ob = bpy.data.objects.new("Patio", me)
     sc.collection.objects.link(ob)
     return ob
 
@@ -512,11 +596,14 @@ def render_still(path, engine):
     spin = math.radians(-90 - 22.5)
     left = build_parasol(sc, "Corner", assign_corner, ATTR_C, (-PAIR_X, 0.0), spin, mats)
     right = build_parasol(sc, "Point", assign_point_naive, ATTR_P, (PAIR_X, 0.0), spin, mats)
-    label_mat = make_material("LabelEnamel", (0.36, 0.345, 0.32), rough=0.6, metallic=0.0)
-    labels = [floor_letters(sc, "CORNER", -PAIR_X, label_mat),
-              floor_letters(sc, "POINT", PAIR_X, label_mat)]
+    mats["slate"] = make_material("Slate", (0.045, 0.048, 0.055), rough=0.55, metallic=0.0)
+    mats["enamel"] = make_material("SignEnamel", (0.78, 0.72, 0.58), rough=0.5, metallic=0.0)
+    labels = (placard(sc, "CORNER", -PAIR_X, mats)
+              + placard(sc, "POINT", PAIR_X, mats))
 
     floor, wall = build_studio(sc)
+    floor.location.z = -DECK_DEPTH
+    patio = build_patio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
@@ -554,14 +641,14 @@ def render_still(path, engine):
         sc, cam,
         hero=hero,
         elements=hero + labels,
-        stage=[floor, wall],
+        stage=[floor, wall, patio],
     )
     if fcode:
         return fcode
     # asset-quality floors (naming, material variation, edge treatment),
     # measured on one parasol — exit 11 on violation
     aqcode = gallery_asset_quality.check_asset_quality(
-        sc, cam, hero=left, stage=[floor, wall])
+        sc, cam, hero=left, stage=[floor, wall, patio])
     if aqcode:
         return aqcode
     bpy.ops.render.render(write_still=True)

@@ -65,7 +65,11 @@ The staging is render-only and does not touch the checked mesh. Each parasol
 is eight named parts with five materials: canopy, aluminium ribs and
 stretchers, brass runner, finial and tilt knuckle, teak upper and lower pole,
 and a cast-iron base. The canopy tilts 24 degrees toward the camera about the
-knuckle so the whole top reads. One bold label stands in front of each base.
+knuckle so the whole top reads. The pair stands on a terracotta paver patio
+(a render-only 10 x 5 deck of beveled pavers with grout joints, two tones
+alternated by a fixed index hash, passed to the framing gate as stage like
+the floor), and each base has a slate placard on a brass post in front of
+it, the domain name inlaid in cream enamel.
 The render path runs the framing gate (exit 10) and the asset-quality floors
 on one parasol (exit 11).
 

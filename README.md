@@ -1098,7 +1098,7 @@ evaluation). Break the mirror and the render is literally half a car.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two striped patio parasols side by side — left CORNER-domain with crisp crimson and cream stripes, right naive POINT-domain with the stripes smeared pink along the seams and the front red panel gone white, proving last-write-wins shear at shared vertices" /></a>
+<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two striped patio parasols on a terracotta paver deck behind slate placards — left CORNER-domain with crisp crimson and cream stripes, right naive POINT-domain with the stripes smeared pink along the seams and the front red panel gone white, proving last-write-wins shear at shared vertices" /></a>
 </td>
 <td valign="middle">
 
