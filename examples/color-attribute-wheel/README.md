@@ -21,13 +21,15 @@ Color, not just present in the node tree.
 
 ## Staging
 
-The disc is zero-thickness, and the still used to show it as a paper-thin oval
-hovering 8 cm above the floor. The render path now gives it a render-only
-Solidify body (5 cm) and stands it at the same 52° lean on a dark plinth, with
-a strut behind it, easel-style. The height is computed so the lowest point of
-the rim rests on the plinth. The mesh `check()` asserts is unchanged: the
-modifier is added after the check and only in the render path. Measured
-framing on 5.2.1: fill 0.794 y, every margin ≥ 0.094.
+The checked disc is flat and zero-thickness. The render path — only after `check()`,
+so the verified mesh is untouched until then — domes it into a shallow glazed plate
+(one `foreach_get`/`foreach_set` over vertex positions; the CORNER colours ride the
+same loops, so the colours on the plate are the colours the check verified), gives it a
+Solidify body, rings it with a turned brass bezel over a dark backing disc, and stands it
+at a 14° lean on a walnut studio easel. The glaze is a satin base under a thin clear
+coat; the dome curves the coat's reflection into a soft sheen instead of the hard
+horizon line a flat glaze draws. The path gates framing through`
+examples/gallery_framing.py` (exit 10): fill 0.739 y, every margin ≥ 0.050.
 
 ## Run
 
@@ -60,6 +62,7 @@ against it.
 | 7 | `active_color` not set |
 | 8 | Probe loop color off HSV closed form |
 | 9 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

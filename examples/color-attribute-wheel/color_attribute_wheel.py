@@ -25,6 +25,11 @@ import bpy, bmesh, sys, os, math, colorsys, argparse
 from array import array
 from mathutils import Vector
 
+# Shared Layer 1 framing measurement (render path only) — see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 RINGS = 14
 SEGMENTS = 72
 R_OUTER = 1.6
@@ -163,14 +168,18 @@ def build_material():
     attr_node.attribute_type = 'GEOMETRY'
     attr_node.attribute_name = ATTR_NAME
     nt.links.new(attr_node.outputs["Color"], bsdf.inputs["Base Color"])
-    if "Emission Color" in bsdf.inputs:  # Principled gained built-in emission in 4.x+
-        nt.links.new(attr_node.outputs["Color"], bsdf.inputs["Emission Color"])
-        bsdf.inputs["Emission Strength"].default_value = 0.12
-    # fully matte: any specular component reflects the wall/floor horizon as
-    # a hard line across the disc face
-    bsdf.inputs["Roughness"].default_value = 0.85
+    # glazed ceramic: a satin base under a thin clear coat. The plate is domed
+    # (render path), so the coat's reflection is a soft curved sheen, never
+    # the hard horizon line a flat mirror-glaze would draw across the face.
+    bsdf.inputs["Roughness"].default_value = 0.42
     if "Specular IOR Level" in bsdf.inputs:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.0
+        bsdf.inputs["Specular IOR Level"].default_value = 0.25
+    if "Coat Weight" in bsdf.inputs:
+        bsdf.inputs["Coat Weight"].default_value = 0.35
+        bsdf.inputs["Coat Roughness"].default_value = 0.18
+    if "Emission Color" in bsdf.inputs:  # a faint self-glow keeps the far hues from sinking
+        nt.links.new(attr_node.outputs["Color"], bsdf.inputs["Emission Color"])
+        bsdf.inputs["Emission Strength"].default_value = 0.10
 
     # The step AI code most often skips: the attribute must actually be wired
     # into the shader, not just present on the mesh.
@@ -186,66 +195,156 @@ def build_material():
     return mat
 
 
+BEZEL_OUT = R_OUTER + 0.20     # brass bezel outer radius (render path)
+DOME = 0.11                     # plate dome height at the centre (render path)
+TILT = math.radians(76)         # plate leans back 14 degrees on the easel
+
+
+def _lathe(bm, profile, segs=96):
+    """Revolve an (r, z) profile about local Z (bottom -> out -> up -> in)."""
+    rings = [[bm.verts.new((r * math.cos(2 * math.pi * i / segs),
+                            r * math.sin(2 * math.pi * i / segs), z)) for i in range(segs)]
+             for r, z in profile]
+    for a, b in zip(rings, rings[1:] + rings[:1]):
+        for i in range(segs):
+            j = (i + 1) % segs
+            f = bm.faces.new((a[i], a[j], b[j], b[i]))
+            f.smooth = True
+
+
+def _beam(bm, p0, p1, w, d):
+    """A w x d rectangular beam from p0 to p1 (world space)."""
+    p0, p1 = Vector(p0), Vector(p1)
+    axis = p1 - p0
+    res = bmesh.ops.create_cube(bm, size=1.0)
+    rot = Vector((0, 0, 1)).rotation_difference(axis.normalized()).to_matrix()
+    for v in res["verts"]:
+        v.co = rot @ Vector((v.co.x * w, v.co.y * d, v.co.z * axis.length)) + (p0 + p1) / 2
+
+
+def _mat(name, base, rough, metal=0.0, noise=None, coat=0.0):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*base, 1.0)
+    b.inputs["Roughness"].default_value = rough
+    b.inputs["Metallic"].default_value = metal
+    if coat and "Coat Weight" in b.inputs:
+        b.inputs["Coat Weight"].default_value = coat
+    if noise:
+        # grain/handling wear: noise-mottled colour and roughness, never flat
+        scale, amount, stretch = noise
+        coord = nt.nodes.new("ShaderNodeTexCoord")
+        mapping = nt.nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = stretch
+        nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = scale
+        tex.inputs["Detail"].default_value = 8.0
+        nt.links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].color = tuple(c * (1 - amount) for c in base) + (1.0,)
+        ramp.color_ramp.elements[1].color = tuple(min(1.0, c * (1 + amount)) for c in base) + (1.0,)
+        nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+        nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+        rmap = nt.nodes.new("ShaderNodeMapRange")
+        rmap.inputs["To Min"].default_value = rough - 0.08
+        rmap.inputs["To Max"].default_value = rough + 0.12
+        nt.links.new(tex.outputs["Fac"], rmap.inputs["Value"])
+        nt.links.new(rmap.outputs["Result"], b.inputs["Roughness"])
+    return m
+
+
 def render_still(obj, path, engine):
     scene = bpy.context.scene
-    for poly in obj.data.polygons:
+    me = obj.data
+    for poly in me.polygons:
         poly.use_smooth = True
 
     mat = build_material()
     if mat is None:
-        return False
-    obj.data.materials.append(mat)
-    # stand the disc up toward the camera like an easel: the wheel is the
-    # subject, so it should present nearly face-on and fill the frame instead
-    # of lying foreshortened on the floor.
-    # render-only: a Solidify body so the disc reads as a painted board, not
-    # a zero-thickness sheet, resting on a dark plinth and propped from
-    # behind by a strut, easel-style, instead of hovering above the floor.
-    disc_t = 0.05
-    plinth_h = 0.12
-    tilt = math.radians(52)
-    solid = obj.modifiers.new("Board", 'SOLIDIFY')
-    solid.thickness = disc_t
+        return 9
+    me.materials.append(mat)
+
+    # render-only: dome the checked flat disc into a shallow glazed plate.
+    # Only positions move; the CORNER attribute rides the same loops, so the
+    # colours the check verified are the colours on the plate.
+    co = array('f', [0.0]) * (len(me.vertices) * 3)
+    me.vertices.foreach_get("co", co)
+    for i in range(len(me.vertices)):
+        x, y = co[3 * i], co[3 * i + 1]
+        co[3 * i + 2] = DOME * (1.0 - (x * x + y * y) / (R_OUTER * R_OUTER))
+    me.vertices.foreach_set("co", co)
+    me.update()
+    solid = obj.modifiers.new("Body", 'SOLIDIFY')
+    solid.thickness = 0.06
     solid.offset = -1.0
-    # lowest rim point sits R_OUTER * sin(tilt) below the centre, and the
-    # board's back face another disc_t * cos(tilt) below that
-    obj.location = (0.0, 0.0, plinth_h + R_OUTER * math.sin(tilt) + disc_t * math.cos(tilt))
-    obj.rotation_euler = (tilt, 0.0, math.radians(10))
 
-    stand_mat = bpy.data.materials.new("Stand")
-    stand_mat.use_nodes = True
-    sb = stand_mat.node_tree.nodes["Principled BSDF"]
-    sb.inputs["Base Color"].default_value = (0.012, 0.012, 0.014, 1.0)
-    sb.inputs["Roughness"].default_value = 0.45
+    brass = _mat("Brass", (0.92, 0.66, 0.30), 0.32, metal=1.0, noise=(40.0, 0.07, (1, 1, 1)))
+    wood = _mat("Walnut", (0.20, 0.095, 0.045), 0.5, noise=(6.0, 0.45, (1.0, 1.0, 14.0)),
+                coat=0.2)
+    backing = _mat("Backing", (0.03, 0.03, 0.035), 0.55)
 
-    def stand_part(name, build):
-        me = bpy.data.meshes.new(name)
-        bm = bmesh.new()
-        try:
-            build(bm)
-            bm.to_mesh(me)
-        finally:
-            bm.free()
-        me.materials.append(stand_mat)
-        ob = bpy.data.objects.new(name, me)
-        scene.collection.objects.link(ob)
-        return ob
+    # brass bezel and a dark backing plate, built in plate space
+    bezel_me = bpy.data.meshes.new("Bezel")
+    bm = bmesh.new()
+    try:
+        # rolled lip over the plate edge, a flat band, a turned-down skirt
+        _lathe(bm, [(R_OUTER - 0.02, -0.10), (BEZEL_OUT, -0.10), (BEZEL_OUT + 0.01, -0.06),
+                    (BEZEL_OUT, 0.02), (BEZEL_OUT - 0.04, 0.05), (R_OUTER + 0.03, 0.055),
+                    (R_OUTER - 0.03, 0.035), (R_OUTER - 0.05, 0.005)])
+        bm.to_mesh(bezel_me)
+    finally:
+        bm.free()
+    bezel_me.materials.append(brass)
+    bezel = bpy.data.objects.new("Bezel", bezel_me)
+    scene.collection.objects.link(bezel)
+    back_me = bpy.data.meshes.new("Backing")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_circle(bm, cap_ends=True, segments=96, radius=BEZEL_OUT - 0.02)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, -0.105))
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
+        bm.to_mesh(back_me)
+    finally:
+        bm.free()
+    back_me.materials.append(backing)
+    back = bpy.data.objects.new("Backing", back_me)
+    scene.collection.objects.link(back)
 
+    # the plate stands on a walnut easel, leaning back against its front legs
+    ledge_z = 0.55
+    zc = ledge_z + 0.06 + BEZEL_OUT * math.sin(TILT)
+    for ob in (obj, bezel, back):
+        ob.location = (0.0, 0.0, zc)
+        ob.rotation_euler = (TILT, 0.0, 0.0)
     bpy.context.view_layer.update()
-    mw = obj.matrix_world
-    rim_low = mw @ Vector((0.0, -R_OUTER, 0.0))
-    plinth = stand_part("Plinth", lambda bm: bmesh.ops.create_cube(bm, size=1.0))
-    plinth.scale = (1.5, 0.9, plinth_h)
-    plinth.location = (rim_low.x, rim_low.y + 0.25, plinth_h / 2.0)
-    plinth.rotation_euler = (0.0, 0.0, math.radians(10))
-    # the strut runs from the board's back, above centre, down to the plinth
-    top = mw @ Vector((0.0, 0.45, -disc_t))
-    foot = Vector((top.x, top.y + 0.95, plinth_h))
-    span = top - foot
-    strut = stand_part("Strut", lambda bm: bmesh.ops.create_cone(
-        bm, cap_ends=True, segments=16, radius1=0.035, radius2=0.035, depth=span.length))
-    strut.location = (top + foot) / 2.0
-    strut.rotation_euler = Vector((0.0, 0.0, 1.0)).rotation_difference(span).to_euler()
+    # the plate's mid-plane: y = cot(TILT) * (z - zc); the back sits behind it
+    cot = math.cos(TILT) / math.sin(TILT)
+
+    def plane_y(z):
+        return cot * (z - zc)
+
+    easel_me = bpy.data.meshes.new("Easel")
+    bm = bmesh.new()
+    try:
+        top = zc + BEZEL_OUT * math.sin(TILT) + 0.12
+        for sx in (-1.0, 1.0):
+            _beam(bm, (sx * 1.05, plane_y(0.0) + 0.22, 0.0),
+                  (sx * 0.22, plane_y(top) + 0.22, top), 0.11, 0.07)
+        _beam(bm, (0.0, 1.9, 0.0), (0.0, plane_y(top - 0.3) + 0.32, top - 0.3), 0.10, 0.07)
+        # ledge the plate rests on, with a front lip, and a cross rail
+        ly = plane_y(ledge_z) - 0.02
+        _beam(bm, (-1.15, ly, ledge_z), (1.15, ly, ledge_z), 0.30, 0.07)
+        _beam(bm, (-1.15, ly - 0.14, ledge_z + 0.035), (1.15, ly - 0.14, ledge_z + 0.035), 0.03, 0.10)
+        _beam(bm, (-0.95, plane_y(0.28) + 0.23, 0.28), (0.95, plane_y(0.28) + 0.23, 0.28), 0.07, 0.06)
+        bm.to_mesh(easel_me)
+    finally:
+        bm.free()
+    easel_me.materials.append(wood)
+    easel = bpy.data.objects.new("Easel", easel_me)
+    scene.collection.objects.link(easel)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -263,7 +362,7 @@ def render_still(obj, path, engine):
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 7.0, 0.0)
+    wall.location = (0.0, 9.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
@@ -272,35 +371,29 @@ def render_still(obj, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, at):
         ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
         scene.collection.objects.link(ob)
 
-    # a bright soft key from above reads the hue ring clearly; a low cool fill
-    # keeps the shadow side legible; a faint warm rim separates the disc edge
-    # from the dark backdrop without washing out the attribute colors.
-    light("Key", (-2.0, -3.0, 5.5), 320.0, 8.0, (1.0, 0.98, 0.96), (58, 0, -28))
-    light("Fill", (4.5, -2.5, 1.6), 90.0, 9.0, (0.78, 0.86, 1.0), (68, 0, 55))
-    light("Rim", (0.5, 3.6, 2.2), 170.0, 4.0, (1.0, 0.78, 0.55), (-70, 0, 175))
-    # a warm wedge raking the back wall — the falloff pool behind the subject
-    # the rest of the gallery stages against.
-    # placed between the disc and the back wall so it can only rake the wall:
-    # from any position in front, its grazing terminator draws a hard line
-    # across the flat disc face.
-    light("Wedge", (2.0, 5.2, 3.6), 220.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
+    centre = (0.0, 0.0, zc)
+    # soft key high left, sized so the glaze sheen is a broad soft highlight;
+    # a cool low fill; a warm rim on the brass; the wedge rakes the back wall
+    light("Key", (-4.2, -3.6, 6.0), 230.0, 3.0, (1.0, 0.96, 0.9), centre)
+    light("Fill", (4.5, -3.0, 1.8), 70.0, 9.0, (0.78, 0.86, 1.0), centre)
+    light("Rim", (3.4, 2.4, 5.2), 420.0, 2.5, (1.0, 0.82, 0.6), (0.0, 0.0, zc + 1.2))
+    light("Wedge", (0.5, 5.2, 5.5), 650.0, 8.0, (1.0, 0.70, 0.42), (1.5, 9.0, 1.5))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = obj.location - Vector((0.0, 0.0, 0.2))
+    aim.location = (0.0, 0.0, zc - 0.30)
     scene.collection.objects.link(aim)
-
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 57.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -9.4, 2.5)
+    cam.location = (-3.0, -13.2, 3.3)
     con = cam.constraints.new('TRACK_TO')
     con.target = aim
     con.track_axis = 'TRACK_NEGATIVE_Z'
@@ -323,8 +416,15 @@ def render_still(obj, path, engine):
     # AgX (the 4.x/5.x default) compresses bright regions toward white, which
     # would hide exactly the saturation gradient this example is showing off.
     scene.view_settings.view_transform = 'Standard'
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    fcode = gallery_framing.check_framing(scene, cam, hero=[obj, bezel],
+                                          elements=[obj, bezel, back, easel],
+                                          stage=[floor, wall])
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 9
 
 
 def main():
@@ -343,9 +443,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            if rcode == 9:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered still {args.output}")
 
     print("color-attribute-wheel OK")
