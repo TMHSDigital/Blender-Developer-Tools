@@ -71,6 +71,7 @@ SELECT = {
     "hand-pump": (r"^HandPumpLow$", None),
     "basketball-hoop": (r"^HoopLow$", None),
     "pine-tree": (r"^PineLow$", None),
+    "desk-lamp": (r"^LampLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),
