@@ -1,7 +1,7 @@
 # Swatch Grid
 
 A runnable example that renders a tiered 3×2 material library — one sphere per material, each
-seated in a chrome collar on a graphite plinth — to a single PNG. It demonstrates the [`procedural-materials-and-shaders`](../../skills/procedural-materials-and-shaders/SKILL.md)
+seated in a gunmetal collar on a two-tier walnut riser behind an engraved brass name plaque — to a single PNG. It demonstrates the [`procedural-materials-and-shaders`](../../skills/procedural-materials-and-shaders/SKILL.md)
 patterns end to end:
 
 - **Principled BSDF** metals (gold, copper: high metallic, low roughness) and dielectrics
@@ -39,9 +39,13 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 
 The swatches stand as a tiered material library on the default stage (floor,
 wall at y = 9, warm key, cool fill and rim, warm wedge pooling on the floor
-behind the display). Each sphere sits in a gunmetal collar on a bevelled
-graphite plinth; the back row stands on tall plinths so every sphere clears
-the one in front of it. A 50 mm camera looks down on the display with a
+behind the display). Each sphere sits in a gunmetal collar on a two-tier
+walnut riser (oiled-grain wave texture in object space); the back tier stands
+taller so every sphere clears the one in front of it. A brass plaque leans in
+front of each collar with the material's name set into it as an extruded
+text object (`LABELS`, in grid order), so the display reads as a labelled
+sample case. The plaques sit below the sphere centres the pixel check
+samples, so `verify_png` is unaffected. A 50 mm camera looks down on the display with a
 `TRACK_TO` aim, which keeps the floor/wall seam above the back row.
 
 The emissive swatch used to be a bare `Emission` at strength 1.4: under the

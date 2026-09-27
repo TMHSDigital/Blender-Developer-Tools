@@ -238,7 +238,7 @@ or expand a category below.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/swatch-grid/"><img src="examples/swatch-grid/preview.webp" alt="Swatch grid: a tiered material library in a dark studio - six spheres seated in chrome collars on graphite plinths, mirror gold, brushed copper and red plastic on tall plinths behind blue plastic, a glowing orange emissive globe and matte white in front, rendered with EEVEE" /></a>
+<a href="examples/swatch-grid/"><img src="examples/swatch-grid/preview.webp" alt="Swatch grid: six material spheres on a two-tier walnut riser, each labelled by an engraved brass plaque — mirror gold, copper and red plastic behind; blue plastic, a glowing emissive globe and white rough in front" /></a>
 </td>
 <td valign="middle">
 

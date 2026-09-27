@@ -165,19 +165,106 @@ def make_cylinder(name, radius, height, bevel, segments=64):
     return me
 
 
+LABELS = ("GOLD", "COPPER", "RED PLASTIC", "BLUE PLASTIC", "EMISSIVE", "WHITE ROUGH")
+TIER_DEPTH = 1.30      # front-to-back depth of each riser tier
+TIER_HALF_W = 2.28     # half-width of the riser, past the outer spheres
+
+
+def make_block(name, sx, sy, sz, bevel):
+    """A bevelled box standing on z=0, centred on x/y."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x *= sx
+            v.co.y *= sy
+            v.co.z = (v.co.z + 0.5) * sz
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=3, profile=0.5,
+                        affect='EDGES', clamp_overlap=True)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for p in me.polygons:
+        p.use_smooth = True
+    me.set_sharp_from_angle(angle=math.radians(40.0))
+    return me
+
+
+def make_walnut():
+    """Oiled walnut: a stretched wave-texture grain over a noise-warped base."""
+    mat = bpy.data.materials.new("Walnut")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = 0.42
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (0.25, 1.0, 1.0)  # stretched: grain runs along X
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.inputs["Scale"].default_value = 3.0
+    wave.bands_direction = 'Z'
+    wave.inputs["Distortion"].default_value = 1.6
+    wave.inputs["Detail"].default_value = 4.0
+    nt.links.new(mapping.outputs["Vector"], wave.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.075, 0.037, 0.018, 1)
+    ramp.color_ramp.elements[1].color = (0.13, 0.068, 0.034, 1)
+    nt.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
+def make_plaque(name, text, loc, brass, ink):
+    """A brass plaque tilted toward the camera with the material's name set
+    into it: a bevelled plate plus an extruded text object riding its face."""
+    import mathutils
+    tilt = math.radians(58.0)                 # plate leans back, face up-and-forward
+    plate = bpy.data.objects.new(name, make_block(name, 0.86, 0.20, 0.022, 0.006))
+    plate.location = loc
+    plate.rotation_euler = (tilt, 0.0, 0.0)
+    plate.data.materials.append(brass)
+    cu = bpy.data.curves.new(name + "Text", type='FONT')
+    cu.body = text
+    cu.size = 0.085
+    cu.align_x = 'CENTER'
+    cu.align_y = 'CENTER'
+    cu.extrude = 0.0025
+    cu.space_character = 1.12
+    txt = bpy.data.objects.new(name + "Text", cu)
+    txt.data.materials.append(ink)
+    # ride the plate's top face: parent, then sit just proud of it
+    txt.parent = plate
+    txt.location = (0.0, 0.0, 0.0245)
+    return plate, txt
+
+
 def build_scene(mats):
     sc = bpy.context.scene
     coll = bpy.context.collection
-    plinth_mat, _ = make_principled("PlinthGraphite", (0.055, 0.056, 0.062, 1), 0.0, 0.42,
-                                    specular=0.5)
+    walnut = make_walnut()
     collar_mat, _ = make_principled("CollarGunmetal", (0.30, 0.30, 0.32, 1), 1.0, 0.32)
+    brass, _ = make_principled("PlaqueBrass", (0.80, 0.58, 0.28, 1), 1.0, 0.30)
+    ink, _ = make_principled("PlaqueInk", (0.02, 0.018, 0.016, 1), 0.0, 0.6)
     swatches, stands = [], []
+    # a two-tier walnut riser: each row of spheres stands on its own tier, so
+    # the back row clears the front one (tier tops at the old plinth heights)
+    for r, (y, h) in enumerate(ROWS):
+        tier = bpy.data.objects.new(f"Tier{r}", make_block(f"Tier{r}", 2 * TIER_HALF_W,
+                                                             TIER_DEPTH, h, 0.03))
+        tier.location = (0.0, y + (0.12 if r == 0 else 0.0), 0.0)
+        tier.data.materials.append(walnut)
+        coll.objects.link(tier)
+        stands.append(tier)
     i = 0
     for r, (y, h) in enumerate(ROWS):
         for c, x in enumerate(COL_X):
-            plinth = bpy.data.objects.new(f"Plinth{i}", make_cylinder(f"Plinth{i}", 0.44, h, 0.035))
-            plinth.location = (x, y, 0.0)
-            plinth.data.materials.append(plinth_mat)
+            plaque, txt = make_plaque(f"Plaque{i}", LABELS[i],
+                                      (x, y - 0.52, h + 0.06), brass, ink)
+            coll.objects.link(plaque)
+            coll.objects.link(txt)
+            stands += [plaque, txt]
             collar = bpy.data.objects.new(f"Collar{i}", make_cylinder(f"Collar{i}", 0.30, 0.07, 0.02))
             collar.location = (x, y, h)
             collar.data.materials.append(collar_mat)
@@ -196,10 +283,10 @@ def build_scene(mats):
             seat = h + 0.07 + math.sqrt(SPHERE_R ** 2 - 0.26 ** 2)
             ob.location = (x, y, seat)
             ob.data.materials.append(mats[i])
-            for o in (plinth, collar, ob):
+            for o in (collar, ob):
                 coll.objects.link(o)
             swatches.append(ob)
-            stands += [plinth, collar]
+            stands.append(collar)
             i += 1
 
     # default stage: floor + back wall share the studio material
