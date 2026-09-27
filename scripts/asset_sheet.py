@@ -71,6 +71,9 @@ SELECT = {
     "fence-kit": (r"^FenceLow$", None),
     "wooden-ladder": (r"^LadderLow$", None),
     "terrain-scatter": (r"^TerrainLow$", None),
+    "shipping-crate": (r"^CrateLow$", None),
+    "signpost": (r"^SignpostLow$", None),
+    "hitching-post": (r"^HitchPostLow$", None),
     "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),

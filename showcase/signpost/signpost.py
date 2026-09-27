@@ -1,7 +1,7 @@
 """Game-ready timber signpost — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural fingerboard signpost (post,
-two painted boards, iron shoe and straps) after composing shipped
+three painted boards lettered with destinations, iron shoe and straps) after composing shipped
 pipeline pieces: bmesh construction, UVs, three materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
@@ -53,6 +53,18 @@ BOARD_H_A = 0.112
 BOARD_H_B = 0.100
 BOARD_A = (1.24, 0.62, 1.0)
 BOARD_B = (1.00, 0.54, -1.0)
+# Third finger, lower and shorter, pointing back the way of the first: a
+# crossroads post reads as a junction, not a pair of arrows.
+BOARD_H_C = 0.092
+BOARD_C = (0.78, 0.46, 1.0)
+
+# Painted destinations, one per board (A, B, C). Rendered from a 5x7 bitmap
+# font into a small lettering image sampled in object space on the boards'
+# front (-Y) faces; cubic filtering plus a threshold rounds the pixel
+# glyphs into brush strokes. Surface only: no geometry, no budget moves.
+BOARD_TEXT = ("MILLBROOK 2", "OAKHAM 5", "FORD 1")
+LETTER_PX = 0.0072            # metres per font pixel
+LETTER_REGION = (-0.66, 0.66, 0.68, 1.34)   # object-space x0, x1, z0, z1
 TIP_LEN = 0.070
 TIP_BITE = 0.004
 BAND_Z = 0.22
@@ -250,6 +262,71 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
+def board_specs():
+    """(z, length, sign, height, thickness) per finger board, A B C."""
+    return (
+        (BOARD_A[0], BOARD_A[1], BOARD_A[2], BOARD_H_A, BOARD_T),
+        (BOARD_B[0], BOARD_B[1], BOARD_B[2], BOARD_H_B, BOARD_T * 0.92),
+        (BOARD_C[0], BOARD_C[1], BOARD_C[2], BOARD_H_C, BOARD_T * 0.90),
+    )
+
+
+# 5x7 bitmap glyphs, top row first; only the characters BOARD_TEXT uses.
+GLYPHS = {
+    "A": ("01110", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "B": ("11110", "10001", "10001", "11110", "10001", "10001", "11110"),
+    "D": ("11110", "10001", "10001", "10001", "10001", "10001", "11110"),
+    "F": ("11111", "10000", "10000", "11110", "10000", "10000", "10000"),
+    "H": ("10001", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "I": ("11111", "00100", "00100", "00100", "00100", "00100", "11111"),
+    "K": ("10001", "10010", "10100", "11000", "10100", "10010", "10001"),
+    "L": ("10000", "10000", "10000", "10000", "10000", "10000", "11111"),
+    "M": ("10001", "11011", "10101", "10101", "10001", "10001", "10001"),
+    "O": ("01110", "10001", "10001", "10001", "10001", "10001", "01110"),
+    "R": ("11110", "10001", "10001", "11110", "10100", "10010", "10001"),
+    "1": ("00100", "01100", "00100", "00100", "00100", "00100", "01110"),
+    "2": ("01110", "10001", "00001", "00010", "00100", "01000", "11111"),
+    "5": ("11111", "10000", "11110", "00001", "00001", "10001", "01110"),
+    " ": ("00000",) * 7,
+}
+
+
+def lettering_image():
+    """Paint BOARD_TEXT into a greyscale image covering LETTER_REGION.
+
+    Each board's text is centred on the part of the board clear of its
+    post collar; one image pixel is one font pixel (LETTER_PX metres).
+    """
+    x0, x1, z0, z1 = LETTER_REGION
+    w = int(round((x1 - x0) / LETTER_PX))
+    h = int(round((z1 - z0) / LETTER_PX))
+    buf = [0.0] * (w * h)
+    half = POST_W / 2.0
+    for (z, length, sign, _bh, _bt), text in zip(board_specs(), BOARD_TEXT):
+        # start clear of the collar plus a margin, so the post does not hide
+        # the first letters of the far board in a three-quarter view
+        inner = sign * (half + IRON_T + 0.045)
+        outer = sign * (half - TENON + length - TIP_LEN)
+        cx = (inner + outer) / 2.0
+        cols = len(text) * 6 - 1
+        px0 = int(round((cx - x0) / LETTER_PX - cols / 2.0))
+        pz0 = int(round((z - z0) / LETTER_PX - 3.5))
+        for k, ch in enumerate(text):
+            rows = GLYPHS[ch]
+            for r in range(7):
+                for c in range(5):
+                    if rows[r][c] != "1":
+                        continue
+                    px = px0 + k * 6 + c
+                    pz = pz0 + (6 - r)
+                    if 0 <= px < w and 0 <= pz < h:
+                        buf[pz * w + px] = 1.0
+    img = bpy.data.images.new("SignpostLettering", w, h, alpha=False)
+    img.colorspace_settings.name = "Non-Color"
+    img.pixels.foreach_set([c for v in buf for c in (v, v, v, 1.0)])
+    return img
+
+
 def build_signpost_mesh(
     name,
     bevel_offset,
@@ -305,10 +382,7 @@ def build_signpost_mesh(
         yaw = YAW_FAIL if yaw_boards else 0.0
         extra = GAP_BOARD if gap_board else 0.0
         strap_extra = FLOAT_STRAP if float_strap else 0.0
-        specs = (
-            (BOARD_A[0], BOARD_A[1], BOARD_A[2], BOARD_H_A, BOARD_T),
-            (BOARD_B[0], BOARD_B[1], BOARD_B[2], BOARD_H_B, BOARD_T * 0.92),
-        )
+        specs = board_specs()
         for z, length, sign, bh, bt in specs:
             inner = sign * (half - TENON + extra)
             rect_len = length - TIP_LEN
@@ -531,10 +605,56 @@ def board_material(name):
     _sock(paint.inputs, "A_Color").default_value = (0.62, 0.56, 0.42, 1.0)
     _sock(paint.inputs, "B_Color").default_value = (0.74, 0.68, 0.52, 1.0)
     nt.links.new(tone.outputs["Fac"], _sock(paint.inputs, "Factor_Float"))
+
+    # Lettering: object-space XZ -> LETTER_REGION -> image, cubic-filtered and
+    # thresholded into rounded strokes, only on the front (-Y) faces.
+    x0, x1, z0, z1 = LETTER_REGION
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+    uu = nt.nodes.new("ShaderNodeMapRange")
+    uu.inputs["From Min"].default_value = x0
+    uu.inputs["From Max"].default_value = x1
+    nt.links.new(sep.outputs["X"], uu.inputs["Value"])
+    vv = nt.nodes.new("ShaderNodeMapRange")
+    vv.inputs["From Min"].default_value = z0
+    vv.inputs["From Max"].default_value = z1
+    nt.links.new(sep.outputs["Z"], vv.inputs["Value"])
+    uvw = nt.nodes.new("ShaderNodeCombineXYZ")
+    nt.links.new(uu.outputs["Result"], uvw.inputs["X"])
+    nt.links.new(vv.outputs["Result"], uvw.inputs["Y"])
+    letters = nt.nodes.new("ShaderNodeTexImage")
+    letters.image = lettering_image()
+    letters.interpolation = "Cubic"
+    letters.extension = "CLIP"
+    # never the bake target: the normal bake writes into the active, selected
+    # image node of each material, and this one is surface paint
+    letters.select = False
+    nt.nodes.active = bsdf
+    nt.links.new(uvw.outputs["Vector"], letters.inputs["Vector"])
+    stroke = nt.nodes.new("ShaderNodeMapRange")
+    stroke.inputs["From Min"].default_value = 0.38
+    stroke.inputs["From Max"].default_value = 0.52
+    nt.links.new(letters.outputs["Color"], stroke.inputs["Value"])
+    nsep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Normal"], nsep.inputs["Vector"])
+    front = nt.nodes.new("ShaderNodeMath")
+    front.operation = "LESS_THAN"
+    front.inputs[1].default_value = -0.9
+    nt.links.new(nsep.outputs["Y"], front.inputs[0])
+    ink_fac = nt.nodes.new("ShaderNodeMath")
+    ink_fac.operation = "MULTIPLY"
+    nt.links.new(stroke.outputs["Result"], ink_fac.inputs[0])
+    nt.links.new(front.outputs["Value"], ink_fac.inputs[1])
+    ink = nt.nodes.new("ShaderNodeMix")
+    ink.data_type = "RGBA"
+    _sock(ink.inputs, "B_Color").default_value = (0.045, 0.032, 0.024, 1.0)
+    nt.links.new(ink_fac.outputs["Value"], _sock(ink.inputs, "Factor_Float"))
+    nt.links.new(_sock(paint.outputs, "Result_Color"), _sock(ink.inputs, "A_Color"))
+
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
     nt.links.new(mask.outputs["Color"], _sock(mix.inputs, "Factor_Float"))
-    nt.links.new(_sock(paint.outputs, "Result_Color"), _sock(mix.inputs, "A_Color"))
+    nt.links.new(_sock(ink.outputs, "Result_Color"), _sock(mix.inputs, "A_Color"))
     nt.links.new(grain, _sock(mix.inputs, "B_Color"))
     nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     return mat
@@ -1144,8 +1264,8 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Key", (-3.6, -5.0, 5.4), 980.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Fill", (5.0, -3.4, 2.4), 70.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 
     cam_data = bpy.data.cameras.new("Cam")
