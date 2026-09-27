@@ -697,14 +697,16 @@ def wood_material(name):
 def pump_materials():
     """(wood, iron): shared by the check, the render and inspection.
 
-    A cast-iron pump is painted near-black and weathers to rust at the
+    A cast-iron village pump is painted in dark green enamel and weathers
+    to rust at the
     edges and pores; the first build was polished metal (metallic 1.0,
-    roughness 0.38) and read as chrome.
+    roughness 0.38) and read as chrome; the second build's near-black
+    paint vanished into the dark stage.
     """
     wood = wood_material("HandPumpWood")
     metal = principled(
-        "HandPumpIron", (0.045, 0.047, 0.050, 1.0), 0.55, 0.52,
-        noise_scale=24.0, wear=(0.09, 0.05, 0.03, 1.0),
+        "HandPumpIron", (0.020, 0.150, 0.075, 1.0), 0.25, 0.42,
+        noise_scale=24.0, wear=(0.16, 0.065, 0.025, 1.0),
     )
     return wood, metal
 
@@ -1292,8 +1294,19 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Key", (-3.6, -5.0, 5.4), 620.0, 3.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Fill", (5.0, -3.4, 2.4), 60.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    # cool rim from behind: lifts the column, handle and spout silhouettes
+    # off the dark backdrop, where the first hero lost them
+    rim = bpy.data.lights.new("Rim", "AREA")
+    rim.energy = 140.0
+    rim.size = 1.2
+    rim.color = (0.62, 0.78, 1.0)
+    rim_ob = bpy.data.objects.new("Rim", rim)
+    rim_ob.location = (-1.1, 1.6, 1.9)
+    # aimed at the column so it grazes the silhouette, not the backdrop
+    rim_ob.rotation_euler = (Vector((0.0, 0.0, 0.7)) - rim_ob.location).to_track_quat("-Z", "Y").to_euler()
+    scene.collection.objects.link(rim_ob)
     light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 
     cam_data = bpy.data.cameras.new("Cam")

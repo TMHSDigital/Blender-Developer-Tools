@@ -60,8 +60,10 @@ The quality pass found no geometric defect: every joint checked in the
 inspection sheet (spout root, flange bolts, head and handle pivot,
 column step, plinth) seats as the joint budgets say. The defects were
 on the surface. The iron was polished metal (metallic 1.0, roughness
-0.38) and read as chrome; it is now near-black painted cast iron with
-dark rust in the pores. The plinth slabs and the handle grip carry their
+0.38) and read as chrome; the next pass painted it near-black, which
+vanished into the dark stage. It is now dark green enamelled cast iron
+with rust in the pores and at the edges, and a cool rim light aimed at the
+column lifts its silhouette off the backdrop. The plinth slabs and the handle grip carry their
 own wood tone and grain. The stage grid grew from 14 to 60 m, because
 the wall's left edge showed in the corner of the hero. The temp `.glb`
 is removed after its size is measured. With no new geometric defect,
