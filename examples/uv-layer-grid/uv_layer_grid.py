@@ -21,6 +21,11 @@ falsifier (``--same-axis`` in export-preset-axis).
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Vector
 
+# Shared Layer 1 framing measurement (render path only) — see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 SEG = 8
 SIZE = 1.0
 UV_TOL = 1e-6
@@ -247,24 +252,44 @@ def render_still(path, engine):
     scene = bpy.context.scene
     card = make_uv_testcard("UVCard")
 
-    # --- Staging materials: quiet and dark, the panel faces carry the color --
-    def pbr(name, base, rough, metal=0.0):
+    # --- Staging materials: wood easels, walnut frames, brass placards -----
+    def pbr(name, base, rough, metal=0.0, noise=None):
         m = bpy.data.materials.new(name)
         m.use_nodes = True
-        b = m.node_tree.nodes["Principled BSDF"]
+        nt = m.node_tree
+        b = nt.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
         b.inputs["Roughness"].default_value = rough
         b.inputs["Metallic"].default_value = metal
+        if noise:
+            # grain/wear: a stretched noise mottles base color and roughness
+            scale, amount = noise
+            coord = nt.nodes.new("ShaderNodeTexCoord")
+            mapping = nt.nodes.new("ShaderNodeMapping")
+            mapping.inputs["Scale"].default_value = (1.0, 1.0, 9.0)
+            tex = nt.nodes.new("ShaderNodeTexNoise")
+            tex.inputs["Scale"].default_value = scale
+            tex.inputs["Detail"].default_value = 8.0
+            ramp = nt.nodes.new("ShaderNodeValToRGB")
+            ramp.color_ramp.elements[0].position = 0.35
+            ramp.color_ramp.elements[1].position = 0.68
+            ramp.color_ramp.elements[0].color = (*(c * (1 - amount) for c in base), 1.0)
+            ramp.color_ramp.elements[1].color = (*(min(1.0, c * (1 + amount)) for c in base), 1.0)
+            nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+            nt.links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+            nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+            nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
         return m
 
-    frame_mat = pbr("Frame", (0.05, 0.053, 0.06), 0.32, 0.65)
-    stand_mat = pbr("Stand", (0.032, 0.035, 0.042), 0.45, 0.4)
-    led_mat = pbr("Led", (0.0, 0.0, 0.0), 0.6)
-    led_b = led_mat.node_tree.nodes["Principled BSDF"]
-    led_b.inputs["Emission Color"].default_value = (1.0, 0.45, 0.12, 1.0)
-    led_b.inputs["Emission Strength"].default_value = 4.0
+    oak = pbr("EaselOak", (0.42, 0.22, 0.09), 0.55, noise=(16.0, 0.22))
+    walnut = pbr("FrameWalnut", (0.13, 0.055, 0.025), 0.38, noise=(24.0, 0.20))
+    backing = pbr("Backing", (0.035, 0.03, 0.028), 0.8)
+    brass = pbr("PlacardBrass", (0.80, 0.58, 0.26), 0.28, metal=1.0)
+    ink = pbr("PlacardInk", (0.012, 0.011, 0.010), 0.5)
 
-    def box(name, dims, loc, rot, mat, bevel=0.0):
+    parts = []
+
+    def box(name, dims, loc, rot, mat, bevel=0.0, parent=None):
         dx, dy, dz = (d * 0.5 for d in dims)
         verts = [
             (-dx, -dy, -dz), (dx, -dy, -dz), (dx, dy, -dz), (-dx, dy, -dz),
@@ -280,75 +305,97 @@ def render_still(path, engine):
         ob = bpy.data.objects.new(name, me)
         ob.location = loc
         ob.rotation_euler = rot
+        ob.parent = parent
         scene.collection.objects.link(ob)
         if bevel > 0.0:
             mod = ob.modifiers.new("Edge", "BEVEL")
             mod.width = bevel
-            mod.segments = 2
+            mod.segments = 3
+            mod.limit_method = "NONE"
+        parts.append(ob)
         return ob
 
-    def bar_between(name, p1, p2, width, mat):
+    def bar_between(name, p1, p2, width, depth, mat):
         a, b = Vector(p1), Vector(p2)
         d = b - a
-        ob = box(name, (width, width, d.length), (a + b) * 0.5, (0, 0, 0), mat, 0.01)
+        ob = box(name, (width, depth, d.length), (a + b) * 0.5, (0, 0, 0), mat, 0.012)
         ob.rotation_mode = "QUATERNION"
         ob.rotation_quaternion = d.to_track_quat("Z", "Y")
         return ob
 
-    # --- Two framed lightbox displays, each on a floor tray with a rear
-    # kick leg. The face planes keep their origins at the face centers (the
-    # pixel witness probes the projected centers), with a ~0.2-unit bezel
-    # between the face edge and the frame so the probed patch stays on data.
-    LEAN = math.radians(75.0)  # 15° back off vertical, easel-like
+    def label(name, text, loc, parent):
+        cu = bpy.data.curves.new(name, "FONT")
+        cu.body = text
+        cu.align_x = "CENTER"
+        cu.align_y = "CENTER"
+        cu.size = 0.15
+        cu.extrude = 0.004
+        cu.space_character = 1.12
+        ob = bpy.data.objects.new(name, cu)
+        ob.data.materials.append(ink)
+        ob.location = loc
+        ob.parent = parent
+        scene.collection.objects.link(ob)
+        parts.append(ob)
+        return ob
 
-    def display(name, with_uvs, cx, cy, yaw_deg):
+    # --- Two studio easels, each holding a walnut-framed tile panel. The face
+    # planes keep their origins at the face centers (the pixel witness probes
+    # the projected centers); the panel rests on the easel ledge, and a brass
+    # placard on the ledge names which authoring path produced the panel.
+    LEAN = math.radians(76.0)  # 14 degrees back off vertical, easel-like
+    LEDGE_Z = 0.62             # world height of the ledge underside
+
+    def display(name, with_uvs, cx, cy, yaw_deg, caption):
         yaw = math.radians(yaw_deg)
         asm = bpy.data.objects.new(name + "Asm", None)
         asm.rotation_euler = (LEAN, 0.0, yaw)
         rot = asm.rotation_euler.to_matrix()
-        # Face-center height such that the frame's bottom edge rests in tray.
-        contact = rot @ Vector((0.0, -1.17, 0.02))
-        asm.location = (cx, cy, 0.07 - contact.z)
+        # local +Y runs up the panel, local +Z faces the camera
+        ledge_low = rot @ Vector((0.0, -1.49, 0.0))
+        asm.location = (cx, cy, LEDGE_Z - ledge_low.z)
         scene.collection.objects.link(asm)
+        base = Vector(asm.location)
 
-        # Left: the hazard — calc_uvs alone, no UV layer → flat teal of
+        # Left: the hazard — calc_uvs alone, no UV layer -> flat teal of
         # texel (0,0). Right: the repair — pre-create, then calc_uvs fills.
         face = textured_plane(name, card, with_uvs)
         face.parent = asm
-        face.location = (0.0, 0.0, 0.075)
+        face.location = (0.0, 0.0, 0.06)
+        parts.append(face)
 
-        plate = box(name + "Back", (2.34, 2.34, 0.14), (0, 0, 0), (0, 0, 0),
-                    frame_mat, 0.02)
-        plate.parent = asm
-        bezels = (
-            ((2.34, 0.17, 0.20), (0.0, 1.085, 0.02)),
-            ((2.34, 0.17, 0.20), (0.0, -1.085, 0.02)),
-            ((0.17, 2.0, 0.20), (1.085, 0.0, 0.02)),
-            ((0.17, 2.0, 0.20), (-1.085, 0.0, 0.02)),
-        )
-        for i, (dims, loc) in enumerate(bezels):
-            bez = box(f"{name}Bez{i}", dims, loc, (0, 0, 0), frame_mat, 0.02)
-            bez.parent = asm
-        led = box(name + "Led", (0.06, 0.03, 0.035), (0.92, -1.085, 0.128),
-                  (0, 0, 0), led_mat, 0.008)
-        led.parent = asm
-
-        base = asm.location
-        box(name + "Tray", (2.0, 0.32, 0.10),
-            (base.x + contact.x, base.y + contact.y, 0.05),
-            (0, 0, yaw), stand_mat, 0.02)
+        box(name + "Board", (2.26, 2.26, 0.07), (0, 0, 0.0), (0, 0, 0), backing,
+            0.01, asm)
+        for i, (dims, loc) in enumerate((
+            ((2.40, 0.20, 0.17), (0.0, 1.10, 0.07)),
+            ((2.40, 0.20, 0.17), (0.0, -1.10, 0.07)),
+            ((0.20, 2.00, 0.17), (1.10, 0.0, 0.07)),
+            ((0.20, 2.00, 0.17), (-1.10, 0.0, 0.07)),
+        )):
+            box(f"{name}Frame{i}", dims, loc, (0, 0, 0), walnut, 0.035, asm)
+        # ledge the frame stands on, and the brass placard on its front face
+        box(name + "Ledge", (2.70, 0.30, 0.34), (0.0, -1.34, 0.10), (0, 0, 0),
+            oak, 0.025, asm)
+        box(name + "Placard", (1.70, 0.21, 0.02), (0.0, -1.34, 0.275), (0, 0, 0),
+            brass, 0.008, asm)
+        label(name + "Caption", caption, (0.0, -1.345, 0.287), asm)
+        # easel: two splayed front legs behind the panel plane, a rear prop
+        for side in (-1.0, 1.0):
+            top = base + rot @ Vector((side * 0.34, 1.62, -0.10))
+            splay = (rot @ Vector((side * 0.22, -1.0, 0.0))).normalized()
+            t = top.z / -splay.z
+            bar_between(f"{name}Leg{side:+.0f}", top, top + splay * t, 0.085, 0.05, oak)
         back = rot @ Vector((0.0, 0.0, -1.0))
         back.z = 0.0
         back.normalize()
-        for side in (-0.75, 0.75):
-            attach = base + rot @ Vector((side, 0.55, -0.12))
-            foot = (base.x + contact.x + side * math.cos(yaw) + back.x * 0.85,
-                    base.y + contact.y - side * math.sin(yaw) + back.y * 0.85,
-                    0.02)
-            bar_between(f"{name}Leg{side:+.2f}", attach, foot, 0.06, stand_mat)
+        rear_top = base + rot @ Vector((0.0, 1.52, -0.14))
+        rear_foot = Vector((rear_top.x, rear_top.y, 0.0)) + back * 1.45
+        bar_between(name + "Rear", rear_top, rear_foot, 0.075, 0.05, oak)
+        box(name + "Head", (0.86, 0.12, 0.10), tuple(base + rot @ Vector((0.0, 1.58, -0.09))),
+            asm.rotation_euler, oak, 0.02)
 
-    display("Broken", False, -1.38, 0.30, 6.0)
-    display("Fixed", True, 1.45, -0.10, 9.0)
+    display("Broken", False, -1.45, 0.25, 7.0, "NO UV LAYER")
+    display("Fixed", True, 1.45, -0.10, 10.0, "UV LAYER FIRST")
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -391,19 +438,18 @@ def render_still(path, engine):
     light("Key", (-4.4, -4.2, 6.4), 340.0, 5.0, (1.0, 0.96, 0.9), (60, 0, -32))
     light("Fill", (4.8, -2.8, 1.6), 80.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
     light("Rim", (0.2, 4.6, 3.0), 250.0, 3.5, (0.6, 0.78, 1.0), (-42, 0, 178))
-    # Uplight between the displays and the wall, raking UP the backdrop: the
-    # visible wall band above the panel tops only spans z≈2.8–3.4, so the
-    # warm pool is aimed to live there instead of hiding behind the panels.
-    light("Wedge", (-2.2, 5.6, 2.3), 480.0, 3.0, (1.0, 0.76, 0.5), (-117, 0, 180))
+    # Warm wedge raking the backdrop between and beside the easels, so the
+    # pool reads in the gaps around the panels (docs/VISUAL-STYLE.md).
+    light("Wedge", (1.2, 4.2, 4.6), 620.0, 5.0, (1.0, 0.72, 0.44), (-62, 0, 172))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.1, 0.05, 1.0)
+    aim.location = (0.05, 0.05, 1.85)
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 48.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.1, -8.35, 2.2)
+    cam.location = (3.2, -10.2, 2.9)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
     con.track_axis = "TRACK_NEGATIVE_Z"
@@ -425,8 +471,14 @@ def render_still(path, engine):
     scene.render.filepath = path
     # AgX desaturates the neon checker toward pastel — Standard keeps it honest.
     scene.view_settings.view_transform = "Standard"
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    fcode = gallery_framing.check_framing(scene, cam, hero=parts, elements=parts,
+                                          stage=[floor, wall])
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 15
 
 
 def patch_stats(px, w, h, cx, cy, half):
@@ -518,8 +570,11 @@ def main():
     if args.output:
         # check() already emptied the scene; rebuild for the still.
         out = os.path.abspath(args.output)
-        if not render_still(out, args.engine):
-            return fail(f"render produced no file at {args.output}", 10)
+        rcode = render_still(out, args.engine)
+        if rcode == 15:
+            return fail(f"render produced no file at {args.output}", 15)
+        if rcode:
+            return rcode
         code = verify_still(out)
         if code != 0:
             return code

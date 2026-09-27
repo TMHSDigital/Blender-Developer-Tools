@@ -371,7 +371,7 @@ result is watertight (every edge borders exactly two faces).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/uv-layer-grid/"><img src="examples/uv-layer-grid/preview.webp" alt="UV layer grid: two framed lightbox displays on floor trays against a dark studio wall — left one flat teal face (the calc_uvs silent no-op hazard), right a saturated magenta-cyan checker (the pre-create repair), under a warm wall pool" /></a>
+<a href="examples/uv-layer-grid/"><img src="examples/uv-layer-grid/preview.webp" alt="UV layer grid: two walnut-framed tile panels on oak studio easels with brass placards — left, NO UV LAYER, one flat teal face (the calc_uvs silent no-op hazard), right, UV LAYER FIRST, a saturated magenta-cyan checker (the pre-create repair), under a warm wall pool" /></a>
 </td>
 <td valign="middle">
 

@@ -47,14 +47,16 @@ fill assert identically on Blender 4.5 LTS and 5.1. The only gate in the file
 is the EEVEE engine id for the optional render (`BLENDER_EEVEE_NEXT` on 4.x,
 `BLENDER_EEVEE` on 5.x).
 
-**Render:** two framed lightbox displays on floor trays (rear kick legs,
-status LED) sharing one neon checker image, shot at a slight 3/4. Left is the
-hazard (no UV layer) — flat teal of texel (0, 0). Right is the repair
-(pre-create + `calc_uvs`) — full magenta/cyan checker. If the UV contract
+**Render:** two oak studio easels, each holding a walnut-framed tile panel that
+shares one neon checker image, with a brass placard on the easel ledge naming the
+authoring path. Left, `NO UV LAYER`, is the hazard — `calc_uvs=True` alone, so the
+whole panel is the flat teal of texel (0, 0). Right, `UV LAYER FIRST`, is the repair
+(pre-create + `calc_uvs`) — the full magenta/cyan checker. If the UV contract
 failed, both panels would read the same — and the still is not just an
 illustration: the script re-reads its own render and exits non-zero unless
-the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread
-`0.0078`, repair spread `0.7412`; identical on 4.5.11).
+the pixels prove the flat-vs-checker split (measured on 5.2.1: hazard spread
+`0.0078`, repair spread `0.7569`; identical on 4.5.11). The render path gates
+framing through `examples/gallery_framing.py` (exit 10) before writing the still.
 
 ## Run
 
@@ -73,8 +75,8 @@ blender --background --python uv_layer_grid.py -- --output uv.png --engine cycle
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it. This example does not call the gallery framing helper; `10`
-is the missing-render-file check.
+against it. `10` is the shared gallery framing gate; `15` is the
+missing-render-file check.
 
 | Code | Meaning |
 | --- | --- |
@@ -88,11 +90,12 @@ is the missing-render-file check.
 | 7 | Mesh UV round-trip error |
 | 8 | calc_uvs=False unexpectedly created a UV layer |
 | 9 | Explicit UV assignment error |
-| 10 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 | 11 | Broken panel is not flat |
 | 12 | Broken panel is not texel-(0,0) teal |
 | 13 | Repaired panel is not a checker |
 | 14 | Broken and repaired panels render identically |
+| 15 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
