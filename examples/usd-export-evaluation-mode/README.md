@@ -12,10 +12,19 @@ RENDER writes 98 / 96. Default `export_subdivision='BEST_MATCH'` writes the
 silent — both files are the cage. TESSELLATE is what makes the mode
 observable.
 
-The still is numeric-adjacent: left is viewport tessellation (flat-shaded
-L1), right is render tessellation (smoothed L2). The USDA point counts are
-the evidence; the two balls depict the two qualities the exporter chooses
-between.
+The still shows the exported files themselves. The `--output` path builds a
+turned goblet on an 8-sided lathe cage with SUBSURF `levels=0` /
+`render_levels=3`, exports it twice through the same `wm.usd_export` call
+the check proves (TESSELLATE + VIEWPORT, TESSELLATE + RENDER), re-imports
+both USDA files with `wm.usd_import`, and stages the two imported meshes.
+Left is the VIEWPORT file (the raw 8-sided cage, 130 points), right the
+RENDER file (8450 points). Both are flat-shaded with the same material, so
+geometry is the only difference, and the point count on each placard is
+read from the re-imported mesh at render time. The goblet widens the
+cube's L1/L2 split to L0/L3 so the difference reads at thumbnail size. The
+render path also asserts that the re-imported RENDER goblet is denser than
+the VIEWPORT one (exit 6). Placards use the bundled DejaVu Sans Mono, whose
+`1` cannot be misread as `I`.
 
 **What failure each check would catch:**
 
@@ -26,11 +35,9 @@ between.
 - exit 5 — BEST_MATCH stopped writing the cage
 - exit 6 — RENDER and VIEWPORT files are identical
 
-Staging: Catmull-Clark pulls the surface inside the 2 m cage, and level 1
-and level 2 shrink by different amounts, so both balls used to hover about
-0.16 m over the floor at the cage's z = 1.0. The render path now rests each
-one on the floor from its own evaluated vertices (measured zmin 0.000000
-for both), after the check has run.
+Staging: Catmull-Clark pulls the surface inside the cage, and each level
+shrinks it by a different amount, so each re-imported goblet is seated on
+its plinth from its own vertices rather than from the cage's z.
 
 Probed on the CI Linux portables **Blender 5.2.1 LTS** (`9e2066aef7ef`) and
 **Blender 4.5.13 LTS** (`daeeeca98fb0`): `wm.usd_export` exists, `poll()` is
@@ -58,7 +65,7 @@ against it. `10` is the shared framing helper.
 | 3 | VIEWPORT TESSELLATE point/face count off closed form |
 | 4 | RENDER TESSELLATE point/face count or scheme off closed form |
 | 5 | BEST_MATCH cage point count or scheme off |
-| 6 | RENDER and VIEWPORT USDA point counts are identical |
+| 6 | RENDER and VIEWPORT USDA point counts are identical (check), or the re-imported RENDER goblet is not denser than the VIEWPORT one (`--output`) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 
