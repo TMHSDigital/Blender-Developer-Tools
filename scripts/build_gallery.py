@@ -208,6 +208,12 @@ SHELL = """<!DOCTYPE html>
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
     .density-btn:hover { color: var(--select); }
     .density-btn.active { background: var(--select); color: #1a1b1e; }
+    /* Segmented groups clip overflow, so the ring has to sit inside. */
+    .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
+    .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -227,6 +233,14 @@ SHELL = """<!DOCTYPE html>
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 559px) {
+      .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
+      .controls-row { gap: 0.4rem; }
+      .searchwrap { flex-basis: 100%; }
+      .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap; }
+      .density-btn { padding: 0.36rem 0.5rem; }
+    }
     @media (max-width: 719px) {
       html.js .tags-toggle { display: inline-block; }
       html.js .chips { display: none; }
@@ -264,8 +278,12 @@ SHELL = """<!DOCTYPE html>
       transition: outline-color 0.12s ease, border-color 0.12s ease; }
     .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
-    .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
+    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
+      transition: transform 0.35s ease, opacity 0.3s ease; }
+    .card:hover .card-media img { transform: scale(1.03); }
+    html.js .grid .card-media img { opacity: 0; }
+    html.js .grid .card-media img.is-loaded { opacity: 1; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
@@ -304,6 +322,7 @@ SHELL = """<!DOCTYPE html>
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
+    .md > p, .md > ul, .md > ol, .md > h2, .md > h3 { max-width: 75ch; }
     .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
     .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
@@ -410,8 +429,8 @@ SHELL = """<!DOCTYPE html>
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .card { transition: none; }
-      .card:hover { transform: none; }
+      .card, .card-media img { transition: none; }
+      .card:hover .card-media img { transform: none; }
       .to-top { transition: none; }
     }
   </style>__HEADJS__
@@ -473,18 +492,35 @@ INDEX_JS = """
       var count = document.getElementById('count');
       var noResults = document.getElementById('noResults');
       var resetFilters = document.getElementById('resetFilters');
-      var densityBtns = Array.prototype.slice.call(document.querySelectorAll('.density-btn'));
+      var densityBtns = Array.prototype.slice.call(document.querySelectorAll('[data-density]'));
+      var kindBtns = Array.prototype.slice.call(document.querySelectorAll('[data-kind-filter]'));
+      var sortSel = document.getElementById('sort');
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
       var COUNT_LABEL = '__COUNT_LABEL__';
       var LS_KEY = 'bdt-gallery-density';
+      var KINDS = ['', 'examples', 'showcase'];
+      var SORTS = ['default', 'az'];
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Searchable text is the card's own DOM text: name, teaches, and the
       // WITNESSES line (visually collapsed in compact mode, still in the DOM).
       var haystacks = cards.map(function (c) { return c.textContent.toLowerCase(); });
-      var state = { q: '', tag: '', density: 'compact' };
+      var cardTags = cards.map(function (c) { return (c.getAttribute('data-tags') || '').split(' '); });
+      var knownTags = chips.map(function (c) { return c.getAttribute('data-tag') || ''; })
+        .filter(function (t) { return t; });
+      var state = { q: '', tags: [], kind: '', sort: 'default', density: 'compact' };
+
+      // Fade card renders in once decoded; images already complete (cache,
+      // eager) are marked immediately so nothing stays invisible.
+      cards.forEach(function (c) {
+        var img = c.querySelector('.card-media img');
+        if (!img) return;
+        function done() { img.classList.add('is-loaded'); }
+        if (img.complete) { done(); }
+        else { img.addEventListener('load', done); img.addEventListener('error', done); }
+      });
 
       function parseHash() {
         var out = {};
@@ -493,7 +529,7 @@ INDEX_JS = """
           if (i < 0) return;
           var k = kv.slice(0, i), v = kv.slice(i + 1);
           try { v = decodeURIComponent(v); } catch (e) {}
-          if (k === 'q' || k === 'tag' || k === 'd') out[k] = v;
+          if (k === 'q' || k === 'tag' || k === 'd' || k === 'k' || k === 's') out[k] = v;
         });
         return out;
       }
@@ -501,60 +537,105 @@ INDEX_JS = """
       function writeHash() {
         var parts = [];
         if (state.q) parts.push('q=' + encodeURIComponent(state.q));
-        if (state.tag) parts.push('tag=' + encodeURIComponent(state.tag));
+        if (state.tags.length) parts.push('tag=' + state.tags.map(encodeURIComponent).join(','));
+        if (state.kind) parts.push('k=' + state.kind);
+        if (state.sort !== 'default') parts.push('s=' + state.sort);
         parts.push('d=' + state.density);
         history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
+      }
+      var hashTimer = 0;
+      function writeHashSoon() {
+        clearTimeout(hashTimer);
+        hashTimer = setTimeout(writeHash, 250);
       }
 
       function syncChips() {
         chips.forEach(function (c) {
-          c.classList.toggle('active', (c.getAttribute('data-tag') || '') === state.tag);
+          var t = c.getAttribute('data-tag') || '';
+          var on = t ? state.tags.indexOf(t) !== -1 : state.tags.length === 0;
+          c.classList.toggle('active', on);
+          c.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
-        tagsToggle.classList.toggle('has-active', !!state.tag);
-        // The chip row is collapsed on narrow screens; name the active tag
+        tagsToggle.classList.toggle('has-active', state.tags.length > 0);
+        // The chip row is collapsed on narrow screens; name the active tags
         // on the toggle so a shared #tag= link is visibly filtered.
-        tagsToggle.textContent = state.tag ? 'Tags: ' + state.tag : 'Tags';
+        tagsToggle.textContent = state.tags.length ? 'Tags: ' + state.tags.join(' + ') : 'Tags';
+      }
+
+      function syncSeg(btns, attr, value) {
+        btns.forEach(function (b) {
+          var on = b.getAttribute(attr) === value;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
       }
 
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
-        densityBtns.forEach(function (b) {
-          var on = b.getAttribute('data-density') === state.density;
-          b.classList.toggle('active', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
+        syncSeg(densityBtns, 'data-density', state.density);
         try { localStorage.setItem(LS_KEY, state.density); } catch (e) {}
+      }
+
+      function applySort() {
+        var order = cards.slice();
+        if (state.sort === 'az') {
+          order.sort(function (a, b) {
+            var x = a.getAttribute('data-name'), y = b.getAttribute('data-name');
+            return x < y ? -1 : x > y ? 1 : 0;
+          });
+        }
+        order.forEach(function (c) { grid.appendChild(c); });
+        sortSel.value = state.sort;
       }
 
       function applyFilters() {
         var query = state.q.trim().toLowerCase();
         var shown = 0;
         cards.forEach(function (card, i) {
-          var tagOK = !state.tag || (card.getAttribute('data-tags') || '').split(' ').indexOf(state.tag) !== -1;
+          var kindOK = !state.kind || card.getAttribute('data-kind') === state.kind;
+          var tagOK = state.tags.every(function (t) { return cardTags[i].indexOf(t) !== -1; });
           var qOK = !query || haystacks[i].indexOf(query) !== -1;
-          var show = tagOK && qOK;
+          var show = kindOK && tagOK && qOK;
           card.classList.toggle('hidden', !show);
           if (show) shown++;
         });
-        count.textContent = (query || state.tag) ? (shown + ' of ' + total) : COUNT_LABEL;
+        count.textContent = (query || state.tags.length || state.kind) ? (shown + ' of ' + total) : COUNT_LABEL;
         noResults.hidden = shown !== 0;
         qClear.hidden = !state.q;
+        syncSeg(kindBtns, 'data-kind-filter', state.kind);
       }
 
       q.addEventListener('input', function () {
         state.q = q.value;
         applyFilters();
-        writeHash();
+        writeHashSoon();
       });
       qClear.addEventListener('click', function () {
         q.value = ''; state.q = '';
         applyFilters(); writeHash(); q.focus();
       });
+      // "All" clears the tag set; any other chip toggles itself, and
+      // several active chips narrow the grid (AND, not OR).
       chips.forEach(function (chip) {
         chip.addEventListener('click', function () {
-          state.tag = chip.getAttribute('data-tag') || '';
+          var t = chip.getAttribute('data-tag') || '';
+          if (!t) { state.tags = []; }
+          else {
+            var at = state.tags.indexOf(t);
+            if (at === -1) state.tags.push(t); else state.tags.splice(at, 1);
+          }
           syncChips(); applyFilters(); writeHash();
         });
+      });
+      kindBtns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.kind = b.getAttribute('data-kind-filter');
+          applyFilters(); writeHash();
+        });
+      });
+      sortSel.addEventListener('change', function () {
+        state.sort = SORTS.indexOf(sortSel.value) !== -1 ? sortSel.value : 'default';
+        applySort(); writeHash();
       });
       densityBtns.forEach(function (b) {
         b.addEventListener('click', function () {
@@ -563,7 +644,7 @@ INDEX_JS = """
         });
       });
       resetFilters.addEventListener('click', function () {
-        state.q = ''; state.tag = ''; q.value = '';
+        state.q = ''; state.tags = []; state.kind = ''; q.value = '';
         syncChips(); applyFilters(); writeHash(); q.focus();
       });
       tagsToggle.addEventListener('click', function () {
@@ -595,7 +676,15 @@ INDEX_JS = """
       // Restore state: URL hash wins; density falls back to localStorage.
       var h = parseHash();
       state.q = h.q || '';
-      state.tag = h.tag || '';
+      state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
+      state.sort = SORTS.indexOf(h.s) !== -1 ? h.s : 'default';
+      // Tags arrive comma-separated. "showcase" is the kind filter now, not
+      // a chip, but older links (the landing page's among them) still say
+      // #tag=showcase. A tag no chip knows would silently show zero cards.
+      (h.tag || '').split(',').forEach(function (t) {
+        if (t === 'showcase') { state.kind = 'showcase'; }
+        else if (knownTags.indexOf(t) !== -1 && state.tags.indexOf(t) === -1) { state.tags.push(t); }
+      });
       if (h.d === 'compact' || h.d === 'detailed') state.density = h.d;
       else {
         try {
@@ -603,12 +692,13 @@ INDEX_JS = """
           if (s === 'compact' || s === 'detailed') state.density = s;
         } catch (e) {}
       }
-      // A tag in the hash that no chip knows would silently show zero cards.
-      var known = chips.some(function (c) { return (c.getAttribute('data-tag') || '') === state.tag; });
-      if (!known) state.tag = '';
       q.value = state.q;
       syncChips();
+      // A deep-linked tag may sit off-screen in the chip scroll strip.
+      var firstOn = chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
+      if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
       applyDensity();
+      applySort();
       applyFilters();
     })();
 """
@@ -714,7 +804,7 @@ DETAIL_JS = """
     })();
 """
 
-CARD = """      <article class="card" data-tags="__TAGS__">
+CARD = """      <article class="card" data-tags="__TAGS__" data-kind="__KINDKEY__" data-name="__NAME__">
         <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
           <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="__LOADING__" decoding="async" />
         </a>
@@ -1167,15 +1257,15 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         else f"{example_total} examples"
     )
 
-    all_tags = sorted({t for ex in examples for t in ex.get("tags", [])})
+    all_tags = sorted({t for ex in examples for t in ex.get("tags", [])} - {"showcase"})
     chips_html = ""
     if all_tags:
-        chips = ['<button class="chip active" data-tag="" type="button">All</button>']
+        chips = ['<button class="chip active" data-tag="" type="button" aria-pressed="true">All</button>']
         chips += [
-            f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button">{html.escape(t)}</button>'
+            f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button" aria-pressed="false">{html.escape(t)}</button>'
             for t in all_tags
         ]
-        chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic">\n        '
+        chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">\n        '
                       + "\n        ".join(chips) + "\n      </div>\n")
 
     # Sticky controls bar. Every control is inert but harmless with JS
@@ -1191,6 +1281,17 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
         '        </div>\n'
         f'        <span class="count" id="count" role="status" aria-live="polite">{html.escape(count_label)}</span>\n'
+        '        <div class="density" role="group" aria-label="Show">\n'
+        '          <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>\n'
+        '          <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>\n'
+        '          <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>\n'
+        '        </div>\n'
+        '        <label class="sort"><span class="sr-only">Sort</span>\n'
+        '          <select id="sort">\n'
+        '            <option value="default">Gallery order</option>\n'
+        '            <option value="az">Name A&ndash;Z</option>\n'
+        '          </select>\n'
+        '        </label>\n'
         '        <div class="density" role="group" aria-label="Card density">\n'
         '          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
         '          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
@@ -1213,6 +1314,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
             .replace("__HERO__", html.escape(page_relative(ex["hero"]), quote=True))
             .replace("__ALT__", html.escape(alt, quote=True))
             .replace("__NAME__", html.escape(ex["name"]))
+            .replace("__KINDKEY__", "showcase" if kind_noun(ex) == "showcase piece" else "examples")
             .replace("__KIND__", kind_noun(ex))
             .replace("__TEACHES__", html.escape(ex["teaches"]))
             .replace("__WITNESSES__", html.escape(ex["witnessesFix"]))
@@ -1228,7 +1330,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         + "\n".join(cards)
         + "\n    </div>\n"
         + '    <p class="noresults" id="noResults" hidden>Nothing matches the current filters.\n'
-        + '      <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>\n'
+        + '      <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>\n'
         + "  </main>\n"
         + '  <button class="to-top" id="toTop" type="button"><span aria-hidden="true">&uarr;</span> Top</button>'
     )

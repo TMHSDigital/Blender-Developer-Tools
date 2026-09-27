@@ -104,6 +104,12 @@
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
     .density-btn:hover { color: var(--select); }
     .density-btn.active { background: var(--select); color: #1a1b1e; }
+    /* Segmented groups clip overflow, so the ring has to sit inside. */
+    .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
+    .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -123,6 +129,14 @@
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 559px) {
+      .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
+      .controls-row { gap: 0.4rem; }
+      .searchwrap { flex-basis: 100%; }
+      .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap; }
+      .density-btn { padding: 0.36rem 0.5rem; }
+    }
     @media (max-width: 719px) {
       html.js .tags-toggle { display: inline-block; }
       html.js .chips { display: none; }
@@ -160,8 +174,12 @@
       transition: outline-color 0.12s ease, border-color 0.12s ease; }
     .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
-    .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
+    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
+      transition: transform 0.35s ease, opacity 0.3s ease; }
+    .card:hover .card-media img { transform: scale(1.03); }
+    html.js .grid .card-media img { opacity: 0; }
+    html.js .grid .card-media img.is-loaded { opacity: 1; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
@@ -200,6 +218,7 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
+    .md > p, .md > ul, .md > ol, .md > h2, .md > h3 { max-width: 75ch; }
     .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
     .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
@@ -306,8 +325,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .card { transition: none; }
-      .card:hover { transform: none; }
+      .card, .card-media img { transition: none; }
+      .card:hover .card-media img { transform: none; }
       .to-top { transition: none; }
     }
   </style>

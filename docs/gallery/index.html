@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Examples and Showcase — Blender Developer Tools</title>
-  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid and carry the &#x27;showcase&#x27; tag; they are budget-conformance props, not examples." />
+  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid (use the Showcase filter to see only them); they are budget-conformance props, not examples." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Examples and Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid and carry the &#x27;showcase&#x27; tag; they are budget-conformance props, not examples." />
+  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid (use the Showcase filter to see only them); they are budget-conformance props, not examples." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/assets/og-card.jpg" />
   <meta property="og:image:width" content="1200" />
@@ -20,7 +20,7 @@
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Examples and Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid and carry the &#x27;showcase&#x27; tag; they are budget-conformance props, not examples." />
+  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid (use the Showcase filter to see only them); they are budget-conformance props, not examples." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/assets/og-card.jpg" />
   <meta name="twitter:image:alt" content="Four renders from the examples gallery: a red low-poly hatchback, a soccer ball, gold spikes aimed at a glowing sphere, and two spheres on pedestals labelled linked and unlinked" />
   <style>
@@ -104,6 +104,12 @@
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
     .density-btn:hover { color: var(--select); }
     .density-btn.active { background: var(--select); color: #1a1b1e; }
+    /* Segmented groups clip overflow, so the ring has to sit inside. */
+    .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
+    .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
     .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -123,6 +129,14 @@
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 559px) {
+      .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
+      .controls-row { gap: 0.4rem; }
+      .searchwrap { flex-basis: 100%; }
+      .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap; }
+      .density-btn { padding: 0.36rem 0.5rem; }
+    }
     @media (max-width: 719px) {
       html.js .tags-toggle { display: inline-block; }
       html.js .chips { display: none; }
@@ -160,8 +174,12 @@
       transition: outline-color 0.12s ease, border-color 0.12s ease; }
     .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
-    .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
+    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
+      transition: transform 0.35s ease, opacity 0.3s ease; }
+    .card:hover .card-media img { transform: scale(1.03); }
+    html.js .grid .card-media img { opacity: 0; }
+    html.js .grid .card-media img.is-loaded { opacity: 1; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
@@ -200,6 +218,7 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
+    .md > p, .md > ul, .md > ol, .md > h2, .md > h3 { max-width: 75ch; }
     .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
     .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
@@ -306,8 +325,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .card { transition: none; }
-      .card:hover { transform: none; }
+      .card, .card-media img { transition: none; }
+      .card:hover .card-media img { transform: none; }
       .to-top { transition: none; }
     }
   </style>
@@ -338,7 +357,7 @@
   </div>
   <header class="hero">
     <h1>Examples and Showcase</h1>
-    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid and carry the &#x27;showcase&#x27; tag; they are budget-conformance props, not examples.</p>
+    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid (use the Showcase filter to see only them); they are budget-conformance props, not examples.</p>
   </header>
   <div class="controls">
     <div class="controls-inner">
@@ -349,56 +368,66 @@
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
         <span class="count" id="count" role="status" aria-live="polite">52 examples, 36 showcase pieces</span>
+        <div class="density" role="group" aria-label="Show">
+          <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
+          <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
+          <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>
+        </div>
+        <label class="sort"><span class="sr-only">Sort</span>
+          <select id="sort">
+            <option value="default">Gallery order</option>
+            <option value="az">Name A&ndash;Z</option>
+          </select>
+        </label>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
         </div>
         <button class="tags-toggle" id="tagsToggle" type="button" aria-expanded="false" aria-controls="chips">Tags</button>
       </div>
-      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic">
-        <button class="chip active" data-tag="" type="button">All</button>
-        <button class="chip" data-tag="alpha" type="button">alpha</button>
-        <button class="chip" data-tag="animation" type="button">animation</button>
-        <button class="chip" data-tag="armature" type="button">armature</button>
-        <button class="chip" data-tag="attributes" type="button">attributes</button>
-        <button class="chip" data-tag="bevel" type="button">bevel</button>
-        <button class="chip" data-tag="bmesh" type="button">bmesh</button>
-        <button class="chip" data-tag="compositor" type="button">compositor</button>
-        <button class="chip" data-tag="constraints" type="button">constraints</button>
-        <button class="chip" data-tag="context" type="button">context</button>
-        <button class="chip" data-tag="curves" type="button">curves</button>
-        <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
-        <button class="chip" data-tag="drivers" type="button">drivers</button>
-        <button class="chip" data-tag="export" type="button">export</button>
-        <button class="chip" data-tag="game-pipeline" type="button">game-pipeline</button>
-        <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
-        <button class="chip" data-tag="grease-pencil" type="button">grease-pencil</button>
-        <button class="chip" data-tag="images" type="button">images</button>
-        <button class="chip" data-tag="instancing" type="button">instancing</button>
-        <button class="chip" data-tag="line-art" type="button">line-art</button>
-        <button class="chip" data-tag="materials" type="button">materials</button>
-        <button class="chip" data-tag="mesh" type="button">mesh</button>
-        <button class="chip" data-tag="modifiers" type="button">modifiers</button>
-        <button class="chip" data-tag="node-groups" type="button">node-groups</button>
-        <button class="chip" data-tag="objects" type="button">objects</button>
-        <button class="chip" data-tag="operators" type="button">operators</button>
-        <button class="chip" data-tag="parenting" type="button">parenting</button>
-        <button class="chip" data-tag="performance" type="button">performance</button>
-        <button class="chip" data-tag="properties" type="button">properties</button>
-        <button class="chip" data-tag="rendering" type="button">rendering</button>
-        <button class="chip" data-tag="sequencer" type="button">sequencer</button>
-        <button class="chip" data-tag="shape-keys" type="button">shape-keys</button>
-        <button class="chip" data-tag="showcase" type="button">showcase</button>
-        <button class="chip" data-tag="sky" type="button">sky</button>
-        <button class="chip" data-tag="transforms" type="button">transforms</button>
-        <button class="chip" data-tag="uv" type="button">uv</button>
-        <button class="chip" data-tag="world" type="button">world</button>
+      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">
+        <button class="chip active" data-tag="" type="button" aria-pressed="true">All</button>
+        <button class="chip" data-tag="alpha" type="button" aria-pressed="false">alpha</button>
+        <button class="chip" data-tag="animation" type="button" aria-pressed="false">animation</button>
+        <button class="chip" data-tag="armature" type="button" aria-pressed="false">armature</button>
+        <button class="chip" data-tag="attributes" type="button" aria-pressed="false">attributes</button>
+        <button class="chip" data-tag="bevel" type="button" aria-pressed="false">bevel</button>
+        <button class="chip" data-tag="bmesh" type="button" aria-pressed="false">bmesh</button>
+        <button class="chip" data-tag="compositor" type="button" aria-pressed="false">compositor</button>
+        <button class="chip" data-tag="constraints" type="button" aria-pressed="false">constraints</button>
+        <button class="chip" data-tag="context" type="button" aria-pressed="false">context</button>
+        <button class="chip" data-tag="curves" type="button" aria-pressed="false">curves</button>
+        <button class="chip" data-tag="depsgraph" type="button" aria-pressed="false">depsgraph</button>
+        <button class="chip" data-tag="drivers" type="button" aria-pressed="false">drivers</button>
+        <button class="chip" data-tag="export" type="button" aria-pressed="false">export</button>
+        <button class="chip" data-tag="game-pipeline" type="button" aria-pressed="false">game-pipeline</button>
+        <button class="chip" data-tag="geometry-nodes" type="button" aria-pressed="false">geometry-nodes</button>
+        <button class="chip" data-tag="grease-pencil" type="button" aria-pressed="false">grease-pencil</button>
+        <button class="chip" data-tag="images" type="button" aria-pressed="false">images</button>
+        <button class="chip" data-tag="instancing" type="button" aria-pressed="false">instancing</button>
+        <button class="chip" data-tag="line-art" type="button" aria-pressed="false">line-art</button>
+        <button class="chip" data-tag="materials" type="button" aria-pressed="false">materials</button>
+        <button class="chip" data-tag="mesh" type="button" aria-pressed="false">mesh</button>
+        <button class="chip" data-tag="modifiers" type="button" aria-pressed="false">modifiers</button>
+        <button class="chip" data-tag="node-groups" type="button" aria-pressed="false">node-groups</button>
+        <button class="chip" data-tag="objects" type="button" aria-pressed="false">objects</button>
+        <button class="chip" data-tag="operators" type="button" aria-pressed="false">operators</button>
+        <button class="chip" data-tag="parenting" type="button" aria-pressed="false">parenting</button>
+        <button class="chip" data-tag="performance" type="button" aria-pressed="false">performance</button>
+        <button class="chip" data-tag="properties" type="button" aria-pressed="false">properties</button>
+        <button class="chip" data-tag="rendering" type="button" aria-pressed="false">rendering</button>
+        <button class="chip" data-tag="sequencer" type="button" aria-pressed="false">sequencer</button>
+        <button class="chip" data-tag="shape-keys" type="button" aria-pressed="false">shape-keys</button>
+        <button class="chip" data-tag="sky" type="button" aria-pressed="false">sky</button>
+        <button class="chip" data-tag="transforms" type="button" aria-pressed="false">transforms</button>
+        <button class="chip" data-tag="uv" type="button" aria-pressed="false">uv</button>
+        <button class="chip" data-tag="world" type="button" aria-pressed="false">world</button>
       </div>
     </div>
   </div>
   <main id="main">
     <div class="grid" id="grid">
-      <article class="card" data-tags="materials rendering">
+      <article class="card" data-tags="materials rendering" data-kind="examples" data-name="swatch-grid">
         <a class="card-media" href="swatch-grid/" tabindex="-1" aria-hidden="true">
           <img src="assets/swatch-grid-hero.webp" alt="Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front." width="1280" height="720" loading="eager" decoding="async" />
         </a>
@@ -409,7 +438,7 @@
           <a class="card-link" href="swatch-grid/">View example<span class="sr-only"> swatch-grid</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="animation">
+      <article class="card" data-tags="animation" data-kind="examples" data-name="turntable">
         <a class="card-media" href="turntable/" tabindex="-1" aria-hidden="true">
           <img src="assets/turntable-hero.webp" alt="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." width="1280" height="720" loading="eager" decoding="async" />
         </a>
@@ -420,7 +449,7 @@
           <a class="card-link" href="turntable/">View example<span class="sr-only"> turntable</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes materials">
+      <article class="card" data-tags="geometry-nodes materials" data-kind="examples" data-name="gn-sdf-remesh">
         <a class="card-media" href="gn-sdf-remesh/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-sdf-remesh-hero.webp" alt="Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid." width="1280" height="720" loading="eager" decoding="async" />
         </a>
@@ -431,7 +460,7 @@
           <a class="card-link" href="gn-sdf-remesh/">View example<span class="sr-only"> gn-sdf-remesh</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="depsgraph export">
+      <article class="card" data-tags="depsgraph export" data-kind="examples" data-name="depsgraph-export">
         <a class="card-media" href="depsgraph-export/" tabindex="-1" aria-hidden="true">
           <img src="assets/depsgraph-export-hero.webp" alt="A game controller&#x27;s sparse control cage in orange wire and vertex beads beside the smooth subdivided cobalt controller with sticks and colored buttons, on a dark studio floor." width="1280" height="720" loading="eager" decoding="async" />
         </a>
@@ -442,7 +471,7 @@
           <a class="card-link" href="depsgraph-export/">View example<span class="sr-only"> depsgraph-export</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh performance">
+      <article class="card" data-tags="mesh performance" data-kind="examples" data-name="wave-displace">
         <a class="card-media" href="wave-displace/" tabindex="-1" aria-hidden="true">
           <img src="assets/wave-displace-hero.webp" alt="A blue tile whose top is a grid displaced into rolling sine-wave hills, standing on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -453,7 +482,7 @@
           <a class="card-link" href="wave-displace/">View example<span class="sr-only"> wave-displace</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="drivers animation">
+      <article class="card" data-tags="drivers animation" data-kind="examples" data-name="driver-wave">
         <a class="card-media" href="driver-wave/" tabindex="-1" aria-hidden="true">
           <img src="assets/driver-wave-hero.webp" alt="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -464,7 +493,7 @@
           <a class="card-link" href="driver-wave/">View example<span class="sr-only"> driver-wave</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh bmesh">
+      <article class="card" data-tags="mesh bmesh" data-kind="examples" data-name="bmesh-gear">
         <a class="card-media" href="bmesh-gear/" tabindex="-1" aria-hidden="true">
           <img src="assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -475,7 +504,7 @@
           <a class="card-link" href="bmesh-gear/">View example<span class="sr-only"> bmesh-gear</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="materials node-groups">
+      <article class="card" data-tags="materials node-groups" data-kind="examples" data-name="shader-node-group">
         <a class="card-media" href="shader-node-group/" tabindex="-1" aria-hidden="true">
           <img src="assets/shader-node-group-hero.webp" alt="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -486,7 +515,7 @@
           <a class="card-link" href="shader-node-group/">View example<span class="sr-only"> shader-node-group</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="operators context">
+      <article class="card" data-tags="operators context" data-kind="examples" data-name="temp-override-join">
         <a class="card-media" href="temp-override-join/" tabindex="-1" aria-hidden="true">
           <img src="assets/temp-override-join-hero.webp" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -497,7 +526,7 @@
           <a class="card-link" href="temp-override-join/">View example<span class="sr-only"> temp-override-join</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes instancing">
+      <article class="card" data-tags="geometry-nodes instancing" data-kind="examples" data-name="gn-instance-grid">
         <a class="card-media" href="gn-instance-grid/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-instance-grid-hero.webp" alt="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -508,7 +537,7 @@
           <a class="card-link" href="gn-instance-grid/">View example<span class="sr-only"> gn-instance-grid</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes modifiers">
+      <article class="card" data-tags="geometry-nodes modifiers" data-kind="examples" data-name="gn-modifier-inputs">
         <a class="card-media" href="gn-modifier-inputs/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-modifier-inputs-hero.webp" alt="Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -519,7 +548,7 @@
           <a class="card-link" href="gn-modifier-inputs/">View example<span class="sr-only"> gn-modifier-inputs</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh shape-keys">
+      <article class="card" data-tags="mesh shape-keys" data-kind="examples" data-name="shape-key-blend">
         <a class="card-media" href="shape-key-blend/" tabindex="-1" aria-hidden="true">
           <img src="assets/shape-key-blend-hero.webp" alt="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -530,7 +559,7 @@
           <a class="card-link" href="shape-key-blend/">View example<span class="sr-only"> shape-key-blend</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="curves bevel">
+      <article class="card" data-tags="curves bevel" data-kind="examples" data-name="curve-bevel-arc">
         <a class="card-media" href="curve-bevel-arc/" tabindex="-1" aria-hidden="true">
           <img src="assets/curve-bevel-arc-hero.webp" alt="A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -541,7 +570,7 @@
           <a class="card-link" href="curve-bevel-arc/">View example<span class="sr-only"> curve-bevel-arc</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="compositor rendering">
+      <article class="card" data-tags="compositor rendering" data-kind="examples" data-name="compositor-glare">
         <a class="card-media" href="compositor-glare/" tabindex="-1" aria-hidden="true">
           <img src="assets/compositor-glare-hero.webp" alt="Three glowing neon rings, violet, cyan and warm white, with fog-glow bloom and reflections on the floor." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -552,7 +581,7 @@
           <a class="card-link" href="compositor-glare/">View example<span class="sr-only"> compositor-glare</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="constraints animation">
+      <article class="card" data-tags="constraints animation" data-kind="examples" data-name="damped-track-aim">
         <a class="card-media" href="damped-track-aim/" tabindex="-1" aria-hidden="true">
           <img src="assets/damped-track-aim-hero.webp" alt="Gold spikes arranged around a glowing sphere, every tip aimed at the sphere." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -563,7 +592,7 @@
           <a class="card-link" href="damped-track-aim/">View example<span class="sr-only"> damped-track-aim</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh materials attributes">
+      <article class="card" data-tags="mesh materials attributes" data-kind="examples" data-name="color-attribute-wheel">
         <a class="card-media" href="color-attribute-wheel/" tabindex="-1" aria-hidden="true">
           <img src="assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -574,7 +603,7 @@
           <a class="card-link" href="color-attribute-wheel/">View example<span class="sr-only"> color-attribute-wheel</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="objects transforms">
+      <article class="card" data-tags="objects transforms" data-kind="examples" data-name="parent-inverse-orrery">
         <a class="card-media" href="parent-inverse-orrery/" tabindex="-1" aria-hidden="true">
           <img src="assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -585,7 +614,7 @@
           <a class="card-link" href="parent-inverse-orrery/">View example<span class="sr-only"> parent-inverse-orrery</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="grease-pencil attributes">
+      <article class="card" data-tags="grease-pencil attributes" data-kind="examples" data-name="grease-pencil-rosette">
         <a class="card-media" href="grease-pencil-rosette/" tabindex="-1" aria-hidden="true">
           <img src="assets/grease-pencil-rosette-hero.webp" alt="A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -596,7 +625,7 @@
           <a class="card-link" href="grease-pencil-rosette/">View example<span class="sr-only"> grease-pencil-rosette</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="armature depsgraph">
+      <article class="card" data-tags="armature depsgraph" data-kind="examples" data-name="armature-bend">
         <a class="card-media" href="armature-bend/" tabindex="-1" aria-hidden="true">
           <img src="assets/armature-bend-hero.webp" alt="Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -607,7 +636,7 @@
           <a class="card-link" href="armature-bend/">View example<span class="sr-only"> armature-bend</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="curves depsgraph rendering">
+      <article class="card" data-tags="curves depsgraph rendering" data-kind="examples" data-name="text-version-stamp">
         <a class="card-media" href="text-version-stamp/" tabindex="-1" aria-hidden="true">
           <img src="assets/text-version-stamp-hero.webp" alt="The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -618,7 +647,7 @@
           <a class="card-link" href="text-version-stamp/">View example<span class="sr-only"> text-version-stamp</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="images performance rendering">
+      <article class="card" data-tags="images performance rendering" data-kind="examples" data-name="image-pixels-testcard">
         <a class="card-media" href="image-pixels-testcard/" tabindex="-1" aria-hidden="true">
           <img src="assets/image-pixels-testcard-hero.webp" alt="A monitor showing a colour-bar test card with a black circle and a greyscale strip." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -629,7 +658,7 @@
           <a class="card-link" href="image-pixels-testcard/">View example<span class="sr-only"> image-pixels-testcard</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="images rendering alpha">
+      <article class="card" data-tags="images rendering alpha" data-kind="examples" data-name="png-exr-alpha">
         <a class="card-media" href="png-exr-alpha/" tabindex="-1" aria-hidden="true">
           <img src="assets/png-exr-alpha-hero.webp" alt="Two monitors on a plinth labelled FLOAT to PNG and FLOAT to EXR, showing alpha and colour bar strips side by side." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -640,7 +669,7 @@
           <a class="card-link" href="png-exr-alpha/">View example<span class="sr-only"> png-exr-alpha</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh bmesh uv materials">
+      <article class="card" data-tags="mesh bmesh uv materials" data-kind="examples" data-name="uv-layer-grid">
         <a class="card-media" href="uv-layer-grid/" tabindex="-1" aria-hidden="true">
           <img src="assets/uv-layer-grid-hero.webp" alt="Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -651,7 +680,7 @@
           <a class="card-link" href="uv-layer-grid/">View example<span class="sr-only"> uv-layer-grid</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="sequencer rendering">
+      <article class="card" data-tags="sequencer rendering" data-kind="examples" data-name="vse-cut-list">
         <a class="card-media" href="vse-cut-list/" tabindex="-1" aria-hidden="true">
           <img src="assets/vse-cut-list-hero.webp" alt="A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -662,7 +691,7 @@
           <a class="card-link" href="vse-cut-list/">View example<span class="sr-only"> vse-cut-list</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="export uv">
+      <article class="card" data-tags="export uv" data-kind="examples" data-name="gltf-export-roundtrip">
         <a class="card-media" href="gltf-export-roundtrip/" tabindex="-1" aria-hidden="true">
           <img src="assets/gltf-export-roundtrip-hero.webp" alt="One olive sci-fi supply crate with a cyan light strip, its right half traced by an amber wire cage of the re-imported glTF triangles that lands exactly on every bevel, rivet and vent slat." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -673,7 +702,7 @@
           <a class="card-link" href="gltf-export-roundtrip/">View example<span class="sr-only"> gltf-export-roundtrip</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="export">
+      <article class="card" data-tags="export" data-kind="examples" data-name="export-preset-axis">
         <a class="card-media" href="export-preset-axis/" tabindex="-1" aria-hidden="true">
           <img src="assets/export-preset-axis-hero.webp" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -684,7 +713,7 @@
           <a class="card-link" href="export-preset-axis/">View example<span class="sr-only"> export-preset-axis</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="depsgraph mesh">
+      <article class="card" data-tags="depsgraph mesh" data-kind="examples" data-name="lod-decimate-chain">
         <a class="card-media" href="lod-decimate-chain/" tabindex="-1" aria-hidden="true">
           <img src="assets/lod-decimate-chain-hero.webp" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -695,7 +724,7 @@
           <a class="card-link" href="lod-decimate-chain/">View example<span class="sr-only"> lod-decimate-chain</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="armature mesh">
+      <article class="card" data-tags="armature mesh" data-kind="examples" data-name="vertex-weight-limit">
         <a class="card-media" href="vertex-weight-limit/" tabindex="-1" aria-hidden="true">
           <img src="assets/vertex-weight-limit-hero.webp" alt="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -706,7 +735,7 @@
           <a class="card-link" href="vertex-weight-limit/">View example<span class="sr-only"> vertex-weight-limit</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh uv">
+      <article class="card" data-tags="mesh uv" data-kind="examples" data-name="triangulate-tangents">
         <a class="card-media" href="triangulate-tangents/" tabindex="-1" aria-hidden="true">
           <img src="assets/triangulate-tangents-hero.webp" alt="A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -717,7 +746,7 @@
           <a class="card-link" href="triangulate-tangents/">View example<span class="sr-only"> triangulate-tangents</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="export armature">
+      <article class="card" data-tags="export armature" data-kind="examples" data-name="gltf-skin-roundtrip">
         <a class="card-media" href="gltf-skin-roundtrip/" tabindex="-1" aria-hidden="true">
           <img src="assets/gltf-skin-roundtrip-hero.webp" alt="Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -728,7 +757,7 @@
           <a class="card-link" href="gltf-skin-roundtrip/">View example<span class="sr-only"> gltf-skin-roundtrip</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="sequencer rendering">
+      <article class="card" data-tags="sequencer rendering" data-kind="examples" data-name="vse-gamma-cross">
         <a class="card-media" href="vse-gamma-cross/" tabindex="-1" aria-hidden="true">
           <img src="assets/vse-gamma-cross-hero.webp" alt="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -739,7 +768,7 @@
           <a class="card-link" href="vse-gamma-cross/">View example<span class="sr-only"> vse-gamma-cross</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="rendering objects">
+      <article class="card" data-tags="rendering objects" data-kind="examples" data-name="light-link-studio">
         <a class="card-media" href="light-link-studio/" tabindex="-1" aria-hidden="true">
           <img src="assets/light-link-studio-hero.webp" alt="Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -750,7 +779,7 @@
           <a class="card-link" href="light-link-studio/">View example<span class="sr-only"> light-link-studio</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="bmesh mesh">
+      <article class="card" data-tags="bmesh mesh" data-kind="examples" data-name="collision-hull-proxy">
         <a class="card-media" href="collision-hull-proxy/" tabindex="-1" aria-hidden="true">
           <img src="assets/collision-hull-proxy-hero.webp" alt="A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -761,7 +790,7 @@
           <a class="card-link" href="collision-hull-proxy/">View example<span class="sr-only"> collision-hull-proxy</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh attributes">
+      <article class="card" data-tags="mesh attributes" data-kind="examples" data-name="custom-normals-shade">
         <a class="card-media" href="custom-normals-shade/" tabindex="-1" aria-hidden="true">
           <img src="assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -772,7 +801,7 @@
           <a class="card-link" href="custom-normals-shade/">View example<span class="sr-only"> custom-normals-shade</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="world sky rendering">
+      <article class="card" data-tags="world sky rendering" data-kind="examples" data-name="sky-texture-sun-elevation">
         <a class="card-media" href="sky-texture-sun-elevation/" tabindex="-1" aria-hidden="true">
           <img src="assets/sky-texture-sun-elevation-hero.webp" alt="A red-granite obelisk on a paved plaza lit only by the sky: navy dusk with an orange horizon glow at sun elevation 8 degrees, bright blue midday and a short shadow at 55 degrees." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -783,7 +812,7 @@
           <a class="card-link" href="sky-texture-sun-elevation/">View example<span class="sr-only"> sky-texture-sun-elevation</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="grease-pencil line-art modifiers">
+      <article class="card" data-tags="grease-pencil line-art modifiers" data-kind="examples" data-name="gp-lineart-contour">
         <a class="card-media" href="gp-lineart-contour/" tabindex="-1" aria-hidden="true">
           <img src="assets/gp-lineart-contour-hero.webp" alt="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -794,7 +823,7 @@
           <a class="card-link" href="gp-lineart-contour/">View example<span class="sr-only"> gp-lineart-contour</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="bmesh mesh game-pipeline">
+      <article class="card" data-tags="bmesh mesh game-pipeline" data-kind="examples" data-name="mesh-hygiene-audit">
         <a class="card-media" href="mesh-hygiene-audit/" tabindex="-1" aria-hidden="true">
           <img src="assets/mesh-hygiene-audit-hero.webp" alt="Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -805,7 +834,7 @@
           <a class="card-link" href="mesh-hygiene-audit/">View example<span class="sr-only"> mesh-hygiene-audit</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="transforms parenting game-pipeline">
+      <article class="card" data-tags="transforms parenting game-pipeline" data-kind="examples" data-name="prop-origin-transform">
         <a class="card-media" href="prop-origin-transform/" tabindex="-1" aria-hidden="true">
           <img src="assets/prop-origin-transform-hero.webp" alt="Two green street utility pedestals in floor pivot rings: the left one keeps its orange conduit elbow bolted on, the right one&#x27;s elbow hangs in the air beside a glowing cyan outline of its seat." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -816,7 +845,7 @@
           <a class="card-link" href="prop-origin-transform/">View example<span class="sr-only"> prop-origin-transform</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="bmesh mesh">
+      <article class="card" data-tags="bmesh mesh" data-kind="examples" data-name="soccer-ball-goldberg">
         <a class="card-media" href="soccer-ball-goldberg/" tabindex="-1" aria-hidden="true">
           <img src="assets/soccer-ball-goldberg-hero.webp" alt="A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -827,7 +856,7 @@
           <a class="card-link" href="soccer-ball-goldberg/">View example<span class="sr-only"> soccer-ball-goldberg</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="modifiers depsgraph">
+      <article class="card" data-tags="modifiers depsgraph" data-kind="examples" data-name="car-mirror-symmetry">
         <a class="card-media" href="car-mirror-symmetry/" tabindex="-1" aria-hidden="true">
           <img src="assets/car-mirror-symmetry-hero.webp" alt="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -838,7 +867,7 @@
           <a class="card-link" href="car-mirror-symmetry/">View example<span class="sr-only"> car-mirror-symmetry</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="attributes mesh rendering">
+      <article class="card" data-tags="attributes mesh rendering" data-kind="examples" data-name="attribute-domain-shear">
         <a class="card-media" href="attribute-domain-shear/" tabindex="-1" aria-hidden="true">
           <img src="assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -849,7 +878,7 @@
           <a class="card-link" href="attribute-domain-shear/">View example<span class="sr-only"> attribute-domain-shear</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="bmesh mesh game-pipeline">
+      <article class="card" data-tags="bmesh mesh game-pipeline" data-kind="examples" data-name="degenerate-bevel-weld">
         <a class="card-media" href="degenerate-bevel-weld/" tabindex="-1" aria-hidden="true">
           <img src="assets/degenerate-bevel-weld-hero.webp" alt="Two blue hard-shell cases: the left with a flat end panel and clean chamfer bands, the right with its rim rolled into a ridge traced by a glowing red seam and orange collapse beads." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -860,7 +889,7 @@
           <a class="card-link" href="degenerate-bevel-weld/">View example<span class="sr-only"> degenerate-bevel-weld</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh bmesh game-pipeline instancing">
+      <article class="card" data-tags="mesh bmesh game-pipeline instancing" data-kind="examples" data-name="modular-kit-snap">
         <a class="card-media" href="modular-kit-snap/" tabindex="-1" aria-hidden="true">
           <img src="assets/modular-kit-snap-hero.webp" alt="A sci-fi corridor built from snapped modular segments, with glass wall panels, orange trim rails and a lit doorway at the far end." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -871,7 +900,7 @@
           <a class="card-link" href="modular-kit-snap/">View example<span class="sr-only"> modular-kit-snap</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="uv game-pipeline rendering">
+      <article class="card" data-tags="uv game-pipeline rendering" data-kind="examples" data-name="lightmap-uv-channel">
         <a class="card-media" href="lightmap-uv-channel/" tabindex="-1" aria-hidden="true">
           <img src="assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -882,7 +911,7 @@
           <a class="card-link" href="lightmap-uv-channel/">View example<span class="sr-only"> lightmap-uv-channel</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh transforms game-pipeline instancing">
+      <article class="card" data-tags="mesh transforms game-pipeline instancing" data-kind="examples" data-name="socket-attach-points">
         <a class="card-media" href="socket-attach-points/" tabindex="-1" aria-hidden="true">
           <img src="assets/socket-attach-points-hero.webp" alt="A dark quadcopter drone with orange motor mounts, propellers and attached antenna and camera parts." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -893,7 +922,7 @@
           <a class="card-link" href="socket-attach-points/">View example<span class="sr-only"> socket-attach-points</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh attributes game-pipeline rendering">
+      <article class="card" data-tags="mesh attributes game-pipeline rendering" data-kind="examples" data-name="vertex-color-ao">
         <a class="card-media" href="vertex-color-ao/" tabindex="-1" aria-hidden="true">
           <img src="assets/vertex-color-ao-hero.webp" alt="A round stone well with a wooden windlass frame, its stones darkened near the base by baked vertex-colour ambient occlusion." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -904,7 +933,7 @@
           <a class="card-link" href="vertex-color-ao/">View example<span class="sr-only"> vertex-color-ao</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="context properties">
+      <article class="card" data-tags="context properties" data-kind="examples" data-name="cross-version-property-delete">
         <a class="card-media" href="cross-version-property-delete/" tabindex="-1" aria-hidden="true">
           <img src="assets/cross-version-property-delete-hero.webp" alt="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -915,7 +944,7 @@
           <a class="card-link" href="cross-version-property-delete/">View example<span class="sr-only"> cross-version-property-delete</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="depsgraph export">
+      <article class="card" data-tags="depsgraph export" data-kind="examples" data-name="usd-export-evaluation-mode">
         <a class="card-media" href="usd-export-evaluation-mode/" tabindex="-1" aria-hidden="true">
           <img src="assets/usd-export-evaluation-mode-hero.webp" alt="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -926,7 +955,7 @@
           <a class="card-link" href="usd-export-evaluation-mode/">View example<span class="sr-only"> usd-export-evaluation-mode</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes">
+      <article class="card" data-tags="geometry-nodes" data-kind="examples" data-name="gn-zone-iterate">
         <a class="card-media" href="gn-zone-iterate/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-zone-iterate-hero.webp" alt="Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -937,7 +966,7 @@
           <a class="card-link" href="gn-zone-iterate/">View example<span class="sr-only"> gn-zone-iterate</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes">
+      <article class="card" data-tags="geometry-nodes" data-kind="examples" data-name="gn-sim-fountain">
         <a class="card-media" href="gn-sim-fountain/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-sim-fountain-hero.webp" alt="A two-tier sandstone fountain in a dark studio whose twenty jets are strings of glowing cyan droplet beads, each string threaded on a thin line tracing its ballistic arc into the pool." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -948,7 +977,7 @@
           <a class="card-link" href="gn-sim-fountain/">View example<span class="sr-only"> gn-sim-fountain</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh">
+      <article class="card" data-tags="mesh" data-kind="examples" data-name="bake-normal-high-to-low">
         <a class="card-media" href="bake-normal-high-to-low/" tabindex="-1" aria-hidden="true">
           <img src="assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -959,7 +988,7 @@
           <a class="card-link" href="bake-normal-high-to-low/">View example<span class="sr-only"> bake-normal-high-to-low</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="geometry-nodes">
+      <article class="card" data-tags="geometry-nodes" data-kind="examples" data-name="gn-socket-rename">
         <a class="card-media" href="gn-socket-rename/" tabindex="-1" aria-hidden="true">
           <img src="assets/gn-socket-rename-hero.webp" alt="A copper measuring column with graduated tick marks standing on a grey base plate." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -970,7 +999,7 @@
           <a class="card-link" href="gn-socket-rename/">View example<span class="sr-only"> gn-socket-rename</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="shipping-crate">
         <a class="card-media" href="shipping-crate/" tabindex="-1" aria-hidden="true">
           <img src="assets/shipping-crate-hero.webp" alt="A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -981,7 +1010,7 @@
           <a class="card-link" href="shipping-crate/">View showcase piece<span class="sr-only"> shipping-crate</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="stone-well">
         <a class="card-media" href="stone-well/" tabindex="-1" aria-hidden="true">
           <img src="assets/stone-well-hero.webp" alt="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -992,7 +1021,7 @@
           <a class="card-link" href="stone-well/">View showcase piece<span class="sr-only"> stone-well</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wooden-barrel">
         <a class="card-media" href="wooden-barrel/" tabindex="-1" aria-hidden="true">
           <img src="assets/wooden-barrel-hero.webp" alt="A wooden stave barrel bound by four iron hoops, its head made of boards." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1003,7 +1032,7 @@
           <a class="card-link" href="wooden-barrel/">View showcase piece<span class="sr-only"> wooden-barrel</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="campfire">
         <a class="card-media" href="campfire/" tabindex="-1" aria-hidden="true">
           <img src="assets/campfire-hero.webp" alt="A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1014,7 +1043,7 @@
           <a class="card-link" href="campfire/">View showcase piece<span class="sr-only"> campfire</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="market-stall">
         <a class="card-media" href="market-stall/" tabindex="-1" aria-hidden="true">
           <img src="assets/market-stall-hero.webp" alt="A grained timber market stall with diagonal side braces, a red and cream striped canvas awning and a counter with shelves." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1025,7 +1054,7 @@
           <a class="card-link" href="market-stall/">View showcase piece<span class="sr-only"> market-stall</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="street-lantern">
         <a class="card-media" href="street-lantern/" tabindex="-1" aria-hidden="true">
           <img src="assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1036,7 +1065,7 @@
           <a class="card-link" href="street-lantern/">View showcase piece<span class="sr-only"> street-lantern</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="treasure-chest">
         <a class="card-media" href="treasure-chest/" tabindex="-1" aria-hidden="true">
           <img src="assets/treasure-chest-hero.webp" alt="An open grained wooden treasure chest with iron bands following its barrel-vaulted lid." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1047,7 +1076,7 @@
           <a class="card-link" href="treasure-chest/">View showcase piece<span class="sr-only"> treasure-chest</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="terrain-scatter">
         <a class="card-media" href="terrain-scatter/" tabindex="-1" aria-hidden="true">
           <img src="assets/terrain-scatter-hero.webp" alt="A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1058,7 +1087,7 @@
           <a class="card-link" href="terrain-scatter/">View showcase piece<span class="sr-only"> terrain-scatter</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="fence-kit">
         <a class="card-media" href="fence-kit/" tabindex="-1" aria-hidden="true">
           <img src="assets/fence-kit-hero.webp" alt="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1069,7 +1098,7 @@
           <a class="card-link" href="fence-kit/">View showcase piece<span class="sr-only"> fence-kit</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="watchtower">
         <a class="card-media" href="watchtower/" tabindex="-1" aria-hidden="true">
           <img src="assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1080,7 +1109,7 @@
           <a class="card-link" href="watchtower/">View showcase piece<span class="sr-only"> watchtower</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="cart">
         <a class="card-media" href="cart/" tabindex="-1" aria-hidden="true">
           <img src="assets/cart-hero.webp" alt="A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1091,7 +1120,7 @@
           <a class="card-link" href="cart/">View showcase piece<span class="sr-only"> cart</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="park-bench">
         <a class="card-media" href="park-bench/" tabindex="-1" aria-hidden="true">
           <img src="assets/park-bench-hero.webp" alt="A park bench of grained wooden slats with a reclined back, on a dark wrought-iron frame whose round-bar legs curl into scrolled feet, with armrests on curved brackets." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1102,7 +1131,7 @@
           <a class="card-link" href="park-bench/">View showcase piece<span class="sr-only"> park-bench</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wheelbarrow">
         <a class="card-media" href="wheelbarrow/" tabindex="-1" aria-hidden="true">
           <img src="assets/wheelbarrow-hero.webp" alt="A wooden wheelbarrow with a flared tray of stacked boards held by iron straps, its front raked out over a spoked wheel, and two long shafts running from the handles under the tray to the axle." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1113,7 +1142,7 @@
           <a class="card-link" href="wheelbarrow/">View showcase piece<span class="sr-only"> wheelbarrow</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="anvil">
         <a class="card-media" href="anvil/" tabindex="-1" aria-hidden="true">
           <img src="assets/anvil-hero.webp" alt="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1124,7 +1153,7 @@
           <a class="card-link" href="anvil/">View showcase piece<span class="sr-only"> anvil</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="water-trough">
         <a class="card-media" href="water-trough/" tabindex="-1" aria-hidden="true">
           <img src="assets/water-trough-hero.webp" alt="A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1135,7 +1164,7 @@
           <a class="card-link" href="water-trough/">View showcase piece<span class="sr-only"> water-trough</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="hitching-post">
         <a class="card-media" href="hitching-post/" tabindex="-1" aria-hidden="true">
           <img src="assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1146,7 +1175,7 @@
           <a class="card-link" href="hitching-post/">View showcase piece<span class="sr-only"> hitching-post</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="grindstone">
         <a class="card-media" href="grindstone/" tabindex="-1" aria-hidden="true">
           <img src="assets/grindstone-hero.webp" alt="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1157,7 +1186,7 @@
           <a class="card-link" href="grindstone/">View showcase piece<span class="sr-only"> grindstone</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="hand-pump">
         <a class="card-media" href="hand-pump/" tabindex="-1" aria-hidden="true">
           <img src="assets/hand-pump-hero.webp" alt="A matte black cast-iron village hand pump with a curved spout and lever handle on a stepped wooden plinth." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1168,7 +1197,7 @@
           <a class="card-link" href="hand-pump/">View showcase piece<span class="sr-only"> hand-pump</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="signpost">
         <a class="card-media" href="signpost/" tabindex="-1" aria-hidden="true">
           <img src="assets/signpost-hero.webp" alt="A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1179,7 +1208,7 @@
           <a class="card-link" href="signpost/">View showcase piece<span class="sr-only"> signpost</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="chopping-block">
         <a class="card-media" href="chopping-block/" tabindex="-1" aria-hidden="true">
           <img src="assets/chopping-block-hero.webp" alt="A log-round chopping block bound with an iron hoop, an axe buried in its top." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1190,7 +1219,7 @@
           <a class="card-link" href="chopping-block/">View showcase piece<span class="sr-only"> chopping-block</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wooden-bucket">
         <a class="card-media" href="wooden-bucket/" tabindex="-1" aria-hidden="true">
           <img src="assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1201,7 +1230,7 @@
           <a class="card-link" href="wooden-bucket/">View showcase piece<span class="sr-only"> wooden-bucket</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wall-torch">
         <a class="card-media" href="wall-torch/" tabindex="-1" aria-hidden="true">
           <img src="assets/wall-torch-hero.webp" alt="A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1212,7 +1241,7 @@
           <a class="card-link" href="wall-torch/">View showcase piece<span class="sr-only"> wall-torch</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="tavern-stool">
         <a class="card-media" href="tavern-stool/" tabindex="-1" aria-hidden="true">
           <img src="assets/tavern-stool-hero.webp" alt="A wooden tavern stool with a grained round seat, turned splayed legs, stretcher rungs at two heights, and dark iron ferrules on flat treads." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1223,7 +1252,7 @@
           <a class="card-link" href="tavern-stool/">View showcase piece<span class="sr-only"> tavern-stool</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="iron-cauldron">
         <a class="card-media" href="iron-cauldron/" tabindex="-1" aria-hidden="true">
           <img src="assets/iron-cauldron-hero.webp" alt="A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1234,7 +1263,7 @@
           <a class="card-link" href="iron-cauldron/">View showcase piece<span class="sr-only"> iron-cauldron</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wooden-ladder">
         <a class="card-media" href="wooden-ladder/" tabindex="-1" aria-hidden="true">
           <img src="assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1245,7 +1274,7 @@
           <a class="card-link" href="wooden-ladder/">View showcase piece<span class="sr-only"> wooden-ladder</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="hay-bale">
         <a class="card-media" href="hay-bale/" tabindex="-1" aria-hidden="true">
           <img src="assets/hay-bale-hero.webp" alt="A golden fibrous hay bale, square-edged and slightly bulging, bound by two orange twine cords with a small knot loop standing on each." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1256,7 +1285,7 @@
           <a class="card-link" href="hay-bale/">View showcase piece<span class="sr-only"> hay-bale</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="crate-stack">
         <a class="card-media" href="crate-stack/" tabindex="-1" aria-hidden="true">
           <img src="assets/crate-stack-hero.webp" alt="Three grained wooden shipping crates stacked, each turned slightly differently, with nailed iron corner straps." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1267,7 +1296,7 @@
           <a class="card-link" href="crate-stack/">View showcase piece<span class="sr-only"> crate-stack</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="stone-archway">
         <a class="card-media" href="stone-archway/" tabindex="-1" aria-hidden="true">
           <img src="assets/stone-archway-hero.webp" alt="A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1278,7 +1307,7 @@
           <a class="card-link" href="stone-archway/">View showcase piece<span class="sr-only"> stone-archway</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="rope-bridge">
         <a class="card-media" href="rope-bridge/" tabindex="-1" aria-hidden="true">
           <img src="assets/rope-bridge-hero.webp" alt="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1289,7 +1318,7 @@
           <a class="card-link" href="rope-bridge/">View showcase piece<span class="sr-only"> rope-bridge</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="grain-sacks">
         <a class="card-media" href="grain-sacks/" tabindex="-1" aria-hidden="true">
           <img src="assets/grain-sacks-hero.webp" alt="Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1300,7 +1329,7 @@
           <a class="card-link" href="grain-sacks/">View showcase piece<span class="sr-only"> grain-sacks</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="brazier">
         <a class="card-media" href="brazier/" tabindex="-1" aria-hidden="true">
           <img src="assets/brazier-hero.webp" alt="An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1311,7 +1340,7 @@
           <a class="card-link" href="brazier/">View showcase piece<span class="sr-only"> brazier</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="apothecary-shelf">
         <a class="card-media" href="apothecary-shelf/" tabindex="-1" aria-hidden="true">
           <img src="assets/apothecary-shelf-hero.webp" alt="A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1322,7 +1351,7 @@
           <a class="card-link" href="apothecary-shelf/">View showcase piece<span class="sr-only"> apothecary-shelf</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="wooden-yoke">
         <a class="card-media" href="wooden-yoke/" tabindex="-1" aria-hidden="true">
           <img src="assets/wooden-yoke-hero.webp" alt="A carved oak ox yoke with upturned ends standing on two bent hickory bows pinned above the beam, with a rusted iron ring hung from a staple under its centre." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1333,7 +1362,7 @@
           <a class="card-link" href="wooden-yoke/">View showcase piece<span class="sr-only"> wooden-yoke</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="butter-churn">
         <a class="card-media" href="butter-churn/" tabindex="-1" aria-hidden="true">
           <img src="assets/butter-churn-hero.webp" alt="A tall staved oak butter churn narrowing toward the top, bound by three dark iron hoops, with a two-board lid and a pale maple dasher handle rising through it." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1344,7 +1373,7 @@
           <a class="card-link" href="butter-churn/">View showcase piece<span class="sr-only"> butter-churn</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="bookshelf">
         <a class="card-media" href="bookshelf/" tabindex="-1" aria-hidden="true">
           <img src="assets/bookshelf-hero.webp" alt="A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1355,7 +1384,7 @@
           <a class="card-link" href="bookshelf/">View showcase piece<span class="sr-only"> bookshelf</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
-      <article class="card" data-tags="mesh export showcase">
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-name="book-trolley">
         <a class="card-media" href="book-trolley/" tabindex="-1" aria-hidden="true">
           <img src="assets/book-trolley-hero.webp" alt="A double-sided wooden library book trolley on four casters, its two sloped troughs of cloth and leather hardbacks leaning back spines out, with loose books stacked on the bottom deck." width="1280" height="720" loading="lazy" decoding="async" />
         </a>
@@ -1368,7 +1397,7 @@
       </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
-      <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>
+      <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
   </main>
   <button class="to-top" id="toTop" type="button"><span aria-hidden="true">&uarr;</span> Top</button>
   <footer>
@@ -1391,18 +1420,35 @@
       var count = document.getElementById('count');
       var noResults = document.getElementById('noResults');
       var resetFilters = document.getElementById('resetFilters');
-      var densityBtns = Array.prototype.slice.call(document.querySelectorAll('.density-btn'));
+      var densityBtns = Array.prototype.slice.call(document.querySelectorAll('[data-density]'));
+      var kindBtns = Array.prototype.slice.call(document.querySelectorAll('[data-kind-filter]'));
+      var sortSel = document.getElementById('sort');
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
       var COUNT_LABEL = '52 examples, 36 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
+      var KINDS = ['', 'examples', 'showcase'];
+      var SORTS = ['default', 'az'];
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Searchable text is the card's own DOM text: name, teaches, and the
       // WITNESSES line (visually collapsed in compact mode, still in the DOM).
       var haystacks = cards.map(function (c) { return c.textContent.toLowerCase(); });
-      var state = { q: '', tag: '', density: 'compact' };
+      var cardTags = cards.map(function (c) { return (c.getAttribute('data-tags') || '').split(' '); });
+      var knownTags = chips.map(function (c) { return c.getAttribute('data-tag') || ''; })
+        .filter(function (t) { return t; });
+      var state = { q: '', tags: [], kind: '', sort: 'default', density: 'compact' };
+
+      // Fade card renders in once decoded; images already complete (cache,
+      // eager) are marked immediately so nothing stays invisible.
+      cards.forEach(function (c) {
+        var img = c.querySelector('.card-media img');
+        if (!img) return;
+        function done() { img.classList.add('is-loaded'); }
+        if (img.complete) { done(); }
+        else { img.addEventListener('load', done); img.addEventListener('error', done); }
+      });
 
       function parseHash() {
         var out = {};
@@ -1411,7 +1457,7 @@
           if (i < 0) return;
           var k = kv.slice(0, i), v = kv.slice(i + 1);
           try { v = decodeURIComponent(v); } catch (e) {}
-          if (k === 'q' || k === 'tag' || k === 'd') out[k] = v;
+          if (k === 'q' || k === 'tag' || k === 'd' || k === 'k' || k === 's') out[k] = v;
         });
         return out;
       }
@@ -1419,60 +1465,105 @@
       function writeHash() {
         var parts = [];
         if (state.q) parts.push('q=' + encodeURIComponent(state.q));
-        if (state.tag) parts.push('tag=' + encodeURIComponent(state.tag));
+        if (state.tags.length) parts.push('tag=' + state.tags.map(encodeURIComponent).join(','));
+        if (state.kind) parts.push('k=' + state.kind);
+        if (state.sort !== 'default') parts.push('s=' + state.sort);
         parts.push('d=' + state.density);
         history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
+      }
+      var hashTimer = 0;
+      function writeHashSoon() {
+        clearTimeout(hashTimer);
+        hashTimer = setTimeout(writeHash, 250);
       }
 
       function syncChips() {
         chips.forEach(function (c) {
-          c.classList.toggle('active', (c.getAttribute('data-tag') || '') === state.tag);
+          var t = c.getAttribute('data-tag') || '';
+          var on = t ? state.tags.indexOf(t) !== -1 : state.tags.length === 0;
+          c.classList.toggle('active', on);
+          c.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
-        tagsToggle.classList.toggle('has-active', !!state.tag);
-        // The chip row is collapsed on narrow screens; name the active tag
+        tagsToggle.classList.toggle('has-active', state.tags.length > 0);
+        // The chip row is collapsed on narrow screens; name the active tags
         // on the toggle so a shared #tag= link is visibly filtered.
-        tagsToggle.textContent = state.tag ? 'Tags: ' + state.tag : 'Tags';
+        tagsToggle.textContent = state.tags.length ? 'Tags: ' + state.tags.join(' + ') : 'Tags';
+      }
+
+      function syncSeg(btns, attr, value) {
+        btns.forEach(function (b) {
+          var on = b.getAttribute(attr) === value;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
       }
 
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
-        densityBtns.forEach(function (b) {
-          var on = b.getAttribute('data-density') === state.density;
-          b.classList.toggle('active', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
+        syncSeg(densityBtns, 'data-density', state.density);
         try { localStorage.setItem(LS_KEY, state.density); } catch (e) {}
+      }
+
+      function applySort() {
+        var order = cards.slice();
+        if (state.sort === 'az') {
+          order.sort(function (a, b) {
+            var x = a.getAttribute('data-name'), y = b.getAttribute('data-name');
+            return x < y ? -1 : x > y ? 1 : 0;
+          });
+        }
+        order.forEach(function (c) { grid.appendChild(c); });
+        sortSel.value = state.sort;
       }
 
       function applyFilters() {
         var query = state.q.trim().toLowerCase();
         var shown = 0;
         cards.forEach(function (card, i) {
-          var tagOK = !state.tag || (card.getAttribute('data-tags') || '').split(' ').indexOf(state.tag) !== -1;
+          var kindOK = !state.kind || card.getAttribute('data-kind') === state.kind;
+          var tagOK = state.tags.every(function (t) { return cardTags[i].indexOf(t) !== -1; });
           var qOK = !query || haystacks[i].indexOf(query) !== -1;
-          var show = tagOK && qOK;
+          var show = kindOK && tagOK && qOK;
           card.classList.toggle('hidden', !show);
           if (show) shown++;
         });
-        count.textContent = (query || state.tag) ? (shown + ' of ' + total) : COUNT_LABEL;
+        count.textContent = (query || state.tags.length || state.kind) ? (shown + ' of ' + total) : COUNT_LABEL;
         noResults.hidden = shown !== 0;
         qClear.hidden = !state.q;
+        syncSeg(kindBtns, 'data-kind-filter', state.kind);
       }
 
       q.addEventListener('input', function () {
         state.q = q.value;
         applyFilters();
-        writeHash();
+        writeHashSoon();
       });
       qClear.addEventListener('click', function () {
         q.value = ''; state.q = '';
         applyFilters(); writeHash(); q.focus();
       });
+      // "All" clears the tag set; any other chip toggles itself, and
+      // several active chips narrow the grid (AND, not OR).
       chips.forEach(function (chip) {
         chip.addEventListener('click', function () {
-          state.tag = chip.getAttribute('data-tag') || '';
+          var t = chip.getAttribute('data-tag') || '';
+          if (!t) { state.tags = []; }
+          else {
+            var at = state.tags.indexOf(t);
+            if (at === -1) state.tags.push(t); else state.tags.splice(at, 1);
+          }
           syncChips(); applyFilters(); writeHash();
         });
+      });
+      kindBtns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.kind = b.getAttribute('data-kind-filter');
+          applyFilters(); writeHash();
+        });
+      });
+      sortSel.addEventListener('change', function () {
+        state.sort = SORTS.indexOf(sortSel.value) !== -1 ? sortSel.value : 'default';
+        applySort(); writeHash();
       });
       densityBtns.forEach(function (b) {
         b.addEventListener('click', function () {
@@ -1481,7 +1572,7 @@
         });
       });
       resetFilters.addEventListener('click', function () {
-        state.q = ''; state.tag = ''; q.value = '';
+        state.q = ''; state.tags = []; state.kind = ''; q.value = '';
         syncChips(); applyFilters(); writeHash(); q.focus();
       });
       tagsToggle.addEventListener('click', function () {
@@ -1513,7 +1604,15 @@
       // Restore state: URL hash wins; density falls back to localStorage.
       var h = parseHash();
       state.q = h.q || '';
-      state.tag = h.tag || '';
+      state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
+      state.sort = SORTS.indexOf(h.s) !== -1 ? h.s : 'default';
+      // Tags arrive comma-separated. "showcase" is the kind filter now, not
+      // a chip, but older links (the landing page's among them) still say
+      // #tag=showcase. A tag no chip knows would silently show zero cards.
+      (h.tag || '').split(',').forEach(function (t) {
+        if (t === 'showcase') { state.kind = 'showcase'; }
+        else if (knownTags.indexOf(t) !== -1 && state.tags.indexOf(t) === -1) { state.tags.push(t); }
+      });
       if (h.d === 'compact' || h.d === 'detailed') state.density = h.d;
       else {
         try {
@@ -1521,12 +1620,13 @@
           if (s === 'compact' || s === 'detailed') state.density = s;
         } catch (e) {}
       }
-      // A tag in the hash that no chip knows would silently show zero cards.
-      var known = chips.some(function (c) { return (c.getAttribute('data-tag') || '') === state.tag; });
-      if (!known) state.tag = '';
       q.value = state.q;
       syncChips();
+      // A deep-linked tag may sit off-screen in the chip scroll strip.
+      var firstOn = chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
+      if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
       applyDensity();
+      applySort();
       applyFilters();
     })();
 
