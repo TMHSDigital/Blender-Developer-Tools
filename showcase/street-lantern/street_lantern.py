@@ -8,13 +8,17 @@ The arm axis, drop length, and roof stack are one closed-form chain: the
 roof peak stays below the arm, the hanger is the arm's far station, and
 the brace is an oriented box tenoned into the post wall and into the
 arm's lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone.
+The column is fluted and collared, a ladder bar passes through its neck, two
+C-scrolls weld into the arm, a hook ring holds the lantern, and the cage sits
+between a brass eave band and a base tray.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-brace`` brace-to-arm
 joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb,
-``--shallow-brace`` brace bite into post and arm (exit 20).
+``--shallow-brace`` brace bite into post and arm (exit 20),
+``--float-scroll`` arm-scroll weld (exit 21).
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -64,12 +68,34 @@ COLLAR_T = 0.016
 CAP_H = 0.050
 CAP_R = POST_R_TOP + 0.028
 POST_FINIAL_H = 0.070
+# Fluted column: POST_FLUTES channels, each FLUTE_DEPTH deep, between lands
+# at the tapered POST_R_BOT..POST_R_TOP radius (so post_size still reads the
+# land diameter).
+POST_FLUTES = 10
+FLUTE_DEPTH = 0.006
+# Ladder bar through the neck — the lamplighter rests a ladder on it.
+LADDER_BAR_FRAC = 0.70
+LADDER_BAR_HALF = 0.125
+LADDER_BAR_R = 0.009
+LADDER_BALL_R = 0.016
 
 ARM_R = 0.022
 ARM_LEN = 0.50
 BRACE_T = 0.024
 BRACE_POST_DROP = 0.155
 BRACE_ARM_FRAC = 0.46
+# C-scrolls under the arm: (y station, outer radius, winding). Each welds into
+# the arm's underside by SCROLL_BITE and stays < 0.10 m on the Y axis so
+# joint_audit's brace test (dy > 0.10 and dz > 0.10) never claims one.
+SCROLLS = ((0.105, 0.026, 1.0), (0.34, 0.040, -1.0))
+SCROLL_BITE = 0.006
+SCROLL_R1 = 0.008
+SCROLL_TURNS = 1.15
+SCROLL_STEPS = 22
+SCROLL_BAR_R = 0.007
+# forged hook ring around the arm at the lantern station
+HOOK_CLEAR = 0.006
+HOOK_R = 0.0045
 
 CAGE_W = 0.24
 CAGE_H = 0.30
@@ -82,6 +108,10 @@ CAGE_JOINT = 0.0015
 ROOF_H = 0.095
 FINIAL_H = 0.050
 EAVE = 0.016
+# brass eave band and base tray, BAND_PROUD proud of the cage on each side
+BAND_PROUD = 0.010
+EAVE_BAND_H = 0.026
+BASE_TRAY_H = 0.020
 # Roof stack plus a gap so the arm passes *over* the cage, never through it.
 DROP_H = ARM_R + ROOF_H + FINIAL_H + 0.024
 
@@ -90,8 +120,12 @@ BBOX_TOL = 0.01
 OUTER_SIZE = (0.300, 0.786, 1.287)
 POST_SIZE = (POST_R_BOT * 2.0, POST_H)
 POST_SIZE_TOL = (0.02, 0.04)
-BASE_TRIS_MIN = 3000
-BASE_TRIS_MAX = 3800
+# Raised from 3000..3800 (3338 measured) when the plain octagonal post and bare
+# cage became a fluted column with collars, a ladder bar, arm scrolls, a hook
+# ring and a banded lantern: 4726 measured. The band brackets that with the
+# same ~±10% slack the old band gave.
+BASE_TRIS_MIN = 4200
+BASE_TRIS_MAX = 5200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -127,6 +161,14 @@ SINK_ARM = 0.14
 # post and 0.0000 m into the arm).
 BRACE_BITE_MIN = 0.004
 RAKE = math.radians(8.0)
+# Hero yaw: the arm points along -X, about 55 degrees off both the hero camera's and the
+# asset sheet's view axes. At -28 it pointed straight down the sheet camera's
+# axis and the lantern read end-on and small.
+HERO_YAW_DEG = 90.0
+# Each scroll's welded foot must sit inside the arm (signed depth, like the
+# brace bite). --float-scroll drops the scrolls SCROLL_DROP so they hang free.
+SCROLL_WELD_MIN = 0.004
+SCROLL_DROP = 0.030
 
 METAL_IDX = 0
 GLASS_IDX = 1
@@ -238,6 +280,102 @@ def add_square_pyramid(bm, loc, half, height, mat_idx):
     return corners + [apex]
 
 
+def add_fluted_post(bm, loc, r_bot, r_top, height, flutes, depth, mat_idx,
+                    euler=(0.0, 0.0, 0.0)):
+    """Tapered column with ``flutes`` concave channels: each ring alternates
+    the land radius with a groove radius ``depth`` smaller. Capped, closed."""
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    n = flutes * 2
+    rings = []
+    for z, r in ((-height / 2.0, r_bot), (height / 2.0, r_top)):
+        ring = []
+        for k in range(n):
+            a = 2.0 * math.pi * k / n
+            rr = r if k % 2 == 0 else r - depth
+            ring.append(bm.verts.new(rot @ Vector((rr * math.cos(a), rr * math.sin(a), z)) + origin))
+        rings.append(ring)
+    faces = []
+    for k in range(n):
+        m = (k + 1) % n
+        faces.append(bm.faces.new((rings[0][k], rings[0][m], rings[1][m], rings[1][k])))
+    faces.append(bm.faces.new(tuple(reversed(rings[0]))))
+    faces.append(bm.faces.new(tuple(rings[1])))
+    for f in faces:
+        f.material_index = mat_idx
+    return [v for ring in rings for v in ring]
+
+
+def add_tube(bm, pts, radius, sides, mat_idx):
+    """Capped round bar swept along a polyline (parallel-transport frames)."""
+    pts = [Vector(p) for p in pts]
+    tans = []
+    for i in range(len(pts)):
+        a = pts[max(i - 1, 0)]
+        b = pts[min(i + 1, len(pts) - 1)]
+        tans.append((b - a).normalized())
+    ref = Vector((1.0, 0.0, 0.0)) if abs(tans[0].x) < 0.9 else Vector((0.0, 0.0, 1.0))
+    nrm = (ref - tans[0] * ref.dot(tans[0])).normalized()
+    rings = []
+    for p, t in zip(pts, tans):
+        nrm = (nrm - t * nrm.dot(t)).normalized()
+        bi = t.cross(nrm)
+        rings.append([
+            bm.verts.new(p + radius * (nrm * math.cos(2.0 * math.pi * k / sides)
+                                       + bi * math.sin(2.0 * math.pi * k / sides)))
+            for k in range(sides)
+        ])
+    faces = []
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(sides):
+            m = (k + 1) % sides
+            faces.append(bm.faces.new((r0[k], r0[m], r1[m], r1[k])))
+    faces.append(bm.faces.new(tuple(reversed(rings[0]))))
+    faces.append(bm.faces.new(tuple(rings[-1])))
+    for f in faces:
+        f.material_index = mat_idx
+    return [v for ring in rings for v in ring]
+
+
+def add_ring(bm, center, axis, r_major, r_minor, segs, sides, mat_idx):
+    """Closed torus about ``axis`` through ``center``."""
+    center = Vector(center)
+    axis = Vector(axis).normalized()
+    ref = Vector((0.0, 0.0, 1.0)) if abs(axis.z) < 0.9 else Vector((1.0, 0.0, 0.0))
+    u = axis.cross(ref).normalized()
+    w = axis.cross(u)
+    rings = []
+    for i in range(segs):
+        a = 2.0 * math.pi * i / segs
+        radial = u * math.cos(a) + w * math.sin(a)
+        c = center + radial * r_major
+        rings.append([
+            bm.verts.new(c + r_minor * (radial * math.cos(2.0 * math.pi * k / sides)
+                                        + axis * math.sin(2.0 * math.pi * k / sides)))
+            for k in range(sides)
+        ])
+    for i in range(segs):
+        r0, r1 = rings[i], rings[(i + 1) % segs]
+        for k in range(sides):
+            m = (k + 1) % sides
+            f = bm.faces.new((r0[k], r0[m], r1[m], r1[k]))
+            f.material_index = mat_idx
+
+
+def scroll_points(centre, r0, r1, turns, steps, spin):
+    """Flat Archimedean scroll in the YZ plane about ``centre``: starts at the
+    top of the r0 circle and winds ``turns`` times inward to radius r1;
+    ``spin`` +1 / -1 picks the winding direction."""
+    centre = Vector(centre)
+    pts = []
+    for i in range(steps + 1):
+        t = i / steps
+        ang = 0.5 * math.pi + spin * t * turns * 2.0 * math.pi
+        r = r0 + (r1 - r0) * t
+        pts.append(centre + Vector((0.0, r * math.cos(ang), r * math.sin(ang))))
+    return pts
+
+
 def triangulate_ngons(bm):
     faces = [f for f in bm.faces if len(f.verts) > 4]
     if faces:
@@ -295,6 +433,7 @@ def build_lantern_mesh(
     sink_arm=False,
     rake_post=False,
     shallow_brace=False,
+    float_scroll=False,
 ):
     bm = bmesh.new()
     try:
@@ -337,27 +476,48 @@ def build_lantern_mesh(
             12,
             BRASS_IDX,
         )
-        add_cone(
+        # cast-iron column: tapered, with POST_FLUTES concave channels
+        add_fluted_post(
             bm,
             (0.0, 0.0, post_z0 + POST_H / 2.0),
             POST_R_BOT,
             POST_R_TOP,
             POST_H,
-            POST_SIDES,
+            POST_FLUTES,
+            FLUTE_DEPTH,
             METAL_IDX,
             euler=post_euler,
         )
-        collar_z = post_z0 + POST_H * 0.36
-        collar_r = post_radius_at(collar_z) + COLLAR_T
-        add_cone(
+        # two moulded collars break the column into base, shaft and neck
+        for frac in (0.36, 0.80):
+            collar_z = post_z0 + POST_H * frac
+            collar_r = post_radius_at(collar_z) + COLLAR_T
+            add_cone(
+                bm,
+                (0.0, 0.0, collar_z),
+                collar_r,
+                collar_r,
+                COLLAR_H,
+                12,
+                BRASS_IDX,
+            )
+        # the lamplighter's ladder bar, through the neck, with ball ends
+        bar_z = post_z0 + POST_H * LADDER_BAR_FRAC
+        add_tube(
             bm,
-            (0.0, 0.0, collar_z),
-            collar_r,
-            collar_r,
-            COLLAR_H,
-            12,
-            BRASS_IDX,
+            [(-LADDER_BAR_HALF, 0.0, bar_z), (LADDER_BAR_HALF, 0.0, bar_z)],
+            LADDER_BAR_R,
+            8,
+            METAL_IDX,
         )
+        for sx in (-1.0, 1.0):
+            ball = bmesh.ops.create_uvsphere(
+                bm, u_segments=8, v_segments=6, radius=LADDER_BALL_R
+            )
+            for v in ball["verts"]:
+                v.co += Vector((sx * LADDER_BAR_HALF, 0.0, bar_z))
+            for f in {f for v in ball["verts"] for f in v.link_faces}:
+                f.material_index = METAL_IDX
         add_cone(
             bm,
             (0.0, 0.0, post_top),
@@ -376,6 +536,11 @@ def build_lantern_mesh(
             8,
             BRASS_IDX,
         )
+        ball = bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=6, radius=0.019)
+        for v in ball["verts"]:
+            v.co += Vector((0.0, 0.0, post_top + CAP_H / 2.0 + 0.012))
+        for f in {f for v in ball["verts"] for f in v.link_faces}:
+            f.material_index = BRASS_IDX
 
         arm_y0 = post_radius_at(arm_z) - 0.008
         arm_y1 = cage_y
@@ -404,6 +569,30 @@ def build_lantern_mesh(
         if float_brace:
             p_arm = p_post + Vector((0.0, 0.11, -0.06))
         bevel_verts.extend(add_oriented_box(bm, p_post, p_arm, (BRACE_T, BRACE_T), METAL_IDX))
+
+        # wrought C-scrolls hung from the arm's underside: each starts inside
+        # the arm (a welded foot) and winds inward. Kept under 0.10 m on both
+        # the Y and Z axes so joint_audit never mistakes one for the brace.
+        for sc_y, sc_r0, spin in SCROLLS:
+            top = arm_z - ARM_R + SCROLL_BITE
+            if float_scroll:
+                top -= SCROLL_DROP
+            centre = (0.0, sc_y, top - sc_r0)
+            pts = [Vector((0.0, sc_y, arm_z - (SCROLL_DROP if float_scroll else 0.0)))]
+            pts += scroll_points(centre, sc_r0, SCROLL_R1, SCROLL_TURNS, SCROLL_STEPS, spin)
+            add_tube(bm, pts, SCROLL_BAR_R, 6, METAL_IDX)
+
+        # the hanging hook: a forged ring around the arm at the lantern station
+        add_ring(
+            bm,
+            (0.0, cage_y, arm_z),
+            (0.0, 1.0, 0.0),
+            ARM_R + HOOK_CLEAR,
+            HOOK_R,
+            16,
+            6,
+            METAL_IDX,
+        )
 
         apex_z = cage_top - 0.001 + ROOF_H
         stub_bot = apex_z + FINIAL_H * 0.70
@@ -506,6 +695,36 @@ def build_lantern_mesh(
             (0.0, cage_y, cage_bot + 0.040),
             0.024,
             0.018,
+            0.048,
+            8,
+            BRASS_IDX,
+        )
+
+        # brass eave band under the roof and a base tray under the cage: the
+        # lantern reads as a finished fitting, not a bare frame
+        band_w = CAGE_W + 2.0 * BAND_PROUD
+        bevel_verts.extend(
+            add_box(
+                bm,
+                (0.0, cage_y, cage_top - EAVE_BAND_H / 2.0 + 0.004),
+                (band_w, band_w, EAVE_BAND_H),
+                BRASS_IDX,
+            )
+        )
+        bevel_verts.extend(
+            add_box(
+                bm,
+                (0.0, cage_y, cage_bot - BASE_TRAY_H / 2.0 + 0.006),
+                (band_w, band_w, BASE_TRAY_H),
+                BRASS_IDX,
+            )
+        )
+        # a drip finial under the tray
+        add_cone(
+            bm,
+            (0.0, cage_y, cage_bot - BASE_TRAY_H + 0.006 - 0.022),
+            0.004,
+            0.030,
             0.048,
             8,
             BRASS_IDX,
@@ -867,6 +1086,7 @@ def joint_audit(me):
     roofs = []
     hangers = []
     posts = []
+    scrolls = []
     for g, a, mat in boxes:
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
         cy = 0.5 * (a[1] + a[4])
@@ -879,6 +1099,9 @@ def joint_audit(me):
             continue
         if mat == METAL_IDX and dz > 0.10 and dy > 0.10 and dx < 0.08 and cz > 0.9:
             braces.append((g, a))
+            continue
+        if mat == METAL_IDX and dx < 0.02 and dz > 0.06 and 0.04 < dy < 0.10 and cz > 0.9:
+            scrolls.append((g, a))
             continue
         if mat == BRASS_IDX and dx > CAGE_W * 0.6 and dy > CAGE_W * 0.6 and cz > 0.9:
             roofs.append((g, a))
@@ -896,6 +1119,9 @@ def joint_audit(me):
     if braces and posts and arms:
         post_bite = min(shell_bite(me, b[0], posts[0][0]) for b in braces)
         arm_bite = min(shell_bite(me, b[0], arms[0][0]) for b in braces)
+    scroll_weld = -1.0
+    if scrolls and arms:
+        scroll_weld = min(shell_bite(me, s[0], arms[0][0]) for s in scrolls)
     roof_zmax = max((a[5] for _g, a in roofs), default=0.0)
     arm_zmin = min((a[2] for _g, a in arms), default=99.0)
     hanger_zmin = min((a[2] for _g, a in hangers), default=99.0)
@@ -906,6 +1132,8 @@ def joint_audit(me):
         "roofs": len(roofs),
         "posts": len(posts),
         "hangers": len(hangers),
+        "scrolls": len(scrolls),
+        "scroll_weld": scroll_weld,
         "brace_gap": brace_gap,
         "post_bite": post_bite,
         "arm_bite": arm_bite,
@@ -1064,6 +1292,7 @@ def check(
     sink_arm=False,
     rake_post=False,
     shallow_brace=False,
+    float_scroll=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_lantern_mesh(
@@ -1074,6 +1303,7 @@ def check(
         sink_arm=sink_arm,
         rake_post=rake_post,
         shallow_brace=shallow_brace,
+        float_scroll=float_scroll,
     )
     high = build_lantern_mesh(
         "LanternHigh",
@@ -1083,6 +1313,7 @@ def check(
         sink_arm=sink_arm,
         rake_post=rake_post,
         shallow_brace=shallow_brace,
+        float_scroll=float_scroll,
     )
     metal, glass, brass = lantern_materials()
     assign_slots(low, metal, glass, brass)
@@ -1183,7 +1414,8 @@ def check(
         f"hanger_roof_gap={jnt['hanger_roof_gap']:.5f} "
         f"plumb={plumb:.5f} post_size=({pxy:.4f},{pz:.4f}) "
         f"parts={jnt['parts']} arms={jnt['arms']} braces={jnt['braces']} "
-        f"roofs={jnt['roofs']} hangers={jnt['hangers']}"
+        f"roofs={jnt['roofs']} hangers={jnt['hangers']} "
+        f"scrolls={jnt['scrolls']} scroll_weld={jnt['scroll_weld']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1303,6 +1535,13 @@ def check(
             f"< {BRACE_BITE_MIN}",
             20,
         ), None, None, None, None, None
+    # Last: a dropped scroll hangs free of the arm (--float-scroll).
+    if jnt["scrolls"] != len(SCROLLS) or jnt["scroll_weld"] < SCROLL_WELD_MIN:
+        return fail(
+            f"scroll weld {jnt['scroll_weld']:.5f} scrolls={jnt['scrolls']} "
+            f"(want {len(SCROLLS)}, >= {SCROLL_WELD_MIN})",
+            21,
+        ), None, None, None, None, None
     return 0, low, high, metal, tex, collider
 
 
@@ -1323,7 +1562,7 @@ def render_still(low, metal, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-28.0)
+    low.rotation_euler.z = math.radians(HERO_YAW_DEG)
     low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
@@ -1443,6 +1682,7 @@ def main():
     p.add_argument("--shallow-brace", action="store_true")
     p.add_argument("--sink-arm", action="store_true")
     p.add_argument("--rake-post", action="store_true")
+    p.add_argument("--float-scroll", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, metal, tex, _col = check(
@@ -1453,6 +1693,7 @@ def main():
         sink_arm=args.sink_arm,
         rake_post=args.rake_post,
         shallow_brace=args.shallow_brace,
+        float_scroll=args.float_scroll,
     )
     if code:
         return code
