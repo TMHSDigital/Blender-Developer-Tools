@@ -357,7 +357,7 @@ Gallery still is a sky-lit obelisk diptych (8° dusk | 55° midday) so the contr
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a brass 14-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre and its hobbed tooth flanks lit against the stage" /></a>
+<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a brass 14-tooth gear in a small gear train, meshing with a blued 8-tooth pinion and a spoked 22-tooth gunmetal wheel, each bolted through a hub boss to a dark steel backplate on a walnut plinth" /></a>
 </td>
 <td valign="middle">
 

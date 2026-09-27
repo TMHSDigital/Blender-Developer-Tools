@@ -11,23 +11,23 @@ check asserts the closed-form counts — verts = 2 × (4 × teeth), faces = side
 edges = 3 × profile — and that the result is watertight (every edge borders exactly two
 faces). If an op leaks geometry or a face fails to close, the math catches it.
 
-The still leans the gear back on a matte inclined display wedge. Both
-contacts are derived from the posed mesh: the lowest back-cap vertex sits 3 mm
-into the floor, and the wedge's slope lies in the back-cap plane, so the lean
-is carried rather than held in the air.
+The still mounts the checked gear in a small gear train on a painted steel
+backplate over a walnut plinth: a blued 8-tooth pinion above right and a
+22-tooth gunmetal wheel with a spoked web below left, each on a hub boss,
+steel shaft, washer and hex nut. The companions are render-only meshes built
+from the same four-verts-per-tooth profile, pitched to the checked gear
+(pitch radius midway between root and tip, so all three share one circular
+pitch), and each is spun so a gap sits on the line of centres facing a tooth
+of the checked gear. A render-only Bevel modifier chamfers the edges after
+the check has run, so the mesh the check counts is untouched.
 
-The finish follows how a gear blank is actually cut, and the render path
-changes only the material and lights — the mesh the check counts is untouched.
-The caps are lathe-faced: turning marks run concentric about the gear's own
-axis (object coordinates, so they centre on that axis rather than on a
-bounding-box corner), far finer than a pixel, so they read only as a narrow
-satin roughness band and a whisper of bump — the soft highlight that fans
-from the centre. The tooth flanks are hobbed, a rougher finish that spreads
-the light across every facet. The key highlight on the face is a softbox
-placed on the camera ray's reflection about the front cap, and a low bounce
-card gives the downward flanks something to mirror. There is no bore: the
-closed-form topology check counts exactly two rings and two caps, so the
-gear stays a solid blank rather than faking a hole in the shader.
+The checked gear keeps its machined finish: lathe-faced caps whose turning
+marks run concentric about the gear's own axis (object coordinates), far
+finer than a pixel, so they read only as a satin sheen, and rougher hobbed
+tooth flanks. A softbox above and left of the camera gives the brass face
+one warm reflection. There is no bore in the checked gear: the closed-form
+topology check counts exactly two rings and two caps, so the hub boss and nut
+sit on its face rather than faking a hole.
 
 ## Run
 
