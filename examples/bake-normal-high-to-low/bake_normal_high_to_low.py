@@ -222,10 +222,29 @@ def paint_principled(mat, color, metallic, roughness):
     return bsdf
 
 
+BRONZE = (0.62, 0.36, 0.16, 1.0)
+
+
+def bronze(mat):
+    """Cast bronze: metallic, with a noise-mottled roughness so the relief
+    catches broken highlights instead of one smeared sheen. Render only."""
+    nt = mat.node_tree
+    bsdf = paint_principled(mat, BRONZE, 1.0, 0.34)
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 18.0
+    noise.inputs["Detail"].default_value = 6.0
+    rmap = nt.nodes.new("ShaderNodeMapRange")
+    rmap.inputs["To Min"].default_value = 0.24
+    rmap.inputs["To Max"].default_value = 0.48
+    nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+    nt.links.new(rmap.outputs["Result"], bsdf.inputs["Roughness"])
+    return bsdf
+
+
 def wire_normal_map(mat, tex):
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
-    bsdf = paint_principled(mat, (0.22, 0.13, 0.07, 1.0), 0.58, 0.44)
+    bsdf = bronze(mat)
     nrm = nodes.new("ShaderNodeNormalMap")
     nrm.space = "TANGENT"
     links.new(tex.outputs["Color"], nrm.inputs["Color"])
@@ -368,7 +387,7 @@ def make_map_card(image, name="BakeCard"):
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = image
     emit = nodes.new("ShaderNodeEmission")
-    emit.inputs["Strength"].default_value = 1.0
+    emit.inputs["Strength"].default_value = 0.8
     out = nodes.new("ShaderNodeOutputMaterial")
     links.new(tex.outputs["Color"], emit.inputs["Color"])
     links.new(emit.outputs["Emission"], out.inputs["Surface"])
@@ -427,30 +446,65 @@ def seat_on_plinth(ob, name):
     return plinth
 
 
-def render_still(low, mat, tex, path, engine):
+def make_label(text, loc, name):
+    """A small text caption lying on the floor in front of a plinth."""
+    cu = bpy.data.curves.new(name, "FONT")
+    cu.body = text
+    cu.size = 0.22
+    cu.align_x, cu.align_y = "CENTER", "CENTER"
+    cu.extrude = 0.004
+    lm = bpy.data.materials.new(name + "Mat")
+    lm.use_nodes = True
+    b = paint_principled(lm, (0.62, 0.60, 0.56, 1.0), 0.0, 0.5)
+    b.inputs["Emission Color"].default_value = (0.9, 0.86, 0.78, 1.0)
+    b.inputs["Emission Strength"].default_value = 0.35
+    cu.materials.append(lm)
+    ob = bpy.data.objects.new(name, cu)
+    ob.location = loc
+    ob.rotation_euler = (math.radians(62.0), 0.0, 0.0)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
+def render_still(high, low, mat, tex, path, engine):
+    """Left to right: the baked tangent map, the high-poly source it was baked
+    from, and the decimated LOD wearing it. The source and the LOD share one
+    bronze, so the only difference between them is geometry versus map."""
     scene = bpy.context.scene
     for ob in list(scene.objects):
-        if ob.type == "MESH" and ob != low:
+        if ob.type == "MESH" and ob not in (low, high):
             ob.hide_render = True
             ob.hide_viewport = True
+    high_tris = evaluated_triangle_count(high)
+    low_tris = evaluated_triangle_count(low)
 
     wire_normal_map(mat, tex)
     # The solidify rim is the plate's edge, not baked surface: give it plain
     # bronze. Wearing the map, it sampled the UV border and rendered ragged.
     rim = bpy.data.materials.new("BronzeRim")
     rim.use_nodes = True
-    paint_principled(rim, (0.22, 0.13, 0.07, 1.0), 0.58, 0.44)
+    bronze(rim)
     low.data.materials.append(rim)
-    solid = low.modifiers.new("SolidifyDisplay", "SOLIDIFY")
-    solid.thickness = THICKNESS
-    solid.offset = 1.0
-    solid.material_offset_rim = 1
-    low.rotation_euler.x = math.radians(72.0)
-    low.location = (1.20, 0.0, 1.05)
+    src = bpy.data.materials.new("BronzeSource")
+    src.use_nodes = True
+    bronze(src)
+    high.data.materials.clear()
+    high.data.materials.append(src)
+    for ob, x in ((high, 0.35), (low, 3.05)):
+        solid = ob.modifiers.new("SolidifyDisplay", "SOLIDIFY")
+        solid.thickness = THICKNESS
+        solid.offset = 1.0
+        solid.material_offset_rim = 1 if ob is low else 0
+        ob.rotation_euler.x = math.radians(72.0)
+        ob.location = (x, 0.0, 1.05)
     card = make_map_card(tex.image)
-    card.location = (-1.50, 0.0, 1.05)
+    card.location = (-2.45, 0.0, 1.05)
     plinths = [seat_on_plinth(ob, name) for ob, name in
-               ((card, "CardPlinth"), (low, "PlatePlinth"))]
+               ((card, "CardPlinth"), (high, "SourcePlinth"), (low, "PlatePlinth"))]
+    labels = [make_label(t, (x, -1.05, 0.13), f"Label{i}") for i, (t, x) in enumerate((
+        ("BAKED MAP", -2.45),
+        (f"HIGH  {high_tris} tris", 0.35),
+        (f"LOW  {low_tris} tris + map", 3.05)))]
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -492,18 +546,20 @@ def render_still(low, mat, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), 600.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
-    light("Fill", (5.0, -4.0, 3.0), 110.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
-    light("Rim", (0.5, 4.5, 5.0), 350.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
-    light("Wedge", (2.5, 3.5, 4.2), 480.0, 6.0, (1.0, 0.76, 0.5), (-72, 0, 195))
+    # A raking key from low on the left, so the relief on the source and the
+    # baked relief on the LOD both throw light and shade across the ribs.
+    light("Key", (-6.5, -3.5, 2.6), 900.0, 3.0, (1.0, 0.94, 0.86), (72, 0, -62))
+    light("Fill", (5.0, -4.0, 3.0), 90.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
+    light("Rim", (0.5, 4.5, 5.0), 300.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
+    light("Wedge", (2.5, 3.5, 4.2), 520.0, 6.0, (1.0, 0.72, 0.45), (-72, 0, 195))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.4, 3.15)
+    cam.location = (0.42, -12.2, 3.4)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.05)
+    aim.location = (0.42, 0.0, 0.78)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -529,8 +585,8 @@ def render_still(low, mat, tex, path, engine):
     fcode = gallery_framing.check_framing(
         scene,
         cam,
-        hero=[card, low],
-        elements=[card, low] + plinths,
+        hero=[card, high, low],
+        elements=[card, high, low] + plinths + labels,
         stage=[floor, wall],
     )
     if fcode:
@@ -567,7 +623,8 @@ def main():
         tex = next(
             n for n in mat.node_tree.nodes if n.type == "TEX_IMAGE" and n.image == img
         )
-        rcode = render_still(low, mat, tex, os.path.abspath(args.output), args.engine)
+        rcode = render_still(high, low, mat, tex, os.path.abspath(args.output),
+                             args.engine)
         if rcode:
             return rcode
         print(f"rendered still {args.output}")

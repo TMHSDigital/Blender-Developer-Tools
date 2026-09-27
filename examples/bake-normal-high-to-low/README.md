@@ -37,14 +37,20 @@ cage target; collapse keeps UVs) and [`image-pixels-testcard`](../image-pixels-t
 (`save_render`, not `Image.save()`, if you persist the datablock). UV transfer
 and atlas packing are out of scope.
 
-The still stages the baked map as an unlit card beside the LOD wearing it.
-If the bake were flat, the card would be uniform `(128, 128, 255)` periwinkle
-and the plate would shade like the undisplaced cage.
+The still reads left to right as the pipeline: the baked map as an unlit
+card, the high-poly source it was baked from, and the collapse-decimated
+LOD wearing it. Source and LOD share one cast-bronze material, so the only
+difference between them is real geometry versus the map. The floor
+captions carry live triangle counts from the evaluated meshes (3200 vs
+900). A raking key from low on the left makes both the real relief and the
+baked relief throw light and shade. If the bake were flat, the card would
+be uniform `(128, 128, 255)` periwinkle and the right plate would shade
+like the undisplaced cage while the middle one kept its ribs.
 
 Staging is render-only. Each panel stands in a low display plinth, lifted
 so its lowest evaluated point sits 35 mm in the slot. Both panels used to
 balance on an edge, and the leaning plate pierced the floor. The
-solidify rim wears plain bronze instead of the baked map. The slight
+LOD's solidify rim wears plain bronze instead of the baked map. The slight
 waviness along the plate's border is the bake itself, normal-map shading
 inside the UV margin, and is left as the map produces it. Bake
 statistics are unchanged: frac 0.7211, MAD 0.09356 on all three binaries.

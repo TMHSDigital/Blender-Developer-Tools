@@ -913,7 +913,7 @@ makes the density drop visible.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/bake-normal-high-to-low/"><img src="examples/bake-normal-high-to-low/preview.webp" alt="Bake normal high to low: an unlit tangent-space normal map card of a six-lobe riveted hatch beside the collapse-decimated bronze plate wearing that map, dark studio" /></a>
+<a href="examples/bake-normal-high-to-low/"><img src="examples/bake-normal-high-to-low/preview.webp" alt="Bake normal high to low: an unlit tangent-space normal map card, the 3200-tri ribbed bronze source plate, and the 900-tri collapse-decimated plate wearing that map, captioned on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
