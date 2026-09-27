@@ -70,6 +70,7 @@ SELECT = {
     "street-lantern": (r"^LanternLow$", None),
     "hand-pump": (r"^HandPumpLow$", None),
     "basketball-hoop": (r"^HoopLow$", None),
+    "pine-tree": (r"^PineLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

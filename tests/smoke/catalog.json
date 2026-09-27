@@ -111,5 +111,6 @@
   {"name": "butter-churn", "script": "showcase/butter-churn/butter_churn.py"},
   {"name": "bookshelf", "script": "showcase/bookshelf/bookshelf.py"},
   {"name": "book-trolley", "script": "showcase/book-trolley/book_trolley.py"},
-  {"name": "basketball-hoop", "script": "showcase/basketball-hoop/basketball_hoop.py"}
+  {"name": "basketball-hoop", "script": "showcase/basketball-hoop/basketball_hoop.py"},
+  {"name": "pine-tree", "script": "showcase/pine-tree/pine_tree.py"}
 ]

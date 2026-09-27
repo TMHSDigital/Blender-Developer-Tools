@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>37 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>38 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 37 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 38 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>37 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>38 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -146,6 +146,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/bookshelf/"><img src="showcase/bookshelf/preview.webp" width="24%" alt="Bookshelf: a stained wooden bookcase of cloth and leather hardbacks, some standing, some stacked flat and two leaning on their neighbours, on a dark studio floor" /></a>
   <a href="showcase/book-trolley/"><img src="showcase/book-trolley/preview.webp" width="24%" alt="Book trolley: a double-sided wooden library book truck on four casters, two sloped troughs of hardbacks leaning back spines out and loose books stacked on its deck, on a dark studio floor" /></a>
   <a href="showcase/basketball-hoop/"><img src="showcase/basketball-hoop/preview.webp" width="24%" alt="Basketball hoop: an outdoor in-ground goal with a padded steel gooseneck pole, a framed backboard with a red shooter's square, an orange rim and a white corded net, on a dark studio floor" /></a>
+  <a href="showcase/pine-tree/"><img src="showcase/pine-tree/preview.webp" width="24%" alt="Pine tree: a 7 m Scots pine with a red-barked trunk on a flared, rooted base and ten tiers of drooping branches carrying spiky needled shoots, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -217,6 +218,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`book-trolley`](showcase/book-trolley/) — procedural double-sided library book truck on four casters, forty-seven hardbacks in four sloped troughs, whose every book's fore-edge depth in its backrest is recomputed as a band beside its shelf seat, through the same pipeline. Falsifiers `--off-back` and `--deep-back` exit 21, `--skew-caster` exits 19.
 
 [`basketball-hoop`](showcase/basketball-hoop/) — the first `sports` piece: procedural in-ground basketball goal (gooseneck pole swept in one piece, braced board, regulation rim, twelve-loop tapered net), whose rim top height, inside diameter, board gap and level, and every net loop threaded on its rim hook, are recomputed from the mesh, through the same pipeline. Falsifiers `--drop-net` exits 18, `--tilt-rim` 19, `--loose-pad` 20.
+
+[`pine-tree`](showcase/pine-tree/) — the first `nature` piece: procedural Scots pine (buttressed trunk from root flare to leader, ten seeded whorls of crooked limbs, faceted needled shoots, dead stubs, hanging cones), whose every limb's seat in the bark, whorl spacing, trunk plumb and crown balance are recomputed from the mesh, through the same pipeline. Falsifiers `--float-branches` exits 17, `--lean-crown` 19, `--bunch-whorls` 20.
 
 </details>
 
