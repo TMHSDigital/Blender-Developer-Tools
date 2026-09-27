@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>armature-bend — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl." />
+  <meta name="description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/armature-bend/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="armature-bend — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl." />
+  <meta property="og:description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/armature-bend/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/armature-bend-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature." />
+  <meta property="og:image:alt" content="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="armature-bend — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl." />
+  <meta name="twitter:description" content="Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/armature-bend-hero.webp" />
-  <meta name="twitter:image:alt" content="Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature." />
+  <meta name="twitter:image:alt" content="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -347,12 +347,12 @@
   </div>
   <header class="hero">
     <h1>armature-bend</h1>
-    <p>Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl.</p>
+    <p>Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl.</p>
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../grease-pencil-rosette/" aria-label="Previous example: grease-pencil-rosette"><span aria-hidden="true">&larr;</span> grease-pencil-rosette</a><span class="pager-pos hud">19 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../text-version-stamp/" aria-label="Next example: text-version-stamp">text-version-stamp <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature.">
-      <img src="../assets/armature-bend-hero.webp" alt="Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature.">
+      <img src="../assets/armature-bend-hero.webp" alt="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal Σ wᵢ·(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected — a straight tube fails.</div>
@@ -362,11 +362,11 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that rigs a tapered, segmented tube with a four-bone armature chain — <code>edit_bones</code> construction, name-bound vertex groups with smoothstep blend zones, a posed curl — and checks the depsgraph-evaluated result against closed-form linear blend skinning, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
+<p>A runnable example that rigs a tapered, ribbed bellows hose with a four-bone armature chain — <code>edit_bones</code> construction, name-bound vertex groups with smoothstep blend zones, a posed curl — and checks the depsgraph-evaluated result against closed-form linear blend skinning, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
 <p><strong>What it witnesses:</strong> the three contracts AI-generated rigging code most often gets wrong.</p>
 <ol><li><code>edit_bones</code> only exists in edit mode — the collection is asserted empty in object mode and holding the full chain (heads/tails at closed-form positions) inside <code>mode_set(mode=&#x27;EDIT&#x27;)</code>. Outside edit mode, reads silently return nothing.</li><li>Vertex groups bind to bones <strong>by name</strong>; a typo deforms nothing without erroring. Every group here is named after its bone and the deform proves the binding.</li><li>The armature modifier is exactly linear blend skinning: for <em>every</em> vertex, <code>evaluated == Σ wᵢ · (pose_bone.matrix @ bone.matrix_local.inverted()) @ rest</code>. The check re-implements LBS from the pose matrices and compares the whole evaluated mesh (max error ~5e-7). The root ring must stay pinned and the tip must deflect — a straight tube is a failure.</li></ol>
 <p>The armature API is identical on Blender 4.5 LTS and 5.1 — no version gate needed. One portability hazard is baked in as a comment: interleaving <code>color_attributes</code> writes with <code>VertexGroup.add()</code> dangles the attribute reference when the deform layer is allocated (hard crash on 4.5, silent luck on 5.1), so the script finishes all weight writes before creating the color attribute.</p>
-<p>The render shows rest → half curl → full curl left to right, with per-bone weight bands visualized through a <code>BoneTint</code> color attribute — the smooth color blends at the joints are the same weights the LBS check asserts.</p>
+<p>The render shows rest → half curl → full curl left to right. The hose is lathed from an <code>(r, z)</code> profile — brass collars at both ends, a ribbed rubber section between — and every weight is a function of <code>z</code> alone, so the ribs change nothing the LBS check asserts; they make the deformation legible, fanning open on the outside of each bend and crowding on the inside. Per-bone weight bands are visualized through a <code>BoneTint</code> color attribute on the rib crests (a <code>Crest</code> attribute darkens the valleys) — the smooth color blends at the joints are the same weights the check asserts. Each hose stands on a render-only steel foot flange; the render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python armature_bend.py --
@@ -379,16 +379,16 @@ blender --background --python armature_bend.py -- --output bend.png
 blender --background --python armature_bend.py -- --output bend.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td><code>edit_bones</code> populated in object mode</td></tr><tr><td>4</td><td>Edit-mode bone chain off closed form</td></tr><tr><td>5</td><td>Evaluated vertex count changed</td></tr><tr><td>6</td><td>Evaluated mesh off closed-form LBS</td></tr><tr><td>7</td><td>Root ring moved</td></tr><tr><td>8</td><td>Tip did not deflect (<code>--zero-curl</code> lands here)</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td><code>edit_bones</code> populated in object mode</td></tr><tr><td>4</td><td>Edit-mode bone chain off closed form</td></tr><tr><td>5</td><td>Evaluated vertex count changed</td></tr><tr><td>6</td><td>Evaluated mesh off closed-form LBS</td></tr><tr><td>7</td><td>Root ring moved</td></tr><tr><td>8</td><td>Tip did not deflect (<code>--zero-curl</code> lands here)</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Framing gate violation on the <code>--output</code> path (<code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-curl</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/armature-bend/armature_bend.py</code>
-        <span>327 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend/armature_bend.py">View on GitHub &rarr;</a></span>
+        <span>466 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend/armature_bend.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="327">
+      <div class="code" data-lines="466">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -715,7 +715,146 @@ blender --background --python armature_bend.py -- --output bend.png --engine cyc
 324
 325
 326
-327</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;An armature bending a weighted tube, checked against closed-form skinning.
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;An armature bending a weighted tube, checked against closed-form skinning.
 
 Witnesses the three contracts AI-generated rigging code most often gets wrong:
 
@@ -747,19 +886,57 @@ check. Pass --output to also render a still:
     blender --background --python armature_bend.py -- --output b.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see</span>
+<span class="c"># gallery_framing.py for the __file__-relative import shim this relies on.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 BONES = <span class="n">4</span>
 BONE_LEN = <span class="n">1.0</span>
 HEIGHT = BONES * BONE_LEN
-SIDES = <span class="n">24</span>
-RINGS = <span class="n">41</span>                      <span class="c"># vertex rings along the tube, tip cap included</span>
-R_BASE = <span class="n">0.34</span>
-R_TIP = <span class="n">0.16</span>
+SIDES = <span class="n">32</span>
 BLEND = <span class="n">0.3</span>                     <span class="c"># half-width of the weight blend zone at each joint</span>
 CURL_DEG = <span class="n">34.0</span>                 <span class="c"># per-joint bend for the full pose</span>
 LBS_TOL = <span class="n">5e-4</span>                  <span class="c"># float32 mesh coords vs double pose matrices</span>
 <span class="c"># one tint per bone so the render shows the weight bands the check asserts</span>
 PALETTE = [(<span class="n">0.02</span>, <span class="n">0.28</span>, <span class="n">0.38</span>), (<span class="n">0.0</span>, <span class="n">0.55</span>, <span class="n">0.55</span>), (<span class="n">0.95</span>, <span class="n">0.52</span>, <span class="n">0.12</span>), (<span class="n">0.85</span>, <span class="n">0.16</span>, <span class="n">0.18</span>)]
+
+<span class="c"># The tube is a ribbed bellows hose between two brass collars, lathed from an</span>
+<span class="c"># (r, z, part) profile: part 0 is brass, part 1 the ribbed hose. Every weight</span>
+<span class="c"># is still a function of z alone, so the closed-form LBS check is unchanged;</span>
+<span class="c"># the ribs just make the deformation legible (they fan open on the outside of</span>
+<span class="c"># each bend and crowd together on the inside).</span>
+HOSE_Z0, HOSE_Z1 = <span class="n">0.44</span>, <span class="n">3.58</span>   <span class="c"># ribbed section; the collars sit inside bone 0 / bone 3</span>
+HOSE_R0, HOSE_R1 = <span class="n">0.31</span>, <span class="n">0.19</span>   <span class="c"># hose valley radius, root -&gt; tip</span>
+RIB_AMP = <span class="n">0.045</span>                 <span class="c"># crest height above the valley</span>
+RIB_PERIOD = <span class="n">0.13</span>
+RIB_SAMPLES = <span class="n">8</span>                 <span class="c"># profile rings per rib</span>
+
+
+<span class="k">def</span> hose_profile():
+    <span class="s">&quot;&quot;&quot;(r, z, part, crest) rings bottom to top; crest in [0, 1] (1 on a rib crest).&quot;&quot;&quot;</span>
+    prof = [(<span class="n">0.45</span>, <span class="n">0.00</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.47</span>, <span class="n">0.02</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.47</span>, <span class="n">0.15</span>, <span class="n">0</span>, <span class="n">0.0</span>),
+            (<span class="n">0.45</span>, <span class="n">0.17</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.39</span>, <span class="n">0.17</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.39</span>, <span class="n">0.29</span>, <span class="n">0</span>, <span class="n">0.0</span>),
+            (<span class="n">0.41</span>, <span class="n">0.31</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.41</span>, <span class="n">0.40</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.38</span>, <span class="n">0.42</span>, <span class="n">0</span>, <span class="n">0.0</span>),
+            (HOSE_R0, HOSE_Z0, <span class="n">1</span>, <span class="n">0.0</span>)]
+    ribs = max(<span class="n">1</span>, round((HOSE_Z1 - HOSE_Z0) / RIB_PERIOD))
+    n = ribs * RIB_SAMPLES
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, n + <span class="n">1</span>):
+        f = k / n
+        z = HOSE_Z0 + (HOSE_Z1 - HOSE_Z0) * f
+        crest = abs(math.sin(math.pi * ribs * f)) ** <span class="n">0.6</span>   <span class="c"># rounded crests, pinched valleys</span>
+        r = HOSE_R0 + (HOSE_R1 - HOSE_R0) * f + RIB_AMP * crest
+        prof.append((r, z, <span class="n">1</span>, crest))
+    prof += [(<span class="n">0.24</span>, <span class="n">3.61</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.27</span>, <span class="n">3.63</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.27</span>, <span class="n">3.80</span>, <span class="n">0</span>, <span class="n">0.0</span>),
+             (<span class="n">0.25</span>, <span class="n">3.82</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.20</span>, <span class="n">3.82</span>, <span class="n">0</span>, <span class="n">0.0</span>), (<span class="n">0.20</span>, <span class="n">3.97</span>, <span class="n">0</span>, <span class="n">0.0</span>),
+             (<span class="n">0.18</span>, HEIGHT, <span class="n">0</span>, <span class="n">0.0</span>)]
+    <span class="k">return</span> prof
+
+
+PROFILE = hose_profile()
+RINGS = len(PROFILE)            <span class="c"># vertex rings along the tube, tip cap included</span>
 
 BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span class="s">&quot;</span> <span class="k">for</span> i <span class="k">in</span> range(BONES)]
 
@@ -783,15 +960,16 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     bm = bmesh.new()
     <span class="k">try</span>:
         rings = []
-        <span class="k">for</span> k <span class="k">in</span> range(RINGS):
-            f = k / (RINGS - <span class="n">1</span>)
-            z, r = HEIGHT * f, R_BASE + (R_TIP - R_BASE) * f
+        <span class="k">for</span> r, z, _part, _crest <span class="k">in</span> PROFILE:
             rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
                           <span class="k">for</span> a <span class="k">in</span> (<span class="n">2</span> * math.pi * s / SIDES <span class="k">for</span> s <span class="k">in</span> range(SIDES))])
         <span class="k">for</span> k <span class="k">in</span> range(RINGS - <span class="n">1</span>):
+            <span class="c"># a band is brass only when both of its rings are brass</span>
+            part = <span class="n">1</span> <span class="k">if</span> (PROFILE[k][<span class="n">2</span>] <span class="k">or</span> PROFILE[k + <span class="n">1</span>][<span class="n">2</span>]) <span class="k">else</span> <span class="n">0</span>
             <span class="k">for</span> s <span class="k">in</span> range(SIDES):
-                bm.faces.new((rings[k][s], rings[k][(s + <span class="n">1</span>) % SIDES],
-                              rings[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], rings[k + <span class="n">1</span>][s]))
+                f = bm.faces.new((rings[k][s], rings[k][(s + <span class="n">1</span>) % SIDES],
+                                  rings[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], rings[k + <span class="n">1</span>][s]))
+                f.material_index = part
         bm.faces.new(list(reversed(rings[<span class="n">0</span>])))
         bm.faces.new(rings[-<span class="n">1</span>])
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
@@ -800,6 +978,8 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
         bm.free()
     <span class="k">for</span> poly <span class="k">in</span> me.polygons:
         poly.use_smooth = <span class="k">True</span>
+    <span class="c"># collars keep crisp machined steps; the rubber ribs stay smooth</span>
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">50.0</span>))
     obj = bpy.data.objects.new(<span class="s">&quot;Tube&quot;</span>, me)
     bpy.context.collection.objects.link(obj)
     <span class="k">return</span> obj
@@ -825,6 +1005,10 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
         w = bone_weights(v.co.z / BONE_LEN)
         rgb = [sum(w[i] * PALETTE[i][c] <span class="k">for</span> i <span class="k">in</span> range(BONES)) <span class="k">for</span> c <span class="k">in</span> range(<span class="n">3</span>)]
         col.data[idx].color = (*rgb, <span class="n">1.0</span>)
+    <span class="c"># rib crests catch the bone tint, valleys fall to dark rubber (render only)</span>
+    crest = tube.data.attributes.new(<span class="s">&quot;Crest&quot;</span>, <span class="s">&#x27;FLOAT&#x27;</span>, <span class="s">&#x27;POINT&#x27;</span>)
+    crest.data.foreach_set(<span class="s">&quot;value&quot;</span>, [PROFILE[i // SIDES][<span class="n">3</span>]
+                                     <span class="k">for</span> i <span class="k">in</span> range(len(tube.data.vertices))])
 
     arm_data = bpy.data.armatures.new(<span class="s">&quot;Chain&quot;</span>)
     arm = bpy.data.objects.new(<span class="s">&quot;Chain&quot;</span>, arm_data)
@@ -923,22 +1107,108 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
 <span class="k">def</span> render_still(rigs, path, engine):
     scene = bpy.context.scene
 
-    mat = bpy.data.materials.new(<span class="s">&quot;WeightBands&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    nt = mat.node_tree
+    <span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, noise=<span class="k">None</span>):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = <span class="k">True</span>
+        b = m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+        <span class="k">if</span> noise:
+            <span class="c"># machining/handling wear: a noise-mottled roughness, never a flat slot</span>
+            nt = m.node_tree
+            tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+            tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise
+            tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+            mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+            mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = rough - <span class="n">0.08</span>
+            mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough + <span class="n">0.14</span>
+            nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+            nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+        <span class="k">return</span> m
+
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.56</span>, <span class="n">0.24</span>), <span class="n">0.26</span>, metal=<span class="n">1.0</span>, noise=<span class="n">28.0</span>)
+    steel = principled(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.205</span>, <span class="n">0.22</span>), <span class="n">0.34</span>, metal=<span class="n">0.9</span>, noise=<span class="n">18.0</span>)
+
+    <span class="c"># the hose: bone tint on the rib crests, dark rubber down in the valleys,</span>
+    <span class="c"># so the weight bands the LBS check asserts still read as colour</span>
+    hose = bpy.data.materials.new(<span class="s">&quot;WeightBands&quot;</span>)
+    hose.use_nodes = <span class="k">True</span>
+    nt = hose.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    attr = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
-    attr.attribute_name = <span class="s">&quot;BoneTint&quot;</span>
-    nt.links.new(attr.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
+    tint = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tint.attribute_name = <span class="s">&quot;BoneTint&quot;</span>
+    crest = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    crest.attribute_name = <span class="s">&quot;Crest&quot;</span>
+    fac = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    fac.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.10</span>
+    nt.links.new(crest.outputs[<span class="s">&quot;Fac&quot;</span>], fac.inputs[<span class="s">&quot;Value&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    mix.inputs[<span class="n">6</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.012</span>, <span class="n">0.014</span>, <span class="n">1.0</span>)     <span class="c"># A: valley rubber</span>
+    nt.links.new(fac.outputs[<span class="s">&quot;Result&quot;</span>], mix.inputs[<span class="n">0</span>])
+    nt.links.new(tint.outputs[<span class="s">&quot;Color&quot;</span>], mix.inputs[<span class="n">7</span>])           <span class="c"># B: bone tint</span>
+    nt.links.new(mix.outputs[<span class="n">2</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.46</span>
+    bsdf.inputs[<span class="s">&quot;Specular IOR Level&quot;</span>].default_value = <span class="n">0.3</span>
+
+    <span class="c"># a machined steel foot flange per hose, six brass bolt heads on its rim</span>
+    <span class="k">def</span> flange(x):
+        me = bpy.data.meshes.new(<span class="s">&quot;Flange&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            prof = [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.74</span>, <span class="n">0.0</span>), (<span class="n">0.78</span>, <span class="n">0.03</span>), (<span class="n">0.78</span>, <span class="n">0.09</span>), (<span class="n">0.74</span>, <span class="n">0.12</span>),
+                    (<span class="n">0.50</span>, <span class="n">0.12</span>), (<span class="n">0.48</span>, <span class="n">0.15</span>), (<span class="n">0.0</span>, <span class="n">0.15</span>)]
+            rings = []
+            <span class="k">for</span> r, z <span class="k">in</span> prof:
+                <span class="k">if</span> r == <span class="n">0.0</span>:
+                    rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+                <span class="k">else</span>:
+                    rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / <span class="n">48</span>),
+                                                r * math.sin(<span class="n">2</span> * math.pi * s / <span class="n">48</span>), z))
+                                  <span class="k">for</span> s <span class="k">in</span> range(<span class="n">48</span>)])
+            <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+                <span class="k">for</span> s <span class="k">in</span> range(<span class="n">48</span>):
+                    t = (s + <span class="n">1</span>) % <span class="n">48</span>
+                    <span class="k">if</span> len(a) == <span class="n">1</span>:
+                        f = bm.faces.new((a[<span class="n">0</span>], b[t], b[s]))
+                    <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                        f = bm.faces.new((a[s], a[t], b[<span class="n">0</span>]))
+                    <span class="k">else</span>:
+                        f = bm.faces.new((a[s], a[t], b[t], b[s]))
+                    f.smooth = <span class="k">True</span>
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>):
+                ang = <span class="n">2</span> * math.pi * (k + <span class="n">0.5</span>) / <span class="n">6</span>
+                res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">6</span>, radius1=<span class="n">0.055</span>,
+                                            radius2=<span class="n">0.055</span>, depth=<span class="n">0.05</span>)
+                <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+                    v.co += Vector((<span class="n">0.62</span> * math.cos(ang), <span class="n">0.62</span> * math.sin(ang), <span class="n">0.145</span>))
+                <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+                    f.material_index = <span class="n">1</span>
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.set_sharp_from_angle(angle=math.radians(<span class="n">40.0</span>))
+        me.materials.append(steel)
+        me.materials.append(brass)
+        ob = bpy.data.objects.new(<span class="s">&quot;Flange&quot;</span>, me)
+        ob.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
 
     <span class="c"># rest -&gt; half curl -&gt; full curl, left to right; the rigs are rotated so</span>
-    <span class="c"># the curl sweeps across the picture plane instead of away from camera</span>
+    <span class="c"># the curl sweeps across the picture plane instead of away from camera.</span>
+    <span class="c"># Each rig stands on its flange (lifted by the flange&#x27;s 0.15 height).</span>
+    tubes, flanges = [], []
     <span class="k">for</span> (tube, arm), x <span class="k">in</span> zip(rigs, (-<span class="n">3.1</span>, -<span class="n">0.6</span>, <span class="n">2.4</span>)):
         <span class="k">for</span> ob <span class="k">in</span> (tube, arm):
-            ob.location.x = x
+            ob.location = (x, <span class="n">0.0</span>, <span class="n">0.15</span>)
             ob.rotation_euler.z = math.radians(<span class="n">90.0</span>)
-        tube.data.materials.append(mat)
+        tube.data.materials.append(brass)       <span class="c"># material index 0: collars</span>
+        tube.data.materials.append(hose)        <span class="c"># material index 1: ribbed hose</span>
+        tubes.append(tube)
+        flanges.append(flange(x))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -977,16 +1247,16 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     <span class="c"># side of each tube stays legible, a cool rim to lift the silhouettes off</span>
     <span class="c"># the backdrop, and a warm wedge raking the back wall — the falloff pool</span>
     <span class="c"># behind the subjects that the rest of the gallery stages against.</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">650.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">520.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">480.0</span>, <span class="n">3.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">70.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">3.0</span>, <span class="n">5.5</span>), <span class="n">160.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">40</span>, <span class="n">0</span>, <span class="n">180</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">3.0</span>, <span class="n">5.0</span>, <span class="n">4.0</span>), <span class="n">760.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">192</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">45.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (-<span class="n">0.3</span>, -<span class="n">10.5</span>, <span class="n">2.4</span>)
-    cam.rotation_euler = (math.radians(<span class="n">87</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (-<span class="n">0.2</span>, -<span class="n">11.6</span>, <span class="n">2.75</span>)
+    cam.rotation_euler = (math.radians(<span class="n">86</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
@@ -1005,8 +1275,14 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     <span class="c"># AgX (the 4.x/5.x default) desaturates the BoneTint bands toward pastel,</span>
     <span class="c"># hiding exactly the weight boundaries the LBS check asserts.</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate before the beauty render (exit 10 on violation)</span>
+    fcode = gallery_framing.check_framing(scene, cam, hero=tubes,
+                                          elements=tubes + flanges, stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">9</span>
 
 
 <span class="k">def</span> main():
@@ -1028,9 +1304,11 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
 
     <span class="k">if</span> args.output:
         rigs = [build_rig(<span class="n">0.0</span>), build_rig(CURL_DEG / <span class="n">2</span>), (tube, arm)]
-        <span class="k">if</span> <span class="k">not</span> render_still(rigs, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+        rcode = render_still(rigs, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">if</span> rcode == <span class="n">9</span>:
+                print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;armature-bend OK&quot;</span>)
@@ -1081,7 +1359,7 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/armature-bend-hero.webp" alt="Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature." />
+    <img src="../assets/armature-bend-hero.webp" alt="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." />
   </dialog>
   <footer>
     <div class="statusbar">

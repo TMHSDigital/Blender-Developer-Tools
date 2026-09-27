@@ -735,7 +735,7 @@ toward the core (dot ≥ 0.998).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/armature-bend/"><img src="examples/armature-bend/preview.webp" alt="Armature bend: three tapered tubes on a dark studio floor showing rest, half, and full curl under a four-bone armature, per-bone weight bands blending teal through amber to coral at the joints" /></a>
+<a href="examples/armature-bend/"><img src="examples/armature-bend/preview.webp" alt="Armature bend: three ribbed bellows hoses on steel foot flanges showing rest, half, and full curl under a four-bone armature, per-bone weight bands blending teal through amber to coral at the joints" /></a>
 </td>
 <td valign="middle">
 

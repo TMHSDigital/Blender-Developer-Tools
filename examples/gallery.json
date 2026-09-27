@@ -244,8 +244,8 @@
     {
       "name": "armature-bend",
       "dir": "examples/armature-bend",
-      "teaches": "Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl.",
-      "alt": "Three tapered tubes, coral to amber to teal, standing straight, half curled and fully curled by an armature.",
+      "teaches": "Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl.",
+      "alt": "Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature.",
       "witnessesFix": "edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal Σ wᵢ·(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected — a straight tube fails.",
       "hero": "docs/gallery/assets/armature-bend-hero.webp",
       "preview": "examples/armature-bend/preview.webp",

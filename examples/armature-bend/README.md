@@ -1,6 +1,6 @@
 # Armature Bend
 
-A runnable example that rigs a tapered, segmented tube with a four-bone armature chain —
+A runnable example that rigs a tapered, ribbed bellows hose with a four-bone armature chain —
 `edit_bones` construction, name-bound vertex groups with smoothstep blend zones, a posed
 curl — and checks the depsgraph-evaluated result against closed-form linear blend
 skinning, following [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md)
@@ -25,9 +25,14 @@ with `VertexGroup.add()` dangles the attribute reference when the deform layer i
 allocated (hard crash on 4.5, silent luck on 5.1), so the script finishes all weight
 writes before creating the color attribute.
 
-The render shows rest → half curl → full curl left to right, with per-bone weight
-bands visualized through a `BoneTint` color attribute — the smooth color blends at the
-joints are the same weights the LBS check asserts.
+The render shows rest → half curl → full curl left to right. The hose is lathed from an
+`(r, z)` profile — brass collars at both ends, a ribbed rubber section between — and every
+weight is a function of `z` alone, so the ribs change nothing the LBS check asserts; they make
+the deformation legible, fanning open on the outside of each bend and crowding on the inside.
+Per-bone weight bands are visualized through a `BoneTint` color attribute on the rib crests
+(a `Crest` attribute darkens the valleys) — the smooth color blends at the joints are the same
+weights the check asserts. Each hose stands on a render-only steel foot flange; the render path
+gates framing through `examples/gallery_framing.py` (exit 10) before writing the still.
 
 ## Run
 
@@ -60,6 +65,7 @@ against it.
 | 7 | Root ring moved |
 | 8 | Tip did not deflect (`--zero-curl` lands here) |
 | 9 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
