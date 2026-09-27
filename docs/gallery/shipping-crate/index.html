@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shipping-crate-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board." />
+  <meta property="og:image:alt" content="A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="shipping-crate — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shipping-crate-hero.webp" />
-  <meta name="twitter:image:alt" content="A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board." />
+  <meta name="twitter:image:alt" content="A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,11 +351,11 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><span></span><span class="pager-pos hud">1 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../stone-well/" aria-label="Next showcase piece: stone-well">stone-well <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board.">
-      <img src="../assets/shipping-crate-hero.webp" alt="A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end.">
+      <img src="../assets/shipping-crate-hero.webp" alt="A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2508 tris, two materials with 1170 wood and 280 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 76 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3388 tris, two materials with 1170 wood and 904 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 116 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/shipping-crate/shipping_crate.py --</pre>
@@ -368,7 +368,7 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2900–3900</td><td>3388 / 3388 / 3388</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2196 / 0.2196 / 0.2196</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥900 wood, ≥600 metal faces</td><td>2 slots; 1170 / 904</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.146, 0.726, 0.612) m ± 0.015</td><td>(1.1460, 0.7260, 0.6120), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 220</td><td>116</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>273816 / 273816 / 273800 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2900–3900</td><td>3388 / 3388 / 3388</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2196 / 0.2196 / 0.2196</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥900 wood, ≥600 metal faces</td><td>2 slots; 1170 / 904</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.146, 0.726, 0.612) m ± 0.015</td><td>(1.1460, 0.7260, 0.6120), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 220</td><td>116</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>274624 (4.5.11) / 274680 (5.2.1) bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>624 to 2508</strong> in the quality pass: the old beveled cube with glued-on slats became a post-and-slat crate with tenons, sills, L-straps, and pipe handles. The second pass took them to <strong>3388</strong>: single-shell chamfered straps, 24 nails, chamfered mounting plates.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series; on this mesh they happen to match (LOD2 744 on all three). The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Slat-width jitter uses fixed seed 17. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3 id="hygiene">Hygiene<a class="anchor" href="#hygiene" aria-label="Link to this section">#</a></h3>
@@ -380,6 +380,9 @@
 <p>The inspection sheet found the iron and the handles built the way <code>crate-stack</code> used to build them:</p>
 <ul><li><strong>Straps were two unbevelled boxes per corner.</strong> That left a seam line down the outer corner, razor edges, and an inner face sitting flush on the post face. Each strap is now one L-section extrusion that bites <code>IRON_BITE</code> into the post. It is chamfered at <code>IRON_BEVEL</code> with <code>material=METAL_IDX</code>, since bevel otherwise hands chamfer faces slot 0. Code copied from <code>crate-stack</code>, not imported.</li><li><strong>No fasteners.</strong> Three nail stations per plate, 24 nails, placed from each plate&#x27;s own outer face and normal. <code>nail_audit</code> asserts the seat band (exit 18, <code>--float-nails</code>).</li><li><strong>The handle mounting plates straddled the gap between two end boards.</strong> The handle sat at a fixed 52% of post height, which landed on a gap. It now snaps to the centre of the end board nearest that height, from the same <code>_span_layout</code> the boards come from. <code>plate_board_audit</code> asserts each plate sits inside one board with clearance at both edges (exit 20, <code>--straddle-handle</code>, which puts the handle on a gap and measures −26.9 mm).</li><li><strong>Every plank was the same flat tone.</strong> <code>PlankTone</code> / <code>GrainDir</code> face attributes drive a grain-along-the-board wood shader. The iron gets rust wear.</li><li>The temp glTF export is removed after it is measured.</li></ul>
 <p>The right-angle-edge budget from <code>crate-stack</code> is not applied here: the handle bail&#x27;s pipe ends are square discs buried in the mounting plates, so &quot;every box is chamfered&quot; does not hold for this piece.</p>
+<h3 id="third-pass-stencil-hero-angle">Third pass (stencil, hero angle)<a class="anchor" href="#third-pass-stencil-hero-angle" aria-label="Link to this section">#</a></h3>
+<p>The crate read as a plain plank box: nothing on it said what it was for. Its front long side (-Y) now carries stencilled cargo marks, PORT ROYAL over NO 17. They are surface only: a 5x7 bitmap font painted into a small image covering the side in object space, cubic-filtered and thresholded into rounded stencil strokes, bitten by a fine overspray noise, and masked to the -Y faces. Each line is centred on one long slat, replayed from the same seeded <code>_span_layout</code> that places the slats, and its 64 mm cap height fits inside the board, so the baseline runs along the board. The first cut let both lines straddle a gap, which in perspective read as lettering sloping across the slats. The image node is deselected so the normal bake never targets it. Geometry, triangles, material face counts and every budget are unchanged; the glTF grows by about 800 bytes.</p>
+<p>The hero turned the crate -48 degrees, which put the long side edge-on. The camera sits at about -51 degrees azimuth, so the crate now turns +15 degrees: the stencilled side is 24 degrees off the view axis and the handle end 66 degrees, a three-quarter view led by the lettering. An intermediate -20 degrees left the side 59 degrees off-axis, where the stencil foreshortened into a steep italic. The key is brighter and the stage is 60 m (the 14 m grid could show its edge).</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-skids</code></td><td>named skid supports at Z=0</td><td>16</td></tr><tr><td><code>--float-handle</code></td><td>handle-end gap</td><td>17</td></tr><tr><td><code>--omit-slats</code></td><td>slat-post seat</td><td>18</td></tr><tr><td><code>--float-nails</code></td><td>nail seat band (heads lifted 1.5 mm off the straps)</td><td>18</td></tr><tr><td><code>--straddle-handle</code></td><td>handle plates on one end board</td><td>20</td></tr></tbody></table></div>
@@ -403,9 +406,9 @@ blender --background --python shipping_crate.py -- --output crate.png</code></pr
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/shipping-crate/shipping_crate.py</code>
-        <span>1569 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/shipping-crate/shipping_crate.py">View on GitHub &rarr;</a></span>
+        <span>1707 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/shipping-crate/shipping_crate.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1569">
+      <div class="code" data-lines="1707">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1974,7 +1977,145 @@ blender --background --python shipping_crate.py -- --output crate.png</code></pr
 1566
 1567
 1568
-1569</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready shipping crate — a showcase piece, not an example.
+1569
+1570
+1571
+1572
+1573
+1574
+1575
+1576
+1577
+1578
+1579
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600
+1601
+1602
+1603
+1604
+1605
+1606
+1607
+1608
+1609
+1610
+1611
+1612
+1613
+1614
+1615
+1616
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700
+1701
+1702
+1703
+1704
+1705
+1706
+1707</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready shipping crate — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural crate (skids, corner posts,
 tenoned slats with seeded width jitter, nailed single-shell L-straps,
@@ -2100,6 +2241,138 @@ PLATE_H = <span class="n">0.044</span>
 PLATE_BOARD_MARGIN = <span class="n">0.004</span>
 PLANK_TONE_JITTER = <span class="n">0.28</span>
 TONE_SEED = <span class="n">29</span>
+
+<span class="c"># Stencilled cargo marks on the front long side (-Y). Surface only: a 5x7</span>
+<span class="c"># bitmap font painted into a small image covering the side in object space,</span>
+<span class="c"># cubic-filtered and thresholded into rounded stencil strokes, masked to the</span>
+<span class="c"># -Y faces. Each line is centred on one long slat (index from the bottom,</span>
+<span class="c"># replayed from the same seeded _span_layout that places the slats) and is</span>
+<span class="c"># shorter than the slat, so its baseline runs along the board rather than</span>
+<span class="c"># across a gap: a line straddling a gap reads as sloping in perspective.</span>
+STENCIL_LINES = ((<span class="s">&quot;PORT ROYAL&quot;</span>, <span class="n">0.0</span>, <span class="n">3</span>), (<span class="s">&quot;NO 17&quot;</span>, <span class="n">0.0</span>, <span class="n">1</span>))
+STENCIL_PX = <span class="n">0.0092</span>           <span class="c"># metres per font pixel: 7 px = 64 mm &lt; slat</span>
+STENCIL_REGION = (-<span class="n">0.47</span>, <span class="n">0.47</span>, <span class="n">0.10</span>, <span class="n">0.56</span>)   <span class="c"># object-space x0, x1, z0, z1</span>
+
+<span class="c"># 5x7 bitmap glyphs, top row first; only the characters STENCIL_LINES uses.</span>
+GLYPHS = {
+    <span class="s">&quot;A&quot;</span>: (<span class="s">&quot;01110&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;11111&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>),
+    <span class="s">&quot;L&quot;</span>: (<span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;11111&quot;</span>),
+    <span class="s">&quot;N&quot;</span>: (<span class="s">&quot;10001&quot;</span>, <span class="s">&quot;11001&quot;</span>, <span class="s">&quot;10101&quot;</span>, <span class="s">&quot;10011&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>),
+    <span class="s">&quot;O&quot;</span>: (<span class="s">&quot;01110&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;01110&quot;</span>),
+    <span class="s">&quot;P&quot;</span>: (<span class="s">&quot;11110&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;11110&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>, <span class="s">&quot;10000&quot;</span>),
+    <span class="s">&quot;R&quot;</span>: (<span class="s">&quot;11110&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;11110&quot;</span>, <span class="s">&quot;10100&quot;</span>, <span class="s">&quot;10010&quot;</span>, <span class="s">&quot;10001&quot;</span>),
+    <span class="s">&quot;T&quot;</span>: (<span class="s">&quot;11111&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>),
+    <span class="s">&quot;Y&quot;</span>: (<span class="s">&quot;10001&quot;</span>, <span class="s">&quot;10001&quot;</span>, <span class="s">&quot;01010&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>),
+    <span class="s">&quot;1&quot;</span>: (<span class="s">&quot;00100&quot;</span>, <span class="s">&quot;01100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;01110&quot;</span>),
+    <span class="s">&quot;7&quot;</span>: (<span class="s">&quot;11111&quot;</span>, <span class="s">&quot;00001&quot;</span>, <span class="s">&quot;00010&quot;</span>, <span class="s">&quot;00100&quot;</span>, <span class="s">&quot;01000&quot;</span>, <span class="s">&quot;01000&quot;</span>, <span class="s">&quot;01000&quot;</span>),
+    <span class="s">&quot; &quot;</span>: (<span class="s">&quot;00000&quot;</span>,) * <span class="n">7</span>,
+}
+
+
+<span class="k">def</span> long_slat_centres():
+    <span class="s">&quot;&quot;&quot;World-z centre of each long side slat, bottom to top.
+
+    Replays the seeded draws build_crate_mesh makes before the long slats
+    (floor, then lid), so the stencil lands on the boards actually built.
+    &quot;&quot;&quot;</span>
+    ix, _iy, iz = INNER
+    rng = random.Random(SLAT_SEED)
+    _span_layout(N_FLOOR, ix, rng)
+    _span_layout(N_LID, ix + POST * <span class="n">0.5</span>, rng)
+    long_c, _long_w = _span_layout(N_LONG, iz - <span class="n">0.04</span>, rng)
+    <span class="k">return</span> [SKID_H + <span class="n">0.02</span> + iz / <span class="n">2.0</span> + c <span class="k">for</span> c <span class="k">in</span> long_c]
+
+
+<span class="k">def</span> stencil_image():
+    <span class="s">&quot;&quot;&quot;Paint STENCIL_LINES into a greyscale image covering STENCIL_REGION.&quot;&quot;&quot;</span>
+    x0, x1, z0, z1 = STENCIL_REGION
+    w = int(round((x1 - x0) / STENCIL_PX))
+    h = int(round((z1 - z0) / STENCIL_PX))
+    buf = [<span class="n">0.0</span>] * (w * h)
+    slat_z = long_slat_centres()
+    <span class="k">for</span> text, cx, board <span class="k">in</span> STENCIL_LINES:
+        cz = slat_z[board]
+        cols = len(text) * <span class="n">6</span> - <span class="n">1</span>
+        px0 = int(round((cx - x0) / STENCIL_PX - cols / <span class="n">2.0</span>))
+        pz0 = int(round((cz - z0) / STENCIL_PX - <span class="n">3.5</span>))
+        <span class="k">for</span> k, ch <span class="k">in</span> enumerate(text):
+            rows = GLYPHS[ch]
+            <span class="k">for</span> r <span class="k">in</span> range(<span class="n">7</span>):
+                <span class="k">for</span> c <span class="k">in</span> range(<span class="n">5</span>):
+                    <span class="k">if</span> rows[r][c] == <span class="s">&quot;1&quot;</span>:
+                        px, pz = px0 + k * <span class="n">6</span> + c, pz0 + (<span class="n">6</span> - r)
+                        <span class="k">if</span> <span class="n">0</span> &lt;= px &lt; w <span class="k">and</span> <span class="n">0</span> &lt;= pz &lt; h:
+                            buf[pz * w + px] = <span class="n">1.0</span>
+    img = bpy.data.images.new(<span class="s">&quot;CrateStencil&quot;</span>, w, h, alpha=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    img.pixels.foreach_set([c <span class="k">for</span> v <span class="k">in</span> buf <span class="k">for</span> c <span class="k">in</span> (v, v, v, <span class="n">1.0</span>)])
+    <span class="k">return</span> img
+
+
+<span class="k">def</span> add_stencil(mat):
+    <span class="s">&quot;&quot;&quot;Spray STENCIL_LINES over the wood colour on the -Y faces.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    base = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].links[<span class="n">0</span>].from_socket
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    x0, x1, z0, z1 = STENCIL_REGION
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    uu = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    uu.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = x0
+    uu.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = x1
+    nt.links.new(sep.outputs[<span class="s">&quot;X&quot;</span>], uu.inputs[<span class="s">&quot;Value&quot;</span>])
+    vv = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    vv.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = z0
+    vv.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = z1
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], vv.inputs[<span class="s">&quot;Value&quot;</span>])
+    uvw = nt.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    nt.links.new(uu.outputs[<span class="s">&quot;Result&quot;</span>], uvw.inputs[<span class="s">&quot;X&quot;</span>])
+    nt.links.new(vv.outputs[<span class="s">&quot;Result&quot;</span>], uvw.inputs[<span class="s">&quot;Y&quot;</span>])
+    img = nt.nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    img.image = stencil_image()
+    img.interpolation = <span class="s">&quot;Cubic&quot;</span>
+    img.extension = <span class="s">&quot;CLIP&quot;</span>
+    <span class="c"># never the bake target: the normal bake writes into the active, selected</span>
+    <span class="c"># image node of each material, and this one is paint</span>
+    img.select = <span class="k">False</span>
+    nt.links.new(uvw.outputs[<span class="s">&quot;Vector&quot;</span>], img.inputs[<span class="s">&quot;Vector&quot;</span>])
+    stroke = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    stroke.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.26</span>
+    stroke.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.44</span>
+    nt.links.new(img.outputs[<span class="s">&quot;Color&quot;</span>], stroke.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># overspray: a fine noise eats into the paint so it reads as sprayed</span>
+    spray = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    spray.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">90.0</span>
+    spray.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], spray.inputs[<span class="s">&quot;Vector&quot;</span>])
+    bite = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    bite.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.30</span>
+    bite.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.55</span>
+    bite.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    bite.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(spray.outputs[<span class="s">&quot;Fac&quot;</span>], bite.inputs[<span class="s">&quot;Value&quot;</span>])
+    nsep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Normal&quot;</span>], nsep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    front = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    front.operation = <span class="s">&quot;LESS_THAN&quot;</span>
+    front.inputs[<span class="n">1</span>].default_value = -<span class="n">0.9</span>
+    nt.links.new(nsep.outputs[<span class="s">&quot;Y&quot;</span>], front.inputs[<span class="n">0</span>])
+    fac = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    fac.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(stroke.outputs[<span class="s">&quot;Result&quot;</span>], fac.inputs[<span class="n">0</span>])
+    nt.links.new(front.outputs[<span class="s">&quot;Value&quot;</span>], fac.inputs[<span class="n">1</span>])
+    fac2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    fac2.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(fac.outputs[<span class="s">&quot;Value&quot;</span>], fac2.inputs[<span class="n">0</span>])
+    nt.links.new(bite.outputs[<span class="s">&quot;Result&quot;</span>], fac2.inputs[<span class="n">1</span>])
+    paint = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    paint.data_type = <span class="s">&quot;RGBA&quot;</span>
+    _sock(paint.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.022</span>, <span class="n">0.020</span>, <span class="n">0.019</span>, <span class="n">1.0</span>)
+    nt.links.new(fac2.outputs[<span class="s">&quot;Value&quot;</span>], _sock(paint.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(base, _sock(paint.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(_sock(paint.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    nt.nodes.active = bsdf
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -2695,6 +2968,7 @@ TONE_SEED = <span class="n">29</span>
 <span class="k">def</span> crate_materials():
     <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
     wood = wood_material(<span class="s">&quot;CrateWood&quot;</span>)
+    add_stencil(wood)
     metal = principled(
         <span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
         noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
@@ -3412,13 +3686,18 @@ TONE_SEED = <span class="n">29</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">48.0</span>)
+    <span class="c"># The camera sits at about -51 deg azimuth. Turning the crate +15 deg puts</span>
+    <span class="c"># the stencilled long side (-Y) 24 deg off the view axis and the handle</span>
+    <span class="c"># end (+X) 66 deg off it: a three-quarter view led by the lettering. At</span>
+    <span class="c"># -48 the side was edge-on; at -20 it was 59 deg off-axis and the</span>
+    <span class="c"># stencil foreshortened into a steep italic that read as a mapping error.</span>
+    low.rotation_euler.z = math.radians(<span class="n">15.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">4.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -3452,7 +3731,7 @@ TONE_SEED = <span class="n">29</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">680.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">880.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">48.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
 
@@ -3582,7 +3861,7 @@ TONE_SEED = <span class="n">29</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/shipping-crate-hero.webp" alt="A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board." />
+    <img src="../assets/shipping-crate-hero.webp" alt="A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end." />
   </dialog>
   <footer>
     <div class="statusbar">
