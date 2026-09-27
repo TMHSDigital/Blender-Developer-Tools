@@ -149,3 +149,7 @@ hygiene and joint-fit family.
 | 17 | Joint fit: rail-to-post engage, side-rail engage, or deck bearing |
 | 18 | Seat: girt-collar standoff |
 | 19 | Post plumb or plan off the stated real-world size |
+
+## Hero
+
+The still used to tilt the tower 2° about X, which the showcase rule "level on the stage" forbids (it sinks one row of shoes and lifts the other); it now turns about Z only. The camera moved in and down (fill y 0.856, was ~0.77) so the tower reads as tall rather than lost in the frame, and the shake roof went from flat grey to weathered cedar brown with silvered wear. Geometry and budgets are unchanged.

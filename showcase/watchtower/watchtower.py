@@ -824,8 +824,8 @@ def tower_materials():
     """
     wood = wood_material("TowerWood")
     roof = principled(
-        "TowerShake", (0.26, 0.24, 0.21, 1.0), 0.0, 0.82,
-        noise_scale=14.0, wear=(0.16, 0.15, 0.13, 1.0),
+        "TowerShake", (0.15, 0.105, 0.07, 1.0), 0.0, 0.78,
+        noise_scale=14.0, wear=(0.20, 0.19, 0.175, 1.0),
     )
     metal = principled(
         "TowerIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
@@ -1502,8 +1502,9 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
+    # turned about Z only: any tilt about X sinks one row of shoes into the
+    # floor and lifts the other (showcase README, level on the stage)
     low.rotation_euler.z = math.radians(-28.0)
-    low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1551,13 +1552,13 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (span * 1.98, -span * 2.75, span * 1.13)
+    cam.location = (span * 1.78, -span * 2.50, span * 0.85)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (
         0.5 * (bb[0] + bb[3]),
         0.5 * (bb[1] + bb[4]),
-        0.42 * (bb[2] + bb[5]),
+        0.47 * (bb[2] + bb[5]),
     )
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
