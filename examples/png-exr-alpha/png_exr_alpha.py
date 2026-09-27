@@ -352,7 +352,7 @@ def make_gallery_card(name, mangled):
     use fill_pattern).
     """
     gw, gh = 256, 192
-    border = 10
+    border = 3
     img = bpy.data.images.new(name, gw, gh, alpha=True, float_buffer=True)
     img.colorspace_settings.name = "Non-Color"
     px = [0.0] * (gw * gh * 4)
@@ -391,40 +391,44 @@ def make_gallery_card(name, mangled):
 
 
 def fixture_mats():
-    """Designed non-data surfaces: dark polymer bezels, rail-steel struts,
-    machined nameplates, plinth — no Principled defaults."""
-    def mat_principled(name, color, metallic, rough):
+    """Designed non-data surfaces: polymer monitor cases, machined stands,
+    a walnut-topped console, brass desk plates — no Principled defaults."""
+    def mat_principled(name, color, metallic, rough, noise=None):
         mat = bpy.data.materials.new(name)
         mat.use_nodes = True
-        bsdf = mat.node_tree.nodes["Principled BSDF"]
+        nt = mat.node_tree
+        bsdf = nt.nodes["Principled BSDF"]
         bsdf.inputs["Base Color"].default_value = (*color, 1.0)
         bsdf.inputs["Metallic"].default_value = metallic
         bsdf.inputs["Roughness"].default_value = rough
+        if noise:
+            # wear/grain: noise-mottled base color, never a flat slot
+            scale, amount = noise
+            tex = nt.nodes.new("ShaderNodeTexNoise")
+            tex.inputs["Scale"].default_value = scale
+            tex.inputs["Detail"].default_value = 8.0
+            ramp = nt.nodes.new("ShaderNodeValToRGB")
+            ramp.color_ramp.elements[0].color = (*(c * (1 - amount) for c in color), 1.0)
+            ramp.color_ramp.elements[1].color = (*(min(1.0, c * (1 + amount)) for c in color), 1.0)
+            nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+            nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
         return mat
 
+    glow = mat_principled("PowerLed", (0.0, 0.0, 0.0), 0.0, 0.5)
+    gb = glow.node_tree.nodes["Principled BSDF"]
+    gb.inputs["Emission Color"].default_value = (0.10, 0.85, 0.75, 1.0)
+    gb.inputs["Emission Strength"].default_value = 6.0
     return {
-        "bezel": mat_principled("BezelPolymer", (0.045, 0.048, 0.055), 0.1, 0.5),
-        "rail": mat_principled("RailSteel", (0.075, 0.08, 0.09), 0.6, 0.45),
-        "plinth": mat_principled("PlinthSteel", (0.10, 0.11, 0.12), 0.6, 0.5),
-        "plate": mat_principled("PlateSteel", (0.14, 0.15, 0.17), 0.7, 0.4),
+        "case": mat_principled("CasePolymer", (0.030, 0.034, 0.042), 0.0, 0.38),
+        "stand": mat_principled("StandMetal", (0.07, 0.075, 0.085), 0.75, 0.34,
+                                noise=(40.0, 0.25)),
+        "walnut": mat_principled("ConsoleWalnut", (0.15, 0.065, 0.03), 0.0, 0.42,
+                                 noise=(18.0, 0.35)),
+        "body": mat_principled("ConsoleLacquer", (0.028, 0.029, 0.033), 0.0, 0.55),
+        "brass": mat_principled("PlateBrass", (0.80, 0.58, 0.26), 1.0, 0.28,
+                                noise=(60.0, 0.12)),
+        "led": glow,
     }
-
-
-def box_obj(name, dims, loc, mat, rot_x=0.0):
-    me = bpy.data.meshes.new(name)
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0)
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    me.materials.append(mat)
-    ob = bpy.data.objects.new(name, me)
-    ob.scale = dims
-    ob.location = loc
-    ob.rotation_euler = (rot_x, 0.0, 0.0)
-    bpy.context.collection.objects.link(ob)
-    return ob
 
 
 def face_mesh(name):
@@ -467,59 +471,97 @@ def face_mat(name, image):
 
 
 def caption_mat():
-    mat = bpy.data.materials.new("CaptionGrey")
+    # engraved-ink lettering on the brass desk plates
+    mat = bpy.data.materials.new("CaptionInk")
     mat.use_nodes = True
     cb = mat.node_tree.nodes["Principled BSDF"]
-    cb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
-    cb.inputs["Metallic"].default_value = 0.2
-    cb.inputs["Roughness"].default_value = 0.6
-    sock = cb.inputs.get("Emission Color") or cb.inputs["Emission"]
-    sock.default_value = (0.38, 0.40, 0.45, 1.0)
-    cb.inputs["Emission Strength"].default_value = 0.5
+    cb.inputs["Base Color"].default_value = (0.012, 0.011, 0.010, 1.0)
+    cb.inputs["Roughness"].default_value = 0.5
     return mat
 
 
-def display_unit(name, image, caption, x, mats, capmat):
-    """One verification display: the emissive data face seated proud of a
-    thick dark bezel, carried by a rear strut and foot, with a machined
-    nameplate under the bezel — a physical instrument standing on the
-    shared plinth, not a floating texture."""
+def bevel_box(name, dims, loc, mat, bevel=0.0, rot=(0.0, 0.0, 0.0)):
+    """A world-dimensioned box (dims baked into the mesh, so a bevel stays
+    even); a small bevel catches a machined edge line."""
+    from mathutils import Vector
+
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        bmesh.ops.scale(bm, vec=Vector(dims), verts=bm.verts)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    ob.rotation_euler = rot
+    bpy.context.collection.objects.link(ob)
+    if bevel > 0.0:
+        mod = ob.modifiers.new("EdgeBevel", "BEVEL")
+        mod.width = bevel
+        mod.segments = 3
+        mod.limit_method = "ANGLE"
+        me.shade_smooth()
+        me.set_sharp_from_angle(angle=math.radians(40.0))
+    return ob
+
+
+DESK_TOP = 0.62   # console top surface height
+
+
+def display_unit(name, image, caption, x, yaw_deg, mats, capmat):
+    """One verification monitor: the emissive data face inside a thin
+    polymer case on a machined neck and base plate, with a brass desk plate
+    in front naming the save path — the image-pixels-testcard monitor, not a
+    floating texture."""
     root = bpy.data.objects.new(name, None)
-    root.location = (x, 0.0, 0.0)
+    root.location = (x, 0.0, DESK_TOP)
+    root.rotation_euler = (0.0, 0.0, math.radians(yaw_deg))
     bpy.context.collection.objects.link(root)
 
     def adopt(ob):
         ob.parent = root
         return ob
 
-    # bezel with real thickness; the face sits proud of its front surface
-    adopt(box_obj(name + "Bezel", (2.64, 0.16, 2.04), (0.0, 0.0, 1.80),
-                  mats["bezel"]))
+    sw, sh = 2.40, 1.80          # 4:3, matching the 256x192 card
+    scr_z = 1.38                 # screen center above the desk top
     face = bpy.data.objects.new(name + "Face", face_mesh(name + "Face"))
     bpy.context.collection.objects.link(face)
     face.data.materials.append(face_mat(name + "FaceMat", image))
-    face.location = (0.0, -0.085, 1.80)
+    face.location = (0.0, -0.001, scr_z)
     face.rotation_euler = (math.radians(90), 0.0, 0.0)
-    face.scale = (1.20, 0.90, 1.0)
+    face.scale = (sw / 2.0, sh / 2.0, 1.0)
     adopt(face)
-    # rear strut leaning onto the bezel back, foot on the plinth top
-    adopt(box_obj(name + "Strut", (0.26, 0.30, 1.30), (0.0, 0.42, 1.10),
-                  mats["rail"], rot_x=math.radians(18)))
-    adopt(box_obj(name + "Foot", (0.60, 0.80, 0.10), (0.0, 0.72, 0.50),
-                  mats["rail"]))
-    # nameplate bridging bezel bottom and plinth top
-    adopt(box_obj(name + "Plate", (1.60, 0.06, 0.26), (0.0, -0.03, 0.63),
-                  mats["plate"]))
+    # thin case: 0.07 bezel around the face, a thicker rear housing
+    adopt(bevel_box(name + "Case", (sw + 0.14, 0.09, sh + 0.14), (0.0, 0.046, scr_z),
+                    mats["case"], bevel=0.025))
+    adopt(bevel_box(name + "Housing", (sw * 0.62, 0.16, sh * 0.55),
+                    (0.0, 0.16, scr_z - 0.05), mats["case"], bevel=0.04))
+    adopt(bevel_box(name + "Neck", (0.26, 0.12, 0.95), (0.0, 0.27, 0.52),
+                    mats["stand"], bevel=0.02))
+    adopt(bevel_box(name + "Base", (1.10, 0.62, 0.05), (0.0, 0.18, 0.025),
+                    mats["stand"], bevel=0.02))
+    adopt(bevel_box(name + "Led", (0.05, 0.02, 0.02), (sw / 2.0 - 0.10, -0.004,
+                    scr_z - sh / 2.0 - 0.035), mats["led"]))
+    # brass tent plate leaning back on the desk, the caption on its face
+    tilt = math.radians(-24.0)
+    adopt(bevel_box(name + "Plate", (1.46, 0.035, 0.26), (0.0, -0.58, 0.135),
+                    mats["brass"], bevel=0.008, rot=(tilt, 0.0, 0.0)))
+    adopt(bevel_box(name + "PlateFoot", (1.40, 0.16, 0.02), (0.0, -0.53, 0.01),
+                    mats["stand"], bevel=0.005))
     cu = bpy.data.curves.new(name + "Caption", "FONT")
     cu.body = caption
     cu.align_x = "CENTER"
     cu.align_y = "CENTER"
     cu.size = 0.15
-    cu.extrude = 0.004
+    cu.extrude = 0.003
     cu.materials.append(capmat)
     cap = bpy.data.objects.new(name + "Caption", cu)
-    cap.location = (0.0, -0.065, 0.63)
-    cap.rotation_euler = (math.radians(90), 0.0, 0.0)
+    # on the plate's front face: offset along the tilted plate normal
+    cap.location = (0.0, -0.58 - 0.021 * math.cos(tilt), 0.135 - 0.021 * math.sin(tilt))
+    cap.rotation_euler = (math.radians(90) + tilt, 0.0, 0.0)
     bpy.context.collection.objects.link(cap)
     adopt(cap)
     return root
@@ -533,13 +575,17 @@ def render_still(path, engine):
     png_card = make_gallery_card("PngMangled", mangled=True)
     exr_card = make_gallery_card("ExrClean", mangled=False)
 
-    # The verification station: two framed displays on a shared plinth —
+    # The verification station: two monitors on a shared console —
     # left bakes the closed-form PNG mangling, right is EXR-clean.
     mats = fixture_mats()
     capmat = caption_mat()
-    display_unit("PngDisplay", png_card, "FLOAT → PNG", -1.45, mats, capmat)
-    display_unit("ExrDisplay", exr_card, "FLOAT → EXR", 1.45, mats, capmat)
-    box_obj("Plinth", (6.10, 1.80, 0.45), (0.0, 0.35, 0.225), mats["plinth"])
+    display_unit("PngDisplay", png_card, "FLOAT → PNG", -1.42, 6.0, mats, capmat)
+    display_unit("ExrDisplay", exr_card, "FLOAT → EXR", 1.42, -6.0, mats, capmat)
+    # shared console: walnut top slab on a dark lacquered body
+    bevel_box("ConsoleTop", (6.40, 1.90, 0.08), (0.0, 0.05, DESK_TOP - 0.04),
+              mats["walnut"], bevel=0.02)
+    bevel_box("Console", (6.20, 1.70, DESK_TOP - 0.08), (0.0, 0.10, (DESK_TOP - 0.08) / 2),
+              mats["body"], bevel=0.03)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -593,17 +639,15 @@ def render_still(path, engine):
           (0.0, 9.0, 2.6))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (-0.10, 0.2, 1.38)
+    aim.location = (-0.10, 0.2, 1.12)
     scene.collection.objects.link(aim)
 
     # Gentle 3/4 from the right: both faces stay fully readable while the
-    # bezels, struts, and plinth show their thickness. Aim dropped 0.23 from
-    # the original 1.65 so the plinth clears the bottom edge (framing gate)
-    # without changing the distance or the composition.
+    # cases, stands and console show their thickness.
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 60.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.9, -9.3, 3.05)
+    cam.location = (4.3, -11.0, 3.2)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
     con.track_axis = "TRACK_NEGATIVE_Z"
@@ -631,11 +675,11 @@ def render_still(path, engine):
         o for o in scene.objects
         if o.name.startswith(("PngDisplay", "ExrDisplay")) and o.type in {"MESH", "FONT"}
     ]
-    plinth = scene.objects.get("Plinth")
+    console = [scene.objects[n] for n in ("ConsoleTop", "Console")]
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=hero,
-        elements=hero + ([plinth] if plinth else []),
+        elements=hero + console,
         stage=[floor, wall],
     )
     if fcode:

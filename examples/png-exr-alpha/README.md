@@ -51,11 +51,13 @@ treat a 4.4 run as a 4.5 substitute). The only version gate in the file is
 the EEVEE engine id for the optional render (`BLENDER_EEVEE_NEXT` on 4.x,
 `BLENDER_EEVEE` on 5.x).
 
-**Render:** two framed verification displays on a shared plinth — the
-left face bakes the closed-form PNG mangling (dark rows flash to white at
-low-alpha columns), the right face shows the authored straight buffer
-(EXR-clean); nameplates read `FLOAT → PNG` and `FLOAT → EXR`. If the
-contract failed, both panels would read the same.
+**Render:** two thin-bezel monitors on machined stands, sharing a
+walnut-topped console — the left screen bakes the closed-form PNG mangling
+(dark rows flash to white at low-alpha columns), the right screen shows the
+authored straight buffer (EXR-clean); brass desk plates in front read
+`FLOAT → PNG` and `FLOAT → EXR`. If the contract failed, both screens would
+read the same. The render path gates framing through
+`examples/gallery_framing.py` (exit 10) before writing the still.
 
 ## Run
 

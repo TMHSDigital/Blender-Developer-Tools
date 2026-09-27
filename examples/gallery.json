@@ -287,7 +287,7 @@
       "name": "png-exr-alpha",
       "dir": "examples/png-exr-alpha",
       "teaches": "Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).",
-      "alt": "Two monitors on a plinth labelled FLOAT to PNG and FLOAT to EXR, showing alpha and colour bar strips side by side.",
+      "alt": "Two thin-bezel monitors on a walnut console with brass desk plates reading FLOAT to PNG and FLOAT to EXR; the PNG screen washes its dark rows to white while the EXR screen keeps every bar.",
       "witnessesFix": "float→PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte→PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.",
       "hero": "docs/gallery/assets/png-exr-alpha-hero.webp",
       "preview": "examples/png-exr-alpha/preview.webp",

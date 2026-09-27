@@ -317,7 +317,7 @@ non-destructive path.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/png-exr-alpha/"><img src="examples/png-exr-alpha/preview.webp" alt="PNG vs EXR alpha: two framed verification displays on a shared plinth in a dark studio — left the float→PNG false-unpremul mangling clamps dark rows to white, right the EXR-clean straight buffer, nameplates reading FLOAT → PNG and FLOAT → EXR under a warm wall pool" /></a>
+<a href="examples/png-exr-alpha/"><img src="examples/png-exr-alpha/preview.webp" alt="PNG vs EXR alpha: two thin-bezel monitors on a walnut-topped console in a dark studio — left the float→PNG false-unpremul mangling clamps dark rows to white, right the EXR-clean straight buffer, brass desk plates reading FLOAT → PNG and FLOAT → EXR" /></a>
 </td>
 <td valign="middle">
 
