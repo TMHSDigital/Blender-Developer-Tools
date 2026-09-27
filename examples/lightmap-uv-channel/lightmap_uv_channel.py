@@ -40,6 +40,7 @@ check. Pass --output to also render a still:
     blender --background --python lightmap_uv_channel.py -- --falsify f.png # overlapping atlas
 """
 import bpy, bmesh, sys, os, math, argparse
+from mathutils import Vector
 
 # Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -218,6 +219,61 @@ def _bolts(name, positions, radius):
     return me
 
 
+def _spokes(name, count, r0, r1, thick, center):
+    """count straight spokes from r0 to r1 in the XZ plane around a Y axle
+    through center: one mesh, disconnected watertight boxes."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for i in range(count):
+            a = 2 * math.pi * (i + 0.5) / count
+            ca, sa = math.cos(a), math.sin(a)
+            before_v = set(bm.verts)
+            bmesh.ops.create_cube(bm, size=1.0)
+            for v in set(bm.verts) - before_v:
+                # box along local X from r0 to r1, then rotate about Y
+                x = v.co.x * (r1 - r0) + 0.5 * (r0 + r1)
+                y = v.co.y * thick * 0.8
+                z = v.co.z * thick
+                v.co = (center[0] + x * ca - z * sa, center[1] + y,
+                        center[2] + x * sa + z * ca)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _beams(name, segments, w):
+    """Square-section beams between point pairs: one mesh, disconnected
+    watertight boxes. segments: [(p0, p1), ...]."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for p0, p1 in segments:
+            a, b = Vector(p0), Vector(p1)
+            axis = (b - a).normalized()
+            side = axis.cross(Vector((0.0, 0.0, 1.0)))
+            if side.length < 1e-6:
+                side = Vector((1.0, 0.0, 0.0))
+            side.normalize()
+            up = side.cross(axis).normalized()
+            h = w / 2
+            corners = [side * sx * h + up * sz * h
+                       for sx, sz in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+            r0 = [bm.verts.new(a + c) for c in corners]
+            r1 = [bm.verts.new(b + c) for c in corners]
+            bm.faces.new(list(reversed(r0)))
+            bm.faces.new(r1)
+            for i in range(4):
+                j = (i + 1) % 4
+                bm.faces.new((r0[i], r0[j], r1[j], r1[i]))
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
 def _multi_box(name, specs):
     """Several beveled boxes as one mesh (disconnected islands, each
     watertight). specs: (dims, center, bevel)."""
@@ -265,8 +321,12 @@ def build_cart_meshes():
         ((0.14, 0.05, 0.14), (0.55, sy * 0.80, 0.5), 0.02) for sy in (-1, 1)])
     for tag, sy in (("L", 1.0), ("R", -1.0)):
         y = sy * 0.68
-        parts[f"Wheel.{tag}.Disc"] = _wheel_disc(
-            f"Cart.Wheel.{tag}.Disc", 0.45, 0.10, (0.55, y, 0.45))
+        # spoked wheel: a wooden felloe ring inside the iron tyre, eight
+        # spokes, and the hub; the Disc part is the felloe (was a solid disc)
+        parts[f"Wheel.{tag}.Disc"] = _ring(
+            f"Cart.Wheel.{tag}.Disc", 0.438, 0.37, 0.09, (0.55, y, 0.45), 32)
+        parts[f"Wheel.{tag}.Spokes"] = _spokes(
+            f"Cart.Wheel.{tag}.Spokes", 8, 0.12, 0.385, 0.045, (0.55, y, 0.45))
         parts[f"Wheel.{tag}.Hub"] = _wheel_disc(
             f"Cart.Wheel.{tag}.Hub", 0.14, 0.16, (0.55, y, 0.45))
         parts[f"Wheel.{tag}.Band"] = _ring(
@@ -292,6 +352,14 @@ def build_cart_meshes():
                 v.co.z += arc - top
         me.update()
         parts[f"Post.{tag}"] = me
+    # draw shafts off the open (-X) end, a crossbar, and a prop leg the
+    # cart rests on when unhitched: without them a two-wheeled cart tips
+    parts["Shafts"] = _beams("Cart.Shafts", [
+        ((-0.95, 0.40, 0.80), (-2.35, 0.36, 0.52)),
+        ((-0.95, -0.40, 0.80), (-2.35, -0.36, 0.52)),
+        ((-1.90, 0.40, 0.61), (-1.90, -0.40, 0.61)),
+        ((-1.05, 0.0, 0.76), (-1.05, 0.0, 0.0)),
+    ], 0.07)
     parts["Canopy"] = _canopy("Cart.Canopy", 2.3, canopy_r, canopy_t, canopy_z0)
     parts["Canopy.Ribs"] = _canopy_ribs("Cart.Canopy.Ribs", (-0.75, 0.0, 0.75),
                                         0.07, 0.875, 0.035, 1.9)
@@ -613,10 +681,16 @@ def check():
 # Render
 # ---------------------------------------------------------------------------
 
-def make_material(name, rgb, rough=0.6, metallic=0.0, emit=None, estr=0.0):
+def make_material(name, rgb, rough=0.6, metallic=0.0, emit=None, estr=0.0,
+                  grain=None, bump=0.0):
+    """grain=(stretch_xyz, scale, amount): noise over Object coordinates,
+    squeezed along the axes the grain should run, multiplied into the base
+    colour and roughness. bump>0 adds a fine noise bump (canvas weave, iron
+    pitting). Render only - no check reads a material."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    b = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1.0)
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metallic
@@ -624,6 +698,39 @@ def make_material(name, rgb, rough=0.6, metallic=0.0, emit=None, estr=0.0):
         sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
         sock.default_value = (*emit, 1.0)
         b.inputs["Emission Strength"].default_value = estr
+    if grain or bump:
+        coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    if grain:
+        stretch, scale, amount = grain
+        mapping = nt.nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = stretch
+        nt.links.new(coord, mapping.inputs["Vector"])
+        noise = nt.nodes.new("ShaderNodeTexNoise")
+        noise.inputs["Scale"].default_value = scale
+        noise.inputs["Detail"].default_value = 7.0
+        nt.links.new(mapping.outputs["Vector"], noise.inputs["Vector"])
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].position = 0.32
+        ramp.color_ramp.elements[1].position = 0.70
+        ramp.color_ramp.elements[0].color = tuple(c * (1 - amount) for c in rgb) + (1.0,)
+        ramp.color_ramp.elements[1].color = tuple(min(1.0, c * (1 + amount)) for c in rgb) + (1.0,)
+        nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+        nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+        rmap = nt.nodes.new("ShaderNodeMapRange")
+        rmap.inputs["To Min"].default_value = rough + 0.12
+        rmap.inputs["To Max"].default_value = rough - 0.08
+        nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+        nt.links.new(rmap.outputs["Result"], b.inputs["Roughness"])
+    if bump:
+        fine = nt.nodes.new("ShaderNodeTexNoise")
+        fine.inputs["Scale"].default_value = 180.0
+        fine.inputs["Detail"].default_value = 4.0
+        nt.links.new(coord, fine.inputs["Vector"])
+        bn = nt.nodes.new("ShaderNodeBump")
+        bn.inputs["Strength"].default_value = bump
+        bn.inputs["Distance"].default_value = 0.003
+        nt.links.new(fine.outputs["Fac"], bn.inputs["Height"])
+        nt.links.new(bn.outputs["Normal"], b.inputs["Normal"])
     return mat
 
 
@@ -675,20 +782,26 @@ def render_still(path, engine, falsify=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    wood = make_material("Wood", (0.38, 0.22, 0.10), rough=0.55)
-    darkwood = make_material("DarkWood", (0.16, 0.10, 0.05), rough=0.7)
-    iron = make_material("Iron", (0.26, 0.26, 0.30), rough=0.3, metallic=0.9)
-    canvas = make_material("Canvas", (0.66, 0.56, 0.40), rough=0.9)
+    # bed planks run along X: grain squeezed in X streaks along the planks
+    wood = make_material("Wood", (0.40, 0.22, 0.095), rough=0.55,
+                         grain=((0.06, 1.0, 1.0), 26.0, 0.35))
+    darkwood = make_material("DarkWood", (0.19, 0.11, 0.05), rough=0.66,
+                             grain=((1.0, 1.0, 0.08), 30.0, 0.30))
+    iron = make_material("Iron", (0.20, 0.20, 0.22), rough=0.38, metallic=0.9,
+                         grain=((1.0, 1.0, 1.0), 14.0, 0.45), bump=0.25)
+    canvas = make_material("Canvas", (0.70, 0.60, 0.42), rough=0.92,
+                           grain=((1.0, 0.4, 1.0), 5.0, 0.18), bump=0.45)
     groovemat = make_material("Groove", (0.05, 0.04, 0.03), rough=0.9)
 
     mat_by_part = {
         "Bed": wood, "Bed.Rails": wood, "Bed.Grooves": groovemat,
         "Bed.Brackets": iron, "Bed.Bolts": iron,
         "Axle": iron, "Axle.Caps": iron,
-        "Canopy": canvas, "Canopy.Ribs": darkwood,
+        "Canopy": canvas, "Canopy.Ribs": darkwood, "Shafts": darkwood,
     }
     for tag in ("L", "R"):
         mat_by_part[f"Wheel.{tag}.Disc"] = darkwood
+        mat_by_part[f"Wheel.{tag}.Spokes"] = darkwood
         mat_by_part[f"Wheel.{tag}.Hub"] = darkwood
         mat_by_part[f"Wheel.{tag}.Band"] = iron
         mat_by_part[f"Wheel.{tag}.Bolts"] = iron
@@ -727,12 +840,65 @@ def render_still(path, engine, falsify=False):
 
     # atlas board: the Bed's live UV1 as flat island polygons mapped onto the
     # board face — a change in the packed atlas moves the board geometry
-    board_mat = make_material("Board", (0.04, 0.04, 0.05), rough=0.5, metallic=0.4)
+    # The display: a slate atlas face in a walnut frame, standing on a walnut
+    # plinth that carries a brass nameplate, with a faint quarter grid under
+    # the islands so the [0,1] square the check bounds is visible.
+    bx, by, bz = 2.05, 0.55, 1.30
+    board_mat = make_material("Board", (0.030, 0.032, 0.036), rough=0.62,
+                              grain=((1.0, 1.0, 1.0), 9.0, 0.25))
     board = _box("Atlas.Board", (0.08, 2.2, 2.0), (0.0, 0.0, 0.0), 0.02)
     board.materials.append(board_mat)
     board_ob = bpy.data.objects.new("Atlas.Board", board)
-    board_ob.location = (2.05, 0.55, 1.15)
+    board_ob.location = (bx, by, bz)
     sc.collection.objects.link(board_ob)
+    walnut = make_material("Walnut", (0.13, 0.065, 0.03), rough=0.5,
+                           grain=((1.0, 1.0, 1.0), 60.0, 0.16))
+    brass = make_material("Brass", (0.80, 0.58, 0.26), rough=0.28, metallic=1.0,
+                          grain=((1.0, 1.0, 1.0), 40.0, 0.12))
+    fw = 0.09
+    frame = _multi_box("Atlas.Frame", [
+        ((0.14, 2.2 + 2 * fw, fw), (0.0, 0.0, 1.0 + fw / 2), 0.012),
+        ((0.14, 2.2 + 2 * fw, fw), (0.0, 0.0, -1.0 - fw / 2), 0.012),
+        ((0.14, fw, 2.0), (0.0, 1.1 + fw / 2, 0.0), 0.012),
+        ((0.14, fw, 2.0), (0.0, -1.1 - fw / 2, 0.0), 0.012)])
+    frame.materials.append(walnut)
+    frame_ob = bpy.data.objects.new("Atlas.Frame", frame)
+    frame_ob.location = (bx, by, bz)
+    sc.collection.objects.link(frame_ob)
+    plinth_top = bz - 1.0 - fw
+    plinth = _box("Atlas.Plinth", (0.46, 2.55, plinth_top),
+                  (bx, by, plinth_top / 2), 0.02)
+    plinth.materials.append(walnut)
+    plinth_ob = bpy.data.objects.new("Atlas.Plinth", plinth)
+    sc.collection.objects.link(plinth_ob)
+    plate = _box("Atlas.Plate", (0.012, 1.1, 0.13), (0.0, 0.0, 0.0), 0.004)
+    plate.materials.append(brass)
+    plate_ob = bpy.data.objects.new("Atlas.Plate", plate)
+    plate_ob.location = (bx + 0.236, by, plinth_top / 2)
+    sc.collection.objects.link(plate_ob)
+    cu = bpy.data.curves.new("Atlas.Label", "FONT")
+    cu.body = "UV1  LIGHTMAP"
+    cu.size = 0.085
+    cu.align_x, cu.align_y = "CENTER", "CENTER"
+    cu.extrude = 0.002
+    cu.materials.append(make_material("Ink", (0.02, 0.018, 0.015), rough=0.6))
+    label_ob = bpy.data.objects.new("Atlas.Label", cu)
+    label_ob.location = (bx + 0.243, by, plinth_top / 2)
+    label_ob.rotation_euler = (math.radians(90), 0.0, math.radians(90))
+    sc.collection.objects.link(label_ob)
+    grid_mat = make_material("Grid", (0.12, 0.13, 0.15), rough=0.5,
+                             emit=(0.45, 0.5, 0.6), estr=0.35)
+    lines = []
+    for k in range(5):
+        t = (k / 4 - 0.5) * 1.9
+        lines.append(((0.004, 0.006, 1.9), (0.0, t, 0.0), 0.0))
+        lines.append(((0.004, 1.9, 0.006), (0.0, 0.0, t), 0.0))
+    grid = _multi_box("Atlas.Grid", lines)
+    grid.materials.append(grid_mat)
+    grid_ob = bpy.data.objects.new("Atlas.Grid", grid)
+    grid_ob.location = (bx + 0.042, by, bz)
+    sc.collection.objects.link(grid_ob)
+    display = [board_ob, frame_ob, plinth_ob, plate_ob, label_ob, grid_ob]
 
     bed = meshes["Bed"]
     layer = bed.uv_layers[LAYER1]
@@ -757,7 +923,7 @@ def render_still(path, engine, falsify=False):
         me.materials.append(make_material(f"IslandMat{fi}", rgb, rough=0.5,
                                           emit=rgb, estr=1.6 if defect else 0.5))
         ob = bpy.data.objects.new(f"Atlas.Island.{fi}", me)
-        ob.location = (2.05 + 0.045 + (0.004 if fi in dragged else 0.0), 0.55, 1.15)
+        ob.location = (bx + 0.045 + (0.004 if fi in dragged else 0.0), by, bz)
         sc.collection.objects.link(ob)
         iso_obs.append(ob)
 
@@ -795,7 +961,7 @@ def render_still(path, engine, falsify=False):
     sc.view_settings.view_transform = "Standard"
     hero = parts_obs
     fcode = gallery_framing.check_framing(
-        sc, cam, hero=hero, elements=hero + [board_ob] + iso_obs,
+        sc, cam, hero=hero, elements=hero + display + iso_obs,
         stage=[floor, wall],
     )
     if fcode:

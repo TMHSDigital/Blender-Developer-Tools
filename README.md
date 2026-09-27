@@ -1161,7 +1161,7 @@ and [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/) (topology gates).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/lightmap-uv-channel/"><img src="examples/lightmap-uv-channel/preview.webp" alt="Lightmap UV channel: a wooden market cart with a cream canvas canopy beside a dark atlas board glowing with the bed's packed lightmap islands — proof the second UV layer packs with no overlaps, channel zero untouched" /></a>
+<a href="examples/lightmap-uv-channel/"><img src="examples/lightmap-uv-channel/preview.webp" alt="Lightmap UV channel: a wooden market cart on spoked wheels with a cream canvas canopy beside a walnut-framed atlas display glowing with the bed's packed lightmap islands — proof the second UV layer packs with no overlaps, channel zero untouched" /></a>
 </td>
 <td valign="middle">
 

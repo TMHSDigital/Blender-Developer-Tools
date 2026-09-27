@@ -2,9 +2,10 @@
 
 A runnable example building the second UV layer engines require for baked
 lighting, on an asset built to be reused: a market cart assembled from
-21 named, watertight parts — a plank-grooved bed with side rails, corner
-brackets, and fasteners, real wheel assemblies (disc + hub + iron band +
-bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Each
+24 named, watertight parts — a plank-grooved bed with side rails, corner
+brackets, and fasteners, spoked wheel assemblies (felloe ring + eight
+spokes + hub + iron tyre + bolt ring) on a capped axle, draw shafts with a
+crossbar and a prop leg, four posts, and a ribbed canvas canopy. Each
 post rises from inside the bed into the canopy's underside, its top
 sheared to the arc at its own station for a uniform 12 mm bite. Fixed
 1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated.
@@ -70,19 +71,23 @@ layers by name and re-asserts flags):
 [`prop-origin-transform`](../prop-origin-transform/).
 
 **Version witness:** check output is byte-identical on Blender 4.5.11 LTS
-and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance
+and 5.2.1 (24 parts, 3428 islands, drift 0, overlap 0, min island distance
 0.00401). The UV *layout* is packer-version-dependent by design; the
 contracts are layout-independent invariants.
 
-**Render as proof:** the cart beside its enlarged UV1 atlas board — the
+**Render as proof:** the cart beside its enlarged UV1 atlas display — a
+slate face in a walnut frame on a plinth with a brass `UV1 LIGHTMAP`
+plate, a faint quarter grid marking the [0,1] square the bounds check
+holds — the
 Bed's packed lightmap built from live UV data, so a change in the atlas
 moves the board geometry. The falsification variant (`--falsify`)
 translates the second-largest island onto the largest: a big emissive-red
 island visibly stacked over the atlas (15 SAT hits in the check probe).
 The render path also gates the asset itself through
 `examples/gallery_asset_quality.py` (naming, material variation, edge
-treatment — exit 11): 21 named parts, 5 materials, right-angle share
-0.069.
+treatment — exit 11): 24 named parts, 5 materials, right-angle share
+0.138. Wood, canvas and iron carry procedural grain, weave and pitting
+over Object coordinates; no check reads a material.
 
 ## Run
 
