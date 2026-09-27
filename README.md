@@ -1204,7 +1204,7 @@ under animation).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vertex-color-ao/"><img src="examples/vertex-color-ao/preview.webp" alt="Vertex colour AO: a stone village well on a dark studio stage, its masonry joints, shaft mouth and coping undersides darkened by ambient occlusion baked into a colour attribute rather than by the lights" /></a>
+<a href="examples/vertex-color-ao/"><img src="examples/vertex-color-ao/preview.webp" alt="Vertex colour AO: a stone village well of chamfered, irregular blocks on a dark studio stage, its V-groove masonry joints, shaft mouth and coping undersides darkened by ambient occlusion baked into a colour attribute rather than by the lights" /></a>
 </td>
 <td valign="middle">
 

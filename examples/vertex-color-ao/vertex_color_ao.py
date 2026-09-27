@@ -350,17 +350,40 @@ def _prism(bm, sides, radius, half_h, centre, bevel=0.0, rot=None, taper=1.0,
     _emit(bm, build, cuts=cuts)
 
 
-def _plate(bm, verts_xy, z0, z1, cuts=2):
-    """A prism from an explicit polygon footprint, subdivided for the bake."""
+def _plate(bm, verts_xy, z0, z1, cuts=2, chamfer=0.0):
+    """A prism from an explicit polygon footprint, subdivided for the bake.
+
+    chamfer > 0 insets the top and bottom rings toward the footprint centroid
+    by that distance over the same height, so stacked blocks meet in a V
+    groove: real concave geometry for the AO bake to darken, instead of a
+    butt joint the rays cannot see into.
+    """
+    n = len(verts_xy)
+    cx = sum(x for x, _ in verts_xy) / n
+    cy = sum(y for _, y in verts_xy) / n
+
+    def inset(d):
+        out = []
+        for x, y in verts_xy:
+            dx, dy = x - cx, y - cy
+            ln = math.hypot(dx, dy) or 1.0
+            k = max(0.0, 1.0 - d / ln)
+            out.append((cx + dx * k, cy + dy * k))
+        return out
+
     def build(t):
-        top = [t.verts.new((x, y, z1)) for x, y in verts_xy]
-        bot = [t.verts.new((x, y, z0)) for x, y in verts_xy]
-        t.faces.new(top)
-        t.faces.new(list(reversed(bot)))
-        n = len(verts_xy)
-        for i in range(n):
-            j = (i + 1) % n
-            t.faces.new((bot[i], bot[j], top[j], top[i]))
+        if chamfer > 0.0:
+            rings = [(inset(chamfer), z0), (verts_xy, z0 + chamfer),
+                     (verts_xy, z1 - chamfer), (inset(chamfer), z1)]
+        else:
+            rings = [(verts_xy, z0), (verts_xy, z1)]
+        loops = [[t.verts.new((x, y, z)) for x, y in pts] for pts, z in rings]
+        t.faces.new(loops[-1])
+        t.faces.new(list(reversed(loops[0])))
+        for lo, hi in zip(loops, loops[1:]):
+            for i in range(n):
+                j = (i + 1) % n
+                t.faces.new((lo[i], lo[j], hi[j], hi[i]))
     _emit(bm, build, cuts=cuts)
 
 
@@ -374,9 +397,9 @@ def _plate(bm, verts_xy, z0, z1, cuts=2):
 # dropping the frame puts the stonework where the eye lands.
 SHAFT_R = 0.545           # inner bore radius
 COURSES = (               # (z0, z1, outer radius, stone count, phase offset)
-    (0.000, 0.200, 0.845, 15, 0.00),
-    (0.200, 0.385, 0.822, 15, 0.50),
-    (0.385, 0.560, 0.805, 15, 0.00),
+    (0.000, 0.200, 0.845, 17, 0.00),
+    (0.200, 0.385, 0.822, 16, 0.50),
+    (0.385, 0.560, 0.805, 17, 0.25),
 )
 COPING_Z0, COPING_Z1 = 0.560, 0.646
 COPING_R = 0.925
@@ -391,24 +414,29 @@ def _course_stone(bm, z0, z1, r_out, idx, count, phase, jog):
     Blocks are inset from each other by a small joint so the bake has real
     crevices to find — the mortar lines are geometry, not a texture.
     """
-    joint = 0.078 / r_out                      # angular half-gap
-    a0 = 2.0 * math.pi * (idx + phase) / count + joint
-    a1 = 2.0 * math.pi * (idx + 1 + phase) / count - joint
+    joint = 0.018 / r_out                      # angular half-gap: tight joints
+    # irregular block widths: each seam wanders by up to a fifth of a block
+    def seam(k):
+        return k + 0.2 * math.sin(k * 2.7 + count * 0.9 + phase * 5.0)
+    a0 = 2.0 * math.pi * (seam(idx) + phase) / count + joint
+    a1 = 2.0 * math.pi * (seam(idx + 1) + phase) / count - joint
     ro = r_out + jog
     ri = SHAFT_R
     pts = []
-    for a in (a0, a1):
+    for k in range(4):                         # outer face as a shallow arc
+        a = a0 + (a1 - a0) * k / 3
         pts.append((math.cos(a) * ro, math.sin(a) * ro))
     for a in (a1, a0):
         pts.append((math.cos(a) * ri, math.sin(a) * ri))
-    _plate(bm, pts, z0 + 0.012, z1 - 0.012)
+    lift = 0.012 * math.sin(idx * 1.93 + count)  # uneven block heights
+    _plate(bm, pts, z0 + 0.004, z1 - 0.004 + lift, chamfer=0.026)
 
 
 def build_well_meshes():
     meshes = {}
     # deterministic per-stone jog so the courses are not machine-perfect
     def jog(i, c):
-        return 0.014 * math.sin(i * 2.399963 + c * 1.107)
+        return 0.026 * math.sin(i * 2.399963 + c * 1.107)
 
     for ci, (z0, z1, r_out, count, phase) in enumerate(COURSES):
         part = Part()
@@ -431,7 +459,8 @@ def build_well_meshes():
                    for a in (a0, a1)]
             pts += [(math.cos(a) * (SHAFT_R - 0.02),
                      math.sin(a) * (SHAFT_R - 0.02)) for a in (a1, a0)]
-            _plate(bm, pts, COPING_Z0, COPING_Z1 + 0.006 * math.sin(i * 1.7))
+            _plate(bm, pts, COPING_Z0, COPING_Z1 + 0.006 * math.sin(i * 1.7),
+                   chamfer=0.022)
     cop.group("Coping", slabs)
     meshes["Coping"] = cop.finish("Well.Stone.Coping")
 
@@ -451,13 +480,14 @@ def build_well_meshes():
         # sits, the deeper the contact darkening the bake has to find
         n = 16
         for i in range(n):
-            joint = 0.032 / 1.05
+            joint = 0.018 / 1.05
             a0 = 2.0 * math.pi * i / n + joint
             a1 = 2.0 * math.pi * (i + 1) / n - joint
             r0, r1 = 0.870, 1.235 + 0.045 * math.sin(i * 2.1)
             pts = [(math.cos(a) * r1, math.sin(a) * r1) for a in (a0, a1)]
             pts += [(math.cos(a) * r0, math.sin(a) * r0) for a in (a1, a0)]
-            _plate(bm, pts, 0.0, 0.048 + 0.008 * math.sin(i * 1.3), cuts=2)
+            _plate(bm, pts, 0.0, 0.048 + 0.008 * math.sin(i * 1.3), cuts=2,
+                   chamfer=0.014)
     ap.group("Flag", apron)
     meshes["Apron"] = ap.finish("Well.Stone.Apron")
 
@@ -748,8 +778,22 @@ def check():
 # Render
 # ---------------------------------------------------------------------------
 
-def make_ao_material(name, rgb, rough, metallic=0.0, ao_strength=1.0):
-    """Principled with the AO colour attribute multiplied into base colour."""
+# AO contrast for the render: the baked value is a visibility fraction, and a
+# linear multiply leaves a 0.7-visible joint only 30 % darker - on grey stone
+# that read as no occlusion at all. Raising it to this power before the
+# multiply deepens the crevices without touching the stored attribute (the
+# check reads the attribute, never the shader).
+AO_GAMMA = 2.4
+
+
+def make_ao_material(name, rgb, rough, metallic=0.0, ao_strength=1.0,
+                     surface=None):
+    """Principled with the AO colour attribute multiplied into base colour.
+
+    surface: None, "stone" (Voronoi per-block tone + chisel bump) or "wood"
+    (stretched grain bands). Both read Object coordinates so every part keeps
+    its own pattern regardless of where the asset is placed.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -759,35 +803,84 @@ def make_ao_material(name, rgb, rough, metallic=0.0, ao_strength=1.0):
     col = nt.nodes.new("ShaderNodeVertexColor")
     col.layer_name = AO_ATTR
     col.location = (-700, 100)
+    gamma = nt.nodes.new("ShaderNodeGamma")
+    gamma.inputs["Gamma"].default_value = AO_GAMMA
+    nt.links.new(col.outputs["Color"], gamma.inputs["Color"])
     # lift so full occlusion does not go to pure black
     lift = nt.nodes.new("ShaderNodeMixRGB")
     lift.blend_type = "MIX"
     lift.inputs["Fac"].default_value = ao_strength
     lift.inputs["Color1"].default_value = (1.0, 1.0, 1.0, 1.0)
     lift.location = (-500, 100)
-    nt.links.new(col.outputs["Color"], lift.inputs["Color2"])
+    nt.links.new(gamma.outputs["Color"], lift.inputs["Color2"])
     tint = nt.nodes.new("ShaderNodeMixRGB")
     tint.blend_type = "MULTIPLY"
     tint.inputs["Fac"].default_value = 1.0
     tint.inputs["Color1"].default_value = (*rgb, 1.0)
     tint.location = (-300, 100)
     nt.links.new(lift.outputs["Color"], tint.inputs["Color2"])
-    nt.links.new(tint.outputs["Color"], bsdf.inputs["Base Color"])
+
+    base = tint.outputs["Color"]
+    if surface in ("stone", "wood"):
+        coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+        if surface == "stone":
+            # one tone per block: Voronoi cells about a stone wide, each cell
+            # a flat random value, so neighbouring blocks differ in colour
+            vor = nt.nodes.new("ShaderNodeTexVoronoi")
+            vor.inputs["Scale"].default_value = 3.2
+            nt.links.new(coord, vor.inputs["Vector"])
+            tone = nt.nodes.new("ShaderNodeValToRGB")
+            tone.color_ramp.elements[0].color = (0.72, 0.70, 0.66, 1.0)
+            tone.color_ramp.elements[1].color = (1.35, 1.24, 1.08, 1.0)
+            nt.links.new(vor.outputs["Color"], tone.inputs["Fac"])
+            grain = nt.nodes.new("ShaderNodeTexNoise")
+            grain.inputs["Scale"].default_value = 26.0
+            grain.inputs["Detail"].default_value = 8.0
+            nt.links.new(coord, grain.inputs["Vector"])
+            bump = nt.nodes.new("ShaderNodeBump")
+            bump.inputs["Strength"].default_value = 0.35
+            bump.inputs["Distance"].default_value = 0.01
+            nt.links.new(grain.outputs["Fac"], bump.inputs["Height"])
+            nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+        else:
+            # grain: noise squeezed in Y and Z, so it varies across X and
+            # streaks along both the Y-running beam/drum and the Z-running posts
+            mapping = nt.nodes.new("ShaderNodeMapping")
+            mapping.inputs["Scale"].default_value = (1.0, 0.06, 0.06)
+            nt.links.new(coord, mapping.inputs["Vector"])
+            wave = nt.nodes.new("ShaderNodeTexNoise")
+            wave.inputs["Scale"].default_value = 38.0
+            wave.inputs["Detail"].default_value = 6.0
+            nt.links.new(mapping.outputs["Vector"], wave.inputs["Vector"])
+            tone = nt.nodes.new("ShaderNodeValToRGB")
+            tone.color_ramp.elements[0].position = 0.3
+            tone.color_ramp.elements[1].position = 0.7
+            tone.color_ramp.elements[0].color = (0.80, 0.76, 0.72, 1.0)
+            tone.color_ramp.elements[1].color = (1.14, 1.10, 1.05, 1.0)
+            nt.links.new(wave.outputs["Fac"], tone.inputs["Fac"])
+        vary = nt.nodes.new("ShaderNodeMixRGB")
+        vary.blend_type = "MULTIPLY"
+        vary.inputs["Fac"].default_value = 1.0
+        nt.links.new(base, vary.inputs["Color1"])
+        nt.links.new(tone.outputs["Color"], vary.inputs["Color2"])
+        base = vary.outputs["Color"]
+    nt.links.new(base, bsdf.inputs["Base Color"])
     return mat
 
 
+# (rgb, roughness, metallic, surface)
 SLOT_MATS = {
-    "Stone":   ((0.086, 0.079, 0.069), 0.86, 0.0),
-    "Coping":  ((0.118, 0.108, 0.094), 0.80, 0.0),
-    "Bore":    ((0.038, 0.035, 0.032), 0.92, 0.0),
-    "Flag":    ((0.066, 0.061, 0.055), 0.89, 0.0),
-    "Timber":  ((0.148, 0.078, 0.030), 0.74, 0.0),
-    "Brace":   ((0.120, 0.064, 0.026), 0.76, 0.0),
-    "Shingle": ((0.092, 0.056, 0.028), 0.82, 0.0),
-    "Drum":    ((0.170, 0.098, 0.040), 0.72, 0.0),
-    "Stave":   ((0.205, 0.118, 0.048), 0.70, 0.0),
-    "Rope":    ((0.255, 0.208, 0.122), 0.88, 0.0),
-    "Iron":    ((0.075, 0.078, 0.084), 0.44, 0.85),
+    "Stone":   ((0.150, 0.136, 0.114), 0.86, 0.0, "stone"),
+    "Coping":  ((0.188, 0.170, 0.142), 0.80, 0.0, "stone"),
+    "Bore":    ((0.040, 0.036, 0.032), 0.92, 0.0, None),
+    "Flag":    ((0.112, 0.104, 0.092), 0.89, 0.0, "stone"),
+    "Timber":  ((0.210, 0.110, 0.042), 0.70, 0.0, "wood"),
+    "Brace":   ((0.170, 0.090, 0.036), 0.72, 0.0, "wood"),
+    "Shingle": ((0.130, 0.078, 0.036), 0.78, 0.0, "wood"),
+    "Drum":    ((0.230, 0.132, 0.054), 0.68, 0.0, "wood"),
+    "Stave":   ((0.290, 0.166, 0.066), 0.66, 0.0, "wood"),
+    "Rope":    ((0.330, 0.268, 0.160), 0.88, 0.0, None),
+    "Iron":    ((0.075, 0.078, 0.084), 0.44, 0.85, None),
 }
 
 _mat_cache = {}
@@ -800,9 +893,9 @@ def bind_materials(ob, ao_strength=1.0):
     for slot in me.get("slots", []):
         key = (slot, ao_strength)
         if key not in _mat_cache:
-            rgb, rough, metal = SLOT_MATS[slot]
+            rgb, rough, metal, surface = SLOT_MATS[slot]
             _mat_cache[key] = make_ao_material(slot, rgb, rough, metal,
-                                               ao_strength)
+                                               ao_strength, surface)
         me.materials.append(_mat_cache[key])
 
 
@@ -845,7 +938,7 @@ def build_studio(sc):
     # and rim used to be strongly blue and lit the whole stage cold (stage
     # luma 0.243, warmth +0.01 against the calibration set); they are now
     # near neutral and weaker, and the warm wedge carries the back wall.
-    light("Key", (-2.3, -2.4, 3.6), 400.0, 3.0, (1.0, 0.95, 0.88), (40, 0, -42))
+    light("Key", (-2.3, -2.4, 3.6), 330.0, 2.4, (1.0, 0.95, 0.88), (40, 0, -42))
     light("Fill", (3.0, -2.0, 1.2), 45.0, 5.0, (0.88, 0.92, 1.0), (70, 0, 54))
     light("Rim", (-0.9, 3.0, 2.6), 170.0, 2.0, (0.85, 0.88, 0.95), (-54, 0, 196))
     light("Wedge", (0.3, 5.0, 0.7), 150.0, 4.0, (1.0, 0.70, 0.40), (-86, 0, 182))

@@ -18,9 +18,10 @@ exactly "a concave corner darkens monotonically with depth", as an equation.
 For an unoccluded flat surface the integral is exactly **1**.
 
 **The asset, for reuse:** `Well.Stone`, a 2.5 m stone village well — three
-courses of 15 masonry blocks each on a 16-slab paved apron, a 15-slab coping
+courses of 16-17 chamfered masonry blocks of irregular width on a 16-slab
+paved apron, a 15-slab coping
 ring, a lined bore, two braced timber posts with a crossbeam, an iron-banded
-windlass with a crank, and a hanging bucket. 11 parts, 11 materials, 6966
+windlass with a crank, and a hanging bucket. 11 parts, 11 materials, 15678
 vertices. Origin at the ground contact centre (`z == 0` is where it rests),
 identity transforms, datablocks under `Well.Stone.*`. Every part ships with the
 AO baked into two colour attributes, and `default_color_name` points at the
@@ -97,13 +98,18 @@ attribute reported a clean **0.0** deviation and the probe exited **0**. The
 length guard was added because the falsification pass failed to fail.
 
 **Version witness:** check output is byte-identical on Blender 4.5.11 LTS and
-5.1.2 — same 6966 vertices, same closed-form errors to every printed digit,
+5.1.2 — same 15678 vertices, same closed-form errors to every printed digit,
 same storage deviations.
 
 **Render as proof:** the well on the dark stage, lit only by the studio rig,
 with the baked AO multiplied into base colour — the masonry joints, the shaft
 mouth, the coping undersides and the apron contact all darken from the
-attribute, not from the lights. The falsification variant (`--falsify`) writes
+attribute, not from the lights. Every block, coping slab and flagstone is
+chamfered top and bottom, so neighbours meet in a V groove the bake can see
+into. The shader raises the AO to the power 2.4 before multiplying it in, so a
+joint that is 70 % visible reads clearly darker; stone gets a per-block
+Voronoi tone and a chisel bump, timber a streaked grain. The stored attribute
+is untouched by any of this. The falsification variant (`--falsify`) writes
 the same bake **inverted**: sky-facing coping and apron tops go grimy while the
 recesses and post bases glow, occlusion turned inside out.
 
