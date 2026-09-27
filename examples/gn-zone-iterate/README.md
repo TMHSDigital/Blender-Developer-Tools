@@ -41,6 +41,15 @@ blender --background --python gn_zone_iterate.py -- --output zones.png
 The `--output` render path measures framing via `examples/gallery_framing.py`
 (exit 10 on violation).
 
+**Staging.** Everything presentational runs after `check()` has passed on the raw
+evaluated zones. Each zone's blocks are graded along the axis the zone iterates on,
+using Object-space coordinates (amber to red along X for the four Repeat blocks, deep
+teal to mint along Z for the six For Each blocks), so the colour steps count the
+iterations. A render-only Bevel modifier after the GN modifier chamfers the cubes into
+machined blocks. The Repeat row sits on a walnut plinth; the For Each tower is threaded
+on a steel spindle over a round walnut base, so its 0.18 m gaps read as spacing on a
+rod rather than floating cubes.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule

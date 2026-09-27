@@ -605,7 +605,7 @@ turns 1 / 2 / 3 m into 7 / 17 / 27 treads. Asserts readback and evaluated Z-exte
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-zone-iterate/"><img src="examples/gn-zone-iterate/preview.webp" alt="GN zone iterate: four brass cubes in a row (Repeat Zone) beside a tower of six teal cubes (For Each Element) on a dark studio floor, proving pair_with_output actually iterates" /></a>
+<a href="examples/gn-zone-iterate/"><img src="examples/gn-zone-iterate/preview.webp" alt="GN zone iterate: four amber-to-red blocks on a walnut plinth (Repeat Zone) beside a spindle of six teal-to-mint blocks (For Each Element) on a dark studio floor, proving pair_with_output actually iterates" /></a>
 </td>
 <td valign="middle">
 

@@ -356,26 +356,105 @@ def render_still(rpt, fee, path, engine):
     # Rim from behind so the cube silhouettes separate from the dark wall.
     light("Rim", (-1.0, 4.5, 4.5), 260.0, 4.0, (0.70, 0.82, 1.0), (-50, 0, 180))
 
-    # Presentation only: the check never reads materials. 0.85 metallic in a
-    # near-black world reflected near-black, and the brass read as mustard
-    # card. Less metal and a warmer, brighter base let the key shape it.
-    for ob, rough, metal in ((rpt, 0.42, 0.55), (fee, 0.38, 0.10)):
+    # Presentation only — everything below runs after check() has passed on
+    # the raw evaluated zones. Each zone's blocks are graded along the axis the
+    # zone iterates on (Object-space X for Repeat, Z for For Each), so the
+    # colour steps count the iterations; a small render-only bevel after the
+    # GN modifier turns the cubes into machined blocks.
+    grades = {
+        rpt: ("X", REPEAT_N * REPEAT_STEP,
+              ((0.95, 0.55, 0.10), (0.62, 0.07, 0.04)), 0.30, 0.0),
+        fee: ("Z", (FOREACH_P - 1) * FOREACH_STEP + FOREACH_SIZE,
+              ((0.02, 0.30, 0.36), (0.30, 0.85, 0.72)), 0.28, 0.0),
+    }
+    for ob, (axis, span, (c0, c1), rough, metal) in grades.items():
         for mat in _node_materials(ob):
-            bsdf = mat.node_tree.nodes.get("Principled BSDF")
-            if bsdf is not None:
-                bsdf.inputs["Metallic"].default_value = metal
-                bsdf.inputs["Roughness"].default_value = rough
+            nt = mat.node_tree
+            bsdf = nt.nodes.get("Principled BSDF")
+            bsdf.inputs["Metallic"].default_value = metal
+            bsdf.inputs["Roughness"].default_value = rough
+            if "Coat Weight" in bsdf.inputs:
+                bsdf.inputs["Coat Weight"].default_value = 0.5
+            coord = nt.nodes.new("ShaderNodeTexCoord")
+            sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+            nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+            norm = nt.nodes.new("ShaderNodeMapRange")
+            norm.inputs["From Min"].default_value = 0.0
+            norm.inputs["From Max"].default_value = span
+            nt.links.new(sep.outputs[axis], norm.inputs["Value"])
+            ramp = nt.nodes.new("ShaderNodeValToRGB")
+            ramp.color_ramp.elements[0].color = (*c0, 1.0)
+            ramp.color_ramp.elements[1].color = (*c1, 1.0)
+            nt.links.new(norm.outputs["Result"], ramp.inputs["Fac"])
+            nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+        bev = ob.modifiers.new("Chamfer", "BEVEL")
+        bev.width = 0.035
+        bev.segments = 3
+        bev.limit_method = "NONE"
+
+    walnut = principled("Walnut", (0.19, 0.09, 0.045, 1.0), 0.0, 0.5)
+    steel = principled("Steel", (0.55, 0.56, 0.58, 1.0), 1.0, 0.3)
+    brass = principled("Finial", (0.88, 0.62, 0.26, 1.0), 1.0, 0.28)
+
+    def solid(name, build, mat, loc):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            build(bm)
+            for f in bm.faces:
+                f.smooth = True
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        scene.collection.objects.link(ob)
+        return ob
+
+    def box(sx, sy, sz):
+        def b(bm):
+            bmesh.ops.create_cube(bm, size=1.0)
+            bmesh.ops.scale(bm, vec=(sx, sy, sz), verts=bm.verts)
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.025, segments=3,
+                            profile=0.5, affect="EDGES", clamp_overlap=True)
+        return b
+
+    def cyl(r, h, segs=48):
+        def b(bm):
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=segs, radius1=r, radius2=r, depth=h)
+        return b
+
+    # Stands: the blocks are lifted onto them (render only, after the check).
+    base_h = 0.14
+    for ob in (rpt, fee):
+        ob.location.z = base_h
+    x0 = rpt.location.x - REPEAT_SIZE / 2 - 0.25
+    x1 = rpt.location.x + REPEAT_N * REPEAT_STEP + REPEAT_SIZE / 2 + 0.25
+    row_base = solid("RowPlinth", box(x1 - x0, 1.0, base_h), walnut,
+                     ((x0 + x1) / 2, 0.0, base_h / 2))
+    tower_top = base_h + (FOREACH_P - 1) * FOREACH_STEP + FOREACH_SIZE
+    tower_base = solid("TowerBase", cyl(0.52, base_h), walnut,
+                       (fee.location.x, 0.0, base_h / 2))
+    # a steel spindle threads the For Each blocks, so the gaps between them
+    # read as spacing on a rod, not blocks floating
+    spindle = solid("Spindle", cyl(0.045, tower_top - base_h + 0.18, 24), steel,
+                    (fee.location.x, 0.0, base_h + (tower_top - base_h + 0.18) / 2))
+    finial = solid("Finial", lambda bm: bmesh.ops.create_uvsphere(
+        bm, u_segments=24, v_segments=12, radius=0.09), brass,
+        (fee.location.x, 0.0, tower_top + 0.2))
+    props = [row_base, tower_base, spindle, finial]
 
     # Centred on the pair and more frontal: from (6.6, -9.3) the repeat row
     # foreshortened into a diagonal and the tower hugged the right edge.
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (-0.10, 0.0, 1.62)
+    aim.location = (-0.10, 0.0, 1.85)
     aim.hide_render = True
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 56.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.7, -10.6, 3.1)
+    cam.location = (1.4, -11.8, 3.6)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
@@ -398,8 +477,9 @@ def render_still(rpt, fee, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     hero = [rpt, fee]
+    bpy.context.view_layer.update()
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=hero, elements=hero, stage=[floor, wall],
+        scene, cam, hero=hero, elements=hero + props, stage=[floor, wall],
     )
     if fcode:
         return fcode
