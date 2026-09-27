@@ -273,7 +273,7 @@
       "name": "image-pixels-testcard",
       "dir": "examples/image-pixels-testcard",
       "teaches": "The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.",
-      "alt": "A monitor showing a colour-bar test card with a black circle and a greyscale strip.",
+      "alt": "A hooded broadcast reference monitor on a walnut desk showing a colour-bar test card with a black circle, a greyscale ramp and a PLUGE row.",
       "witnessesFix": "pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly > 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).",
       "hero": "docs/gallery/assets/image-pixels-testcard-hero.webp",
       "preview": "examples/image-pixels-testcard/preview.webp",

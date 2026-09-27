@@ -298,7 +298,7 @@ shader `Attribute` node is actually linked to Base Color.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor on a machined metal stand showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — in a dark studio with a warm pool raking the back wall" /></a>
+<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a hooded broadcast reference monitor on a walnut desk showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — in a dark studio with a warm pool raking the back wall" /></a>
 </td>
 <td valign="middle">
 

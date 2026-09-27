@@ -82,7 +82,8 @@ against it.
 | 7 | `save()` source/buffer-drop contract drifted |
 | 8 | `save_render()` flipped source or disturbed the buffer |
 | 9 | Byte PNG save/reload error |
-| 10 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
@@ -91,8 +92,12 @@ Smoke does not pass `--output` or `--wrong-origin`.
 In the render, `Closest` interpolation keeps the pixel grid honest —
 the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the
 PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The
-monitor is staged as a designed object — beveled dark-polymer case, machined metal
-stand, teal power LED — on the dark studio stage from `docs/VISUAL-STYLE.md`
+monitor is staged as a broadcast reference display — slim beveled bezel over a
+stepped rear housing, a matte sun hood framing the picture, input keys and a teal
+power LED on the bottom bezel, a machined stand — on a walnut desk with drawer
+pedestals, on the dark studio stage from `docs/VISUAL-STYLE.md`
 (Standard view transform; warm key, cool fill and rim; a warm pool raking the back
 wall). The screen stays emissive and matte — specular off, emission strength 1.0 —
-so the card's values read exactly.
+so the card's values read exactly. The render path gates framing through
+`examples/gallery_framing.py` (exit 10) before writing; the desk is passed as
+stage, like the floor, because its crop at the frame bottom is the composition.

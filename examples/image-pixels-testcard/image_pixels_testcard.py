@@ -31,6 +31,11 @@ check. Pass --output to also render a still:
 """
 import bpy, sys, os, math, argparse, tempfile
 
+# Shared Layer 1 framing measurement (render path only) — see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 W, H = 512, 288
 BYTE_TOL = 0.5 / 255.0 + 1e-6   # 8-bit quantization: round(v*255)/255, worst case half a step
 FLOAT_TOL = 1e-6                # float32 storage of float64 Python values
@@ -250,11 +255,12 @@ def render_still(path, engine):
             mod.limit_method = 'ANGLE'
         return ob
 
-    # -- the monitor: designed object, not a black slab ----------------------
+    # -- the monitor: a broadcast reference display on a walnut desk ---------
     # screen: emissive plane textured with the card (16:9, 3.2 wide), centered
-    # at standing height on its stand
+    # at viewing height on its stand; everything stands on the desk top at dz
     sw, sh = 3.2, 1.8
-    scr_z = 1.61
+    dz = 0.78
+    scr_z = 1.61 + dz
     screen_me = bpy.data.meshes.new("Screen")
     bm = bmesh.new()
     try:
@@ -289,16 +295,54 @@ def render_still(path, engine):
     screen.location = (0.0, 0.0, scr_z)
     scene.collection.objects.link(screen)
 
-    # case: dark polymer shell with a beveled edge the rim light can draw
+    # case: a slim beveled bezel frame over a stepped rear electronics housing
     case_mat = principled("CasePolymer", (0.030, 0.034, 0.042), 0.38)
     metal_mat = principled("StandMetal", (0.055, 0.060, 0.070), 0.36, metallic=0.7)
-    box("Case", (sw + 0.18, 0.11, sh + 0.18), case_mat, (0.0, 0.057, scr_z), bevel=0.03)
-    # machined stand: neck + base plate
-    box("Neck", (0.30, 0.14, 0.64), metal_mat, (0.0, 0.10, 0.37), bevel=0.025)
-    box("Base", (1.45, 0.85, 0.07), metal_mat, (0.0, 0.12, 0.035), bevel=0.03)
-    # power LED on the bottom bezel, a small designed detail
+    hood_mat = principled("HoodMatte", (0.022, 0.023, 0.026), 0.7)
+    box("Case", (sw + 0.18, 0.07, sh + 0.24), case_mat, (0.0, 0.037, scr_z - 0.03), bevel=0.025)
+    box("Housing", (sw - 0.55, 0.26, sh - 0.40), case_mat, (0.0, 0.20, scr_z), bevel=0.05)
+    box("HousingVent", (sw - 1.2, 0.03, 0.30), metal_mat, (0.0, 0.34, scr_z + 0.40), bevel=0.01)
+    # broadcast sun hood: shallow top and side shades that frame the picture
+    hood_d = 0.34
+    top_z = scr_z + sh / 2 + 0.108
+    box("HoodTop", (sw + 0.25, hood_d, 0.035), hood_mat, (0.0, -hood_d / 2 + 0.01, top_z), bevel=0.01)
+    for sx in (-1.0, 1.0):
+        box("HoodSide", (0.035, hood_d, sh + 0.30), hood_mat,
+            (sx * (sw / 2 + 0.108), -hood_d / 2 + 0.01, scr_z - 0.02), bevel=0.01)
+    # machined stand: neck + base plate on the desk
+    box("Neck", (0.30, 0.14, 0.64), metal_mat, (0.0, 0.14, 0.37 + dz), bevel=0.025)
+    box("Base", (1.45, 0.85, 0.07), metal_mat, (0.0, 0.12, 0.035 + dz), bevel=0.03)
+    # bottom-bezel controls: a row of input keys and the power LED
+    key_mat = principled("Keys", (0.10, 0.105, 0.115), 0.45, metallic=0.4)
+    bez_z = scr_z - sh / 2 - 0.09
+    for i in range(5):
+        box("Key", (0.11, 0.02, 0.035), key_mat, (0.55 + 0.15 * i, -0.004, bez_z), bevel=0.006)
     glow_mat = principled("Glow", (0.0, 0.0, 0.0), 0.5, emit=(0.10, 0.85, 0.75), estr=6.0)
-    box("LED", (0.05, 0.02, 0.02), glow_mat, (1.30, -0.006, scr_z - sh / 2 - 0.045))
+    box("LED", (0.05, 0.02, 0.02), glow_mat, (1.42, -0.006, bez_z))
+
+    # the desk: walnut top on two dark drawer pedestals
+    walnut = principled("Walnut", (0.13, 0.065, 0.03), 0.42)
+    grain = walnut.node_tree
+    wave = grain.nodes.new("ShaderNodeTexWave")
+    wave.bands_direction = 'Y'      # grain runs along the desk's length
+    wave.inputs["Scale"].default_value = 3.5
+    wave.inputs["Distortion"].default_value = 7.0
+    wave.inputs["Detail"].default_value = 4.0
+    ramp = grain.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.085, 0.040, 0.018, 1.0)
+    ramp.color_ramp.elements[1].color = (0.19, 0.10, 0.05, 1.0)
+    grain.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+    grain.links.new(ramp.outputs["Color"], grain.nodes["Principled BSDF"].inputs["Base Color"])
+    cab_mat = principled("Cabinet", (0.035, 0.037, 0.042), 0.55)
+    desk = [box("DeskTop", (5.0, 1.7, 0.08), walnut, (0.0, 0.25, dz - 0.04), bevel=0.02)]
+    for sx in (-1.0, 1.0):
+        desk.append(box("DeskPedestal", (1.1, 1.5, dz - 0.08), cab_mat,
+                        (sx * 1.85, 0.30, (dz - 0.08) / 2), bevel=0.015))
+        for k in range(2):
+            desk.append(box("DeskDrawer", (0.95, 0.02, 0.26), cab_mat,
+                            (sx * 1.85, -0.455, 0.20 + 0.32 * k), bevel=0.01))
+            desk.append(box("DeskPull", (0.30, 0.03, 0.025), metal_mat,
+                            (sx * 1.85, -0.475, 0.26 + 0.32 * k), bevel=0.006))
 
     # -- stage: near-black floor + back wall, matte --------------------------
     stage_mat = principled("Studio", (0.03, 0.032, 0.037), 0.7)
@@ -335,21 +379,21 @@ def render_still(path, engine):
         ob.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), (0.0, 0.0, 1.3), 420.0, 5.0, (1.0, 0.96, 0.9))
-    light("Fill", (4.2, -1.8, 2.4), (0.0, 0.0, 1.5), 55.0, 9.0, (0.75, 0.85, 1.0))
-    light("Rim", (3.4, 2.8, 3.4), (0.3, 0.0, 1.6), 320.0, 3.0, (0.6, 0.78, 1.0))
+    light("Key", (-4.0, -5.0, 6.0 + dz), (0.0, 0.0, 1.3 + dz), 420.0, 5.0, (1.0, 0.96, 0.9))
+    light("Fill", (4.2, -1.8, 2.4 + dz), (0.0, 0.0, 1.5 + dz), 55.0, 9.0, (0.75, 0.85, 1.0))
+    light("Rim", (3.4, 2.8, 3.4 + dz), (0.3, 0.0, 1.6 + dz), 320.0, 3.0, (0.6, 0.78, 1.0))
     # the signature: a warm pool raking the back wall behind the subject;
     # aimed at the wall well above the floor seam so the seam stays in shadow
-    light("Wedge", (3.2, 5.2, 6.2), (2.4, 8.5, 4.2), 500.0, 5.0, (1.0, 0.76, 0.5))
+    light("Wedge", (3.2, 5.2, 6.2 + dz), (2.4, 8.5, 4.2 + dz), 500.0, 5.0, (1.0, 0.76, 0.5))
 
     # camera: 50 mm, slightly above the subject, tracking an empty on it
     target = bpy.data.objects.new("AimTarget", None)
-    target.location = (0.0, 0.0, 1.42)
+    target.location = (0.0, 0.0, 1.12 + dz)
     scene.collection.objects.link(target)
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (-4.2, -7.7, 2.85)
+    cam.location = (-4.3, -8.0, 2.85 + dz)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
     scene.collection.objects.link(cam)
@@ -367,8 +411,20 @@ def render_still(path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation):
+    # the hero is the monitor; the desk is its support and, like the floor,
+    # may run out of frame (the bottom crop is the composition)
+    monitor = [o for o in scene.objects if o.type == 'MESH'
+               and not o.name.startswith(("Floor", "Wall", "Desk"))]
+    desk_parts = [o for o in scene.objects if o.name.startswith("Desk")]
+    fcode = gallery_framing.check_framing(scene, cam, hero=monitor,
+                                          elements=monitor,
+                                          stage=[floor, wall] + desk_parts)
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 12
 
 
 def main():
@@ -386,9 +442,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 10
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        if rcode:
+            if rcode == 12:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered still {args.output}")
 
     print("image-pixels-testcard OK")
