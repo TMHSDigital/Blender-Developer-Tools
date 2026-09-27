@@ -36,6 +36,7 @@ import posixpath
 import re
 import sys
 import tokenize
+import urllib.parse
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -264,7 +265,7 @@ SHELL = """<!DOCTYPE html>
     .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
     .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
@@ -279,7 +280,7 @@ SHELL = """<!DOCTYPE html>
     /* ---- detail page ---- */
     .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
-    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .detail-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
       white-space: nowrap; }
@@ -295,7 +296,7 @@ SHELL = """<!DOCTYPE html>
       color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
       font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
     .copy-btn:hover { color: var(--select); border-color: var(--select); }
-    .detail-section { margin-top: 2.25rem; }
+    .detail-section { margin-top: 2.25rem; scroll-margin-top: 60px; }
     .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
@@ -325,11 +326,68 @@ SHELL = """<!DOCTYPE html>
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
 
+    /* ---- detail page: pager, tags, related, anchors, code blocks ---- */
+    .pager { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.75rem;
+      margin: 0 0 1.25rem; font-size: 0.85rem; }
+    .pager-foot { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .pager a { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.8rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pager a:hover { color: var(--select); text-decoration: none; }
+    .pager [rel="next"] { text-align: right; }
+    .pager-pos { text-align: center; }
+    @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
+    .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
+      border-radius: 3px; padding: 0 0.3rem; margin: 0 0.1rem; }
+    .taglist { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
+    .taglist a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px;
+      padding: 0.12rem 0.6rem; transition: color 0.15s, border-color 0.15s; }
+    .taglist a:hover { color: var(--select); border-color: var(--select); text-decoration: none; }
+    .related-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+    .card.mini .card-body { padding: 0.65rem 0.9rem 0.75rem; }
+    .card.mini h3 { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.2rem; }
+    .card.mini h3 a { color: var(--text); }
+    .card.mini h3 a:hover { color: var(--select); text-decoration: none; }
+    .card.mini p { color: var(--text-dim); font-size: 0.78rem; line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .md h1, .md h2, .md h3 { scroll-margin-top: 60px; }
+    .anchor { color: var(--text-dim); margin-left: 0.4rem; font-weight: 400; opacity: 0;
+      transition: opacity 0.15s; }
+    .md h1:hover .anchor, .md h2:hover .anchor, .md h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
+    .anchor:hover { color: var(--select); text-decoration: none; }
+    .codewrap { position: relative; }
+    .codewrap > .copy-btn { position: absolute; top: 0.45rem; right: 0.45rem; padding: 0.2rem 0.55rem;
+      font-size: 0.72rem; opacity: 0; transition: opacity 0.15s, color 0.15s, border-color 0.15s; }
+    .codewrap:hover > .copy-btn, .codewrap > .copy-btn:focus-visible, .codewrap > .copy-btn.done { opacity: 1; }
+    @media (hover: none) { .codewrap > .copy-btn { opacity: 1; } }
+    .copy-btn.done { color: var(--ok); border-color: var(--ok); }
+    .copy-btn.fail { color: var(--code-k); border-color: var(--code-k); }
+    .src .code { display: grid; grid-template-columns: auto minmax(0, 1fr);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .src .code pre { background: none; border: 0; border-radius: 0; }
+    .src .code .gutter { color: color-mix(in srgb, var(--text-dim) 60%, transparent); text-align: right;
+      user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border);
+      background: var(--bg2); overflow: hidden; }
+    .src .code.collapsed { max-height: 42rem; position: relative; }
+    .src .code.collapsed::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5rem;
+      background: linear-gradient(transparent, var(--surface-2)); pointer-events: none; }
+    .src-expand { display: block; margin: 0.6rem auto 0; background: var(--surface-2);
+      border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius);
+      padding: 0.4rem 0.9rem; cursor: pointer; font: 500 0.8rem var(--font-sans);
+      transition: color 0.15s, border-color 0.15s; }
+    .src-expand:hover { color: var(--select); border-color: var(--select); }
+
     .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
       max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
-    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    /* margin:auto (not align/justify-content) centers without clipping the
+       top-left of a native-size image that overflows a small viewport. */
+    .lightbox[open] { display: flex; overflow: auto; }
     .lightbox::backdrop { background: transparent; }
-    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox img { margin: auto; max-width: 100%; max-height: 100%; border-radius: var(--radius);
+      cursor: zoom-in; }
+    .lightbox.native img { max-width: none; max-height: none; cursor: zoom-out; }
     .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
       color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
       font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
@@ -561,26 +619,104 @@ DETAIL_JS = """
       var box = document.getElementById('lightbox');
       if (hero && box) {
         // <dialog>.showModal() traps focus, closes on Escape, and returns
-        // focus to the hero button on close. Any click inside closes it.
-        hero.addEventListener('click', function () { box.showModal(); });
-        box.addEventListener('click', function () { box.close(); });
+        // focus to the hero button on close. The dialog fills the viewport,
+        // so a click whose target is the dialog itself is a backdrop click.
+        var full = box.querySelector('img');
+        hero.addEventListener('click', function () { box.classList.remove('native'); box.showModal(); });
+        box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+        box.querySelector('.lightbox-close').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { box.classList.toggle('native'); });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        copy.addEventListener('click', function () {
-          var cmd = document.getElementById('runCmd').textContent;
-          navigator.clipboard.writeText(cmd).then(function () {
-            copy.textContent = 'Copied!';
-            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+
+      // Clipboard API first; execCommand for non-secure origins (file://,
+      // plain-http previews) where navigator.clipboard is undefined.
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
+      function wireCopy(btn, getText) {
+        btn.addEventListener('click', function () {
+          copyText(getText()).then(function () {
+            btn.textContent = 'Copied'; btn.classList.add('done');
+          }, function () {
+            btn.textContent = 'Copy failed'; btn.classList.add('fail');
+          }).then(function () {
+            setTimeout(function () {
+              btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
+            }, 1600);
           });
         });
       }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+        var wrap = block;
+        if (block.tagName === 'PRE') {
+          wrap = document.createElement('div');
+          block.parentNode.insertBefore(wrap, block);
+          wrap.appendChild(block);
+        }
+        wrap.classList.add('codewrap');
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'copy-btn'; btn.textContent = 'Copy';
+        var src = block.tagName === 'PRE' ? block : block.querySelector('.code-lines');
+        btn.setAttribute('aria-label', 'Copy code');
+        wireCopy(btn, function () { return src.textContent; });
+        wrap.appendChild(btn);
+      });
+
+      // Long listings start collapsed; with JS off they render in full.
+      var code = document.querySelector('.src .code');
+      if (code) {
+        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
+        if (lines > 120) {
+          code.classList.add('collapsed');
+          var more = document.createElement('button');
+          more.type = 'button'; more.className = 'src-expand';
+          more.setAttribute('aria-expanded', 'false');
+          more.textContent = 'Show all ' + lines + ' lines';
+          code.parentNode.insertBefore(more, code.nextSibling);
+          more.addEventListener('click', function () {
+            var open = code.classList.toggle('collapsed') === false;
+            more.setAttribute('aria-expanded', open ? 'true' : 'false');
+            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
+            if (!open) code.scrollIntoView({ block: 'start' });
+          });
+        }
+      }
+
+      // Left/right arrows page between entries of the same kind.
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        if (box && box.open) return;
+        var ae = document.activeElement;
+        if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+        var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
+        if (!rel) return;
+        var a = document.querySelector('.pager a[rel="' + rel + '"]');
+        if (a) { location.href = a.href; }
+      });
     })();
 """
 
 CARD = """      <article class="card" data-tags="__TAGS__">
         <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
-          <img src="__HERO__" alt="__ALT__" loading="lazy" decoding="async" />
+          <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="__LOADING__" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="__HREF__">__NAME__</a></h2>
@@ -589,6 +725,20 @@ CARD = """      <article class="card" data-tags="__TAGS__">
           <a class="card-link" href="__HREF__">View __KIND__<span class="sr-only"> __NAME__</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>"""
+
+# Compact card for a detail page's Related strip (same visual family as CARD).
+MINI_CARD = """        <article class="card mini">
+          <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
+            <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="lazy" decoding="async" />
+          </a>
+          <div class="card-body">
+            <h3><a href="__HREF__">__NAME__</a></h3>
+            <p>__TEACHES__</p>
+          </div>
+        </article>"""
+
+# Cards above the fold on a typical desktop load eagerly; the rest stay lazy.
+EAGER_CARDS = 4
 
 
 # ---------------------------------------------------------------------------
@@ -705,11 +855,29 @@ def _starts_block(lines: list[str], i: int) -> bool:
             and bool(_TABLE_SEP.match(lines[i + 1].strip())))
 
 
+# Ids the detail page itself uses; a README heading must never collide with them.
+RESERVED_IDS = frozenset({"main", "heroZoom", "lightbox", "runCmd", "copyRun", "related", "related-h", "source"})
+
+
+def slugify(text: str, seen: set[str]) -> str:
+    """GitHub-style heading slug from raw Markdown heading text, unique within *seen*."""
+    plain = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", text)  # links/images -> label
+    plain = re.sub(r"[`*_]", "", plain).lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", plain).strip("-") or "section"
+    candidate, n = slug, 1
+    while candidate in seen or candidate in RESERVED_IDS:
+        candidate = f"{slug}-{n}"
+        n += 1
+    seen.add(candidate)
+    return candidate
+
+
 def md_to_html(text: str, resolve, skip_first_h1: bool = True) -> str:
     lines = text.splitlines()
     out: list[str] = []
     i = 0
     seen_h1 = False
+    slugs: set[str] = set()
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
@@ -735,7 +903,10 @@ def md_to_html(text: str, resolve, skip_first_h1: bool = True) -> str:
                 seen_h1 = True
                 i += 1
                 continue
-            out.append(f"<h{level}>{render_inline(m.group(2), resolve)}</h{level}>")
+            hid = slugify(m.group(2), slugs)
+            out.append(f'<h{level} id="{hid}">{render_inline(m.group(2), resolve)}'
+                       f'<a class="anchor" href="#{hid}" aria-label="Link to this section">#</a>'
+                       f"</h{level}>")
             i += 1
             continue
 
@@ -840,7 +1011,43 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
             .replace("__CONTENT__", content))
 
 
-def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
+def related_entries(ex: dict, entries: list, limit: int = 3) -> list:
+    """Entries sharing the most topic tags with *ex*; gallery order breaks ties.
+
+    ``showcase`` is a kind marker, not a topic, so it never counts as shared.
+    """
+    mine = set(ex.get("tags") or []) - {"showcase"}
+    scored = []
+    for i, other in enumerate(entries):
+        if other["name"] == ex["name"]:
+            continue
+        shared = len(mine & (set(other.get("tags") or []) - {"showcase"}))
+        if shared:
+            scored.append((-shared, i, other))
+    return [o for _, _, o in sorted(scored, key=lambda t: t[:2])[:limit]]
+
+
+def pager_html(prev: dict | None, nxt: dict | None, pos: int, total: int, noun: str,
+               *, foot: bool = False) -> str:
+    """Prev/next links between entries of one kind. Never wraps."""
+    plural = "showcase pieces" if noun == "showcase piece" else "examples"
+    def link(e: dict | None, rel: str) -> str:
+        if e is None:
+            return "<span></span>"
+        n = html.escape(e["name"])
+        label = (f'<span aria-hidden="true">&larr;</span> {n}' if rel == "prev"
+                 else f'{n} <span aria-hidden="true">&rarr;</span>')
+        return (f'<a rel="{rel}" href="../{html.escape(e["name"], quote=True)}/" '
+                f'aria-label="{"Previous" if rel == "prev" else "Next"} {noun}: {n}">{label}</a>')
+    cls = "pager pager-foot" if foot else "pager"
+    hint = "" if foot else '<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span>'
+    return (f'    <nav class="{cls}" aria-label="{plural.capitalize()}">'
+            f'{link(prev, "prev")}'
+            f'<span class="pager-pos hud">{pos} of {total} {plural}{hint}</span>'
+            f'{link(nxt, "next")}</nav>')
+
+
+def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site: str) -> str:
     noun = kind_noun(ex)
     kind_title = "Showcase" if noun == "showcase piece" else "Examples"
     name = ex["name"]
@@ -848,17 +1055,29 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
     script = find_script(ex_dir)
     hero_file = page_relative(ex["hero"]).split("/")[-1]
 
+    peers = [e for e in entries if kind_noun(e) == noun]
+    idx = next(i for i, e in enumerate(peers) if e["name"] == name)
+    prev = peers[idx - 1] if idx > 0 else None
+    nxt = peers[idx + 1] if idx + 1 < len(peers) else None
+
     parts: list[str] = []
     parts.append('  <header class="hero">')
     parts.append(f'    <h1>{html.escape(name)}</h1>')
     parts.append(f'    <p>{html.escape(ex["teaches"])}</p>')
     parts.append("  </header>")
     parts.append('  <main id="main">')
+    parts.append(pager_html(prev, nxt, idx + 1, len(peers), noun))
     parts.append(f'    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: {html.escape(ex["alt"], quote=True)}">')
-    parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" width="1280" height="720" />')
+    parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" width="1280" height="720" fetchpriority="high" />')
     parts.append("    </button>")
     parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself — click to zoom.</p>')
     parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
+    tags = ex.get("tags") or []
+    if tags:
+        links = " ".join(
+            f'<a href="../#tag={html.escape(urllib.parse.quote(t), quote=True)}">{html.escape(t)}</a>'
+            for t in tags)
+        parts.append(f'    <p class="taglist"><span class="tag">tags</span> {links}</p>')
 
     if script is not None:
         cmd = f"blender --background --python {ex['dir']}/{script.name} --"
@@ -876,15 +1095,38 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
     if script is not None:
         blob = f"{base}/{ex['dir']}/{script.name}"
-        parts.append('    <section class="detail-section src">')
+        src = script.read_text(encoding="utf-8")
+        n_lines = len(src.splitlines())
+        gutter = "\n".join(str(n) for n in range(1, n_lines + 1))
+        parts.append('    <section class="detail-section src" id="source">')
         parts.append("      <h2>Source</h2>")
         parts.append('      <div class="src-meta">')
         parts.append(f"        <code>{html.escape(ex['dir'])}/{html.escape(script.name)}</code>")
-        parts.append(f'        <a href="{html.escape(blob, quote=True)}">View on GitHub &rarr;</a>')
+        parts.append(f'        <span>{n_lines} lines &middot; <a href="{html.escape(blob, quote=True)}">View on GitHub &rarr;</a></span>')
         parts.append("      </div>")
-        parts.append(f"      <pre>{highlight_python(script.read_text(encoding='utf-8'))}</pre>")
+        parts.append(f'      <div class="code" data-lines="{n_lines}">')
+        parts.append(f'<pre class="gutter" aria-hidden="true">{gutter}</pre>'
+                     f'<pre class="code-lines">{highlight_python(src)}</pre>')
+        parts.append("      </div>")
         parts.append("    </section>")
 
+    related = related_entries(ex, entries)
+    if related:
+        parts.append('    <section class="detail-section" id="related" aria-labelledby="related-h">')
+        parts.append('      <h2 id="related-h">Related</h2>')
+        parts.append('      <div class="related-grid">')
+        for r in related:
+            parts.append(
+                MINI_CARD
+                .replace("__HREF__", html.escape(f'../{r["name"]}/', quote=True))
+                .replace("__HERO__", html.escape("../" + page_relative(r["hero"]), quote=True))
+                .replace("__ALT__", html.escape(r["alt"], quote=True))
+                .replace("__NAME__", html.escape(r["name"]))
+                .replace("__TEACHES__", html.escape(r["teaches"])))
+        parts.append("      </div>")
+        parts.append("    </section>")
+
+    parts.append(pager_html(prev, nxt, idx + 1, len(peers), noun, foot=True))
     parts.append("  </main>")
     parts.append('  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">')
     parts.append('    <button class="lightbox-close" type="button" autofocus>Close</button>')
@@ -961,10 +1203,11 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
     )
 
     cards = []
-    for ex in examples:
+    for i, ex in enumerate(examples):
         alt = ex["alt"]
         cards.append(
             CARD
+            .replace("__LOADING__", "eager" if i < EAGER_CARDS else "lazy")
             .replace("__TAGS__", html.escape(" ".join(ex.get("tags", [])), quote=True))
             .replace("__HREF__", html.escape(f'{ex["name"]}/', quote=True))
             .replace("__HERO__", html.escape(page_relative(ex["hero"]), quote=True))
@@ -1041,7 +1284,7 @@ def main() -> int:
         page_dir = OUT_DIR / ex["name"]
         page_dir.mkdir(parents=True, exist_ok=True)
         (page_dir / "index.html").write_text(
-            build_detail(ex, base=base, repo_root_url=repo_root_url, site=site),
+            build_detail(ex, examples, base=base, repo_root_url=repo_root_url, site=site),
             encoding="utf-8",
         )
 

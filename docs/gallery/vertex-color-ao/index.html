@@ -161,7 +161,7 @@
     .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
     .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
@@ -176,7 +176,7 @@
     /* ---- detail page ---- */
     .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
-    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .detail-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
       white-space: nowrap; }
@@ -192,7 +192,7 @@
       color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
       font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
     .copy-btn:hover { color: var(--select); border-color: var(--select); }
-    .detail-section { margin-top: 2.25rem; }
+    .detail-section { margin-top: 2.25rem; scroll-margin-top: 60px; }
     .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
@@ -222,11 +222,68 @@
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
 
+    /* ---- detail page: pager, tags, related, anchors, code blocks ---- */
+    .pager { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.75rem;
+      margin: 0 0 1.25rem; font-size: 0.85rem; }
+    .pager-foot { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .pager a { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.8rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pager a:hover { color: var(--select); text-decoration: none; }
+    .pager [rel="next"] { text-align: right; }
+    .pager-pos { text-align: center; }
+    @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
+    .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
+      border-radius: 3px; padding: 0 0.3rem; margin: 0 0.1rem; }
+    .taglist { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
+    .taglist a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px;
+      padding: 0.12rem 0.6rem; transition: color 0.15s, border-color 0.15s; }
+    .taglist a:hover { color: var(--select); border-color: var(--select); text-decoration: none; }
+    .related-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+    .card.mini .card-body { padding: 0.65rem 0.9rem 0.75rem; }
+    .card.mini h3 { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.2rem; }
+    .card.mini h3 a { color: var(--text); }
+    .card.mini h3 a:hover { color: var(--select); text-decoration: none; }
+    .card.mini p { color: var(--text-dim); font-size: 0.78rem; line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .md h1, .md h2, .md h3 { scroll-margin-top: 60px; }
+    .anchor { color: var(--text-dim); margin-left: 0.4rem; font-weight: 400; opacity: 0;
+      transition: opacity 0.15s; }
+    .md h1:hover .anchor, .md h2:hover .anchor, .md h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
+    .anchor:hover { color: var(--select); text-decoration: none; }
+    .codewrap { position: relative; }
+    .codewrap > .copy-btn { position: absolute; top: 0.45rem; right: 0.45rem; padding: 0.2rem 0.55rem;
+      font-size: 0.72rem; opacity: 0; transition: opacity 0.15s, color 0.15s, border-color 0.15s; }
+    .codewrap:hover > .copy-btn, .codewrap > .copy-btn:focus-visible, .codewrap > .copy-btn.done { opacity: 1; }
+    @media (hover: none) { .codewrap > .copy-btn { opacity: 1; } }
+    .copy-btn.done { color: var(--ok); border-color: var(--ok); }
+    .copy-btn.fail { color: var(--code-k); border-color: var(--code-k); }
+    .src .code { display: grid; grid-template-columns: auto minmax(0, 1fr);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .src .code pre { background: none; border: 0; border-radius: 0; }
+    .src .code .gutter { color: color-mix(in srgb, var(--text-dim) 60%, transparent); text-align: right;
+      user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border);
+      background: var(--bg2); overflow: hidden; }
+    .src .code.collapsed { max-height: 42rem; position: relative; }
+    .src .code.collapsed::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5rem;
+      background: linear-gradient(transparent, var(--surface-2)); pointer-events: none; }
+    .src-expand { display: block; margin: 0.6rem auto 0; background: var(--surface-2);
+      border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius);
+      padding: 0.4rem 0.9rem; cursor: pointer; font: 500 0.8rem var(--font-sans);
+      transition: color 0.15s, border-color 0.15s; }
+    .src-expand:hover { color: var(--select); border-color: var(--select); }
+
     .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
       max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
-    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    /* margin:auto (not align/justify-content) centers without clipping the
+       top-left of a native-size image that overflows a small viewport. */
+    .lightbox[open] { display: flex; overflow: auto; }
     .lightbox::backdrop { background: transparent; }
-    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox img { margin: auto; max-width: 100%; max-height: 100%; border-radius: var(--radius);
+      cursor: zoom-in; }
+    .lightbox.native img { max-width: none; max-height: none; cursor: zoom-out; }
     .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
       color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
       font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
@@ -268,11 +325,13 @@
     <p>A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.</p>
   </header>
   <main id="main">
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span> socket-attach-points</a><span class="pager-pos hud">46 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete">cross-version-property-delete <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round stone well with a wooden windlass frame, its stones darkened near the base by baked vertex-colour ambient occlusion.">
-      <img src="../assets/vertex-color-ao-hero.webp" alt="A round stone well with a wooden windlass frame, its stones darkened near the base by baked vertex-colour ambient occlusion." width="1280" height="720" />
+      <img src="../assets/vertex-color-ao-hero.webp" alt="A round stone well with a wooden windlass frame, its stones darkened near the base by baked vertex-colour ambient occlusion." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Integrator matches 1 - 0.5(1 - 1/sqrt(1+k^2)) to 6.760e-04, unoccluded plate exactly 1.0, FLOAT_COLOR exact vs BYTE_COLOR sRGB-quantised (model agreement 3.189e-07), evaluated deviation 0.0.</div>
+    <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=attributes">attributes</a> <a href="../#tag=game-pipeline">game-pipeline</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/vertex-color-ao/vertex_color_ao.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -286,30 +345,993 @@
 <p><strong>Pipeline arc neighbours:</strong> attribute domains in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/attribute-domain-shear"><code>attribute-domain-shear</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel"><code>color-attribute-wheel</code></a>, the second UV set for <em>texture</em>-baked lighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel"><code>lightmap-uv-channel</code></a>, topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>.</p>
 <p><strong>What it witnesses</strong> (all closed form or independently re-derived):</p>
 <ul><li><strong>Analytic AO.</strong> The integrator matches <code>1 − A(H/d)</code> at six probe distances spanning two decades of <code>H/d</code> (60.0 down to 0.60); worst error <strong>6.760e-04</strong> against a <strong>2.5e-03</strong> gate.</li><li><strong>Unoccluded is exactly 1.</strong> An isolated flat plate bakes to <strong>1.000000000</strong> — not approximately, exactly, because no ray can self-hit.</li><li><strong>Monotone with depth.</strong> AO rises strictly across the calibration ruler, <strong>0.508301 → 0.928467</strong>.</li><li><strong>Range and spread.</strong> Every baked value on the asset lies in [0, 1] and the bake actually uses the range (measured spread <strong>1.000000</strong>); a silently constant bake would pass a bare range check and fails this one.</li><li><strong>Storage.</strong> <code>FLOAT_COLOR</code> round-trips the linear value exactly (<strong>0.000e+00</strong>). <code>BYTE_COLOR</code> does not — see below.</li><li><strong>Depsgraph survival.</strong> Both attributes read back off the evaluated mesh at deviation <strong>exactly 0.0</strong>, keeping <code>data_type</code> and <code>domain</code>.</li><li><strong>Reuse hygiene.</strong> Identity scales, <code>Well.Stone.*</code> names, no default datablocks, <code>min z == 0.00e+00</code>, render colour attribute pinned to <code>AO</code>.</li></ul>
-<h2>Hazards found while authoring</h2>
+<h2 id="hazards-found-while-authoring">Hazards found while authoring<a class="anchor" href="#hazards-found-while-authoring" aria-label="Link to this section">#</a></h2>
 <ul><li><strong><code>BYTE_COLOR</code> is sRGB-encoded 8-bit, not linear 8-bit.</strong> Writing linear 0.735 reads back <strong>0.7379107</strong>. The round-trip error peaks at <strong>3.782e-03</strong>, and the readback matches an independent encode → quantise → decode model to <strong>3.189e-07</strong> — so the encoding is confirmed, not guessed. Darks get more precision than a linear ramp would give and midtones get less. An exporter that hands the raw bytes to an engine expecting linear occlusion ships visibly wrong shadows. Store AO in <code>FLOAT_COLOR</code> unless the target genuinely wants sRGB.</li><li><strong><code>bmesh.ops.bevel</code> offsets along <em>cached</em> face normals.</strong> Moving a vertex does not refresh them. While the stale normal is within 90° of the true one the bevel merely skews; past 90° it flips sign and grows the solid outward. Measured while authoring, on a ring of bevelled boxes placed around a circle: the boxes at 0/36/72° bevelled correctly and the one at <strong>108°</strong> grew by exactly one offset (<strong>12 mm</strong>) in both z directions, putting geometry below the ground plane. <code>t.normal_update()</code> before every bevel is the fix, and every <code>_box</code>/<code>_prism</code> here calls it; the hygiene check (exit 8) is what caught it.</li><li><strong>Point-domain AO needs vertices to vary across.</strong> An 8-vertex slab bakes to one nearly-constant value per face, so the crevice gradient never reaches the attribute. The first draft rendered as flat pale stone with a correct bake underneath. Parts are subdivided before the bake for this reason.</li><li><strong><code>color_attributes</code> enumeration order is not portable</strong> — measured <code>BYTE_COLOR</code> first on 4.5.11 and <code>FLOAT_COLOR</code> first on 5.1.2 for the same mesh. Look attributes up by name, never by index.</li></ul>
 <p><strong>What each check catches on failure</strong> (every one probed, with the measured error): an integrator sampling the full sphere rather than the hemisphere — AO <strong>0.752686</strong> against a closed form of <strong>0.508332</strong>, error <strong>2.444e-01</strong> (exit 3); uniform-solid-angle weighting instead of cosine — error <strong>1.202e-02</strong> (exit 3); rays cast with no normal offset so they self-hit the surface they start on — unoccluded plate bakes to <strong>0.160644531</strong> instead of 1.0 (exit 4); a bake collapsed to a constant — spread <strong>0.000000</strong> (exit 5); the sRGB storage model swapped for naive linear 8-bit quantisation — <strong>4.577e-03</strong> disagreement with the real readback (exit 6); a Subdivision modifier resampling the attribute — <strong>3270</strong> evaluated elements against <strong>840</strong> authored (exit 7); a part sunk below the ground plane — <strong>-1.200e-02</strong> (exit 8); a default <code>Cube</code> datablock name (exit 8).</p>
 <p>The exit-7 probe earned its keep twice: the depsgraph check originally compared <code>zip(src.data, eva.data)</code>, which stops at the shorter sequence, so a resampled attribute reported a clean <strong>0.0</strong> deviation and the probe exited <strong>0</strong>. The length guard was added because the falsification pass failed to fail.</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same 6966 vertices, same closed-form errors to every printed digit, same storage deviations.</p>
 <p><strong>Render as proof:</strong> the well on the dark stage, lit only by the studio rig, with the baked AO multiplied into base colour — the masonry joints, the shaft mouth, the coping undersides and the apron contact all darken from the attribute, not from the lights. The falsification variant (<code>--falsify</code>) writes the same bake <strong>inverted</strong>: sky-facing coping and apron tops go grimy while the recesses and post bases glow, occlusion turned inside out.</p>
 <p>The studio rig is presentation only. Its fill and rim used to be strongly blue, which lit the whole stage cold (stage luma 0.243, warmth +0.01 against the calibration set). Its wedge grazed floor the camera barely saw and left a hard-edged patch on the back wall. Both are now near neutral, and the wedge pools warm light on the floor just behind the well from the camera&#x27;s side: luma 0.274, warmth +0.023. The bake, the checks and the exit codes are unchanged.</p>
-<h2>Run</h2>
+<h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python vertex_color_ao.py --
 blender --background --python vertex_color_ao.py -- --output well.png
 blender --background --python vertex_color_ao.py -- --falsify inverted.png</code></pre>
 <p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.839y</strong>, margins <strong>0.241/0.238/0.072/0.089</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (11 materials, <code>edge90</code> <strong>0.152</strong>, no default names).</p>
-<h2>Exit codes</h2>
+<h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Calibration AO off closed form</td></tr><tr><td>4</td><td>Unoccluded plate is not 1.0, or AO is not strictly increasing with distance</td></tr><tr><td>5</td><td>Bake empty, out of range, or spread too small</td></tr><tr><td>6</td><td>FLOAT_COLOR / BYTE_COLOR round-trip contract</td></tr><tr><td>7</td><td>Colour attributes missing, retyped, or drifted under the depsgraph</td></tr><tr><td>8</td><td>Asset part count, unapplied scale, namespace, render attribute, or ground plane</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>.</p>
     </section>
-    <section class="detail-section src">
+    <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/vertex-color-ao/vertex_color_ao.py</code>
-        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-color-ao/vertex_color_ao.py">View on GitHub &rarr;</a>
+        <span>963 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-color-ao/vertex_color_ao.py">View on GitHub &rarr;</a></span>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;Vertex-colour AO — cheap baked occlusion in a colour attribute.
+      <div class="code" data-lines="963">
+<pre class="gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Vertex-colour AO — cheap baked occlusion in a colour attribute.
 
 Engines that read vertex colour get their contact shadows for free if the
 asset ships with ambient occlusion baked into a colour attribute. The bake is
@@ -1273,7 +2295,41 @@ _mat_cache = {}
         print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
         sys.exit(<span class="n">1</span>)
 </pre>
+      </div>
     </section>
+    <section class="detail-section" id="related" aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <div class="related-grid">
+        <article class="card mini">
+          <a class="card-media" href="../attribute-domain-shear/" tabindex="-1" aria-hidden="true">
+            <img src="../assets/attribute-domain-shear-hero.webp" alt="Two striped patio parasols labelled CORNER and POINT: the left has crisp crimson and cream stripes, the right has stripes smeared pink along the seams and a front panel turned cream." width="1280" height="720" loading="lazy" decoding="async" />
+          </a>
+          <div class="card-body">
+            <h3><a href="../attribute-domain-shear/">attribute-domain-shear</a></h3>
+            <p>POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <a class="card-media" href="../color-attribute-wheel/" tabindex="-1" aria-hidden="true">
+            <img src="../assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." width="1280" height="720" loading="lazy" decoding="async" />
+          </a>
+          <div class="card-body">
+            <h3><a href="../color-attribute-wheel/">color-attribute-wheel</a></h3>
+            <p>The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <a class="card-media" href="../custom-normals-shade/" tabindex="-1" aria-hidden="true">
+            <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." width="1280" height="720" loading="lazy" decoding="async" />
+          </a>
+          <div class="card-body">
+            <h3><a href="../custom-normals-shade/">custom-normals-shade</a></h3>
+            <p>A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact).</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span> socket-attach-points</a><span class="pager-pos hud">46 of 52 examples</span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete">cross-version-property-delete <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
@@ -1293,20 +2349,98 @@ _mat_cache = {}
       var box = document.getElementById('lightbox');
       if (hero && box) {
         // <dialog>.showModal() traps focus, closes on Escape, and returns
-        // focus to the hero button on close. Any click inside closes it.
-        hero.addEventListener('click', function () { box.showModal(); });
-        box.addEventListener('click', function () { box.close(); });
+        // focus to the hero button on close. The dialog fills the viewport,
+        // so a click whose target is the dialog itself is a backdrop click.
+        var full = box.querySelector('img');
+        hero.addEventListener('click', function () { box.classList.remove('native'); box.showModal(); });
+        box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+        box.querySelector('.lightbox-close').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { box.classList.toggle('native'); });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        copy.addEventListener('click', function () {
-          var cmd = document.getElementById('runCmd').textContent;
-          navigator.clipboard.writeText(cmd).then(function () {
-            copy.textContent = 'Copied!';
-            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+
+      // Clipboard API first; execCommand for non-secure origins (file://,
+      // plain-http previews) where navigator.clipboard is undefined.
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
+      function wireCopy(btn, getText) {
+        btn.addEventListener('click', function () {
+          copyText(getText()).then(function () {
+            btn.textContent = 'Copied'; btn.classList.add('done');
+          }, function () {
+            btn.textContent = 'Copy failed'; btn.classList.add('fail');
+          }).then(function () {
+            setTimeout(function () {
+              btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
+            }, 1600);
           });
         });
       }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+        var wrap = block;
+        if (block.tagName === 'PRE') {
+          wrap = document.createElement('div');
+          block.parentNode.insertBefore(wrap, block);
+          wrap.appendChild(block);
+        }
+        wrap.classList.add('codewrap');
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'copy-btn'; btn.textContent = 'Copy';
+        var src = block.tagName === 'PRE' ? block : block.querySelector('.code-lines');
+        btn.setAttribute('aria-label', 'Copy code');
+        wireCopy(btn, function () { return src.textContent; });
+        wrap.appendChild(btn);
+      });
+
+      // Long listings start collapsed; with JS off they render in full.
+      var code = document.querySelector('.src .code');
+      if (code) {
+        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
+        if (lines > 120) {
+          code.classList.add('collapsed');
+          var more = document.createElement('button');
+          more.type = 'button'; more.className = 'src-expand';
+          more.setAttribute('aria-expanded', 'false');
+          more.textContent = 'Show all ' + lines + ' lines';
+          code.parentNode.insertBefore(more, code.nextSibling);
+          more.addEventListener('click', function () {
+            var open = code.classList.toggle('collapsed') === false;
+            more.setAttribute('aria-expanded', open ? 'true' : 'false');
+            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
+            if (!open) code.scrollIntoView({ block: 'start' });
+          });
+        }
+      }
+
+      // Left/right arrows page between entries of the same kind.
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        if (box && box.open) return;
+        var ae = document.activeElement;
+        if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+        var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
+        if (!rel) return;
+        var a = document.querySelector('.pager a[rel="' + rel + '"]');
+        if (a) { location.href = a.href; }
+      });
     })();
 
   </script>
