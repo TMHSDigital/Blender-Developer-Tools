@@ -149,10 +149,13 @@ def render_still(obj, path, engine):
     txt.space_character = 1.05
     # Render only (the check above asserts the built-in Bfont): Bfont's "1"
     # is a bare stem that reads as a capital I ("5.2.I LTS"). Inter, shipped
-    # with Blender, gives the numeral its flag.
-    inter = bundled_font("Inter.woff2")
+    # with Blender, gives the numeral its flag. 4.5 LTS builds Inter's
+    # variable-font outlines with broken counters (the "4" fills its hole),
+    # so 4.x falls back to DejaVuSansMono, whose "1" also carries a flag.
+    font_name = "Inter.woff2" if bpy.app.version >= (5, 0, 0) else "DejaVuSansMono.woff2"
+    inter = bundled_font(font_name)
     if inter is None:
-        print("ERROR: bundled datafiles/fonts/Inter.woff2 not found", file=sys.stderr)
+        print(f"ERROR: bundled datafiles/fonts/{font_name} not found", file=sys.stderr)
         return 13
     txt.font = inter
 
