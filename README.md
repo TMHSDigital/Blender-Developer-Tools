@@ -226,7 +226,7 @@ that actually runs. Browse them all with filters and full-size renders in the
 or expand a category below.
 
 <p align="center">
-  <a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" width="24%" alt="Grease pencil rosette: five nested neon rose curves glowing against a dark studio wall" /></a>
+  <a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" width="24%" alt="Grease pencil rosette: five nested neon rose curves mounted as a sign on a brass-framed black lacquer board" /></a>
   <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing yellow sun and three planets" /></a>
   <a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" width="24%" alt="Compositor glare: three neon rings with colored bloom halos" /></a>
   <a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" width="24%" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card" /></a>
@@ -819,7 +819,7 @@ on 5.2.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" alt="Grease pencil rosette: five nested neon rose curves drawn as tapered Grease Pencil v3 strokes, cyan through magenta to red, glowing against a dark studio wall with a soft blue halo" /></a>
+<a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" alt="Grease pencil rosette: five nested neon rose curves drawn as tapered Grease Pencil v3 strokes, cyan through magenta to red, mounted as a neon sign on a brass-framed black lacquer board and washing it with coloured spill" /></a>
 </td>
 <td valign="middle">
 

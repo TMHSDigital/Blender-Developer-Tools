@@ -21,6 +21,16 @@ layers*: writing `pt.radius` / `pt.opacity` / `pt.vertex_color` lazily materiali
 `drawing.attributes`, and every closed-form rose position round-trips exactly through the
 raw `position` attribute buffer via `foreach_get`.
 
+## Render
+
+The strokes stay unlit (`layer.use_lights = False`) and act as the neon tubes of a sign:
+they hang a few centimetres proud of a satin black-lacquer backboard in a brass frame with
+brass standoff caps and a maker's plate, mounted on the studio wall. Grease Pencil does not
+light its surroundings, so the spill is staged: one small shadowless disk light per sample
+along each ring, placed on that ring's `rose_point` and tinted with its `ring_color`, washes
+the board behind each tube. The spill reads the same closed-form curve the check asserts.
+The render path gates framing through `examples/gallery_framing.py` (exit 10).
+
 ## Run
 
 ```bash
@@ -52,6 +62,7 @@ against it.
 | 7 | Position buffer length or closed-form round-trip |
 | 8 | Grease Pencil material missing gpencil settings |
 | 9 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

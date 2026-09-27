@@ -32,6 +32,11 @@ check. Pass --output to also render a still:
 """
 import bpy, sys, os, math, argparse, colorsys
 
+# Shared Layer 1 framing measurement (render path only) -- see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 RINGS = 5           # nested rose curves, one stroke each
 POINTS = 192        # samples per stroke
 R_OUTER = 1.55      # radius of the outermost rose
@@ -198,11 +203,53 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+def _box(name, dims, loc, mat, bevel=0.0, segments=3):
+    import bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x *= dims[0]; v.co.y *= dims[1]; v.co.z *= dims[2]
+        if bevel > 0.0:
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=segments,
+                            profile=0.5, affect='EDGES', clamp_overlap=True)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for poly in me.polygons:
+        poly.use_smooth = True
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
+def _mat(name, rgb, rough, metal=0.0, coat=0.0):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    b = m.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*rgb, 1.0)
+    b.inputs["Roughness"].default_value = rough
+    b.inputs["Metallic"].default_value = metal
+    if coat:
+        try:
+            b.inputs["Coat Weight"].default_value = coat
+        except KeyError:
+            pass
+    return m
+
+
 def render_still(obj, path, engine):
+    """The rosette as a neon sign: the unlit GPv3 strokes are the tubes,
+    mounted a few centimetres proud of a black-lacquer backboard in a brass
+    frame, hung on the studio wall. Coloured area lights just in front of the
+    board stand in for the spill real neon throws on its backing."""
     scene = bpy.context.scene
     obj.data.layers[0].use_lights = False   # neon ink stays unlit and vivid
-    obj.location = (0.0, 0.0, 1.9)
-    obj.rotation_euler = (math.radians(4), 0.0, 0.0)
+    SIGN_Z = 2.25
+    obj.location = (0.0, -0.06, SIGN_Z)
     # unlit saturated ink wants the graphic transform, not AgX's filmic desaturation
     scene.view_settings.view_transform = 'Standard'
 
@@ -214,23 +261,50 @@ def render_still(obj, path, engine):
         bm.to_mesh(floor_me)
     finally:
         bm.free()
-    fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
-    fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.045, 0.05, 0.065, 1.0)
-    fb.inputs["Roughness"].default_value = 0.35
+    fmat = _mat("Studio", (0.03, 0.032, 0.037), 0.7)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 6.0, 0.0)
+    wall.location = (0.0, 0.32, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.01, 0.012, 0.02, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.012, 0.012, 0.016, 1.0)
     scene.world = world
+
+    # sign: black lacquer board, brass frame, four brass standoff caps
+    lacquer = _mat("Lacquer", (0.02, 0.02, 0.024), 0.55, coat=0.15)
+    brass = _mat("Brass", (0.78, 0.55, 0.24), 0.28, metal=1.0)
+    BW, BH = 4.0, 3.7
+    board = _box("SignBoard", (BW, 0.06, BH), (0.0, 0.26, SIGN_Z), lacquer, bevel=0.015)
+    fw = 0.09
+    frame = [
+        _box("FrameTop", (BW + 2 * fw, 0.1, fw), (0.0, 0.24, SIGN_Z + BH / 2 + fw / 2), brass, 0.02),
+        _box("FrameBot", (BW + 2 * fw, 0.1, fw), (0.0, 0.24, SIGN_Z - BH / 2 - fw / 2), brass, 0.02),
+        _box("FrameL", (fw, 0.1, BH), (-(BW + fw) / 2, 0.24, SIGN_Z), brass, 0.02),
+        _box("FrameR", (fw, 0.1, BH), ((BW + fw) / 2, 0.24, SIGN_Z), brass, 0.02),
+    ]
+    caps = []
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.07, depth=0.1,
+                                                location=(sx * (BW / 2 - 0.25), 0.18,
+                                                          SIGN_Z + sz * (BH / 2 - 0.25)),
+                                                rotation=(math.radians(90), 0, 0))
+            cap = bpy.context.active_object
+            cap.data.materials.append(brass)
+            caps.append(cap)
+    # a brass plate under the tubes, a mains cable dropping to the floor
+    plate = _box("MakerPlate", (0.9, 0.03, 0.16), (0.0, 0.215, SIGN_Z - BH / 2 + 0.22), brass, 0.01)
+    cable_mat = _mat("Cable", (0.02, 0.02, 0.02), 0.45)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.018, depth=SIGN_Z - BH / 2 - fw,
+                                        location=(1.35, 0.28, (SIGN_Z - BH / 2 - fw) / 2))
+    cable = bpy.context.active_object
+    cable.data.materials.append(cable_mat)
+    sign = [board, plate, cable] + frame + caps
 
     def light(name, loc, energy, size, col, rot):
         ld = bpy.data.lights.new(name, 'AREA')
@@ -239,16 +313,41 @@ def render_still(obj, path, engine):
         ob.location = loc
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
+        return ld
 
-    # the strokes are unlit; this only paints a soft halo on the wall behind them
-    light("Halo", (0.0, 3.2, 1.9), 260.0, 7.0, (0.4, 0.45, 1.0), (90, 0, 0))
+    # neon spill: one small shadowless disk per ring, set just in front of
+    # the board on that ring's rose and tinted with its colour, so each tube
+    # washes the satin lacquer behind it the way real neon does
+    for ring in range(RINGS):
+        for i in range(0, POINTS, POINTS // 16):
+            x, _y, z = rose_point(ring, i)
+            ld = bpy.data.lights.new(f"Spill{ring}_{i}", 'AREA')
+            ld.shape = 'DISK'
+            ld.size = 0.6
+            ld.energy = 0.9
+            ld.color = ring_color(ring, i)[:3]
+            ld.use_shadow = False
+            lo = bpy.data.objects.new(ld.name, ld)
+            lo.location = (x, 0.05, SIGN_Z + z)
+            lo.rotation_euler = (math.radians(90), 0.0, 0.0)  # emit along +Y, onto the board
+            scene.collection.objects.link(lo)
+    # warm key grazing the brass frame, cool fill, warm wedge on the wall
+    light("Key", (-4.5, -5.0, 5.5), 200.0, 3.0, (1.0, 0.93, 0.85), (48, 0, -40))
+    light("Fill", (5.0, -4.0, 2.5), 50.0, 8.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    light("Wedge", (3.2, -1.6, 4.6), 380.0, 4.0, (1.0, 0.70, 0.42), (40, 0, 60))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 41.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -9.5, 1.9)
-    cam.rotation_euler = (math.radians(90), 0.0, 0.0)
+    cam.location = (-2.6, -9.2, 2.3)
     scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = (0.0, 0.2, SIGN_Z - 0.05)
+    scene.collection.objects.link(aim)
+    tr = cam.constraints.new('TRACK_TO')
+    tr.target = aim
+    tr.track_axis = 'TRACK_NEGATIVE_Z'
+    tr.up_axis = 'UP_Y'
     scene.camera = cam
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
@@ -263,8 +362,14 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    fcode = gallery_framing.check_framing(scene, cam, hero=[board] + frame,
+                                          elements=[obj, board, plate] + frame + caps, stage=[floor, wall])
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 9
 
 
 def main():
@@ -284,9 +389,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            if rcode == 9:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered still {args.output}")
 
     print("grease-pencil-rosette OK")

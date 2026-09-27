@@ -232,7 +232,7 @@
       "name": "grease-pencil-rosette",
       "dir": "examples/grease-pencil-rosette",
       "teaches": "Grease Pencil v3's attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.",
-      "alt": "A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop.",
+      "alt": "A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall.",
       "witnessesFix": "The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.",
       "hero": "docs/gallery/assets/grease-pencil-rosette-hero.webp",
       "preview": "examples/grease-pencil-rosette/preview.webp",
