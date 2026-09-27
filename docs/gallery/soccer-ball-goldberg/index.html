@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/soccer-ball-goldberg-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron." />
+  <meta property="og:image:alt" content="A white soccer ball with black pentagon panels and dark stitched seams, pressed into mown pitch turf on a chalked penalty spot with a touchline behind it." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="soccer-ball-goldberg — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/soccer-ball-goldberg-hero.webp" />
-  <meta name="twitter:image:alt" content="A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron." />
+  <meta name="twitter:image:alt" content="A white soccer ball with black pentagon panels and dark stitched seams, pressed into mown pitch turf on a chalked penalty spot with a touchline behind it." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../prop-origin-transform/" aria-label="Previous example: prop-origin-transform"><span aria-hidden="true">&larr;</span> prop-origin-transform</a><span class="pager-pos hud">39 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../car-mirror-symmetry/" aria-label="Next example: car-mirror-symmetry">car-mirror-symmetry <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron.">
-      <img src="../assets/soccer-ball-goldberg-hero.webp" alt="A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A white soccer ball with black pentagon panels and dark stitched seams, pressed into mown pitch turf on a chalked penalty spot with a touchline behind it.">
+      <img src="../assets/soccer-ball-goldberg-hero.webp" alt="A white soccer ball with black pentagon panels and dark stitched seams, pressed into mown pitch turf on a chalked penalty spot with a touchline behind it." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Goldberg invariants are closed forms — counts, degree 3, uniform edges, planar faces, one circumsphere — and panels bind by vertex count, never enumeration order.</div>
@@ -371,7 +371,9 @@
 <p>The render is the proof: the faceted Goldberg cage is smoothed by an <strong>unapplied</strong> Subsurf modifier (panel materials carry through Catmull-Clark per face class), and the ball is grounded by its depsgraph-evaluated lowest vertex. Invert the panel binding and the still inverts with it: white pentagons on a black ball, wrong on sight.</p>
 <h3 id="staging-render-path-only">Staging (render path only)<a class="anchor" href="#staging-render-path-only" aria-label="Link to this section">#</a></h3>
 <p>None of this touches the checked mesh, its binding, or any check.</p>
-<ul><li><strong>Round, not lumpy.</strong> Catmull-Clark on a 60-vertex cage leaves flats over every hexagon; the clay pass read as a lumpy stone. An unapplied Cast modifier after the Subsurf pulls the surface onto a sphere of the cage&#x27;s own circumradius.</li><li><strong>Every panel visible.</strong> The white hexagons used to merge into one white shell, so the still showed 12 of the 32 panels the check counts. A render-only copy of the mesh, turned into a wire, subdivided and cast onto a sphere 2 mm proud of the ball, draws every panel boundary as a stitched seam. It is parented to the ball and bound to the dark slot on the copy only.</li><li><strong>Framing gate.</strong> The render path calls <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gallery_framing.py"><code>gallery_framing.check_framing</code></a> before writing the still. The helper returns 10, which this example already spends on the centroid check, so the call site maps a violation to <strong>14</strong>. The larger, rounder ball touched the top edge at the old 55 mm lens; the lens is now 50 mm.</li></ul>
+<ul><li><strong>Round, not lumpy.</strong> Catmull-Clark on a 60-vertex cage leaves flats over every hexagon; the clay pass read as a lumpy stone. An unapplied Cast modifier after the Subsurf pulls the surface onto a sphere of the cage&#x27;s own circumradius.</li><li><strong>Every panel visible.</strong> The white hexagons used to merge into one white shell, so the still showed 12 of the 32 panels the check counts. A render-only copy of the mesh, turned into a wire, subdivided and cast onto a sphere 2 mm proud of the ball, draws every panel boundary as a stitched seam. It is parented to the ball and bound to the dark slot on the copy only.</li><li><strong>Match leather.</strong> Both panel materials carry a fine Voronoi pebble grain in the bump and a thin clear coat, so each panel holds a soft sheen.</li><li><strong>On the pitch.</strong> The ball sits pressed 1 cm into a patch of mown turf: alternating mowing stripes, blade noise in colour and bump, and chalk (a penalty spot under the ball, a touchline behind it) broken up by the same blade noise. The chalk and stripes read Object coordinates on the turf, so the spot centres under the ball&#x27;s origin.</li><li><strong>Framing gate.</strong> The render path calls <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gallery_framing.py"><code>gallery_framing.check_framing</code></a> before writing the still. The helper returns 10, which this example already spends on the centroid check, so the call site maps a violation to <strong>14</strong>. The larger, rounder ball touched the top edge at the old 55 mm lens; the lens is now 50 mm, and a <code>TRACK_TO</code> aim sits 0.25 below the ball&#x27;s centre.</li></ul>
+<h3 id="stage-deviation">Stage deviation<a class="anchor" href="#stage-deviation" aria-label="Link to this section">#</a></h3>
+<p>The floor is dark mown turf rather than the near-black studio floor: a ball alone on a black stage read as an object in a void, and the pitch is the context that makes it a match ball. The back wall and warm wedge are the default stage; measured stage luminance 0.217 sits inside the calibration set.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python soccer_ball_goldberg.py --
@@ -391,9 +393,9 @@ blender --background --python soccer_ball_goldberg.py -- --output ball.png --eng
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/soccer-ball-goldberg/soccer_ball_goldberg.py</code>
-        <span>466 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/soccer-ball-goldberg/soccer_ball_goldberg.py">View on GitHub &rarr;</a></span>
+        <span>611 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/soccer-ball-goldberg/soccer_ball_goldberg.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="466">
+      <div class="code" data-lines="611">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -859,7 +861,152 @@ blender --background --python soccer_ball_goldberg.py -- --output ball.png --eng
 463
 464
 465
-466</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A soccer ball built as a Goldberg polyhedron with bmesh — a runnable example.
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A soccer ball built as a Goldberg polyhedron with bmesh — a runnable example.
 
 A truncated icosahedron (12 pentagons, 20 hexagons) derived by cutting every
 edge of a bmesh icosphere at exactly 1/3, with the pentagon/hexagon faces
@@ -878,6 +1025,7 @@ check. Pass --output to also render a still:
     blender --background --python soccer_ball_goldberg.py -- --output b.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -901,6 +1049,12 @@ TOL_CENTER = <span class="n">1.0e-6</span>         <span class="c"># centroid at
 SEAM_WIDTH = <span class="n">0.018</span>          <span class="c"># render only: stitched seam width on the ball</span>
 SEAM_LIFT = <span class="n">0.002</span>           <span class="c"># render only: seam sits this far proud of the ball</span>
 FRAMING_EXIT = <span class="n">14</span>           <span class="c"># render only: gallery_framing returns 10, taken here</span>
+TURF_SIZE = (<span class="n">16.0</span>, <span class="n">14.0</span>)    <span class="c"># render only: pitch turf footprint (x, y)</span>
+TURF_H = <span class="n">0.22</span>               <span class="c"># render only: sod sample thickness</span>
+TURF_STRIPE = <span class="n">0.6</span>           <span class="c"># render only: mowing stripe width</span>
+CHALK_SPOT_R = <span class="n">0.42</span>         <span class="c"># render only: penalty spot radius under the ball</span>
+CHALK_LINE_Y = <span class="n">0.95</span>         <span class="c"># render only: touchline behind the ball</span>
+CHALK_LINE_W = <span class="n">0.12</span>
 
 <span class="c"># closed forms for a truncated icosahedron (Goldberg polyhedron GP(1,1))</span>
 EXPECT_V, EXPECT_E, EXPECT_F = <span class="n">60</span>, <span class="n">90</span>, <span class="n">32</span>
@@ -1143,17 +1297,146 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
+<span class="k">def</span> _leather(mat, base, rough):
+    <span class="s">&quot;&quot;&quot;Synthetic match leather: a fine pebble grain in the bump and a thin
+    clear coat, so each panel carries a soft sheen instead of flat paint.&quot;&quot;&quot;</span>
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.35</span>
+    b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.25</span>
+    grain = nt.nodes.new(<span class="s">&quot;ShaderNodeTexVoronoi&quot;</span>)
+    grain.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">160.0</span>
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.12</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+    nt.links.new(grain.outputs[<span class="s">&quot;Distance&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
 <span class="k">def</span> _panel_materials(obj):
     <span class="s">&quot;&quot;&quot;Leather finishes for the two panel classes (render path only).&quot;&quot;&quot;</span>
     white, black = obj.data.materials
-    white.use_nodes = <span class="k">True</span>
-    wb = white.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    wb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.82</span>, <span class="n">0.82</span>, <span class="n">0.84</span>, <span class="n">1.0</span>)
-    wb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.52</span>
-    black.use_nodes = <span class="k">True</span>
-    bb = black.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.018</span>, <span class="n">0.02</span>, <span class="n">0.024</span>, <span class="n">1.0</span>)
-    bb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.48</span>
+    _leather(white, (<span class="n">0.80</span>, <span class="n">0.80</span>, <span class="n">0.82</span>), <span class="n">0.48</span>)
+    _leather(black, (<span class="n">0.016</span>, <span class="n">0.018</span>, <span class="n">0.022</span>), <span class="n">0.42</span>)
+
+
+<span class="k">def</span> _turf_patch(scene):
+    <span class="s">&quot;&quot;&quot;Render-only staging: a patch of mown pitch turf — striped grass on
+    top, a soil edge on its (off-frame) sides — with a chalked penalty spot
+    under the ball and a touchline running behind it.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Turf&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            v.co.x *= TURF_SIZE[<span class="n">0</span>]
+            v.co.y *= TURF_SIZE[<span class="n">1</span>]
+            v.co.z = (v.co.z + <span class="n">0.5</span>) * TURF_H
+        bmesh.ops.bevel(bm, geom=[e <span class="k">for</span> e <span class="k">in</span> bm.edges], offset=<span class="n">0.06</span>, segments=<span class="n">3</span>,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.material_index = <span class="n">0</span> <span class="k">if</span> f.normal.z &gt; <span class="n">0.7</span> <span class="k">else</span> <span class="n">1</span>
+            f.smooth = <span class="k">True</span>
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+
+    grass = bpy.data.materials.new(<span class="s">&quot;MownGrass&quot;</span>)
+    grass.use_nodes = <span class="k">True</span>
+    nt = grass.node_tree
+    g = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    g.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    <span class="c"># mowing stripes: alternating light/dark bands where the mower laid the</span>
+    <span class="c"># blades in opposite directions</span>
+    stripes = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    stripes.wave_type = <span class="s">&#x27;BANDS&#x27;</span>
+    stripes.bands_direction = <span class="s">&#x27;X&#x27;</span>
+    stripes.wave_profile = <span class="s">&#x27;SIN&#x27;</span>
+    stripes.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.0</span> * math.pi / (<span class="n">20.0</span> * TURF_STRIPE)
+    nt.links.new(coord, stripes.inputs[<span class="s">&quot;Vector&quot;</span>])
+    sharpen = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    sharpen.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.4</span>
+    sharpen.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(stripes.outputs[<span class="s">&quot;Fac&quot;</span>], sharpen.inputs[<span class="s">&quot;Value&quot;</span>])
+    blades = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    blades.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">90.0</span>
+    blades.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">10.0</span>
+    nt.links.new(coord, blades.inputs[<span class="s">&quot;Vector&quot;</span>])
+    band = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    band.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    band.inputs[<span class="n">6</span>].default_value = (<span class="n">0.016</span>, <span class="n">0.060</span>, <span class="n">0.013</span>, <span class="n">1.0</span>)
+    band.inputs[<span class="n">7</span>].default_value = (<span class="n">0.032</span>, <span class="n">0.105</span>, <span class="n">0.021</span>, <span class="n">1.0</span>)
+    nt.links.new(sharpen.outputs[<span class="s">&quot;Result&quot;</span>], band.inputs[<span class="n">0</span>])
+    tuft = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    tuft.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    tuft.blend_type = <span class="s">&#x27;MULTIPLY&#x27;</span>
+    tuft.inputs[<span class="n">0</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(band.outputs[<span class="n">2</span>], tuft.inputs[<span class="n">6</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.45</span>, <span class="n">0.45</span>, <span class="n">0.4</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">1.25</span>, <span class="n">1.25</span>, <span class="n">1.1</span>, <span class="n">1.0</span>)
+    nt.links.new(blades.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], tuft.inputs[<span class="n">7</span>])
+    <span class="c"># chalk: a penalty spot under the ball and a touchline behind it</span>
+    spot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    spot.operation = <span class="s">&#x27;LENGTH&#x27;</span>
+    nt.links.new(coord, spot.inputs[<span class="n">0</span>])
+    in_spot = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    in_spot.operation = <span class="s">&#x27;LESS_THAN&#x27;</span>
+    in_spot.inputs[<span class="n">1</span>].default_value = CHALK_SPOT_R
+    nt.links.new(spot.outputs[<span class="s">&quot;Value&quot;</span>], in_spot.inputs[<span class="n">0</span>])
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord, sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    off = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    off.operation = <span class="s">&#x27;SUBTRACT&#x27;</span>
+    off.inputs[<span class="n">1</span>].default_value = CHALK_LINE_Y
+    nt.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], off.inputs[<span class="n">0</span>])
+    dist = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    dist.operation = <span class="s">&#x27;ABSOLUTE&#x27;</span>
+    nt.links.new(off.outputs[<span class="s">&quot;Value&quot;</span>], dist.inputs[<span class="n">0</span>])
+    in_line = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    in_line.operation = <span class="s">&#x27;LESS_THAN&#x27;</span>
+    in_line.inputs[<span class="n">1</span>].default_value = CHALK_LINE_W / <span class="n">2</span>
+    nt.links.new(dist.outputs[<span class="s">&quot;Value&quot;</span>], in_line.inputs[<span class="n">0</span>])
+    chalk = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    chalk.operation = <span class="s">&#x27;MAXIMUM&#x27;</span>
+    nt.links.new(in_spot.outputs[<span class="s">&quot;Value&quot;</span>], chalk.inputs[<span class="n">0</span>])
+    nt.links.new(in_line.outputs[<span class="s">&quot;Value&quot;</span>], chalk.inputs[<span class="n">1</span>])
+    <span class="c"># chalk sits in the grass: the blade noise breaks its edge up a little</span>
+    patchy = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    patchy.operation = <span class="s">&#x27;MULTIPLY&#x27;</span>
+    nt.links.new(chalk.outputs[<span class="s">&quot;Value&quot;</span>], patchy.inputs[<span class="n">0</span>])
+    nt.links.new(blades.outputs[<span class="s">&quot;Fac&quot;</span>], patchy.inputs[<span class="n">1</span>])
+    chalk_fac = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    chalk_fac.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.2</span>
+    chalk_fac.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(patchy.outputs[<span class="s">&quot;Value&quot;</span>], chalk_fac.inputs[<span class="s">&quot;Value&quot;</span>])
+    lined = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    lined.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    lined.inputs[<span class="n">7</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.60</span>, <span class="n">1.0</span>)
+    nt.links.new(chalk_fac.outputs[<span class="s">&quot;Result&quot;</span>], lined.inputs[<span class="n">0</span>])
+    nt.links.new(tuft.outputs[<span class="n">2</span>], lined.inputs[<span class="n">6</span>])
+    nt.links.new(lined.outputs[<span class="n">2</span>], g.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.5</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.01</span>
+    nt.links.new(blades.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], g.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+    soil = bpy.data.materials.new(<span class="s">&quot;Soil&quot;</span>)
+    soil.use_nodes = <span class="k">True</span>
+    s = soil.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    s.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.035</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    s.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.95</span>
+    me.materials.append(grass)
+    me.materials.append(soil)
+    turf = bpy.data.objects.new(<span class="s">&quot;Turf&quot;</span>, me)
+    scene.collection.objects.link(turf)
+    <span class="k">return</span> turf
 
 
 <span class="k">def</span> render_still(obj, path, engine):
@@ -1220,7 +1503,9 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
         min_z = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> ev_me.vertices)
     <span class="k">finally</span>:
         ev.to_mesh_clear()  <span class="c"># no argument: clears this object&#x27;s evaluated mesh</span>
-    obj.location.z -= min_z - <span class="n">0.002</span>  <span class="c"># 2 mm contact: grounded, not intersecting</span>
+    <span class="c"># seated on the turf: the ball presses 1 cm into the grass it rests on</span>
+    obj.location.z -= min_z - TURF_H + <span class="n">0.01</span>
+    turf = _turf_patch(scene)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1265,9 +1550,16 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">7.2</span>, <span class="n">3.8</span>)
-    cam.rotation_euler = (math.radians(<span class="n">68</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (<span class="n">1.2</span>, -<span class="n">7.0</span>, <span class="n">3.6</span>)
     scene.collection.objects.link(cam)
+    <span class="c"># aimed a little below the ball&#x27;s centre so the turf and its chalk read</span>
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = obj.location - Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.25</span>))
+    scene.collection.objects.link(aim)
+    track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    track.target = aim
+    track.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    track.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     scene.camera = cam
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
@@ -1286,7 +1578,7 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
     <span class="c"># (docs/VISUAL-STYLE.md); Standard is the house transform</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="k">if</span> gallery_framing.check_framing(scene, cam, hero=[obj], elements=[obj],
-                                     stage=[floor, wall]):
+                                     stage=[floor, wall, turf]):
         <span class="k">return</span> FRAMING_EXIT
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
@@ -1333,7 +1625,7 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
       <div class="related-grid">
         <article class="card mini">
           <a class="card-media" href="../bmesh-gear/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear meshing with a blued pinion and a spoked gunmetal wheel, each bolted through a hub to a dark steel backplate on a walnut plinth." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../bmesh-gear/">bmesh-gear</a></h3>
@@ -1364,7 +1656,7 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/soccer-ball-goldberg-hero.webp" alt="A round white soccer ball with black pentagon panels and dark stitched seams outlining every white hexagon, built as a smoothed Goldberg polyhedron." />
+    <img src="../assets/soccer-ball-goldberg-hero.webp" alt="A white soccer ball with black pentagon panels and dark stitched seams, pressed into mown pitch turf on a chalked penalty spot with a touchline behind it." />
   </dialog>
   <footer>
     <div class="statusbar">

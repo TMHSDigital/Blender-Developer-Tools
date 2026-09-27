@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
+  <meta property="og:image:alt" content="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="fence-kit — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
-  <meta name="twitter:image:alt" content="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
+  <meta name="twitter:image:alt" content="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span> terrain-scatter</a><span class="pager-pos hud">9 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower">watchtower <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts.">
-      <img src="../assets/fence-kit-hero.webp" alt="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands.">
+      <img src="../assets/fence-kit-hero.webp" alt="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.</div>
@@ -364,6 +364,7 @@
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural post-and-rail fence section (two posts, pyramidal caps, three rails, a kickboard, a board brace, iron shoes and U-bands), then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
 <p>Posts, rails, kick, brace and bands share named stations (<code>POST_XS</code>, <code>RAIL_ZS</code>, <code>SHOE_H</code>). The post stations come from the tile. The outer faces of the iron bands sit <code>KIT_CLEAR</code> (2 mm) inside the tile edge, so copies placed at the 1.60 m pitch meet band to band without interpenetrating or sharing a plane. Each band is one shell, mitred at the corners. A rail band is a U open toward the span, with its arms stopped inside the post&#x27;s inner face. The brace is a board with plumb-cut ends, face-nailed to the middle rail and housed 12 mm into both posts. It clears the bottom rail at the left post and the top rail at the right one. Rails and kick tenon into the post volume.</p>
+<p><strong>Hero.</strong> The still shows the kit doing its job: three linked duplicates of the one checked mesh at the 1.60 m pitch, so every joint in the picture is the tile fit the budgets assert — the paired posts meet band to band, <code>KIT_CLEAR</code> apart. The run stands in a render-only packed-earth strip, and the wood weathers in broad silver-grey patches (object-space noise) over the per-member tone and grain. The strip and the duplicates are staging; the asset sheet judges the single <code>FenceLow</code> section.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check. This piece does not re-witness the <code>modular-kit-snap</code> snap contract.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
 <p>Intended size: 1.60 m tile, 1.14 m posts, 0.11 m post stock. Outer AABB 1.596 × 0.134 × 1.232 m.</p>
@@ -403,9 +404,9 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/fence-kit/fence_kit.py</code>
-        <span>1381 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/fence-kit/fence_kit.py">View on GitHub &rarr;</a></span>
+        <span>1453 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/fence-kit/fence_kit.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1381">
+      <div class="code" data-lines="1453">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1786,7 +1787,79 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
 1378
 1379
 1380
-1381</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready post-and-rail fence kit — a showcase piece, not an example.
+1381
+1382
+1383
+1384
+1385
+1386
+1387
+1388
+1389
+1390
+1391
+1392
+1393
+1394
+1395
+1396
+1397
+1398
+1399
+1400
+1401
+1402
+1403
+1404
+1405
+1406
+1407
+1408
+1409
+1410
+1411
+1412
+1413
+1414
+1415
+1416
+1417
+1418
+1419
+1420
+1421
+1422
+1423
+1424
+1425
+1426
+1427
+1428
+1429
+1430
+1431
+1432
+1433
+1434
+1435
+1436
+1437
+1438
+1439
+1440
+1441
+1442
+1443
+1444
+1445
+1446
+1447
+1448
+1449
+1450
+1451
+1452
+1453</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready post-and-rail fence kit — a showcase piece, not an example.
 
 Asserts budget conformance of a tiling timber fence section after
 composing shipped pipeline pieces: bmesh construction, UVs, two
@@ -2378,9 +2451,9 @@ LONG_RAIL = <span class="n">0.08</span>
     nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
     ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.085</span>, <span class="n">0.052</span>, <span class="n">0.030</span>, <span class="n">1.0</span>)
     ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
-    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.30</span>, <span class="n">0.19</span>, <span class="n">0.105</span>, <span class="n">1.0</span>)
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
     gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
@@ -2393,7 +2466,23 @@ LONG_RAIL = <span class="n">0.08</span>
     _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
     nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
     nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
-    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="c"># Weathering: outdoor timber silvers in broad patches, not uniformly.</span>
+    <span class="c"># A coarse object-space noise pulls the grain toward weathered grey.</span>
+    silver = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    silver.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.4</span>
+    silver.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], silver.inputs[<span class="s">&quot;Vector&quot;</span>])
+    patch = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    patch.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.42</span>
+    patch.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.68</span>
+    patch.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(silver.outputs[<span class="s">&quot;Fac&quot;</span>], patch.inputs[<span class="s">&quot;Value&quot;</span>])
+    weather = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    weather.data_type = <span class="s">&quot;RGBA&quot;</span>
+    _sock(weather.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.20</span>, <span class="n">0.19</span>, <span class="n">0.17</span>, <span class="n">1.0</span>)
+    nt.links.new(patch.outputs[<span class="s">&quot;Result&quot;</span>], _sock(weather.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(weather.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(_sock(weather.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
     rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
     rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
@@ -3034,8 +3123,64 @@ LONG_RAIL = <span class="n">0.08</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    <span class="c"># Level on the floor: an X tilt sinks one face of the shoes.</span>
-    low.rotation_euler.z = math.radians(-<span class="n">16.0</span>)
+    <span class="c"># The hero is the kit doing its job: three sections at the tile pitch,</span>
+    <span class="c"># linked duplicates of the one checked mesh, so every joint in the</span>
+    <span class="c"># picture is the tile fit the check asserts (posts meet band to band,</span>
+    <span class="c"># KIT_CLEAR apart). A run parent carries the yaw; level on the floor,</span>
+    <span class="c"># since an X tilt sinks one face of the shoes.</span>
+    run = bpy.data.objects.new(<span class="s">&quot;FenceRun&quot;</span>, <span class="k">None</span>)
+    scene.collection.objects.link(run)
+    run.rotation_euler.z = math.radians(-<span class="n">24.0</span>)
+    sections = [low]
+    <span class="k">for</span> i <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        dup = bpy.data.objects.new(<span class="s">f&quot;</span>{low.name}<span class="s">.Run</span>{i:<span class="s">+d</span>}<span class="s">&quot;</span>, low.data)
+        scene.collection.objects.link(dup)
+        dup.location.x = i * TILE
+        sections.append(dup)
+    <span class="k">for</span> ob <span class="k">in</span> sections:
+        ob.parent = run
+
+    <span class="c"># A render-only packed-earth strip the run stands in: a low bevelled</span>
+    <span class="c"># slab with a worn centre, so the sections read as installed, not as</span>
+    <span class="c"># props parked on a studio floor. Not part of the asset or its budgets.</span>
+    path_me = bpy.data.meshes.new(<span class="s">&quot;PathStrip&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= TILE * <span class="n">3</span> + <span class="n">0.9</span>
+            v.co.y *= <span class="n">0.78</span>
+            v.co.z = (v.co.z + <span class="n">0.5</span>) * <span class="n">0.02</span> - <span class="n">0.019</span>
+        bmesh.ops.bevel(bm, geom=sorted(bm.edges, key=<span class="k">lambda</span> e: e.index), offset=<span class="n">0.012</span>,
+                        segments=<span class="n">2</span>, affect=<span class="s">&quot;EDGES&quot;</span>, profile=<span class="n">0.5</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(path_me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> path_me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    pmat = bpy.data.materials.new(<span class="s">&quot;PackedEarth&quot;</span>)
+    pmat.use_nodes = <span class="k">True</span>
+    pnt = pmat.node_tree
+    pb = pnt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    pnoise = pnt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    pnoise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">9.0</span>
+    pnoise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    pramp = pnt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    pramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    pramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.035</span>, <span class="n">0.026</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    pramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    pramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.11</span>, <span class="n">0.085</span>, <span class="n">0.055</span>, <span class="n">1.0</span>)
+    pnt.links.new(pnoise.outputs[<span class="s">&quot;Fac&quot;</span>], pramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    pnt.links.new(pramp.outputs[<span class="s">&quot;Color&quot;</span>], pb.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.92</span>
+    pbump = pnt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    pbump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.35</span>
+    pnt.links.new(pnoise.outputs[<span class="s">&quot;Fac&quot;</span>], pbump.inputs[<span class="s">&quot;Height&quot;</span>])
+    pnt.links.new(pbump.outputs[<span class="s">&quot;Normal&quot;</span>], pb.inputs[<span class="s">&quot;Normal&quot;</span>])
+    path_me.materials.append(pmat)
+    strip = bpy.data.objects.new(<span class="s">&quot;PathStrip&quot;</span>, path_me)
+    scene.collection.objects.link(strip)
+    strip.parent = run
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -3079,12 +3224,12 @@ LONG_RAIL = <span class="n">0.08</span>
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">45.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.50</span>, -<span class="n">3.46</span>, <span class="n">1.95</span>)
+    cam.location = (<span class="n">1.30</span>, -<span class="n">5.60</span>, <span class="n">1.70</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.58</span>)
+    aim.location = (<span class="n">0.42</span>, -<span class="n">0.18</span>, <span class="n">0.55</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -3112,7 +3257,7 @@ LONG_RAIL = <span class="n">0.08</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=sections, elements=sections, stage=[floor, wall, strip],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -3206,7 +3351,7 @@ LONG_RAIL = <span class="n">0.08</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/fence-kit-hero.webp" alt="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
+    <img src="../assets/fence-kit-hero.webp" alt="A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands." />
   </dialog>
   <footer>
     <div class="statusbar">

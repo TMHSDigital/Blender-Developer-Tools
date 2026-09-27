@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
+  <meta property="og:image:alt" content="A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="lightmap-uv-channel — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
+  <meta name="twitter:image:alt" content="A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../modular-kit-snap/" aria-label="Previous example: modular-kit-snap"><span aria-hidden="true">&larr;</span> modular-kit-snap</a><span class="pager-pos hud">44 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../socket-attach-points/" aria-label="Next example: socket-attach-points">socket-attach-points <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands.">
-      <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid.">
+      <img src="../assets/lightmap-uv-channel-hero.webp" alt="A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 3680 islands with 0 SAT overlaps, min island distance 0.00401.</div>
@@ -362,15 +362,15 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 21 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, real wheel assemblies (disc + hub + iron band + bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Each post rises from inside the bed into the canopy&#x27;s underside, its top sheared to the arc at its own station for a uniform 12 mm bite. Fixed 1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated. The UV1 contract is unchanged: every part keeps its island count, zero overlap and minimum island distance. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
+<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 24 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, spoked wheel assemblies (felloe ring + eight spokes + hub + iron tyre + bolt ring) on a capped axle, draw shafts with a crossbar and a prop leg, four posts, and a ribbed canvas canopy. Each post rises from inside the bed into the canopy&#x27;s underside, its top sheared to the arc at its own station for a uniform 12 mm bite. Fixed 1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated. The UV1 contract is unchanged: every part keeps its island count, zero overlap and minimum island distance. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
 <p><strong>What it witnesses</strong> (all independently derived, nothing trusted from the packer):</p>
 <ul><li><strong>The flag trap.</strong> <code>uv_layers.new()</code> does <strong>not</strong> move the active flags — the first layer keeps <code>active</code> + <code>active_render</code>, so a UV op runs against channel 0 unless you move <code>active</code> yourself (probed: unwrap+pack with the flags unmoved destroys channel 0, measured drift <strong>2.068</strong>). Worse, the edit-mode UV ops <strong>clear both flags</strong> — the sequence must re-assert them. The check pins, per part: exactly two layers <code>UVMap</code>/<code>UVLight</code>, <code>active == UVLight</code> (edit target), <code>active_render == UVMap</code> (render target).</li><li><strong>Channel zero untouched.</strong> UV0 loops snapshotted before the UVLight unwrap, compared after: drift <strong>0.0</strong> on every part (tol 1e-6).</li><li><strong>Bounds.</strong> Every UVLight loop inside <code>[0, 1]</code> within 1e-5.</li><li><strong>Non-overlap.</strong> UV1 triangles binned into a 256² spatial hash and tested pairwise with strict SAT (epsilon-separated, so shared edges don&#x27;t count): <strong>0</strong> overlapping pairs.</li><li><strong>Margin.</strong> <code>MARGIN_DIV</code> semantics measured live: nominal margin == <code>MARGIN_DIV × 0.01</code> UV units; the check requires the measured min island-pair distance ≥ half the nominal — measured <strong>0.00401</strong> (≈ 2× the nominal 0.002, the packer&#x27;s per-island margin applied twice).</li><li><strong>Island census + watertight parts.</strong> Connected components counted independently per part; loops conserved; every part manifold.</li></ul>
 <p><strong>What each check catches on failure:</strong> wrong layer names/count (exit 3); flags not re-established after the ops (exit 4); channel 0 touched by the UV1 unwrap (exit 5 — probed via the clobber trap, drift 2.068); UV1 loops outside the unit square (exit 6); overlapping islands (exit 7 — probed by translating an island onto a neighbor, 15 SAT hits); margin floor broken (exit 8 — probed with <code>MARGIN_DIV=0</code>, measured 2e-5 &lt; 0.001); non-watertight part (exit 9).</p>
 <p><strong>Authoring hazards pinned while building this</strong> (probes in <code>.scratch</code>-style bisect scripts; the reasons the check code re-fetches layers by name and re-asserts flags):</p>
 <ul><li>Holding a <code>MeshUVLoopLayer</code> reference across edit-mode UV ops and then iterating its <code>.data</code> <strong>segfaults Blender 4.5.11 headless</strong> (<code>EXCEPTION_ACCESS_VIOLATION</code>, 5/5 repro); the same read survives on 5.1.2. Re-fetch <code>mesh.uv_layers[name]</code> after CustomData-reallocating calls. Second confirmation of the UV-handle lifetime hazard found authoring <code>triangulate-tangents</code>.</li><li><code>bpy.ops.uv.lightmap_pack</code> <strong>silently packs nothing</strong> (exit OK) when the active layer has no UVs yet — unwrap first, then pack.</li></ul>
 <p><strong>Pipeline arc neighbors:</strong> UV-layer authoring in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/uv-layer-grid"><code>uv-layer-grid</code></a>, tangent-space from UVs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export round-trip in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, pivot discipline in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform"><code>prop-origin-transform</code></a>.</p>
-<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance 0.00401). The UV <em>layout</em> is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
-<p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas board — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 21 named parts, 5 materials, right-angle share 0.069.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.2.1 (24 parts, 3428 islands, drift 0, overlap 0, min island distance 0.00401). The UV <em>layout</em> is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
+<p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas display — a slate face in a walnut frame on a plinth with a brass <code>UV1 LIGHTMAP</code> plate, a faint quarter grid marking the [0,1] square the bounds check holds — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 24 named parts, 5 materials, right-angle share 0.138. Wood, canvas and iron carry procedural grain, weave and pitting over Object coordinates; no check reads a material.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python lightmap_uv_channel.py --
 blender --background --python lightmap_uv_channel.py -- --output atlas.png
@@ -384,9 +384,9 @@ blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</c
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/lightmap-uv-channel/lightmap_uv_channel.py</code>
-        <span>853 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel/lightmap_uv_channel.py">View on GitHub &rarr;</a></span>
+        <span>1019 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel/lightmap_uv_channel.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="853">
+      <div class="code" data-lines="1019">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1239,7 +1239,173 @@ blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</c
 850
 851
 852
-853</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Lightmap UV channel — the second UV layer engines need for baked lighting.
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1010
+1011
+1012
+1013
+1014
+1015
+1016
+1017
+1018
+1019</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Lightmap UV channel — the second UV layer engines need for baked lighting.
 
 Witnesses the two-channel UV contract a bake pipeline depends on, on an
 asset built to be reused (a market cart: bed, axle, two wheels, four posts,
@@ -1281,6 +1447,7 @@ check. Pass --output to also render a still:
     blender --background --python lightmap_uv_channel.py -- --falsify f.png # overlapping atlas
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -1459,6 +1626,61 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="k">return</span> me
 
 
+<span class="k">def</span> _spokes(name, count, r0, r1, thick, center):
+    <span class="s">&quot;&quot;&quot;count straight spokes from r0 to r1 in the XZ plane around a Y axle
+    through center: one mesh, disconnected watertight boxes.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> i <span class="k">in</span> range(count):
+            a = <span class="n">2</span> * math.pi * (i + <span class="n">0.5</span>) / count
+            ca, sa = math.cos(a), math.sin(a)
+            before_v = set(bm.verts)
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> set(bm.verts) - before_v:
+                <span class="c"># box along local X from r0 to r1, then rotate about Y</span>
+                x = v.co.x * (r1 - r0) + <span class="n">0.5</span> * (r0 + r1)
+                y = v.co.y * thick * <span class="n">0.8</span>
+                z = v.co.z * thick
+                v.co = (center[<span class="n">0</span>] + x * ca - z * sa, center[<span class="n">1</span>] + y,
+                        center[<span class="n">2</span>] + x * sa + z * ca)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _beams(name, segments, w):
+    <span class="s">&quot;&quot;&quot;Square-section beams between point pairs: one mesh, disconnected
+    watertight boxes. segments: [(p0, p1), ...].&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> p0, p1 <span class="k">in</span> segments:
+            a, b = Vector(p0), Vector(p1)
+            axis = (b - a).normalized()
+            side = axis.cross(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)))
+            <span class="k">if</span> side.length &lt; <span class="n">1e-6</span>:
+                side = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+            side.normalize()
+            up = side.cross(axis).normalized()
+            h = w / <span class="n">2</span>
+            corners = [side * sx * h + up * sz * h
+                       <span class="k">for</span> sx, sz <span class="k">in</span> ((-<span class="n">1</span>, -<span class="n">1</span>), (<span class="n">1</span>, -<span class="n">1</span>), (<span class="n">1</span>, <span class="n">1</span>), (-<span class="n">1</span>, <span class="n">1</span>))]
+            r0 = [bm.verts.new(a + c) <span class="k">for</span> c <span class="k">in</span> corners]
+            r1 = [bm.verts.new(b + c) <span class="k">for</span> c <span class="k">in</span> corners]
+            bm.faces.new(list(reversed(r0)))
+            bm.faces.new(r1)
+            <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+                j = (i + <span class="n">1</span>) % <span class="n">4</span>
+                bm.faces.new((r0[i], r0[j], r1[j], r1[i]))
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
 <span class="k">def</span> _multi_box(name, specs):
     <span class="s">&quot;&quot;&quot;Several beveled boxes as one mesh (disconnected islands, each
     watertight). specs: (dims, center, bevel).&quot;&quot;&quot;</span>
@@ -1506,8 +1728,12 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         ((<span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">0.14</span>), (<span class="n">0.55</span>, sy * <span class="n">0.80</span>, <span class="n">0.5</span>), <span class="n">0.02</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)])
     <span class="k">for</span> tag, sy <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, <span class="n">1.0</span>), (<span class="s">&quot;R&quot;</span>, -<span class="n">1.0</span>)):
         y = sy * <span class="n">0.68</span>
-        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>] = _wheel_disc(
-            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>, <span class="n">0.45</span>, <span class="n">0.10</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
+        <span class="c"># spoked wheel: a wooden felloe ring inside the iron tyre, eight</span>
+        <span class="c"># spokes, and the hub; the Disc part is the felloe (was a solid disc)</span>
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>] = _ring(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>, <span class="n">0.438</span>, <span class="n">0.37</span>, <span class="n">0.09</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>), <span class="n">32</span>)
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Spokes</span><span class="s">&quot;</span>] = _spokes(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Spokes</span><span class="s">&quot;</span>, <span class="n">8</span>, <span class="n">0.12</span>, <span class="n">0.385</span>, <span class="n">0.045</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
         parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>] = _wheel_disc(
             <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>, <span class="n">0.14</span>, <span class="n">0.16</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
         parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>] = _ring(
@@ -1533,6 +1759,14 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
                 v.co.z += arc - top
         me.update()
         parts[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = me
+    <span class="c"># draw shafts off the open (-X) end, a crossbar, and a prop leg the</span>
+    <span class="c"># cart rests on when unhitched: without them a two-wheeled cart tips</span>
+    parts[<span class="s">&quot;Shafts&quot;</span>] = _beams(<span class="s">&quot;Cart.Shafts&quot;</span>, [
+        ((-<span class="n">0.95</span>, <span class="n">0.40</span>, <span class="n">0.80</span>), (-<span class="n">2.35</span>, <span class="n">0.36</span>, <span class="n">0.52</span>)),
+        ((-<span class="n">0.95</span>, -<span class="n">0.40</span>, <span class="n">0.80</span>), (-<span class="n">2.35</span>, -<span class="n">0.36</span>, <span class="n">0.52</span>)),
+        ((-<span class="n">1.90</span>, <span class="n">0.40</span>, <span class="n">0.61</span>), (-<span class="n">1.90</span>, -<span class="n">0.40</span>, <span class="n">0.61</span>)),
+        ((-<span class="n">1.05</span>, <span class="n">0.0</span>, <span class="n">0.76</span>), (-<span class="n">1.05</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)),
+    ], <span class="n">0.07</span>)
     parts[<span class="s">&quot;Canopy&quot;</span>] = _canopy(<span class="s">&quot;Cart.Canopy&quot;</span>, <span class="n">2.3</span>, canopy_r, canopy_t, canopy_z0)
     parts[<span class="s">&quot;Canopy.Ribs&quot;</span>] = _canopy_ribs(<span class="s">&quot;Cart.Canopy.Ribs&quot;</span>, (-<span class="n">0.75</span>, <span class="n">0.0</span>, <span class="n">0.75</span>),
                                         <span class="n">0.07</span>, <span class="n">0.875</span>, <span class="n">0.035</span>, <span class="n">1.9</span>)
@@ -1854,10 +2088,16 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
 <span class="c"># Render</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
-<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>,
+                  grain=<span class="k">None</span>, bump=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;grain=(stretch_xyz, scale, amount): noise over Object coordinates,
+    squeezed along the axes the grain should run, multiplied into the base
+    colour and roughness. bump&gt;0 adds a fine noise bump (canvas weave, iron
+    pitting). Render only - no check reads a material.&quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
     b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
     b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
@@ -1865,6 +2105,39 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
         sock.default_value = (*emit, <span class="n">1.0</span>)
         b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">if</span> grain <span class="k">or</span> bump:
+        coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    <span class="k">if</span> grain:
+        stretch, scale, amount = grain
+        mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+        mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = stretch
+        nt.links.new(coord, mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+        noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+        noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">7.0</span>
+        nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+        ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.32</span>
+        ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+        ramp.color_ramp.elements[<span class="n">0</span>].color = tuple(c * (<span class="n">1</span> - amount) <span class="k">for</span> c <span class="k">in</span> rgb) + (<span class="n">1.0</span>,)
+        ramp.color_ramp.elements[<span class="n">1</span>].color = tuple(min(<span class="n">1.0</span>, c * (<span class="n">1</span> + amount)) <span class="k">for</span> c <span class="k">in</span> rgb) + (<span class="n">1.0</span>,)
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        rmap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = rough + <span class="n">0.12</span>
+        rmap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough - <span class="n">0.08</span>
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rmap.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(rmap.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">if</span> bump:
+        fine = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        fine.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">180.0</span>
+        fine.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+        nt.links.new(coord, fine.inputs[<span class="s">&quot;Vector&quot;</span>])
+        bn = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+        bn.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = bump
+        bn.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.003</span>
+        nt.links.new(fine.outputs[<span class="s">&quot;Fac&quot;</span>], bn.inputs[<span class="s">&quot;Height&quot;</span>])
+        nt.links.new(bn.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -1916,20 +2189,26 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
 
-    wood = make_material(<span class="s">&quot;Wood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.22</span>, <span class="n">0.10</span>), rough=<span class="n">0.55</span>)
-    darkwood = make_material(<span class="s">&quot;DarkWood&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.10</span>, <span class="n">0.05</span>), rough=<span class="n">0.7</span>)
-    iron = make_material(<span class="s">&quot;Iron&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.26</span>, <span class="n">0.30</span>), rough=<span class="n">0.3</span>, metallic=<span class="n">0.9</span>)
-    canvas = make_material(<span class="s">&quot;Canvas&quot;</span>, (<span class="n">0.66</span>, <span class="n">0.56</span>, <span class="n">0.40</span>), rough=<span class="n">0.9</span>)
+    <span class="c"># bed planks run along X: grain squeezed in X streaks along the planks</span>
+    wood = make_material(<span class="s">&quot;Wood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.095</span>), rough=<span class="n">0.55</span>,
+                         grain=((<span class="n">0.06</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">26.0</span>, <span class="n">0.35</span>))
+    darkwood = make_material(<span class="s">&quot;DarkWood&quot;</span>, (<span class="n">0.19</span>, <span class="n">0.11</span>, <span class="n">0.05</span>), rough=<span class="n">0.66</span>,
+                             grain=((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.08</span>), <span class="n">30.0</span>, <span class="n">0.30</span>))
+    iron = make_material(<span class="s">&quot;Iron&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.20</span>, <span class="n">0.22</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.9</span>,
+                         grain=((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">14.0</span>, <span class="n">0.45</span>), bump=<span class="n">0.25</span>)
+    canvas = make_material(<span class="s">&quot;Canvas&quot;</span>, (<span class="n">0.70</span>, <span class="n">0.60</span>, <span class="n">0.42</span>), rough=<span class="n">0.92</span>,
+                           grain=((<span class="n">1.0</span>, <span class="n">0.4</span>, <span class="n">1.0</span>), <span class="n">5.0</span>, <span class="n">0.18</span>), bump=<span class="n">0.45</span>)
     groovemat = make_material(<span class="s">&quot;Groove&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.04</span>, <span class="n">0.03</span>), rough=<span class="n">0.9</span>)
 
     mat_by_part = {
         <span class="s">&quot;Bed&quot;</span>: wood, <span class="s">&quot;Bed.Rails&quot;</span>: wood, <span class="s">&quot;Bed.Grooves&quot;</span>: groovemat,
         <span class="s">&quot;Bed.Brackets&quot;</span>: iron, <span class="s">&quot;Bed.Bolts&quot;</span>: iron,
         <span class="s">&quot;Axle&quot;</span>: iron, <span class="s">&quot;Axle.Caps&quot;</span>: iron,
-        <span class="s">&quot;Canopy&quot;</span>: canvas, <span class="s">&quot;Canopy.Ribs&quot;</span>: darkwood,
+        <span class="s">&quot;Canopy&quot;</span>: canvas, <span class="s">&quot;Canopy.Ribs&quot;</span>: darkwood, <span class="s">&quot;Shafts&quot;</span>: darkwood,
     }
     <span class="k">for</span> tag <span class="k">in</span> (<span class="s">&quot;L&quot;</span>, <span class="s">&quot;R&quot;</span>):
         mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>] = darkwood
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Spokes</span><span class="s">&quot;</span>] = darkwood
         mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>] = darkwood
         mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>] = iron
         mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>] = iron
@@ -1968,12 +2247,65 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
 
     <span class="c"># atlas board: the Bed&#x27;s live UV1 as flat island polygons mapped onto the</span>
     <span class="c"># board face — a change in the packed atlas moves the board geometry</span>
-    board_mat = make_material(<span class="s">&quot;Board&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.04</span>, <span class="n">0.05</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.4</span>)
+    <span class="c"># The display: a slate atlas face in a walnut frame, standing on a walnut</span>
+    <span class="c"># plinth that carries a brass nameplate, with a faint quarter grid under</span>
+    <span class="c"># the islands so the [0,1] square the check bounds is visible.</span>
+    bx, by, bz = <span class="n">2.05</span>, <span class="n">0.55</span>, <span class="n">1.30</span>
+    board_mat = make_material(<span class="s">&quot;Board&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.032</span>, <span class="n">0.036</span>), rough=<span class="n">0.62</span>,
+                              grain=((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">9.0</span>, <span class="n">0.25</span>))
     board = _box(<span class="s">&quot;Atlas.Board&quot;</span>, (<span class="n">0.08</span>, <span class="n">2.2</span>, <span class="n">2.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.02</span>)
     board.materials.append(board_mat)
     board_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Board&quot;</span>, board)
-    board_ob.location = (<span class="n">2.05</span>, <span class="n">0.55</span>, <span class="n">1.15</span>)
+    board_ob.location = (bx, by, bz)
     sc.collection.objects.link(board_ob)
+    walnut = make_material(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.065</span>, <span class="n">0.03</span>), rough=<span class="n">0.5</span>,
+                           grain=((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">60.0</span>, <span class="n">0.16</span>))
+    brass = make_material(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.58</span>, <span class="n">0.26</span>), rough=<span class="n">0.28</span>, metallic=<span class="n">1.0</span>,
+                          grain=((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">40.0</span>, <span class="n">0.12</span>))
+    fw = <span class="n">0.09</span>
+    frame = _multi_box(<span class="s">&quot;Atlas.Frame&quot;</span>, [
+        ((<span class="n">0.14</span>, <span class="n">2.2</span> + <span class="n">2</span> * fw, fw), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span> + fw / <span class="n">2</span>), <span class="n">0.012</span>),
+        ((<span class="n">0.14</span>, <span class="n">2.2</span> + <span class="n">2</span> * fw, fw), (<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">1.0</span> - fw / <span class="n">2</span>), <span class="n">0.012</span>),
+        ((<span class="n">0.14</span>, fw, <span class="n">2.0</span>), (<span class="n">0.0</span>, <span class="n">1.1</span> + fw / <span class="n">2</span>, <span class="n">0.0</span>), <span class="n">0.012</span>),
+        ((<span class="n">0.14</span>, fw, <span class="n">2.0</span>), (<span class="n">0.0</span>, -<span class="n">1.1</span> - fw / <span class="n">2</span>, <span class="n">0.0</span>), <span class="n">0.012</span>)])
+    frame.materials.append(walnut)
+    frame_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Frame&quot;</span>, frame)
+    frame_ob.location = (bx, by, bz)
+    sc.collection.objects.link(frame_ob)
+    plinth_top = bz - <span class="n">1.0</span> - fw
+    plinth = _box(<span class="s">&quot;Atlas.Plinth&quot;</span>, (<span class="n">0.46</span>, <span class="n">2.55</span>, plinth_top),
+                  (bx, by, plinth_top / <span class="n">2</span>), <span class="n">0.02</span>)
+    plinth.materials.append(walnut)
+    plinth_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Plinth&quot;</span>, plinth)
+    sc.collection.objects.link(plinth_ob)
+    plate = _box(<span class="s">&quot;Atlas.Plate&quot;</span>, (<span class="n">0.012</span>, <span class="n">1.1</span>, <span class="n">0.13</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.004</span>)
+    plate.materials.append(brass)
+    plate_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Plate&quot;</span>, plate)
+    plate_ob.location = (bx + <span class="n">0.236</span>, by, plinth_top / <span class="n">2</span>)
+    sc.collection.objects.link(plate_ob)
+    cu = bpy.data.curves.new(<span class="s">&quot;Atlas.Label&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = <span class="s">&quot;UV1  LIGHTMAP&quot;</span>
+    cu.size = <span class="n">0.085</span>
+    cu.align_x, cu.align_y = <span class="s">&quot;CENTER&quot;</span>, <span class="s">&quot;CENTER&quot;</span>
+    cu.extrude = <span class="n">0.002</span>
+    cu.materials.append(make_material(<span class="s">&quot;Ink&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.018</span>, <span class="n">0.015</span>), rough=<span class="n">0.6</span>))
+    label_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Label&quot;</span>, cu)
+    label_ob.location = (bx + <span class="n">0.243</span>, by, plinth_top / <span class="n">2</span>)
+    label_ob.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, math.radians(<span class="n">90</span>))
+    sc.collection.objects.link(label_ob)
+    grid_mat = make_material(<span class="s">&quot;Grid&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.13</span>, <span class="n">0.15</span>), rough=<span class="n">0.5</span>,
+                             emit=(<span class="n">0.45</span>, <span class="n">0.5</span>, <span class="n">0.6</span>), estr=<span class="n">0.35</span>)
+    lines = []
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">5</span>):
+        t = (k / <span class="n">4</span> - <span class="n">0.5</span>) * <span class="n">1.9</span>
+        lines.append(((<span class="n">0.004</span>, <span class="n">0.006</span>, <span class="n">1.9</span>), (<span class="n">0.0</span>, t, <span class="n">0.0</span>), <span class="n">0.0</span>))
+        lines.append(((<span class="n">0.004</span>, <span class="n">1.9</span>, <span class="n">0.006</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, t), <span class="n">0.0</span>))
+    grid = _multi_box(<span class="s">&quot;Atlas.Grid&quot;</span>, lines)
+    grid.materials.append(grid_mat)
+    grid_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Grid&quot;</span>, grid)
+    grid_ob.location = (bx + <span class="n">0.042</span>, by, bz)
+    sc.collection.objects.link(grid_ob)
+    display = [board_ob, frame_ob, plinth_ob, plate_ob, label_ob, grid_ob]
 
     bed = meshes[<span class="s">&quot;Bed&quot;</span>]
     layer = bed.uv_layers[LAYER1]
@@ -1998,7 +2330,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         me.materials.append(make_material(<span class="s">f&quot;</span><span class="s">IslandMat</span>{fi}<span class="s">&quot;</span>, rgb, rough=<span class="n">0.5</span>,
                                           emit=rgb, estr=<span class="n">1.6</span> <span class="k">if</span> defect <span class="k">else</span> <span class="n">0.5</span>))
         ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Atlas.Island.</span>{fi}<span class="s">&quot;</span>, me)
-        ob.location = (<span class="n">2.05</span> + <span class="n">0.045</span> + (<span class="n">0.004</span> <span class="k">if</span> fi <span class="k">in</span> dragged <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.55</span>, <span class="n">1.15</span>)
+        ob.location = (bx + <span class="n">0.045</span> + (<span class="n">0.004</span> <span class="k">if</span> fi <span class="k">in</span> dragged <span class="k">else</span> <span class="n">0.0</span>), by, bz)
         sc.collection.objects.link(ob)
         iso_obs.append(ob)
 
@@ -2036,7 +2368,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     hero = parts_obs
     fcode = gallery_framing.check_framing(
-        sc, cam, hero=hero, elements=hero + [board_ob] + iso_obs,
+        sc, cam, hero=hero, elements=hero + display + iso_obs,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -2100,7 +2432,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
       <div class="related-grid">
         <article class="card mini">
           <a class="card-media" href="../vertex-color-ao/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/vertex-color-ao-hero.webp" alt="A round stone well with a wooden windlass frame, its stones darkened near the base by baked vertex-colour ambient occlusion." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/vertex-color-ao-hero.webp" alt="A round well of chamfered, irregular stone blocks with a timber windlass frame, every masonry joint and the shaft darkened by baked vertex-colour ambient occlusion." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../vertex-color-ao/">vertex-color-ao</a></h3>
@@ -2131,7 +2463,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
+    <img src="../assets/lightmap-uv-channel-hero.webp" alt="A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid." />
   </dialog>
   <footer>
     <div class="statusbar">

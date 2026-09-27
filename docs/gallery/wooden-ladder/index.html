@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
+  <meta property="og:image:alt" content="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-ladder — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
+  <meta name="twitter:image:alt" content="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../iron-cauldron/" aria-label="Previous showcase piece: iron-cauldron"><span aria-hidden="true">&larr;</span> iron-cauldron</a><span class="pager-pos hud">25 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hay-bale/" aria-label="Next showcase piece: hay-bale">hay-bale <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section.">
-      <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung.">
+      <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.</div>
@@ -363,6 +363,7 @@
     </div>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural timber ladder: two stiles tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, barrel thicker only in the clear span), iron ferrules at the top, and level shoe plates under sleeves that follow the rake. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p><strong>Hero.</strong> The ladder leans on a render-only barn wall of staggered weathered boards (a Brick texture turned onto the wall plane, with a stretched noise for grain), and a hand-coiled rope hangs over the second-highest rung. The rung is found the way <code>rung_pitch</code> finds rungs: the wooden shells wide in X and short in Z. The coil is a teardrop laid from a three-lobed section, per the showcase rope rule. It hangs forward of the rung, away from the wall. The wall and the coil are staging, not part of the asset, its budgets or its export. The asset sheet judges the bare <code>LadderLow</code>.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p>Intended size: stile length 1.50 m, overall about 0.49 × 0.38 × 1.49 m. A household ladder, not a 3 m orchard ladder.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
@@ -397,9 +398,9 @@ blender --background --python wooden_ladder.py -- --output preview.webp --engine
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/wooden-ladder/wooden_ladder.py</code>
-        <span>1621 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/wooden-ladder/wooden_ladder.py">View on GitHub &rarr;</a></span>
+        <span>1753 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/wooden-ladder/wooden_ladder.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1621">
+      <div class="code" data-lines="1753">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2020,7 +2021,139 @@ blender --background --python wooden_ladder.py -- --output preview.webp --engine
 1618
 1619
 1620
-1621</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden ladder — a showcase piece, not an example.
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700
+1701
+1702
+1703
+1704
+1705
+1706
+1707
+1708
+1709
+1710
+1711
+1712
+1713
+1714
+1715
+1716
+1717
+1718
+1719
+1720
+1721
+1722
+1723
+1724
+1725
+1726
+1727
+1728
+1729
+1730
+1731
+1732
+1733
+1734
+1735
+1736
+1737
+1738
+1739
+1740
+1741
+1742
+1743
+1744
+1745
+1746
+1747
+1748
+1749
+1750
+1751
+1752
+1753</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready wooden ladder — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural timber ladder after composing
 shipped pipeline pieces: bmesh construction, UVs, two materials,
@@ -3012,9 +3145,9 @@ METAL_IDX = <span class="n">1</span>
     nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
     ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.10</span>, <span class="n">0.056</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
     ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
-    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.33</span>, <span class="n">0.19</span>, <span class="n">0.095</span>, <span class="n">1.0</span>)
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
     gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
@@ -3445,6 +3578,136 @@ METAL_IDX = <span class="n">1</span>
     nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
+<span class="k">def</span> barn_wall_material():
+    <span class="s">&quot;&quot;&quot;Render-only lean surface: staggered weathered boards, dark seams.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;BarnBoards&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    <span class="c"># Brick rows run along the texture&#x27;s Y; turn the wall&#x27;s Z onto it.</span>
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Rotation&quot;</span>].default_value = (math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    boards = nt.nodes.new(<span class="s">&quot;ShaderNodeTexBrick&quot;</span>)
+    boards.offset = <span class="n">0.37</span>
+    boards.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    boards.inputs[<span class="s">&quot;Brick Width&quot;</span>].default_value = <span class="n">1.35</span>
+    boards.inputs[<span class="s">&quot;Row Height&quot;</span>].default_value = <span class="n">0.17</span>
+    boards.inputs[<span class="s">&quot;Mortar Size&quot;</span>].default_value = <span class="n">0.006</span>
+    boards.inputs[<span class="s">&quot;Mortar Smooth&quot;</span>].default_value = <span class="n">0.3</span>
+    boards.inputs[<span class="s">&quot;Bias&quot;</span>].default_value = <span class="n">0.0</span>
+    boards.inputs[<span class="s">&quot;Color1&quot;</span>].default_value = (<span class="n">0.070</span>, <span class="n">0.052</span>, <span class="n">0.038</span>, <span class="n">1.0</span>)
+    boards.inputs[<span class="s">&quot;Color2&quot;</span>].default_value = (<span class="n">0.105</span>, <span class="n">0.080</span>, <span class="n">0.058</span>, <span class="n">1.0</span>)
+    boards.inputs[<span class="s">&quot;Mortar&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.007</span>, <span class="n">0.006</span>, <span class="n">1.0</span>)
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], boards.inputs[<span class="s">&quot;Vector&quot;</span>])
+    grain = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    grain.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">6.0</span>
+    grain.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    stretch = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    stretch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.12</span>, <span class="n">1.0</span>, <span class="n">6.0</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], stretch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(stretch.outputs[<span class="s">&quot;Vector&quot;</span>], grain.inputs[<span class="s">&quot;Vector&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">0.55</span>
+    nt.links.new(boards.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(grain.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.88</span>
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.6</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.004</span>
+    nt.links.new(boards.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> rope_coil(low, turns=<span class="n">3</span>, loop_r=<span class="n">0.135</span>, rope_r=<span class="n">0.012</span>):
+    <span class="s">&quot;&quot;&quot;A hand-coiled rope hung over the second-highest rung (ladder frame).
+
+    Rungs are read off the mesh the way ``rung_pitch`` reads them: the
+    wooden shells wide across X and short in Z. The coil&#x27;s loops hang in
+    the plane across the rung, their tops draped over it, and are laid
+    from a three-lobed section turned one step per ring, as the showcase
+    rope rule asks.
+    &quot;&quot;&quot;</span>
+    me = low.data
+    rungs = []
+    <span class="k">for</span> g <span class="k">in</span> _vertex_shells(me):
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        <span class="k">if</span> (max(p.x <span class="k">for</span> p <span class="k">in</span> pts) - min(p.x <span class="k">for</span> p <span class="k">in</span> pts) &gt; <span class="n">0.25</span>
+                <span class="k">and</span> max(p.z <span class="k">for</span> p <span class="k">in</span> pts) - min(p.z <span class="k">for</span> p <span class="k">in</span> pts) &lt; <span class="n">0.08</span>):
+            rungs.append(pts)
+    rungs.sort(key=<span class="k">lambda</span> pts: sum(p.z <span class="k">for</span> p <span class="k">in</span> pts))
+    rung = rungs[-<span class="n">2</span>]
+    rz = sum(p.z <span class="k">for</span> p <span class="k">in</span> rung) / len(rung)
+    ry = sum(p.y <span class="k">for</span> p <span class="k">in</span> rung) / len(rung)
+    rr = (max(p.z <span class="k">for</span> p <span class="k">in</span> rung) - min(p.z <span class="k">for</span> p <span class="k">in</span> rung)) / <span class="n">2.0</span>
+    <span class="c"># The wall stands on the side the rails rake toward; the coil hangs</span>
+    <span class="c"># forward of the rung, away from it, so it never meets the boards.</span>
+    top_band = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> v.co.z &gt; max(p.z <span class="k">for</span> p <span class="k">in</span> rung) + <span class="n">0.3</span>]
+    foot_band = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> v.co.z &lt; <span class="n">0.08</span>]
+    wall_side = <span class="n">1.0</span> <span class="k">if</span> sum(top_band) / len(top_band) &gt; sum(foot_band) / len(foot_band) <span class="k">else</span> -<span class="n">1.0</span>
+    ztop = rz + rr + rope_r
+    x0 = <span class="n">0.035</span>
+
+    steps, sides = <span class="n">36</span> * turns, <span class="n">9</span>
+    pitch = <span class="n">2.3</span> * rope_r
+
+    <span class="k">def</span> centre(i):
+        <span class="c"># a hanging loop is a teardrop: pinched over the rung, full below;</span>
+        <span class="c"># it reaches far forward of the rung and barely behind it</span>
+        t = i / <span class="n">36.0</span> * <span class="n">2.0</span> * math.pi
+        fan = <span class="n">1.0</span> - <span class="n">0.06</span> * (i / steps)                 <span class="c"># turns read as separate</span>
+        s = math.sin(t)
+        reach = (loop_r * <span class="n">0.9</span> <span class="k">if</span> s &gt; <span class="n">0</span> <span class="k">else</span> loop_r * <span class="n">0.28</span>) * fan
+        y = ry - wall_side * reach * s
+        z = ztop - loop_r * <span class="n">1.35</span> * fan * (<span class="n">1.0</span> - math.cos(t))
+        <span class="k">return</span> Vector((x0 + pitch * i / <span class="n">36.0</span>, y, z))
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = []
+        <span class="k">for</span> i <span class="k">in</span> range(steps + <span class="n">1</span>):
+            c = centre(i)
+            tang = (centre(i + <span class="n">1</span>) - centre(i - <span class="n">1</span>)).normalized()
+            n = tang.cross(Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))).normalized()
+            b = tang.cross(n)
+            ring = []
+            <span class="k">for</span> k <span class="k">in</span> range(sides):
+                a = <span class="n">2</span> * math.pi * k / sides + i * (<span class="n">2</span> * math.pi / sides)
+                lobe = <span class="n">1.0</span> + <span class="n">0.16</span> * math.cos(<span class="n">3</span> * (<span class="n">2</span> * math.pi * k / sides))
+                ring.append(bm.verts.new(c + rope_r * lobe * (n * math.cos(a) + b * math.sin(a))))
+            rings.append(ring)
+        <span class="k">for</span> r0, r1 <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            <span class="k">for</span> k <span class="k">in</span> range(sides):
+                f = bm.faces.new((r0[k], r0[(k + <span class="n">1</span>) % sides], r1[(k + <span class="n">1</span>) % sides], r1[k]))
+                f.smooth = <span class="k">True</span>
+        bm.faces.new(list(reversed(rings[<span class="n">0</span>])))
+        bm.faces.new(rings[-<span class="n">1</span>])
+        cme = bpy.data.meshes.new(<span class="s">&quot;RopeCoil&quot;</span>)
+        bm.to_mesh(cme)
+    <span class="k">finally</span>:
+        bm.free()
+    rmat = bpy.data.materials.new(<span class="s">&quot;Hemp&quot;</span>)
+    rmat.use_nodes = <span class="k">True</span>
+    rnt = rmat.node_tree
+    rb = rnt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    rnoise = rnt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    rnoise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">90.0</span>
+    rnoise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    rramp = rnt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    rramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.16</span>, <span class="n">0.115</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    rramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.40</span>, <span class="n">0.31</span>, <span class="n">0.18</span>, <span class="n">1.0</span>)
+    rnt.links.new(rnoise.outputs[<span class="s">&quot;Fac&quot;</span>], rramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    rnt.links.new(rramp.outputs[<span class="s">&quot;Color&quot;</span>], rb.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.9</span>
+    cme.materials.append(rmat)
+    <span class="k">return</span> bpy.data.objects.new(<span class="s">&quot;RopeCoil&quot;</span>, cme)
+
+
 <span class="k">def</span> render_still(low, wood, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(wood, tex)
@@ -3469,21 +3732,23 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">try</span>:
         bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            v.co.x *= <span class="n">1.4</span>
+            v.co.x *= <span class="n">3.8</span>
             v.co.y = top_y + lean * (v.co.y + <span class="n">0.5</span>) * <span class="n">0.10</span>
-            v.co.z = (v.co.z + <span class="n">0.5</span>) * <span class="n">1.75</span>
+            v.co.z = (v.co.z + <span class="n">0.5</span>) * <span class="n">1.95</span>
         bm.to_mesh(panel_me)
     <span class="k">finally</span>:
         bm.free()
-    pmat = bpy.data.materials.new(<span class="s">&quot;LeanWall&quot;</span>)
-    pmat.use_nodes = <span class="k">True</span>
-    pb = pmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.034</span>, <span class="n">0.032</span>, <span class="n">0.031</span>, <span class="n">1.0</span>)
-    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
-    panel_me.materials.append(pmat)
+    panel_me.materials.append(barn_wall_material())
     panel = bpy.data.objects.new(<span class="s">&quot;LeanWall&quot;</span>, panel_me)
     panel.rotation_euler.z = low.rotation_euler.z
     scene.collection.objects.link(panel)
+
+    <span class="c"># A laid-rope coil hung over the second-highest rung: the ladder in use,</span>
+    <span class="c"># not in a catalogue. Render-only, parented to the ladder so it turns</span>
+    <span class="c"># with it; not part of the asset, its budgets or its export.</span>
+    coil = rope_coil(low)
+    coil.parent = low
+    scene.collection.objects.link(coil)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -3562,7 +3827,7 @@ METAL_IDX = <span class="n">1</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall, panel],
+        scene, cam, hero=[low], elements=[low, coil], stage=[floor, wall, panel],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -3680,7 +3945,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
+    <img src="../assets/wooden-ladder-hero.webp" alt="A timber ladder with tapered stiles and six evenly spaced turned rungs, leaning on a weathered board wall with a coil of hemp rope hung over its second-highest rung." />
   </dialog>
   <footer>
     <div class="statusbar">

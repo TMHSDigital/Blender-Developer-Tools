@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grease-pencil-rosette-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop." />
+  <meta property="og:image:alt" content="A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="grease-pencil-rosette — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Grease Pencil v3&#x27;s attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grease-pencil-rosette-hero.webp" />
-  <meta name="twitter:image:alt" content="A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop." />
+  <meta name="twitter:image:alt" content="A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../parent-inverse-orrery/" aria-label="Previous example: parent-inverse-orrery"><span aria-hidden="true">&larr;</span> parent-inverse-orrery</a><span class="pager-pos hud">18 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../armature-bend/" aria-label="Next example: armature-bend">armature-bend <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop.">
-      <img src="../assets/grease-pencil-rosette-hero.webp" alt="A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall.">
+      <img src="../assets/grease-pencil-rosette-hero.webp" alt="A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.</div>
@@ -366,6 +366,8 @@
 <p><strong>What it witnesses:</strong> GPv3 lives at <em>different addresses</em> on the two supported versions, and the check asserts each side&#x27;s actual contract:</p>
 <ul><li><strong>Blender 4.5 LTS</strong> — GPv3 is <code>bpy.data.grease_pencils_v3</code> (<code>GreasePencilv3</code>), while <code>bpy.data.grease_pencils</code> still holds <strong>legacy</strong> GPencil whose frames carry <code>.strokes</code> directly and have no <code>.drawing</code>. Same collection name, incompatible API — the trap is asserted, not just avoided.</li><li><strong>Blender 5.x</strong> — legacy is gone: GPv3 took over the <code>bpy.data.grease_pencils</code> name, and <code>grease_pencils_v3</code> / <code>bpy.types.GPencilStroke</code> no longer exist.</li></ul>
 <p>On the shared GPv3 surface it then asserts that stroke points are <em>views over attribute layers</em>: writing <code>pt.radius</code> / <code>pt.opacity</code> / <code>pt.vertex_color</code> lazily materializes <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> (POINT) and <code>cyclic</code> (CURVE) layers in <code>drawing.attributes</code>, and every closed-form rose position round-trips exactly through the raw <code>position</code> attribute buffer via <code>foreach_get</code>.</p>
+<h2 id="render">Render<a class="anchor" href="#render" aria-label="Link to this section">#</a></h2>
+<p>The strokes stay unlit (<code>layer.use_lights = False</code>) and act as the neon tubes of a sign: they hang a few centimetres proud of a satin black-lacquer backboard in a brass frame with brass standoff caps and a maker&#x27;s plate, mounted on the studio wall. Grease Pencil does not light its surroundings, so the spill is staged: one small shadowless disk light per sample along each ring, placed on that ring&#x27;s <code>rose_point</code> and tinted with its <code>ring_color</code>, washes the board behind each tube. The spill reads the same closed-form curve the check asserts. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python grease_pencil_rosette.py --
@@ -378,16 +380,16 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png
 blender --background --python grease_pencil_rosette.py -- --output rosette.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>GPv3 address / legacy trap for this Blender</td></tr><tr><td>4</td><td>Object type, layer count, or frame number</td></tr><tr><td>5</td><td>Stroke topology or cyclic (<code>--open-strokes</code> lands here)</td></tr><tr><td>6</td><td>Lazy attribute layers missing or wrong domain/type</td></tr><tr><td>7</td><td>Position buffer length or closed-form round-trip</td></tr><tr><td>8</td><td>Grease Pencil material missing gpencil settings</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>GPv3 address / legacy trap for this Blender</td></tr><tr><td>4</td><td>Object type, layer count, or frame number</td></tr><tr><td>5</td><td>Stroke topology or cyclic (<code>--open-strokes</code> lands here)</td></tr><tr><td>6</td><td>Lazy attribute layers missing or wrong domain/type</td></tr><tr><td>7</td><td>Position buffer length or closed-form round-trip</td></tr><tr><td>8</td><td>Grease Pencil material missing gpencil settings</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Framing gate violation on the <code>--output</code> path (<code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--open-strokes</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/grease-pencil-rosette/grease_pencil_rosette.py</code>
-        <span>300 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/grease-pencil-rosette/grease_pencil_rosette.py">View on GitHub &rarr;</a></span>
+        <span>407 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/grease-pencil-rosette/grease_pencil_rosette.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="300">
+      <div class="code" data-lines="407">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -687,7 +689,114 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png -
 297
 298
 299
-300</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A neon rose-curve set drawn with GPv3 strokes — a runnable example.
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A neon rose-curve set drawn with GPv3 strokes — a runnable example.
 
 Witnesses the Grease Pencil v3 rewrite, the largest bpy API break in the
 4.x-to-5.x window. GPv3 is present on both supported versions but lives at
@@ -720,6 +829,11 @@ check. Pass --output to also render a still:
     blender --background --python grease_pencil_rosette.py -- --output r.png   # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, colorsys
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) -- see</span>
+<span class="c"># gallery_framing.py for the __file__-relative import shim this relies on.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 RINGS = <span class="n">5</span>           <span class="c"># nested rose curves, one stroke each</span>
 POINTS = <span class="n">192</span>        <span class="c"># samples per stroke</span>
@@ -887,11 +1001,53 @@ TOL = <span class="n">1e-4</span>
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
+<span class="k">def</span> _box(name, dims, loc, mat, bevel=<span class="n">0.0</span>, segments=<span class="n">3</span>):
+    <span class="k">import</span> bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= dims[<span class="n">0</span>]; v.co.y *= dims[<span class="n">1</span>]; v.co.z *= dims[<span class="n">2</span>]
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=segments,
+                            profile=<span class="n">0.5</span>, affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    bpy.context.scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> _mat(name, rgb, rough, metal=<span class="n">0.0</span>, coat=<span class="n">0.0</span>):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = <span class="k">True</span>
+    b = m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">if</span> coat:
+        <span class="k">try</span>:
+            b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = coat
+        <span class="k">except</span> KeyError:
+            <span class="k">pass</span>
+    <span class="k">return</span> m
+
+
 <span class="k">def</span> render_still(obj, path, engine):
+    <span class="s">&quot;&quot;&quot;The rosette as a neon sign: the unlit GPv3 strokes are the tubes,
+    mounted a few centimetres proud of a black-lacquer backboard in a brass
+    frame, hung on the studio wall. Coloured area lights just in front of the
+    board stand in for the spill real neon throws on its backing.&quot;&quot;&quot;</span>
     scene = bpy.context.scene
     obj.data.layers[<span class="n">0</span>].use_lights = <span class="k">False</span>   <span class="c"># neon ink stays unlit and vivid</span>
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.9</span>)
-    obj.rotation_euler = (math.radians(<span class="n">4</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    SIGN_Z = <span class="n">2.25</span>
+    obj.location = (<span class="n">0.0</span>, -<span class="n">0.06</span>, SIGN_Z)
     <span class="c"># unlit saturated ink wants the graphic transform, not AgX&#x27;s filmic desaturation</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
 
@@ -903,23 +1059,50 @@ TOL = <span class="n">1e-4</span>
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
-    fmat.use_nodes = <span class="k">True</span>
-    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
+    fmat = _mat(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.7</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">6.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">0.32</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.01</span>, <span class="n">0.012</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.012</span>, <span class="n">0.016</span>, <span class="n">1.0</span>)
     scene.world = world
+
+    <span class="c"># sign: black lacquer board, brass frame, four brass standoff caps</span>
+    lacquer = _mat(<span class="s">&quot;Lacquer&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.024</span>), <span class="n">0.55</span>, coat=<span class="n">0.15</span>)
+    brass = _mat(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.55</span>, <span class="n">0.24</span>), <span class="n">0.28</span>, metal=<span class="n">1.0</span>)
+    BW, BH = <span class="n">4.0</span>, <span class="n">3.7</span>
+    board = _box(<span class="s">&quot;SignBoard&quot;</span>, (BW, <span class="n">0.06</span>, BH), (<span class="n">0.0</span>, <span class="n">0.26</span>, SIGN_Z), lacquer, bevel=<span class="n">0.015</span>)
+    fw = <span class="n">0.09</span>
+    frame = [
+        _box(<span class="s">&quot;FrameTop&quot;</span>, (BW + <span class="n">2</span> * fw, <span class="n">0.1</span>, fw), (<span class="n">0.0</span>, <span class="n">0.24</span>, SIGN_Z + BH / <span class="n">2</span> + fw / <span class="n">2</span>), brass, <span class="n">0.02</span>),
+        _box(<span class="s">&quot;FrameBot&quot;</span>, (BW + <span class="n">2</span> * fw, <span class="n">0.1</span>, fw), (<span class="n">0.0</span>, <span class="n">0.24</span>, SIGN_Z - BH / <span class="n">2</span> - fw / <span class="n">2</span>), brass, <span class="n">0.02</span>),
+        _box(<span class="s">&quot;FrameL&quot;</span>, (fw, <span class="n">0.1</span>, BH), (-(BW + fw) / <span class="n">2</span>, <span class="n">0.24</span>, SIGN_Z), brass, <span class="n">0.02</span>),
+        _box(<span class="s">&quot;FrameR&quot;</span>, (fw, <span class="n">0.1</span>, BH), ((BW + fw) / <span class="n">2</span>, <span class="n">0.24</span>, SIGN_Z), brass, <span class="n">0.02</span>),
+    ]
+    caps = []
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        <span class="k">for</span> sz <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=<span class="n">24</span>, radius=<span class="n">0.07</span>, depth=<span class="n">0.1</span>,
+                                                location=(sx * (BW / <span class="n">2</span> - <span class="n">0.25</span>), <span class="n">0.18</span>,
+                                                          SIGN_Z + sz * (BH / <span class="n">2</span> - <span class="n">0.25</span>)),
+                                                rotation=(math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>))
+            cap = bpy.context.active_object
+            cap.data.materials.append(brass)
+            caps.append(cap)
+    <span class="c"># a brass plate under the tubes, a mains cable dropping to the floor</span>
+    plate = _box(<span class="s">&quot;MakerPlate&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.03</span>, <span class="n">0.16</span>), (<span class="n">0.0</span>, <span class="n">0.215</span>, SIGN_Z - BH / <span class="n">2</span> + <span class="n">0.22</span>), brass, <span class="n">0.01</span>)
+    cable_mat = _mat(<span class="s">&quot;Cable&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.02</span>), <span class="n">0.45</span>)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=<span class="n">12</span>, radius=<span class="n">0.018</span>, depth=SIGN_Z - BH / <span class="n">2</span> - fw,
+                                        location=(<span class="n">1.35</span>, <span class="n">0.28</span>, (SIGN_Z - BH / <span class="n">2</span> - fw) / <span class="n">2</span>))
+    cable = bpy.context.active_object
+    cable.data.materials.append(cable_mat)
+    sign = [board, plate, cable] + frame + caps
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
@@ -928,16 +1111,41 @@ TOL = <span class="n">1e-4</span>
         ob.location = loc
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
+        <span class="k">return</span> ld
 
-    <span class="c"># the strokes are unlit; this only paints a soft halo on the wall behind them</span>
-    light(<span class="s">&quot;Halo&quot;</span>, (<span class="n">0.0</span>, <span class="n">3.2</span>, <span class="n">1.9</span>), <span class="n">260.0</span>, <span class="n">7.0</span>, (<span class="n">0.4</span>, <span class="n">0.45</span>, <span class="n">1.0</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>))
+    <span class="c"># neon spill: one small shadowless disk per ring, set just in front of</span>
+    <span class="c"># the board on that ring&#x27;s rose and tinted with its colour, so each tube</span>
+    <span class="c"># washes the satin lacquer behind it the way real neon does</span>
+    <span class="k">for</span> ring <span class="k">in</span> range(RINGS):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">0</span>, POINTS, POINTS // <span class="n">16</span>):
+            x, _y, z = rose_point(ring, i)
+            ld = bpy.data.lights.new(<span class="s">f&quot;</span><span class="s">Spill</span>{ring}<span class="s">_</span>{i}<span class="s">&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
+            ld.shape = <span class="s">&#x27;DISK&#x27;</span>
+            ld.size = <span class="n">0.6</span>
+            ld.energy = <span class="n">0.9</span>
+            ld.color = ring_color(ring, i)[:<span class="n">3</span>]
+            ld.use_shadow = <span class="k">False</span>
+            lo = bpy.data.objects.new(ld.name, ld)
+            lo.location = (x, <span class="n">0.05</span>, SIGN_Z + z)
+            lo.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)  <span class="c"># emit along +Y, onto the board</span>
+            scene.collection.objects.link(lo)
+    <span class="c"># warm key grazing the brass frame, cool fill, warm wedge on the wall</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.5</span>, -<span class="n">5.0</span>, <span class="n">5.5</span>), <span class="n">200.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.93</span>, <span class="n">0.85</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">40</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">2.5</span>), <span class="n">50.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">3.2</span>, -<span class="n">1.6</span>, <span class="n">4.6</span>), <span class="n">380.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.42</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">60</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">41.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">9.5</span>, <span class="n">1.9</span>)
-    cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (-<span class="n">2.6</span>, -<span class="n">9.2</span>, <span class="n">2.3</span>)
     scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.2</span>, SIGN_Z - <span class="n">0.05</span>)
+    scene.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    tr.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     scene.camera = cam
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
@@ -952,8 +1160,14 @@ TOL = <span class="n">1e-4</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate before the beauty render (exit 10 on violation)</span>
+    fcode = gallery_framing.check_framing(scene, cam, hero=[board] + frame,
+                                          elements=[obj, board, plate] + frame + caps, stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">9</span>
 
 
 <span class="k">def</span> main():
@@ -973,9 +1187,11 @@ TOL = <span class="n">1e-4</span>
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">if</span> rcode == <span class="n">9</span>:
+                print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;grease-pencil-rosette OK&quot;</span>)
@@ -1026,7 +1242,7 @@ TOL = <span class="n">1e-4</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/grease-pencil-rosette-hero.webp" alt="A neon Grease Pencil rosette of nested cyan, violet, magenta and red petal loops on a dark blue backdrop." />
+    <img src="../assets/grease-pencil-rosette-hero.webp" alt="A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall." />
   </dialog>
   <footer>
     <div class="statusbar">

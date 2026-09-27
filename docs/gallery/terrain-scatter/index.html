@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill." />
+  <meta property="og:image:alt" content="A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="terrain-scatter — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A Geometry Nodes hill tile with embedded, varied stone scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
-  <meta name="twitter:image:alt" content="A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill." />
+  <meta name="twitter:image:alt" content="A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../treasure-chest/" aria-label="Previous showcase piece: treasure-chest"><span aria-hidden="true">&larr;</span> treasure-chest</a><span class="pager-pos hud">8 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../fence-kit/" aria-label="Next showcase piece: fence-kit">fence-kit <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill.">
-      <img src="../assets/terrain-scatter-hero.webp" alt="A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles.">
+      <img src="../assets/terrain-scatter-hero.webp" alt="A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2398 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800x1.800x0.570 m, grounded zmin, 9 stones of &gt;=80 faces each sealed into the ground in 8/8 sectors, footprint ratio 9.8, rim tilt step 33.5 deg, no stone pairs overlapping, LOD ratios in band, convex collider 36 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19; --pile-rocks 20; --perch-rocks 21; --uniform-rocks 22; --sharp-rim 23.</div>
@@ -367,6 +367,7 @@
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>geometry-nodes-python</code>, <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
 <p>Intended size: 1.80 m square hill tile, ~0.16 m sine amplitude, nine embedded stones from cobble to boulder; outer AABB 1.800 × 1.800 × 0.570 m.</p>
+<p><strong>Hero.</strong> On the render path, grass is blended into the dirt shader where the ground faces up (geometry normal Z), broken by a coarse patch noise so bare soil shows through. The rounded rim and the cut sides tip past the band, so the section still reads as topsoil over subsoil. A render-only dressing, drawn with a fixed seed from the up-facing dirt faces, adds 120 clumped grass tufts and 40 sunk pebbles in the stone material. The dressing is staging, parented to the tile, and is not part of the asset, its budgets or its export. The asset sheet judges <code>TerrainLow</code> alone.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–2800</td><td>2398 / 2398 / 2398</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4996 / 0.4996 / 0.4996</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2193 / 0.2193 / 0.2193</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥24 stone faces</td><td>2 slots, 720 stone</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.800, 1.800, 0.570) m ± 0.015</td><td>(1.8000, 1.8008, 0.5700), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 120</td><td>36</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>199496 / 199496 / 199480 bytes</td></tr></tbody></table></div>
@@ -408,9 +409,9 @@ blender --background --python terrain_scatter.py -- --output terrain.png</code><
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/terrain-scatter/terrain_scatter.py</code>
-        <span>1571 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/terrain-scatter/terrain_scatter.py">View on GitHub &rarr;</a></span>
+        <span>1700 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/terrain-scatter/terrain_scatter.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1571">
+      <div class="code" data-lines="1700">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1981,7 +1982,136 @@ blender --background --python terrain_scatter.py -- --output terrain.png</code><
 1568
 1569
 1570
-1571</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
+1571
+1572
+1573
+1574
+1575
+1576
+1577
+1578
+1579
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600
+1601
+1602
+1603
+1604
+1605
+1606
+1607
+1608
+1609
+1610
+1611
+1612
+1613
+1614
+1615
+1616
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
 
 Asserts budget conformance of a Geometry Nodes hill grid with instanced
 rocks after composing shipped pipeline pieces: GN construction,
@@ -2014,6 +2144,7 @@ across Blender versions — the LOD gate is a ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -3407,9 +3538,134 @@ RELIEF = ((<span class="n">9.1</span>, <span class="n">7.3</span>, <span class="
     nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
+<span class="k">def</span> grass_over(dirt):
+    <span class="s">&quot;&quot;&quot;Render path: patchy grass on the up-facing ground, soil on the cut.
+
+    Grass holds where the surface faces up (geometry normal Z) and a coarse
+    patch noise lets bare soil through; the rounded rim and the slab sides
+    tip past the band, so the cut still reads as topsoil over subsoil.
+    &quot;&quot;&quot;</span>
+    nt = dirt.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    link = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].links[<span class="n">0</span>]
+    soil = link.from_socket
+    nt.links.remove(link)
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    geo = nt.nodes.new(<span class="s">&quot;ShaderNodeNewGeometry&quot;</span>)
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(geo.outputs[<span class="s">&quot;Normal&quot;</span>], sep.inputs[<span class="n">0</span>])
+    up = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    up.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.80</span>
+    up.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.95</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], up.inputs[<span class="s">&quot;Value&quot;</span>])
+    patch = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    patch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">3.2</span>
+    patch.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], patch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    cover = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    cover.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.40</span>
+    cover.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(patch.outputs[<span class="s">&quot;Fac&quot;</span>], cover.inputs[<span class="s">&quot;Value&quot;</span>])
+    amount = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    amount.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(up.outputs[<span class="s">&quot;Result&quot;</span>], amount.inputs[<span class="n">0</span>])
+    nt.links.new(cover.outputs[<span class="s">&quot;Result&quot;</span>], amount.inputs[<span class="n">1</span>])
+    blades = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    blades.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">140.0</span>
+    blades.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], blades.inputs[<span class="s">&quot;Vector&quot;</span>])
+    green = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    green.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.030</span>, <span class="n">0.045</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    green.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.105</span>, <span class="n">0.130</span>, <span class="n">0.035</span>, <span class="n">1.0</span>)
+    nt.links.new(blades.outputs[<span class="s">&quot;Fac&quot;</span>], green.inputs[<span class="s">&quot;Fac&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(amount.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(soil, _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(green.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+
+
+<span class="k">def</span> ground_dressing(low, stone_mat, seed=<span class="n">11</span>, n_tufts=<span class="n">120</span>, n_pebbles=<span class="n">40</span>):
+    <span class="s">&quot;&quot;&quot;Render-only tufts and pebbles on the tile&#x27;s up-facing dirt faces.
+
+    Sites are dirt faces (material DIRT_IDX) facing up, drawn by area with
+    a fixed seed, so the dressing is the same every run. Pebbles sink a
+    third of their height; tufts are a few tapered blades each. Returned
+    objects are staging, parented to the tile, never part of its budgets.
+    &quot;&quot;&quot;</span>
+    me = low.data
+    rng = random.Random(seed)
+    sites = [p <span class="k">for</span> p <span class="k">in</span> me.polygons
+             <span class="k">if</span> p.material_index == DIRT_IDX <span class="k">and</span> p.normal.z &gt; <span class="n">0.9</span>]
+    weights = [p.area <span class="k">for</span> p <span class="k">in</span> sites]
+
+    <span class="k">def</span> site():
+        p = rng.choices(sites, weights)[<span class="n">0</span>]
+        vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> p.vertices]
+        w = [rng.random() <span class="k">for</span> _ <span class="k">in</span> vs]
+        s = sum(w)
+        <span class="k">return</span> sum((v * (wi / s) <span class="k">for</span> v, wi <span class="k">in</span> zip(vs, w)), Vector()), p.normal
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> _ <span class="k">in</span> range(n_tufts):
+            base, _nrm = site()
+            <span class="k">for</span> _b <span class="k">in</span> range(rng.randint(<span class="n">9</span>, <span class="n">15</span>)):
+                a = rng.uniform(<span class="n">0.0</span>, <span class="n">2</span> * math.pi)
+                h = rng.uniform(<span class="n">0.028</span>, <span class="n">0.062</span>)
+                lean = rng.uniform(<span class="n">0.15</span>, <span class="n">0.55</span>)
+                w = rng.uniform(<span class="n">0.004</span>, <span class="n">0.007</span>)
+                d = Vector((math.cos(a), math.sin(a), <span class="n">0.0</span>))
+                side = Vector((-d.y, d.x, <span class="n">0.0</span>)) * w
+                base_b = base + Vector((rng.uniform(-<span class="n">0.012</span>, <span class="n">0.012</span>), rng.uniform(-<span class="n">0.012</span>, <span class="n">0.012</span>), <span class="n">0.0</span>))
+                root = base_b - Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.004</span>))
+                tip = base_b + d * (h * lean) + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, h))
+                mid = base_b + d * (h * lean * <span class="n">0.35</span>) + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, h * <span class="n">0.55</span>))
+                vs = [bm.verts.new(root - side), bm.verts.new(root + side),
+                      bm.verts.new(mid + side * <span class="n">0.6</span>), bm.verts.new(mid - side * <span class="n">0.6</span>),
+                      bm.verts.new(tip)]
+                bm.faces.new(vs[:<span class="n">4</span>])
+                bm.faces.new((vs[<span class="n">3</span>], vs[<span class="n">2</span>], vs[<span class="n">4</span>]))
+        tme = bpy.data.meshes.new(<span class="s">&quot;GrassTufts&quot;</span>)
+        bm.to_mesh(tme)
+    <span class="k">finally</span>:
+        bm.free()
+    gmat = bpy.data.materials.new(<span class="s">&quot;Tuft&quot;</span>)
+    gmat.use_nodes = <span class="k">True</span>
+    gb = gmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    gb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.090</span>, <span class="n">0.118</span>, <span class="n">0.030</span>, <span class="n">1.0</span>)
+    gb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.75</span>
+    tme.materials.append(gmat)
+    tufts = bpy.data.objects.new(<span class="s">&quot;GrassTufts&quot;</span>, tme)
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> _ <span class="k">in</span> range(n_pebbles):
+            base, _nrm = site()
+            r = rng.uniform(<span class="n">0.010</span>, <span class="n">0.026</span>)
+            geo = bmesh.ops.create_icosphere(bm, subdivisions=<span class="n">1</span>, radius=<span class="n">1.0</span>)
+            sx, sy, sz = r * rng.uniform(<span class="n">0.8</span>, <span class="n">1.3</span>), r * rng.uniform(<span class="n">0.8</span>, <span class="n">1.2</span>), r * rng.uniform(<span class="n">0.45</span>, <span class="n">0.7</span>)
+            rot = rng.uniform(<span class="n">0.0</span>, <span class="n">2</span> * math.pi)
+            c, s = math.cos(rot), math.sin(rot)
+            <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
+                x, y, z = v.co.x * sx, v.co.y * sy, v.co.z * sz
+                v.co = Vector((c * x - s * y, s * x + c * y, z)) + base - Vector((<span class="n">0</span>, <span class="n">0</span>, sz * <span class="n">0.35</span>))
+        pme = bpy.data.meshes.new(<span class="s">&quot;Pebbles&quot;</span>)
+        bm.to_mesh(pme)
+    <span class="k">finally</span>:
+        bm.free()
+    pme.materials.append(stone_mat)
+    pebbles = bpy.data.objects.new(<span class="s">&quot;Pebbles&quot;</span>, pme)
+    <span class="k">for</span> ob <span class="k">in</span> (tufts, pebbles):
+        ob.parent = low
+    <span class="k">return</span> [tufts, pebbles]
+
+
 <span class="k">def</span> render_still(low, dirt, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(dirt, tex)
+    grass_over(dirt)
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
         <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
             ob.hide_render = <span class="k">True</span>
@@ -3417,6 +3673,9 @@ RELIEF = ((<span class="n">9.1</span>, <span class="n">7.3</span>, <span class="
 
     low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">0.0</span>)
+    dressing = ground_dressing(low, low.data.materials[STONE_IDX])
+    <span class="k">for</span> ob <span class="k">in</span> dressing:
+        scene.collection.objects.link(ob)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -3591,7 +3850,7 @@ RELIEF = ((<span class="n">9.1</span>, <span class="n">7.3</span>, <span class="
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/terrain-scatter-hero.webp" alt="A square tile of dark rolling earth with a rounded edge, nine faceted grey stones from cobble to boulder sunk into the ground across the hill." />
+    <img src="../assets/terrain-scatter-hero.webp" alt="A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles." />
   </dialog>
   <footer>
     <div class="statusbar">

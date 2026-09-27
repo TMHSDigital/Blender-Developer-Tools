@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bake-normal-high-to-low-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
+  <meta property="og:image:alt" content="Left to right: a lilac baked normal-map card, the 3200-tri ribbed bronze source plate, and the 900-tri decimated plate wearing the map, each captioned on the floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="bake-normal-high-to-low — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bake-normal-high-to-low-hero.webp" />
-  <meta name="twitter:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
+  <meta name="twitter:image:alt" content="Left to right: a lilac baked normal-map card, the 3200-tri ribbed bronze source plate, and the 900-tri decimated plate wearing the map, each captioned on the floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-sim-fountain/" aria-label="Previous example: gn-sim-fountain"><span aria-hidden="true">&larr;</span> gn-sim-fountain</a><span class="pager-pos hud">51 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-socket-rename/" aria-label="Next example: gn-socket-rename">gn-socket-rename <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths.">
-      <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Left to right: a lilac baked normal-map card, the 3200-tri ribbed bronze source plate, and the 900-tri decimated plate wearing the map, each captioned on the floor.">
+      <img src="../assets/bake-normal-high-to-low-hero.webp" alt="Left to right: a lilac baked normal-map card, the 3200-tri ribbed bronze source plate, and the 900-tri decimated plate wearing the map, each captioned on the floor." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Statistical gates not byte-identity: detail frac 0.7211 / MAD 0.09356 vs flat 0.0000 / 0.00277; --flat-source exits 5; type=NORMAL not bake_type; RNA identical on 4.5.11, 5.1.2, 5.2.1</div>
@@ -367,8 +367,8 @@
 <p>Byte-identity across 4.5 / 5.1 / 5.2 is <strong>not</strong> the contract. Tile order and float accumulation differ even at one CPU sample. The gates are fraction of pixels beyond Euclidean <code>0.04</code> from flat, mean absolute deviation, and a monotonic gap versus a flat control. Tolerances sit well inside the measured gap (detail frac 0.7211 vs flat 0.0000) so they are not tuned-until-green.</p>
 <ul><li><strong>Detail bake is not flat.</strong> <code>frac &gt;= 0.40</code> and <code>MAD &gt;= 0.05</code> (measured 0.7211 / 0.09356 on 4.5.11, 5.1.2, and 5.2.1). Catches an inactive Image Texture node, reversed selection, or EEVEE/GPU mis-setup that writes a blank map. MAD floor is half the measured hatch value, still ~30× a flat bake.</li><li><strong>Flat control is flat.</strong> <code>frac &lt;= 0.05</code> and <code>MAD &lt;= 0.03</code> (measured 0.0000 / 0.00277). Catches a noisy or wrongly-typed bake that would also satisfy the detail gates.</li><li><strong>Monotonic gap.</strong> <code>detail_frac - flat_frac &gt;= 0.30</code>. The two maps must separate; a tolerance wide enough to pass both would have no discriminating power.</li><li><strong><code>--flat-source</code> is the falsifier.</strong> Skips the ribs and still runs the detail gates. Must exit 5. Analogous to <code>--same-axis</code> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis"><code>export-preset-axis</code></a>.</li></ul>
 <p>Neighbor of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a> (the LOD is the cage target; collapse keeps UVs) and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard"><code>image-pixels-testcard</code></a> (<code>save_render</code>, not <code>Image.save()</code>, if you persist the datablock). UV transfer and atlas packing are out of scope.</p>
-<p>The still stages the baked map as an unlit card beside the LOD wearing it. If the bake were flat, the card would be uniform <code>(128, 128, 255)</code> periwinkle and the plate would shade like the undisplaced cage.</p>
-<p>Staging is render-only. Each panel stands in a low display plinth, lifted so its lowest evaluated point sits 35 mm in the slot. Both panels used to balance on an edge, and the leaning plate pierced the floor. The solidify rim wears plain bronze instead of the baked map. The slight waviness along the plate&#x27;s border is the bake itself, normal-map shading inside the UV margin, and is left as the map produces it. Bake statistics are unchanged: frac 0.7211, MAD 0.09356 on all three binaries.</p>
+<p>The still reads left to right as the pipeline: the baked map as an unlit card, the high-poly source it was baked from, and the collapse-decimated LOD wearing it. Source and LOD share one cast-bronze material, so the only difference between them is real geometry versus the map. The floor captions carry live triangle counts from the evaluated meshes (3200 vs 900). A raking key from low on the left makes both the real relief and the baked relief throw light and shade. If the bake were flat, the card would be uniform <code>(128, 128, 255)</code> periwinkle and the right plate would shade like the undisplaced cage while the middle one kept its ribs.</p>
+<p>Staging is render-only. Each panel stands in a low display plinth, lifted so its lowest evaluated point sits 35 mm in the slot. Both panels used to balance on an edge, and the leaning plate pierced the floor. The LOD&#x27;s solidify rim wears plain bronze instead of the baked map. The slight waviness along the plate&#x27;s border is the bake itself, normal-map shading inside the UV margin, and is left as the map produces it. Bake statistics are unchanged: frac 0.7211, MAD 0.09356 on all three binaries.</p>
 <p>Operator RNA (<code>type=&#x27;NORMAL&#x27;</code>, <code>use_selected_to_active</code>, <code>cage_extrusion</code>, <code>cage_object</code> as a string, <code>normal_space=&#x27;TANGENT&#x27;</code>, <code>margin_type</code>) is identical on 4.5.11, 5.1.2, and 5.2.1 — no shim.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) - the CI check:
@@ -389,9 +389,9 @@ blender --background --python bake_normal_high_to_low.py -- --output hatch.png -
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/bake-normal-high-to-low/bake_normal_high_to_low.py</code>
-        <span>587 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bake-normal-high-to-low/bake_normal_high_to_low.py">View on GitHub &rarr;</a></span>
+        <span>644 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bake-normal-high-to-low/bake_normal_high_to_low.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="587">
+      <div class="code" data-lines="644">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -978,7 +978,64 @@ blender --background --python bake_normal_high_to_low.py -- --output hatch.png -
 584
 585
 586
-587</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;High-to-low tangent normal bake — a runnable example.
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;High-to-low tangent normal bake — a runnable example.
 
 Witnesses transferring high-poly surface detail onto a collapse-decimated LOD
 via Cycles cage bake. Pixel buffers are stochastic: this example does **not**
@@ -1202,10 +1259,29 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
     <span class="k">return</span> bsdf
 
 
+BRONZE = (<span class="n">0.62</span>, <span class="n">0.36</span>, <span class="n">0.16</span>, <span class="n">1.0</span>)
+
+
+<span class="k">def</span> bronze(mat):
+    <span class="s">&quot;&quot;&quot;Cast bronze: metallic, with a noise-mottled roughness so the relief
+    catches broken highlights instead of one smeared sheen. Render only.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = paint_principled(mat, BRONZE, <span class="n">1.0</span>, <span class="n">0.34</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">18.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    rmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rmap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.24</span>
+    rmap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.48</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rmap.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rmap.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> bsdf
+
+
 <span class="k">def</span> wire_normal_map(mat, tex):
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
-    bsdf = paint_principled(mat, (<span class="n">0.22</span>, <span class="n">0.13</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.58</span>, <span class="n">0.44</span>)
+    bsdf = bronze(mat)
     nrm = nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
     nrm.space = <span class="s">&quot;TANGENT&quot;</span>
     links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
@@ -1348,7 +1424,7 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
     tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
     tex.image = image
     emit = nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
-    emit.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    emit.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.8</span>
     out = nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
     links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], emit.inputs[<span class="s">&quot;Color&quot;</span>])
     links.new(emit.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
@@ -1407,30 +1483,65 @@ PLINTH_PAD = <span class="n">0.08</span>
     <span class="k">return</span> plinth
 
 
-<span class="k">def</span> render_still(low, mat, tex, path, engine):
+<span class="k">def</span> make_label(text, loc, name):
+    <span class="s">&quot;&quot;&quot;A small text caption lying on the floor in front of a plinth.&quot;&quot;&quot;</span>
+    cu = bpy.data.curves.new(name, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = text
+    cu.size = <span class="n">0.22</span>
+    cu.align_x, cu.align_y = <span class="s">&quot;CENTER&quot;</span>, <span class="s">&quot;CENTER&quot;</span>
+    cu.extrude = <span class="n">0.004</span>
+    lm = bpy.data.materials.new(name + <span class="s">&quot;Mat&quot;</span>)
+    lm.use_nodes = <span class="k">True</span>
+    b = paint_principled(lm, (<span class="n">0.62</span>, <span class="n">0.60</span>, <span class="n">0.56</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.5</span>)
+    b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.9</span>, <span class="n">0.86</span>, <span class="n">0.78</span>, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.35</span>
+    cu.materials.append(lm)
+    ob = bpy.data.objects.new(name, cu)
+    ob.location = loc
+    ob.rotation_euler = (math.radians(<span class="n">62.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    bpy.context.scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(high, low, mat, tex, path, engine):
+    <span class="s">&quot;&quot;&quot;Left to right: the baked tangent map, the high-poly source it was baked
+    from, and the decimated LOD wearing it. The source and the LOD share one
+    bronze, so the only difference between them is geometry versus map.&quot;&quot;&quot;</span>
     scene = bpy.context.scene
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
-        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob <span class="k">not</span> <span class="k">in</span> (low, high):
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
+    high_tris = evaluated_triangle_count(high)
+    low_tris = evaluated_triangle_count(low)
 
     wire_normal_map(mat, tex)
     <span class="c"># The solidify rim is the plate&#x27;s edge, not baked surface: give it plain</span>
     <span class="c"># bronze. Wearing the map, it sampled the UV border and rendered ragged.</span>
     rim = bpy.data.materials.new(<span class="s">&quot;BronzeRim&quot;</span>)
     rim.use_nodes = <span class="k">True</span>
-    paint_principled(rim, (<span class="n">0.22</span>, <span class="n">0.13</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.58</span>, <span class="n">0.44</span>)
+    bronze(rim)
     low.data.materials.append(rim)
-    solid = low.modifiers.new(<span class="s">&quot;SolidifyDisplay&quot;</span>, <span class="s">&quot;SOLIDIFY&quot;</span>)
-    solid.thickness = THICKNESS
-    solid.offset = <span class="n">1.0</span>
-    solid.material_offset_rim = <span class="n">1</span>
-    low.rotation_euler.x = math.radians(<span class="n">72.0</span>)
-    low.location = (<span class="n">1.20</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    src = bpy.data.materials.new(<span class="s">&quot;BronzeSource&quot;</span>)
+    src.use_nodes = <span class="k">True</span>
+    bronze(src)
+    high.data.materials.clear()
+    high.data.materials.append(src)
+    <span class="k">for</span> ob, x <span class="k">in</span> ((high, <span class="n">0.35</span>), (low, <span class="n">3.05</span>)):
+        solid = ob.modifiers.new(<span class="s">&quot;SolidifyDisplay&quot;</span>, <span class="s">&quot;SOLIDIFY&quot;</span>)
+        solid.thickness = THICKNESS
+        solid.offset = <span class="n">1.0</span>
+        solid.material_offset_rim = <span class="n">1</span> <span class="k">if</span> ob <span class="k">is</span> low <span class="k">else</span> <span class="n">0</span>
+        ob.rotation_euler.x = math.radians(<span class="n">72.0</span>)
+        ob.location = (x, <span class="n">0.0</span>, <span class="n">1.05</span>)
     card = make_map_card(tex.image)
-    card.location = (-<span class="n">1.50</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    card.location = (-<span class="n">2.45</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
     plinths = [seat_on_plinth(ob, name) <span class="k">for</span> ob, name <span class="k">in</span>
-               ((card, <span class="s">&quot;CardPlinth&quot;</span>), (low, <span class="s">&quot;PlatePlinth&quot;</span>))]
+               ((card, <span class="s">&quot;CardPlinth&quot;</span>), (high, <span class="s">&quot;SourcePlinth&quot;</span>), (low, <span class="s">&quot;PlatePlinth&quot;</span>))]
+    labels = [make_label(t, (x, -<span class="n">1.05</span>, <span class="n">0.13</span>), <span class="s">f&quot;</span><span class="s">Label</span>{i}<span class="s">&quot;</span>) <span class="k">for</span> i, (t, x) <span class="k">in</span> enumerate((
+        (<span class="s">&quot;BAKED MAP&quot;</span>, -<span class="n">2.45</span>),
+        (<span class="s">f&quot;</span><span class="s">HIGH  </span>{high_tris}<span class="s"> tris</span><span class="s">&quot;</span>, <span class="n">0.35</span>),
+        (<span class="s">f&quot;</span><span class="s">LOW  </span>{low_tris}<span class="s"> tris + map</span><span class="s">&quot;</span>, <span class="n">3.05</span>)))]
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1472,18 +1583,20 @@ PLINTH_PAD = <span class="n">0.08</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">600.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    <span class="c"># A raking key from low on the left, so the relief on the source and the</span>
+    <span class="c"># baked relief on the LOD both throw light and shade across the ribs.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">6.5</span>, -<span class="n">3.5</span>, <span class="n">2.6</span>), <span class="n">900.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">72</span>, <span class="n">0</span>, -<span class="n">62</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">520.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.4</span>, <span class="n">3.15</span>)
+    cam.location = (<span class="n">0.42</span>, -<span class="n">12.2</span>, <span class="n">3.4</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    aim.location = (<span class="n">0.42</span>, <span class="n">0.0</span>, <span class="n">0.78</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -1509,8 +1622,8 @@ PLINTH_PAD = <span class="n">0.08</span>
     fcode = gallery_framing.check_framing(
         scene,
         cam,
-        hero=[card, low],
-        elements=[card, low] + plinths,
+        hero=[card, high, low],
+        elements=[card, high, low] + plinths + labels,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -1547,7 +1660,8 @@ PLINTH_PAD = <span class="n">0.08</span>
         tex = next(
             n <span class="k">for</span> n <span class="k">in</span> mat.node_tree.nodes <span class="k">if</span> n.type == <span class="s">&quot;TEX_IMAGE&quot;</span> <span class="k">and</span> n.image == img
         )
-        rcode = render_still(low, mat, tex, os.path.abspath(args.output), args.engine)
+        rcode = render_still(high, low, mat, tex, os.path.abspath(args.output),
+                             args.engine)
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
@@ -1582,7 +1696,7 @@ PLINTH_PAD = <span class="n">0.08</span>
         </article>
         <article class="card mini">
           <a class="card-media" href="../bmesh-gear/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear meshing with a blued pinion and a spoked gunmetal wheel, each bolted through a hub to a dark steel backplate on a walnut plinth." width="1280" height="720" loading="lazy" decoding="async" />
           </a>
           <div class="card-body">
             <h3><a href="../bmesh-gear/">bmesh-gear</a></h3>
@@ -1604,7 +1718,7 @@ PLINTH_PAD = <span class="n">0.08</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
+    <img src="../assets/bake-normal-high-to-low-hero.webp" alt="Left to right: a lilac baked normal-map card, the 3200-tri ribbed bronze source plate, and the 900-tri decimated plate wearing the map, each captioned on the floor." />
   </dialog>
   <footer>
     <div class="statusbar">
