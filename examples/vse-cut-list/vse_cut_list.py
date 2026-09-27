@@ -71,6 +71,7 @@ T2_SPAN = (25, 57)   # cross source 2 (teal) — consumed by GC, no cell
 GC_SPAN = (25, 33)   # 8-frame cross, exactly the T1/T2 overlap (clamped to it)
 TXT_SPAN = (1, 57)   # caption lives for the whole color timeline
 SCENE_END = 250      # explicit scene frame_end -> scene strip spans [1, 251)
+SCENE_END_VIS = 57  # the console ruler spans the colour timeline, frames 1..57
 TXT_BODY = "CUT LIST  A 001-032  B 025-056  CROSS 025-032  @ F29"
 
 RENDER_W, RENDER_H = 1280, 720
@@ -440,55 +441,79 @@ def render_frame(sc, path, engine, w, h):
     return os.path.exists(path) and os.path.getsize(path) > 0
 
 
-def build_bay(sc, frame_path):
-    """The editing-bay presentation: a reference monitor on a desk in the
-    dark studio, its screen showing the AUTHENTIC sequencer frame. The pixels
-    on the screen are the evidence (rendered by the VSE above); the bay is
-    only the designed presentation around them."""
+def build_bay(sc, frame_path, coll):
+    """The editing-bay presentation: a reference monitor on an editing desk in
+    the dark studio, its screen showing the AUTHENTIC sequencer frame, and in
+    front of it a tilted timeline console whose strip blocks are laid out from
+    the cut list's own spans (read back through ``strip_span`` — the canonical
+    accessors the check asserts). The screen pixels are the evidence rendered
+    by the VSE; the console is the same timeline made physical so the cut list
+    reads in the thumbnail."""
     import bmesh
 
-    def box(name, size, loc, mat):
+    def mesh_box(name, size, loc, mat, bevel=0.0, parent=None, rot=None):
         me = bpy.data.meshes.new(name)
         bm = bmesh.new()
         try:
             bmesh.ops.create_cube(bm, size=1.0,
                                   matrix=mathutils.Matrix.Diagonal((*size, 1.0)))
+            if bevel > 0.0:
+                bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=2,
+                                profile=0.5, affect='EDGES')
             bm.to_mesh(me)
         finally:
             bm.free()
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
         ob.location = loc
+        if rot is not None:
+            ob.rotation_euler = rot
+        if parent is not None:
+            ob.parent = parent
         sc.collection.objects.link(ob)
         return ob
 
-    def pbr(name, base, metallic, roughness):
+    def pbr(name, base, metallic, roughness, emit=None, strength=0.0):
         mat = bpy.data.materials.new(name)
         mat.use_nodes = True
         b = mat.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
         b.inputs["Metallic"].default_value = metallic
         b.inputs["Roughness"].default_value = roughness
+        if emit is not None:
+            b.inputs["Emission Color"].default_value = (*emit, 1.0)
+            b.inputs["Emission Strength"].default_value = strength
         return mat
 
-    gunmetal = pbr("BayMetal", (0.08, 0.09, 0.10), 0.7, 0.40)
-    deskmat = pbr("DeskTop", (0.05, 0.05, 0.06), 0.0, 0.80)
+    gunmetal = pbr("BayMetal", (0.06, 0.065, 0.075), 0.75, 0.38)
+    satin = pbr("BayBlack", (0.018, 0.019, 0.022), 0.0, 0.55)
+    walnut = pbr("Walnut", (0.13, 0.065, 0.03), 0.0, 0.45)
+    bed = pbr("ConsoleBed", (0.025, 0.027, 0.032), 0.1, 0.6)
+    lane = pbr("TrackLane", (0.045, 0.048, 0.056), 0.0, 0.7)
 
-    # desk slab, stand, and the monitor bezel (screen face toward -Y)
-    # Each part bites the one it rests on. The neck used to butt its top face
-    # onto the bezel's bottom face (one plane, no joint) with half its depth
-    # hanging out behind, and the base sat exactly on the desk top.
-    desk_top, base_h, base_bite = 0.72, 0.06, 0.005
-    bezel_z, bezel_h, bezel_d = 1.89, 1.30, 0.09
-    neck_bite, neck_d = 0.10, 0.07
-    base_z0 = desk_top - base_bite
-    neck_z0 = base_z0 + base_h - base_bite
-    neck_z1 = bezel_z - bezel_h / 2 + neck_bite
-    box("Desk", (2.80, 1.10, desk_top), (0.0, 0.0, desk_top / 2), deskmat)
-    box("StandBase", (0.70, 0.50, base_h), (0.0, 0.05, base_z0 + base_h / 2), gunmetal)
-    box("Stand", (0.18, neck_d, neck_z1 - neck_z0),
-        (0.0, bezel_d / 2 - neck_d / 2 + 0.02, 0.5 * (neck_z0 + neck_z1)), gunmetal)
-    box("Bezel", (2.06, bezel_d, bezel_h), (0.0, 0.0, bezel_z), gunmetal)
+    # ---- desk: walnut top on a satin-black cabinet
+    desk_top = 0.74
+    mesh_box("DeskTop", (3.4, 1.8, 0.06), (0.0, 0.0, desk_top - 0.03), walnut, bevel=0.012)
+    mesh_box("DeskBody", (3.2, 1.6, desk_top - 0.06), (0.0, 0.05, (desk_top - 0.06) / 2),
+             satin, bevel=0.01)
+
+    # ---- reference monitor: thin bezel, chin, angled stand
+    scr_w, scr_h = 2.24, 1.26                 # 16:9 active area
+    bez_w, bez_h, bez_d = scr_w + 0.07, scr_h + 0.07, 0.06
+    mon_y, mon_z = 0.34, desk_top + 0.30 + bez_h / 2
+    mesh_box("Bezel", (bez_w, bez_d, bez_h), (0.0, mon_y, mon_z), gunmetal, bevel=0.012)
+    mesh_box("Chin", (bez_w, bez_d + 0.01, 0.05), (0.0, mon_y - 0.005, mon_z - bez_h / 2 - 0.02),
+             gunmetal, bevel=0.01)
+    mesh_box("MonitorBack", (bez_w * 0.7, 0.10, bez_h * 0.6),
+             (0.0, mon_y + 0.07, mon_z - 0.05), satin, bevel=0.03)
+    mesh_box("StandNeck", (0.16, 0.06, 0.52),
+             (0.0, mon_y + 0.10, desk_top + 0.28), gunmetal, bevel=0.01)
+    mesh_box("StandFoot", (0.62, 0.40, 0.03), (0.0, mon_y + 0.10, desk_top + 0.015),
+             gunmetal, bevel=0.01)
+    # a thin tally lamp on the chin: the bay is live
+    mesh_box("Tally", (0.10, 0.012, 0.012), (bez_w / 2 - 0.16, mon_y - bez_d / 2 - 0.004,
+                                              mon_z - bez_h / 2 - 0.02),
+             pbr("Tally", (0.9, 0.2, 0.15), 0.0, 0.4, emit=(1.0, 0.18, 0.1), strength=6.0))
 
     # the screen: one unlit quad sampling the authentic frame end to end —
     # emission only, so the VSE pixels read exactly as the sequencer wrote them
@@ -508,8 +533,10 @@ def build_bay(sc, frame_path):
     sme = bpy.data.meshes.new("Screen")
     bm = bmesh.new()
     try:
-        q = [bm.verts.new(p) for p in ((-0.96, -0.048, 1.35), (0.96, -0.048, 1.35),
-                                       (0.96, -0.048, 2.43), (-0.96, -0.048, 2.43))]
+        y = mon_y - bez_d / 2 - 0.002
+        x0, x1 = -scr_w / 2, scr_w / 2
+        z0, z1 = mon_z - scr_h / 2, mon_z + scr_h / 2
+        q = [bm.verts.new(p) for p in ((x0, y, z0), (x1, y, z0), (x1, y, z1), (x0, y, z1))]
         # explicit UVs, not Generated: the quad is flat in Y, so Generated's
         # image-V is a constant and the screen samples one strip of the frame
         uv_layer = bm.loops.layers.uv.new("UVMap")
@@ -523,34 +550,105 @@ def build_bay(sc, frame_path):
     sob = bpy.data.objects.new("Screen", sme)
     sc.collection.objects.link(sob)
 
-    # a small desk-lip caption, the bay's only typography
-    cmat = pbr("CaptionGrey", (0.42, 0.44, 0.48), 0.2, 0.6)
-    cu = bpy.data.curves.new("BayCaption", "FONT")
-    cu.body = "PROGRAM"
-    cu.align_x = "CENTER"
-    cu.size = 0.10
-    cu.extrude = 0.004
-    cob = bpy.data.objects.new("BayCaption", cu)
-    # upright on the desk's front face, set 1 mm into it: laid flat on the
-    # top it floated 6 mm up and read as a smear at the camera's grazing angle
-    cob.location = (0.0, -0.55 - cu.extrude + 0.001, desk_top - 0.16)
-    cob.rotation_euler = (math.radians(90.0), 0.0, 0.0)
-    cob.data.materials.append(cmat)
-    sc.collection.objects.link(cob)
+    # ---- timeline console: the cut list made physical. A tilted bed on the
+    # desk; one lane per channel; each strip a coloured block spanning its
+    # [left_handle, right_handle) with raised handle notches at both ends.
+    console = bpy.data.objects.new("Console", None)
+    console.location = (0.0, -0.44, desk_top + 0.09)
+    console.rotation_euler = (math.radians(22.0), 0.0, 0.0)
+    sc.collection.objects.link(console)
+    bed_w, bed_d = 2.9, 0.80
+    mesh_box("ConsoleBed", (bed_w, bed_d, 0.05), (0.0, 0.0, 0.0), bed, bevel=0.012,
+             parent=console)
+    mesh_box("ConsoleWedge", (bed_w - 0.04, bed_d - 0.1, 0.10), (0.0, 0.04, -0.06), satin,
+             parent=console)
+    f0, f1 = 1, SCENE_END_VIS
+    x_left, x_right = -bed_w / 2 + 0.26, bed_w / 2 - 0.08
+
+    def fx(frame):
+        return x_left + (x_right - x_left) * (frame - f0) / (f1 - f0)
+
+    # lanes front (low channel) to back (high channel)
+    lanes = (("A", A_RGB), ("B", B_RGB), ("C", C_RGB), ("TXT", (0.86, 0.84, 0.80)),
+             ("GC", None))
+    lane_pitch = (bed_d - 0.10) / len(lanes)
+    top = 0.025
+    for i, (name, rgb) in enumerate(lanes):
+        ly = -bed_d / 2 + 0.07 + lane_pitch * (i + 0.5)
+        mesh_box(f"Lane.{name}", (x_right - x_left + 0.04, lane_pitch * 0.80, 0.006),
+                 ((x_left + x_right) / 2, ly, top + 0.003), lane, parent=console)
+        s0, s1, _dur = strip_span(coll[name])
+        s1 = min(s1, f1)
+        a, b = fx(s0), fx(s1)
+        if rgb is None:
+            # the cross: a ramp from its first input's colour to its second's
+            gm = bpy.data.materials.new("Strip.GC")
+            gm.use_nodes = True
+            gnt = gm.node_tree
+            gb = gnt.nodes["Principled BSDF"]
+            gtc = gnt.nodes.new("ShaderNodeTexCoord")
+            sep = gnt.nodes.new("ShaderNodeSeparateXYZ")
+            ramp = gnt.nodes.new("ShaderNodeValToRGB")
+            gin = coll["GC"]
+            ramp.color_ramp.elements[0].color = (*gin.input_1.color, 1.0)
+            ramp.color_ramp.elements[1].color = (*gin.input_2.color, 1.0)
+            gnt.links.new(gtc.outputs["Generated"], sep.inputs["Vector"])
+            gnt.links.new(sep.outputs["X"], ramp.inputs["Fac"])
+            gnt.links.new(ramp.outputs["Color"], gb.inputs["Base Color"])
+            gnt.links.new(ramp.outputs["Color"], gb.inputs["Emission Color"])
+            gb.inputs["Emission Strength"].default_value = 0.35
+            gb.inputs["Roughness"].default_value = 0.35
+            smat_i = gm
+        else:
+            smat_i = pbr(f"Strip.{name}", rgb, 0.0, 0.35, emit=rgb, strength=0.35)
+        h = 0.034
+        mesh_box(f"Strip.{name}", (b - a - 0.012, lane_pitch * 0.66, h),
+                 ((a + b) / 2, ly, top + 0.006 + h / 2), smat_i, bevel=0.006,
+                 parent=console)
+        # handle notches: lighter raised tabs at the left and right handles
+        notch = pbr(f"Handle.{name}", (0.75, 0.76, 0.78), 0.6, 0.3)
+        for hx in (a + 0.018, b - 0.018):
+            mesh_box(f"Handle.{name}", (0.022, lane_pitch * 0.70, h + 0.014),
+                     (hx, ly, top + 0.006 + (h + 0.014) / 2), notch, bevel=0.004,
+                     parent=console)
+        # lane label in the left gutter
+        cu = bpy.data.curves.new(f"Label.{name}", "FONT")
+        cu.body = name
+        cu.align_x = "RIGHT"
+        cu.align_y = "CENTER"
+        cu.size = 0.075
+        cu.extrude = 0.002
+        lab = bpy.data.objects.new(f"Label.{name}", cu)
+        lab.location = (x_left - 0.05, ly, top + 0.004)
+        lab.parent = console
+        cu.materials.append(pbr(f"LabelInk.{name}", (0.55, 0.57, 0.62), 0.1, 0.5))
+        sc.collection.objects.link(lab)
+
+    # frame ruler along the back edge and the playhead at the sampled frame
+    tick = pbr("Tick", (0.35, 0.36, 0.40), 0.4, 0.5)
+    for fr in range(f0, f1 + 1, 8):
+        mesh_box("Tick", (0.006, 0.03 if (fr - 1) % 16 else 0.05, 0.004),
+                 (fx(fr), bed_d / 2 - 0.035, top + 0.002), tick, parent=console)
+    head = pbr("Playhead", (0.95, 0.30, 0.18), 0.0, 0.3, emit=(1.0, 0.32, 0.16), strength=2.0)
+    px = fx(SAMPLE_FRAME)
+    mesh_box("Playhead", (0.006, bed_d - 0.06, 0.05), (px, 0.0, top + 0.025), head,
+             parent=console)
+    mesh_box("PlayheadCap", (0.05, 0.03, 0.03), (px, bed_d / 2 - 0.02, top + 0.07), head,
+             bevel=0.006, parent=console)
 
 
 def render_bay(sc, path, engine, w, h):
     """Render the editing bay. The camera moves to a three-quarter view of
     the monitor; everything else reuses the house stage."""
     cam_data = bpy.data.cameras.new("BayCam")
-    cam_data.lens = 52.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("BayCam", cam_data)
-    # Pulled back from (2.0, -5.2, 1.72) so the bezel top and desk base
-    # clear the frame edges (framing gate on the Bay scene).
-    cam.location = (3.05, -7.9, 2.0)
+    # Three-quarter and well above desk height, so the tilted timeline
+    # console in front of the monitor presents its lanes to the lens.
+    cam.location = (2.4, -7.3, 3.45)
     sc.collection.objects.link(cam)
     target = bpy.data.objects.new("BayAim", None)
-    target.location = (0.0, 0.0, 1.20)
+    target.location = (0.0, -0.05, 0.98)
     sc.collection.objects.link(target)
     con = cam.constraints.new("TRACK_TO")
     con.target = target
@@ -599,7 +697,12 @@ def render_still(path, engine):
     """Two passes: the authentic sequencer frame (evidence), then the
     editing-bay presentation with that exact frame on the monitor screen."""
     sc = bpy.context.scene
-    build_cut_list(sc)
+    # 5.2 COLOR strips bake width/height from the render resolution at
+    # new_effect time (see check_pixels); building at the factory 1920x1080
+    # and rendering at 1280x720 put every mosaic cell in the wrong place.
+    sc.render.resolution_x = RENDER_W
+    sc.render.resolution_y = RENDER_H
+    coll = build_cut_list(sc)
     build_stage(bpy.data.scenes["Stage"])
     tmp = tempfile.mkdtemp(prefix="vse_frame_")
     try:
@@ -608,7 +711,7 @@ def render_still(path, engine):
             return 11
         bay = bpy.data.scenes.new("Bay")
         build_stage(bay)          # the house dark studio, lights included
-        build_bay(bay, frame_path)
+        build_bay(bay, frame_path, coll)
         return render_bay(bay, path, engine, RENDER_W, RENDER_H)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)  # pixels live on in the blend

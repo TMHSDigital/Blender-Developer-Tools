@@ -492,7 +492,7 @@ still.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vse-cut-list/"><img src="examples/vse-cut-list/preview.webp" alt="VSE cut list: a two-by-two program wall in a dark studio — crimson, teal, and amber color strips plus the mid cross-blend cell, composited by the sequencer over a scene strip, with the span caption below" /></a>
+<a href="examples/vse-cut-list/"><img src="examples/vse-cut-list/preview.webp" alt="VSE cut list: a reference monitor showing the two-by-two program wall — crimson, teal, and amber color strips plus the mid cross-blend cell, composited by the sequencer over a scene strip — above a timeline console laying out the same strip spans as coloured blocks with handle notches and a playhead" /></a>
 </td>
 <td valign="middle">
 

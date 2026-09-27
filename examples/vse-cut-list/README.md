@@ -99,13 +99,22 @@ are the genuine sequencer output (evidence); only the bay around them is
 staged (presentation). Rendered locally with EEVEE (GPU host); the checks
 and `--check-pixels` need no GPU (Cycles CPU).
 
-In the bay, each part bites the one it rests on. The monitor's neck rises
-0.10 m into the bezel, the stand base sits 5 mm into the desk, and the
-"PROGRAM" caption stands on the desk's front face. The neck used to butt its
-top face onto the bezel's bottom on one plane, with half its depth hanging
-out behind, and the caption lay flat on the desk top 6 mm up, where the
-camera read it as a smear. None of this touches the sequencer frame or any
-check.
+In front of the monitor, a tilted timeline console makes the same cut list
+physical: one lane per channel (A, B, C, TXT, GC), each strip a coloured
+block spanning its `[left_handle, right_handle)` read back through the same
+`strip_span` accessor the check asserts, with raised handle notches at both
+ends, a frame ruler, and the playhead at frame 29. The GC block ramps from
+its `input_1` colour to its `input_2` colour, so the wiring reads too. The
+console is laid out from the strips, never from constants — a span that
+drifted would move its block. The monitor's neck is seated into the monitor
+back and its foot sits on the walnut desk top; none of the bay touches the
+sequencer frame or any check.
+
+The still builds the cut list at the 1280×720 render resolution. 5.2 COLOR
+strips bake `width`/`height` from the render resolution at `new_effect`
+time (the same trap `--check-pixels` documents), and the previous still
+built at the factory 1920×1080 and rendered at 1280×720, which pushed every
+mosaic cell off its crosshair slot.
 
 ## Framing measurement
 
