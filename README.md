@@ -1000,7 +1000,7 @@ concave grooves are free.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry cans with X-pressed panels, triple handles and red-sealed spouts on a dark studio floor - one faceted flat, one smeared glossy by smooth-everything, one crisp by-angle with its sharp edges traced in thin cyan lines - proving the post-4.1 shading contract" /></a>
+<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry cans with X-pressed panels, triple handles and red-sealed spouts on a dark studio floor - one faceted flat, one smeared glossy by smooth-everything, one crisp by-angle with its sharp edges traced in thin amber lines - proving the post-4.1 shading contract" /></a>
 </td>
 <td valign="middle">
 

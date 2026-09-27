@@ -80,8 +80,8 @@ treatment. Left, flat: the side-band corners, cap and handle break into
 facets. Middle, smooth-everywhere (the shade-smooth-and-forget AI habit):
 the flat fields smear into gradients and the pressed panels go pillowy.
 Right, by-angle (the contract): crisp creases and smooth rounds, with the
-`sharp_edge` attribute read back from the mesh and traced as thin cyan
-lines, so the viewer sees exactly which edges the data marked hard. A
+`sharp_edge` attribute read back from the mesh and traced as thin amber
+drafting lines (low emission, no bloom halo), so the viewer sees exactly which edges the data marked hard. A
 low strip light makes the highlight shapes diverge between the three.
 
 ## Run

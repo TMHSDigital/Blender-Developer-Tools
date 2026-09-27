@@ -757,7 +757,7 @@ def shade(parts, mode):
             me.set_sharp_from_angle(angle=ANGLE)
 
 
-def sharp_edge_overlay(parts, name, radius=0.0026):
+def sharp_edge_overlay(parts, name, radius=0.0019):
     """Thin tubes along every edge the `sharp_edge` attribute marks — the
     contract's own output drawn onto the by-angle can, read back from the
     mesh rather than recomputed."""
@@ -815,12 +815,15 @@ def render_still(can, path, engine):
         variants[mode] = built
     hero = [o for objs in variants.values() for o in objs]
     edges = sharp_edge_overlay(variants["byangle"], "SharpEdgeOverlay")
-    glow = bpy.data.materials.new("SharpEdgeGlow")
+    # a drafting line, not a glow: warm amber ink with just enough emission
+    # to stay legible on the shadow side of the can, no bloom halo
+    glow = bpy.data.materials.new("SharpEdgeInk")
     glow.use_nodes = True
     gb = glow.node_tree.nodes["Principled BSDF"]
-    gb.inputs["Base Color"].default_value = (0.35, 0.85, 1.0, 1.0)
-    gb.inputs["Emission Color"].default_value = (0.35, 0.85, 1.0, 1.0)
-    gb.inputs["Emission Strength"].default_value = 1.0
+    gb.inputs["Base Color"].default_value = (0.85, 0.40, 0.06, 1.0)
+    gb.inputs["Roughness"].default_value = 0.6
+    gb.inputs["Emission Color"].default_value = (1.0, 0.50, 0.08, 1.0)
+    gb.inputs["Emission Strength"].default_value = 0.25
     edges.data.materials.append(glow)
     edges.location = variants["byangle"][0].location
     edges.rotation_euler = variants["byangle"][0].rotation_euler
