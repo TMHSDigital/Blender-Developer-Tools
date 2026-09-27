@@ -1262,19 +1262,53 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    # The hero is the kit doing its job: three sections at the tile pitch,
-    # linked duplicates of the one checked mesh, so every joint in the
-    # picture is the tile fit the check asserts (posts meet band to band,
-    # KIT_CLEAR apart). A run parent carries the yaw; level on the floor,
-    # since an X tilt sinks one face of the shoes.
+    # The hero is a run that reads as one fence, not three panels parked end
+    # to end: the leading section is the checked mesh itself, and each
+    # follow-on section is a render-only copy of it with its first post
+    # group (post, cap, shoe and bands, found as mesh shells) removed,
+    # stepped at the post pitch 2*HX so its rails and brace tenon into the
+    # previous section's trailing post - one post per joint. Placed at the
+    # 1.60 m tile pitch instead, whole sections meet band to band (the tile
+    # fit the check asserts) but every joint shows a doubled post. A run
+    # parent carries the yaw; level on the floor, since an X tilt sinks one
+    # face of the shoes.
     run = bpy.data.objects.new("FenceRun", None)
     scene.collection.objects.link(run)
     run.rotation_euler.z = math.radians(-24.0)
+    follow_me = low.data.copy()
+    follow_me.name = f"{low.name}.Follow"
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(follow_me)
+        post_edge = POST_XS[0] + POST_W / 2.0 + IRON_T + 0.002
+        seen = set()
+        doomed = []
+        for v in bm.verts:
+            if v in seen:
+                continue
+            group, stack = [], [v]
+            seen.add(v)
+            while stack:
+                cur = stack.pop()
+                group.append(cur)
+                for e in cur.link_edges:
+                    o = e.other_vert(cur)
+                    if o not in seen:
+                        seen.add(o)
+                        stack.append(o)
+            if max(g.co.x for g in group) < post_edge:
+                doomed.extend(group)
+        bmesh.ops.delete(bm, geom=doomed, context="VERTS")
+        bm.to_mesh(follow_me)
+    finally:
+        bm.free()
+    pitch = 2.0 * POST_XS[1]
     sections = [low]
-    for i in (-1, 1):
-        dup = bpy.data.objects.new(f"{low.name}.Run{i:+d}", low.data)
+    low.location.x = -pitch
+    for i in (0, 1):
+        dup = bpy.data.objects.new(f"{low.name}.Run{i}", follow_me)
         scene.collection.objects.link(dup)
-        dup.location.x = i * TILE
+        dup.location.x = i * pitch
         sections.append(dup)
     for ob in sections:
         ob.parent = run

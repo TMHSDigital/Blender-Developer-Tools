@@ -17,13 +17,18 @@ rail and housed 12 mm into both posts. It clears the bottom rail at the left
 post and the top rail at the right one. Rails and kick tenon into the post
 volume.
 
-**Hero.** The still shows the kit doing its job: three linked duplicates of
-the one checked mesh at the 1.60 m pitch, so every joint in the picture is
-the tile fit the budgets assert — the paired posts meet band to band,
-`KIT_CLEAR` apart. The run stands in a render-only packed-earth strip, and
-the wood weathers in broad silver-grey patches (object-space noise) over
-the per-member tone and grain. The strip and the duplicates are staging;
-the asset sheet judges the single `FenceLow` section.
+**Hero.** The still shows a three-section run that reads as one fence,
+with one post at each joint. The leading section is the checked `FenceLow`
+mesh. Each follow-on section is a render-only copy with its first post group
+(post, cap, shoe and bands, found as mesh shells) removed, stepped at the
+post pitch `2·HX`. Its rails and brace then tenon into the previous
+section's trailing post. Placed whole at the 1.60 m tile pitch, the sections
+meet band to band, which is the tile fit the budgets assert, but every joint
+shows a doubled post. The earlier hero did exactly that. The run stands in a
+render-only packed-earth strip, and the wood weathers in broad silver-grey
+patches (object-space noise) over the per-member tone and grain. The strip
+and the trimmed copies are staging; the asset sheet judges the single
+`FenceLow` section.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check. This
