@@ -1,10 +1,13 @@
 # Wooden ladder
 
 A showcase piece, not an example. Procedural timber ladder: two stiles
-tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, a
+tapered from 64 mm to 50 mm, raked 12°, six turned hickory rungs (a
 barrel that shoulders in just under its radius and swells 14 % at
-mid-span, the profile a lathe leaves on a ladder round), iron ferrules at the top, and
-level shoe plates under sleeves that follow the rake. Then the shipped
+mid-span, the profile a lathe leaves on a ladder round) through-tenoned
+into oak rails with their end grain showing 2 mm proud of the outer faces,
+two iron tie-rods under the bottom and top rungs clamped by square nuts
+over round washers, iron ferrules at the top, and level shoe plates under
+sleeves that follow the rake. Then the shipped
 pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain,
 convex collider, Unity glTF export.
 
@@ -37,24 +40,25 @@ imported). Coplanar-pair counting matches `showcase/signpost`.
 Declared as named constants; every gate **recomputes** from the mesh,
 materials, UVs, evaluated LOD, collider, or export file.
 
-| Axis | Declared | Measured (4.5.11 / 5.2.1; 5.1.2 not re-run after the turned-rung pass) |
+| Axis | Declared | Measured (4.5.11 / 5.2.1; 5.1.2 not re-run after the tie-rod pass) |
 | --- | --- | --- |
-| Base triangles | 1800–2800 | 2680 / 2680 |
+| Base triangles | 1800–3100 | 3000 / 3000 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2194 / 0.2194 |
-| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 684 wood, 736 metal |
+| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 |
+| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 684 wood, 832 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.490, 0.376, 1.487) m ± 0.01 | (0.4897, 0.3760, 1.4870) |
+| Outer AABB | (0.490, 0.376, 1.487) m ± 0.01 | (0.4903, 0.3760, 1.4870) |
 | Grounded | `abs(zmin)` ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m | zmin 0, sole 0, rail 0.02037 |
 | Mesh hygiene | non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0 | all 0 |
-| Parts | 16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles) | 16 (2 / 6 / 2 / 2) |
+| Parts | 26 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles, 2 tie-rods, 4 washers, 4 nuts) | 26 (2 / 6 / 2 / 2) |
 | Rung depth clearance | ≥ 0.003 m inside the stile faces | 0.00800 |
-| Tenon engagement | ≥ 0.008 m past the stile inner face | 0.01399 |
-| Tenon breakout margin | ≥ 0.008 m short of the stile outer face | 0.03787 |
+| Tenon engagement | ≥ 0.008 m past the stile inner face | 0.05387 (through) |
+| Through-tenon proud | tenon end 0.001–0.004 m past the stile outer face | 0.00199 |
 | Shoe bite / cover | bite ≥ 0.010 m, cover ≥ 0.016 m | 0.02000 / 0.03800 |
 | **Rung pitch** | 6 rungs; every rung-to-rung gap within 0.002 m of the mean | 6; 0.00000 |
-| Collider tris | ≤ 180 | 24 |
-| Export | written, size > 0 | 197604 / 197584 bytes |
+| **Tie-rod seat** | 2 rods, 4 washers, 4 nuts; washer into stile and nut into washer 0.0002–0.002 m; on the rod axis within 0.0015 m; thread ≥ 0.003 m proud of each nut | 2 / 4 / 4; bite 0.00049–0.00051; axis 0; thread 0.00450 |
+| Collider tris | ≤ 180 | 92 |
+| Export | written, size > 0 | 230268 bytes (5.2.1) |
 
 Base triangles rose from **936 to 2536**. The previous mesh was two
 boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon
@@ -74,6 +78,25 @@ across the stile's 50 mm width at a readable scale (`WOOD_GRAIN_SCALE`
 34 → 95, streak stretch 0.94 → 0.985); before, about one noise period
 spanned a stile, so it rendered as flat tan. A short-range AO term darkens
 the rung housings and the wood under the iron sleeves.
+
+A third pass changed the model itself. The bare ladder was still the
+plainest object in its asset sheet, because the exact parts budget left
+every detail inside the existing shells. The parts budget is now **26**:
+two iron tie-rods run through both rails under the bottom and top rungs,
+each end clamped by a square nut over a round washer bedded on the rail's
+outer face. That is the rod a wooden ladder carries to stop the rails
+spreading off the rungs. The triangle ceiling rose **2800 → 3100** for the
+hardware (+320 triangles; the old ceiling had 120 to spare). The rungs are
+now through-tenoned: each tenon runs right through its rail and stands
+2 mm proud, so the old *breakout margin* (a blind tenon stopping short of
+the outer face) became a **through-tenon proud** band, and the tenon's
+inboard ring moved to 4 mm inside the rail so the joint audit always
+samples tenon section in the wood. The shader reads a per-shell
+`Species` attribute: rungs are pale hickory against darker oak rails, and
+end grain (the tenon ends, the rail tops) takes the finish darker. The
+rung finders now require the wood material, because the tie-rods are as
+wide as a rung. The new **tie-rod seat** budget gets its own falsifier,
+`--float-nuts` (exit 20).
 
 The joint budgets are measured per rung against each stile, from vertex
 positions in the un-raked construction frame, and the reported value is
@@ -106,7 +129,8 @@ rake toward, with its face through the rail tops, and turns the ladder
 so that side faces away from the camera.
 
 Each falsifier violates exactly one named budget. Proven on Blender
-4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries' own `--version`):
+4.5.11 LTS and 5.2.1 LTS (the binaries' own `--version`; 5.1.2 not re-run
+after the tie-rod pass):
 
 | Falsifier | Budget violated | Exit | Measured failure |
 | --- | --- | --- | --- |
@@ -117,8 +141,9 @@ Each falsifier violates exactly one named budget. Proven on Blender
 | `--fat-rungs` | Rung depth clearance | 17 | clearance 0 |
 | `--short-stile` | Shoe bite / cover | 18 | bite 0.070, cover −0.012 |
 | `--drift-rungs` | Rung pitch | 19 | worst gap 0.03287 off the mean |
+| `--float-nuts` | Tie-rod seat | 20 | seat bite −0.00350, thread 0.00050 proud |
 
-Default exit is 0 on all three.
+Default exit is 0 on both.
 
 ## Run
 
@@ -131,6 +156,7 @@ blender --background --python wooden_ladder.py -- --lift-z
 blender --background --python wooden_ladder.py -- --fat-rungs
 blender --background --python wooden_ladder.py -- --short-stile
 blender --background --python wooden_ladder.py -- --drift-rungs
+blender --background --python wooden_ladder.py -- --float-nuts
 blender --background --python wooden_ladder.py -- --output preview.webp --engine cycles
 ```
 
@@ -160,6 +186,7 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 14 | `--output` produced no file |
 | 15 | Mesh hygiene, including coplanar pairs (`--stray-vert`, `--twin-sole`) |
 | 16 | Grounded zmin, or a rail end sitting in the tread (`--lift-z`) |
-| 17 | Part count or rung-to-stile joint fit (`--fat-rungs`) |
+| 17 | Part count or rung-to-stile joint fit, including through-tenon proud (`--fat-rungs`) |
 | 18 | Shoe bite / cover (`--short-stile`) |
 | 19 | Rung pitch (`--drift-rungs`) |
+| 20 | Tie-rod seat (`--float-nuts`) |

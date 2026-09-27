@@ -13,8 +13,9 @@ mesh-hygiene budget fails, ``--twin-sole`` duplicates a shoe plate so the
 coplanar-face budget fails, ``--fat-rungs`` widens the tenons to the full
 stile depth so the rung-to-stile joint-fit budget fails,
 ``--drift-rungs`` restores the old jittered rung heights so the rung-pitch
-budget fails, and ``--short-stile`` starts the rail above the sleeve so the
-shoe-bite budget fails.
+budget fails, ``--short-stile`` starts the rail above the sleeve so the
+shoe-bite budget fails, and ``--float-nuts`` backs the tie-rod nuts off
+their washers so the tie-rod seat budget fails.
 
 Construction is closed-form; the only RNG is the seeded per-piece wood
 tone. DECIMATE COLLAPSE triangle counts
@@ -29,6 +30,7 @@ ratio band, not an exact count.
     blender --background --python wooden_ladder.py -- --short-stile
     blender --background --python wooden_ladder.py -- --twin-sole
     blender --background --python wooden_ladder.py -- --drift-rungs
+    blender --background --python wooden_ladder.py -- --float-nuts
     blender --background --python wooden_ladder.py -- --output preview.webp
 """
 import argparse
@@ -64,7 +66,9 @@ N_RUNGS = 6
 RUNG_R = 0.011
 BARREL_RATIO = 1.34
 RUNG_SEGS = 12
-RUNG_TENON = 0.014
+# Through-wedged: each tenon runs right through its rail and stands
+# TENON_PROUD past the outer face, where its end grain shows.
+TENON_PROUD = 0.002
 RUNG_SHOULDER = 0.90             # barrel radius at the shoulders, x r_barrel
 RUNG_SWELL = 1.14                # barrel radius at mid-span, x r_barrel
 # Rungs sit at one even pitch: a climber's feet find them blind, so height
@@ -89,11 +93,33 @@ SOLE_H = 0.032
 SOLE_PAD = 0.008
 RAKE = math.radians(12.0)
 BBOX_TOL = 0.01
-# 2 stiles + 6 rungs + 2 shoe sleeves + 2 cap sleeves + 2 cap plates + 2 soles.
-PART_COUNT = 16
+# 2 stiles + 6 rungs + 2 shoe sleeves + 2 cap sleeves + 2 cap plates + 2 soles
+# + 2 iron tie-rods + 4 washers + 4 square nuts.
+PART_COUNT = 26
+# Iron tie-rods run through both stiles just under the bottom and top rungs,
+# the rod every wooden ladder carries to keep the rails from spreading off
+# the tenons. Each end is clamped by a square nut over a round washer bedded
+# on the stile's outer face.
+TIE_RUNGS = (0, N_RUNGS - 1)     # rung indices the rods sit under
+TIE_DROP = 0.036                 # rod axis below the rung axis
+TIE_R = 0.0065
+TIE_SEGS = 8
+TIE_PROUD = 0.016                # rod end past the stile outer face
+WASHER_R = 0.016
+WASHER_T = 0.0025
+WASHER_SEGS = 12
+NUT_HALF = 0.0125                # half the square nut's flat-to-flat width
+NUT_T = 0.010                    # nut thickness along the rod
+SEAT_SINK = 0.0005               # washer into the wood, nut into the washer
+SEAT_BITE_MIN = 0.0002           # seated: each bearing face at least this far in
+SEAT_BITE_MAX = 0.0020           # ... and not buried deeper than this
+NUT_AXIS_TOL = 0.0015            # washer / nut centre on the rod axis (y, z)
+TIE_THROUGH_MIN = 0.003          # rod thread end proud of each nut's outer face
+FLOAT_NUTS = 0.004               # --float-nuts: nuts backed off their washers
 RUNG_DEPTH_CLEARANCE = 0.003
 TENON_ENGAGE_MIN = 0.008
-TENON_BREAKOUT_MIN = 0.008
+TENON_PROUD_MIN = 0.001          # through: tenon end past the outer face
+TENON_PROUD_MAX = 0.004          # ... and not a stub sticking out
 SHOE_BITE_MIN = 0.010
 SHOE_COVER_MIN = 0.016
 RAIL_ZMIN_MIN = 0.012
@@ -107,7 +133,9 @@ LIFT_Z = 0.05
 OUTER_SIZE = (0.490, 0.376, 1.487)
 
 BASE_TRIS_MIN = 1800
-BASE_TRIS_MAX = 2800
+# Raised from 2800 for the two tie-rods, four washers and four nuts (+320 tris);
+# the old ceiling left 120 triangles of headroom, less than the hardware.
+BASE_TRIS_MAX = 3100
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -277,13 +305,15 @@ def add_turned_rung(bm, z, x_left, x_right, tenon, r_tenon, r_barrel, segs, mat_
     under the barrel radius and swells to RUNG_SWELL at mid-span, the
     profile a lathe leaves on a ladder round (one extra ring per rung).
     """
+    # the inboard tenon ring sits 4 mm inside the rail so the joint audit
+    # always samples tenon section inside the wood (the end is past it)
     xs = (
         x_left - tenon,
-        x_left - 0.0015,
+        x_left - 0.004,
         x_left + 0.004,
         0.5 * (x_left + x_right),
         x_right - 0.004,
-        x_right + 0.0015,
+        x_right + 0.004,
         x_right + tenon,
     )
     shoulder = r_barrel * RUNG_SHOULDER
@@ -375,6 +405,7 @@ def build_ladder_mesh(
     short_stile=False,
     twin_sole=False,
     drift_rungs=False,
+    float_nuts=False,
 ):
     """Raked tapered rails, turned rungs, sleeve shoes with level soles.
 
@@ -412,7 +443,7 @@ def build_ladder_mesh(
                 z,
                 inner_x(z, -1.0),
                 inner_x(z, 1.0),
-                RUNG_TENON,
+                2.0 * half_w(z) + TENON_PROUD,
                 rung_radius,
                 rung_radius * BARREL_RATIO * RUNG_BARREL_SCALE[i],
                 RUNG_SEGS,
@@ -519,6 +550,35 @@ def build_ladder_mesh(
                     clamp_overlap=True,
                 )
                 metal_faces.update(bevelled.get("faces") or [])
+
+        # Iron tie-rods under the bottom and top rungs, through both stiles,
+        # each end clamped by a square nut seated on the stile's outer face.
+        # Built after the bevels: rods and nuts carry their own facets.
+        before = set(bm.faces)
+        nut_gap = FLOAT_NUTS if float_nuts else 0.0
+        for i in TIE_RUNGS:
+            t = i / (N_RUNGS - 1)
+            z = z_lo + t * (z_hi - z_lo) - TIE_DROP
+            outer = CENTER + half_w(z)
+            span = 2.0 * (outer + TIE_PROUD)
+            add_cylinder(bm, (0.0, 0.0, z), TIE_R, span, TIE_SEGS, METAL_IDX,
+                         euler=(0.0, math.radians(90.0), 0.0))
+            for sign in (-1.0, 1.0):
+                washer_in = outer - SEAT_SINK
+                add_cylinder(bm, (sign * (washer_in + WASHER_T * 0.5), 0.0, z),
+                             WASHER_R, WASHER_T, WASHER_SEGS, METAL_IDX,
+                             euler=(0.0, math.radians(90.0), 0.0))
+                inner_face = washer_in + WASHER_T - SEAT_SINK + nut_gap
+                xc = sign * (inner_face + NUT_T * 0.5)
+                # a four-segment cone lies on the rod axis as a diamond;
+                # turning it 45 deg about that axis levels the flats
+                nut = add_cone(bm, (0.0, 0.0, 0.0), NUT_HALF * math.sqrt(2.0),
+                               NUT_HALF * math.sqrt(2.0), NUT_T, 4, METAL_IDX,
+                               euler=(0.0, math.radians(90.0), 0.0))
+                spin = Euler((math.radians(45.0), 0.0, 0.0)).to_matrix()
+                for v in nut:
+                    v.co = spin @ v.co + Vector((xc, 0.0, z))
+        metal_faces.update(set(bm.faces) - before)
 
         rake = Euler((RAKE, 0.0, 0.0)).to_matrix()
         for v in bm.verts:
@@ -810,7 +870,7 @@ def joint_audit(me):
         "soles": len(soles),
         "clearance": -1.0,
         "engage": -1.0,
-        "breakout": -1.0,
+        "proud": -1.0,
         "shoe_bite": -1.0,
         "shoe_cover": -1.0,
         "rail_zmin": -1.0,
@@ -820,7 +880,7 @@ def joint_audit(me):
         return empty
     clearance = 1e9
     engage = 1e9
-    breakout = 1e9
+    proud = 1e9
     for rung in rungs:
         rz = sum(p.z for p in rung["local"]) / len(rung["local"])
         rx0 = min(p.x for p in rung["local"])
@@ -838,10 +898,10 @@ def joint_audit(me):
             clearance = min(clearance, (stile_dy - rung_dy) * 0.5)
             if x1 < 0.0:
                 engage = min(engage, x1 - rx0)
-                breakout = min(breakout, rx0 - x0)
+                proud = min(proud, x0 - rx0)
             else:
                 engage = min(engage, rx1 - x0)
-                breakout = min(breakout, x1 - rx1)
+                proud = min(proud, rx1 - x1)
     shoe_bite = 1e9
     shoe_cover = 1e9
     for stile in stiles:
@@ -857,13 +917,78 @@ def joint_audit(me):
     empty.update({
         "clearance": clearance,
         "engage": engage,
-        "breakout": breakout,
+        "proud": proud,
         "shoe_bite": shoe_bite,
         "shoe_cover": shoe_cover,
         "rail_zmin": rail_zmin,
         "sole_zmin": sole_zmin,
     })
     return empty
+
+
+def tie_audit(me):
+    """Tie-rod hardware, recomputed from vertex positions (un-raked frame).
+
+    Rods are metal shells long in X and thin in Z; washers are thin metal
+    discs and nuts thicker metal blocks, both above the shoes. Every washer
+    and nut must sit on its rod's axis. Each washer beds a hair into its
+    stile's outer face and each nut into its washer's outboard face: seated,
+    not floating off, not buried. Each rod's thread end must stand proud of
+    both nuts, so the nuts are on the rod at all.
+    """
+    recs = shell_records(me)
+    stiles, rods, washers, nuts = [], [], [], []
+    for rec in recs:
+        loc = rec["local"]
+        dx = max(p.x for p in loc) - min(p.x for p in loc)
+        dy = max(p.y for p in loc) - min(p.y for p in loc)
+        dz = max(p.z for p in loc) - min(p.z for p in loc)
+        if rec["mat"] == WOOD_IDX and dz > 0.8:
+            stiles.append(loc)
+        elif rec["mat"] == METAL_IDX and dx > 0.3 and dz < 0.02:
+            rods.append(loc)
+        elif rec["mat"] == METAL_IDX and min(p.z for p in loc) > 0.1 and dx < 0.02:
+            if dx < 0.0045 and 0.02 < dy < 0.04 and 0.02 < dz < 0.04:
+                washers.append(loc)
+            elif dx > 0.005 and dy < 0.03 and dz < 0.03:
+                nuts.append(loc)
+    out = {"rods": len(rods), "washers": len(washers), "nuts": len(nuts),
+           "bite_min": -1.0, "bite_max": 99.0, "axis": 99.0, "through": -1.0}
+    ends = 2 * len(TIE_RUNGS)
+    if (len(stiles) != 2 or len(rods) != len(TIE_RUNGS)
+            or len(washers) != ends or len(nuts) != ends):
+        return out
+    stiles.sort(key=lambda s: sum(p.x for p in s))
+
+    def mean(pts, k):
+        return sum(p[k] for p in pts) / len(pts)
+
+    bite_min, bite_max, axis, through = 1e9, -1e9, 0.0, 1e9
+    for washer in washers:
+        wx, wy, wz = mean(washer, 0), mean(washer, 1), mean(washer, 2)
+        rod = min(rods, key=lambda r: abs(mean(r, 2) - wz))
+        axis = max(axis, abs(wy - mean(rod, 1)), abs(wz - mean(rod, 2)))
+        # the washer's inboard face bedded into the stile's outer face
+        if wx < 0.0:
+            bite = max(p.x for p in washer) - _span_at(stiles[0], wz)[0]
+        else:
+            bite = _span_at(stiles[1], wz)[1] - min(p.x for p in washer)
+        bite_min, bite_max = min(bite_min, bite), max(bite_max, bite)
+        # the nut on this end bears on the washer's outboard face
+        side = [n for n in nuts if (mean(n, 0) < 0.0) == (wx < 0.0)]
+        nut = min(side, key=lambda n: abs(mean(n, 2) - wz))
+        axis = max(axis, abs(mean(nut, 1) - mean(rod, 1)),
+                   abs(mean(nut, 2) - mean(rod, 2)))
+        if wx < 0.0:
+            bite = max(p.x for p in nut) - min(p.x for p in washer)
+            through = min(through, min(p.x for p in nut) - min(p.x for p in rod))
+        else:
+            bite = max(p.x for p in washer) - min(p.x for p in nut)
+            through = min(through, max(p.x for p in rod) - max(p.x for p in nut))
+        bite_min, bite_max = min(bite_min, bite), max(bite_max, bite)
+    out.update({"bite_min": bite_min, "bite_max": bite_max, "axis": axis,
+                "through": through})
+    return out
 
 
 def _vertex_shells(me):
@@ -891,6 +1016,28 @@ def _vertex_shells(me):
     return groups
 
 
+def _wood_rung_shells(me):
+    """Vertex positions of every rung: the WOOD shells wide in X, short in Z.
+
+    The material test matters: the iron tie-rods are just as wide and
+    shorter still, and must not be read as rungs.
+    """
+    vert_mat = {}
+    for poly in me.polygons:
+        for v in poly.vertices:
+            vert_mat.setdefault(v, poly.material_index)
+    rungs = []
+    for g in _vertex_shells(me):
+        if vert_mat.get(g[0]) != WOOD_IDX:
+            continue
+        pts = [me.vertices[i].co for i in g]
+        dx = max(p.x for p in pts) - min(p.x for p in pts)
+        dz = max(p.z for p in pts) - min(p.z for p in pts)
+        if dx > 0.25 and dz < 0.08:
+            rungs.append(pts)
+    return rungs
+
+
 def rung_pitch(me):
     """Worst deviation of a rung-to-rung gap from the mean gap, metres.
 
@@ -898,12 +1045,8 @@ def rung_pitch(me):
     height is the mean Z of its vertices.
     """
     zs = []
-    for g in _vertex_shells(me):
-        pts = [me.vertices[i].co for i in g]
-        dx = max(p.x for p in pts) - min(p.x for p in pts)
-        dz = max(p.z for p in pts) - min(p.z for p in pts)
-        if dx > 0.25 and dz < 0.08:
-            zs.append(sum(p.z for p in pts) / len(pts))
+    for pts in _wood_rung_shells(me):
+        zs.append(sum(p.z for p in pts) / len(pts))
     zs.sort()
     if len(zs) < 3:
         return len(zs), 99.0
@@ -938,22 +1081,28 @@ def paint_planks(me):
     """
     tone = [0.5] * len(me.polygons)
     grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    species = [0.0] * len(me.polygons)
     owner = {}
     rng = random.Random(TONE_SEED)
     for g in _vertex_shells(me):
         pts = [me.vertices[i].co.copy() for i in g]
         d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
         t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        # rungs run across X: turned from pale hickory, the rails from oak
+        s = 1.0 if abs(d.x) > 0.8 else 0.0
         for i in g:
-            owner[i] = (t, tuple(d))
+            owner[i] = (t, tuple(d), s)
     for poly in me.polygons:
-        t, d = owner[poly.vertices[0]]
+        t, d, s = owner[poly.vertices[0]]
         tone[poly.index] = t
         grain[poly.index] = d
+        species[poly.index] = s
     a = me.attributes.new("PlankTone", "FLOAT", "FACE")
     a.data.foreach_set("value", tone)
     b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
     b.data.foreach_set("vector", [c for v in grain for c in v])
+    c = me.attributes.new("Species", "FLOAT", "FACE")
+    c.data.foreach_set("value", species)
 
 
 def _sock(sockets, identifier):
@@ -999,10 +1148,51 @@ def wood_material(name):
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.38
-    ramp.color_ramp.elements[0].color = (0.055, 0.030, 0.014, 1.0)
+    ramp.color_ramp.elements[0].color = (0.030, 0.015, 0.007, 1.0)
     ramp.color_ramp.elements[1].position = 0.62
-    ramp.color_ramp.elements[1].color = (0.34, 0.20, 0.10, 1.0)
+    ramp.color_ramp.elements[1].color = (0.19, 0.095, 0.040, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    # rungs are pale hickory against the darker oak rails (``Species``)
+    hickory = nt.nodes.new("ShaderNodeValToRGB")
+    hickory.color_ramp.elements[0].position = 0.38
+    hickory.color_ramp.elements[0].color = (0.16, 0.10, 0.052, 1.0)
+    hickory.color_ramp.elements[1].position = 0.62
+    hickory.color_ramp.elements[1].color = (0.58, 0.42, 0.25, 1.0)
+    nt.links.new(noise.outputs["Fac"], hickory.inputs["Fac"])
+    species = nt.nodes.new("ShaderNodeAttribute")
+    species.attribute_name = "Species"
+    timber = nt.nodes.new("ShaderNodeMix")
+    timber.data_type = "RGBA"
+    nt.links.new(species.outputs["Fac"], _sock(timber.inputs, "Factor_Float"))
+    nt.links.new(ramp.outputs["Color"], _sock(timber.inputs, "A_Color"))
+    nt.links.new(hickory.outputs["Color"], _sock(timber.inputs, "B_Color"))
+    # end grain (the face looks down the grain: the through-tenon ends on
+    # the rail sides, the rail tops) drinks finish and reads darker
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    to_obj = nt.nodes.new("ShaderNodeVectorTransform")
+    to_obj.vector_type = "NORMAL"
+    to_obj.convert_from = "WORLD"
+    to_obj.convert_to = "OBJECT"
+    nt.links.new(geo.outputs["Normal"], to_obj.inputs["Vector"])
+    end_dot = nt.nodes.new("ShaderNodeVectorMath")
+    end_dot.operation = "DOT_PRODUCT"
+    nt.links.new(to_obj.outputs["Vector"], end_dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], end_dot.inputs[1])
+    end_abs = nt.nodes.new("ShaderNodeMath")
+    end_abs.operation = "ABSOLUTE"
+    nt.links.new(end_dot.outputs["Value"], end_abs.inputs[0])
+    end_shade = nt.nodes.new("ShaderNodeMapRange")
+    end_shade.inputs["From Min"].default_value = 0.80
+    end_shade.inputs["From Max"].default_value = 0.95
+    end_shade.inputs["To Min"].default_value = 1.0
+    end_shade.inputs["To Max"].default_value = 0.42
+    nt.links.new(end_abs.outputs["Value"], end_shade.inputs["Value"])
+    end_mix = nt.nodes.new("ShaderNodeMix")
+    end_mix.data_type = "RGBA"
+    end_mix.blend_type = "MULTIPLY"
+    _sock(end_mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(_sock(timber.outputs, "Result_Color"), _sock(end_mix.inputs, "A_Color"))
+    nt.links.new(end_shade.outputs["Result"], _sock(end_mix.inputs, "B_Color"))
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
     gain.inputs[1].default_value = 1.1
@@ -1012,7 +1202,7 @@ def wood_material(name):
     mix.data_type = "RGBA"
     mix.blend_type = "MULTIPLY"
     _sock(mix.inputs, "Factor_Float").default_value = 1.0
-    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(_sock(end_mix.outputs, "Result_Color"), _sock(mix.inputs, "A_Color"))
     nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
     # handling grime: short-range AO darkens where rungs enter the stiles
     # and under the iron sleeves, so the joints read at thumbnail scale
@@ -1041,8 +1231,8 @@ def ladder_materials():
     """(wood, iron): shared by the check, the render and inspection."""
     wood = wood_material("LadderWood")
     metal = principled(
-        "LadderMetal", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
-        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+        "LadderMetal", (0.085, 0.082, 0.078, 1.0), 0.80, 0.42,
+        noise_scale=18.0, wear=(0.11, 0.050, 0.024, 1.0),
     )
     return wood, metal
 
@@ -1186,6 +1376,7 @@ def check(
     short_stile=False,
     twin_sole=False,
     drift_rungs=False,
+    float_nuts=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     # Falsification: a tenon as deep as the stile, which breaks the front
@@ -1199,6 +1390,7 @@ def check(
         short_stile=short_stile,
         twin_sole=twin_sole,
         drift_rungs=drift_rungs,
+        float_nuts=float_nuts,
     )
     high = build_ladder_mesh(
         "LadderHigh",
@@ -1208,6 +1400,7 @@ def check(
         short_stile=short_stile,
         twin_sole=twin_sole,
         drift_rungs=drift_rungs,
+        float_nuts=float_nuts,
     )
     if lift_z:
         low.location.z += LIFT_Z
@@ -1300,11 +1493,17 @@ def check(
     joint = joint_audit(low.data)
     n_rungs, pitch_dev = rung_pitch(low.data)
     print(f"measured rung_pitch rungs={n_rungs} worst_dev={pitch_dev:.5f}")
+    tie = tie_audit(low.data)
+    print(
+        f"measured tie_rods rods={tie['rods']} washers={tie['washers']} "
+        f"nuts={tie['nuts']} seat_bite={tie['bite_min']:.5f}..{tie['bite_max']:.5f} "
+        f"axis_off={tie['axis']:.5f} thread_proud={tie['through']:.5f}"
+    )
     print(
         f"measured joints parts={joint['parts']} stiles={joint['stiles']} "
         f"rungs={joint['rungs']} bands={joint['bands']} soles={joint['soles']} "
         f"clearance={joint['clearance']:.5f} engage={joint['engage']:.5f} "
-        f"breakout={joint['breakout']:.5f} shoe_bite={joint['shoe_bite']:.5f} "
+        f"tenon_proud={joint['proud']:.5f} shoe_bite={joint['shoe_bite']:.5f} "
         f"shoe_cover={joint['shoe_cover']:.5f} rail_zmin={joint['rail_zmin']:.5f} "
         f"sole_zmin={joint['sole_zmin']:.5f}"
     )
@@ -1416,10 +1615,10 @@ def check(
             f"tenon engagement {joint['engage']:.5f} < {TENON_ENGAGE_MIN}",
             17,
         ), None, None, None, None, None
-    if joint["breakout"] < TENON_BREAKOUT_MIN:
+    if not (TENON_PROUD_MIN <= joint["proud"] <= TENON_PROUD_MAX):
         return fail(
-            f"tenon breakout margin {joint['breakout']:.5f} < "
-            f"{TENON_BREAKOUT_MIN}",
+            f"through-tenon proud {joint['proud']:.5f} not in "
+            f"[{TENON_PROUD_MIN}, {TENON_PROUD_MAX}]",
             17,
         ), None, None, None, None, None
     if joint["shoe_bite"] < SHOE_BITE_MIN or joint["shoe_cover"] < SHOE_COVER_MIN:
@@ -1433,6 +1632,23 @@ def check(
             f"rung pitch: {n_rungs} rungs, worst gap {pitch_dev:.5f} off the mean "
             f"> {RUNG_PITCH_TOL} (--drift-rungs is the designed fail)",
             19,
+        ), None, None, None, None, None
+    if (
+        tie["rods"] != len(TIE_RUNGS)
+        or tie["washers"] != 2 * len(TIE_RUNGS)
+        or tie["nuts"] != 2 * len(TIE_RUNGS)
+        or tie["bite_min"] < SEAT_BITE_MIN
+        or tie["bite_max"] > SEAT_BITE_MAX
+        or tie["axis"] > NUT_AXIS_TOL
+        or tie["through"] < TIE_THROUGH_MIN
+    ):
+        return fail(
+            f"tie-rod seat: rods {tie['rods']} washers {tie['washers']} nuts "
+            f"{tie['nuts']} seat bite {tie['bite_min']:.5f}..{tie['bite_max']:.5f} "
+            f"not in [{SEAT_BITE_MIN}, {SEAT_BITE_MAX}], axis off {tie['axis']:.5f}, "
+            f"thread proud {tie['through']:.5f} < {TIE_THROUGH_MIN}? "
+            "(--float-nuts is the designed fail)",
+            20,
         ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
@@ -1502,12 +1718,7 @@ def rope_coil(low, turns=3, loop_r=0.135, rope_r=0.012):
     rope rule asks.
     """
     me = low.data
-    rungs = []
-    for g in _vertex_shells(me):
-        pts = [me.vertices[i].co for i in g]
-        if (max(p.x for p in pts) - min(p.x for p in pts) > 0.25
-                and max(p.z for p in pts) - min(p.z for p in pts) < 0.08):
-            rungs.append(pts)
+    rungs = _wood_rung_shells(me)
     rungs.sort(key=lambda pts: sum(p.z for p in pts))
     rung = rungs[-2]
     rz = sum(p.z for p in rung) / len(rung)
@@ -1745,6 +1956,11 @@ def main():
         action="store_true",
         help="falsification: the old jittered rung heights",
     )
+    p.add_argument(
+        "--float-nuts",
+        action="store_true",
+        help="falsification: back the tie-rod nuts off the stile faces",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1755,6 +1971,7 @@ def main():
         short_stile=args.short_stile,
         twin_sole=args.twin_sole,
         drift_rungs=args.drift_rungs,
+        float_nuts=args.float_nuts,
     )
     if code:
         return code
