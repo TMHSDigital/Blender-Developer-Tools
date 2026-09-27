@@ -125,6 +125,138 @@ PLATE_BOARD_MARGIN = 0.004
 PLANK_TONE_JITTER = 0.28
 TONE_SEED = 29
 
+# Stencilled cargo marks on the front long side (-Y). Surface only: a 5x7
+# bitmap font painted into a small image covering the side in object space,
+# cubic-filtered and thresholded into rounded stencil strokes, masked to the
+# -Y faces. Each line is centred on one long slat (index from the bottom,
+# replayed from the same seeded _span_layout that places the slats) and is
+# shorter than the slat, so its baseline runs along the board rather than
+# across a gap: a line straddling a gap reads as sloping in perspective.
+STENCIL_LINES = (("PORT ROYAL", 0.0, 3), ("NO 17", 0.0, 1))
+STENCIL_PX = 0.0092           # metres per font pixel: 7 px = 64 mm < slat
+STENCIL_REGION = (-0.47, 0.47, 0.10, 0.56)   # object-space x0, x1, z0, z1
+
+# 5x7 bitmap glyphs, top row first; only the characters STENCIL_LINES uses.
+GLYPHS = {
+    "A": ("01110", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "L": ("10000", "10000", "10000", "10000", "10000", "10000", "11111"),
+    "N": ("10001", "11001", "10101", "10011", "10001", "10001", "10001"),
+    "O": ("01110", "10001", "10001", "10001", "10001", "10001", "01110"),
+    "P": ("11110", "10001", "10001", "11110", "10000", "10000", "10000"),
+    "R": ("11110", "10001", "10001", "11110", "10100", "10010", "10001"),
+    "T": ("11111", "00100", "00100", "00100", "00100", "00100", "00100"),
+    "Y": ("10001", "10001", "01010", "00100", "00100", "00100", "00100"),
+    "1": ("00100", "01100", "00100", "00100", "00100", "00100", "01110"),
+    "7": ("11111", "00001", "00010", "00100", "01000", "01000", "01000"),
+    " ": ("00000",) * 7,
+}
+
+
+def long_slat_centres():
+    """World-z centre of each long side slat, bottom to top.
+
+    Replays the seeded draws build_crate_mesh makes before the long slats
+    (floor, then lid), so the stencil lands on the boards actually built.
+    """
+    ix, _iy, iz = INNER
+    rng = random.Random(SLAT_SEED)
+    _span_layout(N_FLOOR, ix, rng)
+    _span_layout(N_LID, ix + POST * 0.5, rng)
+    long_c, _long_w = _span_layout(N_LONG, iz - 0.04, rng)
+    return [SKID_H + 0.02 + iz / 2.0 + c for c in long_c]
+
+
+def stencil_image():
+    """Paint STENCIL_LINES into a greyscale image covering STENCIL_REGION."""
+    x0, x1, z0, z1 = STENCIL_REGION
+    w = int(round((x1 - x0) / STENCIL_PX))
+    h = int(round((z1 - z0) / STENCIL_PX))
+    buf = [0.0] * (w * h)
+    slat_z = long_slat_centres()
+    for text, cx, board in STENCIL_LINES:
+        cz = slat_z[board]
+        cols = len(text) * 6 - 1
+        px0 = int(round((cx - x0) / STENCIL_PX - cols / 2.0))
+        pz0 = int(round((cz - z0) / STENCIL_PX - 3.5))
+        for k, ch in enumerate(text):
+            rows = GLYPHS[ch]
+            for r in range(7):
+                for c in range(5):
+                    if rows[r][c] == "1":
+                        px, pz = px0 + k * 6 + c, pz0 + (6 - r)
+                        if 0 <= px < w and 0 <= pz < h:
+                            buf[pz * w + px] = 1.0
+    img = bpy.data.images.new("CrateStencil", w, h, alpha=False)
+    img.colorspace_settings.name = "Non-Color"
+    img.pixels.foreach_set([c for v in buf for c in (v, v, v, 1.0)])
+    return img
+
+
+def add_stencil(mat):
+    """Spray STENCIL_LINES over the wood colour on the -Y faces."""
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    base = bsdf.inputs["Base Color"].links[0].from_socket
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    x0, x1, z0, z1 = STENCIL_REGION
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+    uu = nt.nodes.new("ShaderNodeMapRange")
+    uu.inputs["From Min"].default_value = x0
+    uu.inputs["From Max"].default_value = x1
+    nt.links.new(sep.outputs["X"], uu.inputs["Value"])
+    vv = nt.nodes.new("ShaderNodeMapRange")
+    vv.inputs["From Min"].default_value = z0
+    vv.inputs["From Max"].default_value = z1
+    nt.links.new(sep.outputs["Z"], vv.inputs["Value"])
+    uvw = nt.nodes.new("ShaderNodeCombineXYZ")
+    nt.links.new(uu.outputs["Result"], uvw.inputs["X"])
+    nt.links.new(vv.outputs["Result"], uvw.inputs["Y"])
+    img = nt.nodes.new("ShaderNodeTexImage")
+    img.image = stencil_image()
+    img.interpolation = "Cubic"
+    img.extension = "CLIP"
+    # never the bake target: the normal bake writes into the active, selected
+    # image node of each material, and this one is paint
+    img.select = False
+    nt.links.new(uvw.outputs["Vector"], img.inputs["Vector"])
+    stroke = nt.nodes.new("ShaderNodeMapRange")
+    stroke.inputs["From Min"].default_value = 0.26
+    stroke.inputs["From Max"].default_value = 0.44
+    nt.links.new(img.outputs["Color"], stroke.inputs["Value"])
+    # overspray: a fine noise eats into the paint so it reads as sprayed
+    spray = nt.nodes.new("ShaderNodeTexNoise")
+    spray.inputs["Scale"].default_value = 90.0
+    spray.inputs["Detail"].default_value = 4.0
+    nt.links.new(coord.outputs["Object"], spray.inputs["Vector"])
+    bite = nt.nodes.new("ShaderNodeMapRange")
+    bite.inputs["From Min"].default_value = 0.30
+    bite.inputs["From Max"].default_value = 0.55
+    bite.inputs["To Min"].default_value = 0.72
+    bite.inputs["To Max"].default_value = 1.0
+    nt.links.new(spray.outputs["Fac"], bite.inputs["Value"])
+    nsep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Normal"], nsep.inputs["Vector"])
+    front = nt.nodes.new("ShaderNodeMath")
+    front.operation = "LESS_THAN"
+    front.inputs[1].default_value = -0.9
+    nt.links.new(nsep.outputs["Y"], front.inputs[0])
+    fac = nt.nodes.new("ShaderNodeMath")
+    fac.operation = "MULTIPLY"
+    nt.links.new(stroke.outputs["Result"], fac.inputs[0])
+    nt.links.new(front.outputs["Value"], fac.inputs[1])
+    fac2 = nt.nodes.new("ShaderNodeMath")
+    fac2.operation = "MULTIPLY"
+    nt.links.new(fac.outputs["Value"], fac2.inputs[0])
+    nt.links.new(bite.outputs["Result"], fac2.inputs[1])
+    paint = nt.nodes.new("ShaderNodeMix")
+    paint.data_type = "RGBA"
+    _sock(paint.inputs, "B_Color").default_value = (0.022, 0.020, 0.019, 1.0)
+    nt.links.new(fac2.outputs["Value"], _sock(paint.inputs, "Factor_Float"))
+    nt.links.new(base, _sock(paint.inputs, "A_Color"))
+    nt.links.new(_sock(paint.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    nt.nodes.active = bsdf
+
 
 def eevee_engine_id():
     """EEVEE id: 'BLENDER_EEVEE' on 5.0+, 'BLENDER_EEVEE_NEXT' on 4.2-4.5.
@@ -719,6 +851,7 @@ def wood_material(name):
 def crate_materials():
     """(wood, iron): shared by the check, the render and inspection."""
     wood = wood_material("CrateWood")
+    add_stencil(wood)
     metal = principled(
         "CrateMetal", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
         noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
@@ -1436,13 +1569,18 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-48.0)
+    # The camera sits at about -51 deg azimuth. Turning the crate +15 deg puts
+    # the stencilled long side (-Y) 24 deg off the view axis and the handle
+    # end (+X) 66 deg off it: a three-quarter view led by the lettering. At
+    # -48 the side was edge-on; at -20 it was 59 deg off-axis and the
+    # stencil foreshortened into a steep italic that read as a mapping error.
+    low.rotation_euler.z = math.radians(15.0)
     low.rotation_euler.x = math.radians(4.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1476,7 +1614,7 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.8), 680.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Key", (-3.6, -5.0, 5.8), 880.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
     light("Fill", (5.0, -3.6, 2.6), 48.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 

@@ -9,8 +9,8 @@
       "name": "shipping-crate",
       "dir": "showcase/shipping-crate",
       "teaches": "A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A grained wooden shipping crate with nailed iron corner straps, horizontal planks and a metal bail handle mounted on one end board.",
-      "witnessesFix": "Recomputed: 2508 tris, two materials with 1170 wood and 280 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 76 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.",
+      "alt": "A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end.",
+      "witnessesFix": "Recomputed: 3388 tris, two materials with 1170 wood and 904 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 116 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.",
       "hero": "docs/gallery/assets/shipping-crate-hero.webp",
       "preview": "showcase/shipping-crate/preview.webp",
       "tags": [

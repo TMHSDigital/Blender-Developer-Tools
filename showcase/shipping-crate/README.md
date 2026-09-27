@@ -34,7 +34,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.146, 0.726, 0.612) m ± 0.015 | (1.1460, 0.7260, 0.6120), zmin 0 |
 | Collider tris | ≤ 220 | 116 |
-| Export | written, size > 0 | 273816 / 273816 / 273800 bytes |
+| Export | written, size > 0 | 274624 (4.5.11) / 274680 (5.2.1) bytes |
 
 Base triangles rose from **624 to 2508** in the quality pass: the old
 beveled cube with glued-on slats became a post-and-slat crate with
@@ -103,6 +103,30 @@ The inspection sheet found the iron and the handles built the way
 The right-angle-edge budget from `crate-stack` is not applied here: the
 handle bail's pipe ends are square discs buried in the mounting plates,
 so "every box is chamfered" does not hold for this piece.
+
+### Third pass (stencil, hero angle)
+
+The crate read as a plain plank box: nothing on it said what it was for.
+Its front long side (-Y) now carries stencilled cargo marks, PORT ROYAL
+over NO 17. They are surface only: a 5x7 bitmap font painted into a small
+image covering the side in object space, cubic-filtered and thresholded
+into rounded stencil strokes, bitten by a fine overspray noise, and masked
+to the -Y faces. Each line is centred on one long slat, replayed from the
+same seeded `_span_layout` that places the slats, and its 64 mm cap height
+fits inside the board, so the baseline runs along the board. The first cut
+let both lines straddle a gap, which in perspective read as lettering
+sloping across the slats. The image node is deselected so the normal bake
+never targets it. Geometry, triangles, material face counts and every budget
+are unchanged; the glTF grows by about 800 bytes.
+
+The hero turned the crate -48 degrees, which put the long side
+edge-on. The camera sits at about -51 degrees azimuth, so the crate now
+turns +15 degrees: the stencilled side is 24 degrees off the view axis
+and the handle end 66 degrees, a three-quarter view led by the
+lettering. An intermediate -20 degrees left the side 59 degrees
+off-axis, where the stencil foreshortened into a steep italic. The key
+is brighter and the stage is 60 m (the 14 m grid could show its
+edge).
 
 ### Falsifiers
 
