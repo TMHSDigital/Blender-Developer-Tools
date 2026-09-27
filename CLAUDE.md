@@ -24,7 +24,8 @@ snippets/<snippet-name>.py     - Standalone code patterns, 27 total
 examples/<name>/               - Runnable smoke-gated examples, 60 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 36 pieces (sibling of examples/; see showcase/README.md)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
-scripts/site/                  - Vendored landing-page build (Jinja2)
+scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
+tests/check_site_links.py      - Internal link/anchor/alt gate over the built site (docs/)
 docs/gallery/                  - Committed generated gallery pages + hero renders
 VERSION                        - Source of truth for the repo version
 ```
@@ -190,6 +191,18 @@ This is a content repository, no build step for skills/rules/snippets/templates 
 `SKILL.md`, `.mdc`, `.py`, and `.toml` files directly. The website is generated:
 `scripts/build_gallery.py` (stdlib) regenerates `docs/gallery/` and must be re-run after
 touching `examples/`; the landing page builds from `scripts/site/` at deploy time.
+
+- **One palette:** `scripts/site/tokens.css` is the single `:root` for every published
+  page — the landing and 404 templates `{% include %}` it and `build_gallery.py` inlines
+  it. Change colors or type there, never in a hand-copied `:root`; a token edit changes
+  all 89 gallery pages, so regenerate and commit `docs/gallery/`.
+- **Link gate:** after building both (`python scripts/site/build_site.py --repo-root . --out docs`
+  then `python scripts/build_gallery.py`), run `python tests/check_site_links.py`. It resolves
+  every internal `href`/`src`/`#anchor` across all pages and requires `alt` on every `<img>`;
+  the `validate-site` job and the deploy both run it. Gallery hash fragments with `=`
+  (`#tag=a,b`, `#k=showcase`, `#s=az`) are filter state, not anchors, and are skipped.
+- **"What's new" needs history:** the landing page dates recent additions from `git log`;
+  a shallow clone hides the strip, which is why `pages.yml` checks out with `fetch-depth: 0`.
 
 The AI consumes content via:
 
