@@ -20,10 +20,15 @@ so that framing could not be gated at all.
 
 The render path now stages a **copy** of the checked grid. Its boundary is
 extruded straight down to a flat base 0.30 m below the deepest trough, so the
-wave is the top face of a cast tile standing on the studio floor, framed whole.
-The checked `Wave` object is left exactly as asserted and hidden from the
-render. The copy is render-only and never enters `check()`. Measured framing on
-5.2.1: fill 0.753 x / 0.761 y, every margin ≥ 0.117.
+wave is the top face of a cast bronze tile, set in a walnut frame whose rails stop
+at mid-wave height: crests rise proud of the frame, troughs sink below it. The
+bronze is polished on the crests and carries verdigris in the troughs — the patina
+mask is the tile's own object-space Z, so the colouring is a readout of the
+displaced height the check asserts. The checked `Wave` object is left exactly as
+asserted and hidden from the render. The copy and frame are render-only and never
+enter `check()`. The render path gates framing through
+`examples/gallery_framing.py` (exit 10); measured on 5.2.1: fill 0.856 x /
+0.850 y, every margin ≥ 0.050.
 
 ## Run
 
@@ -52,6 +57,7 @@ against it.
 | 4 | Z-span not in the closed-form band (`--flat` lands here) |
 | 5 | A vertex is off the closed-form wave |
 | 6 | `--output` produced no file |
+| 10 | Gallery framing violation (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

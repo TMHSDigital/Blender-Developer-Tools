@@ -18,6 +18,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from array import array
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing  # noqa: E402
+
 GRID = 96          # segments per side -> (GRID+1)^2 verts
 SIZE = 6.0
 AMP = 0.55
@@ -75,16 +80,93 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+def bronze_material():
+    """Cast bronze: polished on the crests, verdigris pooled in the troughs.
+
+    The patina mask is the tile's own object-space Z — the displaced wave
+    height the check asserts — so the colouring is a readout of the wave.
+    """
+    mat = bpy.data.materials.new("CastBronze")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    out = nt.nodes["Material Output"]
+    metal = nt.nodes["Principled BSDF"]
+    metal.inputs["Base Color"].default_value = (0.82, 0.52, 0.23, 1.0)
+    metal.inputs["Metallic"].default_value = 1.0
+    metal.inputs["Roughness"].default_value = 0.26
+    patina = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    patina.inputs["Base Color"].default_value = (0.07, 0.24, 0.19, 1.0)
+    patina.inputs["Roughness"].default_value = 0.72
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord, sep.inputs["Vector"])
+    band = nt.nodes.new("ShaderNodeMapRange")          # trough (z=-AMP) -> 1, mid -> 0
+    band.inputs["From Min"].default_value = -AMP
+    band.inputs["From Max"].default_value = -0.05
+    band.inputs["To Min"].default_value = 0.85
+    band.inputs["To Max"].default_value = 0.0
+    nt.links.new(sep.outputs["Z"], band.inputs["Value"])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 2.5
+    noise.inputs["Detail"].default_value = 8.0
+    nt.links.new(coord, noise.inputs["Vector"])
+    speck = nt.nodes.new("ShaderNodeMapRange")
+    speck.inputs["To Min"].default_value = 0.55
+    speck.inputs["To Max"].default_value = 1.25
+    nt.links.new(noise.outputs["Fac"], speck.inputs["Value"])
+    fac = nt.nodes.new("ShaderNodeMath")
+    fac.operation = "MULTIPLY"
+    fac.use_clamp = True
+    nt.links.new(band.outputs["Result"], fac.inputs[0])
+    nt.links.new(speck.outputs["Result"], fac.inputs[1])
+    rough = nt.nodes.new("ShaderNodeMapRange")          # hand-polish wear on the metal
+    rough.inputs["To Min"].default_value = 0.20
+    rough.inputs["To Max"].default_value = 0.40
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], metal.inputs["Roughness"])
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(fac.outputs["Value"], mix.inputs["Fac"])
+    nt.links.new(metal.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(patina.outputs["BSDF"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    return mat
+
+
+def walnut_material():
+    mat = bpy.data.materials.new("Walnut")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    base = (0.15, 0.065, 0.026)
+    b.inputs["Roughness"].default_value = 0.42
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (0.5, 12.0, 12.0)
+    nt.links.new(coord, mapping.inputs["Vector"])
+    tex = nt.nodes.new("ShaderNodeTexWave")
+    tex.wave_type = "BANDS"
+    tex.bands_direction = "Y"
+    tex.inputs["Scale"].default_value = 0.35
+    tex.inputs["Distortion"].default_value = 6.0
+    tex.inputs["Detail"].default_value = 4.0
+    nt.links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (*(c * 0.55 for c in base), 1.0)
+    ramp.color_ramp.elements[1].color = (*(c * 1.5 for c in base), 1.0)
+    nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
 def render_still(obj, path, engine):
     scene = bpy.context.scene
-    for poly in obj.data.polygons:
-        poly.use_smooth = True
-    mat = bpy.data.materials.new("WaveMat")
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.012, 0.09, 0.38, 1.0)  # deep sapphire
-    bsdf.inputs["Roughness"].default_value = 0.18
-    obj.data.materials.append(mat)
+    bronze = bronze_material()
+    cast = bpy.data.materials.new("CastSide")      # sand-cast flanks, no polish
+    cast.use_nodes = True
+    cb = cast.node_tree.nodes["Principled BSDF"]
+    cb.inputs["Base Color"].default_value = (0.30, 0.17, 0.08, 1.0)
+    cb.inputs["Metallic"].default_value = 1.0
+    cb.inputs["Roughness"].default_value = 0.55
 
     # render-only staging: the displaced grid is the contract and stays as
     # checked. A copy of it gets a skirt, its boundary extruded straight
@@ -95,6 +177,8 @@ def render_still(obj, path, engine):
     bm = bmesh.new()
     try:
         bm.from_mesh(tile_me)
+        for f in bm.faces:
+            f.smooth = True
         rim = [e for e in bm.edges if e.is_boundary]
         ret = bmesh.ops.extrude_edge_only(bm, edges=rim)
         skirt = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMFace)]
@@ -102,17 +186,50 @@ def render_still(obj, path, engine):
             if isinstance(g, bmesh.types.BMVert):
                 g.co.z = -AMP - base
         bottom = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMEdge) and g.is_boundary]
-        bmesh.ops.holes_fill(bm, edges=bottom, sides=0)
+        filled = bmesh.ops.holes_fill(bm, edges=bottom, sides=0)["faces"]
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        for f in skirt:
+        for f in skirt + filled:
             f.smooth = False
+            f.material_index = 1
         bm.to_mesh(tile_me)
     finally:
         bm.free()
+    tile_me.materials.append(bronze)   # 0: the displaced wave face
+    tile_me.materials.append(cast)     # 1: skirt and base
     tile = bpy.data.objects.new("WaveTile", tile_me)
     tile.location.z = AMP + base
     scene.collection.objects.link(tile)
     obj.hide_render = True
+
+    # a walnut frame around the cast tile: its rails stop at mid-wave height,
+    # so the crests rise proud of the frame and the troughs sink below it
+    walnut = walnut_material()
+    rail_w, rail_h, half = 0.42, AMP + base + 0.02, SIZE / 2
+    frame = []
+    for name, dims, loc in (
+        ("Frame.Front", (SIZE + 2 * rail_w, rail_w, rail_h), (0, -half - rail_w / 2, rail_h / 2)),
+        ("Frame.Back", (SIZE + 2 * rail_w, rail_w, rail_h), (0, half + rail_w / 2, rail_h / 2)),
+        ("Frame.Left", (SIZE, rail_w, rail_h), (-half - rail_w / 2, 0, rail_h / 2)),
+        ("Frame.Right", (SIZE, rail_w, rail_h), (half + rail_w / 2, 0, rail_h / 2)),
+    ):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cube(bm, size=1.0)
+            for v in bm.verts:
+                v.co.x *= dims[0]; v.co.y *= dims[1]; v.co.z *= dims[2]
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.035, segments=3,
+                            profile=0.5, affect="EDGES", clamp_overlap=True)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(walnut)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        if name in ("Frame.Left", "Frame.Right"):
+            ob.rotation_euler.z = math.radians(90)   # grain runs along each rail
+        scene.collection.objects.link(ob)
+        frame.append(ob)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -153,6 +270,9 @@ def render_still(obj, path, engine):
     light("Fill", (9.0, -6.0, 3.0), 120.0, 10.0, (0.78, 0.86, 1.0), (70, 0, 55))
     light("Rim", (5.0, 7.5, 4.0), 1800.0, 5.0, (1.0, 0.68, 0.38), (-62, 0, 148))
     light("Wedge", (4.0, 10.5, 7.0), 1500.0, 9.0, (1.0, 0.76, 0.5), (-65, 0, 190))
+    # a broad soft overhead card the polished bronze can mirror; bare metal
+    # in a dark studio otherwise goes muddy on every face turned from the key
+    light("Card", (1.0, -3.0, 9.0), 220.0, 14.0, (1.0, 0.93, 0.82), (15, 0, 0))
 
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (0.0, -0.4, 0.05)
@@ -180,8 +300,14 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    fcode = gallery_framing.check_framing(scene, cam, hero=[tile] + frame,
+                                          elements=[tile] + frame, stage=[floor, wall])
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 6
 
 
 def main():
@@ -201,9 +327,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            if rcode == 6:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered still {args.output}")
 
     print("wave-displace OK")
