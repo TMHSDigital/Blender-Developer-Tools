@@ -72,8 +72,8 @@
     {
       "name": "driver-wave",
       "dir": "examples/driver-wave",
-      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.",
-      "alt": "A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor.",
+      "teaches": "A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated.",
+      "alt": "A small pipe-organ facade: sixteen brass pipes on a walnut windchest in front of a dark walnut case, their tops rising and falling in a sine wave, tall at both ends and short in the middle.",
       "witnessesFix": "Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.",
       "hero": "docs/gallery/assets/driver-wave-hero.webp",
       "preview": "examples/driver-wave/preview.webp",

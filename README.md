@@ -691,7 +691,7 @@ A slotted-actions Z-rotation turntable keyed through the cross-version channelba
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen orange columns seen from above whose heights form a sine wave on a dark studio floor, each driven by a driver_namespace function" /></a>
+<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: a pipe-organ facade of sixteen brass pipes on a walnut windchest whose heights form a sine wave, each driven by a driver_namespace function" /></a>
 </td>
 <td valign="middle">
 

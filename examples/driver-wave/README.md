@@ -1,6 +1,6 @@
 # Driver Wave
 
-A runnable example that drives sixteen column heights from a custom function registered in
+A runnable example that drives sixteen organ-pipe heights from a custom function registered in
 `bpy.app.driver_namespace` — the pattern from
 [`drivers-and-app-handlers`](../../skills/drivers-and-app-handlers/SKILL.md). Each column
 gets a SCRIPTED driver on Z scale whose expression calls `wave_scale(i)`, producing a sine
@@ -17,9 +17,14 @@ open. Headless, registering before driver creation (as here) is enough.
 
 ## Staging
 
-The camera is raised to look down about 18 degrees, so the column tops
-and their shadows read as a wave. From nearly level (86 degrees) the
-skyline flattened into a bar chart. Render path only.
+The sixteen driven objects are the speaking pipes of a small organ facade. They share one
+open-tube body mesh of unit height (`z` 0..1), so the driven Z scale **is** each pipe's
+speaking length and the pipe tops trace `wave_scale` directly; the rim annulus is horizontal
+and stays crisp under any Z scale. Everything else — the walnut windchest and case back, the
+side towers with brass finials, a brass foot cone and a mouth under each pipe — is render-only
+staging built around the driven bodies. The case back sits behind the pipes so their tops read
+as a wave against wood rather than fading into the stage. The render path gates framing through
+`examples/gallery_framing.py` (exit 10) before writing the still.
 
 ## Run
 
