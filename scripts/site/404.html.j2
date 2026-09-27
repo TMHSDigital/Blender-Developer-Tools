@@ -16,8 +16,7 @@
       src: url('{{ base }}fonts/inter-regular.woff2') format('woff2'); }
     @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
       src: url('{{ base }}fonts/jetbrains-mono-regular.woff2') format('woff2'); }
-    :root { color-scheme: dark; --bg: #1a1b1e; --panel: #232428; --border: #3a3b40;
-      --text: #e8e9eb; --dim: #9698a0; --select: #ff8c19; }
+    {% include "tokens.css" %}
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex;
       align-items: center; justify-content: center; padding: 1.25rem;

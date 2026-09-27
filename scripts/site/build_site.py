@@ -10,6 +10,7 @@ import datetime
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -215,6 +216,7 @@ def parse_rules(repo_root: Path) -> list[dict]:
         results.append({
             "name": name,
             "slug": rule_file.stem,
+            "file": rule_file.name,
             "description": description,
             "scope": scope,
         })
@@ -311,6 +313,36 @@ def pick_featured(examples: list[dict]) -> list[dict]:
         (ex for ex in examples if isinstance(ex.get("featured_rank"), int)),
         key=lambda ex: ex["featured_rank"],
     )
+
+
+def recent_additions(repo_root: Path, entries: list[dict], limit: int = 6) -> list[dict]:
+    """The *limit* entries whose directory entered the repo most recently.
+
+    Gallery JSON order is not add order, so the first commit that added a file
+    under each entry's ``dir`` decides. A shallow clone has no history to ask
+    (every entry would look added today), so it yields [] and the section hides.
+    """
+    def git(*args: str) -> str:
+        return subprocess.run(["git", "-C", str(repo_root), *args], capture_output=True,
+                              text=True, encoding="utf-8", check=True).stdout
+    try:
+        if git("rev-parse", "--is-shallow-repository").strip() != "false":
+            return []
+        log = git("log", "--diff-filter=A", "--format=%x00%cs", "--name-only",
+                  "--", "examples", "showcase")
+    except (OSError, subprocess.CalledProcessError):
+        return []
+
+    by_dir = {e.get("dir", "").rstrip("/"): e for e in entries if e.get("dir")}
+    added: dict[str, tuple[int, str]] = {}  # dir -> (commit ordinal, date); log is newest first
+    for ordinal, block in enumerate(log.split("\0")[1:]):
+        date, _, files = block.partition("\n")
+        for f in files.split():
+            d = "/".join(f.split("/")[:2])
+            if d in by_dir:
+                added[d] = (ordinal, date.strip())  # keep overwriting: the oldest add wins
+    newest = sorted(added.items(), key=lambda kv: kv[1][0])[:limit]
+    return [dict(by_dir[d], added=date) for d, (_, date) in newest]
 
 
 def load_mcp_tools(repo_root: Path) -> list[dict]:
@@ -433,6 +465,11 @@ def main():
     mcp_tools = load_mcp_tools(repo_root)
     mcp_grouped = group_by_category(mcp_tools)
     changelog = parse_changelog(repo_root)
+    for piece in showcase:
+        piece["kind"] = "showcase"
+    for ex in examples:
+        ex.setdefault("kind", "example")
+    recent = recent_additions(repo_root, examples + showcase)
 
     context = {
         "plugin": plugin,
@@ -467,6 +504,9 @@ def main():
         "mcp_grouped": mcp_grouped,
         "changelog": changelog,
         "has_changelog": len(changelog) > 0,
+        "latest_release": changelog[0] if changelog else None,
+        "recent": recent,
+        "blender": site.get("blender") or {},
         "build_date": datetime.date.today().isoformat(),
     }
 

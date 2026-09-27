@@ -186,6 +186,26 @@ jobs:
           echo "Templates: $template_count"
           echo "Snippets: $snippet_count"
 
+  validate-site:
+    name: Build landing page and check site links
+    # The landing page is built only at deploy (docs/index.html is untracked),
+    # so a template error or a dead link otherwise surfaces in production.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r scripts/site/requirements.txt
+
+      - name: Build landing page into docs/
+        run: python scripts/site/build_site.py --repo-root . --out docs
+
+      - name: Check every internal link, anchor and image alt
+        run: python tests/check_site_links.py
+
   validate-manifest:
     name: Validate plugin manifest
     runs-on: ubuntu-latest

@@ -45,20 +45,8 @@
     @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
       src: url('fonts/jetbrains-mono-regular.woff2') format('woff2'); }
 
-    /* ---- tokens: Blender's own UI grays; selection orange is THE accent;
-           axis colors appear only in the gizmo and the grid origin lines ---- */
-    :root {
-      color-scheme: dark;
-      --bg: #1a1b1e; --panel: #222327; --panel-2: #2a2b30; --border: #3a3b40;
-      --text: #e8e9eb; --dim: #9698a0;
-      --select: #ff8c19;
-      --ax-x: #ff3352; --ax-y: #8bdc00; --ax-z: #2890ff;
-      --ok: #6dc96d;
-      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      --font-body: 'Inter', -apple-system, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
-      --maxw: 1060px;
-    }
+    {% include "tokens.css" %}
+    :root { --maxw: 1060px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: var(--font-body);
@@ -145,8 +133,16 @@
       margin-top: 1.25rem; overflow: hidden; }
     .panel-head { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.55rem 1.1rem;
       background: var(--panel-2); border-bottom: 1px solid var(--border); }
-    .panel-head .caret { color: var(--dim); font-size: 0.6rem; align-self: center; }
-    .panel-head .count { margin-left: auto; }
+    .panel-head .count { margin-left: auto; white-space: nowrap; }
+    /* Per-panel filter: rendered hidden, revealed by JS, so no-JS never sees
+       a box that does nothing. */
+    .panel-filter { background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 3px; padding: 0.18rem 0.55rem; font-family: var(--font-mono); font-size: 0.72rem;
+      width: 12rem; max-width: 45vw; align-self: center; }
+    .panel-filter:focus { border-color: var(--select); outline: none; }
+    .panel-filter::placeholder { color: var(--dim); }
+    .filter-empty { color: var(--dim); font-size: 0.85rem; padding: 0.75rem 0; }
+    .is-filtered-out { display: none !important; }
     .panel-body { padding: 1.5rem 1.75rem 1.75rem; }
     .panel-body > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: clamp(1.6rem, 3.2vw, 2.2rem); line-height: 1.02; margin-bottom: 0.4rem; }
@@ -175,8 +171,18 @@
     /* skills */
     .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2.25rem; }
     .skill-row { display: flex; flex-direction: column; padding: 0.55rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); }
-    .skill-row .name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--select); }
+    .skill-row .name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--select); align-self: flex-start; }
+    .skill-row .name:hover, .rules-table .r-name a:hover { text-decoration: underline; }
+    .skill-row { min-width: 0; }  /* a long `code` token must wrap, not widen the 1fr column */
+    .skill-row .desc, .skill-row details { overflow-wrap: anywhere; }
     .skill-row .desc { color: var(--dim); font-size: 0.85rem; margin-top: 0.15rem; }
+    .skill-row details { margin-top: 0.35rem; font-size: 0.8rem; color: var(--dim); }
+    .skill-row summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.68rem;
+      text-transform: uppercase; letter-spacing: 0.04em; width: fit-content; }
+    .skill-row summary:hover { color: var(--select); }
+    .skill-row details ul { margin: 0.35rem 0 0 1.1rem; }
+    .skill-row details li { margin: 0.15rem 0; }
+    .skill-row details code { font-family: var(--font-mono); font-size: 0.85em; color: var(--text); }
     .skill-row .desc code, .rules-table td code { font-family: var(--font-mono); font-size: 0.85em;
       color: var(--text); }
 
@@ -186,6 +192,20 @@
     .rules-table td { padding: 0.6rem 0.75rem 0.6rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
       vertical-align: top; color: var(--dim); }
     .rules-table .r-name { color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; }
+    .rules-table .r-name a { color: var(--text); }
+    .rules-table .r-name a:hover { color: var(--select); }
+
+    /* what's new */
+    .release-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1rem;
+      margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--dim); }
+    .release-line .ver { font-family: var(--font-mono); color: var(--text); font-size: 0.85rem; }
+    .release-line a { color: var(--select); }
+    .release-line a:hover { text-decoration: underline; }
+    .recent-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; }
+    .recent-grid .render-meta .name { overflow: hidden; text-overflow: ellipsis; font-size: 0.74rem; }
+    .recent-grid .render-meta { flex-direction: column; gap: 0.1rem; padding: 0.5rem 0.75rem 0.6rem; }
+    .recent-grid .when { font-family: var(--font-mono); font-size: 0.66rem; color: var(--dim);
+      text-transform: uppercase; letter-spacing: 0.04em; }
     .rules-table .r-scope { font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; }
 
     /* snippets */
@@ -219,16 +239,21 @@
       text-transform: uppercase; letter-spacing: 0.04em; }
     .statusbar a:hover { color: var(--select); }
 
-    /* boot sequence: HUD fades in, stats count up (JS adds .booted) */
+    .vp-center .sub code { font-family: var(--font-mono); font-size: 0.9em; }
+    .statusbar .ok { color: var(--ok); }
+
+    /* boot sequence: HUD fades in, stats count up (JS adds .booted). Gated on
+       html.js so the corners never stay invisible when scripts don't run. */
     @media (prefers-reduced-motion: no-preference) {
-      .hud-corner { opacity: 0; transition: opacity 0.5s ease; }
-      .booted .hud-corner { opacity: 1; }
+      html.js .hud-corner { opacity: 0; transition: opacity 0.5s ease; }
+      html.js .booted .hud-corner { opacity: 1; }
       .booted .hud-tl { transition-delay: 0.1s; } .booted .hud-tr { transition-delay: 0.25s; }
       .booted .hud-bl { transition-delay: 0.4s; } .booted .hud-br { transition-delay: 0.55s; }
     }
 
     @media (max-width: 820px) {
       .skill-grid, .render-grid { grid-template-columns: 1fr; }
+      .recent-grid { grid-template-columns: repeat(3, 1fr); }
       .render-meta .teach { white-space: normal; }
     }
     @media (max-width: 640px) {
@@ -242,10 +267,15 @@
     }
     @media (max-width: 520px) {
       .topnav li:not(.always) { display: none; }
+      .recent-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
+  {% set repo = site.links.github | default(plugin.repository) %}
+  {% set bl_primary = blender.primary | default('5.2 LTS') %}
+  {% set bl_fallback = blender.fallback | default('4.5 LTS') %}
   <a class="skip" href="#main">Skip to content</a>
 
   <div class="topbar">
@@ -258,7 +288,7 @@
         {% if skills %}<li><a href="#skills">Skills</a></li>{% endif %}
         {% if rules %}<li><a href="#rules">Rules</a></li>{% endif %}
         <li class="always"><a href="#install">Install</a></li>
-        <li class="always"><a href="{{ site.links.github | default(plugin.repository) }}">GitHub</a></li>
+        <li class="always"><a href="{{ repo }}">GitHub</a></li>
       </ul>
     </div>
   </div>
@@ -269,7 +299,7 @@
       <div class="vp-floor" aria-hidden="true"><div class="vp-grid"></div></div>
 
       <div class="hud-corner hud-tl hud" aria-hidden="true">
-        <span>Object Mode</span><span>bpy 5.2 LTS &middot; 4.5 LTS</span>
+        <span>Object Mode</span><span>bpy {{ bl_primary }} &middot; {{ bl_fallback }}</span>
       </div>
       <div class="hud-corner hud-tr" aria-hidden="true">
         <span class="axis axis-x">x</span><span class="axis axis-y">y</span><span class="axis axis-z">z</span>
@@ -283,17 +313,17 @@
         {% if showcase_count %}<a href="#showcase">Showcase</a><span class="v" data-count="{{ showcase_count }}">{{ showcase_count }}</span>{% endif %}
       </div>
       <div class="hud-corner hud-br hud">
-        <span class="ok-dot" aria-hidden="true"></span><span>smoke-gated on 5.2 LTS + 4.5 LTS &middot; exit 0</span>
+        <span class="ok-dot" aria-hidden="true"></span><span>smoke-gated on {{ bl_primary }} + {{ bl_fallback }} &middot; exit 0</span>
       </div>
 
       <div class="vp-center">
         <h1>Blender Python<br />that <span class="runs">actually runs</span>.</h1>
         <p class="sub">Skills, rules, snippets, and starter templates that teach Cursor and Claude Code
-          the <code style="font-family: var(--font-mono); font-size: 0.9em;">bpy</code> that works —
-          backed by runnable examples asserted headless on Blender 5.2 LTS and 4.5 LTS before they ship.</p>
+          the <code>bpy</code> that works —
+          backed by runnable examples asserted headless on Blender {{ bl_primary }} and {{ bl_fallback }} before they ship.</p>
         <div class="clone-row">
-          <pre id="cloneCmd"><span class="p">$</span> git clone {{ site.links.github | default(plugin.repository) }}</pre>
-          <button class="copy-btn" type="button" data-copy="git clone {{ site.links.github | default(plugin.repository) }}">copy</button>
+          <pre id="cloneCmd"><span class="p">$</span> git clone {{ repo }}</pre>
+          <button class="copy-btn" type="button" data-copy="git clone {{ repo }}">copy</button>
         </div>
         <div class="hero-links">
           <a href="#examples">See the proof &darr;</a>
@@ -305,17 +335,17 @@
 
   <main id="main">
 
+
   {% if examples %}
   {% set shown = featured_examples if featured_examples else examples %}
   <section class="panel" id="examples">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Render Result</span>
       <span class="hud count">{% if featured_examples %}{{ featured_count }} of {% endif %}{{ example_count }} frames</span>
     </div>
     <div class="panel-body">
       <h2>Every render here is code that runs.</h2>
-      <p class="lede">These aren't mockups. Each example runs headless on Blender 5.2 LTS and 4.5 LTS in the
+      <p class="lede">These aren't mockups. Each example runs headless on Blender {{ bl_primary }} and {{ bl_fallback }} in the
         smoke workflow, asserts its own correctness, and exits non-zero if the API drifted. Each still was
         rendered by that same script.</p>
       <p class="cta-row"><a class="btn-cta" href="gallery/">Browse all {{ example_count }} rendered examples and {{ showcase_count }} showcase pieces in the gallery &rarr;</a></p>
@@ -339,7 +369,6 @@
   {% set shown_showcase = featured_showcase if featured_showcase else showcase %}
   <section class="panel" id="showcase">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Showcase</span>
       <span class="hud count">{% if featured_showcase %}{{ featured_showcase | length }} of {% endif %}{{ showcase_count }} pieces</span>
     </div>
@@ -348,7 +377,7 @@
       <p class="lede">Showcase pieces compose shipped skills into a recognizable asset and assert
         declared budgets — triangle counts, materials, UVs, LODs, colliders, exports. They are not
         examples. A still that merely rendered is not an assertion.</p>
-      <p class="cta-row"><a class="btn-cta" href="gallery/#tag=showcase">See all {{ showcase_count }} showcase pieces in the gallery &rarr;</a></p>
+      <p class="cta-row"><a class="btn-cta" href="gallery/#k=showcase">See all {{ showcase_count }} showcase pieces in the gallery &rarr;</a></p>
       <div class="render-grid">
         {% for ex in shown_showcase %}
         <a class="render-card" href="gallery/{{ ex.name }}/">
@@ -364,12 +393,46 @@
   </section>
   {% endif %}
 
+  {% if recent or latest_release %}
+  <section class="panel" id="new">
+    <div class="panel-head">
+      <span class="hud">What's new</span>
+      {% if latest_release %}<span class="hud count">v{{ latest_release.version }}</span>{% endif %}
+    </div>
+    <div class="panel-body">
+      <h2>Fresh off the render farm.</h2>
+      {% if latest_release %}
+      <p class="release-line">
+        <span>Latest release <span class="ver">v{{ latest_release.version }}</span>{% if latest_release.date %} &middot; {{ latest_release.date }}{% endif %}</span>
+        <a href="{{ repo }}/releases/tag/v{{ latest_release.version }}">Release notes &rarr;</a>
+        <a href="{{ repo }}/blob/main/CHANGELOG.md">Changelog &rarr;</a>
+      </p>
+      {% endif %}
+      {% if recent %}
+      <div class="recent-grid">
+        {% for ex in recent %}
+        <a class="render-card" href="gallery/{{ ex.name }}/">
+          <img src="{{ ex.heroSite }}" alt="{{ ex.alt | default(ex.name ~ ' render', true) }}" loading="lazy" width="1280" height="720" />
+          <div class="render-meta">
+            <span class="name">{{ ex.name }}</span>
+            <span class="when">{{ 'showcase' if ex.kind == 'showcase' else 'example' }}</span>
+            <span class="when">added {{ ex.added }}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+
   {% if skills %}
   <section class="panel" id="skills">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Skills</span>
-      <span class="hud count">{{ skill_count }} loaded</span>
+      <input class="panel-filter" type="search" data-filter="#skills .skill-row" placeholder="filter skills"
+        aria-label="Filter skills" autocomplete="off" spellcheck="false" hidden />
+      <span class="hud count" data-count-label="{{ skill_count }} loaded">{{ skill_count }} loaded</span>
     </div>
     <div class="panel-body">
       <h2>Workflows the AI loads by name.</h2>
@@ -379,11 +442,18 @@
       <div class="skill-grid">
         {% for skill in skills %}
         <div class="skill-row">
-          <span class="name">{{ skill.category }}</span>
+          <a class="name" href="{{ repo }}/blob/main/skills/{{ skill.category }}/SKILL.md">{{ skill.category }}</a>
           <span class="desc">{{ skill.description | inline_code }}</span>
+          {% if skill.triggers %}
+          <details>
+            <summary>When to use ({{ skill.triggers | length }})</summary>
+            <ul>{% for t in skill.triggers %}<li>{{ t | inline_code }}</li>{% endfor %}</ul>
+          </details>
+          {% endif %}
         </div>
         {% endfor %}
       </div>
+      <p class="filter-empty" hidden>No skill matches that filter.</p>
     </div>
   </section>
   {% endif %}
@@ -391,9 +461,10 @@
   {% if rules %}
   <section class="panel" id="rules">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Rules</span>
-      <span class="hud count">{{ rule_count }} active</span>
+      <input class="panel-filter" type="search" data-filter="#rules tbody tr" placeholder="filter rules"
+        aria-label="Filter rules" autocomplete="off" spellcheck="false" hidden />
+      <span class="hud count" data-count-label="{{ rule_count }} active">{{ rule_count }} active</span>
     </div>
     <div class="panel-body">
       <h2>Anti-patterns, caught before they ship.</h2>
@@ -404,13 +475,14 @@
         <tbody>
           {% for rule in rules %}
           <tr>
-            <td class="r-name">{{ rule.slug | default(rule.name) }}</td>
+            <td class="r-name">{% if rule.file %}<a href="{{ repo }}/blob/main/rules/{{ rule.file }}">{{ rule.slug | default(rule.name) }}</a>{% else %}{{ rule.slug | default(rule.name) }}{% endif %}</td>
             <td class="r-scope">{{ rule.scope }}</td>
             <td>{{ rule.description | inline_code }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <p class="filter-empty" hidden>No rule matches that filter.</p>
     </div>
   </section>
   {% endif %}
@@ -418,7 +490,6 @@
   {% if snippets %}
   <section class="panel" id="snippets">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Snippets</span>
       <span class="hud count">{{ snippet_count }} patterns</span>
     </div>
@@ -429,12 +500,12 @@
         the 4.x/5.x API boundary.</p>
       <div class="chip-grid">
         {% for sn in snippets %}
-        <a href="{{ site.links.github | default(plugin.repository) }}/blob/main/{{ sn.path }}">{{ sn.name }}</a>
+        <a href="{{ repo }}/blob/main/{{ sn.path }}">{{ sn.name }}</a>
         {% endfor %}
       </div>
       {% if templates %}
       <p class="tmpl-note">Plus {{ template_count }} starter templates:
-        {% for t in templates %}<a href="{{ site.links.github | default(plugin.repository) }}/tree/main/{{ t.path }}">{{ t.name }}</a>{% if loop.revindex == 2 %}{{ ',' if loop.length > 2 }} and {% elif not loop.last %}, {% endif %}{% endfor %}.</p>
+        {% for t in templates %}<a href="{{ repo }}/tree/main/{{ t.path }}">{{ t.name }}</a>{% if loop.revindex == 2 %}{{ ',' if loop.length > 2 }} and {% elif not loop.last %}, {% endif %}{% endfor %}.</p>
       {% endif %}
     </div>
   </section>
@@ -443,7 +514,6 @@
   {% if site.installSteps %}
   <section class="panel" id="install">
     <div class="panel-head">
-      <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Install</span>
     </div>
     <div class="panel-body">
@@ -465,10 +535,10 @@
       <span>v{{ plugin.version }}</span>
       <span>{{ plugin.license }}</span>
       <span>built {{ build_date }}</span>
-      <span style="color: var(--ok);">exit 0</span>
+      <span class="ok">exit 0</span>
       <span class="right">
-        <a href="{{ site.links.github | default(plugin.repository) }}/releases">Releases</a>
-        <a href="{{ site.links.github | default(plugin.repository) }}">GitHub</a>
+        <a href="{{ repo }}/releases">Releases</a>
+        <a href="{{ repo }}">GitHub</a>
         <a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a>
       </span>
     </div>
@@ -476,13 +546,52 @@
 
   <script>
     (function () {
-      // copy buttons
+      // copy buttons: Clipboard API, else execCommand (non-secure origins)
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
       document.querySelectorAll('[data-copy]').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          navigator.clipboard.writeText(btn.getAttribute('data-copy')).then(function () {
+          copyText(btn.getAttribute('data-copy')).then(function () {
             btn.textContent = 'copied';
+          }, function () {
+            btn.textContent = 'copy failed';
+          }).then(function () {
             setTimeout(function () { btn.textContent = 'copy'; }, 1500);
           });
+        });
+      });
+
+      // panel filters: substring match over each row's text
+      document.querySelectorAll('.panel-filter').forEach(function (input) {
+        var panel = input.closest('.panel');
+        var rows = Array.prototype.slice.call(document.querySelectorAll(input.getAttribute('data-filter')));
+        var texts = rows.map(function (r) { return r.textContent.toLowerCase(); });
+        var count = panel.querySelector('[data-count-label]');
+        var empty = panel.querySelector('.filter-empty');
+        input.hidden = false;
+        input.addEventListener('input', function () {
+          var q = input.value.trim().toLowerCase();
+          var shown = 0;
+          rows.forEach(function (r, i) {
+            var on = !q || texts[i].indexOf(q) !== -1;
+            r.classList.toggle('is-filtered-out', !on);
+            if (on) shown++;
+          });
+          count.textContent = q ? shown + ' of ' + rows.length : count.getAttribute('data-count-label');
+          empty.hidden = shown !== 0;
         });
       });
 

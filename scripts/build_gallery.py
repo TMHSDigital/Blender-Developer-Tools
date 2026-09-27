@@ -43,6 +43,7 @@ REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "examples" / "gallery.json"
 SHOWCASE_DATA = REPO / "showcase" / "gallery.json"
 OUT_DIR = REPO / "docs" / "gallery"
+TOKENS_CSS = REPO / "scripts" / "site" / "tokens.css"
 
 # Social card for the gallery index, shared with the landing page (site.json).
 OG_CARD_SIZE = (1200, 630)
@@ -138,16 +139,10 @@ SHELL = """<!DOCTYPE html>
     @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
       src: url('__SITEROOT__fonts/jetbrains-mono-regular.woff2') format('woff2'); }
 
-    /* Blender-viewport system, shared with the landing page. Dark only. */
+    /* Palette and type: scripts/site/tokens.css, shared with the landing page. */
+__TOKENS__
     :root {
-      color-scheme: dark;
-      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
-      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
-      --select: #ff8c19; --ok: #6dc96d;
       --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
-      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
       --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1075,6 +1070,16 @@ def make_resolver(repo_base: str, ex_dir: str):
     return resolve
 
 
+def tokens_css() -> str:
+    """The shared palette, minus its header comment (the landing page's copy
+    carries it; 89 gallery pages don't need 89 copies)."""
+    text = TOKENS_CSS.read_text(encoding="utf-8")
+    m = re.search(r"^[ \t]*:root\s*\{", text, re.M)
+    if m is None:
+        raise SystemExit(f"{TOKENS_CSS.relative_to(REPO)} has no :root block")
+    return text[m.start():].rstrip()
+
+
 def shell(*, title: str, desc: str, canonical: str, og_image: str,
           og_size: tuple[int, int], og_alt: str,
           site_root: str, back_href: str, back_label: str, repo_url: str,
@@ -1096,6 +1101,7 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
                 f"<code>{html.escape(s)}</code>" for s in sources))
             .replace("__PAGEJS__", page_js)
             .replace("__HEADJS__", head_js)
+            .replace("__TOKENS__", tokens_css())
             # Content last, so README and source text are never scanned for
             # the other placeholders.
             .replace("__CONTENT__", content))
