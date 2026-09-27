@@ -1121,7 +1121,7 @@ turns cream.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/degenerate-bevel-weld/"><img src="examples/degenerate-bevel-weld/preview.webp" alt="Degenerate bevel weld: two blue hard-shell equipment cases — left with a flat end panel and clean chamfer bands, right with its rim rolled into a knife ridge traced by a glowing red seam and orange beads at the zero-area faces, proving the half-dimension bevel collapse ships degenerate triangles" /></a>
+<a href="examples/degenerate-bevel-weld/"><img src="examples/degenerate-bevel-weld/preview.webp" alt="Degenerate bevel weld: two blue hard-shell equipment cases — left with a flat end panel and clean chamfer bands, right with its rim rolled into a knife ridge traced by a thin red-orange seam line and small amber pins at the zero-area faces, proving the half-dimension bevel collapse ships degenerate triangles" /></a>
 </td>
 <td valign="middle">
 

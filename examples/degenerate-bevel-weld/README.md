@@ -41,14 +41,14 @@ future Blender changes triangulation — re-measure and update deliberately).
 
 **Render as proof:** two rugged hard-shell equipment cases whose shells
 *are* the check's two meshes — `beveled_box(DIMS, 0.10)` and
-`beveled_box(DIMS, 0.20)` — with every fitting (handle, latches, molded
+`beveled_box(DIMS, 0.20)` — with every fitting (handle, steel draw latches with wire bails, rubber corner guards, molded
 frame, purge valve, ID plate, feet) kept inside the flat front land that
 survives both offsets, so the bevel is the only difference. The cases turn
 their end panels to the camera: the left keeps a flat end framed by clean
 chamfer bands; on the right the end and top lands are gone and the band
-rolls into a knife ridge at mid-depth. That collapsed seam is traced in hot
-red from live mesh data (every edge of every face thinner than 1e-6), with
-an orange bead on each of the 12 zero-area faces the check counts — change
+rolls into a knife ridge at mid-depth. That collapsed seam is traced as a thin
+red-orange ink line (low emission, no neon halo) from live mesh data (every edge of every face thinner than 1e-6), with
+a small amber pin on each of the 12 zero-area faces the check counts — change
 the offset and the overlay moves or disappears. The clean case is the
 designed asset and passes the asset-quality floors (exit 11).
 

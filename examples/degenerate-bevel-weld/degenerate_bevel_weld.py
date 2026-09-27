@@ -344,6 +344,32 @@ def build_case(sc, prefix, offset, mats, loc, rot_z):
         parts.append(_part(sc, f"{prefix}.LatchLever{'LR'[sx > 0]}",
                            _block(f"{prefix}.LatchLever", (0.11, 0.035, 0.13), 0.014),
                            mats["accent"], shell, (sx * 0.40, fy - 0.045, 0.15)))
+        # wire draw-bail: a steel loop from the lever over the hasp
+        def bail(bm, sx=sx):
+            y = fy - 0.032
+            _tube_path(bm, [(sx * 0.37, y, 0.195), (sx * 0.245, y, 0.215),
+                            (sx * 0.245, y, 0.125), (sx * 0.37, y, 0.105)],
+                       0.008, sides=8)
+        parts.append(_part(sc, f"{prefix}.LatchBail{'LR'[sx > 0]}",
+                           _mesh_from_bm(f"{prefix}.LatchBail", bail),
+                           mats["steel"], shell))
+    # rubber corner guards on the front land, capping the frame joints
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            def guard(bm, sx=sx, sz=sz):
+                for dims, off in (((0.13, 0.05, 0.05), (-sx * 0.04, 0.0)),
+                                  ((0.05, 0.05, 0.13), (0.0, -sz * 0.04))):
+                    res = bmesh.ops.create_cube(bm, size=1.0)
+                    for v in res["verts"]:
+                        v.co.x = v.co.x * dims[0] + sx * 0.565 + off[0]
+                        v.co.y = v.co.y * dims[1]
+                        v.co.z = v.co.z * dims[2] + sz * 0.275 + off[1]
+                bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-6)
+                bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.012, segments=2,
+                                profile=0.5, affect="EDGES", clamp_overlap=True)
+            parts.append(_part(sc, f"{prefix}.CornerGuard{'LR'[sx > 0]}{'BT'[sz > 0]}",
+                               _mesh_from_bm(f"{prefix}.CornerGuard", guard),
+                               mats["rubber"], shell, (0.0, fy - 0.018, 0.0)))
     # molded reinforcement frame around the front land
     for nm, dims, pos in (("FrameTop", (1.17, 0.03, 0.035), (0.0, 0.28)),
                           ("FrameBottom", (1.17, 0.03, 0.035), (0.0, -0.28)),
@@ -408,16 +434,16 @@ def build_weld_overlay(sc, shell, mat_seam, mat_hot):
 
     def seam(bm):
         for va, vb in segs:
-            _tube_path(bm, [va, vb], 0.018, sides=10)
+            _tube_path(bm, [va, vb], 0.009, sides=10)
         joints = {tuple(round(c, 5) for c in v) for s in segs for v in s}
         for j in joints:
-            bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=6, radius=0.020,
+            bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=6, radius=0.012,
                                       matrix=Matrix.Translation(j))
     seam_ob = _part(sc, "WeldSeam", _mesh_from_bm("WeldSeam", seam), mat_seam, shell)
 
     def beads(bm):
         for p in counted:
-            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.038,
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.019,
                                       matrix=Matrix.Translation(p.center))
     bead_ob = _part(sc, "PinchBeads", _mesh_from_bm("PinchBeads", beads), mat_hot, shell)
     return [seam_ob, bead_ob]
@@ -439,8 +465,8 @@ def render_still(path, engine):
                                         rough=0.55, metallic=0.0),
             "steel": make_material(f"{tag}.Steel", (0.62, 0.63, 0.66), rough=0.32,
                                    metallic=1.0),
-            "accent": make_material(f"{tag}.LatchAnodized", (0.95, 0.52, 0.06),
-                                    rough=0.35, metallic=0.6),
+            "accent": make_material(f"{tag}.LatchSteel", (0.30, 0.31, 0.33),
+                                    rough=0.26, metallic=1.0),
             "rubber": make_material(f"{tag}.Rubber", (0.025, 0.025, 0.028), rough=0.8,
                                     metallic=0.0),
             "plate": make_material(f"{tag}.IdPlate", (0.80, 0.78, 0.70), rough=0.3,
@@ -452,10 +478,12 @@ def render_still(path, engine):
                                   (-0.95, 0.2, hz), CASE_YAW)
     degen, degen_parts = build_case(sc, "CaseDegen", DEGEN_OFFSET, mats("Degen"),
                                     (0.95, -0.2, hz), CASE_YAW)
-    seam_mat = make_material("WeldSeam", (1.0, 0.06, 0.02), rough=0.4, metallic=0.0,
-                             emit=(1.0, 0.05, 0.02), estr=2.2)
-    hot_mat = make_material("PinchHot", (1.0, 0.2, 0.05), rough=0.4, metallic=0.0,
-                            emit=(1.0, 0.16, 0.04), estr=3.0)
+    # an inspector's ink line, not a neon tube: thin red-orange seam, and a
+    # small warm pin on each zero-area face the check counts
+    seam_mat = make_material("WeldSeam", (0.62, 0.07, 0.02), rough=0.5, metallic=0.0,
+                             emit=(1.0, 0.12, 0.03), estr=0.35)
+    hot_mat = make_material("PinchHot", (0.95, 0.45, 0.10), rough=0.4, metallic=0.0,
+                            emit=(1.0, 0.45, 0.10), estr=0.6)
     overlay = build_weld_overlay(sc, degen, seam_mat, hot_mat)
 
     floor, wall = build_studio(sc)
