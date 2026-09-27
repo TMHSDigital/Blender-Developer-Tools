@@ -77,6 +77,9 @@ SELECT = {
     "shipping-crate": (r"^CrateLow$", None),
     "signpost": (r"^SignpostLow$", None),
     "hitching-post": (r"^HitchPostLow$", None),
+    "campfire": (r"^CampfireLow$", None),
+    "water-trough": (r"^TroughLow$", None),
+    "watchtower": (r"^TowerLow$", None),
     "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),

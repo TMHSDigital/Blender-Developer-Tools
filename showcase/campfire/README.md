@@ -90,6 +90,8 @@ The stated ring height rose from 0.156 to 0.176 m for the crowns.
 upper bound, so the ring keeps the envelope of its widest seeded stone
 and only this budget fails (exit 20, spread 0.00000).
 
+**Fire, char and soot (render and shaders only; no budget changed).** The logs were a clean bark brown and the ring a pale concrete grey, so nothing in the still said the fire had ever been lit. A heat field (distance from a core just above the ash bed) now drives three things in the shared shaders: wood chars to near-black toward the flames, the hottest charred wood shows cracked embers (a Voronoi edge network, masked by a coarse noise so only some cracks are live), and stones are smoke-blackened where they face the fire. Stone base colours dropped to a warm dark fieldstone with a wider per-stone tone spread. The render adds a warm point light in the ember bed. Material slots and face counts are unchanged.
+
 Stone is isotropic mottling, speckle and pitting with a seeded tone per
 stone (`stone-archway`'s recipe, reading `PieceTone`); sticks and logs
 carry their own tone and grain along their axis; the ash has sparse

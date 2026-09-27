@@ -839,10 +839,77 @@ def wood_material(name):
     rough.inputs["To Max"].default_value = 0.52
     nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
     nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    # Char: heat falls off with distance from the fire's core (the ash bed at
+    # the ring centre), so the tripod blackens toward the flames and keeps its
+    # bark colour at the far ends. Inside the char, cracked embers glow.
+    heat = _heat_field(nt, coord)
+    char = nt.nodes.new("ShaderNodeMapRange")
+    char.inputs["From Min"].default_value = 0.12
+    char.inputs["From Max"].default_value = 0.55
+    nt.links.new(heat, char.inputs["Value"])
+    cmix = nt.nodes.new("ShaderNodeMix")
+    cmix.data_type = "RGBA"
+    nt.links.new(char.outputs["Result"], _sock(cmix.inputs, "Factor_Float"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(cmix.inputs, "A_Color"))
+    _sock(cmix.inputs, "B_Color").default_value = (0.016, 0.013, 0.011, 1.0)
+    nt.links.new(_sock(cmix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    crack = nt.nodes.new("ShaderNodeTexVoronoi")
+    crack.feature = "DISTANCE_TO_EDGE"
+    crack.inputs["Scale"].default_value = 42.0
+    nt.links.new(coord.outputs["Object"], crack.inputs["Vector"])
+    seam = nt.nodes.new("ShaderNodeMapRange")
+    seam.inputs["From Min"].default_value = 0.0
+    seam.inputs["From Max"].default_value = 0.035
+    seam.inputs["To Min"].default_value = 1.0
+    seam.inputs["To Max"].default_value = 0.0
+    nt.links.new(crack.outputs["Distance"], seam.inputs["Value"])
+    glow = nt.nodes.new("ShaderNodeMath")
+    glow.operation = "MULTIPLY"
+    nt.links.new(seam.outputs["Result"], glow.inputs[0])
+    hot = nt.nodes.new("ShaderNodeMapRange")
+    hot.inputs["From Min"].default_value = 0.70
+    hot.inputs["From Max"].default_value = 0.95
+    nt.links.new(heat, hot.inputs["Value"])
+    nt.links.new(hot.outputs["Result"], glow.inputs[1])
+    # only some of the cracks are live: a coarse noise mask breaks the net
+    live = nt.nodes.new("ShaderNodeTexNoise")
+    live.inputs["Scale"].default_value = 9.0
+    live.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], live.inputs["Vector"])
+    lmap = nt.nodes.new("ShaderNodeMapRange")
+    lmap.inputs["From Min"].default_value = 0.48
+    lmap.inputs["From Max"].default_value = 0.62
+    nt.links.new(live.outputs["Fac"], lmap.inputs["Value"])
+    masked = nt.nodes.new("ShaderNodeMath")
+    masked.operation = "MULTIPLY"
+    nt.links.new(glow.outputs["Value"], masked.inputs[0])
+    nt.links.new(lmap.outputs["Result"], masked.inputs[1])
+    bsdf.inputs["Emission Color"].default_value = (1.0, 0.30, 0.05, 1.0)
+    estr = nt.nodes.new("ShaderNodeMath")
+    estr.operation = "MULTIPLY"
+    estr.inputs[1].default_value = 3.5
+    nt.links.new(masked.outputs["Value"], estr.inputs[0])
+    nt.links.new(estr.outputs["Value"], bsdf.inputs["Emission Strength"])
     return mat
 
 
-def stone_material(name, light, dark, roughness, mottle, speck, bump):
+def _heat_field(nt, coord):
+    """0..1 heat: 1 at the fire's core just above the ash bed, 0 by ~0.34 m out."""
+    off = nt.nodes.new("ShaderNodeVectorMath")
+    off.operation = "SUBTRACT"
+    off.inputs[1].default_value = (0.0, 0.0, 0.06)
+    nt.links.new(coord.outputs["Object"], off.inputs[0])
+    dist = nt.nodes.new("ShaderNodeVectorMath")
+    dist.operation = "LENGTH"
+    nt.links.new(off.outputs["Vector"], dist.inputs[0])
+    heat = nt.nodes.new("ShaderNodeMapRange")
+    heat.inputs["From Min"].default_value = 0.34
+    heat.inputs["From Max"].default_value = 0.04
+    nt.links.new(dist.outputs["Value"], heat.inputs["Value"])
+    return heat.outputs["Result"]
+
+
+def stone_material(name, light, dark, roughness, mottle, speck, bump, soot=0.0, spread=0.8):
     """Fieldstone: isotropic mottling, speckle and pitting, a tone per stone.
 
     Copied from stone-archway, reading ``PieceTone`` for the per-stone
@@ -883,8 +950,8 @@ def stone_material(name, light, dark, roughness, mottle, speck, bump):
     tone.attribute_name = "PieceTone"
     shade = nt.nodes.new("ShaderNodeMath")
     shade.operation = "MULTIPLY_ADD"
-    shade.inputs[1].default_value = 0.8
-    shade.inputs[2].default_value = 0.6
+    shade.inputs[1].default_value = spread
+    shade.inputs[2].default_value = 1.0 - 0.5 * spread
     nt.links.new(tone.outputs["Fac"], shade.inputs[0])
     mix2 = nt.nodes.new("ShaderNodeMix")
     mix2.data_type = "RGBA"
@@ -893,6 +960,29 @@ def stone_material(name, light, dark, roughness, mottle, speck, bump):
     nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(mix2.inputs, "A_Color"))
     nt.links.new(shade.outputs["Value"], _sock(mix2.inputs, "B_Color"))
     nt.links.new(_sock(mix2.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    if soot:
+        # smoke-blackened where the stones face the fire, patchy by mottle
+        heat = _heat_field(nt, coord)
+        smap = nt.nodes.new("ShaderNodeMapRange")
+        smap.inputs["From Min"].default_value = 0.05
+        smap.inputs["From Max"].default_value = 0.40
+        smap.inputs["To Max"].default_value = soot
+        nt.links.new(heat, smap.inputs["Value"])
+        patch = nt.nodes.new("ShaderNodeMath")
+        patch.operation = "MULTIPLY"
+        nt.links.new(smap.outputs["Result"], patch.inputs[0])
+        nt.links.new(mot.outputs["Fac"], patch.inputs[1])
+        pmul = nt.nodes.new("ShaderNodeMath")
+        pmul.operation = "MULTIPLY"
+        pmul.inputs[1].default_value = 1.6
+        pmul.use_clamp = True
+        nt.links.new(patch.outputs["Value"], pmul.inputs[0])
+        smix = nt.nodes.new("ShaderNodeMix")
+        smix.data_type = "RGBA"
+        nt.links.new(pmul.outputs["Value"], _sock(smix.inputs, "Factor_Float"))
+        nt.links.new(_sock(mix2.outputs, "Result_Color"), _sock(smix.inputs, "A_Color"))
+        _sock(smix.inputs, "B_Color").default_value = (0.022, 0.019, 0.017, 1.0)
+        nt.links.new(_sock(smix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     rough = nt.nodes.new("ShaderNodeMapRange")
     rough.inputs["To Min"].default_value = roughness - 0.06
     rough.inputs["To Max"].default_value = min(1.0, roughness + 0.08)
@@ -932,8 +1022,8 @@ def ash_material(name):
 def campfire_materials():
     """(stone, wood, ash): shared by the check, the render and inspection."""
     stone = stone_material(
-        "CampfireStone", (0.44, 0.42, 0.38, 1.0), (0.22, 0.215, 0.20, 1.0),
-        0.86, mottle=6.0, speck=160.0, bump=0.35,
+        "CampfireStone", (0.24, 0.20, 0.155, 1.0), (0.085, 0.07, 0.055, 1.0),
+        0.86, mottle=6.0, speck=160.0, bump=0.6, soot=0.85, spread=1.3,
     )
     wood = wood_material("CampfireWood")
     ash = ash_material("CampfireAsh")
@@ -1331,9 +1421,18 @@ def render_still(low, _stone, _tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.8), 680.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.6, 2.6), 48.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Key", (-3.6, -5.0, 5.8), 640.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Fill", (5.0, -3.6, 2.6), 40.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    # the fire itself: a warm, shadow-soft point in the ember bed that lights
+    # the tripod's inner faces and the soot-dark inner ring (render only)
+    fire = bpy.data.lights.new("FireGlow", "POINT")
+    fire.energy = 260.0
+    fire.color = (1.0, 0.42, 0.12)
+    fire.shadow_soft_size = 0.08
+    fob = bpy.data.objects.new("FireGlow", fire)
+    fob.location = (0.0, 0.0, 0.07)
+    scene.collection.objects.link(fob)
 
     bb = world_bbox(low)
     span = max(bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2], 0.2)
