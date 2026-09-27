@@ -65,6 +65,12 @@ nothing in it feeds back into `check()`; the column is also turned to
 18° for the still so two faces show, which `check()` cannot see because
 it reads object-space vertices.
 
+The gauge is staged as a height gauge on a bench: it stands on a granite
+surface plate, and a brass scriber carriage clamped on the column reaches
+out to rest its point on a wrung stack of three steel gauge blocks. The
+bench props are built after `check()` in `dress_bench` and parented to the
+gauge object; no assertion reads them.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule

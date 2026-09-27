@@ -638,7 +638,7 @@ random access.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-socket-rename/"><img src="examples/gn-socket-rename/preview.webp" alt="GN socket rename: a brushed copper gauge column on a steel plinth in a dark studio, graduated every 0.1 m from its stored gauge_h attribute, warm wedge on the back wall" /></a>
+<a href="examples/gn-socket-rename/"><img src="examples/gn-socket-rename/preview.webp" alt="GN socket rename: a brushed copper height-gauge column on a granite surface plate, graduated every 0.1 m from its stored gauge_h attribute, with a brass scriber resting on a stack of steel gauge blocks" /></a>
 </td>
 <td valign="middle">
 

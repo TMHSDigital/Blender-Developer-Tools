@@ -409,7 +409,7 @@ def dress_gauge(copper, steel):
     nt.links.new(enabled_sock(base, "outputs", "Result"), emit)
     # Brushed, the copper reflects less of the key and went brown at
     # thumbnail size; a little more of its own colour keeps it copper.
-    bsdf.inputs["Emission Strength"].default_value = 0.24
+    bsdf.inputs["Emission Strength"].default_value = 0.14
 
     # Ground steel: lift it off the stage and give it a machined finish.
     sb = steel.node_tree.nodes["Principled BSDF"]
@@ -417,6 +417,124 @@ def dress_gauge(copper, steel):
     sb.inputs["Base Color"].default_value = (0.27, 0.28, 0.31, 1.0)
     sb.inputs["Metallic"].default_value = 0.8
     sb.inputs["Roughness"].default_value = 0.42
+
+
+# Render-only bench dressing: the gauge stands on a granite surface plate
+# with a brass scriber carriage clamped on the column, its point resting on a
+# stack of steel gauge blocks. Pure staging — built after check(), parented to
+# the gauge object, never read by an assertion.
+PLATE = (3.0, 1.9, 0.22)
+SCRIBE_Z = 0.62                 # scriber height above the plinth top
+
+
+def _principled_noise(name, base, rough, metal, scale, amount, stretch=(1, 1, 1)):
+    mat = principled(name, (*base, 1.0), metal, rough)
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = stretch
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    tex = nt.nodes.new("ShaderNodeTexNoise")
+    tex.inputs["Scale"].default_value = scale
+    tex.inputs["Detail"].default_value = 10.0
+    nt.links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.4
+    ramp.color_ramp.elements[0].color = tuple(c * (1 - amount) for c in base) + (1.0,)
+    ramp.color_ramp.elements[1].position = 0.62
+    ramp.color_ramp.elements[1].color = tuple(min(1.0, c * (1 + amount)) for c in base) + (1.0,)
+    nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
+def dress_bench(obj):
+    scene = bpy.context.scene
+    granite = _principled_noise("Granite", (0.03, 0.031, 0.034), 0.22, 0.0, 140.0, 0.85)
+    brass = _principled_noise("Brass", (0.86, 0.60, 0.25), 0.28, 1.0, 30.0, 0.12)
+    blocks = _principled_noise("GaugeSteel", (0.62, 0.63, 0.66), 0.16, 1.0, 12.0, 0.08,
+                               stretch=(40.0, 1.0, 1.0))
+    knob = principled("Knurl", (0.03, 0.03, 0.035, 1.0), 0.6, 0.4)
+
+    def part(name, build, mat, parent=obj):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            build(bm)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(mat)
+        me.set_sharp_from_angle(angle=math.radians(40))
+        for p in me.polygons:
+            p.use_smooth = True
+        ob = bpy.data.objects.new(name, me)
+        scene.collection.objects.link(ob)
+        ob.parent = parent
+        return ob
+
+    def box(size, center, bevel=0.012):
+        def b(bm):
+            res = bmesh.ops.create_cube(bm, size=1.0)
+            for v in res["verts"]:
+                v.co = type(v.co)((v.co.x * size[0] + center[0], v.co.y * size[1] + center[1],
+                                   v.co.z * size[2] + center[2]))
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=2,
+                            profile=0.5, affect="EDGES", clamp_overlap=True)
+        return b
+
+    def cyl(r, h, center, axis="Z", segs=32):
+        def b(bm):
+            res = bmesh.ops.create_cone(bm, cap_ends=True, segments=segs,
+                                        radius1=r, radius2=r, depth=h)
+            for v in res["verts"]:
+                x, y, z = v.co
+                if axis == "X":
+                    x, z = z, x
+                elif axis == "Y":
+                    y, z = z, y
+                v.co = type(v.co)((x + center[0], y + center[1], z + center[2]))
+        return b
+
+    # the surface plate; the gauge (and everything parented to it) rides up
+    plate = part("SurfacePlate", box(PLATE, (0.55, 0.15, -PLATE[2] / 2), 0.03),
+                 granite, parent=None)
+    plate.rotation_euler = obj.rotation_euler
+    obj.location.z = PLATE[2]
+    plate.location.z = PLATE[2]
+
+    top = PLINTH_SIZE[2]
+    z = top + SCRIBE_Z
+    half = COLUMN_XY / 2
+    parts = [plate]
+    # carriage collar around the column, a clamp knob, and the scriber arm
+    parts.append(part("Carriage", box((COLUMN_XY + 0.16, COLUMN_XY + 0.16, 0.26),
+                                      (0.0, 0.0, z + 0.06), 0.02), brass))
+    parts.append(part("ClampKnob", cyl(0.07, 0.12, (0.0, -(half + 0.14), z + 0.06), "Y"),
+                      knob))
+    arm_len = 0.95
+    parts.append(part("ScriberArm", box((arm_len, 0.09, 0.07),
+                                        (half + 0.08 + arm_len / 2, 0.0, z + 0.04), 0.01),
+                      brass))
+
+    def tip(bm):
+        res = bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=0.035,
+                                    radius2=0.0, depth=0.22)
+        for v in res["verts"]:
+            x, y, zz = v.co
+            v.co = type(v.co)((zz + half + 0.08 + arm_len + 0.11, y, -x + z + 0.04))
+    parts.append(part("ScriberPoint", tip, blocks))
+    # a wrung stack of three gauge blocks whose top the scriber point touches
+    stack = z + 0.04 - 0.035          # up to the underside of the scriber point
+    heights = (0.30, 0.20, stack - 0.50)
+    bx = half + 0.08 + arm_len + 0.26
+    zz = 0.0
+    for i, h in enumerate(heights):
+        parts.append(part(f"GaugeBlock{i}", box((0.34, 0.26, h - 0.004), (bx, 0.0, zz + h / 2),
+                                                0.006), blocks))
+        zz += h
+    return parts
 
 
 def render_still(obj, path, engine):
@@ -427,6 +545,7 @@ def render_still(obj, path, engine):
     # corner graduations wrap the edge. check() reads object-space vertices,
     # so the turn cannot reach an assertion.
     obj.rotation_euler = (0.0, 0.0, math.radians(18))
+    props = dress_bench(obj)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -452,7 +571,7 @@ def render_still(obj, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, ZMAX_OK * 0.45)
+    aim.location = (0.3, 0.0, ZMAX_OK * 0.47)
     aim.hide_render = True
     scene.collection.objects.link(aim)
 
@@ -469,13 +588,13 @@ def render_still(obj, path, engine):
         lc.track_axis = "TRACK_NEGATIVE_Z"
         lc.up_axis = "UP_Y"
 
-    light("Key", (-3.4, -4.6, 5.4), 680.0, 4.2, (1.0, 0.96, 0.9))
+    light("Key", (-3.4, -4.6, 5.4), 520.0, 3.4, (1.0, 0.96, 0.9))
     light("Fill", (4.8, -3.0, 2.2), 140.0, 8.0, (0.75, 0.85, 1.0))
     # At 300 W the rim's glossy reflection off the floor lifted the stage
     # right of the column to mid grey-blue (patch mean 104 against 62 with
     # the rim off); the column edge still separates at this level.
     light("Rim", (0.2, 5.8, 3.4), 120.0, 3.2, (0.6, 0.78, 1.0))
-    light("Glint", (1.8, -4.8, 5.6), 900.0, 0.85, (1.0, 0.90, 0.70))
+    light("Glint", (1.8, -4.8, 5.6), 560.0, 0.85, (1.0, 0.90, 0.70))
     wedge = bpy.data.lights.new("Wedge", "AREA")
     wedge.energy = 480.0
     wedge.size = 6.0
@@ -486,9 +605,9 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (4.15, -5.85, 2.55)
+    cam.location = (4.5, -6.6, 2.8)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
