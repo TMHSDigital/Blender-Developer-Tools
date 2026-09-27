@@ -19,8 +19,11 @@ jobs:
         id: changed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The files endpoint lists paths only. `gh pr diff --name-only` fetches the
+        # whole diff first and fails with HTTP 406 past 20,000 lines, which a
+        # full docs/gallery regeneration exceeds (#300).
         run: |
-          FILES=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+          FILES=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename')
           echo "files<<EOF" >> "$GITHUB_OUTPUT"
           echo "$FILES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
