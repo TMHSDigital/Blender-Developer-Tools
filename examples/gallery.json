@@ -667,6 +667,18 @@
       ]
     },
     {
+      "name": "gn-sim-fountain",
+      "dir": "examples/gn-sim-fountain",
+      "teaches": "A Simulation Zone only advances one step per consecutive frame_set. A direct jump to frame N runs a single step, and only a bake gives random access to the stepped state.",
+      "alt": "A two-tier sandstone fountain in a dark studio whose twenty jets are strings of glowing cyan droplet beads, each string threaded on a thin line tracing its ballistic arc into the pool.",
+      "witnessesFix": "24 stepped frames match p0 + v0 t - g t^2/2 within 6.6e-7 m. An unbaked jump 1->25 runs one step and sits 1.68-2.42 m off the arc; calculate_to_frame returns PASS_THROUGH headless; after a bake, random-access frames match within 5.6e-7 m.",
+      "hero": "docs/gallery/assets/gn-sim-fountain-hero.webp",
+      "preview": "examples/gn-sim-fountain/preview.webp",
+      "tags": [
+        "geometry-nodes"
+      ]
+    },
+    {
       "name": "bake-normal-high-to-low",
       "dir": "examples/bake-normal-high-to-low",
       "teaches": "A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source",

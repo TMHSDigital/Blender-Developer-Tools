@@ -291,7 +291,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples, 36 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 36 showcase pieces</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -880,6 +880,17 @@
           <a class="card-link" href="gn-zone-iterate/">View example<span class="sr-only"> gn-zone-iterate</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="geometry-nodes">
+        <a class="card-media" href="gn-sim-fountain/" tabindex="-1" aria-hidden="true">
+          <img src="assets/gn-sim-fountain-hero.webp" alt="A two-tier sandstone fountain in a dark studio whose twenty jets are strings of glowing cyan droplet beads, each string threaded on a thin line tracing its ballistic arc into the pool." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gn-sim-fountain/">gn-sim-fountain</a></h2>
+          <p class="teaches">A Simulation Zone only advances one step per consecutive frame_set. A direct jump to frame N runs a single step, and only a bake gives random access to the stepped state.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> 24 stepped frames match p0 + v0 t - g t^2/2 within 6.6e-7 m. An unbaked jump 1-&gt;25 runs one step and sits 1.68-2.42 m off the arc; calculate_to_frame returns PASS_THROUGH headless; after a bake, random-access frames match within 5.6e-7 m.</p>
+          <a class="card-link" href="gn-sim-fountain/">View example<span class="sr-only"> gn-sim-fountain</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
       <article class="card" data-tags="mesh">
         <a class="card-media" href="bake-normal-high-to-low/" tabindex="-1" aria-hidden="true">
           <img src="assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." loading="lazy" decoding="async" />
@@ -1327,7 +1338,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '51 examples, 36 showcase pieces';
+      var COUNT_LABEL = '52 examples, 36 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
