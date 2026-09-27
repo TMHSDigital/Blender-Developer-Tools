@@ -17,7 +17,8 @@ budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named shoe
 supports, ``--box-ends`` end-cap U-fit, ``--float-strap`` strap seat,
 ``--narrow-hull`` hull real-world size, ``--open-ends`` water
-containment, ``--slab-ends`` end boards per end.
+containment, ``--slab-ends`` end boards per end,
+``--float-bolts`` bolt seat on the straps.
 
 Stave seams use closed-form ``sin(i)``; the only RNG is plank tone,
 seeded with ``TONE_SEED``. DECIMATE COLLAPSE
@@ -78,14 +79,58 @@ END_BOARDS_MIN = 3
 # Half full: at 0.68 the surface sat nearly flush with the rim and hid the
 # inner stave walls, so nothing said vessel.
 WATER_FILL = 0.50
+# The water is lofted along X (WATER_NX stations, WATER_NY strips across) so
+# its surface is geometry: two crossing standing waves of RIPPLE_AMP, damped
+# to zero at the staves, and a meniscus MENISCUS_H high that climbs the wall
+# over MENISCUS_W. The flat quad it replaced read as a painted slab.
+WATER_NX = 22
+WATER_NY = 10
+RIPPLE_AMP = 0.0055
+RIPPLE_LX = 0.26
+RIPPLE_LY = 0.30
+MENISCUS_H = 0.004
+MENISCUS_W = 0.012
+# Carriage-bolt heads through each strap at BOLT_ANGLES on the hull arc,
+# sunk BOLT_SINK into the strap face.
+BOLT_ANGLES = (-1.08, -0.54, 0.0, 0.54, 1.08)
+BOLT_R = 0.010
+BOLT_H = 0.010
+BOLT_SINK = 0.004
+# Each strap ends in a clip hooked over the stave rim, so the straps read
+# from above where the hull hides their run.
+CLIP_OVER = 0.012
+CLIP_T = 0.007
+BOLT_FLOAT = 0.015
+# Each bolt's deepest vertex must sit inside its strap (signed depth to the
+# strap surface). A BVH gap cannot say this: a sunk head and one resting
+# 2 mm proud both read as a few mm from the nearest strap face.
+BOLT_BITE_MIN = 0.002
+# --float-strap lifts the straps this far off the hull. It was 0.040; with bolt
+# heads and rim clips riding on the strap that widened the AABB past its
+# tolerance, so the probe hit exit 8 before the strap-seat budget it is for.
+# 0.012 still measures a 0.0117 m strap-to-hull gap against STRAP_GAP_MAX 0.008.
+STRAP_FLOAT = 0.012
+# Trestle pegs proud of each face they pass through; a drain bung in the
+# right end, BUNG_OUT proud of it.
+PEG_R = 0.0085
+PEG_PROUD = 0.005
+BUNG_R = 0.017
+BUNG_OUT = 0.018
+BUNG_Y = 0.07
+BUNG_LIFT = 0.050
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (1.093, 0.552, 0.5055)
+# X grew 1.093 -> 1.111 with the drain bung (BUNG_OUT proud of the right end);
+# Z grew 0.5055 -> 0.512 with the strap clips lying on the rim.
+OUTER_SIZE = (1.111, 0.552, 0.512)
 HULL_SIZE = (1.08, 0.44)
 HULL_SIZE_TOL = (0.08, 0.08)
 NARROW_HULL_R = 0.12
-BASE_TRIS_MIN = 2800
-BASE_TRIS_MAX = 3500
+# Was 2800..3500 (3316 measured). The lofted, rippled water (~900 tris), ten
+# bolt heads, four strap clips, six trestle pegs and the bung brought it to 4792; the band
+# keeps the same ~+/-10 % slack around the new count.
+BASE_TRIS_MIN = 4300
+BASE_TRIS_MAX = 5200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -336,21 +381,87 @@ def add_box_end(bm, x_mid, radius, zc, a_span, thick, mat_idx):
     return verts
 
 
-def add_u_water(bm, x0, x1, r, n_seg, zc, z_water, mat_idx):
-    ca = max(-1.0, min(1.0, (zc - z_water) / r))
+def _aligned(bm, verts, axis, origin):
+    """Rotate verts built about +Z so +Z points along ``axis``, then move."""
+    rot = Vector((0.0, 0.0, 1.0)).rotation_difference(Vector(axis).normalized()).to_matrix()
+    for v in verts:
+        v.co = rot @ v.co + Vector(origin)
+
+
+def add_bolt_head(bm, base, normal, radius, height, mat_idx):
+    """Domed carriage-bolt head: a short cylinder crowned by a low cone,
+    standing on ``base`` along ``normal``."""
+    geo = bmesh.ops.create_cone(
+        bm, cap_ends=True, cap_tris=True, segments=8,
+        radius1=radius, radius2=radius * 0.55, depth=height,
+    )
+    verts = list(geo["verts"])
+    for v in verts:
+        v.co.z += height / 2.0
+    _aligned(bm, verts, normal, base)
+    for f in {f for v in verts for f in v.link_faces}:
+        f.material_index = mat_idx
+    return verts
+
+
+def add_peg(bm, center, axis, length, radius, mat_idx, sides=8):
+    """Round wooden peg / bung centred on ``center`` along ``axis``."""
+    geo = bmesh.ops.create_cone(
+        bm, cap_ends=True, cap_tris=True, segments=sides,
+        radius1=radius, radius2=radius, depth=length,
+    )
+    verts = list(geo["verts"])
+    _aligned(bm, verts, axis, center)
+    for f in {f for v in verts for f in v.link_faces}:
+        f.material_index = mat_idx
+    return verts
+
+
+def water_surface_z(x, y, w, z_water):
+    """Rippled water line: two crossing standing waves, damped to zero at the
+    walls, plus a meniscus that climbs the staves over the last few mm."""
+    edge = max(0.0, 1.0 - (y / w) ** 2) if w > 0.0 else 0.0
+    ripple = RIPPLE_AMP * edge * (
+        math.sin(2.0 * math.pi * x / RIPPLE_LX + 0.7) * math.cos(2.0 * math.pi * y / RIPPLE_LY)
+        + 0.5 * math.sin(2.0 * math.pi * (x + y) / (0.6 * RIPPLE_LX) + 1.9)
+    )
+    meniscus = MENISCUS_H * math.exp(-(w - abs(y)) / MENISCUS_W) if w > 0.0 else 0.0
+    return z_water + ripple + meniscus
+
+
+def add_u_water(bm, x0, x1, r, n_seg, zc, z_water, mat_idx, flat=False):
+    """Water volume lofted along X: each station is a closed section, the hull
+    arc below (r below the staves) and a rippled top across it, so the surface
+    is real geometry, not one flat quad. The arc ends where the meniscus meets
+    the wall, so section and top close without a seam."""
+    z_edge = z_water + (0.0 if flat else MENISCUS_H)
+    ca = max(-1.0, min(1.0, (zc - z_edge) / r))
     a_wl = math.acos(ca)
-    ring0, ring1 = [], []
-    for i in range(n_seg + 1):
-        a = -a_wl + 2.0 * a_wl * i / n_seg
-        ring0.append(bm.verts.new(_arc_point(a, r, x0, zc)))
-        ring1.append(bm.verts.new(_arc_point(a, r, x1, zc)))
-    collected = ring0 + ring1
-    for i in range(n_seg):
-        _face(bm, (ring0[i], ring0[i + 1], ring1[i + 1], ring1[i]), mat_idx)
-    _face(bm, (ring0[0], ring1[0], ring1[n_seg], ring0[n_seg]), mat_idx)
-    _face(bm, tuple(reversed(ring0)), mat_idx)
-    _face(bm, tuple(ring1), mat_idx)
-    return collected
+    w = r * math.sin(a_wl)
+    nx = 1 if flat else WATER_NX
+    ny = 1 if flat else WATER_NY
+    loops = []
+    for k in range(nx + 1):
+        x = x0 + (x1 - x0) * k / nx
+        loop = []
+        for i in range(n_seg + 1):
+            a = -a_wl + 2.0 * a_wl * i / n_seg
+            loop.append(bm.verts.new(_arc_point(a, r, x, zc)))
+        # top, from +w back toward -w, interior points only
+        for j in range(ny - 1, 0, -1):
+            y = -w + 2.0 * w * j / ny
+            z = z_water if flat else water_surface_z(x, y, w, z_water)
+            loop.append(bm.verts.new((x, y, z)))
+        loops.append(loop)
+    n = len(loops[0])
+    for k in range(nx):
+        a, b = loops[k], loops[k + 1]
+        for i in range(n):
+            m = (i + 1) % n
+            _face(bm, (a[i], a[m], b[m], b[i]), mat_idx)
+    _face(bm, tuple(reversed(loops[0])), mat_idx)
+    _face(bm, tuple(loops[-1]), mat_idx)
+    return [v for loop in loops for v in loop]
 
 
 def triangulate_ngons(bm):
@@ -412,6 +523,8 @@ def build_trough_mesh(
     narrow_hull=False,
     open_ends=False,
     slab_ends=False,
+    float_bolts=False,
+    hardware=True,
 ):
     bm = bmesh.new()
     try:
@@ -539,7 +652,7 @@ def build_trough_mesh(
                 bm, 0.5 * (x_cap_r0 + x_cap_r1), r_out, zc, A_SPAN, END_T, WOOD_IDX
             )
 
-        r_strap_in = r_out + 0.040 if float_strap else r_out - STRAP_BITE
+        r_strap_in = r_out + STRAP_FLOAT if float_strap else r_out - STRAP_BITE
         r_strap_out = r_strap_in + STRAP_T
         for sx in (-STRAP_X, STRAP_X):
             add_u_shell(
@@ -553,6 +666,23 @@ def build_trough_mesh(
                 A_SPAN,
                 METAL_IDX,
             )
+            # through-bolts: domed heads on the strap face, sunk into it so
+            # each head reads as clamping the strap to the staves
+            for a in (BOLT_ANGLES if hardware else ()):
+                nrm = Vector((0.0, math.sin(a), -math.cos(a)))
+                base = _arc_point(a, r_strap_out, sx, zc) - nrm * BOLT_SINK
+                if float_bolts:
+                    base = base + nrm * BOLT_FLOAT
+                add_bolt_head(bm, base, nrm, BOLT_R, BOLT_H, METAL_IDX)
+            for side in (-1.0, 1.0):
+                a_rim = side * A_SPAN
+                p_in = _arc_point(a_rim, r_in - CLIP_OVER, sx, zc)
+                p_out = _arc_point(a_rim, r_strap_out, sx, zc)
+                # lie on the rim face: shift the radial bar outward along the
+                # arc tangent by half its thickness
+                tan = Vector((0.0, math.cos(a_rim), math.sin(a_rim))) * side
+                off = tan * (CLIP_T / 2.0 - 0.002)
+                add_oriented_box(bm, p_in + off, p_out + off, (STRAP_W, CLIP_T), METAL_IDX)
         for sx in (-LEG_X, LEG_X):
             for ysign in (-1.0, 1.0):
                 add_box(
@@ -561,6 +691,22 @@ def build_trough_mesh(
                     (SHOE_XY[0], SHOE_XY[1], SHOE_H),
                     METAL_IDX,
                 )
+
+        # trestle pegs: one through each leg across the side stretcher's
+        # tenon, and one down through each side stretcher into the long one
+        for sx in ((-LEG_X, LEG_X) if hardware else ()):
+            for ysign in (-1.0, 1.0):
+                y_peg = ysign * (y_leg - 0.004)
+                add_peg(bm, Vector((sx, y_peg, STRETCHER_Z)), Vector((1.0, 0.0, 0.0)),
+                        LEG_W + 2.0 * PEG_PROUD, PEG_R, WOOD_IDX)
+            add_peg(bm, Vector((sx - math.copysign(0.004, sx), 0.0, STRETCHER_Z)),
+                    Vector((0.0, 0.0, 1.0)), STRETCHER_T + 2.0 * PEG_PROUD, PEG_R, WOOD_IDX)
+
+        # a drain bung driven into the right end, low on its middle board
+        bung_z = hull_z_at_y(BUNG_Y, r_cap_out, zc) + BUNG_LIFT
+        if hardware:
+                add_peg(bm, Vector((x_cap_r1 + BUNG_OUT / 2.0 - 0.006, BUNG_Y, bung_z)),
+                    Vector((1.0, 0.0, 0.0)), BUNG_OUT + 0.012, BUNG_R, WOOD_IDX, sides=10)
 
         z_bot = zc - r_in
         z_rim = zc - r_in * math.cos(A_SPAN)
@@ -595,12 +741,12 @@ def build_trough_mesh(
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = face.material_index == WATER_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         for poly in me.polygons:
-            poly.use_smooth = False
+            poly.use_smooth = poly.material_index == WATER_IDX
     finally:
         bm.free()
     paint_planks(me)
@@ -1008,6 +1154,32 @@ def shell_bvh_gap(me, ga, gb):
         bm_b.free()
 
 
+def shell_bite(me, ga, gb):
+    """Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is."""
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_b.faces:
+            return -1e9
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -1e9
+        for i in ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            if loc is None:
+                continue
+            depth = dist if (co - loc).dot(nrm) < 0.0 else -dist
+            best = max(best, depth)
+        return best
+    finally:
+        bm_b.free()
+
+
 def min_vert_gap(me, ga, gb):
     pa = [me.vertices[i].co for i in ga]
     pb = [me.vertices[i].co for i in gb]
@@ -1048,6 +1220,7 @@ def joint_audit(me):
     ends = []
     straps = []
     waters = []
+    bolts = []
     for g, a, mat in boxes:
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
         cx = 0.5 * (a[0] + a[3])
@@ -1060,6 +1233,9 @@ def joint_audit(me):
             continue
         if mat == METAL_IDX and dy > 0.15 and dz > 0.10:
             straps.append((g, a))
+            continue
+        if mat == METAL_IDX and max(dx, dy, dz) < 0.03 and 0.5 * (a[2] + a[5]) > 0.10:
+            bolts.append((g, a))
             continue
         if mat == WATER_IDX:
             waters.append((g, a))
@@ -1082,6 +1258,10 @@ def joint_audit(me):
     strap_gap = 99.0
     if straps and hulls:
         strap_gap = min(shell_bvh_gap(me, s[0], h[0]) for s in straps for h in hulls)
+    bolt_bite = -1.0
+    if bolts and straps:
+        # every bolt must bite its own strap: the worst bolt's best strap
+        bolt_bite = min(max(shell_bite(me, b[0], s[0]) for s in straps) for b in bolts)
     water_gap = 99.0
     if waters and hulls:
         water_gap = min(shell_bvh_gap(me, w[0], h[0]) for w in waters for h in hulls)
@@ -1096,6 +1276,8 @@ def joint_audit(me):
         "ends": len(by_end),
         "end_boards": min((len(gs) for gs in by_end.values()), default=0),
         "straps": len(straps),
+        "bolts": len(bolts),
+        "bolt_bite": bolt_bite,
         "waters": len(waters),
         "rim_span": rim_span,
         "strap_gap": strap_gap,
@@ -1248,6 +1430,7 @@ def check(
     narrow_hull=False,
     open_ends=False,
     slab_ends=False,
+    float_bolts=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_trough_mesh(
@@ -1260,6 +1443,7 @@ def check(
         narrow_hull=narrow_hull,
         open_ends=open_ends,
         slab_ends=slab_ends,
+        float_bolts=float_bolts,
     )
     high = build_trough_mesh(
         "TroughHigh",
@@ -1271,6 +1455,7 @@ def check(
         narrow_hull=narrow_hull,
         open_ends=open_ends,
         slab_ends=slab_ends,
+        float_bolts=float_bolts,
     )
     wood, metal, water = trough_materials()
     assign_slots(low, wood, metal, water)
@@ -1318,7 +1503,11 @@ def check(
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_trough_mesh("TroughColSrc", bevel_offset=0.0, bevel_segments=1)
+    # The collider hulls the trough without its sub-2 cm hardware (bolt heads,
+    # pegs, bung): detail that small carries no collision meaning, and it
+    # would add hull faces for nothing.
+    collider_src = build_trough_mesh(
+        "TroughColSrc", bevel_offset=0.0, bevel_segments=1, hardware=False)
     collider = convex_hull_collider(collider_src, "TroughCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -1362,7 +1551,8 @@ def check(
         f"measured shoes={sup['shoes']} shoe_z={sup['shoe_z']:.5f} "
         f"rim_span={jnt['rim_span']:.4f} strap_gap={jnt['strap_gap']:.5f} "
         f"water_gap={jnt['water_gap']:.5f} hull_xy={jnt['hull_xy']} "
-        f"ends={jnt['ends']} end_boards={jnt['end_boards']} straps={jnt['straps']}"
+        f"ends={jnt['ends']} end_boards={jnt['end_boards']} straps={jnt['straps']} "
+        f"bolts={jnt['bolts']} bolt_bite={jnt['bolt_bite']:.5f}"
     )
     print(f"measured containment rays={con['rays']} misses={con['misses']}")
 
@@ -1493,6 +1683,13 @@ def check(
             "(--slab-ends is the designed fail)",
             20,
         ), None, None, None, None, None
+    want_bolts = 2 * len(BOLT_ANGLES)
+    if jnt["bolts"] != want_bolts or jnt["bolt_bite"] < BOLT_BITE_MIN:
+        return fail(
+            f"bolt seat: worst bolt bite into its strap {jnt['bolt_bite']:.5f} < {BOLT_BITE_MIN} "
+            f"or bolts={jnt['bolts']} != {want_bolts} (--float-bolts is the designed fail)",
+            21,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1619,6 +1816,7 @@ def main():
     p.add_argument("--narrow-hull", action="store_true")
     p.add_argument("--open-ends", action="store_true")
     p.add_argument("--slab-ends", action="store_true")
+    p.add_argument("--float-bolts", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1631,6 +1829,7 @@ def main():
         narrow_hull=args.narrow_hull,
         open_ends=args.open_ends,
         slab_ends=args.slab_ends,
+        float_bolts=args.float_bolts,
     )
     if code:
         return code

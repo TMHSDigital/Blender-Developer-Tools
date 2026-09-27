@@ -1,8 +1,9 @@
 # Water trough
 
 A showcase piece, not an example. Procedural staved water trough on a
-timber stand (watertight U-hull, board-built ends, contained water, iron
-straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles
+timber stand (watertight U-hull, board-built ends with a drain bung,
+contained water with a rippled surface and meniscus, iron straps
+through-bolted and clipped over the rim, pegged trestle legs) then the shipped pipeline: unique-cell UVs, Cycles
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 The hull, ends, straps and water all sample the same YZ arc. Each end
@@ -23,31 +24,41 @@ witness an API contract. "It rendered without error" is not a check.
 Hygiene combinatorics match `examples/mesh-hygiene-audit` (copied, not
 imported).
 
-Intended size: 1.08 m tray length, 0.44 m across the U, 0.50 m overall
-height; outer AABB 1.093 × 0.552 × 0.5055 m.
+Intended size: 1.08 m tray length, 0.44 m across the U, 0.51 m overall
+height; outer AABB 1.111 × 0.552 × 0.512 m (the bung adds 18 mm in X, the
+rim clips 7 mm in Z).
 
 ## Budgets
 
 Declared as named constants; every gate **recomputes** from the mesh,
 materials, UVs, evaluated LOD, collider, or export file.
 
-| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
+| Axis | Declared | Measured (4.5.11 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2800–3500 | 3316 / 3316 / 3316 |
-| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2195 / 0.2195 / 0.2195 |
-| Materials | exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water | 3 slots; 1482 / 156 / 29 |
+| Base triangles | 4300–5200 | 4792 / 4792 |
+| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2199 / 0.2199 |
+| Materials | exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water | 3 slots; 1656 / 420 / 476 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.093, 0.552, 0.5055) m ± 0.01 | (1.0932, 0.5520, 0.5055), zmin 0 |
-| Collider tris | ≤ 80 | 68 |
-| Export | written, size > 0 | 242240 / 242240 / 242224 bytes |
+| Outer AABB | (1.111, 0.552, 0.512) m ± 0.01 | (1.1112, 0.5520, 0.5123), zmin 0 |
+| Collider tris | ≤ 80 | 76 |
+| Export | written, size > 0 | 355404 / 355388 bytes |
 
 Base triangles rose from **2484 to 3700** in the first quality pass: box
 end slabs and a single extruded U became ten jittered staves, U end-caps,
 continuous straps offset from the legs, and stretchers that meet the
 inner faces. The second pass took them to **3124**: the open U-band ends
 became solid end boards, which close the section with fewer faces. The
-third pass took them to **3316**: each end became three boards.
+third pass took them to **3316**: each end became three boards. The
+fifth pass took them to **4792**: the water became a lofted, rippled
+volume (~900 triangles; it was one flat quad on a U prism), and the
+straps gained ten bolt heads and four rim clips, the trestles six pegs,
+and the right end a bung. The band moved from 2800–3500 to 4300–5200, the
+same ~±10 % slack around the measured count. The collider hulls the
+trough without the sub-2 cm hardware (bolts, pegs, bung): detail that
+small carries no collision meaning. The rim clips are 47 mm wide and
+stay in it. The 5.1.2 column was dropped with this change: the new model
+was measured on 4.5.11 and 5.2.1 only.
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. Bake pixels are
@@ -82,9 +93,10 @@ Recomputed from the generated mesh, not asserted about the script.
 | --- | --- | --- |
 | End-cap rim Z-span (union of an end's boards) | ≤ 0.080 m | 0.0208 |
 | Strap-to-hull BVH gap | ≤ 0.008 m | 0.00000 |
-| Water-to-hull BVH gap | ≤ 0.008 m | 0.00260 |
-| Water contained by the end boards | 0 misses over 66 outward rays | 0 of 66 |
+| Water-to-hull BVH gap | ≤ 0.008 m | 0.00249 |
+| Water contained by the end boards | 0 misses over 120 outward rays | 0 of 120 |
 | **End boards** per end | ≥ 3 | 3 |
+| Bolt bite: each of the 10 bolt heads' deepest vertex inside its strap (signed depth) | ≥ 0.002 m, exactly 10 bolts | 0.00347 |
 
 ### Why the ends are solid boards
 
@@ -100,8 +112,8 @@ hull; nothing asked whether anything held it in at the ends.
 along X, from the face's perimeter vertices and from points drawn 50% and
 90% of the way in from the centroid, so the middle of the section is
 tested and not only the rim a band would cover. Every ray must hit
-timber within `1.5 × END_T`. `--open-ends` restores the U-bands: all 66
-rays miss, and the piece exits 18.
+timber within `1.5 × END_T`. `--open-ends` restores the U-bands: 119 of
+the 120 rays miss, and the piece exits 18.
 
 ### Why each end is three boards
 
@@ -138,12 +150,23 @@ The third pass darkened the grazing tint from a pale grey-blue (0.20,
 the surface near grazing, where that tint wins, and it read as a
 painted slab.
 
+The fifth pass made the surface geometry. The water is lofted along X,
+`WATER_NX` stations with `WATER_NY` strips across each, under two crossing
+standing waves of `RIPPLE_AMP` that damp to zero at the staves, and a
+`MENISCUS_H` meniscus that climbs the wall over `MENISCUS_W`. The water is
+the one smooth-shaded material, so the key light runs along the crests.
+The straps were invisible from the hero camera, which looks over the rim
+while the straps wrap the hull's underside. Each strap now ends in a clip
+hooked over the rim and carries five domed carriage-bolt heads. The
+trestle legs are pegged through their stretcher tenons, and a drain bung
+sits low in the right end.
+
 The fourth pass made the surface read as liquid rather than as a teal panel: larger ripples (noise scale 22 to 7) under a stronger bump (0.08 to 0.30) at roughness 0.03 catch the key as glints, and the render path turns on EEVEE screen-space raytracing (4.2+) so the staves mirror in the water. The iron gets vertically stretched rust runs that dull its metallic response. A lower camera was tried to show the hull straps and rejected: the water surface dropped out of view.
 
 ### Falsifiers
 
-Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and
-5.2.1 and returned the same code on each.
+Each violates one named budget. After the fifth pass all ten were re-run
+on 4.5.11 and 5.2.1 and returned the same code on each.
 
 | Flag | Budget violated | Exit |
 | --- | --- | --- |
@@ -152,10 +175,11 @@ Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and
 | `--lift-z` | bounding box `zmin` is 0 | 16 |
 | `--short-legs` | named shoe supports at Z=0 | 16 |
 | `--box-ends` | end-cap rim span | 17 |
-| `--float-strap` | strap-to-hull gap | 18 |
+| `--float-strap` | strap-to-hull gap (straps lifted `STRAP_FLOAT` 0.012 m: gap 0.01169) | 18 |
 | `--narrow-hull` | hull plan vs stated size | 19 |
 | `--open-ends` | water contained by the end boards (restores the open U-band ends) | 18 |
 | `--slab-ends` | end boards per end (restores the one-piece D board; measures 1) | 20 |
+| `--float-bolts` | bolt bite (heads lifted 0.015 m off the strap: −0.01153) | 21 |
 
 `--short-legs` lifts the shoes and stretches each leg's foot down to the
 floor, so AABB `zmin` stays 0 (the legs still plant) and the
@@ -163,6 +187,12 @@ named-support gate is what fires. Lifting the shoes alone used to let the
 whole piece re-ground on the legs. That shrank the AABB by ~10 mm, 0.4 mm
 inside the bounding-box tolerance, and a 1.5 mm model change in this pass
 tipped it to exit 8. With the feet stretched, the envelope moves 1.6 mm.
+
+`--float-strap` lifted the straps 0.040 m until the fifth pass. With bolt
+heads and rim clips riding on the straps, that widened the AABB past its
+tolerance and the probe hit exit 8 before the strap-seat budget it exists
+for. It now lifts them `STRAP_FLOAT` (0.012 m), still a 0.0117 m gap
+against the 0.008 m budget.
 
 ## Run
 
@@ -177,6 +207,7 @@ blender --background --python water_trough.py -- --float-strap
 blender --background --python water_trough.py -- --narrow-hull
 blender --background --python water_trough.py -- --open-ends
 blender --background --python water_trough.py -- --slab-ends
+blender --background --python water_trough.py -- --float-bolts
 blender --background --python water_trough.py -- --output trough.png
 ```
 
@@ -186,7 +217,7 @@ Smoke passes no flags.
 
 File-local. `9` is a valid check code. `10` is reserved for
 `gallery_framing.check_framing` on the `--output` path. `15`–`19` are the
-hygiene and joint-fit family.
+hygiene and joint-fit family; `20`–`21` are file-local.
 
 | Code | Meaning |
 | --- | --- |
@@ -211,3 +242,4 @@ hygiene and joint-fit family.
 | 18 | Seat: strap or water BVH gap (`--float-strap`), or water not contained by the end boards (`--open-ends`) |
 | 19 | Hull length or width off the stated real-world size (`--narrow-hull`) |
 | 20 | An end is fewer than three boards (`--slab-ends`) |
+| 21 | Bolt seat: a bolt head not inside its strap, or not exactly ten (`--float-bolts`) |
