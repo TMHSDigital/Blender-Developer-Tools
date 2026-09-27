@@ -59,11 +59,24 @@ not a pixel witness — the hood and roof are nearly flat across the plane,
 so an unwelded seam renders within 12/255 of the welded one; the `2n − c`
 count is what catches it.
 
-Render notes: the loft is smooth-shaded with sharp edges set on the
-authored half by dihedral angle (35°) and material border — no bevel or
-weighted-normal modifier, so the stack stays Mirror only and every count
-stays closed-form. Boundary edges on the plane take the angle to their own
-mirror image, `acos(1 − 2nₓ²)`, so the centerline shades smooth. The
+Render notes: the 13-point loft reads faceted at gallery size, so the
+`--output` path — after `check()` has asserted every closed-form count on
+the Mirror-only stack — stacks a Subdivision Surface modifier (level 2)
+**after** `MirrorHalf`. Order matters: subdividing the half first would pull
+the centerline off the plane; subdividing the welded whole keeps it exact.
+Panel breaks stay crisp through a `crease_edge` attribute: every material
+border (glass, pillars, arch cladding, the chrome window-sill strip)
+creases fully and the fascia cap outlines half-crease, so the nose keeps
+its shape. The body is smooth-shaded with hard shading only at material
+borders; the separate parts keep a 40° dihedral split, and their boundary
+edges on the plane take the angle to their own mirror image,
+`acos(1 − 2nₓ²)`, so centerlines shade smooth. The paint is candy red over
+a faint metallic base under a softened clear coat; the rim light is large
+and dim and set steep — a small bright rim mirrors in the roof as a clipped
+white slab, and a shallow one prints its own terminator line across the
+floor. Tires carry a 72-groove tread bump masked to the outward-facing
+band, and the rims are a half-metallic alloy (a full metal mirrors the
+black stage and the spokes vanish). The
 previous faceted loft had a thin pink-white streak on the hood by the
 windshield: not a seam (it sat at `|x|` 0.11–0.38, on the mirrored half, and
 all weld checks passed) but a sliver facet — the loft's greenhouse points

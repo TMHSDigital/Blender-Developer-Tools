@@ -530,7 +530,7 @@
       "name": "car-mirror-symmetry",
       "dir": "examples/car-mirror-symmetry",
       "teaches": "A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it.",
-      "alt": "A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille.",
+      "alt": "A smooth candy-red stylized hatchback in front three-quarter view with tinted glass, black pillars, a chrome window sill, silver five-spoke alloy wheels, and matched headlamps and door mirrors either side of one centered grille.",
       "witnessesFix": "Mirror is a modifier, not applied data: the original keeps the authored half while the evaluated mesh is the welded, watertight, exactly symmetric whole.",
       "hero": "docs/gallery/assets/car-mirror-symmetry-hero.webp",
       "preview": "examples/car-mirror-symmetry/preview.webp",

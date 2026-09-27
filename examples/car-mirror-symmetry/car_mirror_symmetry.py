@@ -394,7 +394,8 @@ def _assign_body_materials(body):
     B-pillar interrupts it, paint C-pillar ends it); the drip rail above it
     is trim and becomes the A-pillar through the windshield; the roof bands
     are glass exactly where the cabin factor ramps (windshield, hatch)."""
-    PAINT, GLASS, TRIM = (MATERIALS.index(m) for m in ("Paint", "Glass", "Trim"))
+    PAINT, GLASS, TRIM, CHROME = (MATERIALS.index(m)
+                                  for m in ("Paint", "Glass", "Trim", "Chrome"))
     for poly in body.data.polygons:
         i, k = divmod(poly.index, RING - 1)
         if i >= N_ST - 1:            # cap ngons (front/rear fascia)
@@ -405,6 +406,8 @@ def _assign_body_materials(body):
         cab = cabin(ym) > 1e-6
         if k <= 3:
             poly.material_index = TRIM       # underbody, rocker, arch cladding
+        elif k == 6 and cab and ym < Y_CPILLAR:
+            poly.material_index = CHROME     # window-sill strip under the side glass
         elif k == 7 and cab and ym < Y_CPILLAR:
             in_b = Y_BPILLAR[0] <= ym <= Y_BPILLAR[1]
             poly.material_index = TRIM if in_b else GLASS
@@ -591,11 +594,13 @@ def _finish_materials():
         m.use_nodes = True
         return m.node_tree.nodes["Principled BSDF"]
     p = principled("Paint")
-    p.inputs["Base Color"].default_value = (0.50, 0.016, 0.02, 1.0)
-    p.inputs["Metallic"].default_value = 0.0
-    p.inputs["Roughness"].default_value = 0.38
-    p.inputs["Coat Weight"].default_value = 1.0   # clear coat: crisp light streaks
-    p.inputs["Coat Roughness"].default_value = 0.06
+    # candy red over a faint metallic base, under a glassy clear coat: the coat
+    # carries the crisp strip-light streaks that describe the body's curvature
+    p.inputs["Base Color"].default_value = (0.46, 0.012, 0.018, 1.0)
+    p.inputs["Metallic"].default_value = 0.25
+    p.inputs["Roughness"].default_value = 0.34
+    p.inputs["Coat Weight"].default_value = 0.7
+    p.inputs["Coat Roughness"].default_value = 0.10
     g = principled("Glass")
     # opaque dark dielectric, glossy (metallic glass mirrors the key across
     # the whole windshield as a hot slab). On a near-black stage there is
@@ -622,12 +627,49 @@ def _finish_materials():
     ch.inputs["Metallic"].default_value = 1.0
     ch.inputs["Roughness"].default_value = 0.2
     tire = principled("Tire")
-    tire.inputs["Base Color"].default_value = (0.016, 0.016, 0.018, 1.0)
-    tire.inputs["Roughness"].default_value = 0.82
+    tire.inputs["Base Color"].default_value = (0.018, 0.018, 0.02, 1.0)
+    tire.inputs["Roughness"].default_value = 0.78
+    # tread: 72 transverse grooves around the axle (object X), bumped only
+    # where the face looks outward from the axle, so the sidewalls stay clean
+    tn = bpy.data.materials["Tire"].node_tree
+    tc = tn.nodes.new("ShaderNodeTexCoord")
+    mp = tn.nodes.new("ShaderNodeMapping")
+    mp.inputs["Rotation"].default_value = (0.0, math.radians(90.0), 0.0)
+    tn.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    grad = tn.nodes.new("ShaderNodeTexGradient")
+    grad.gradient_type = 'RADIAL'            # angle about the axle, 0..1
+    tn.links.new(mp.outputs["Vector"], grad.inputs["Vector"])
+
+    def math_node(op, a=None, b=None):
+        n = tn.nodes.new("ShaderNodeMath")
+        n.operation = op
+        for i, v in enumerate((a, b)):
+            if v is None:
+                continue
+            if isinstance(v, float):
+                n.inputs[i].default_value = v
+            else:
+                tn.links.new(v, n.inputs[i])
+        return n.outputs[0]
+
+    groove = math_node('LESS_THAN',
+                       math_node('FRACT', math_node('MULTIPLY', grad.outputs["Fac"], 72.0)),
+                       0.34)
+    sep = tn.nodes.new("ShaderNodeSeparateXYZ")
+    tn.links.new(tc.outputs["Normal"], sep.inputs["Vector"])
+    tread_face = math_node('LESS_THAN', math_node('ABSOLUTE', sep.outputs["X"]), 0.5)
+    bump = tn.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.9
+    bump.inputs["Distance"].default_value = 0.02
+    tn.links.new(math_node('MULTIPLY', groove, tread_face), bump.inputs["Height"])
+    tn.links.new(bump.outputs["Normal"], tire.inputs["Normal"])
     rim = principled("Rim")
-    rim.inputs["Base Color"].default_value = (0.62, 0.64, 0.68, 1.0)
-    rim.inputs["Metallic"].default_value = 1.0
-    rim.inputs["Roughness"].default_value = 0.3
+    # machined alloy: bright, slightly brushed, so the five spokes read
+    # against the dark spoke gaps even in the thumbnail
+    # (half metallic: a full metal on a near-black stage mirrors the black)
+    rim.inputs["Base Color"].default_value = (0.70, 0.71, 0.74, 1.0)
+    rim.inputs["Metallic"].default_value = 0.5
+    rim.inputs["Roughness"].default_value = 0.26
     head = principled("Headlamp")
     head.inputs["Base Color"].default_value = (0.8, 0.84, 0.9, 1.0)
     head.inputs["Roughness"].default_value = 0.1
@@ -671,6 +713,40 @@ def _shade_smooth(ob, angle_deg=35.0):
         bm.free()
 
 
+def _subdivide_body(body):
+    """Render-path refinement: Catmull-Clark after the Mirror, with creases.
+
+    The 13-point loft is exactly the closed form the check counts, and it
+    reads faceted at gallery size. A Subdivision Surface modifier stacked
+    AFTER MirrorHalf smooths the welded whole (subdividing the half first
+    would pull the centerline off the plane). Panel breaks stay crisp:
+    material borders (glass, pillars, cladding, chrome sill) crease fully and
+    the fascia cap outlines half-crease, so the nose and tail keep their
+    shape instead of melting. Runs after check(), so the counts it asserts
+    are the loft's, untouched."""
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(body.data)
+        cl = (bm.edges.layers.float.get("crease_edge")
+              or bm.edges.layers.float.new("crease_edge"))
+        caps = {f for f in bm.faces if len(f.verts) > 4}
+        for e in bm.edges:
+            lf = e.link_faces
+            c = 0.0
+            if len(lf) == 2 and lf[0].material_index != lf[1].material_index:
+                c = 1.0
+            elif any(f in caps for f in lf):
+                c = 0.5
+            e[cl] = c
+        bm.to_mesh(body.data)
+    finally:
+        bm.free()
+    sub = body.modifiers.new("Refine", 'SUBSURF')
+    sub.levels = 2
+    sub.render_levels = 2
+    sub.use_creases = True
+
+
 def render_still(objs, path, engine):
     # Shared Layer 1 gates (render path only) — see gallery_framing.py
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -682,7 +758,10 @@ def render_still(objs, path, engine):
     _finish_materials()
     body = objs["body"]
     parts = [body] + [w for w, *_ in objs["mirrored"]]
-    _shade_smooth(body)
+    # subdivided body: hard shading only at material borders (a dihedral split
+    # would print the loft's facets back onto the smoothed surface)
+    _shade_smooth(body, 179.0)
+    _subdivide_body(body)
     for ob in parts[1:]:
         _shade_smooth(ob, 40.0)
 
@@ -711,19 +790,33 @@ def render_still(objs, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, rot=None, at=None, size_y=None):
         ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy; ld.size = size; ld.color = col
+        if size_y is not None:
+            ld.shape = 'RECTANGLE'
+            ld.size_y = size_y
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        if at is not None:
+            ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
+        else:
+            ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    # default-stage rig per docs/VISUAL-STYLE.md
-    light("Key", (-4.0, -5.0, 6.0), 520.0, 5.0, (1.0, 0.96, 0.9), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 110.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
-    light("Rim", (3.0, 4.5, 5.0), 320.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 155))
-    light("Wedge", (2.5, 5.5, 4.0), 420.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
+    # default-stage rig per docs/VISUAL-STYLE.md, plus a long overhead strip:
+    # its reflection runs down the clear-coated hood and roof as one crisp
+    # streak, which is what makes a car body read as a car body
+    light("Key", (-4.0, -5.0, 6.0), 480.0, 7.5, (1.0, 0.95, 0.88), (48, 0, -35))
+    light("Fill", (5.0, -3.5, 2.5), 55.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    # rim: big and dim, so the clear-coated roof mirrors it as a sheen, not a
+    # clipped white slab (a small bright rim blows the roof out)
+    # (steep, so the light's own plane meets the floor behind the back wall:
+    # a shallow area light prints a hard terminator line across the floor)
+    light("Rim", (2.5, 3.0, 4.5), 220.0, 7.0, (0.62, 0.78, 1.0), at=(0.0, 0.3, 0.8))
+    light("Strip", (-1.6, -0.3, 4.6), 110.0, 2.2, (1.0, 0.98, 0.95),
+          at=(-0.6, -0.3, 0.0), size_y=6.0)
+    light("Wedge", (2.5, 5.5, 4.0), 520.0, 6.0, (1.0, 0.72, 0.45), (-68, 0, 190))
 
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (0.0, -0.3, 0.62)

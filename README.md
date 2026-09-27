@@ -1079,7 +1079,7 @@ smoothed render inverts on sight if the panel binding does.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/car-mirror-symmetry/"><img src="examples/car-mirror-symmetry/preview.webp" alt="Car mirror symmetry: a red stylized hatchback on a dark studio floor, tinted glass, black pillars and arch cladding, spoked wheels, and a matched headlamp and door-mirror pair either side of one centered grille — lofted as one half and completed by the Mirror modifier evaluated through the depsgraph, proving 2n-c counts, exact negated-X partners, a welded watertight centerline, and wheels mirrored about origins on the plane" /></a>
+<a href="examples/car-mirror-symmetry/"><img src="examples/car-mirror-symmetry/preview.webp" alt="Car mirror symmetry: a smooth candy-red stylized hatchback on a dark studio floor, tinted glass, black pillars and arch cladding, a chrome window sill, silver five-spoke alloy wheels, and a matched headlamp and door-mirror pair either side of one centered grille — lofted as one half and completed by the Mirror modifier evaluated through the depsgraph, proving 2n-c counts, exact negated-X partners, a welded watertight centerline, and wheels mirrored about origins on the plane" /></a>
 </td>
 <td valign="middle">
 
