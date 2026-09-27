@@ -13,6 +13,16 @@ leg ends inside the sleeve, above the tread. The first build ended every leg
 3 mm above a vertical ring on the floor, with a 1 mm air gap around the foot.
 The front-back and side stretchers sit at different heights, so their tenons
 do not meet inside the leg. Each member has its own wood tone and grain.
+The seat is dished 14 mm at the centre for sitting, from the same lathe ring
+count as the old 6 mm dish, so the triangle count did not move. The dish
+floor stays 8 mm above the leg tenons wherever a leg enters from below.
+
+The hero stands the stool level and turns it about Z only. An earlier still
+rolled it 6° about X to show the seat, which sank one pair of treads into
+the floor and lifted the other; the camera now sits higher instead. A
+pewter tankard stands in the dish as render-only dressing. It is not part
+of the asset: no budget, no export, and the asset sheet renders the stool
+without it.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.

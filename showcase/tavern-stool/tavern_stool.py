@@ -145,8 +145,11 @@ SEAT_PROFILE = (
     (0.022, 0.168),
     (0.032, 0.170),
     (0.040, 0.164),
-    (0.037, 0.095),
-    (0.034, 0.000),
+    # A sitting dish, 14 mm deep at the centre: the same ring count as the
+    # old 6 mm dish, so the triangle count is unchanged. It stays 8 mm above
+    # the leg tenons (SEAT_TENON) wherever a leg enters from below.
+    (0.033, 0.105),
+    (0.026, 0.000),
 )
 
 
@@ -1396,6 +1399,85 @@ def wire_normal(mat, tex):
     nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
+def add_tankard(scene):
+    """Render-only dressing: a pewter tankard standing in the seat dish.
+
+    Not part of the asset (no budget, no export); it gives the seat a scale
+    cue and a use. The foot rests on the dish, whose surface rises from
+    DISH_Z at the centre by DISH_RISE per metre of radius.
+    """
+    dish_z = SEAT_Z - SEAT_T + SEAT_PROFILE[-1][0]
+    dish_rise = (SEAT_PROFILE[-2][0] - SEAT_PROFILE[-1][0]) / SEAT_PROFILE[-2][1]
+    foot_r = 0.042
+    z0 = dish_z + dish_rise * foot_r - 0.001     # the foot rim bites 1 mm
+    cx, cy = 0.030, -0.018
+    prof = [(0.000, 0.0), (0.040, 0.0), (foot_r, 0.004), (0.043, 0.010),
+            (0.040, 0.016), (0.038, 0.030), (0.037, 0.090), (0.039, 0.112),
+            (0.041, 0.118), (0.041, 0.124), (0.035, 0.124), (0.034, 0.012),
+            (0.0, 0.012)]
+    segs = 32
+    me = bpy.data.meshes.new("Tankard")
+    bm = bmesh.new()
+    try:
+        rings = []
+        for r, z in prof:
+            if r < 1e-9:
+                rings.append([bm.verts.new((cx, cy, z0 + z))])
+            else:
+                rings.append([bm.verts.new((cx + r * math.cos(2 * math.pi * i / segs),
+                                            cy + r * math.sin(2 * math.pi * i / segs),
+                                            z0 + z)) for i in range(segs)])
+        for a, b in zip(rings, rings[1:]):
+            for i in range(segs):
+                j = (i + 1) % segs
+                if len(a) == 1:
+                    f = bm.faces.new((a[0], b[j], b[i]))
+                elif len(b) == 1:
+                    f = bm.faces.new((a[i], a[j], b[0]))
+                else:
+                    f = bm.faces.new((a[i], a[j], b[j], b[i]))
+                f.smooth = True
+        # handle: a D-shaped bar, turned into profile against the hero camera
+        ang = math.radians(20.0)
+        ux, uy = math.cos(ang), math.sin(ang)
+        pts = []
+        for k in range(13):
+            t = math.pi * k / 12
+            reach = 0.030 * math.sin(t)
+            pts.append(Vector((cx + ux * (0.037 + reach), cy + uy * (0.037 + reach),
+                               z0 + 0.100 - 0.070 * k / 12)))
+        hr = 0.0055
+        hs = 8
+        prev = None
+        for k, p in enumerate(pts):
+            tan = (pts[min(k + 1, 12)] - pts[max(k - 1, 0)]).normalized()
+            side = Vector((-uy, ux, 0.0))
+            nrm = tan.cross(side).normalized()
+            ring = [bm.verts.new(p + hr * (side * math.cos(2 * math.pi * i / hs)
+                                           + nrm * math.sin(2 * math.pi * i / hs)))
+                    for i in range(hs)]
+            if prev:
+                for i in range(hs):
+                    j = (i + 1) % hs
+                    f = bm.faces.new((prev[i], prev[j], ring[j], ring[i]))
+                    f.smooth = True
+            prev = ring
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    mat = bpy.data.materials.new("Pewter")
+    mat.use_nodes = True
+    b = mat.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (0.62, 0.62, 0.60, 1.0)
+    b.inputs["Metallic"].default_value = 1.0
+    b.inputs["Roughness"].default_value = 0.46
+    me.materials.append(mat)
+    ob = bpy.data.objects.new("Tankard", me)
+    scene.collection.objects.link(ob)
+    return ob
+
+
 def render_still(low, wood, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(wood, tex)
@@ -1404,8 +1486,12 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
+    # Turn about Z only: the old 6 degree roll about X sank one pair of
+    # treads into the floor and lifted the other (showcase "level on the
+    # stage"). The camera sits higher instead, so the seat dish still reads.
     low.rotation_euler.z = math.radians(-32.0)
-    low.rotation_euler.x = math.radians(6.0)
+    low.rotation_euler.x = 0.0
+    tankard = add_tankard(scene)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1444,17 +1530,19 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
-    light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    # the key reads the grain on the seat and the turned legs; the wedge
+    # rakes the wall behind the stool so the stage carries the warm pool
+    light("Key", (-3.2, -4.4, 5.0), 980.0, 3.6, (1.0, 0.93, 0.84), (50, 0, -36))
+    light("Fill", (5.0, -3.4, 2.4), 60.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Wedge", (1.6, 3.2, 3.2), 780.0, 5.0, (1.0, 0.66, 0.36), (-66, 0, 200))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.05, -1.38, 0.92)
+    cam.location = (1.00, -1.33, 1.06)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.26)
+    aim.location = (0.0, 0.0, 0.25)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1482,7 +1570,7 @@ def render_still(low, wood, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, tankard], stage=[floor, wall],
     )
     if fcode:
         return fcode

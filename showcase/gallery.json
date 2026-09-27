@@ -300,7 +300,7 @@
       "name": "tavern-stool",
       "dir": "showcase/tavern-stool",
       "teaches": "A procedural tavern stool with a lathed seat, turned splayed legs, staggered stretchers, and iron ferrules gripping each leg on its own axis over a level tread, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A wooden tavern stool with a grained round seat, turned splayed legs, stretcher rungs at two heights, and dark iron ferrules on flat treads.",
+      "alt": "A wooden tavern stool with a grained, dished round seat holding a pewter tankard, turned splayed legs, stretcher rungs at two heights, and dark iron ferrules on flat treads.",
       "witnessesFix": "Recomputed: 3040 tris, two materials with 1168 wood and 576 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.341×0.341×0.470 m, LOD ratios in band, convex collider 468 tris, non-empty glTF. Hygiene all zero, four treads at zmin 0, stretcher-leg gap 0, ferrule grip 1.20 mm on each leg's axis, leg ends 1.1 mm above their treads, bake 22.4 texels per UV cell. --float-stretchers exits 17; --pipe-ferrule 18; --sink-legs 20; --low-bake 21.",
       "hero": "docs/gallery/assets/tavern-stool-hero.webp",
       "preview": "showcase/tavern-stool/preview.webp",
