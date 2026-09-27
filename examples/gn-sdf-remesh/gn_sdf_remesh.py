@@ -17,6 +17,11 @@ both builds.
 """
 import bpy, sys, os, math, argparse
 
+# Shared Layer 1 framing measurement (render path only) -- see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 def get_eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
@@ -55,9 +60,125 @@ def build():
     obj.data.materials.append(mat)
     return obj
 
+def build_vase_kit(name):
+    """Render-only input: a vase blocked out the way a modeller kitbashes it --
+    foot, belly, neck, lip and two handles as separate primitives that simply
+    overlap, joined into one mesh with interior faces and hard intersection
+    seams everywhere. Each part keeps its own bisque tone so the seams read.
+    The same `build_remesh_via_sdf` tree then fuses it into one watertight
+    shell: the thing an SDF remesh is actually for."""
+    tones = [("Clay.Foot", (0.30, 0.13, 0.07)), ("Clay.Belly", (0.62, 0.30, 0.15)),
+             ("Clay.Neck", (0.78, 0.62, 0.42)), ("Clay.Lip", (0.86, 0.78, 0.62)),
+             ("Clay.Handle", (0.45, 0.20, 0.10))]
+    mats = []
+    for mname, rgb in tones:
+        m = bpy.data.materials.new(mname); m.use_nodes = True
+        mb = m.node_tree.nodes.get('Principled BSDF')
+        mb.inputs['Base Color'].default_value = (*rgb, 1)
+        mb.inputs['Roughness'].default_value = 0.85   # unfired clay: matte
+        mats.append(m)
+    parts = []
+
+    def add(op, mat_i, **kw):
+        op(**kw)
+        ob = bpy.context.active_object
+        ob.data.materials.append(mats[mat_i])
+        for poly in ob.data.polygons:
+            poly.use_smooth = True
+        parts.append(ob)
+        return ob
+
+    add(bpy.ops.mesh.primitive_cylinder_add, 0, vertices=48, radius=0.42, depth=0.22,
+        location=(0, 0, 0.11))
+    belly = add(bpy.ops.mesh.primitive_uv_sphere_add, 1, segments=48, ring_count=24,
+                radius=0.72, location=(0, 0, 0.82))
+    belly.scale = (1.0, 1.0, 0.86)
+    add(bpy.ops.mesh.primitive_cylinder_add, 2, vertices=40, radius=0.27, depth=0.72,
+        location=(0, 0, 1.62))
+    add(bpy.ops.mesh.primitive_torus_add, 3, major_segments=48, minor_segments=16,
+        major_radius=0.30, minor_radius=0.075, location=(0, 0, 1.98))
+    for sx in (-1.0, 1.0):
+        add(bpy.ops.mesh.primitive_torus_add, 4, major_segments=40, minor_segments=14,
+            major_radius=0.30, minor_radius=0.065, location=(sx * 0.58, 0, 1.36),
+            rotation=(math.radians(90), 0, 0))
+    with bpy.context.temp_override(active_object=parts[0], selected_editable_objects=parts,
+                                   selected_objects=parts):
+        bpy.ops.object.join()
+    kit = parts[0]
+    kit.name = name
+    return kit
+
+
 def render_still(obj, path, engine):
     import bmesh
     sc = bpy.context.scene
+    # The torus the check measured leaves the stage; the render proves the
+    # same tree on a subject where fusing is visible.
+    bpy.context.collection.objects.unlink(obj)
+
+    kit = build_vase_kit("VaseKit")
+    glaze = bpy.data.materials.new("Glaze"); glaze.use_nodes = True
+    g = glaze.node_tree.nodes.get('Principled BSDF')
+    g.inputs['Base Color'].default_value = (0.03, 0.16, 0.30, 1)   # cobalt glaze
+    g.inputs['Roughness'].default_value = 0.12
+    try:
+        g.inputs['Coat Weight'].default_value = 0.6
+    except KeyError:
+        pass
+    fused = bpy.data.objects.new("VaseFused", kit.data.copy())
+    bpy.context.collection.objects.link(fused)
+    # Same builder, finer voxels than the check's 0.1 so the fused shell
+    # holds the handles' profile; the glaze rides in on Set Material.
+    tree, _ok = build_remesh_via_sdf(voxel_size=0.018, material=glaze)
+    fused.modifiers.new("sdf", 'NODES').node_group = tree
+    kit.location.x = -1.45
+    fused.location.x = 1.45
+    dg = bpy.context.evaluated_depsgraph_get()
+    em = fused.evaluated_get(dg).to_mesh()
+    fused_v = len(em.vertices)
+    zmin = min(v.co.z for v in em.vertices)
+    fused.evaluated_get(dg).to_mesh_clear()
+    fused.location.z = -zmin + 0.12
+    kit.location.z = -min(v.co.z for v in kit.data.vertices) + 0.12
+    # the kit's own edges as a thin dark cage: UV rings and torus loops
+    # running straight through each other, the topology the remesh replaces
+    cage_mat = bpy.data.materials.new("Cage"); cage_mat.use_nodes = True
+    cm = cage_mat.node_tree.nodes.get('Principled BSDF')
+    cm.inputs['Base Color'].default_value = (0.05, 0.03, 0.02, 1)
+    cm.inputs['Roughness'].default_value = 0.6
+    cage = bpy.data.objects.new("VaseKitCage", kit.data.copy())
+    cage.data.materials.clear(); cage.data.materials.append(cage_mat)
+    for poly in cage.data.polygons:
+        poly.material_index = 0
+    cage.location = kit.location
+    wire = cage.modifiers.new("cage", 'WIREFRAME')
+    wire.thickness = 0.005; wire.offset = 1.0; wire.use_even_offset = True
+    bpy.context.collection.objects.link(cage)
+    print(f"render: kit_verts={len(kit.data.vertices)} fused_verts={fused_v} "
+          f"kit_mats={len(kit.data.materials)}")
+
+    # walnut potter's bats under each piece
+    wood = bpy.data.materials.new("Walnut"); wood.use_nodes = True
+    wn = wood.node_tree
+    wb = wn.nodes.get('Principled BSDF')
+    wave = wn.nodes.new('ShaderNodeTexWave'); wave.inputs['Scale'].default_value = 1.2
+    wave.inputs['Distortion'].default_value = 1.5
+    wave.inputs['Detail'].default_value = 4.0
+    ramp = wn.nodes.new('ShaderNodeValToRGB')
+    ramp.color_ramp.elements[0].color = (0.13, 0.065, 0.03, 1)
+    ramp.color_ramp.elements[1].color = (0.20, 0.105, 0.05, 1)
+    wn.links.new(wave.outputs['Fac'], ramp.inputs['Fac'])
+    wn.links.new(ramp.outputs['Color'], wb.inputs['Base Color'])
+    wb.inputs['Roughness'].default_value = 0.5
+    bats = []
+    for x in (-1.45, 1.45):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.95, depth=0.12,
+                                            location=(x, 0, 0.06))
+        bat = bpy.context.active_object
+        bat.data.materials.append(wood)
+        bev = bat.modifiers.new("bev", 'BEVEL'); bev.width = 0.025; bev.segments = 3
+        bats.append(bat)
+
     fme = bpy.data.meshes.new("Floor"); bm = bmesh.new()
     try:
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme)
@@ -73,69 +194,32 @@ def render_still(obj, path, engine):
     wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
-    # Input beside output. Alone, the remeshed torus read as a glossy inner
-    # tube with blotchy highlights: nothing said "remeshed". The source torus
-    # (a modifier-free copy of the same datablock) on the left and the SDF
-    # result on the right, each under a cage of its own edges, show the
-    # thing the check measures: UV-ring topology in, voxel-grid topology
-    # out. Render-path scaffolding only; the check ran before this.
-    obj.location.x = 1.85
-    src = bpy.data.objects.new("SourceTorus", obj.data.copy())
-    src.location = (-1.85, obj.location.y, obj.location.z)
-    bpy.context.collection.objects.link(src)
-    # build() centres the torus at z=0.55 with a 0.5 minor radius, so both
-    # hovered 5 cm over the floor. Ground each on its own measured bottom:
-    # the SDF surface is not exactly the source surface.
-    dg0 = bpy.context.evaluated_depsgraph_get()
-    em = obj.evaluated_get(dg0).to_mesh()
-    obj.location.z -= obj.location.z + min(v.co.z for v in em.vertices)
-    obj.evaluated_get(dg0).to_mesh_clear()
-    src.location.z = -min(v.co.z for v in src.data.vertices)
-    cage_mat = bpy.data.materials.new("Cage"); cage_mat.use_nodes = True
-    cb = cage_mat.node_tree.nodes.get('Principled BSDF')
-    cb.inputs['Base Color'].default_value = (0.92, 0.82, 0.62, 1)
-    cb.inputs['Roughness'].default_value = 0.4
-    cages = []
-    dg = bpy.context.evaluated_depsgraph_get()
-    for host, remeshed in ((src, False), (obj, True)):
-        # The remeshed cage is the evaluated result frozen into a plain mesh:
-        # a live copy of the tree would re-apply its Set Material and paint
-        # the cage crimson.
-        data = (bpy.data.meshes.new_from_object(obj.evaluated_get(dg))
-                if remeshed else obj.data.copy())
-        cage = bpy.data.objects.new(host.name + "Cage", data)
-        cage.data.materials.clear(); cage.data.materials.append(cage_mat)
-        for poly in cage.data.polygons:
-            poly.material_index = 0
-        cage.location = host.location
-        wire = cage.modifiers.new("cage", 'WIREFRAME')
-        wire.thickness = 0.012; wire.offset = 1.0; wire.use_even_offset = True
-        wire.material_offset = 0
-        bpy.context.collection.objects.link(cage)
-        cages.append(cage)
-    # Softer than 0.16: at that gloss every voxel facet threw its own hard
-    # glint and the highlight broke into blocks that read as artifacts.
-    for m in obj.data.materials:
-        if m is not None and m.node_tree is not None:
-            bsdf = m.node_tree.nodes.get('Principled BSDF')
-            if bsdf is not None:
-                bsdf.inputs['Roughness'].default_value = 0.32
-    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.45); bpy.context.collection.objects.link(aim)
-    # Raised so both donut holes read, and pulled back to hold the pair.
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (1.5, -10.8, 5.5)
+
+    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.05)
+    bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam"))
+    cam.data.lens = 58.0
+    cam.location = (0.9, -9.4, 3.0)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
-    # low raking warm key so every facet catches a distinct glint, faint cool
-    # fill (docs/VISUAL-STYLE.md)
-    for nm, loc, en, sz, col in [("K", (-5, -3.5, 2.8), 480, 3.0, (1.0, 0.96, 0.9)),
-                                 ("F2", (5, -4, 2), 110, 7.0, (0.75, 0.85, 1.0))]:
+
+    def light(nm, loc, en, sz, col, target=aim):
         ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = sz; ld.color = col
-        lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
-        lc = lo.constraints.new('TRACK_TO'); lc.target = aim; lc.track_axis = 'TRACK_NEGATIVE_Z'; lc.up_axis = 'UP_Y'
-    # warm wedge raking the back wall, aimed past the torus at the wall
-    wd = bpy.data.lights.new("Wedge", 'AREA'); wd.energy = 380; wd.size = 6.0; wd.color = (1.0, 0.76, 0.5)
+        lo = bpy.data.objects.new(nm, ld); lo.location = loc
+        bpy.context.collection.objects.link(lo)
+        lc = lo.constraints.new('TRACK_TO'); lc.target = target
+        lc.track_axis = 'TRACK_NEGATIVE_Z'; lc.up_axis = 'UP_Y'
+    # shaped warm key, faint cool fill, cool rim for the glaze silhouette,
+    # warm wedge raking the back wall (docs/VISUAL-STYLE.md)
+    light("Key", (-4.5, -4.5, 5.0), 520, 3.0, (1.0, 0.95, 0.88))
+    light("Fill", (5, -4, 2.2), 90, 7.0, (0.75, 0.85, 1.0))
+    light("Rim", (2.5, 3.5, 4.0), 260, 2.5, (0.62, 0.78, 1.0))
+    wd = bpy.data.lights.new("Wedge", 'AREA'); wd.energy = 520; wd.size = 6.0
+    wd.color = (1.0, 0.72, 0.45)
     wo = bpy.data.objects.new("Wedge", wd); wo.location = (2.5, 5.5, 4.0)
-    wo.rotation_euler = (math.radians(-68), 0, math.radians(190)); bpy.context.collection.objects.link(wo)
+    wo.rotation_euler = (math.radians(-68), 0, math.radians(190))
+    bpy.context.collection.objects.link(wo)
+
     sc.render.engine = 'CYCLES' if engine == 'cycles' else get_eevee_engine_id()
     if sc.render.engine == 'CYCLES':
         try: sc.cycles.samples = 32
@@ -148,10 +232,17 @@ def render_still(obj, path, engine):
     # for a --background run with no .blend is the drive root, not the cwd.
     path = os.path.abspath(path)
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
-    # AgX would wash the crimson toward brick (docs/VISUAL-STYLE.md)
+    # AgX would wash the cobalt glaze toward slate (docs/VISUAL-STYLE.md)
     sc.view_settings.view_transform = 'Standard'
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    fcode = gallery_framing.check_framing(sc, cam, hero=[kit, fused],
+                                          elements=[kit, fused] + bats, stage=[floor, wall])
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 4
+
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -191,8 +282,11 @@ def main():
         print(f"ERROR: material '{src_mat.name}' dropped by remesh", file=sys.stderr); return 6
 
     if args.output:
-        if not render_still(obj, args.output, args.engine):
-            print("ERROR: render produced no file", file=sys.stderr); return 4
+        rcode = render_still(obj, args.output, args.engine)
+        if rcode:
+            if rcode == 4:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered {args.output} ({os.path.getsize(args.output)} bytes)")
     print("gn-sdf-remesh OK")
     return 0

@@ -561,7 +561,7 @@ exits 0 on all three. `--assume-present` is red only on 5.2.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a crimson ceramic torus with visible voxel-remesh facets, resting on a dark studio floor" /></a>
+<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a vase kitbashed from overlapping clay primitives beside the same kit fused by the SDF remesh into one cobalt-glazed shell" /></a>
 </td>
 <td valign="middle">
 

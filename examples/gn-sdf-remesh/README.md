@@ -16,6 +16,17 @@ input mesh's material is dropped on remesh (the result renders with the default 
 it inside the tree with a **Set Material** node (`GeometryNodeSetMaterial`) on the remeshed
 output — this example does that and asserts the material survives onto the evaluated mesh.
 
+## Render
+
+The check measures a torus; the still proves the same `build_remesh_via_sdf` tree on a
+subject where remeshing is visible. A vase is kitbashed from overlapping primitives (foot,
+belly, neck, lip, two handles), each in its own clay tone under a thin cage of its own edges,
+so the interior faces and hard intersection seams read. Beside it the identical kit runs
+through the tree (finer 0.018 voxels, cobalt glaze carried in by Set Material) and comes out
+one fused, watertight shell with the handles filleted into the belly. The torus leaves the
+stage before the render; the render path gates framing through `examples/gallery_framing.py`
+(exit 10).
+
 ## Run
 
 ```bash
@@ -44,6 +55,7 @@ against it.
 | 4 | `--output` produced no file |
 | 5 | Wrong-era EEVEE engine id was accepted |
 | 6 | Input material dropped by remesh |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
