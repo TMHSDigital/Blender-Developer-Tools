@@ -514,6 +514,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "basketball-hoop",
+      "dir": "showcase/basketball-hoop",
+      "category": "sports",
+      "teaches": "A procedural in-ground basketball goal — one-sweep gooseneck pole, braced framed backboard, regulation rim on a bolted flange and a twelve-loop tapered net hung on the rim hooks — through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "An outdoor basketball goal: padded steel gooseneck pole on a bolted plate, braced framed backboard with a red shooter's square, an orange rim and a white corded net.",
+      "witnessesFix": "Recomputed: 9356 tris, six materials with 2206 steel, 54 board, 32 paint, 916 rim, 1344 net and 368 pad faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.846×2.054×3.950 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both braces 7.0 mm into the collar and 21.8 mm into the lower rail, all 12 net loops threaded through their hook eyes (worst 7.0 mm from the eye centre against a 9 mm clear radius), rim top 3.050 m, inside diameter 0.457 m, inner edge 0.151 m off the board, tilt 0.000°, one connected assembly of 93 shells, LOD ratios in band, convex collider 200 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --short-brace 17; --drop-net 18; --tilt-rim 19; --loose-pad 20.",
+      "hero": "docs/gallery/assets/basketball-hoop-hero.webp",
+      "preview": "showcase/basketball-hoop/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
