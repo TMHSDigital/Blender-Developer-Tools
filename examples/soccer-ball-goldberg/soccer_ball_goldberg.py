@@ -17,6 +17,7 @@ check. Pass --output to also render a still:
     blender --background --python soccer_ball_goldberg.py -- --output b.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
+from mathutils import Vector
 
 # Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -40,6 +41,12 @@ TOL_CENTER = 1.0e-6         # centroid at origin
 SEAM_WIDTH = 0.018          # render only: stitched seam width on the ball
 SEAM_LIFT = 0.002           # render only: seam sits this far proud of the ball
 FRAMING_EXIT = 14           # render only: gallery_framing returns 10, taken here
+TURF_SIZE = (16.0, 14.0)    # render only: pitch turf footprint (x, y)
+TURF_H = 0.22               # render only: sod sample thickness
+TURF_STRIPE = 0.6           # render only: mowing stripe width
+CHALK_SPOT_R = 0.42         # render only: penalty spot radius under the ball
+CHALK_LINE_Y = 0.95         # render only: touchline behind the ball
+CHALK_LINE_W = 0.12
 
 # closed forms for a truncated icosahedron (Goldberg polyhedron GP(1,1))
 EXPECT_V, EXPECT_E, EXPECT_F = 60, 90, 32
@@ -282,17 +289,146 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+def _leather(mat, base, rough):
+    """Synthetic match leather: a fine pebble grain in the bump and a thin
+    clear coat, so each panel carries a soft sheen instead of flat paint."""
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*base, 1.0)
+    b.inputs["Roughness"].default_value = rough
+    b.inputs["Coat Weight"].default_value = 0.35
+    b.inputs["Coat Roughness"].default_value = 0.25
+    grain = nt.nodes.new("ShaderNodeTexVoronoi")
+    grain.inputs["Scale"].default_value = 160.0
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.12
+    bump.inputs["Distance"].default_value = 0.002
+    nt.links.new(grain.outputs["Distance"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+
+
 def _panel_materials(obj):
     """Leather finishes for the two panel classes (render path only)."""
     white, black = obj.data.materials
-    white.use_nodes = True
-    wb = white.node_tree.nodes["Principled BSDF"]
-    wb.inputs["Base Color"].default_value = (0.82, 0.82, 0.84, 1.0)
-    wb.inputs["Roughness"].default_value = 0.52
-    black.use_nodes = True
-    bb = black.node_tree.nodes["Principled BSDF"]
-    bb.inputs["Base Color"].default_value = (0.018, 0.02, 0.024, 1.0)
-    bb.inputs["Roughness"].default_value = 0.48
+    _leather(white, (0.80, 0.80, 0.82), 0.48)
+    _leather(black, (0.016, 0.018, 0.022), 0.42)
+
+
+def _turf_patch(scene):
+    """Render-only staging: a patch of mown pitch turf — striped grass on
+    top, a soil edge on its (off-frame) sides — with a chalked penalty spot
+    under the ball and a touchline running behind it."""
+    me = bpy.data.meshes.new("Turf")
+    bm = bmesh.new()
+    try:
+        res = bmesh.ops.create_cube(bm, size=1.0)
+        for v in res["verts"]:
+            v.co.x *= TURF_SIZE[0]
+            v.co.y *= TURF_SIZE[1]
+            v.co.z = (v.co.z + 0.5) * TURF_H
+        bmesh.ops.bevel(bm, geom=[e for e in bm.edges], offset=0.06, segments=3,
+                        profile=0.5, affect='EDGES', clamp_overlap=True)
+        for f in bm.faces:
+            f.material_index = 0 if f.normal.z > 0.7 else 1
+            f.smooth = True
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+
+    grass = bpy.data.materials.new("MownGrass")
+    grass.use_nodes = True
+    nt = grass.node_tree
+    g = nt.nodes["Principled BSDF"]
+    g.inputs["Roughness"].default_value = 0.85
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    # mowing stripes: alternating light/dark bands where the mower laid the
+    # blades in opposite directions
+    stripes = nt.nodes.new("ShaderNodeTexWave")
+    stripes.wave_type = 'BANDS'
+    stripes.bands_direction = 'X'
+    stripes.wave_profile = 'SIN'
+    stripes.inputs["Scale"].default_value = 2.0 * math.pi / (20.0 * TURF_STRIPE)
+    nt.links.new(coord, stripes.inputs["Vector"])
+    sharpen = nt.nodes.new("ShaderNodeMapRange")
+    sharpen.inputs["From Min"].default_value = 0.4
+    sharpen.inputs["From Max"].default_value = 0.6
+    nt.links.new(stripes.outputs["Fac"], sharpen.inputs["Value"])
+    blades = nt.nodes.new("ShaderNodeTexNoise")
+    blades.inputs["Scale"].default_value = 90.0
+    blades.inputs["Detail"].default_value = 10.0
+    nt.links.new(coord, blades.inputs["Vector"])
+    band = nt.nodes.new("ShaderNodeMix")
+    band.data_type = 'RGBA'
+    band.inputs[6].default_value = (0.016, 0.060, 0.013, 1.0)
+    band.inputs[7].default_value = (0.032, 0.105, 0.021, 1.0)
+    nt.links.new(sharpen.outputs["Result"], band.inputs[0])
+    tuft = nt.nodes.new("ShaderNodeMix")
+    tuft.data_type = 'RGBA'
+    tuft.blend_type = 'MULTIPLY'
+    tuft.inputs[0].default_value = 0.55
+    nt.links.new(band.outputs[2], tuft.inputs[6])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.45, 0.45, 0.4, 1.0)
+    ramp.color_ramp.elements[1].color = (1.25, 1.25, 1.1, 1.0)
+    nt.links.new(blades.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], tuft.inputs[7])
+    # chalk: a penalty spot under the ball and a touchline behind it
+    spot = nt.nodes.new("ShaderNodeVectorMath")
+    spot.operation = 'LENGTH'
+    nt.links.new(coord, spot.inputs[0])
+    in_spot = nt.nodes.new("ShaderNodeMath")
+    in_spot.operation = 'LESS_THAN'
+    in_spot.inputs[1].default_value = CHALK_SPOT_R
+    nt.links.new(spot.outputs["Value"], in_spot.inputs[0])
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord, sep.inputs["Vector"])
+    off = nt.nodes.new("ShaderNodeMath")
+    off.operation = 'SUBTRACT'
+    off.inputs[1].default_value = CHALK_LINE_Y
+    nt.links.new(sep.outputs["Y"], off.inputs[0])
+    dist = nt.nodes.new("ShaderNodeMath")
+    dist.operation = 'ABSOLUTE'
+    nt.links.new(off.outputs["Value"], dist.inputs[0])
+    in_line = nt.nodes.new("ShaderNodeMath")
+    in_line.operation = 'LESS_THAN'
+    in_line.inputs[1].default_value = CHALK_LINE_W / 2
+    nt.links.new(dist.outputs["Value"], in_line.inputs[0])
+    chalk = nt.nodes.new("ShaderNodeMath")
+    chalk.operation = 'MAXIMUM'
+    nt.links.new(in_spot.outputs["Value"], chalk.inputs[0])
+    nt.links.new(in_line.outputs["Value"], chalk.inputs[1])
+    # chalk sits in the grass: the blade noise breaks its edge up a little
+    patchy = nt.nodes.new("ShaderNodeMath")
+    patchy.operation = 'MULTIPLY'
+    nt.links.new(chalk.outputs["Value"], patchy.inputs[0])
+    nt.links.new(blades.outputs["Fac"], patchy.inputs[1])
+    chalk_fac = nt.nodes.new("ShaderNodeMapRange")
+    chalk_fac.inputs["From Min"].default_value = 0.2
+    chalk_fac.inputs["From Max"].default_value = 0.45
+    nt.links.new(patchy.outputs["Value"], chalk_fac.inputs["Value"])
+    lined = nt.nodes.new("ShaderNodeMix")
+    lined.data_type = 'RGBA'
+    lined.inputs[7].default_value = (0.62, 0.64, 0.60, 1.0)
+    nt.links.new(chalk_fac.outputs["Result"], lined.inputs[0])
+    nt.links.new(tuft.outputs[2], lined.inputs[6])
+    nt.links.new(lined.outputs[2], g.inputs["Base Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.5
+    bump.inputs["Distance"].default_value = 0.01
+    nt.links.new(blades.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], g.inputs["Normal"])
+
+    soil = bpy.data.materials.new("Soil")
+    soil.use_nodes = True
+    s = soil.node_tree.nodes["Principled BSDF"]
+    s.inputs["Base Color"].default_value = (0.055, 0.035, 0.02, 1.0)
+    s.inputs["Roughness"].default_value = 0.95
+    me.materials.append(grass)
+    me.materials.append(soil)
+    turf = bpy.data.objects.new("Turf", me)
+    scene.collection.objects.link(turf)
+    return turf
 
 
 def render_still(obj, path, engine):
@@ -359,7 +495,9 @@ def render_still(obj, path, engine):
         min_z = min((ev.matrix_world @ v.co).z for v in ev_me.vertices)
     finally:
         ev.to_mesh_clear()  # no argument: clears this object's evaluated mesh
-    obj.location.z -= min_z - 0.002  # 2 mm contact: grounded, not intersecting
+    # seated on the turf: the ball presses 1 cm into the grass it rests on
+    obj.location.z -= min_z - TURF_H + 0.01
+    turf = _turf_patch(scene)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -404,9 +542,16 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.2, 3.8)
-    cam.rotation_euler = (math.radians(68), 0.0, 0.0)
+    cam.location = (1.2, -7.0, 3.6)
     scene.collection.objects.link(cam)
+    # aimed a little below the ball's centre so the turf and its chalk read
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = obj.location - Vector((0.0, 0.0, 0.25))
+    scene.collection.objects.link(aim)
+    track = cam.constraints.new('TRACK_TO')
+    track.target = aim
+    track.track_axis = 'TRACK_NEGATIVE_Z'
+    track.up_axis = 'UP_Y'
     scene.camera = cam
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
@@ -425,7 +570,7 @@ def render_still(obj, path, engine):
     # (docs/VISUAL-STYLE.md); Standard is the house transform
     scene.view_settings.view_transform = 'Standard'
     if gallery_framing.check_framing(scene, cam, hero=[obj], elements=[obj],
-                                     stage=[floor, wall]):
+                                     stage=[floor, wall, turf]):
         return FRAMING_EXIT
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):

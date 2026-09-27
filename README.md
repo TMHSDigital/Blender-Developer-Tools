@@ -1059,7 +1059,7 @@ teleported flange) vs MPI KEEP.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/soccer-ball-goldberg/"><img src="examples/soccer-ball-goldberg/preview.webp" alt="Soccer ball Goldberg: a round white soccer ball with black pentagon panels and dark stitched seams around every hexagon on a dark studio floor — a bmesh icosphere truncated at one-third per edge into the Goldberg polyhedron, proving closed-form counts, uniform degree, equal edges, planar faces, one circumsphere, and panels bound by face vertex count" /></a>
+<a href="examples/soccer-ball-goldberg/"><img src="examples/soccer-ball-goldberg/preview.webp" alt="Soccer ball Goldberg: a round white soccer ball with black pentagon panels and dark stitched seams around every hexagon, resting on mown pitch turf beside a chalked touchline — a bmesh icosphere truncated at one-third per edge into the Goldberg polyhedron, proving closed-form counts, uniform degree, equal edges, planar faces, one circumsphere, and panels bound by face vertex count" /></a>
 </td>
 <td valign="middle">
 

@@ -74,12 +74,26 @@ None of this touches the checked mesh, its binding, or any check.
   render-only copy of the mesh, turned into a wire, subdivided and cast onto a
   sphere 2 mm proud of the ball, draws every panel boundary as a stitched seam.
   It is parented to the ball and bound to the dark slot on the copy only.
+- **Match leather.** Both panel materials carry a fine Voronoi pebble grain
+  in the bump and a thin clear coat, so each panel holds a soft sheen.
+- **On the pitch.** The ball sits pressed 1 cm into a patch of mown turf:
+  alternating mowing stripes, blade noise in colour and bump, and chalk
+  (a penalty spot under the ball, a touchline behind it) broken up by the
+  same blade noise. The chalk and stripes read Object coordinates on the
+  turf, so the spot centres under the ball's origin.
 - **Framing gate.** The render path calls
   [`gallery_framing.check_framing`](../gallery_framing.py) before writing the
   still. The helper returns 10, which this example already spends on the
   centroid check, so the call site maps a violation to **14**. The larger,
   rounder ball touched the top edge at the old 55 mm lens; the lens is now
-  50 mm.
+  50 mm, and a `TRACK_TO` aim sits 0.25 below the ball's centre.
+
+### Stage deviation
+
+The floor is dark mown turf rather than the near-black studio floor: a ball
+alone on a black stage read as an object in a void, and the pitch is the
+context that makes it a match ball. The back wall and warm wedge are the
+default stage; measured stage luminance 0.217 sits inside the calibration set.
 
 ## Run
 
