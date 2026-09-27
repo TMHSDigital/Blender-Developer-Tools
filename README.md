@@ -430,7 +430,7 @@ topology 1044 verts / 1028 faces.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/text-version-stamp/"><img src="examples/text-version-stamp/preview.webp" alt="Text version stamp: beveled brass version numerals standing on a dark plinth with a steel BLENDER caption set into its face — the body text is the live bpy.app.version_string" /></a>
+<a href="examples/text-version-stamp/"><img src="examples/text-version-stamp/preview.webp" alt="Text version stamp: beveled gold version numerals standing on a chamfered dark stone plinth with a BLENDER caption on a brushed-steel nameplate — the body text is the live bpy.app.version_string" /></a>
 </td>
 <td valign="middle">
 

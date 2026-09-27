@@ -259,7 +259,7 @@
       "name": "text-version-stamp",
       "dir": "examples/text-version-stamp",
       "teaches": "The TextCurve data API — curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it.",
-      "alt": "The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face.",
+      "alt": "The Blender version number in polished gold 3D characters on a chamfered two-tier dark stone plinth, with BLENDER inked on a brushed-steel nameplate across its face.",
       "witnessesFix": "TextCurve solids are exactly predictable: evaluated z-extent = 2 × (extrude + bevel_depth), bevel widens the outline by 2 × bevel_depth, editing body regenerates geometry — and version_string is not bare semver on LTS (\"4.5.11 LTS\"), so parse bpy.app.version instead.",
       "hero": "docs/gallery/assets/text-version-stamp-hero.webp",
       "preview": "examples/text-version-stamp/preview.webp",

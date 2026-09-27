@@ -132,19 +132,46 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+def bundled_font(name):
+    """Load a font Blender ships in datafiles/fonts (both 4.5 LTS and 5.x ship
+    Inter.woff2 and DejaVuSansMono.woff2). None if the install lacks it."""
+    base = bpy.utils.system_resource('DATAFILES')
+    path = os.path.join(base, "fonts", name) if base else ""
+    if not os.path.isfile(path):
+        return None
+    return bpy.data.fonts.load(path, check_existing=True)
+
+
 def render_still(obj, path, engine):
     scene = bpy.context.scene
     txt = obj.data
     txt.size = 1.0
     txt.space_character = 1.05
+    # Render only (the check above asserts the built-in Bfont): Bfont's "1"
+    # is a bare stem that reads as a capital I ("5.2.I LTS"). Inter, shipped
+    # with Blender, gives the numeral its flag.
+    inter = bundled_font("Inter.woff2")
+    if inter is None:
+        print("ERROR: bundled datafiles/fonts/Inter.woff2 not found", file=sys.stderr)
+        return 13
+    txt.font = inter
 
-    # brass stamp
-    mat = bpy.data.materials.new("Brass")
+    # polished gold stamp: warm base, low roughness with a faint brushed
+    # variation so the long faces carry a gradient instead of a flat slab
+    mat = bpy.data.materials.new("Gold")
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.85, 0.62, 0.28, 1.0)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (0.95, 0.66, 0.26, 1.0)
     bsdf.inputs["Metallic"].default_value = 1.0
-    bsdf.inputs["Roughness"].default_value = 0.32
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 60.0
+    noise.inputs["Detail"].default_value = 4.0
+    rmap = nt.nodes.new("ShaderNodeMapRange")
+    rmap.inputs["To Min"].default_value = 0.16
+    rmap.inputs["To Max"].default_value = 0.30
+    nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+    nt.links.new(rmap.outputs["Result"], bsdf.inputs["Roughness"])
     txt.materials.append(mat)
 
     # stand the text upright, feet on the floor, scaled to a constant width
@@ -156,53 +183,100 @@ def render_still(obj, path, engine):
     width = max(v.co.x for v in me.vertices) - min(v.co.x for v in me.vertices)
     height = max(v.co.y for v in me.vertices) - min(v.co.y for v in me.vertices)
     ev.to_mesh_clear()
-    s = 3.1 / width
+    s = 3.2 / width
     obj.scale = (s, s, s)
     obj.rotation_euler = (math.radians(90), 0.0, 0.0)
     # The stamp stands on a dark plinth, and the caption is set into the
     # plinth's front face. It used to float in the air above the stamp,
     # with a glowing bar along the bottom edge of the frame.
-    plinth_h = 0.30
-    plinth_d = 0.56
-    obj.location = (0.0, 0.0, plinth_h + s * height / 2 + 0.02)
+    # A two-tier plinth with 45-degree chamfers: a wide foot, and an upper
+    # tier whose front face carries a brushed-steel nameplate with the
+    # caption standing proud of it. The gold is reserved for the version; the
+    # plinth is dark stone and the plate and caption are steel.
+    import bmesh
+    foot_h, top_h = 0.12, 0.30
+    plinth_h = foot_h + top_h
+    top_d = 0.62
+    obj.location = (0.0, 0.0, plinth_h + s * height / 2 + 0.01)
 
-    # small steel caption above, also a TextCurve
+    def chamfer_box(name, size, loc, mat, chamfer):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cube(bm, size=1.0)
+            for v in bm.verts:
+                v.co = (v.co.x * size[0], v.co.y * size[1], v.co.z * size[2])
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=chamfer, segments=1,
+                            profile=0.5, affect="EDGES", clamp_overlap=True)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        scene.collection.objects.link(ob)
+        return ob
+
+    pmat = bpy.data.materials.new("Stone")
+    pmat.use_nodes = True
+    pnt = pmat.node_tree
+    pb = pnt.nodes["Principled BSDF"]
+    pb.inputs["Roughness"].default_value = 0.62
+    # honed dark stone: faint mottling, never a flat slot
+    pn = pnt.nodes.new("ShaderNodeTexNoise")
+    pn.inputs["Scale"].default_value = 9.0
+    pn.inputs["Detail"].default_value = 8.0
+    pr = pnt.nodes.new("ShaderNodeValToRGB")
+    pr.color_ramp.elements[0].color = (0.011, 0.011, 0.013, 1.0)
+    pr.color_ramp.elements[1].color = (0.028, 0.027, 0.029, 1.0)
+    pnt.links.new(pn.outputs["Fac"], pr.inputs["Fac"])
+    pnt.links.new(pr.outputs["Color"], pb.inputs["Base Color"])
+
+    smat = bpy.data.materials.new("Steel")
+    smat.use_nodes = True
+    snt = smat.node_tree
+    sb = snt.nodes["Principled BSDF"]
+    sb.inputs["Base Color"].default_value = (0.70, 0.72, 0.76, 1.0)
+    sb.inputs["Metallic"].default_value = 1.0
+    # brushed along X: noise stretched hard in X drives the roughness
+    stc = snt.nodes.new("ShaderNodeTexCoord")
+    smap = snt.nodes.new("ShaderNodeMapping")
+    smap.inputs["Scale"].default_value = (2.0, 120.0, 120.0)
+    sn = snt.nodes.new("ShaderNodeTexNoise")
+    sn.inputs["Detail"].default_value = 6.0
+    sr = snt.nodes.new("ShaderNodeMapRange")
+    sr.inputs["To Min"].default_value = 0.22
+    sr.inputs["To Max"].default_value = 0.42
+    snt.links.new(stc.outputs["Object"], smap.inputs["Vector"])
+    snt.links.new(smap.outputs["Vector"], sn.inputs["Vector"])
+    snt.links.new(sn.outputs["Fac"], sr.inputs["Value"])
+    snt.links.new(sr.outputs["Result"], sb.inputs["Roughness"])
+
+    foot = chamfer_box("PlinthFoot", (3.62, top_d + 0.20, foot_h), (0.0, 0.0, foot_h / 2),
+                       pmat, 0.035)
+    top = chamfer_box("PlinthTop", (3.42, top_d, top_h), (0.0, 0.0, foot_h + top_h / 2),
+                      pmat, 0.045)
+    plate = chamfer_box("Nameplate", (2.2, 0.03, 0.19),
+                        (0.0, -top_d / 2 - 0.008, foot_h + top_h / 2), smat, 0.008)
+
+    # dark inked caption on the steel plate, also a TextCurve
     cap = bpy.data.curves.new("Caption", type='FONT')
     cap.body = "B L E N D E R"
     cap.align_x = 'CENTER'; cap.align_y = 'CENTER'
-    cap.size = 0.34; cap.extrude = 0.012; cap.bevel_depth = 0.004
-    cmat = bpy.data.materials.new("Steel")
+    cap.size = 0.15; cap.extrude = 0.008; cap.bevel_depth = 0.003
+    cap.font = inter
+    cmat = bpy.data.materials.new("CaptionInk")
     cmat.use_nodes = True
     cb = cmat.node_tree.nodes["Principled BSDF"]
-    cb.inputs["Base Color"].default_value = (0.62, 0.66, 0.72, 1.0)
-    cb.inputs["Metallic"].default_value = 1.0
-    cb.inputs["Roughness"].default_value = 0.4
+    cb.inputs["Base Color"].default_value = (0.03, 0.03, 0.035, 1.0)
+    cb.inputs["Metallic"].default_value = 0.2
+    cb.inputs["Roughness"].default_value = 0.35
     cap.materials.append(cmat)
     cap_obj = bpy.data.objects.new("Caption", cap)
     cap_obj.rotation_euler = (math.radians(90), 0.0, 0.0)
-    cap_obj.location = (0.0, -plinth_d / 2 - cap.extrude, plinth_h / 2)
+    cap_obj.location = (0.0, -top_d / 2 - 0.023 - cap.extrude + 0.002, foot_h + top_h / 2)
     scene.collection.objects.link(cap_obj)
-
-    import bmesh
-    plinth_me = bpy.data.meshes.new("Plinth")
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0)
-        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.012, segments=2,
-                        profile=0.5, affect="EDGES", clamp_overlap=True)
-        bm.to_mesh(plinth_me)
-    finally:
-        bm.free()
-    pmat = bpy.data.materials.new("Plinth")
-    pmat.use_nodes = True
-    pb = pmat.node_tree.nodes["Principled BSDF"]
-    pb.inputs["Base Color"].default_value = (0.045, 0.045, 0.05, 1.0)
-    pb.inputs["Roughness"].default_value = 0.45
-    plinth_me.materials.append(pmat)
-    plinth = bpy.data.objects.new("Plinth", plinth_me)
-    plinth.scale = (3.5, plinth_d, plinth_h)
-    plinth.location = (0.0, 0.0, plinth_h / 2)
-    scene.collection.objects.link(plinth)
+    plinth = [foot, top, plate]
 
     # dark studio: floor + back wall
     floor_me = bpy.data.meshes.new("Floor")
@@ -239,9 +313,14 @@ def render_still(obj, path, engine):
         scene.collection.objects.link(ob)
 
     # brass reads on reflections: warm key, broad cool fill, hard warm rim
-    light("Key", (-3.2, -4.8, 4.6), 850.0, 6.0, (1.0, 0.95, 0.86), (52, 0, -32))
-    light("Fill", (4.6, -3.6, 2.4), 320.0, 8.0, (0.75, 0.84, 1.0), (66, 0, 48))
-    light("Rim", (0.8, 4.2, 3.4), 900.0, 3.0, (1.0, 0.75, 0.45), (-65, 0, 170))
+    light("Key", (-3.2, -4.8, 4.6), 700.0, 6.0, (1.0, 0.95, 0.86), (52, 0, -32))
+    light("Fill", (4.6, -3.6, 2.4), 150.0, 8.0, (0.75, 0.84, 1.0), (66, 0, 48))
+    light("Rim", (0.8, 4.2, 3.4), 520.0, 3.0, (1.0, 0.75, 0.45), (-65, 0, 170))
+    # a broad card behind the camera facing the stamp: the gold's front faces
+    # mirror it as a clean gradient instead of the dark studio
+    light("Card", (0.9, -8.6, 1.9), 260.0, 4.0, (1.0, 0.9, 0.74), (84, 0, 6))
+    # warm wedge raking the back wall (docs/VISUAL-STYLE.md)
+    light("Wedge", (2.6, 5.0, 3.8), 260.0, 6.0, (1.0, 0.72, 0.45), (-70, 0, 195))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
@@ -249,10 +328,10 @@ def render_still(obj, path, engine):
     # Reframed: the old (0,-8.5,1.15) fixed 86.5° pitch left the stamp at
     # 0.663 fill with a dead lower third; moved in with an aim on the stamp's
     # vertical center so text, caption, and underline bar balance the frame.
-    cam.location = (0.0, -5.45, 1.55)
+    cam.location = (1.15, -5.75, 1.75)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.62)
+    aim.location = (0.12, 0.0, 0.66)
     scene.collection.objects.link(aim)
     con = cam.constraints.new('TRACK_TO')
     con.target = aim
@@ -280,7 +359,7 @@ def render_still(obj, path, engine):
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj, cap_obj, plinth],
+        elements=[obj, cap_obj, *plinth],
         stage=[floor, wall],
     )
     if fcode:

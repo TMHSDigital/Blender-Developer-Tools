@@ -24,11 +24,19 @@ on every LTS build; branch on the `bpy.app.version` tuple instead.
 
 ## Staging
 
-The numerals stand on a dark plinth, with the steel caption set into the
-plinth's front face. The caption used to float in the air above the
-stamp, and an emissive bar lay along the bottom edge of the frame. The
-still renders under the Standard view transform on the house stage.
-Render path only; the checked text body and its extents are unchanged.
+The polished gold numerals stand on a two-tier chamfered plinth of dark
+honed stone. A brushed-steel nameplate on its front face carries the
+BLENDER caption, so gold is reserved for the version and steel for the
+plate. A card light behind the camera gives the gold faces something to
+mirror. The still renders under the Standard view transform on the house
+stage.
+
+The render sets the stamp in **Inter**, which Blender ships at
+`datafiles/fonts/Inter.woff2` on 4.5 LTS and 5.x alike (found through
+`bpy.utils.system_resource('DATAFILES')`). The built-in Bfont's "1" is a
+bare stem, so the old still read "5.2.I LTS". The check still asserts the
+built-in Bfont: the font swap happens on the render path only, after every
+check has passed, and the checked text body and its extents are unchanged.
 
 ## Run
 
@@ -65,6 +73,7 @@ against it. `10` is the shared framing helper.
 | 8 | Mesh survived `to_mesh_clear()` |
 | 9 | `--output` produced no file |
 | 10 | Gallery framing violation |
+| 13 | `--output`: bundled `datafiles/fonts/Inter.woff2` not found |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
