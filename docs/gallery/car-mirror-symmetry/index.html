@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/car-mirror-symmetry-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
+  <meta property="og:image:alt" content="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="car-mirror-symmetry — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/car-mirror-symmetry-hero.webp" />
-  <meta name="twitter:image:alt" content="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
+  <meta name="twitter:image:alt" content="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille.">
-      <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille.">
+      <img src="../assets/car-mirror-symmetry-hero.webp" alt="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Mirror is a modifier, not applied data: the original keeps the authored half while the evaluated mesh is the welded, watertight, exactly symmetric whole.</div>
@@ -368,7 +368,7 @@
 <p><strong>Why the checks target the modifier, not the base:</strong> mutating a non-plane base vertex cannot break the ±X pairing — the evaluated set is always <code>half ∪ mirror(half)</code>, symmetric by construction. Realistic failures live in the modifier (merge off, axis off, modifier applied into data, origin off the plane), which is what the probes break.</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS, 5.1.2 and 5.2.1 LTS. Mirror, <code>evaluated_get</code> / <code>to_mesh</code> / <code>to_mesh_clear</code> (no argument — passing the mesh raises TypeError on both), <code>BVHTree</code>, and <code>TRACK_TO</code> constraint behavior are stable across them; only the EEVEE engine id is version-gated.</p>
 <p>The render is the proof: hide the mirror and the still is literally half a car — one headlamp, one door mirror, half a grille, a hood cut open at the centerline. The camera stands on the key light&#x27;s side, high enough to look down the hood centerline so both halves read at once. The weld itself is not a pixel witness — the hood and roof are nearly flat across the plane, so an unwelded seam renders within 12/255 of the welded one; the <code>2n − c</code> count is what catches it.</p>
-<p>Render notes: the loft is smooth-shaded with sharp edges set on the authored half by dihedral angle (35°) and material border — no bevel or weighted-normal modifier, so the stack stays Mirror only and every count stays closed-form. Boundary edges on the plane take the angle to their own mirror image, <code>acos(1 − 2nₓ²)</code>, so the centerline shades smooth. The previous faceted loft had a thin pink-white streak on the hood by the windshield: not a seam (it sat at <code>|x|</code> 0.11–0.38, on the mirrored half, and all weld checks passed) but a sliver facet — the loft&#x27;s greenhouse points collapsing onto the hood — flat-shaded and facing the key almost head on (<code>n · −key = 0.967</code>). The redesigned ring lerps a hood layout into a cabin layout, so no such sliver exists. Panel classes are by construction position: underbody, rocker and arch cladding are trim; side glass is the sill-to-glass-top segment under the roof, broken by a trim B-pillar; the drip rail becomes the A-pillar; windshield and hatch glass are the roof bands where the cabin factor ramps. The glass is a dark dielectric whose base colour ramps toward steel blue at grazing angles (Layer Weight → Color Ramp) — on a near-black stage there is little to reflect, and flat dark glass read as dull paint. Lamps, grille, mirrors and handles are closed superellipse pods seated on the skin by a <code>BVHTree</code> ray cast, with a chrome bezel and an inset lens rather than flat boxes.</p>
+<p>Render notes: the 13-point loft reads faceted at gallery size, so the <code>--output</code> path — after <code>check()</code> has asserted every closed-form count on the Mirror-only stack — stacks a Subdivision Surface modifier (level 2) <strong>after</strong> <code>MirrorHalf</code>. Order matters: subdividing the half first would pull the centerline off the plane; subdividing the welded whole keeps it exact. Panel breaks stay crisp through a <code>crease_edge</code> attribute: every material border (glass, pillars, arch cladding, the chrome window-sill strip) creases fully and the fascia cap outlines half-crease, so the nose keeps its shape. The body is smooth-shaded with hard shading only at material borders; the separate parts keep a 40° dihedral split, and their boundary edges on the plane take the angle to their own mirror image, <code>acos(1 − 2nₓ²)</code>, so centerlines shade smooth. The paint is candy red over a faint metallic base under a softened clear coat; the rim light is large and dim and set steep — a small bright rim mirrors in the roof as a clipped white slab, and a shallow one prints its own terminator line across the floor. Tires carry a 72-groove tread bump masked to the outward-facing band, and the rims are a half-metallic alloy (a full metal mirrors the black stage and the spokes vanish). The previous faceted loft had a thin pink-white streak on the hood by the windshield: not a seam (it sat at <code>|x|</code> 0.11–0.38, on the mirrored half, and all weld checks passed) but a sliver facet — the loft&#x27;s greenhouse points collapsing onto the hood — flat-shaded and facing the key almost head on (<code>n · −key = 0.967</code>). The redesigned ring lerps a hood layout into a cabin layout, so no such sliver exists. Panel classes are by construction position: underbody, rocker and arch cladding are trim; side glass is the sill-to-glass-top segment under the roof, broken by a trim B-pillar; the drip rail becomes the A-pillar; windshield and hatch glass are the roof bands where the cabin factor ramps. The glass is a dark dielectric whose base colour ramps toward steel blue at grazing angles (Layer Weight → Color Ramp) — on a near-black stage there is little to reflect, and flat dark glass read as dull paint. Lamps, grille, mirrors and handles are closed superellipse pods seated on the skin by a <code>BVHTree</code> ray cast, with a chrome bezel and an inset lens rather than flat boxes.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python car_mirror_symmetry.py --
@@ -388,9 +388,9 @@ blender --background --python car_mirror_symmetry.py -- --output car.png --engin
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/car-mirror-symmetry/car_mirror_symmetry.py</code>
-        <span>802 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/car-mirror-symmetry/car_mirror_symmetry.py">View on GitHub &rarr;</a></span>
+        <span>895 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/car-mirror-symmetry/car_mirror_symmetry.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="802">
+      <div class="code" data-lines="895">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1192,7 +1192,100 @@ blender --background --python car_mirror_symmetry.py -- --output car.png --engin
 799
 800
 801
-802</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A stylized hatchback built as one half and completed by the Mirror modifier
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A stylized hatchback built as one half and completed by the Mirror modifier
 — a runnable example.
 
 Witnesses the Mirror + depsgraph contract from depsgraph-and-evaluated-data:
@@ -1588,7 +1681,8 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
     B-pillar interrupts it, paint C-pillar ends it); the drip rail above it
     is trim and becomes the A-pillar through the windshield; the roof bands
     are glass exactly where the cabin factor ramps (windshield, hatch).&quot;&quot;&quot;</span>
-    PAINT, GLASS, TRIM = (MATERIALS.index(m) <span class="k">for</span> m <span class="k">in</span> (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>))
+    PAINT, GLASS, TRIM, CHROME = (MATERIALS.index(m)
+                                  <span class="k">for</span> m <span class="k">in</span> (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>, <span class="s">&quot;Chrome&quot;</span>))
     <span class="k">for</span> poly <span class="k">in</span> body.data.polygons:
         i, k = divmod(poly.index, RING - <span class="n">1</span>)
         <span class="k">if</span> i &gt;= N_ST - <span class="n">1</span>:            <span class="c"># cap ngons (front/rear fascia)</span>
@@ -1599,6 +1693,8 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
         cab = cabin(ym) &gt; <span class="n">1e-6</span>
         <span class="k">if</span> k &lt;= <span class="n">3</span>:
             poly.material_index = TRIM       <span class="c"># underbody, rocker, arch cladding</span>
+        <span class="k">elif</span> k == <span class="n">6</span> <span class="k">and</span> cab <span class="k">and</span> ym &lt; Y_CPILLAR:
+            poly.material_index = CHROME     <span class="c"># window-sill strip under the side glass</span>
         <span class="k">elif</span> k == <span class="n">7</span> <span class="k">and</span> cab <span class="k">and</span> ym &lt; Y_CPILLAR:
             in_b = Y_BPILLAR[<span class="n">0</span>] &lt;= ym &lt;= Y_BPILLAR[<span class="n">1</span>]
             poly.material_index = TRIM <span class="k">if</span> in_b <span class="k">else</span> GLASS
@@ -1785,11 +1881,13 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
         m.use_nodes = <span class="k">True</span>
         <span class="k">return</span> m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     p = principled(<span class="s">&quot;Paint&quot;</span>)
-    p.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.50</span>, <span class="n">0.016</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
-    p.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
-    p.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.38</span>
-    p.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">1.0</span>   <span class="c"># clear coat: crisp light streaks</span>
-    p.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+    <span class="c"># candy red over a faint metallic base, under a glassy clear coat: the coat</span>
+    <span class="c"># carries the crisp strip-light streaks that describe the body&#x27;s curvature</span>
+    p.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.46</span>, <span class="n">0.012</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    p.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.25</span>
+    p.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.34</span>
+    p.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.7</span>
+    p.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.10</span>
     g = principled(<span class="s">&quot;Glass&quot;</span>)
     <span class="c"># opaque dark dielectric, glossy (metallic glass mirrors the key across</span>
     <span class="c"># the whole windshield as a hot slab). On a near-black stage there is</span>
@@ -1816,12 +1914,49 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
     ch.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
     ch.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.2</span>
     tire = principled(<span class="s">&quot;Tire&quot;</span>)
-    tire.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.016</span>, <span class="n">0.016</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
-    tire.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.82</span>
+    tire.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.018</span>, <span class="n">0.018</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    tire.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.78</span>
+    <span class="c"># tread: 72 transverse grooves around the axle (object X), bumped only</span>
+    <span class="c"># where the face looks outward from the axle, so the sidewalls stay clean</span>
+    tn = bpy.data.materials[<span class="s">&quot;Tire&quot;</span>].node_tree
+    tc = tn.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mp = tn.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mp.inputs[<span class="s">&quot;Rotation&quot;</span>].default_value = (<span class="n">0.0</span>, math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>)
+    tn.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], mp.inputs[<span class="s">&quot;Vector&quot;</span>])
+    grad = tn.nodes.new(<span class="s">&quot;ShaderNodeTexGradient&quot;</span>)
+    grad.gradient_type = <span class="s">&#x27;RADIAL&#x27;</span>            <span class="c"># angle about the axle, 0..1</span>
+    tn.links.new(mp.outputs[<span class="s">&quot;Vector&quot;</span>], grad.inputs[<span class="s">&quot;Vector&quot;</span>])
+
+    <span class="k">def</span> math_node(op, a=<span class="k">None</span>, b=<span class="k">None</span>):
+        n = tn.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        n.operation = op
+        <span class="k">for</span> i, v <span class="k">in</span> enumerate((a, b)):
+            <span class="k">if</span> v <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> isinstance(v, float):
+                n.inputs[i].default_value = v
+            <span class="k">else</span>:
+                tn.links.new(v, n.inputs[i])
+        <span class="k">return</span> n.outputs[<span class="n">0</span>]
+
+    groove = math_node(<span class="s">&#x27;LESS_THAN&#x27;</span>,
+                       math_node(<span class="s">&#x27;FRACT&#x27;</span>, math_node(<span class="s">&#x27;MULTIPLY&#x27;</span>, grad.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">72.0</span>)),
+                       <span class="n">0.34</span>)
+    sep = tn.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    tn.links.new(tc.outputs[<span class="s">&quot;Normal&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    tread_face = math_node(<span class="s">&#x27;LESS_THAN&#x27;</span>, math_node(<span class="s">&#x27;ABSOLUTE&#x27;</span>, sep.outputs[<span class="s">&quot;X&quot;</span>]), <span class="n">0.5</span>)
+    bump = tn.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.9</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.02</span>
+    tn.links.new(math_node(<span class="s">&#x27;MULTIPLY&#x27;</span>, groove, tread_face), bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    tn.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], tire.inputs[<span class="s">&quot;Normal&quot;</span>])
     rim = principled(<span class="s">&quot;Rim&quot;</span>)
-    rim.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.68</span>, <span class="n">1.0</span>)
-    rim.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
-    rim.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    <span class="c"># machined alloy: bright, slightly brushed, so the five spokes read</span>
+    <span class="c"># against the dark spoke gaps even in the thumbnail</span>
+    <span class="c"># (half metallic: a full metal on a near-black stage mirrors the black)</span>
+    rim.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.70</span>, <span class="n">0.71</span>, <span class="n">0.74</span>, <span class="n">1.0</span>)
+    rim.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.5</span>
+    rim.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.26</span>
     head = principled(<span class="s">&quot;Headlamp&quot;</span>)
     head.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.8</span>, <span class="n">0.84</span>, <span class="n">0.9</span>, <span class="n">1.0</span>)
     head.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.1</span>
@@ -1865,6 +2000,40 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
         bm.free()
 
 
+<span class="k">def</span> _subdivide_body(body):
+    <span class="s">&quot;&quot;&quot;Render-path refinement: Catmull-Clark after the Mirror, with creases.
+
+    The 13-point loft is exactly the closed form the check counts, and it
+    reads faceted at gallery size. A Subdivision Surface modifier stacked
+    AFTER MirrorHalf smooths the welded whole (subdividing the half first
+    would pull the centerline off the plane). Panel breaks stay crisp:
+    material borders (glass, pillars, cladding, chrome sill) crease fully and
+    the fascia cap outlines half-crease, so the nose and tail keep their
+    shape instead of melting. Runs after check(), so the counts it asserts
+    are the loft&#x27;s, untouched.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(body.data)
+        cl = (bm.edges.layers.float.get(<span class="s">&quot;crease_edge&quot;</span>)
+              <span class="k">or</span> bm.edges.layers.float.new(<span class="s">&quot;crease_edge&quot;</span>))
+        caps = {f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>}
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            lf = e.link_faces
+            c = <span class="n">0.0</span>
+            <span class="k">if</span> len(lf) == <span class="n">2</span> <span class="k">and</span> lf[<span class="n">0</span>].material_index != lf[<span class="n">1</span>].material_index:
+                c = <span class="n">1.0</span>
+            <span class="k">elif</span> any(f <span class="k">in</span> caps <span class="k">for</span> f <span class="k">in</span> lf):
+                c = <span class="n">0.5</span>
+            e[cl] = c
+        bm.to_mesh(body.data)
+    <span class="k">finally</span>:
+        bm.free()
+    sub = body.modifiers.new(<span class="s">&quot;Refine&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>)
+    sub.levels = <span class="n">2</span>
+    sub.render_levels = <span class="n">2</span>
+    sub.use_creases = <span class="k">True</span>
+
+
 <span class="k">def</span> render_still(objs, path, engine):
     <span class="c"># Shared Layer 1 gates (render path only) — see gallery_framing.py</span>
     sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -1876,7 +2045,10 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
     _finish_materials()
     body = objs[<span class="s">&quot;body&quot;</span>]
     parts = [body] + [w <span class="k">for</span> w, *_ <span class="k">in</span> objs[<span class="s">&quot;mirrored&quot;</span>]]
-    _shade_smooth(body)
+    <span class="c"># subdivided body: hard shading only at material borders (a dihedral split</span>
+    <span class="c"># would print the loft&#x27;s facets back onto the smoothed surface)</span>
+    _shade_smooth(body, <span class="n">179.0</span>)
+    _subdivide_body(body)
     <span class="k">for</span> ob <span class="k">in</span> parts[<span class="n">1</span>:]:
         _shade_smooth(ob, <span class="n">40.0</span>)
 
@@ -1905,19 +2077,33 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, rot=<span class="k">None</span>, at=<span class="k">None</span>, size_y=<span class="k">None</span>):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy; ld.size = size; ld.color = col
+        <span class="k">if</span> size_y <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            ld.shape = <span class="s">&#x27;RECTANGLE&#x27;</span>
+            ld.size_y = size_y
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        <span class="k">if</span> at <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        <span class="k">else</span>:
+            ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    <span class="c"># default-stage rig per docs/VISUAL-STYLE.md</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">3.0</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">320.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">155</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># default-stage rig per docs/VISUAL-STYLE.md, plus a long overhead strip:</span>
+    <span class="c"># its reflection runs down the clear-coated hood and roof as one crisp</span>
+    <span class="c"># streak, which is what makes a car body read as a car body</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">480.0</span>, <span class="n">7.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">55.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    <span class="c"># rim: big and dim, so the clear-coated roof mirrors it as a sheen, not a</span>
+    <span class="c"># clipped white slab (a small bright rim blows the roof out)</span>
+    <span class="c"># (steep, so the light&#x27;s own plane meets the floor behind the back wall:</span>
+    <span class="c"># a shallow area light prints a hard terminator line across the floor)</span>
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.0</span>, <span class="n">4.5</span>), <span class="n">220.0</span>, <span class="n">7.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), at=(<span class="n">0.0</span>, <span class="n">0.3</span>, <span class="n">0.8</span>))
+    light(<span class="s">&quot;Strip&quot;</span>, (-<span class="n">1.6</span>, -<span class="n">0.3</span>, <span class="n">4.6</span>), <span class="n">110.0</span>, <span class="n">2.2</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.95</span>),
+          at=(-<span class="n">0.6</span>, -<span class="n">0.3</span>, <span class="n">0.0</span>), size_y=<span class="n">6.0</span>)
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">520.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.0</span>, -<span class="n">0.3</span>, <span class="n">0.62</span>)
@@ -2033,7 +2219,7 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
+    <img src="../assets/car-mirror-symmetry-hero.webp" alt="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." />
   </dialog>
   <footer>
     <div class="statusbar">
