@@ -2,8 +2,8 @@
 
 A showcase piece, not an example. Procedural timber hitching post: a
 125 mm square post seated in a closed iron shoe, one cross-rail through
-the post, a pyramidal cap with eaves, and two rings hung through eyes
-under the rail. Then the shipped pipeline: unique-cell UVs, Cycles
+the post, a pyramidal cap with eaves, two rings hung through eyes
+under the rail, and a horseshoe nailed heels-up to the post's face. Then the shipped pipeline: unique-cell UVs, Cycles
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 It asserts **budget conformance** of the generated result. It does not
@@ -25,12 +25,12 @@ imported). Coplanar-pair counting matches `showcase/signpost`.
 Declared as named constants; every gate **recomputes** from the mesh,
 materials, UVs, evaluated LOD, collider, or export file.
 
-| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
+| Axis | Declared | Measured (4.5.11 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1400–2400 | 1680 / 1680 / 1680 |
-| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2190 / 0.2190 / 0.2190 |
-| Materials | exactly 2 distinct, ≥70 wood, ≥560 metal | 2 slots, 114 wood, 742 metal |
+| Base triangles | 1400–2400 | 1852 / 1852 |
+| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2192 / 0.2192 |
+| Materials | exactly 2 distinct, ≥70 wood, ≥560 metal | 2 slots, 114 wood, 828 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.500, 0.149, 1.246) m ± 0.01 | (0.5000, 0.1490, 1.2460) |
 | Grounded zmin | within 1e-4 of 0 | 0 / 0 / 0 |
@@ -39,9 +39,10 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Hung ring | centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye | 0, 0, 0, 0, 40 |
 | Shoe | each band overlaps the post, shoe overlaps the sole | band gap 0, sole–shoe 8 |
 | **Band seat** | each band above the shoe stands ≥ 0.004 m proud of the post faces | 0.00650 |
+| **Horseshoe seat** | exactly 1; back bites the post face 0.0005–0.004 m, face ≥ 0.004 m proud | 1, 0.00150, 0.00750 |
 | Wood–metal gap | BVH surface < 0.008 m | 0.00075 |
 | Collider tris | ≤ 280 | 80 |
-| Export | written, size > 0 | 127424 / 127424 / 127412 bytes |
+| Export | written, size > 0 | 139464 / 139452 bytes |
 
 Base triangles rose from **1598 to 1680**. The old rings were faceted
 tori clipped into the arm; the new eyes, shanks, and 24-segment hung
@@ -54,7 +55,26 @@ binaries agreed. Bake pixels are stochastic; the gate is `has_data`
 plus operator `FINISHED`, not byte-identity. Construction is
 closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on
 every run; a Python set of edges handed to the bevel had made it vary.
-Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 12 (six balls and seven tori) and is not gated to 2.
+Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 14 (12 before the horseshoe added one more closed shell) and is not gated to 2.
+
+### Horseshoe
+
+A lone post with a stub rail read as the plainest object in the showcase
+lineup. A horseshoe nailed heels-up to the post's front face is what a
+real hitching post carries, and it is geometry, so it is budgeted: a
+flat iron bar (17 mm wide, 7.5 mm thick) swept around 290° of an arc,
+heels capped, centred on the post between the upper band and the rail
+and clear of the rings. Its back face bites the post face by 1.5 mm
+(`HS_BITE`); its face stands 7.5 mm proud. The shell classifier sets it
+apart from the hung rings, which are the same flat-loop shape class, by
+where it sits (on the post's centre line, not at ±`EYE_X`). **Horseshoe
+seat** reads the bite and the stand-off against the post's own front face
+off the mesh; `--float-horseshoe` pulls it 4 mm off the face and exits 18
+(bite −0.0025 m). It moved the budgets it should: base triangles 1680 →
+1852 (inside the declared 1400–2400) and metal faces 742 → 828. The outer
+AABB, collider (80 tris) and every other seat are unchanged. The hero key
+light rose from 660 to 960 W so the still sits in the calibration luma
+band.
 
 ### Bands, wood and stage
 
@@ -83,6 +103,7 @@ Each falsifier violates exactly one named budget. Proven on Blender
 | `--clip-ring` | Hung-ring centerline | 18 | ring_err 0.024, ring–wood overlap 32 |
 | `--short-post` | Seated post | 19 | post zmin 0.030 |
 | `--sunk-bands` | Band seat | 18 | band proud −0.0015 |
+| `--float-horseshoe` | Horseshoe seat | 18 | bite −0.0025 |
 
 Default exit is 0 on all three. `--clip-ring` also overlaps the rail;
 the centerline gate is the one that fires.
@@ -98,6 +119,7 @@ blender --background --python hitching_post.py -- --lift-z
 blender --background --python hitching_post.py -- --clip-ring
 blender --background --python hitching_post.py -- --short-post
 blender --background --python hitching_post.py -- --sunk-bands
+blender --background --python hitching_post.py -- --float-horseshoe
 blender --background --python hitching_post.py -- --output preview.webp --engine cycles
 ```
 
@@ -128,5 +150,5 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 15 | Hygiene, including coplanar pairs (`--stray-vert`, `--twin-sole`) |
 | 16 | Grounded zmin (`--lift-z`) |
 | 17 | Wood–metal BVH gap above 8 mm |
-| 18 | Hung ring, shoe or band seat (`--clip-ring`, `--sunk-bands`) |
+| 18 | Hung ring, shoe, band or horseshoe seat (`--clip-ring`, `--sunk-bands`, `--float-horseshoe`) |
 | 19 | Post plumb, origin, and cup seat (`--short-post`) |

@@ -1,7 +1,8 @@
 """Game-ready hitching post — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural timber hitching post (square
-post, pyramidal cap, cross-arm, iron shoe, bands, and hitching rings)
+post, pyramidal cap, cross-arm, iron shoe, bands, hitching rings and a
+face-nailed horseshoe)
 after composing shipped pipeline pieces: bmesh construction, UVs, two
 materials, high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
@@ -15,7 +16,8 @@ plate so the coplanar-face budget fails. ``--clip-ring`` lifts a hung
 ring off the eye centerline. ``--short-post`` starts the post above the
 shoe cup so the seated-post budget fails. ``--sunk-bands`` builds the
 iron bands inside the post, as the piece first shipped, so the band-seat
-budget fails.
+budget fails. ``--float-horseshoe`` pulls the horseshoe off the post face
+so the horseshoe-seat budget fails.
 
 Construction is closed-form; the only RNG is the seeded per-piece wood
 tone. DECIMATE COLLAPSE triangle counts
@@ -79,6 +81,22 @@ BAND_ZS = (0.24, 0.56)
 # corners broke the surface, as black slits. --sunk-bands restores that.
 BAND_BITE = 0.0015
 BAND_PROUD_MIN = 0.004
+
+# A horseshoe nailed to the post's front face, heels up for luck: a flat
+# iron bar swept around 290 degrees of an arc in the XZ plane. Its back face
+# bites the post face by HS_BITE and it stands HS_T proud of it. It sits
+# between the upper band and the rail, clear of the rings.
+HS_Z = 0.690
+HS_R_IN = 0.033
+HS_R_OUT = 0.050
+HS_T = 0.0075
+HS_BITE = 0.0015
+HS_OPEN_DEG = 70.0            # opening at the top, centred on +Z
+HS_STATIONS = 22
+HS_BITE_MIN = 0.0005
+HS_BITE_MAX = 0.004
+HS_PROUD_MIN = 0.004
+HS_FLOAT = 0.004              # --float-horseshoe pulls it off the face by this
 # Per-piece wood tone jitter and grain frequency, as in shipping-crate.
 PLANK_TONE_JITTER = 0.28
 TONE_SEED = 29
@@ -436,7 +454,7 @@ def _bvh(me, poly_ids):
 def seat_audit(me):
     """Recompute cup, hung-ring, and plumb budgets from the generated shells."""
     post = arm = cap = None
-    soles, rings, eyes, bands, shanks = [], [], [], [], []
+    soles, rings, eyes, bands, shanks, shoes_hs = [], [], [], [], [], []
     for idxs, polys in _face_shells(me):
         x0, x1, y0, y1, z0, z1 = _bounds(me, idxs)
         dx, dy, dz = x1 - x0, y1 - y0, z1 - z0
@@ -456,6 +474,10 @@ def seat_audit(me):
             continue
         if z0 < 0.004 and dz < 0.030 and dx > 0.10:
             soles.append(rec)
+        elif dy < 0.025 and dx > 0.06 and dz > 0.06 and abs(rec["c"].x) < 0.06:
+            # flat, face-mounted, on the post's centre line: the horseshoe
+            # (the hung rings are the same shape class but hang at +-EYE_X)
+            shoes_hs.append(rec)
         elif dy < 0.025 and dx > 0.06 and dz > 0.06:
             rings.append(rec)
         elif dx < 0.025 and dy > 0.025 and dz > 0.02:
@@ -485,6 +507,9 @@ def seat_audit(me):
         "shank_ring": 99,
         "shank_eye": 0,
         "band_proud": -1.0,
+        "horseshoes": len(shoes_hs),
+        "hs_bite": -1.0,
+        "hs_proud": -1.0,
     }
     if (
         post is None
@@ -544,6 +569,14 @@ def seat_audit(me):
         bx0, bx1, by0, by1, _bz0, _bz1 = _bounds(me, band["idxs"])
         band_proud = min(band_proud, 0.25 * ((bx1 - bx0) + (by1 - by0)) - post_half)
 
+    # Horseshoe seat, read against the post's own front face off the mesh:
+    # how deep its back bites into the post and how far its face stands out.
+    hs_bite = hs_proud = -1.0
+    if len(shoes_hs) == 1:
+        ys = [me.vertices[i].co.y for i in shoes_hs[0]["idxs"]]
+        hs_bite = max(ys) - post_y0
+        hs_proud = post_y0 - min(ys)
+
     pos, neg = [], []
     for i in arm["idxs"]:
         co = me.vertices[i].co
@@ -571,6 +604,8 @@ def seat_audit(me):
         "shank_ring": shank_ring,
         "shank_eye": shank_eye,
         "band_proud": band_proud,
+        "hs_bite": hs_bite,
+        "hs_proud": hs_proud,
     })
     return out
 
@@ -694,6 +729,28 @@ def add_torus(bm, center, major, minor, axis, mat_idx, n_major=24, n_minor=8):
     return made
 
 
+def add_horseshoe(bm, cz, y_back, y_front, mat_idx):
+    """Flat bar swept around the arc; rectangular section, capped heels."""
+    half_open = math.radians(HS_OPEN_DEG) * 0.5
+    a0 = math.pi * 0.5 + half_open
+    a1 = math.pi * 0.5 - half_open + 2.0 * math.pi
+    rings = []
+    for i in range(HS_STATIONS):
+        a = a0 + (a1 - a0) * i / (HS_STATIONS - 1)
+        ca, sa = math.cos(a), math.sin(a)
+        rings.append([
+            bm.verts.new((r * ca, y, cz + r * sa))
+            for r, y in ((HS_R_IN, y_back), (HS_R_OUT, y_back),
+                         (HS_R_OUT, y_front), (HS_R_IN, y_front))
+        ])
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(4):
+            m = (k + 1) % 4
+            bm.faces.new((r0[k], r0[m], r1[m], r1[k])).material_index = mat_idx
+    bm.faces.new(tuple(reversed(rings[0]))).material_index = mat_idx
+    bm.faces.new(tuple(rings[-1])).material_index = mat_idx
+
+
 def build_hitching_post_mesh(
     name,
     bevel_offset,
@@ -703,6 +760,7 @@ def build_hitching_post_mesh(
     twin_sole=False,
     small_cap=False,
     sunk_bands=False,
+    float_horseshoe=False,
 ):
     """Post on a closed shoe, one rail, rings hung through eyes under the rail.
 
@@ -789,6 +847,12 @@ def build_hitching_post_mesh(
         band_in = (half - grip) if sunk_bands else (half - BAND_BITE)
         for z in BAND_ZS:
             add_square_band(bm, z, band_in, BAND_T, BAND_H, METAL_IDX)
+
+        # the post's front face is flat across |x| < half - bevel, wider than
+        # the shoe; seat the shoe's back face HS_BITE inside it
+        hs_shift = -HS_FLOAT if float_horseshoe else 0.0
+        hs_back = -half + HS_BITE + hs_shift
+        add_horseshoe(bm, HS_Z, hs_back, hs_back - HS_BITE - HS_T, METAL_IDX)
 
         arm_bottom = ARM_Z - ARM_ZTH * 0.5
         eye_z = arm_bottom - EYE_MAJOR - EYE_MINOR - 0.004
@@ -1135,6 +1199,7 @@ def check(
     clip_ring=False,
     short_post=False,
     sunk_bands=False,
+    float_horseshoe=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_hitching_post_mesh(
@@ -1145,6 +1210,7 @@ def check(
         clip_ring=clip_ring,
         twin_sole=twin_sole,
         sunk_bands=sunk_bands,
+        float_horseshoe=float_horseshoe,
     )
     high = build_hitching_post_mesh(
         "HitchPostHigh", bevel_offset=0.008, bevel_segments=4, sunk_bands=sunk_bands,
@@ -1247,7 +1313,8 @@ def check(
         f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
         f"parts={seat['post']}/{seat['arm']}/{seat['cap']}/"
         f"soles={seat['soles']}/rings={seat['rings']}/eyes={seat['eyes']}/bands={seat['bands']} "
-        f"band_proud={seat['band_proud']:.5f}"
+        f"band_proud={seat['band_proud']:.5f} horseshoes={seat['horseshoes']} "
+        f"hs_bite={seat['hs_bite']:.5f} hs_proud={seat['hs_proud']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1354,6 +1421,9 @@ def check(
         or seat["shank_ring"]
         or seat["shank_eye"] < 1
         or seat["band_proud"] < BAND_PROUD_MIN
+        or seat["horseshoes"] != 1
+        or not (HS_BITE_MIN <= seat["hs_bite"] <= HS_BITE_MAX)
+        or seat["hs_proud"] < HS_PROUD_MIN
     ):
         return fail(
             f"hung ring / shoe seat ring_err={seat['ring_err']:.5f} "
@@ -1361,7 +1431,9 @@ def check(
             f"band_gap={seat['band_gap']:.5f} sole_shoe={seat['sole_shoe']} "
             f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
             f"band_proud={seat['band_proud']:.5f} (min {BAND_PROUD_MIN}) "
-            "(--clip-ring / --sunk-bands are the designed fails)",
+            f"horseshoes={seat['horseshoes']} hs_bite={seat['hs_bite']:.5f} "
+            f"(band [{HS_BITE_MIN}, {HS_BITE_MAX}]) hs_proud={seat['hs_proud']:.5f} "
+            "(--clip-ring / --sunk-bands / --float-horseshoe are the designed fails)",
             18,
         ), None, None, None, None, None
     if (
@@ -1437,8 +1509,8 @@ def render_still(low, wood, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Key", (-3.6, -5.0, 5.4), 960.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
+    light("Fill", (5.0, -3.4, 2.4), 70.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 
     cam_data = bpy.data.cameras.new("Cam")
@@ -1525,6 +1597,11 @@ def main():
         action="store_true",
         help="falsification: bands inside the post, only the corners showing",
     )
+    p.add_argument(
+        "--float-horseshoe",
+        action="store_true",
+        help="falsification: pull the horseshoe off the post face",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1535,6 +1612,7 @@ def main():
         clip_ring=args.clip_ring,
         short_post=args.short_post,
         sunk_bands=args.sunk_bands,
+        float_horseshoe=args.float_horseshoe,
     )
     if code:
         return code

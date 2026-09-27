@@ -207,9 +207,9 @@
     {
       "name": "hitching-post",
       "dir": "showcase/hitching-post",
-      "teaches": "A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings.",
-      "witnessesFix": "Recomputed: 1680 tris, two materials with 114 wood and 742 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring and --sunk-bands exit 18; --short-post exits 19.",
+      "teaches": "A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes, a face-nailed horseshoe) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A tall wooden hitching post with a pointed cap, a crossbar with two hung iron rings, iron bands, and a horseshoe nailed heels-up to its face.",
+      "witnessesFix": "Recomputed: 1852 tris, two materials with 114 wood and 828 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, horseshoe biting 1.5 mm and 7.5 mm proud, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring, --sunk-bands and --float-horseshoe exit 18; --short-post exits 19.",
       "hero": "docs/gallery/assets/hitching-post-hero.webp",
       "preview": "showcase/hitching-post/preview.webp",
       "tags": [
