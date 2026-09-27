@@ -15,6 +15,14 @@ is chamfered. The stone is 48 smooth segments with hard chamfer rings, in
 a mottled sandstone material. Stated size is a 0.50 m × 0.095 m stone in a
 0.72 × 0.42 × 0.61 m frame.
 
+The hero turns the crank toward the camera, since the crank is the part that
+says the wheel is turned by hand, and fills the trough. The water is
+render-only dressing parented to the piece, set 12 mm under the rim, so the
+stone (28 mm under the rim) runs 16 mm under water; the stone darkens and
+glosses in a band that fades out 45 mm above the water line. Neither the
+water nor the wet band is part of the asset: no budget reads them, the export
+does not carry them, and the asset sheet renders the grindstone dry.
+
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
 

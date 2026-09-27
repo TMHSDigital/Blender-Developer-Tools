@@ -1635,6 +1635,86 @@ def wire_normal(mat, tex):
         nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
+WATER_BELOW_RIM = 0.012   # render-only water line, below the trough rim
+
+
+def add_trough_water(low):
+    """Render-only dressing: water standing in the trough, parented to the
+    piece so it turns with it. Not part of the asset (no budget, no export).
+
+    The line sits WATER_BELOW_RIM under the rim, so the stone, whose bottom
+    is DIP under the rim, runs DIP - WATER_BELOW_RIM (16 mm) under water:
+    a grindstone turns wet or it burns the edge.
+    """
+    inner_l = TROUGH_L - 2.0 * TROUGH_WALL - 0.002
+    inner_w = TROUGH_W - 2.0 * TROUGH_WALL - 0.002
+    z = TROUGH_Z0 + TROUGH_H - WATER_BELOW_RIM
+    me = bpy.data.meshes.new("TroughWater")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_grid(bm, x_segments=24, y_segments=12, size=0.5)
+        for v in bm.verts:
+            v.co = Vector((v.co.x * inner_l, v.co.y * inner_w, z))
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    mat = bpy.data.materials.new("TroughWater")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (0.020, 0.030, 0.028, 1.0)
+    b.inputs["Roughness"].default_value = 0.04
+    # a slow ripple so the key breaks into glints rather than one flat sheet
+    wave = nt.nodes.new("ShaderNodeTexNoise")
+    wave.inputs["Scale"].default_value = 28.0
+    wave.inputs["Detail"].default_value = 3.0
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.35
+    bump.inputs["Distance"].default_value = 0.002
+    nt.links.new(wave.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    me.materials.append(mat)
+    ob = bpy.data.objects.new("TroughWater", me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = low
+    return ob
+
+
+def wet_stone_band(low):
+    """Render-only: the stone darkens and glosses where it runs through the
+    water, fading out WET_WICK above the water line (it wicks up)."""
+    stone = next((m for m in low.data.materials if m and m.name.startswith("GrindstoneStone")),
+                 None)
+    if stone is None:
+        return
+    wet_wick = 0.045
+    z_water = TROUGH_Z0 + TROUGH_H - WATER_BELOW_RIM
+    nt = stone.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+    wet = nt.nodes.new("ShaderNodeMapRange")
+    wet.inputs["From Min"].default_value = z_water + wet_wick
+    wet.inputs["From Max"].default_value = z_water
+    nt.links.new(sep.outputs["Z"], wet.inputs["Value"])
+    col_link = bsdf.inputs["Base Color"].links[0]
+    darken = nt.nodes.new("ShaderNodeMix")
+    darken.data_type = "RGBA"
+    darken.blend_type = "MULTIPLY"
+    nt.links.new(wet.outputs["Result"], _sock(darken.inputs, "Factor_Float"))
+    nt.links.new(col_link.from_socket, _sock(darken.inputs, "A_Color"))
+    _sock(darken.inputs, "B_Color").default_value = (0.52, 0.50, 0.48, 1.0)
+    nt.links.new(_sock(darken.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    r_link = bsdf.inputs["Roughness"].links[0]
+    gloss = nt.nodes.new("ShaderNodeMix")
+    gloss.data_type = "FLOAT"
+    nt.links.new(wet.outputs["Result"], _sock(gloss.inputs, "Factor_Float"))
+    nt.links.new(r_link.from_socket, _sock(gloss.inputs, "A_Float"))
+    _sock(gloss.inputs, "B_Float").default_value = 0.30
+    nt.links.new(_sock(gloss.outputs, "Result_Float"), bsdf.inputs["Roughness"])
+
+
 def render_still(low, hero_mat, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(hero_mat, tex)
@@ -1643,8 +1723,11 @@ def render_still(low, hero_mat, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-22.0)
+    # crank toward the camera: it is the part that says "turned by hand"
+    low.rotation_euler.z = math.radians(158.0)
     low.rotation_euler.x = math.radians(0.0)
+    water = add_trough_water(low)
+    wet_stone_band(low)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1683,17 +1766,17 @@ def render_still(low, hero_mat, tex, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.4), 660.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.4, 2.4), 46.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
-    light("Wedge", (2.2, 4.0, 3.8), 600.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    light("Key", (-3.2, -4.4, 5.0), 940.0, 3.6, (1.0, 0.93, 0.84), (50, 0, -36))
+    light("Fill", (5.0, -3.4, 2.4), 60.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
+    light("Wedge", (1.6, 3.2, 3.2), 820.0, 5.0, (1.0, 0.66, 0.36), (-66, 0, 200))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.55, -1.95, 0.92)
+    cam.location = (1.30, -1.73, 0.90)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.32)
+    aim.location = (0.0, 0.0, 0.235)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1721,7 +1804,7 @@ def render_still(low, hero_mat, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, water], stage=[floor, wall],
     )
     if fcode:
         return fcode

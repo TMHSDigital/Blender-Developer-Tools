@@ -221,7 +221,7 @@
       "name": "grindstone",
       "dir": "showcase/grindstone",
       "teaches": "A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes.",
+      "alt": "A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes.",
       "witnessesFix": "Recomputed: 1668 tris, three materials with 400 wood / 240 stone / 364 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.419×0.610 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four shoes planted, trough seated in the sills and biting both stretchers 4 mm, stone dip 24 mm, no unchamfered right-angle edge, 29.44 bake texels per UV cell, LOD ratios in band, convex collider 304 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert / --flush-shoes exit 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough / --low-stretchers exit 18 on seat; --sharp-handle exits 20 on edge treatment; --low-bake exits 21 on texel density.",
       "hero": "docs/gallery/assets/grindstone-hero.webp",
       "preview": "showcase/grindstone/preview.webp",
