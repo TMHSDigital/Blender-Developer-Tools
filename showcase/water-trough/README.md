@@ -138,6 +138,8 @@ The third pass darkened the grazing tint from a pale grey-blue (0.20,
 the surface near grazing, where that tint wins, and it read as a
 painted slab.
 
+The fourth pass made the surface read as liquid rather than as a teal panel: larger ripples (noise scale 22 to 7) under a stronger bump (0.08 to 0.30) at roughness 0.03 catch the key as glints, and the render path turns on EEVEE screen-space raytracing (4.2+) so the staves mirror in the water. The iron gets vertically stretched rust runs that dull its metallic response. A lower camera was tried to show the hull straps and rejected: the water surface dropped out of view.
+
 ### Falsifiers
 
 Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and

@@ -756,7 +756,7 @@ def water_material(name):
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
-    bsdf.inputs["Roughness"].default_value = 0.06
+    bsdf.inputs["Roughness"].default_value = 0.03
     bsdf.inputs["IOR"].default_value = 1.33
     # Deep body where the view looks straight down, a pale sky tint toward
     # grazing angles. A light placed to reflect in the surface was
@@ -774,12 +774,12 @@ def water_material(name):
     nt.links.new(_sock(tint.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     coord = nt.nodes.new("ShaderNodeTexCoord")
     noise = nt.nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 22.0
-    noise.inputs["Detail"].default_value = 3.0
+    noise.inputs["Scale"].default_value = 7.0
+    noise.inputs["Detail"].default_value = 4.0
     nt.links.new(coord.outputs["Object"], noise.inputs["Vector"])
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.08
-    bump.inputs["Distance"].default_value = 0.004
+    bump.inputs["Strength"].default_value = 0.30
+    bump.inputs["Distance"].default_value = 0.006
     nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
@@ -789,8 +789,39 @@ def trough_materials():
     """(wood, iron, water): shared by the check, the render and inspection."""
     wood = wood_material("TroughWood")
     metal = principled("TroughIron", (0.16, 0.155, 0.15, 1.0), 0.85, 0.42, roughness_var=0.10)
+    rust_streaks(metal)
     water = water_material("TroughWater")
     return wood, metal, water
+
+
+def rust_streaks(mat):
+    """Wet iron rusts in runs down the strap: rust tone and dull roughness
+    wherever a vertically stretched noise crosses a threshold."""
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    stretch = nt.nodes.new("ShaderNodeMapping")
+    stretch.inputs["Scale"].default_value = (1.0, 1.0, 0.25)
+    nt.links.new(coord.outputs["Object"], stretch.inputs["Vector"])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 26.0
+    noise.inputs["Detail"].default_value = 5.0
+    nt.links.new(stretch.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeMapRange")
+    ramp.inputs["From Min"].default_value = 0.46
+    ramp.inputs["From Max"].default_value = 0.66
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Value"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    nt.links.new(ramp.outputs["Result"], _sock(mix.inputs, "Factor_Float"))
+    _sock(mix.inputs, "A_Color").default_value = bsdf.inputs["Base Color"].default_value
+    _sock(mix.inputs, "B_Color").default_value = (0.20, 0.075, 0.028, 1.0)
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    metal = nt.nodes.new("ShaderNodeMapRange")
+    metal.inputs["To Min"].default_value = 0.85
+    metal.inputs["To Max"].default_value = 0.15
+    nt.links.new(ramp.outputs["Result"], metal.inputs["Value"])
+    nt.links.new(metal.outputs["Result"], bsdf.inputs["Metallic"])
 
 
 def assign_slots(obj, wood, metal, water):
@@ -1549,6 +1580,10 @@ def render_still(low, wood, tex, path, engine):
             scene.eevee.taa_render_samples = 64
         except AttributeError:
             pass
+        # screen-space raytracing lets the water mirror the staves above it,
+        # which is what makes a dark surface read as liquid (EEVEE Next, 4.2+)
+        if hasattr(scene.eevee, "use_raytracing"):
+            scene.eevee.use_raytracing = True
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = (
