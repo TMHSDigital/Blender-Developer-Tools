@@ -419,7 +419,7 @@
       "name": "light-link-studio",
       "dir": "examples/light-link-studio",
       "teaches": "One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 233% while the hero holds at 0.3% drift.",
-      "alt": "Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED.",
+      "alt": "Two identical porcelain chess kings on dark plinths: the left, labelled LINKED, glows under an amber key; the right, labelled UNLINKED, stays cool grey.",
       "witnessesFix": "The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere's projected center; EEVEE honors linking too (probe-measured 3.8x on 4.5.11 EEVEE Next and 5.1.2 EEVEE), Cycles pinned for deterministic samples.",
       "hero": "docs/gallery/assets/light-link-studio-hero.webp",
       "preview": "examples/light-link-studio/preview.webp",

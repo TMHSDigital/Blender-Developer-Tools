@@ -507,7 +507,7 @@ consumed-input compositing contract, and a save/reload round-trip.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/light-link-studio/"><img src="examples/light-link-studio/preview.webp" alt="Light link studio: a blazing orange hero sphere and a dim steel decoy staged as specimens on turned-metal pedestals, LINKED and UNLINKED placards on each plinth, a warm floor inlay glowing under the hero only, a warm light pool raking the wall behind - one key light restricted to the hero collection" /></a>
+<a href="examples/light-link-studio/"><img src="examples/light-link-studio/preview.webp" alt="Light link studio: two identical porcelain chess kings on dark plinths, the LINKED king glowing under an amber key with a warm floor inlay beneath it, the UNLINKED king cool grey beside it - one key light restricted to the hero collection" /></a>
 </td>
 <td valign="middle">
 

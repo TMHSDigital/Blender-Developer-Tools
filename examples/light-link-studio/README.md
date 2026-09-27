@@ -41,11 +41,16 @@ below 50%), and a non-surgical restriction (exit 8, hero drift above 5%).
 Blender 4.5 LTS and 5.1 (3.7x vs 3.6x linked; rise 238% vs 233% — inside the
 rise noise described above).
 
-The render is the contract at a glance: the spheres staged as studio
-specimens on matching turned-metal pedestals — the blazing orange hero over
-its LINKED placard with the warm floor inlay marking the linked light's
-footprint, the cold steel decoy over UNLINKED with its inlay dark, a warm
-pool raking the wall behind them — one key, one hero.
+The render is the contract at a glance, on designed subjects: after the
+check passes on the spheres, the still hides them and stands two
+**identical** lathed porcelain chess kings (gilt collar and cross, one
+shared material) in the hero and decoy collections. The only difference
+between the kings is the linked key, recoloured amber for the still: the
+LINKED king glows warm over its placard and the warm floor inlay, the
+UNLINKED king stays cool grey. The shared fill and rim are pulled down for
+the still only, because glossy porcelain picks up far more of them than the
+matte check spheres do. The still's render path gates framing through
+`examples/gallery_framing.py` (exit 10) before writing.
 
 ## Run
 
@@ -77,6 +82,7 @@ against it.
 | 7 | Decoy rise below gate when unlinked |
 | 8 | Hero drifted across the unlink |
 | 9 | `--output` produced no file |
+| 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

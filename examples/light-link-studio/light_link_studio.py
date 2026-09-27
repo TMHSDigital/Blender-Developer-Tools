@@ -33,6 +33,11 @@ CI smoke check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse, tempfile, shutil
 from mathutils import Matrix
 
+# Shared Layer 1 framing measurement (render path only) — see
+# gallery_framing.py for the __file__-relative import shim this relies on.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+import gallery_framing  # noqa: E402
+
 HERO_RGB = (0.85, 0.30, 0.08)     # hazard orange
 DECOY_RGB = (0.30, 0.34, 0.40)    # cold steel
 KEY_ENERGY = 560.0
@@ -375,7 +380,85 @@ def placard(sc, text, x, plate_m, stand_m, text_m):
     sc.collection.objects.link(ob)
 
 
-def render_still(sc, path):
+# Render-only chess king, lathed from an (r, z) profile standing on z=0.
+# Faces between KING_BAND z-limits take the gilt material (index 1).
+KING_PROFILE = [
+    (0.0, 0.0), (0.34, 0.0), (0.355, 0.025), (0.345, 0.065), (0.29, 0.085),
+    (0.30, 0.115), (0.26, 0.135), (0.21, 0.19), (0.165, 0.31), (0.14, 0.45),
+    (0.145, 0.55), (0.22, 0.585), (0.235, 0.615), (0.175, 0.64),
+    (0.165, 0.67), (0.20, 0.79), (0.25, 0.89), (0.258, 0.915), (0.215, 0.94),
+    (0.155, 0.99), (0.075, 1.02), (0.0, 1.03),
+]
+KING_BAND = (0.57, 0.65)
+KING_SEGS = 48
+
+
+def chess_king(sc, name, x, z0, coll, body_m, gilt_m):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        rings = []
+        for r, z in KING_PROFILE:
+            if r == 0.0:
+                rings.append([bm.verts.new((0.0, 0.0, z))])
+            else:
+                rings.append([bm.verts.new((r * math.cos(2 * math.pi * s / KING_SEGS),
+                                            r * math.sin(2 * math.pi * s / KING_SEGS), z))
+                              for s in range(KING_SEGS)])
+        for a, b in zip(rings, rings[1:]):
+            zmid = 0.5 * (a[0].co.z + b[0].co.z)
+            idx = 1 if KING_BAND[0] <= zmid <= KING_BAND[1] else 0
+            for s in range(KING_SEGS):
+                t = (s + 1) % KING_SEGS
+                if len(a) == 1:
+                    f = bm.faces.new((a[0], b[t], b[s]))
+                elif len(b) == 1:
+                    f = bm.faces.new((a[s], a[t], b[0]))
+                else:
+                    f = bm.faces.new((a[s], a[t], b[t], b[s]))
+                f.smooth = True
+                f.material_index = idx
+        # gilt cross finial: an upright and a crossbar
+        for dims, cz in (((0.055, 0.055, 0.24), 1.13), ((0.19, 0.075, 0.055), 1.17)):
+            res = bmesh.ops.create_cube(bm, size=1.0)
+            for v in res["verts"]:
+                v.co = (v.co.x * dims[0], v.co.y * dims[1], v.co.z * dims[2] + cz)
+            for f in {f for v in res["verts"] for f in v.link_faces}:
+                f.material_index = 1
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.set_sharp_from_angle(angle=math.radians(45.0))
+    me.materials.append(body_m)
+    me.materials.append(gilt_m)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = (x, 0.0, z0)
+    coll.objects.link(ob)
+    return ob
+
+
+def render_still(sc, path, key, hero, decoy):
+    """The gallery still stages the contract on designed subjects: the checked
+    spheres are hidden and two identical porcelain chess kings stand in their
+    collections. The kings share one material, so the only difference between
+    them is the linked key — recoloured amber for the still (the check ran
+    first, on the untouched scene)."""
+    porcelain = _principled("Porcelain", (0.66, 0.64, 0.60), 0.22)
+    gilt = _principled("Gilt", (0.78, 0.56, 0.24), 0.28, metallic=1.0)
+    kings = []
+    for src in (hero, decoy):
+        src.hide_render = True
+        coll = src.users_collection[0]
+        kings.append(chess_king(sc, "King" + src.name, src.location.x, 0.70,
+                                coll, porcelain, gilt))
+    key.data.color = (1.0, 0.48, 0.16)
+    key.data.energy = KEY_ENERGY * 1.2
+    # the unlinked king must sit near the fill floor as the check measured it
+    # on the matte decoy sphere; porcelain reflects far more of the shared
+    # fill and rim, so both are pulled down for the still only
+    sc.objects["Fill"].data.energy = FILL_ENERGY * 0.45
+    sc.objects["Rim"].data.energy = 70.0
     plate_m = _principled("PlateBlack", (0.03, 0.032, 0.038), 0.6)
     stand_m = _principled("StandMetal", (0.16, 0.17, 0.20), 0.3, metallic=0.9)
     # faint self-glow: the UNLINKED placard must read even in the decoy's dark
@@ -386,16 +469,26 @@ def render_still(sc, path):
     # the gallery still is the linked state, on Cycles for the same
     # deterministic sampling as the check
     sc.render.engine = 'CYCLES'
-    sc.cycles.samples = 48
-    sc.cycles.use_denoising = False
+    sc.cycles.samples = 64
+    sc.cycles.use_denoising = True
     sc.render.resolution_x = 1280
     sc.render.resolution_y = 720
     sc.render.resolution_percentage = 100
     sc.render.image_settings.file_format = 'PNG'
     sc.render.filepath = path
     sc.view_settings.view_transform = 'Standard'
+    bpy.context.view_layer.update()
+    # Layer 1 framing gate before the beauty render (exit 10 on violation)
+    stage = [o for o in sc.objects if o.name.startswith(("Floor", "Wall", "Inlay"))]
+    placards = [o for o in sc.objects if o.name.startswith(("Plate", "PlacardText"))]
+    peds = [o for o in sc.objects if o.name.startswith("Ped")]
+    fcode = gallery_framing.check_framing(sc, sc.camera, hero=kings + peds,
+                                          elements=kings + peds + placards,
+                                          stage=stage)
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 9
 
 
 def main():
@@ -415,9 +508,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(sc, os.path.abspath(args.output)):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(sc, os.path.abspath(args.output), key, hero, decoy)
+        if rcode:
+            if rcode == 9:
+                print("ERROR: render produced no file", file=sys.stderr)
+            return rcode
         print(f"rendered still {args.output}")
 
     print("light-link-studio OK")
