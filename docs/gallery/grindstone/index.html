@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grindstone-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
+  <meta property="og:image:alt" content="A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="grindstone — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grindstone-hero.webp" />
-  <meta name="twitter:image:alt" content="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
+  <meta name="twitter:image:alt" content="A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../hitching-post/" aria-label="Previous showcase piece: hitching-post"><span aria-hidden="true">&larr;</span> hitching-post</a><span class="pager-pos hud">17 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hand-pump/" aria-label="Next showcase piece: hand-pump">hand-pump <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes.">
-      <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes.">
+      <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1668 tris, three materials with 400 wood / 240 stone / 364 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.419×0.610 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four shoes planted, trough seated in the sills and biting both stretchers 4 mm, stone dip 24 mm, no unchamfered right-angle edge, 29.44 bake texels per UV cell, LOD ratios in band, convex collider 304 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert / --flush-shoes exit 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough / --low-stretchers exit 18 on seat; --sharp-handle exits 20 on edge treatment; --low-bake exits 21 on texel density.</div>
@@ -364,6 +364,7 @@
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural grindstone: a sandstone wheel, a timber A-frame trestle, iron shoes, axle, hubs and crank, and an open trough. The piece then runs the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider, and a Unity glTF export.</p>
 <p>Each A-frame is a king post with two diagonals tenoned 12 mm into its faces and into a fatter sill. It is not two sticks meeting at a point. The sills stand in iron shoes, cups one 6 mm reveal proud of the sill on every side. The trough is one manifold basin seated into the sills and carried on two end stretchers, which it bites by 4 mm. Every timber and iron edge is chamfered. The stone is 48 smooth segments with hard chamfer rings, in a mottled sandstone material. Stated size is a 0.50 m × 0.095 m stone in a 0.72 × 0.42 × 0.61 m frame.</p>
+<p>The hero turns the crank toward the camera, since the crank is the part that says the wheel is turned by hand, and fills the trough. The water is render-only dressing parented to the piece, set 12 mm under the rim, so the stone (28 mm under the rim) runs 16 mm under water; the stone darkens and glosses in a band that fades out 45 mm above the water line. Neither the water nor the wet band is part of the asset: no budget reads them, the export does not carry them, and the asset sheet renders the grindstone dry.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
@@ -405,9 +406,9 @@ blender --background --python grindstone.py -- --output grindstone.png</code></p
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/grindstone/grindstone.py</code>
-        <span>1784 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/grindstone/grindstone.py">View on GitHub &rarr;</a></span>
+        <span>1867 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/grindstone/grindstone.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1784">
+      <div class="code" data-lines="1867">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2191,7 +2192,90 @@ blender --background --python grindstone.py -- --output grindstone.png</code></p
 1781
 1782
 1783
-1784</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready grindstone — a showcase piece, not an example.
+1784
+1785
+1786
+1787
+1788
+1789
+1790
+1791
+1792
+1793
+1794
+1795
+1796
+1797
+1798
+1799
+1800
+1801
+1802
+1803
+1804
+1805
+1806
+1807
+1808
+1809
+1810
+1811
+1812
+1813
+1814
+1815
+1816
+1817
+1818
+1819
+1820
+1821
+1822
+1823
+1824
+1825
+1826
+1827
+1828
+1829
+1830
+1831
+1832
+1833
+1834
+1835
+1836
+1837
+1838
+1839
+1840
+1841
+1842
+1843
+1844
+1845
+1846
+1847
+1848
+1849
+1850
+1851
+1852
+1853
+1854
+1855
+1856
+1857
+1858
+1859
+1860
+1861
+1862
+1863
+1864
+1865
+1866
+1867</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready grindstone — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural grindstone (thick sandstone
 wheel, timber A-frame, open water trough, iron axle/hubs/crank) after
@@ -3828,6 +3912,86 @@ METAL_IDX = <span class="n">2</span>
         nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
+WATER_BELOW_RIM = <span class="n">0.012</span>   <span class="c"># render-only water line, below the trough rim</span>
+
+
+<span class="k">def</span> add_trough_water(low):
+    <span class="s">&quot;&quot;&quot;Render-only dressing: water standing in the trough, parented to the
+    piece so it turns with it. Not part of the asset (no budget, no export).
+
+    The line sits WATER_BELOW_RIM under the rim, so the stone, whose bottom
+    is DIP under the rim, runs DIP - WATER_BELOW_RIM (16 mm) under water:
+    a grindstone turns wet or it burns the edge.
+    &quot;&quot;&quot;</span>
+    inner_l = TROUGH_L - <span class="n">2.0</span> * TROUGH_WALL - <span class="n">0.002</span>
+    inner_w = TROUGH_W - <span class="n">2.0</span> * TROUGH_WALL - <span class="n">0.002</span>
+    z = TROUGH_Z0 + TROUGH_H - WATER_BELOW_RIM
+    me = bpy.data.meshes.new(<span class="s">&quot;TroughWater&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">24</span>, y_segments=<span class="n">12</span>, size=<span class="n">0.5</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co = Vector((v.co.x * inner_l, v.co.y * inner_w, z))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    mat = bpy.data.materials.new(<span class="s">&quot;TroughWater&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.020</span>, <span class="n">0.030</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.04</span>
+    <span class="c"># a slow ripple so the key breaks into glints rather than one flat sheet</span>
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">28.0</span>
+    wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.35</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;TroughWater&quot;</span>, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = low
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> wet_stone_band(low):
+    <span class="s">&quot;&quot;&quot;Render-only: the stone darkens and glosses where it runs through the
+    water, fading out WET_WICK above the water line (it wicks up).&quot;&quot;&quot;</span>
+    stone = next((m <span class="k">for</span> m <span class="k">in</span> low.data.materials <span class="k">if</span> m <span class="k">and</span> m.name.startswith(<span class="s">&quot;GrindstoneStone&quot;</span>)),
+                 <span class="k">None</span>)
+    <span class="k">if</span> stone <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    wet_wick = <span class="n">0.045</span>
+    z_water = TROUGH_Z0 + TROUGH_H - WATER_BELOW_RIM
+    nt = stone.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wet = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    wet.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = z_water + wet_wick
+    wet.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = z_water
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], wet.inputs[<span class="s">&quot;Value&quot;</span>])
+    col_link = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].links[<span class="n">0</span>]
+    darken = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    darken.data_type = <span class="s">&quot;RGBA&quot;</span>
+    darken.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(wet.outputs[<span class="s">&quot;Result&quot;</span>], _sock(darken.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(col_link.from_socket, _sock(darken.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    _sock(darken.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.52</span>, <span class="n">0.50</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
+    nt.links.new(_sock(darken.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    r_link = bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].links[<span class="n">0</span>]
+    gloss = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    gloss.data_type = <span class="s">&quot;FLOAT&quot;</span>
+    nt.links.new(wet.outputs[<span class="s">&quot;Result&quot;</span>], _sock(gloss.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(r_link.from_socket, _sock(gloss.inputs, <span class="s">&quot;A_Float&quot;</span>))
+    _sock(gloss.inputs, <span class="s">&quot;B_Float&quot;</span>).default_value = <span class="n">0.30</span>
+    nt.links.new(_sock(gloss.outputs, <span class="s">&quot;Result_Float&quot;</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+
+
 <span class="k">def</span> render_still(low, hero_mat, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(hero_mat, tex)
@@ -3836,8 +4000,11 @@ METAL_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">22.0</span>)
+    <span class="c"># crank toward the camera: it is the part that says &quot;turned by hand&quot;</span>
+    low.rotation_euler.z = math.radians(<span class="n">158.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">0.0</span>)
+    water = add_trough_water(low)
+    wet_stone_band(low)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -3876,17 +4043,17 @@ METAL_IDX = <span class="n">2</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">660.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">46.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">600.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.2</span>, -<span class="n">4.4</span>, <span class="n">5.0</span>), <span class="n">940.0</span>, <span class="n">3.6</span>, (<span class="n">1.0</span>, <span class="n">0.93</span>, <span class="n">0.84</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">60.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.6</span>, <span class="n">3.2</span>, <span class="n">3.2</span>), <span class="n">820.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.66</span>, <span class="n">0.36</span>), (-<span class="n">66</span>, <span class="n">0</span>, <span class="n">200</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.55</span>, -<span class="n">1.95</span>, <span class="n">0.92</span>)
+    cam.location = (<span class="n">1.30</span>, -<span class="n">1.73</span>, <span class="n">0.90</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.32</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.235</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -3914,7 +4081,7 @@ METAL_IDX = <span class="n">2</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, water], stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -4014,7 +4181,7 @@ METAL_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
+    <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes." />
   </dialog>
   <footer>
     <div class="statusbar">

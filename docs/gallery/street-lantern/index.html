@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
+  <meta property="og:image:alt" content="A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="street-lantern — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
-  <meta name="twitter:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
+  <meta name="twitter:image:alt" content="A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -351,8 +351,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../market-stall/" aria-label="Previous showcase piece: market-stall"><span aria-hidden="true">&larr;</span> market-stall</a><span class="pager-pos hud">6 of 36 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../treasure-chest/" aria-label="Next showcase piece: treasure-chest">treasure-chest <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor.">
-      <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside.">
+      <img src="../assets/street-lantern-hero.webp" alt="A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.</div>
@@ -362,26 +362,27 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural hanging street lantern (stepped iron foot, tapered octagonal post, brass collars, braced arm, muntined cage with amber panes, square pyramidal brass roof and finial) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural hanging street lantern (stepped iron foot, tapered cast-iron column with ten flutes, two brass collars, a lamplighter&#x27;s ladder bar with ball ends, a braced arm hung with two wrought C-scrolls and a forged hook ring, a muntined cage with amber panes between a brass eave band and base tray, square pyramidal brass roof, finial and drip) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The arm axis, drop length, and roof stack are one closed-form chain: the roof peak stays below the arm, the hanger is the arm&#x27;s far station, and the brace is an oriented box tenoned into the post wall and into the arm&#x27;s lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone. Cage posts and rails share a named overlap (<code>CAGE_JOINT</code>); glass sits behind the muntins by <code>PANE_REBATE</code>. Collars and the arm root evaluate <code>post_radius_at(z)</code>.</p>
 <p>The first build parked the brace&#x27;s post end 0.35 × <code>BRACE_T</code> outside the post and its arm end under the arm, so a single bevelled corner grazed each host and the brace read as a loose stick in both side elevations. The brace-to-arm gap budget passed anyway, because a grazing corner is a zero gap, and nothing measured the post end at all. The brace ends now start half a brace inside the post wall and on the arm&#x27;s centre-line side, and the brace-bite budget below asserts that each end is actually inside its host. Brass is aged and rougher (it was bright polished gold at roughness 0.28).</p>
-<p>The hero is lit from inside: a shadowless warm point light sits at the centroid of the glass faces and the panes emit at 1.6, so the lantern throws its glow onto the post, arm and floor. The camera is closer and lower on a 40 mm lens; the first hero left the lantern small in an empty frame. Render path only; geometry and budgets are unchanged.</p>
+<p>The model was the plainest in its asset sheet: a plain octagonal post and a bare box cage. The column is now fluted (<code>POST_FLUTES</code> channels, <code>FLUTE_DEPTH</code> deep, lands at the declared post radius so the post-size budget still reads 0.10 m) and broken by two collars; a ladder bar with ball ends passes through the neck; two C-scrolls weld into the arm&#x27;s underside (each kept under 0.10 m on Y so the brace classifier never claims one); a hook ring rings the arm at the lantern station; and the cage gains a brass eave band, a base tray and a drip finial. Base triangles rose from 3338 to 4726 and the band was re-declared around the new model (below). One construction hazard is recorded in the script: a 0.008 m flute depth puts a groove vertex exactly on the arm root&#x27;s cap centre, <code>remove_doubles</code> fuses post and arm into one shell, and the joint audit then finds neither.</p>
+<p>The hero is lit from inside: a shadowless warm point light sits at the centroid of the glass faces and the panes emit at 1.6, so the lantern throws its glow onto the post, arm and floor. The camera is closer and lower on a 40 mm lens; the first hero left the lantern small in an empty frame. The hero yaws the piece <code>HERO_YAW_DEG</code> (90) so the arm reaches across both the hero camera and the asset-sheet camera; at the old −28° it pointed down the sheet camera&#x27;s axis and the lantern read end-on.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
-<p>Intended size: 0.30 m square foot, 1.12 m octagonal post (0.10 m across at the base), 0.50 m arm, 0.24 × 0.30 m cage; outer AABB 0.300 × 0.786 × 1.287 m.</p>
+<p>Intended size: 0.30 m square foot, 1.12 m fluted post (0.10 m across the lands at the base), 0.50 m arm, 0.24 × 0.30 m cage; outer AABB 0.300 × 0.786 × 1.287 m.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>3000–3800</td><td>3338 / 3338 / 3338</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4997 / 0.4997 / 0.4997</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2193</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥200 metal, ≥8 glass, ≥24 brass</td><td>3 slots; 1530 / 24 / 209</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.300, 0.786, 1.287) m ± 0.01</td><td>(0.3000, 0.7860, 1.2874), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 120</td><td>78</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>251016 / 251016 / 251000 bytes</td></tr></tbody></table></div>
-<p>Base triangles dropped from <strong>3520 to 3338</strong> in the quality pass: the open 4-gon cone roof became a closed square pyramid, cage crossings stopped sharing vertices, and a pane rebate replaced coplanar glass.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 2 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>4200–5200</td><td>4726 / 4726</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4998 / 0.4998</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2196 / 0.2179</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥200 metal, ≥8 glass, ≥24 brass</td><td>3 slots; 2162 / 24 / 341</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.300, 0.786, 1.287) m ± 0.01</td><td>(0.3000, 0.7860, 1.2874), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 120</td><td>108</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>355288 / 355272 bytes</td></tr></tbody></table></div>
+<p>Base triangles dropped from <strong>3520 to 3338</strong> in the first quality pass (closed square-pyramid roof, unshared cage crossings, pane rebate), then rose to <strong>4726</strong> when the model gained its column flutes, second collar, ladder bar, arm scrolls, hook ring, eave band, base tray and drip. The band moved from 3000–3800 to 4200–5200, the same ~±10 % slack around the measured count. The 5.1.2 column was dropped with this change: the new model was measured on 4.5.11 and 5.2.1 only.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3 id="hygiene">Hygiene<a class="anchor" href="#hygiene" aria-label="Link to this section">#</a></h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Post plan</td><td>0.100 m across × 1.120 m high ± (0.02, 0.04)</td><td>0.1000 × 1.1200</td></tr><tr><td>Post plumb (top vs bottom XY)</td><td>≤ 0.008 m</td><td>0.00000</td></tr></tbody></table></div>
 <h3 id="joint-fit-and-seat">Joint fit and seat<a class="anchor" href="#joint-fit-and-seat" aria-label="Link to this section">#</a></h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-arm BVH gap</td><td>≤ 0.006 m</td><td>0.00000</td></tr><tr><td>Brace bite: deepest brace vertex inside the post / inside the arm (signed distance to the host shell)</td><td>≥ 0.004 m each</td><td>0.01305 / 0.01282</td></tr><tr><td>Arm underside vs roof peak</td><td>≥ 0.008 m clearance</td><td>0.05300</td></tr><tr><td>Hanger-to-roof BVH gap</td><td>≤ 0.004 m</td><td>−0.00100</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-arm BVH gap</td><td>≤ 0.006 m</td><td>0.00000</td></tr><tr><td>Brace bite: deepest brace vertex inside the post / inside the arm (signed distance to the host shell)</td><td>≥ 0.004 m each</td><td>0.01305 / 0.01282</td></tr><tr><td>Arm underside vs roof peak</td><td>≥ 0.008 m clearance</td><td>0.05300</td></tr><tr><td>Hanger-to-roof BVH gap</td><td>≤ 0.004 m</td><td>−0.00100</td></tr><tr><td>Scroll weld: deepest vertex of each of the 2 arm scrolls inside the arm</td><td>≥ 0.004 m each, exactly 2 scrolls</td><td>0.01709</td></tr></tbody></table></div>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
-<p>Each violates one named budget. Every falsifier was run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-brace</code></td><td>brace-to-arm BVH gap</td><td>17</td></tr><tr><td><code>--sink-arm</code></td><td>arm-over-roof clearance</td><td>18</td></tr><tr><td><code>--rake-post</code></td><td>post plumb</td><td>19</td></tr><tr><td><code>--shallow-brace</code></td><td>brace bite (the first build&#x27;s ends: −0.00593 m into the post, 0.00000 m into the arm)</td><td>20</td></tr></tbody></table></div>
+<p>Each violates one named budget. After the model change every falsifier was re-run on 4.5.11 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-brace</code></td><td>brace-to-arm BVH gap</td><td>17</td></tr><tr><td><code>--sink-arm</code></td><td>arm-over-roof clearance</td><td>18</td></tr><tr><td><code>--rake-post</code></td><td>post plumb</td><td>19</td></tr><tr><td><code>--shallow-brace</code></td><td>brace bite (the first build&#x27;s ends: −0.00638 m into the post, 0.00000 m into the arm)</td><td>20</td></tr><tr><td><code>--float-scroll</code></td><td>scroll weld (scrolls dropped 0.03 m: −0.00873 m)</td><td>21</td></tr></tbody></table></div>
 <p><code>--sink-arm</code> lowers only the arm. Hang-station <code>hang_z</code> stays at post top so the cage does not follow, which is what lets the clearance budget fire.</p>
 <p>The brace-bite check runs last, after plumb, so a raked post is reported as plumb (19) rather than as a brace that no longer reaches it.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
@@ -393,19 +394,20 @@ blender --background --python street_lantern.py -- --float-brace
 blender --background --python street_lantern.py -- --sink-arm
 blender --background --python street_lantern.py -- --rake-post
 blender --background --python street_lantern.py -- --shallow-brace
+blender --background --python street_lantern.py -- --float-scroll
 blender --background --python street_lantern.py -- --output lantern.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family; <code>20</code> is file-local.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0</td></tr><tr><td>17</td><td>Joint fit: brace-to-arm gap (<code>--float-brace</code>)</td></tr><tr><td>18</td><td>Seat: arm-roof clearance or hanger-roof gap (<code>--sink-arm</code>)</td></tr><tr><td>19</td><td>Post plumb or post size off the stated real-world size (<code>--rake-post</code>)</td></tr><tr><td>20</td><td>Brace bite: a brace end not inside the post or the arm (<code>--shallow-brace</code>)</td></tr></tbody></table></div>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family; <code>20</code>–<code>21</code> are file-local.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0</td></tr><tr><td>17</td><td>Joint fit: brace-to-arm gap (<code>--float-brace</code>)</td></tr><tr><td>18</td><td>Seat: arm-roof clearance or hanger-roof gap (<code>--sink-arm</code>)</td></tr><tr><td>19</td><td>Post plumb or post size off the stated real-world size (<code>--rake-post</code>)</td></tr><tr><td>20</td><td>Brace bite: a brace end not inside the post or the arm (<code>--shallow-brace</code>)</td></tr><tr><td>21</td><td>Scroll weld: an arm scroll not welded into the arm, or not exactly two (<code>--float-scroll</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/street-lantern/street_lantern.py</code>
-        <span>1474 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/street-lantern/street_lantern.py">View on GitHub &rarr;</a></span>
+        <span>1715 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/street-lantern/street_lantern.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1474">
+      <div class="code" data-lines="1715">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1879,7 +1881,248 @@ blender --background --python street_lantern.py -- --output lantern.png</code></
 1471
 1472
 1473
-1474</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready street lantern — a showcase piece, not an example.
+1474
+1475
+1476
+1477
+1478
+1479
+1480
+1481
+1482
+1483
+1484
+1485
+1486
+1487
+1488
+1489
+1490
+1491
+1492
+1493
+1494
+1495
+1496
+1497
+1498
+1499
+1500
+1501
+1502
+1503
+1504
+1505
+1506
+1507
+1508
+1509
+1510
+1511
+1512
+1513
+1514
+1515
+1516
+1517
+1518
+1519
+1520
+1521
+1522
+1523
+1524
+1525
+1526
+1527
+1528
+1529
+1530
+1531
+1532
+1533
+1534
+1535
+1536
+1537
+1538
+1539
+1540
+1541
+1542
+1543
+1544
+1545
+1546
+1547
+1548
+1549
+1550
+1551
+1552
+1553
+1554
+1555
+1556
+1557
+1558
+1559
+1560
+1561
+1562
+1563
+1564
+1565
+1566
+1567
+1568
+1569
+1570
+1571
+1572
+1573
+1574
+1575
+1576
+1577
+1578
+1579
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600
+1601
+1602
+1603
+1604
+1605
+1606
+1607
+1608
+1609
+1610
+1611
+1612
+1613
+1614
+1615
+1616
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629
+1630
+1631
+1632
+1633
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700
+1701
+1702
+1703
+1704
+1705
+1706
+1707
+1708
+1709
+1710
+1711
+1712
+1713
+1714
+1715</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready street lantern — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural hanging lantern after composing
 shipped pipeline pieces: bmesh construction, UVs, three materials,
@@ -1889,13 +2132,17 @@ The arm axis, drop length, and roof stack are one closed-form chain: the
 roof peak stays below the arm, the hanger is the arm&#x27;s far station, and
 the brace is an oriented box tenoned into the post wall and into the
 arm&#x27;s lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone.
+The column is fluted and collared, a ladder bar passes through its neck, two
+C-scrolls weld into the arm, a hook ring holds the lantern, and the cage sits
+between a brass eave band and a base tray.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-brace`` brace-to-arm
 joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb,
-``--shallow-brace`` brace bite into post and arm (exit 20).
+``--shallow-brace`` brace bite into post and arm (exit 20),
+``--float-scroll`` arm-scroll weld (exit 21).
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -1945,12 +2192,34 @@ COLLAR_T = <span class="n">0.016</span>
 CAP_H = <span class="n">0.050</span>
 CAP_R = POST_R_TOP + <span class="n">0.028</span>
 POST_FINIAL_H = <span class="n">0.070</span>
+<span class="c"># Fluted column: POST_FLUTES channels, each FLUTE_DEPTH deep, between lands</span>
+<span class="c"># at the tapered POST_R_BOT..POST_R_TOP radius (so post_size still reads the</span>
+<span class="c"># land diameter).</span>
+POST_FLUTES = <span class="n">10</span>
+FLUTE_DEPTH = <span class="n">0.006</span>
+<span class="c"># Ladder bar through the neck — the lamplighter rests a ladder on it.</span>
+LADDER_BAR_FRAC = <span class="n">0.70</span>
+LADDER_BAR_HALF = <span class="n">0.125</span>
+LADDER_BAR_R = <span class="n">0.009</span>
+LADDER_BALL_R = <span class="n">0.016</span>
 
 ARM_R = <span class="n">0.022</span>
 ARM_LEN = <span class="n">0.50</span>
 BRACE_T = <span class="n">0.024</span>
 BRACE_POST_DROP = <span class="n">0.155</span>
 BRACE_ARM_FRAC = <span class="n">0.46</span>
+<span class="c"># C-scrolls under the arm: (y station, outer radius, winding). Each welds into</span>
+<span class="c"># the arm&#x27;s underside by SCROLL_BITE and stays &lt; 0.10 m on the Y axis so</span>
+<span class="c"># joint_audit&#x27;s brace test (dy &gt; 0.10 and dz &gt; 0.10) never claims one.</span>
+SCROLLS = ((<span class="n">0.105</span>, <span class="n">0.026</span>, <span class="n">1.0</span>), (<span class="n">0.34</span>, <span class="n">0.040</span>, -<span class="n">1.0</span>))
+SCROLL_BITE = <span class="n">0.006</span>
+SCROLL_R1 = <span class="n">0.008</span>
+SCROLL_TURNS = <span class="n">1.15</span>
+SCROLL_STEPS = <span class="n">22</span>
+SCROLL_BAR_R = <span class="n">0.007</span>
+<span class="c"># forged hook ring around the arm at the lantern station</span>
+HOOK_CLEAR = <span class="n">0.006</span>
+HOOK_R = <span class="n">0.0045</span>
 
 CAGE_W = <span class="n">0.24</span>
 CAGE_H = <span class="n">0.30</span>
@@ -1963,6 +2232,10 @@ CAGE_JOINT = <span class="n">0.0015</span>
 ROOF_H = <span class="n">0.095</span>
 FINIAL_H = <span class="n">0.050</span>
 EAVE = <span class="n">0.016</span>
+<span class="c"># brass eave band and base tray, BAND_PROUD proud of the cage on each side</span>
+BAND_PROUD = <span class="n">0.010</span>
+EAVE_BAND_H = <span class="n">0.026</span>
+BASE_TRAY_H = <span class="n">0.020</span>
 <span class="c"># Roof stack plus a gap so the arm passes *over* the cage, never through it.</span>
 DROP_H = ARM_R + ROOF_H + FINIAL_H + <span class="n">0.024</span>
 
@@ -1971,8 +2244,12 @@ BBOX_TOL = <span class="n">0.01</span>
 OUTER_SIZE = (<span class="n">0.300</span>, <span class="n">0.786</span>, <span class="n">1.287</span>)
 POST_SIZE = (POST_R_BOT * <span class="n">2.0</span>, POST_H)
 POST_SIZE_TOL = (<span class="n">0.02</span>, <span class="n">0.04</span>)
-BASE_TRIS_MIN = <span class="n">3000</span>
-BASE_TRIS_MAX = <span class="n">3800</span>
+<span class="c"># Raised from 3000..3800 (3338 measured) when the plain octagonal post and bare</span>
+<span class="c"># cage became a fluted column with collars, a ladder bar, arm scrolls, a hook</span>
+<span class="c"># ring and a banded lantern: 4726 measured. The band brackets that with the</span>
+<span class="c"># same ~±10% slack the old band gave.</span>
+BASE_TRIS_MIN = <span class="n">4200</span>
+BASE_TRIS_MAX = <span class="n">5200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -2008,6 +2285,14 @@ SINK_ARM = <span class="n">0.14</span>
 <span class="c"># post and 0.0000 m into the arm).</span>
 BRACE_BITE_MIN = <span class="n">0.004</span>
 RAKE = math.radians(<span class="n">8.0</span>)
+<span class="c"># Hero yaw: the arm points along -X, about 55 degrees off both the hero camera&#x27;s and the</span>
+<span class="c"># asset sheet&#x27;s view axes. At -28 it pointed straight down the sheet camera&#x27;s</span>
+<span class="c"># axis and the lantern read end-on and small.</span>
+HERO_YAW_DEG = <span class="n">90.0</span>
+<span class="c"># Each scroll&#x27;s welded foot must sit inside the arm (signed depth, like the</span>
+<span class="c"># brace bite). --float-scroll drops the scrolls SCROLL_DROP so they hang free.</span>
+SCROLL_WELD_MIN = <span class="n">0.004</span>
+SCROLL_DROP = <span class="n">0.030</span>
 
 METAL_IDX = <span class="n">0</span>
 GLASS_IDX = <span class="n">1</span>
@@ -2119,6 +2404,102 @@ BRASS_IDX = <span class="n">2</span>
     <span class="k">return</span> corners + [apex]
 
 
+<span class="k">def</span> add_fluted_post(bm, loc, r_bot, r_top, height, flutes, depth, mat_idx,
+                    euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    <span class="s">&quot;&quot;&quot;Tapered column with ``flutes`` concave channels: each ring alternates
+    the land radius with a groove radius ``depth`` smaller. Capped, closed.&quot;&quot;&quot;</span>
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    n = flutes * <span class="n">2</span>
+    rings = []
+    <span class="k">for</span> z, r <span class="k">in</span> ((-height / <span class="n">2.0</span>, r_bot), (height / <span class="n">2.0</span>, r_top)):
+        ring = []
+        <span class="k">for</span> k <span class="k">in</span> range(n):
+            a = <span class="n">2.0</span> * math.pi * k / n
+            rr = r <span class="k">if</span> k % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> r - depth
+            ring.append(bm.verts.new(rot @ Vector((rr * math.cos(a), rr * math.sin(a), z)) + origin))
+        rings.append(ring)
+    faces = []
+    <span class="k">for</span> k <span class="k">in</span> range(n):
+        m = (k + <span class="n">1</span>) % n
+        faces.append(bm.faces.new((rings[<span class="n">0</span>][k], rings[<span class="n">0</span>][m], rings[<span class="n">1</span>][m], rings[<span class="n">1</span>][k])))
+    faces.append(bm.faces.new(tuple(reversed(rings[<span class="n">0</span>]))))
+    faces.append(bm.faces.new(tuple(rings[<span class="n">1</span>])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> add_tube(bm, pts, radius, sides, mat_idx):
+    <span class="s">&quot;&quot;&quot;Capped round bar swept along a polyline (parallel-transport frames).&quot;&quot;&quot;</span>
+    pts = [Vector(p) <span class="k">for</span> p <span class="k">in</span> pts]
+    tans = []
+    <span class="k">for</span> i <span class="k">in</span> range(len(pts)):
+        a = pts[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        b = pts[min(i + <span class="n">1</span>, len(pts) - <span class="n">1</span>)]
+        tans.append((b - a).normalized())
+    ref = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)) <span class="k">if</span> abs(tans[<span class="n">0</span>].x) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    nrm = (ref - tans[<span class="n">0</span>] * ref.dot(tans[<span class="n">0</span>])).normalized()
+    rings = []
+    <span class="k">for</span> p, t <span class="k">in</span> zip(pts, tans):
+        nrm = (nrm - t * nrm.dot(t)).normalized()
+        bi = t.cross(nrm)
+        rings.append([
+            bm.verts.new(p + radius * (nrm * math.cos(<span class="n">2.0</span> * math.pi * k / sides)
+                                       + bi * math.sin(<span class="n">2.0</span> * math.pi * k / sides)))
+            <span class="k">for</span> k <span class="k">in</span> range(sides)
+        ])
+    faces = []
+    <span class="k">for</span> r0, r1 <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> k <span class="k">in</span> range(sides):
+            m = (k + <span class="n">1</span>) % sides
+            faces.append(bm.faces.new((r0[k], r0[m], r1[m], r1[k])))
+    faces.append(bm.faces.new(tuple(reversed(rings[<span class="n">0</span>]))))
+    faces.append(bm.faces.new(tuple(rings[-<span class="n">1</span>])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> add_ring(bm, center, axis, r_major, r_minor, segs, sides, mat_idx):
+    <span class="s">&quot;&quot;&quot;Closed torus about ``axis`` through ``center``.&quot;&quot;&quot;</span>
+    center = Vector(center)
+    axis = Vector(axis).normalized()
+    ref = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)) <span class="k">if</span> abs(axis.z) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    u = axis.cross(ref).normalized()
+    w = axis.cross(u)
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(segs):
+        a = <span class="n">2.0</span> * math.pi * i / segs
+        radial = u * math.cos(a) + w * math.sin(a)
+        c = center + radial * r_major
+        rings.append([
+            bm.verts.new(c + r_minor * (radial * math.cos(<span class="n">2.0</span> * math.pi * k / sides)
+                                        + axis * math.sin(<span class="n">2.0</span> * math.pi * k / sides)))
+            <span class="k">for</span> k <span class="k">in</span> range(sides)
+        ])
+    <span class="k">for</span> i <span class="k">in</span> range(segs):
+        r0, r1 = rings[i], rings[(i + <span class="n">1</span>) % segs]
+        <span class="k">for</span> k <span class="k">in</span> range(sides):
+            m = (k + <span class="n">1</span>) % sides
+            f = bm.faces.new((r0[k], r0[m], r1[m], r1[k]))
+            f.material_index = mat_idx
+
+
+<span class="k">def</span> scroll_points(centre, r0, r1, turns, steps, spin):
+    <span class="s">&quot;&quot;&quot;Flat Archimedean scroll in the YZ plane about ``centre``: starts at the
+    top of the r0 circle and winds ``turns`` times inward to radius r1;
+    ``spin`` +1 / -1 picks the winding direction.&quot;&quot;&quot;</span>
+    centre = Vector(centre)
+    pts = []
+    <span class="k">for</span> i <span class="k">in</span> range(steps + <span class="n">1</span>):
+        t = i / steps
+        ang = <span class="n">0.5</span> * math.pi + spin * t * turns * <span class="n">2.0</span> * math.pi
+        r = r0 + (r1 - r0) * t
+        pts.append(centre + Vector((<span class="n">0.0</span>, r * math.cos(ang), r * math.sin(ang))))
+    <span class="k">return</span> pts
+
+
 <span class="k">def</span> triangulate_ngons(bm):
     faces = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
     <span class="k">if</span> faces:
@@ -2176,6 +2557,7 @@ BRASS_IDX = <span class="n">2</span>
     sink_arm=<span class="k">False</span>,
     rake_post=<span class="k">False</span>,
     shallow_brace=<span class="k">False</span>,
+    float_scroll=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -2218,27 +2600,48 @@ BRASS_IDX = <span class="n">2</span>
             <span class="n">12</span>,
             BRASS_IDX,
         )
-        add_cone(
+        <span class="c"># cast-iron column: tapered, with POST_FLUTES concave channels</span>
+        add_fluted_post(
             bm,
             (<span class="n">0.0</span>, <span class="n">0.0</span>, post_z0 + POST_H / <span class="n">2.0</span>),
             POST_R_BOT,
             POST_R_TOP,
             POST_H,
-            POST_SIDES,
+            POST_FLUTES,
+            FLUTE_DEPTH,
             METAL_IDX,
             euler=post_euler,
         )
-        collar_z = post_z0 + POST_H * <span class="n">0.36</span>
-        collar_r = post_radius_at(collar_z) + COLLAR_T
-        add_cone(
+        <span class="c"># two moulded collars break the column into base, shaft and neck</span>
+        <span class="k">for</span> frac <span class="k">in</span> (<span class="n">0.36</span>, <span class="n">0.80</span>):
+            collar_z = post_z0 + POST_H * frac
+            collar_r = post_radius_at(collar_z) + COLLAR_T
+            add_cone(
+                bm,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, collar_z),
+                collar_r,
+                collar_r,
+                COLLAR_H,
+                <span class="n">12</span>,
+                BRASS_IDX,
+            )
+        <span class="c"># the lamplighter&#x27;s ladder bar, through the neck, with ball ends</span>
+        bar_z = post_z0 + POST_H * LADDER_BAR_FRAC
+        add_tube(
             bm,
-            (<span class="n">0.0</span>, <span class="n">0.0</span>, collar_z),
-            collar_r,
-            collar_r,
-            COLLAR_H,
-            <span class="n">12</span>,
-            BRASS_IDX,
+            [(-LADDER_BAR_HALF, <span class="n">0.0</span>, bar_z), (LADDER_BAR_HALF, <span class="n">0.0</span>, bar_z)],
+            LADDER_BAR_R,
+            <span class="n">8</span>,
+            METAL_IDX,
         )
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            ball = bmesh.ops.create_uvsphere(
+                bm, u_segments=<span class="n">8</span>, v_segments=<span class="n">6</span>, radius=LADDER_BALL_R
+            )
+            <span class="k">for</span> v <span class="k">in</span> ball[<span class="s">&quot;verts&quot;</span>]:
+                v.co += Vector((sx * LADDER_BAR_HALF, <span class="n">0.0</span>, bar_z))
+            <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> ball[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+                f.material_index = METAL_IDX
         add_cone(
             bm,
             (<span class="n">0.0</span>, <span class="n">0.0</span>, post_top),
@@ -2257,6 +2660,11 @@ BRASS_IDX = <span class="n">2</span>
             <span class="n">8</span>,
             BRASS_IDX,
         )
+        ball = bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">10</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.019</span>)
+        <span class="k">for</span> v <span class="k">in</span> ball[<span class="s">&quot;verts&quot;</span>]:
+            v.co += Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, post_top + CAP_H / <span class="n">2.0</span> + <span class="n">0.012</span>))
+        <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> ball[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+            f.material_index = BRASS_IDX
 
         arm_y0 = post_radius_at(arm_z) - <span class="n">0.008</span>
         arm_y1 = cage_y
@@ -2285,6 +2693,30 @@ BRASS_IDX = <span class="n">2</span>
         <span class="k">if</span> float_brace:
             p_arm = p_post + Vector((<span class="n">0.0</span>, <span class="n">0.11</span>, -<span class="n">0.06</span>))
         bevel_verts.extend(add_oriented_box(bm, p_post, p_arm, (BRACE_T, BRACE_T), METAL_IDX))
+
+        <span class="c"># wrought C-scrolls hung from the arm&#x27;s underside: each starts inside</span>
+        <span class="c"># the arm (a welded foot) and winds inward. Kept under 0.10 m on both</span>
+        <span class="c"># the Y and Z axes so joint_audit never mistakes one for the brace.</span>
+        <span class="k">for</span> sc_y, sc_r0, spin <span class="k">in</span> SCROLLS:
+            top = arm_z - ARM_R + SCROLL_BITE
+            <span class="k">if</span> float_scroll:
+                top -= SCROLL_DROP
+            centre = (<span class="n">0.0</span>, sc_y, top - sc_r0)
+            pts = [Vector((<span class="n">0.0</span>, sc_y, arm_z - (SCROLL_DROP <span class="k">if</span> float_scroll <span class="k">else</span> <span class="n">0.0</span>)))]
+            pts += scroll_points(centre, sc_r0, SCROLL_R1, SCROLL_TURNS, SCROLL_STEPS, spin)
+            add_tube(bm, pts, SCROLL_BAR_R, <span class="n">6</span>, METAL_IDX)
+
+        <span class="c"># the hanging hook: a forged ring around the arm at the lantern station</span>
+        add_ring(
+            bm,
+            (<span class="n">0.0</span>, cage_y, arm_z),
+            (<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>),
+            ARM_R + HOOK_CLEAR,
+            HOOK_R,
+            <span class="n">16</span>,
+            <span class="n">6</span>,
+            METAL_IDX,
+        )
 
         apex_z = cage_top - <span class="n">0.001</span> + ROOF_H
         stub_bot = apex_z + FINIAL_H * <span class="n">0.70</span>
@@ -2387,6 +2819,36 @@ BRASS_IDX = <span class="n">2</span>
             (<span class="n">0.0</span>, cage_y, cage_bot + <span class="n">0.040</span>),
             <span class="n">0.024</span>,
             <span class="n">0.018</span>,
+            <span class="n">0.048</span>,
+            <span class="n">8</span>,
+            BRASS_IDX,
+        )
+
+        <span class="c"># brass eave band under the roof and a base tray under the cage: the</span>
+        <span class="c"># lantern reads as a finished fitting, not a bare frame</span>
+        band_w = CAGE_W + <span class="n">2.0</span> * BAND_PROUD
+        bevel_verts.extend(
+            add_box(
+                bm,
+                (<span class="n">0.0</span>, cage_y, cage_top - EAVE_BAND_H / <span class="n">2.0</span> + <span class="n">0.004</span>),
+                (band_w, band_w, EAVE_BAND_H),
+                BRASS_IDX,
+            )
+        )
+        bevel_verts.extend(
+            add_box(
+                bm,
+                (<span class="n">0.0</span>, cage_y, cage_bot - BASE_TRAY_H / <span class="n">2.0</span> + <span class="n">0.006</span>),
+                (band_w, band_w, BASE_TRAY_H),
+                BRASS_IDX,
+            )
+        )
+        <span class="c"># a drip finial under the tray</span>
+        add_cone(
+            bm,
+            (<span class="n">0.0</span>, cage_y, cage_bot - BASE_TRAY_H + <span class="n">0.006</span> - <span class="n">0.022</span>),
+            <span class="n">0.004</span>,
+            <span class="n">0.030</span>,
             <span class="n">0.048</span>,
             <span class="n">8</span>,
             BRASS_IDX,
@@ -2748,6 +3210,7 @@ BRASS_IDX = <span class="n">2</span>
     roofs = []
     hangers = []
     posts = []
+    scrolls = []
     <span class="k">for</span> g, a, mat <span class="k">in</span> boxes:
         dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
         cy = <span class="n">0.5</span> * (a[<span class="n">1</span>] + a[<span class="n">4</span>])
@@ -2760,6 +3223,9 @@ BRASS_IDX = <span class="n">2</span>
             <span class="k">continue</span>
         <span class="k">if</span> mat == METAL_IDX <span class="k">and</span> dz &gt; <span class="n">0.10</span> <span class="k">and</span> dy &gt; <span class="n">0.10</span> <span class="k">and</span> dx &lt; <span class="n">0.08</span> <span class="k">and</span> cz &gt; <span class="n">0.9</span>:
             braces.append((g, a))
+            <span class="k">continue</span>
+        <span class="k">if</span> mat == METAL_IDX <span class="k">and</span> dx &lt; <span class="n">0.02</span> <span class="k">and</span> dz &gt; <span class="n">0.06</span> <span class="k">and</span> <span class="n">0.04</span> &lt; dy &lt; <span class="n">0.10</span> <span class="k">and</span> cz &gt; <span class="n">0.9</span>:
+            scrolls.append((g, a))
             <span class="k">continue</span>
         <span class="k">if</span> mat == BRASS_IDX <span class="k">and</span> dx &gt; CAGE_W * <span class="n">0.6</span> <span class="k">and</span> dy &gt; CAGE_W * <span class="n">0.6</span> <span class="k">and</span> cz &gt; <span class="n">0.9</span>:
             roofs.append((g, a))
@@ -2777,6 +3243,9 @@ BRASS_IDX = <span class="n">2</span>
     <span class="k">if</span> braces <span class="k">and</span> posts <span class="k">and</span> arms:
         post_bite = min(shell_bite(me, b[<span class="n">0</span>], posts[<span class="n">0</span>][<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces)
         arm_bite = min(shell_bite(me, b[<span class="n">0</span>], arms[<span class="n">0</span>][<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces)
+    scroll_weld = -<span class="n">1.0</span>
+    <span class="k">if</span> scrolls <span class="k">and</span> arms:
+        scroll_weld = min(shell_bite(me, s[<span class="n">0</span>], arms[<span class="n">0</span>][<span class="n">0</span>]) <span class="k">for</span> s <span class="k">in</span> scrolls)
     roof_zmax = max((a[<span class="n">5</span>] <span class="k">for</span> _g, a <span class="k">in</span> roofs), default=<span class="n">0.0</span>)
     arm_zmin = min((a[<span class="n">2</span>] <span class="k">for</span> _g, a <span class="k">in</span> arms), default=<span class="n">99.0</span>)
     hanger_zmin = min((a[<span class="n">2</span>] <span class="k">for</span> _g, a <span class="k">in</span> hangers), default=<span class="n">99.0</span>)
@@ -2787,6 +3256,8 @@ BRASS_IDX = <span class="n">2</span>
         <span class="s">&quot;roofs&quot;</span>: len(roofs),
         <span class="s">&quot;posts&quot;</span>: len(posts),
         <span class="s">&quot;hangers&quot;</span>: len(hangers),
+        <span class="s">&quot;scrolls&quot;</span>: len(scrolls),
+        <span class="s">&quot;scroll_weld&quot;</span>: scroll_weld,
         <span class="s">&quot;brace_gap&quot;</span>: brace_gap,
         <span class="s">&quot;post_bite&quot;</span>: post_bite,
         <span class="s">&quot;arm_bite&quot;</span>: arm_bite,
@@ -2945,6 +3416,7 @@ BRASS_IDX = <span class="n">2</span>
     sink_arm=<span class="k">False</span>,
     rake_post=<span class="k">False</span>,
     shallow_brace=<span class="k">False</span>,
+    float_scroll=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_lantern_mesh(
@@ -2955,6 +3427,7 @@ BRASS_IDX = <span class="n">2</span>
         sink_arm=sink_arm,
         rake_post=rake_post,
         shallow_brace=shallow_brace,
+        float_scroll=float_scroll,
     )
     high = build_lantern_mesh(
         <span class="s">&quot;LanternHigh&quot;</span>,
@@ -2964,6 +3437,7 @@ BRASS_IDX = <span class="n">2</span>
         sink_arm=sink_arm,
         rake_post=rake_post,
         shallow_brace=shallow_brace,
+        float_scroll=float_scroll,
     )
     metal, glass, brass = lantern_materials()
     assign_slots(low, metal, glass, brass)
@@ -3064,7 +3538,8 @@ BRASS_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">hanger_roof_gap=</span>{jnt[<span class="s">&#x27;hanger_roof_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">plumb=</span>{plumb:<span class="s">.5f</span>}<span class="s"> post_size=(</span>{pxy:<span class="s">.4f</span>}<span class="s">,</span>{pz:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">parts=</span>{jnt[<span class="s">&#x27;parts&#x27;</span>]}<span class="s"> arms=</span>{jnt[<span class="s">&#x27;arms&#x27;</span>]}<span class="s"> braces=</span>{jnt[<span class="s">&#x27;braces&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">roofs=</span>{jnt[<span class="s">&#x27;roofs&#x27;</span>]}<span class="s"> hangers=</span>{jnt[<span class="s">&#x27;hangers&#x27;</span>]}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">roofs=</span>{jnt[<span class="s">&#x27;roofs&#x27;</span>]}<span class="s"> hangers=</span>{jnt[<span class="s">&#x27;hangers&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">scrolls=</span>{jnt[<span class="s">&#x27;scrolls&#x27;</span>]}<span class="s"> scroll_weld=</span>{jnt[<span class="s">&#x27;scroll_weld&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -3184,6 +3659,13 @@ BRASS_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">&lt; </span>{BRACE_BITE_MIN}<span class="s">&quot;</span>,
             <span class="n">20</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="c"># Last: a dropped scroll hangs free of the arm (--float-scroll).</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;scrolls&quot;</span>] != len(SCROLLS) <span class="k">or</span> jnt[<span class="s">&quot;scroll_weld&quot;</span>] &lt; SCROLL_WELD_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">scroll weld </span>{jnt[<span class="s">&#x27;scroll_weld&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> scrolls=</span>{jnt[<span class="s">&#x27;scrolls&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(want </span>{len(SCROLLS)}<span class="s">, &gt;= </span>{SCROLL_WELD_MIN}<span class="s">)</span><span class="s">&quot;</span>,
+            <span class="n">21</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, metal, tex, collider
 
 
@@ -3204,7 +3686,7 @@ BRASS_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
+    low.rotation_euler.z = math.radians(HERO_YAW_DEG)
     low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -3324,6 +3806,7 @@ BRASS_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--shallow-brace&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--sink-arm&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--rake-post&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-scroll&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, metal, tex, _col = check(
@@ -3334,6 +3817,7 @@ BRASS_IDX = <span class="n">2</span>
         sink_arm=args.sink_arm,
         rake_post=args.rake_post,
         shallow_brace=args.shallow_brace,
+        float_scroll=args.float_scroll,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -3392,7 +3876,7 @@ BRASS_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace, its hanging lantern lit from inside so the amber panes glow onto the post and floor." />
+    <img src="../assets/street-lantern-hero.webp" alt="A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside." />
   </dialog>
   <footer>
     <div class="statusbar">
