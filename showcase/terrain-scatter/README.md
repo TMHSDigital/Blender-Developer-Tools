@@ -27,6 +27,15 @@ Intended size: 1.80 m square hill tile, ~0.16 m sine amplitude, nine
 embedded stones from cobble to boulder; outer AABB 1.800 × 1.800 ×
 0.570 m.
 
+**Hero.** On the render path, grass is blended into the dirt shader where
+the ground faces up (geometry normal Z), broken by a coarse patch noise so
+bare soil shows through. The rounded rim and the cut sides tip past the
+band, so the section still reads as topsoil over subsoil. A render-only
+dressing, drawn with a fixed seed from the up-facing dirt faces, adds 120
+clumped grass tufts and 40 sunk pebbles in the stone material. The dressing
+is staging, parented to the tile, and is not part of the asset, its budgets
+or its export. The asset sheet judges `TerrainLow` alone.
+
 ## Budgets
 
 Declared as named constants; every gate **recomputes** from the mesh,

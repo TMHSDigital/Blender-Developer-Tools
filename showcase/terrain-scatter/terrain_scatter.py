@@ -31,6 +31,7 @@ across Blender versions — the LOD gate is a ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -1424,9 +1425,134 @@ def wire_normal(mat, tex):
     nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
+def grass_over(dirt):
+    """Render path: patchy grass on the up-facing ground, soil on the cut.
+
+    Grass holds where the surface faces up (geometry normal Z) and a coarse
+    patch noise lets bare soil through; the rounded rim and the slab sides
+    tip past the band, so the cut still reads as topsoil over subsoil.
+    """
+    nt = dirt.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    link = bsdf.inputs["Base Color"].links[0]
+    soil = link.from_socket
+    nt.links.remove(link)
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(geo.outputs["Normal"], sep.inputs[0])
+    up = nt.nodes.new("ShaderNodeMapRange")
+    up.inputs["From Min"].default_value = 0.80
+    up.inputs["From Max"].default_value = 0.95
+    nt.links.new(sep.outputs["Z"], up.inputs["Value"])
+    patch = nt.nodes.new("ShaderNodeTexNoise")
+    patch.inputs["Scale"].default_value = 3.2
+    patch.inputs["Detail"].default_value = 6.0
+    nt.links.new(coord.outputs["Object"], patch.inputs["Vector"])
+    cover = nt.nodes.new("ShaderNodeMapRange")
+    cover.inputs["From Min"].default_value = 0.40
+    cover.inputs["From Max"].default_value = 0.55
+    nt.links.new(patch.outputs["Fac"], cover.inputs["Value"])
+    amount = nt.nodes.new("ShaderNodeMath")
+    amount.operation = "MULTIPLY"
+    nt.links.new(up.outputs["Result"], amount.inputs[0])
+    nt.links.new(cover.outputs["Result"], amount.inputs[1])
+    blades = nt.nodes.new("ShaderNodeTexNoise")
+    blades.inputs["Scale"].default_value = 140.0
+    blades.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], blades.inputs["Vector"])
+    green = nt.nodes.new("ShaderNodeValToRGB")
+    green.color_ramp.elements[0].color = (0.030, 0.045, 0.012, 1.0)
+    green.color_ramp.elements[1].color = (0.105, 0.130, 0.035, 1.0)
+    nt.links.new(blades.outputs["Fac"], green.inputs["Fac"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    nt.links.new(amount.outputs["Value"], _sock(mix.inputs, "Factor_Float"))
+    nt.links.new(soil, _sock(mix.inputs, "A_Color"))
+    nt.links.new(green.outputs["Color"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+
+
+def ground_dressing(low, stone_mat, seed=11, n_tufts=120, n_pebbles=40):
+    """Render-only tufts and pebbles on the tile's up-facing dirt faces.
+
+    Sites are dirt faces (material DIRT_IDX) facing up, drawn by area with
+    a fixed seed, so the dressing is the same every run. Pebbles sink a
+    third of their height; tufts are a few tapered blades each. Returned
+    objects are staging, parented to the tile, never part of its budgets.
+    """
+    me = low.data
+    rng = random.Random(seed)
+    sites = [p for p in me.polygons
+             if p.material_index == DIRT_IDX and p.normal.z > 0.9]
+    weights = [p.area for p in sites]
+
+    def site():
+        p = rng.choices(sites, weights)[0]
+        vs = [me.vertices[i].co for i in p.vertices]
+        w = [rng.random() for _ in vs]
+        s = sum(w)
+        return sum((v * (wi / s) for v, wi in zip(vs, w)), Vector()), p.normal
+
+    bm = bmesh.new()
+    try:
+        for _ in range(n_tufts):
+            base, _nrm = site()
+            for _b in range(rng.randint(9, 15)):
+                a = rng.uniform(0.0, 2 * math.pi)
+                h = rng.uniform(0.028, 0.062)
+                lean = rng.uniform(0.15, 0.55)
+                w = rng.uniform(0.004, 0.007)
+                d = Vector((math.cos(a), math.sin(a), 0.0))
+                side = Vector((-d.y, d.x, 0.0)) * w
+                base_b = base + Vector((rng.uniform(-0.012, 0.012), rng.uniform(-0.012, 0.012), 0.0))
+                root = base_b - Vector((0, 0, 0.004))
+                tip = base_b + d * (h * lean) + Vector((0.0, 0.0, h))
+                mid = base_b + d * (h * lean * 0.35) + Vector((0.0, 0.0, h * 0.55))
+                vs = [bm.verts.new(root - side), bm.verts.new(root + side),
+                      bm.verts.new(mid + side * 0.6), bm.verts.new(mid - side * 0.6),
+                      bm.verts.new(tip)]
+                bm.faces.new(vs[:4])
+                bm.faces.new((vs[3], vs[2], vs[4]))
+        tme = bpy.data.meshes.new("GrassTufts")
+        bm.to_mesh(tme)
+    finally:
+        bm.free()
+    gmat = bpy.data.materials.new("Tuft")
+    gmat.use_nodes = True
+    gb = gmat.node_tree.nodes["Principled BSDF"]
+    gb.inputs["Base Color"].default_value = (0.090, 0.118, 0.030, 1.0)
+    gb.inputs["Roughness"].default_value = 0.75
+    tme.materials.append(gmat)
+    tufts = bpy.data.objects.new("GrassTufts", tme)
+
+    bm = bmesh.new()
+    try:
+        for _ in range(n_pebbles):
+            base, _nrm = site()
+            r = rng.uniform(0.010, 0.026)
+            geo = bmesh.ops.create_icosphere(bm, subdivisions=1, radius=1.0)
+            sx, sy, sz = r * rng.uniform(0.8, 1.3), r * rng.uniform(0.8, 1.2), r * rng.uniform(0.45, 0.7)
+            rot = rng.uniform(0.0, 2 * math.pi)
+            c, s = math.cos(rot), math.sin(rot)
+            for v in geo["verts"]:
+                x, y, z = v.co.x * sx, v.co.y * sy, v.co.z * sz
+                v.co = Vector((c * x - s * y, s * x + c * y, z)) + base - Vector((0, 0, sz * 0.35))
+        pme = bpy.data.meshes.new("Pebbles")
+        bm.to_mesh(pme)
+    finally:
+        bm.free()
+    pme.materials.append(stone_mat)
+    pebbles = bpy.data.objects.new("Pebbles", pme)
+    for ob in (tufts, pebbles):
+        ob.parent = low
+    return [tufts, pebbles]
+
+
 def render_still(low, dirt, tex, path, engine):
     scene = bpy.context.scene
     wire_normal(dirt, tex)
+    grass_over(dirt)
     for ob in list(scene.objects):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
@@ -1434,6 +1560,9 @@ def render_still(low, dirt, tex, path, engine):
 
     low.rotation_euler.z = math.radians(-28.0)
     low.rotation_euler.x = math.radians(0.0)
+    dressing = ground_dressing(low, low.data.materials[STONE_IDX])
+    for ob in dressing:
+        scene.collection.objects.link(ob)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
