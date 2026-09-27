@@ -1,8 +1,9 @@
 # Wooden ladder
 
 A showcase piece, not an example. Procedural timber ladder: two stiles
-tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon,
-barrel thicker only in the clear span), iron ferrules at the top, and
+tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, a
+barrel that shoulders in just under its radius and swells 14 % at
+mid-span, the profile a lathe leaves on a ladder round), iron ferrules at the top, and
 level shoe plates under sleeves that follow the rake. Then the shipped
 pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain,
 convex collider, Unity glTF export.
@@ -36,12 +37,12 @@ imported). Coplanar-pair counting matches `showcase/signpost`.
 Declared as named constants; every gate **recomputes** from the mesh,
 materials, UVs, evaluated LOD, collider, or export file.
 
-| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
+| Axis | Declared | Measured (4.5.11 / 5.2.1; 5.1.2 not re-run after the turned-rung pass) |
 | --- | --- | --- |
-| Base triangles | 1800–2800 | 2536 / 2536 / 2536 |
-| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2192 / 0.2192 / 0.2192 |
-| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 612 wood, 736 metal |
+| Base triangles | 1800–2800 | 2680 / 2680 |
+| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2194 / 0.2194 |
+| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 684 wood, 736 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.490, 0.376, 1.487) m ± 0.01 | (0.4897, 0.3760, 1.4870) |
 | Grounded | `abs(zmin)` ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m | zmin 0, sole 0, rail 0.02037 |
@@ -49,16 +50,30 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Parts | 16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles) | 16 (2 / 6 / 2 / 2) |
 | Rung depth clearance | ≥ 0.003 m inside the stile faces | 0.00800 |
 | Tenon engagement | ≥ 0.008 m past the stile inner face | 0.01399 |
-| Tenon breakout margin | ≥ 0.008 m short of the stile outer face | 0.03780 |
+| Tenon breakout margin | ≥ 0.008 m short of the stile outer face | 0.03787 |
 | Shoe bite / cover | bite ≥ 0.010 m, cover ≥ 0.016 m | 0.02000 / 0.03800 |
 | **Rung pitch** | 6 rungs; every rung-to-rung gap within 0.002 m of the mean | 6; 0.00000 |
 | Collider tris | ≤ 180 | 24 |
-| Export | written, size > 0 | 187524 / 187524 / 187504 bytes |
+| Export | written, size > 0 | 197604 / 197584 bytes |
 
 Base triangles rose from **936 to 2536**. The previous mesh was two
 boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon
 and barrel in one shell) plus ferrule collars and chamfered soles added
 the triangles. Nothing was removed as a hidden face.
+
+A later pass took them to **2680**. The bare ladder was still the plainest
+object in its asset-sheet lineup, and the parts budget is exact (16
+shells), so the detail had to live inside existing shells. Each rung gained
+one ring at mid-span (+24 triangles per rung): the barrel shoulders in at
+0.90 × its radius (`RUNG_SHOULDER`) and swells to 1.14 × (`RUNG_SWELL`).
+That turns a dowel into a lathe-turned round. The tenons are unchanged, so
+clearance, engagement and pitch read the same. The breakout margin moved
+0.07 mm (0.03780 → 0.03787) because the shell's worst vertex is now measured
+across seven rings. The wood shader also changed. The grain noise runs
+across the stile's 50 mm width at a readable scale (`WOOD_GRAIN_SCALE`
+34 → 95, streak stretch 0.94 → 0.985); before, about one noise period
+spanned a stile, so it rendered as flat tan. A short-range AO term darkens
+the rung housings and the wood under the iron sleeves.
 
 The joint budgets are measured per rung against each stile, from vertex
 positions in the un-raked construction frame, and the reported value is

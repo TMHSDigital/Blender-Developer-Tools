@@ -65,6 +65,8 @@ RUNG_R = 0.011
 BARREL_RATIO = 1.34
 RUNG_SEGS = 12
 RUNG_TENON = 0.014
+RUNG_SHOULDER = 0.90             # barrel radius at the shoulders, x r_barrel
+RUNG_SWELL = 1.14                # barrel radius at mid-span, x r_barrel
 # Rungs sit at one even pitch: a climber's feet find them blind, so height
 # jitter is a defect, not variation. Variation lives in the turning (a few
 # percent of barrel) and the wood tone. --drift-rungs restores the old
@@ -75,7 +77,7 @@ RUNG_PITCH_TOL = 0.002
 # Per-piece wood tone jitter and grain frequency, as in shipping-crate.
 PLANK_TONE_JITTER = 0.28
 TONE_SEED = 29
-WOOD_GRAIN_SCALE = 34.0
+WOOD_GRAIN_SCALE = 95.0
 BAND_Z0 = 0.0
 BAND_H = 0.058
 BAND_T = 0.007
@@ -269,16 +271,23 @@ def add_rect_band(bm, zc, cx, hx, hy, tx, ty, h, mat_idx):
 
 
 def add_turned_rung(bm, z, x_left, x_right, tenon, r_tenon, r_barrel, segs, mat_idx):
-    """One shell: thin tenon inside each stile, thicker barrel only in the clear span."""
+    """One shell: thin tenon inside each stile, thicker barrel only in the clear span.
+
+    The barrel is turned, not a plain dowel: it starts at a shoulder just
+    under the barrel radius and swells to RUNG_SWELL at mid-span, the
+    profile a lathe leaves on a ladder round (one extra ring per rung).
+    """
     xs = (
         x_left - tenon,
         x_left - 0.0015,
         x_left + 0.004,
+        0.5 * (x_left + x_right),
         x_right - 0.004,
         x_right + 0.0015,
         x_right + tenon,
     )
-    rs = (r_tenon, r_tenon, r_barrel, r_barrel, r_tenon, r_tenon)
+    shoulder = r_barrel * RUNG_SHOULDER
+    rs = (r_tenon, r_tenon, shoulder, r_barrel * RUNG_SWELL, shoulder, r_tenon, r_tenon)
     rings = []
     for x, radius in zip(xs, rs):
         ring = []
@@ -969,7 +978,7 @@ def wood_material(name):
     nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
     squash = nt.nodes.new("ShaderNodeMath")
     squash.operation = "MULTIPLY"
-    squash.inputs[1].default_value = 0.94
+    squash.inputs[1].default_value = 0.985
     nt.links.new(dot.outputs["Value"], squash.inputs[0])
     along = nt.nodes.new("ShaderNodeVectorMath")
     along.operation = "SCALE"
@@ -989,10 +998,10 @@ def wood_material(name):
     noise.inputs["Roughness"].default_value = 0.62
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (0.10, 0.056, 0.028, 1.0)
-    ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (0.33, 0.19, 0.095, 1.0)
+    ramp.color_ramp.elements[0].position = 0.38
+    ramp.color_ramp.elements[0].color = (0.055, 0.030, 0.014, 1.0)
+    ramp.color_ramp.elements[1].position = 0.62
+    ramp.color_ramp.elements[1].color = (0.34, 0.20, 0.10, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
@@ -1005,7 +1014,21 @@ def wood_material(name):
     _sock(mix.inputs, "Factor_Float").default_value = 1.0
     nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
     nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
-    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    # handling grime: short-range AO darkens where rungs enter the stiles
+    # and under the iron sleeves, so the joints read at thumbnail scale
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.035
+    grime = nt.nodes.new("ShaderNodeMapRange")
+    grime.inputs["To Min"].default_value = 0.45
+    grime.inputs["To Max"].default_value = 1.0
+    nt.links.new(ao.outputs["AO"], grime.inputs["Value"])
+    dirt = nt.nodes.new("ShaderNodeMix")
+    dirt.data_type = "RGBA"
+    dirt.blend_type = "MULTIPLY"
+    _sock(dirt.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(dirt.inputs, "A_Color"))
+    nt.links.new(grime.outputs["Result"], _sock(dirt.inputs, "B_Color"))
+    nt.links.new(_sock(dirt.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     rough = nt.nodes.new("ShaderNodeMapRange")
     rough.inputs["To Min"].default_value = 0.72
     rough.inputs["To Max"].default_value = 0.52
