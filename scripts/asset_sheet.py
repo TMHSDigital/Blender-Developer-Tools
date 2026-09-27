@@ -67,6 +67,10 @@ SELECT = {
     "grain-sacks": (r"^SacksLow$", None),
     "rope-bridge": (r"^BridgeLow$", None),
     "wheelbarrow": (r"^BarrowLow$", None),
+    # the hero shows a three-section run; the sheet judges the one asset
+    "fence-kit": (r"^FenceLow$", None),
+    "wooden-ladder": (r"^LadderLow$", None),
+    "terrain-scatter": (r"^TerrainLow$", None),
     "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),

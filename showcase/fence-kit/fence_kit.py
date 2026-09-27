@@ -590,9 +590,9 @@ def wood_material(name):
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[0].color = (0.085, 0.052, 0.030, 1.0)
     ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    ramp.color_ramp.elements[1].color = (0.30, 0.19, 0.105, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
@@ -605,7 +605,23 @@ def wood_material(name):
     _sock(mix.inputs, "Factor_Float").default_value = 1.0
     nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
     nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
-    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    # Weathering: outdoor timber silvers in broad patches, not uniformly.
+    # A coarse object-space noise pulls the grain toward weathered grey.
+    silver = nt.nodes.new("ShaderNodeTexNoise")
+    silver.inputs["Scale"].default_value = 2.4
+    silver.inputs["Detail"].default_value = 4.0
+    nt.links.new(coord.outputs["Object"], silver.inputs["Vector"])
+    patch = nt.nodes.new("ShaderNodeMapRange")
+    patch.inputs["From Min"].default_value = 0.42
+    patch.inputs["From Max"].default_value = 0.68
+    patch.inputs["To Max"].default_value = 0.55
+    nt.links.new(silver.outputs["Fac"], patch.inputs["Value"])
+    weather = nt.nodes.new("ShaderNodeMix")
+    weather.data_type = "RGBA"
+    _sock(weather.inputs, "B_Color").default_value = (0.20, 0.19, 0.17, 1.0)
+    nt.links.new(patch.outputs["Result"], _sock(weather.inputs, "Factor_Float"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(weather.inputs, "A_Color"))
+    nt.links.new(_sock(weather.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     rough = nt.nodes.new("ShaderNodeMapRange")
     rough.inputs["To Min"].default_value = 0.72
     rough.inputs["To Max"].default_value = 0.52
@@ -1246,8 +1262,64 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    # Level on the floor: an X tilt sinks one face of the shoes.
-    low.rotation_euler.z = math.radians(-16.0)
+    # The hero is the kit doing its job: three sections at the tile pitch,
+    # linked duplicates of the one checked mesh, so every joint in the
+    # picture is the tile fit the check asserts (posts meet band to band,
+    # KIT_CLEAR apart). A run parent carries the yaw; level on the floor,
+    # since an X tilt sinks one face of the shoes.
+    run = bpy.data.objects.new("FenceRun", None)
+    scene.collection.objects.link(run)
+    run.rotation_euler.z = math.radians(-24.0)
+    sections = [low]
+    for i in (-1, 1):
+        dup = bpy.data.objects.new(f"{low.name}.Run{i:+d}", low.data)
+        scene.collection.objects.link(dup)
+        dup.location.x = i * TILE
+        sections.append(dup)
+    for ob in sections:
+        ob.parent = run
+
+    # A render-only packed-earth strip the run stands in: a low bevelled
+    # slab with a worn centre, so the sections read as installed, not as
+    # props parked on a studio floor. Not part of the asset or its budgets.
+    path_me = bpy.data.meshes.new("PathStrip")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x *= TILE * 3 + 0.9
+            v.co.y *= 0.78
+            v.co.z = (v.co.z + 0.5) * 0.02 - 0.019
+        bmesh.ops.bevel(bm, geom=sorted(bm.edges, key=lambda e: e.index), offset=0.012,
+                        segments=2, affect="EDGES", profile=0.5, clamp_overlap=True)
+        bm.to_mesh(path_me)
+    finally:
+        bm.free()
+    for poly in path_me.polygons:
+        poly.use_smooth = True
+    pmat = bpy.data.materials.new("PackedEarth")
+    pmat.use_nodes = True
+    pnt = pmat.node_tree
+    pb = pnt.nodes["Principled BSDF"]
+    pnoise = pnt.nodes.new("ShaderNodeTexNoise")
+    pnoise.inputs["Scale"].default_value = 9.0
+    pnoise.inputs["Detail"].default_value = 8.0
+    pramp = pnt.nodes.new("ShaderNodeValToRGB")
+    pramp.color_ramp.elements[0].position = 0.35
+    pramp.color_ramp.elements[0].color = (0.035, 0.026, 0.018, 1.0)
+    pramp.color_ramp.elements[1].position = 0.70
+    pramp.color_ramp.elements[1].color = (0.11, 0.085, 0.055, 1.0)
+    pnt.links.new(pnoise.outputs["Fac"], pramp.inputs["Fac"])
+    pnt.links.new(pramp.outputs["Color"], pb.inputs["Base Color"])
+    pb.inputs["Roughness"].default_value = 0.92
+    pbump = pnt.nodes.new("ShaderNodeBump")
+    pbump.inputs["Strength"].default_value = 0.35
+    pnt.links.new(pnoise.outputs["Fac"], pbump.inputs["Height"])
+    pnt.links.new(pbump.outputs["Normal"], pb.inputs["Normal"])
+    path_me.materials.append(pmat)
+    strip = bpy.data.objects.new("PathStrip", path_me)
+    scene.collection.objects.link(strip)
+    strip.parent = run
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1291,12 +1363,12 @@ def render_still(low, wood, tex, path, engine):
     light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 45.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.50, -3.46, 1.95)
+    cam.location = (1.30, -5.60, 1.70)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.58)
+    aim.location = (0.42, -0.18, 0.55)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1324,7 +1396,7 @@ def render_still(low, wood, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=sections, elements=sections, stage=[floor, wall, strip],
     )
     if fcode:
         return fcode

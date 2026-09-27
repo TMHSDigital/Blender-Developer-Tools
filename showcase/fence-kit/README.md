@@ -17,6 +17,14 @@ rail and housed 12 mm into both posts. It clears the bottom rail at the left
 post and the top rail at the right one. Rails and kick tenon into the post
 volume.
 
+**Hero.** The still shows the kit doing its job: three linked duplicates of
+the one checked mesh at the 1.60 m pitch, so every joint in the picture is
+the tile fit the budgets assert — the paired posts meet band to band,
+`KIT_CLEAR` apart. The run stands in a render-only packed-earth strip, and
+the wood weathers in broad silver-grey patches (object-space noise) over
+the per-member tone and grain. The strip and the duplicates are staging;
+the asset sheet judges the single `FenceLow` section.
+
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check. This
 piece does not re-witness the `modular-kit-snap` snap contract.

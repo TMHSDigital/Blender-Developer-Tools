@@ -115,7 +115,7 @@
       "name": "fence-kit",
       "dir": "showcase/fence-kit",
       "teaches": "A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts.",
+      "alt": "A run of three weathered post-and-rail fence sections on a packed-earth strip, joined post to post at the tile pitch, each with a diagonal board brace and dark iron bands.",
       "witnessesFix": "Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.",
       "hero": "docs/gallery/assets/fence-kit-hero.webp",
       "preview": "showcase/fence-kit/preview.webp",
