@@ -696,6 +696,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "pond-edge",
+      "dir": "showcase/pond-edge",
+      "category": "nature",
+      "teaches": "A procedural pond margin on a raised soil disc — a shallow pond whose water is its own mesh at a declared level, rippled in low rings round the reeds and the branch, its rim run on under a sloped mud bank; a clump of cattails with arching strap leaves and five stems, each threaded through a brown seed head with a bare spike above it; soft rush and turf tufts on the bank; five notched lily pads floating on the water with two layered white-and-pink water lilies; wet stones at the waterline, a half-submerged branch, pebbles and fallen leaves — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A dark rippled pond on a raised soil disc: cattails with brown seed heads and rush tufts on the far bank, notched lily pads and two pink-white water lilies, wet stones and a branch at the waterline.",
+      "witnessesFix": "Recomputed: 37602 tris, nine materials with 5824 water, 5614 soil, 8162 reed, 1400 seed-head, 1390 pad, 1440 flower, 2046 stone, 234 wood and 400 litter faces, UVs in 0..1 with zero AABB overlap, outer AABB 3.204×2.634×1.507 m read off the vertices, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 39 cattail leaves and stems rooted 0.0397–0.0445 m under the mud (band 0.020–0.070), all five pads floating with 0.00149 m freeboard (band −0.0005–0.0040) and 0.00150 m draft (band 0.0005–0.0040) at ≤ 0.011° tilt (cap 3°), the water's level 0.11500 m (declared 0.115 ± 0.0015) with a 0.00439 m ripple (band 0.0015–0.0090), five seed heads on five distinct stems at most 0.00008 m off their stems' axes (cap 0.002) with 0.093–0.136 m of spike above (floor 0.06), the bank at least 0.01366 m over every point of the water's rim (floor 0.008), all 598 shells joined to the soil, LOD ratios in band, soil collider 96 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-reeds 17; --sink-pad 18; --flat-water 19; --slip-heads 20; --short-water 21; --float-cover 22.",
+      "hero": "docs/gallery/assets/pond-edge-hero.webp",
+      "preview": "showcase/pond-edge/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 49 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 50 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -405,7 +405,7 @@
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
           <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">4</span></button>
-          <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">3</span></button>
+          <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">3</span></button>
         </div>
@@ -1563,6 +1563,17 @@
           <a class="card-link" href="bowling-pins/">View showcase piece<span class="sr-only"> bowling-pins</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="nature" data-name="pond-edge">
+        <a class="card-media" href="pond-edge/" tabindex="-1" aria-hidden="true">
+          <img src="assets/pond-edge-hero.webp" alt="A dark rippled pond on a raised soil disc: cattails with brown seed heads and rush tufts on the far bank, notched lily pads and two pink-white water lilies, wet stones and a branch at the waterline." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="pond-edge/">pond-edge</a></h2>
+          <p class="teaches">A procedural pond margin on a raised soil disc — a shallow pond whose water is its own mesh at a declared level, rippled in low rings round the reeds and the branch, its rim run on under a sloped mud bank; a clump of cattails with arching strap leaves and five stems, each threaded through a brown seed head with a bare spike above it; soft rush and turf tufts on the bank; five notched lily pads floating on the water with two layered white-and-pink water lilies; wet stones at the waterline, a half-submerged branch, pebbles and fallen leaves — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 37602 tris, nine materials with 5824 water, 5614 soil, 8162 reed, 1400 seed-head, 1390 pad, 1440 flower, 2046 stone, 234 wood and 400 litter faces, UVs in 0..1 with zero AABB overlap, outer AABB 3.204×2.634×1.507 m read off the vertices, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 39 cattail leaves and stems rooted 0.0397–0.0445 m under the mud (band 0.020–0.070), all five pads floating with 0.00149 m freeboard (band −0.0005–0.0040) and 0.00150 m draft (band 0.0005–0.0040) at ≤ 0.011° tilt (cap 3°), the water&#x27;s level 0.11500 m (declared 0.115 ± 0.0015) with a 0.00439 m ripple (band 0.0015–0.0090), five seed heads on five distinct stems at most 0.00008 m off their stems&#x27; axes (cap 0.002) with 0.093–0.136 m of spike above (floor 0.06), the bank at least 0.01366 m over every point of the water&#x27;s rim (floor 0.008), all 598 shells joined to the soil, LOD ratios in band, soil collider 96 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-reeds 17; --sink-pad 18; --flat-water 19; --slip-heads 20; --short-water 21; --float-cover 22.</p>
+          <a class="card-link" href="pond-edge/">View showcase piece<span class="sr-only"> pond-edge</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1597,7 +1608,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 49 showcase pieces';
+      var COUNT_LABEL = '52 examples, 50 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];
