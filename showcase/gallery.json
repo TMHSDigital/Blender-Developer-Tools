@@ -766,6 +766,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "espresso-machine",
+      "dir": "showcase/espresso-machine",
+      "category": "household",
+      "teaches": "A procedural prosumer E61 semi-automatic espresso machine on a honed limestone countertop section — a black chassis behind a brushed stainless front panel, two side panels folded round the front and back edges, each one sheet with louvred vent slots cut through it, a warmer tray with a rail bent from one bar and four upturned cups, on adjustable feet; the chromed E61 group with its neck, thermosiphon pipe, gasket, mushroom cap and a lever pinned through two bosses; a spouted portafilter with a walnut handle locked against the gasket; steam and hot-water valves with fluted bakelite knobs and wands on ball joints; twin gauges with printed dials in chrome bezels; a toggle and pilot lamp; a drip tray whose slotted grate carries a shot cup of espresso; and a knock box, tamper and milk pitcher — with a studio carried in the metals' material so stainless reads as metal on a dark stage, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A brushed stainless E61 espresso machine with twin gauges, a chrome group head and a walnut-handled portafilter over a shot cup, cups on its warmer tray, beside a tamper, milk pitcher and knock box.",
+      "witnessesFix": "Recomputed: 43636 tris, fourteen materials with 4788 stainless, 7284 chrome, 948 bakelite, 632 wood, 5800 ceramic, 1244 rubber, 632 glass, 1642 dial, 64 ink, 36 needle, 91 stone, 26 paint, 452 coffee and 116 lamp faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.670×0.655×0.4755 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four pads sunk 0.00025–0.00070 m into the counter (band 0.0001–0.0008), the lever pin 0.000000 m off the axis of both bosses and the hub (cap 0.0003) and spanning all three, all five cups seated 0.00020–0.00074 m on the warmer tray or the grate (band 0.0001–0.0009), the body 0.30000 m wide (0.300 ± 0.004) and its warmer tray 0.39070 m above the counter (0.3907 ± 0.004), the portafilter and gasket 0.000000 m off the group's axis (cap 0.0003) and the rim pressed 0.00040 m into the gasket (band 0.0001–0.0008), both gauge glasses 0.0034 m behind their bezels' lips (band 0.0015–0.0050), the drip tray 0.0250 m inside the side panels (floor 0.010) and tucked 0.0170 m behind the front panel (floor 0.005), the mass centre 0.1064 m inside the feet's support polygon (floor 0.060) at 39.83 kg, one connected assembly of 94 shells, LOD ratios in band, collider 447 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-pin 17; --sink-cup 18; --narrow-body 19; --offset-pf 20; --drop-pf 21; --proud-gauge 22; --shift-tray 23; --bunch-feet 24; --loose-knob 25.",
+      "hero": "docs/gallery/assets/espresso-machine-hero.webp",
+      "preview": "showcase/espresso-machine/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

@@ -87,6 +87,7 @@ SELECT = {
     "cargo-loader": (r"^LoaderLow$", None),
     "archery-target": (r"^TargetLow$", None),
     "cactus-garden": (r"^CactusLow$", None),
+    "espresso-machine": (r"^EspressoLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

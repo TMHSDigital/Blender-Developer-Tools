@@ -128,5 +128,6 @@
   {"name": "stand-mixer", "script": "showcase/stand-mixer/stand_mixer.py"},
   {"name": "cargo-loader", "script": "showcase/cargo-loader/cargo_loader.py"},
   {"name": "archery-target", "script": "showcase/archery-target/archery_target.py"},
-  {"name": "cactus-garden", "script": "showcase/cactus-garden/cactus_garden.py"}
+  {"name": "cactus-garden", "script": "showcase/cactus-garden/cactus_garden.py"},
+  {"name": "espresso-machine", "script": "showcase/espresso-machine/espresso_machine.py"}
 ]
