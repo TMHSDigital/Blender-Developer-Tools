@@ -74,6 +74,7 @@ SELECT = {
     "desk-lamp": (r"^LampLow$", None),
     "quad-drone": (r"^DroneLow$", None),
     "soccer-goal": (r"^GoalLow$", None),
+    "fallen-log": (r"^LogLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

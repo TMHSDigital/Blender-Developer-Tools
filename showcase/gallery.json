@@ -584,6 +584,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "fallen-log",
+      "dir": "showcase/fallen-log",
+      "category": "nature",
+      "teaches": "A procedural fallen forest log — one furrowed lathe along a bowed axis with bark peeled to galleried sapwood, a rotted hollow saw-cut butt, a splintered snapped top, broken branch stubs, moss cushions on its top and shaded side and three tiers of bracket fungi rooted in the bark — settled into a soil mound with toadstools, ferns and fallen leaves, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A mossy fallen log settled into a soil mound: furrowed dark bark peeled in patches, a hollow ringed butt, a splintered top, shelf fungi, toadstools, ferns and fallen leaves.",
+      "witnessesFix": "Recomputed: 36374 tris, nine materials with 5144 bark, 892 wood, 384 rot, 2400 moss, 2448 bracket, 1296 toadstool, 2494 soil, 2080 litter and 5090 fern faces, UVs in 0..1 with zero AABB overlap, outer AABB 4.119×2.189×1.027 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, the log bedded in the soil at 0.889 of its stations (floor 0.75, depth band 0.020–0.090 m), all 12 bracket shelves rooted 0.021–0.029 m into the bark (band 0.008–0.050), the log's mass centre 0.149 m inside the plan hull of its buried vertices (floor 0.06), 0.992 of the moss top area facing up or north (floor 0.85), all 436 ground-cover shells joined to the soil, LOD ratios in band, log collider 215 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --hump-ground 17; --float-fungi 18; --tilt-ground 19; --sunny-moss 20; --float-litter 21.",
+      "hero": "docs/gallery/assets/fallen-log-hero.webp",
+      "preview": "showcase/fallen-log/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
