@@ -556,6 +556,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "quad-drone",
+      "dir": "showcase/quad-drone",
+      "category": "vehicles",
+      "teaches": "A procedural camera quadcopter — a two-tone moulded shell with panel lines, grilles, a sensor visor, a battery pack and a GPS puck, four folding arms hinged on pinned clevises with lock rings, slotted brushless motors carrying twisted, swept two-blade propellers, rubber-footed skids and a three-axis gimbal camera — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A white-and-graphite camera drone seen from above on a dark studio floor: four carbon arms with red lock rings, two-blade props on slotted motors, skids, and a gimbal camera under the nose.",
+      "witnessesFix": "Recomputed: 41048 tris, eight materials with 1720 shell, 2304 carbon, 6472 gunmetal, 524 glass, 760 light, 1296 rubber, 8464 graphite and 2184 anodised faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.692×0.569×0.243 m, zmin 0 and all 4 feet grounded, hygiene 0 including zero coplanar cross-shell pairs, the 4 motor axes on an exact X about the body centre (gaps 90.000°, diagonals 0.52000 m, axes vertical, hubs level), every neighbouring prop disc cleared by 0.0365 m (band 0.028–0.050), mass centre 0.115 m inside the feet's footprint (floor 0.090), wheelbase 0.520 m, one connected assembly of 171 shells, LOD ratios in band, collider 499 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --unlock-arm 17; --long-blades 18; --narrow-skids 19; --drop-lens 20.",
+      "hero": "docs/gallery/assets/quad-drone-hero.webp",
+      "preview": "showcase/quad-drone/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

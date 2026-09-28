@@ -358,7 +358,7 @@
     <p>A procedural balanced-arm desk lamp — stepped cast base, swivel turret, two parallelogram arm sections pinned through knuckle bosses with knurled tension knobs, three extension springs hung on cross bars, a domed enamel shade with a rolled rim, reflector and glowing lamp, a draped flex and a cable to a plug — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 39 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 40 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone">quad-drone <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red balanced-arm desk lamp on a dark studio floor: stepped base, parallel-rod arms with chrome springs and knobs, and a domed shade whose white reflector frames a glowing bulb.">
       <img src="../assets/desk-lamp-hero.webp" alt="A red balanced-arm desk lamp on a dark studio floor: stepped base, parallel-rod arms with chrome springs and knobs, and a domed shade whose white reflector frames a glowing bulb." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -391,7 +391,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar cross-shell face pairs (KD range 0.05 m, plane ε 1e-4)</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr></tbody></table></div>
 <h3 id="joint-pins-springs-stance-and-assembly">Joint pins, springs, stance and assembly<a class="anchor" href="#joint-pins-springs-stance-and-assembly" aria-label="Link to this section">#</a></h3>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Joint pins: for each of the 7 pins (axis by PCA), the XZ offset from its axis to the axis of every eye and boss within 12 mm, taken at that eye&#x27;s own station</td><td>≤ 0.0003 m; 7 pins, 23 eyes and bosses, ≥ 3 per pin; each pin spans every one of them in Y; pin tilt ≤ 0.5°</td><td>0.000000; 7 pins, 23 (3, 3, 4, 4, 3, 3, 3); 0 not through; 0.000°</td></tr><tr><td>Spring seat: for each of the 6 looped ends, distance from its centre to the axis of the nearest bar, within that bar&#x27;s length; each coil&#x27;s wire runs into exactly 2 loops</td><td>≤ 0.0006 m; 3 coils, 6 loops, 4 bars</td><td>0.000000; ends [2, 2, 2]</td></tr><tr><td>Stance: mass centre (shell volumes × density per material) inside the base footprint read off the mesh</td><td>≥ 0.025 m inside every edge</td><td>0.0396 (11.76 kg, centre at x 0.0504)</td></tr><tr><td>Base width</td><td>0.180 m ± 0.003 each way</td><td>0.1800 × 0.1800</td></tr><tr><td>Arm sections, pin to pin (both rods of each)</td><td>0.320 / 0.360 m ± 0.003</td><td>0.3200, 0.3200 / 0.3600, 0.3600</td></tr><tr><td>One connected assembly (union of shells whose BVH trees overlap)</td><td>1 component</td><td>1 (78 shells)</td></tr></tbody></table></div>
-<p>A balanced-arm lamp that reaches 0.6 m past its pivot stands only because its base is heavy. The stance budget tests exactly that: the densities are named constants (steel and cast iron 7850, bakelite 1400, rubber 1200, and 300 for the lamp, whose glass is modelled solid but is a hollow envelope), and the volumes come from the mesh.</p>
+<p>A balanced-arm lamp whose shade rim reaches nearly 0.6 m past its pivot stands only because its base is heavy. The stance budget tests exactly that: the densities are named constants (steel and cast iron 7850, bakelite 1400, rubber 1200, and 300 for the lamp, whose glass is modelled solid but is a hollow envelope), and the volumes come from the mesh.</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each falsifier violates one named budget. Every one was run on 5.2.1 and exited its declared code. None moves the envelope: every run measured the same outer AABB as the default.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--offset-pin</code></td><td>joint pins coaxial (elbow pin moved 2.5 mm off its eyes: offset 0.00250 m)</td><td>17</td></tr><tr><td><code>--unhook-spring</code></td><td>spring seat (one loop 10 mm short of its bar: 0.01000 m)</td><td>18</td></tr><tr><td><code>--hollow-base</code></td><td>stance (base pressed from 1.5 mm steel: 3.22 kg, centre at x 0.184, margin −0.094 m)</td><td>19</td></tr><tr><td><code>--unscrew-bulb</code></td><td>one connected assembly (lamp backed 5 mm out of its socket: 2 components)</td><td>20</td></tr></tbody></table></div>
@@ -416,9 +416,9 @@ blender --background --python desk_lamp.py -- --output lamp.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/desk-lamp/desk_lamp.py</code>
-        <span>1766 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/desk-lamp/desk_lamp.py">View on GitHub &rarr;</a></span>
+        <span>1769 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/desk-lamp/desk_lamp.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1766">
+      <div class="code" data-lines="1769">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2184,7 +2184,10 @@ blender --background --python desk_lamp.py -- --output lamp.png</code></pre>
 1763
 1764
 1765
-1766</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready balanced-arm desk lamp — a showcase piece, not an example.
+1766
+1767
+1768
+1769</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready balanced-arm desk lamp — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural architect&#x27;s lamp after composing
 shipped pipeline pieces: bmesh construction, UVs, six materials, high-to-low
@@ -2198,8 +2201,11 @@ cheeks. Knurled tension knobs sit on the base, elbow and shade pins. Three
 close-wound tension springs hang by looped ends on cross bars: two on the
 base section, one on the upper section. The shade is a domed bell of
 enamelled sheet with a white reflector inside, a wired rolled rim, a
-chrome band, a push switch and a lamp on a bakelite socket. A rubber cable
-leaves the base through a grommet and ends in a plug on the desk.
+chrome band, a push switch and a lamp on a bakelite socket. A flex drapes from a gland on the
+shade&#x27;s back down both arm sections into the base&#x27;s top tread, and a
+rubber cable leaves the base through a grommet and ends in a plug on the
+desk.
+
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
@@ -3985,7 +3991,7 @@ X_DOWN = Matrix(((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 39 showcase pieces</span><span></span></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 40 showcase pieces</span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone">quad-drone <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
