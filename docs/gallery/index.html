@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 47 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 48 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -407,7 +407,7 @@
           <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">3</span></button>
-          <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">2</span></button>
+          <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">3</span></button>
         </div>
       </div>
       <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">
@@ -1541,6 +1541,17 @@
           <a class="card-link" href="floor-fan/">View showcase piece<span class="sr-only"> floor-fan</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="vehicles" data-name="motor-scooter">
+        <a class="card-media" href="motor-scooter/" tabindex="-1" aria-hidden="true">
+          <img src="assets/motor-scooter-hero.webp" alt="A pastel sea-green 1960s scooter on its centre stand: cream and oxblood saddle, louvred side cowl, curved chrome-rimmed leg shield, split-rim front wheel, black silencer." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="motor-scooter/">motor-scooter</a></h2>
+          <p class="teaches">A procedural 1960s Italian step-through motor scooter — a pressed-steel tail lofted from superellipse sections with two bulbous side cowls (pressed louvres on the engine side, chrome belt trims), a floorboard with rubber runner strips and chrome edge trims pressed up into the tail and into a leg shield convex in plan, arched up into the headset and rimmed in a rolled chrome trim, with a horn cast and grille, a single-sided front end (a column raked 26 degrees, crown, fork leg, trailing link and coil spring) under a crested mudguard, a headset carrying the headlamp, speedometer, ribbed grips, levers and two mirrors, a two-tone dual saddle with piping and a grab strap, 10-inch split rims with five nuts and finned drums in block-tread tyres, an alloy engine case with a finned cylinder, header, silencer and kick-start, a luggage rack, tail lamp and plate, and a centre stand with rubber feet — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 45060 tris, nine materials with 7156 paint, 4638 chrome, 3608 rubber, 1147 oxblood vinyl, 297 cream vinyl, 550 glass, 188 tail-lens, 4020 alloy and 2292 black-enamel faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.790×0.730×1.244 m, zmin 0 with both tyres and both stand feet on the floor, hygiene 0 including zero coplanar cross-shell pairs, both axles level and parallel (camber 0.000°, toe 0.000°, cap 0.3°), the steering column raked 26.000° meeting the ground 0.0750 m ahead of the front contact (band 0.055–0.090) and on its line, the body mirror-symmetric to 0.000 mm (cap 0.5, engine side excluded by construction), tail 0.862 m and saddle top 0.807 m, a 1.20000 m wheelbase (±0.004), a 101.6 kg scooter whose mass centre stands 0.1284 m inside its tyres-and-stand support polygon (floor 0.080), one connected assembly of 105 shells, the leg shield&#x27;s foot 0.0320 m deep in the floorboard (band 0.020–0.040), LOD ratios in band, collider 1678 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-tyre 16; --toe-wheel 17; --steep-head 18; --odd-body 19; --short-wheelbase 20; --narrow-stand 21; --pop-speedo 22; --lift-shield 23.</p>
+          <a class="card-link" href="motor-scooter/">View showcase piece<span class="sr-only"> motor-scooter</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1575,7 +1586,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 47 showcase pieces';
+      var COUNT_LABEL = '52 examples, 48 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

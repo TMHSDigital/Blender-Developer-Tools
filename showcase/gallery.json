@@ -668,6 +668,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "motor-scooter",
+      "dir": "showcase/motor-scooter",
+      "category": "vehicles",
+      "teaches": "A procedural 1960s Italian step-through motor scooter — a pressed-steel tail lofted from superellipse sections with two bulbous side cowls (pressed louvres on the engine side, chrome belt trims), a floorboard with rubber runner strips and chrome edge trims pressed up into the tail and into a leg shield convex in plan, arched up into the headset and rimmed in a rolled chrome trim, with a horn cast and grille, a single-sided front end (a column raked 26 degrees, crown, fork leg, trailing link and coil spring) under a crested mudguard, a headset carrying the headlamp, speedometer, ribbed grips, levers and two mirrors, a two-tone dual saddle with piping and a grab strap, 10-inch split rims with five nuts and finned drums in block-tread tyres, an alloy engine case with a finned cylinder, header, silencer and kick-start, a luggage rack, tail lamp and plate, and a centre stand with rubber feet — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A pastel sea-green 1960s scooter on its centre stand: cream and oxblood saddle, louvred side cowl, curved chrome-rimmed leg shield, split-rim front wheel, black silencer.",
+      "witnessesFix": "Recomputed: 45060 tris, nine materials with 7156 paint, 4638 chrome, 3608 rubber, 1147 oxblood vinyl, 297 cream vinyl, 550 glass, 188 tail-lens, 4020 alloy and 2292 black-enamel faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.790×0.730×1.244 m, zmin 0 with both tyres and both stand feet on the floor, hygiene 0 including zero coplanar cross-shell pairs, both axles level and parallel (camber 0.000°, toe 0.000°, cap 0.3°), the steering column raked 26.000° meeting the ground 0.0750 m ahead of the front contact (band 0.055–0.090) and on its line, the body mirror-symmetric to 0.000 mm (cap 0.5, engine side excluded by construction), tail 0.862 m and saddle top 0.807 m, a 1.20000 m wheelbase (±0.004), a 101.6 kg scooter whose mass centre stands 0.1284 m inside its tyres-and-stand support polygon (floor 0.080), one connected assembly of 105 shells, the leg shield's foot 0.0320 m deep in the floorboard (band 0.020–0.040), LOD ratios in band, collider 1678 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-tyre 16; --toe-wheel 17; --steep-head 18; --odd-body 19; --short-wheelbase 20; --narrow-stand 21; --pop-speedo 22; --lift-shield 23.",
+      "hero": "docs/gallery/assets/motor-scooter-hero.webp",
+      "preview": "showcase/motor-scooter/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
