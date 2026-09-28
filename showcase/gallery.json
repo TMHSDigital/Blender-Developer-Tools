@@ -654,6 +654,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "floor-fan",
+      "dir": "showcase/floor-fan",
+      "category": "household",
+      "teaches": "A procedural 1950s oscillating pedestal fan — a hollow two-tier cast base on a rubber gasket with a rotary speed switch and badge, a telescoping enamel and chrome column with a knurled height-lock collar, a strap yoke with a knurled tilt knob, a slotted motor housing with a trim band and an oscillation knob, a two-half wire guard of radial spokes and concentric rings welded to clipped rim rings with a centre badge, four swept brass blades on a hub with a hex spinner nut, and a cord to a plug — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A sage-green 1950s pedestal fan, head turned on a tilt yoke: chrome wire guard over four brass blades, telescoping column, round cast base with a speed knob, cord to a plug.",
+      "witnessesFix": "Recomputed: 41460 tris, six materials with 4732 enamel, 13960 chrome, 584 brass, 1216 rubber, 810 bakelite and 440 badge faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.761×0.704×1.229 m, zmin 0 with the gasket on the floor, hygiene 0 including zero coplanar cross-shell pairs, hub, spinner, shaft, badge, rear mount and motor housing on the axis the rim rings define (worst 0.000001 m, cap 0.0005), all 48 spokes ending inside their rim rings (worst 0.0007 m from the ring's centreline, cap 0.0026) and each of 7 rings crossing all 24 spokes of its half, both column tubes plumb (0.000°, cap 0.2°) and on the base's axis (0.0000 m, cap 0.001), guard 0.452 m and base 0.400 m across, blade tips 0.0195 m inside the rim rings (band 0.012–0.030) and 0.0140 m from the nearest wire (floor 0.006), four blades 90° apart within 0.0002° (cap 0.3°), a 28.4 kg fan that stands on a 19.06° incline before it tips (floor 16°), one connected assembly of 109 shells, LOD ratios in band, collider 1997 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --offset-hub 17; --short-spoke 18; --lean-column 19; --long-blades 20; --skew-blade 21; --hollow-base 22; --loose-spinner 23.",
+      "hero": "docs/gallery/assets/floor-fan-hero.webp",
+      "preview": "showcase/floor-fan/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

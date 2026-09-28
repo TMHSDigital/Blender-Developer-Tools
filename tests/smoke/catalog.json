@@ -120,5 +120,6 @@
   {"name": "office-chair", "script": "showcase/office-chair/office_chair.py"},
   {"name": "hover-bike", "script": "showcase/hover-bike/hover_bike.py"},
   {"name": "weight-rack", "script": "showcase/weight-rack/weight_rack.py"},
-  {"name": "boulder-cluster", "script": "showcase/boulder-cluster/boulder_cluster.py"}
+  {"name": "boulder-cluster", "script": "showcase/boulder-cluster/boulder_cluster.py"},
+  {"name": "floor-fan", "script": "showcase/floor-fan/floor_fan.py"}
 ]

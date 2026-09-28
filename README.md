@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>46 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>47 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 46 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 47 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>46 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>47 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -155,6 +155,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/hover-bike/"><img src="showcase/hover-bike/preview.webp" width="24%" alt="Hover bike: a teal sci-fi speeder with pearl racing stripes, a stitched black saddle, clip-on bars and two ducted fans with orange spinners, parked on landing skids, on a dark studio floor" /></a>
   <a href="showcase/weight-rack/"><img src="showcase/weight-rack/preview.webp" width="24%" alt="Weight rack: a red half rack holding a barbell loaded with blue and yellow bumpers on J-hooks, plates on storage horns and two hex dumbbells, on a dark studio floor" /></a>
   <a href="showcase/boulder-cluster/"><img src="showcase/boulder-cluster/preview.webp" width="24%" alt="Boulder cluster: a speckled granite block, a banded sandstone boulder split in two and a slab resting on a smaller boulder, sunk in a grassy soil mound with pebbles and wildflowers, on a dark studio floor" /></a>
+  <a href="showcase/floor-fan/"><img src="showcase/floor-fan/preview.webp" width="24%" alt="Floor fan: a sage-green 1950s pedestal fan with a chrome wire guard over four brass blades, its head turned on a tilt yoke, a telescoping column and a round cast base, its cord looped to a plug, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -244,6 +245,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`weight-rack`](showcase/weight-rack/) — the third `sports` piece: procedural home-gym half rack (punched, numbered square uprights on bolted base plates and padded feet, side rails on bolted flanges, a pull-up bar, J-hooks with UHMW-lined saddles and spotter arms on pull pins, four plate-storage horns, an Olympic barbell with a knurled shaft, collars and sleeves loaded with 20 and 15 kg bumpers and 5 kg iron plates behind spring clips, and two hex dumbbells on the floor), whose pads and dumbbell heads on the floor, pull pins coaxial with their holes, bar seated in both saddles and level, plates coaxial and seated along their sleeves, balanced load and single connected rack are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-pin` 17, `--float-bar` 18, `--hook-high` 19, `--gap-plate` 20, `--odd-load` 21, `--loose-horn` 22.
 
 [`boulder-cluster`](showcase/boulder-cluster/) — the third `nature` piece: procedural glacial boulder cluster (four boulders cut from ellipsoids by cleavage planes with weathered bevels: a speckled granite block, a banded sandstone boulder split in two with matching crack faces and bedding, and a sandstone slab resting flat on a smaller granite boulder, with lichen crusts and moss cushions on the tops and north faces, sunk into a soil mound with grass tufts, pebbles and wildflowers), whose boulders sunk into the soil all round, slab seated on its support and balanced over its footprint, split halves matching across the crack, growth facing up or north and ground cover rooted in the soil are recomputed from the mesh, through the same pipeline. Falsifiers `--perch-boulder` exits 17, `--float-slab` 18, `--perch-slab` 19, `--skew-half` 20, `--sunny-lichen` 21, `--float-cover` 22.
+
+[`floor-fan`](showcase/floor-fan/) — the third `household` piece: procedural 1950s oscillating pedestal fan (a hollow two-tier cast base on a rubber gasket with a rotary speed switch and badge, a telescoping column with a knurled height-lock collar, a strap yoke with a tilt knob, a slotted motor housing with an oscillation knob, a two-half wire guard of spokes and rings welded to clipped rim rings, four swept brass blades on a hub with a spinner nut, and a cord to a plug), whose rotor and head coaxial with the guard, spokes seated in their rim rings, plumb column on the base's axis, blade-tip clearance, equal blade spacing, tip-over angle and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--offset-hub` exits 17, `--short-spoke` 18, `--lean-column` 19, `--long-blades` 20, `--skew-blade` 21, `--hollow-base` 22, `--loose-spinner` 23.
 
 </details>
 

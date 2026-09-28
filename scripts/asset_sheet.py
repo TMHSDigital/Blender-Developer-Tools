@@ -79,6 +79,7 @@ SELECT = {
     "hover-bike": (r"^HoverBikeLow$", None),
     "weight-rack": (r"^RackLow$", None),
     "boulder-cluster": (r"^ClusterLow$", None),
+    "floor-fan": (r"^FanLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),
