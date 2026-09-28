@@ -85,6 +85,7 @@ SELECT = {
     "pond-edge": (r"^PondLow$", None),
     "stand-mixer": (r"^MixerLow$", None),
     "cargo-loader": (r"^LoaderLow$", None),
+    "archery-target": (r"^TargetLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

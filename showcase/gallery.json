@@ -738,6 +738,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "archery-target",
+      "dir": "showcase/archery-target",
+      "category": "sports",
+      "teaches": "A procedural archery range target on a turf patch — a 1.10 m compressed-straw boss coiled from rope courses that show on its back and round its edge, bound with doubled jute twine drawn tight over the crests; an 80 cm ten-zone World Archery face in aged inks with ring lines, an X ring and a printed X, held by four target pins; a timber easel leaning it back 12° on toe skids with knee braces, a ledge with a stop lip on a bolted rail and gussets, a numbered butt board, a strap hinge pinned to a rear leg in a steel ferrule and foot, and a splay chain between eye bolts; five carbon arrows in the face with cresting, nocks and three vanes, one glancing into the straw edge, one snapped with its fletched half on the grass, and a leather quiver of arrows lying among grass tufts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A straw archery boss with a gold, red, blue, black and white face and five arrows, leaning on a timber easel numbered 12, a quiver on the grass patch below.",
+      "witnessesFix": "Recomputed: 42908 tris, sixteen materials with 4732 straw, 1856 twine, 1086 pine, 6288 steel, 522 white, 816 black, 128 blue, 128 red, 254 gold, 326 carbon, 500 vane, 300 cock-vane, 1076 nock, 5230 grass, 286 soil and 768 leather faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.007×2.689×2.054 m, zmin 0 with both skids and the rear tread bedded 2.0 mm into the turf (band 1–4 mm), hygiene 0 including zero coplanar cross-shell pairs, the hinge pin 0.000 mm off the axis of all three knuckles (tol 0.3 mm), the boss seated 2.5 mm into its ledge and leaning 2.0 mm on both legs (bands 1–4 mm), the gold centre 1.3000 m above the turf (World Archery 1.30 ± 0.05) on a 1.100 × 0.280 m boss and a 0.800 m face tilted 12.000° (band 10–15°), seven points buried 0.119–0.149 m in the straw (band 0.08–0.20) with straw left ahead, every vane at least 0.419 m clear of the boss (min 0.25), ten fletched shafts with three vanes each within 0.002° of 120° (tol 1°), all ten ring lines on the 4 cm scoring table (0.000 mm off, tol 0.5 mm) in the right inks, a 73.85 kg stand and boss whose mass centre is 0.349 m inside its supports with a forward tip angle of 27.83° (min 20°), one connected assembly of 722 shells, LOD ratios in band, collider 1083 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-hinge 17; --lift-boss 18; --high-boss 19; --shallow-arrow 20; --short-arrow 21; --skew-vane 22; --wide-gold 23; --short-skids 24; --loose-pin 25.",
+      "hero": "docs/gallery/assets/archery-target-hero.webp",
+      "preview": "showcase/archery-target/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

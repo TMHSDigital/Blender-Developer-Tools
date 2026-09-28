@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 52 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 53 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -404,7 +404,7 @@
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
-          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">4</span></button>
+          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">5</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">4</span></button>
@@ -1596,6 +1596,17 @@
           <a class="card-link" href="cargo-loader/">View showcase piece<span class="sr-only"> cargo-loader</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="sports" data-name="archery-target">
+        <a class="card-media" href="archery-target/" tabindex="-1" aria-hidden="true">
+          <img src="assets/archery-target-hero.webp" alt="A straw archery boss with a gold, red, blue, black and white face and five arrows, leaning on a timber easel numbered 12, a quiver on the grass patch below." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="archery-target/">archery-target</a></h2>
+          <p class="teaches">A procedural archery range target on a turf patch — a 1.10 m compressed-straw boss coiled from rope courses that show on its back and round its edge, bound with doubled jute twine drawn tight over the crests; an 80 cm ten-zone World Archery face in aged inks with ring lines, an X ring and a printed X, held by four target pins; a timber easel leaning it back 12° on toe skids with knee braces, a ledge with a stop lip on a bolted rail and gussets, a numbered butt board, a strap hinge pinned to a rear leg in a steel ferrule and foot, and a splay chain between eye bolts; five carbon arrows in the face with cresting, nocks and three vanes, one glancing into the straw edge, one snapped with its fletched half on the grass, and a leather quiver of arrows lying among grass tufts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 42908 tris, sixteen materials with 4732 straw, 1856 twine, 1086 pine, 6288 steel, 522 white, 816 black, 128 blue, 128 red, 254 gold, 326 carbon, 500 vane, 300 cock-vane, 1076 nock, 5230 grass, 286 soil and 768 leather faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.007×2.689×2.054 m, zmin 0 with both skids and the rear tread bedded 2.0 mm into the turf (band 1–4 mm), hygiene 0 including zero coplanar cross-shell pairs, the hinge pin 0.000 mm off the axis of all three knuckles (tol 0.3 mm), the boss seated 2.5 mm into its ledge and leaning 2.0 mm on both legs (bands 1–4 mm), the gold centre 1.3000 m above the turf (World Archery 1.30 ± 0.05) on a 1.100 × 0.280 m boss and a 0.800 m face tilted 12.000° (band 10–15°), seven points buried 0.119–0.149 m in the straw (band 0.08–0.20) with straw left ahead, every vane at least 0.419 m clear of the boss (min 0.25), ten fletched shafts with three vanes each within 0.002° of 120° (tol 1°), all ten ring lines on the 4 cm scoring table (0.000 mm off, tol 0.5 mm) in the right inks, a 73.85 kg stand and boss whose mass centre is 0.349 m inside its supports with a forward tip angle of 27.83° (min 20°), one connected assembly of 722 shells, LOD ratios in band, collider 1083 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-hinge 17; --lift-boss 18; --high-boss 19; --shallow-arrow 20; --short-arrow 21; --skew-vane 22; --wide-gold 23; --short-skids 24; --loose-pin 25.</p>
+          <a class="card-link" href="archery-target/">View showcase piece<span class="sr-only"> archery-target</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1630,7 +1641,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 52 showcase pieces';
+      var COUNT_LABEL = '52 examples, 53 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];
