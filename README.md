@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>40 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>41 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 40 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 41 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>40 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>41 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -149,6 +149,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/pine-tree/"><img src="showcase/pine-tree/preview.webp" width="24%" alt="Pine tree: a 7 m Scots pine with a red-barked trunk on a flared, rooted base and ten tiers of drooping branches carrying spiky needled shoots, on a dark studio floor" /></a>
   <a href="showcase/desk-lamp/"><img src="showcase/desk-lamp/preview.webp" width="24%" alt="Desk lamp: a red balanced-arm lamp with a stepped base, parallel-rod arms, chrome springs and knurled knobs, and a domed shade glowing around its bulb, on a dark studio floor" /></a>
   <a href="showcase/quad-drone/"><img src="showcase/quad-drone/preview.webp" width="24%" alt="Quad drone: a white-and-graphite camera quadcopter on four carbon arms with red lock rings, twin-blade props, rubber-footed skids and a three-axis gimbal camera, on a dark studio floor" /></a>
+  <a href="showcase/soccer-goal/"><img src="showcase/soccer-goal/preview.webp" width="24%" alt="Soccer goal: a white 5 by 2 m youth goal with sloped rear supports and a sagging diamond-mesh net edged in red rope, on a turf patch with a painted goal line, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -226,6 +227,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`desk-lamp`](showcase/desk-lamp/) — the first `household` piece: procedural balanced-arm desk lamp (stepped cast base, two parallelogram arm sections pinned through knuckle bosses, three tension springs hung on cross bars, domed shade with reflector and lamp, draped flex and plugged cable), whose every joint pin coaxial through the eyes it joins, every spring end seated on its bar, and mass centre over the base footprint are recomputed from the mesh, through the same pipeline. Falsifiers `--offset-pin` exits 17, `--unhook-spring` 18, `--hollow-base` 19, `--unscrew-bulb` 20.
 
 [`quad-drone`](showcase/quad-drone/) — the first `vehicles` piece: procedural camera quadcopter (two-tone moulded shell with panel lines, grilles, visor and battery pack, four folding arms hinged on pinned clevises, slotted brushless motors carrying twisted, swept two-blade props, rubber-footed skids, a three-axis gimbal camera), whose motor axes on an exact X, the gap between neighbouring prop discs, every foot on the ground and the mass centre over the landing footprint are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--unlock-arm` 17, `--long-blades` 18, `--narrow-skids` 19, `--drop-lens` 20.
+
+[`soccer-goal`](showcase/soccer-goal/) — the second `sports` piece: procedural freestanding 5 × 2 m youth soccer goal (posts and crossbar in one oval aluminium extrusion with a net channel, mitred and welded at the corners, cast corner brackets, foot connectors and rear hubs, sloped supports and a steel ground frame pinned by staples and spikes, a sagging diamond-mesh net with a red head rope through 53 nylon clips, a turf patch with a painted goal line), whose ground bars bedded in the turf, supports seated in their sockets, head rope threaded through every clip, clear mouth size with plumb posts, and catenary sag of the back panel are recomputed from the mesh, through the same pipeline. Falsifiers `--float-bar` exits 16, `--short-support` 17, `--unclip-net` 18, `--wide-mouth` 19, `--taut-net` 20.
 
 </details>
 

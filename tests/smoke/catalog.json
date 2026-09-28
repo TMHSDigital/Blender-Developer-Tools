@@ -114,5 +114,6 @@
   {"name": "basketball-hoop", "script": "showcase/basketball-hoop/basketball_hoop.py"},
   {"name": "pine-tree", "script": "showcase/pine-tree/pine_tree.py"},
   {"name": "desk-lamp", "script": "showcase/desk-lamp/desk_lamp.py"},
-  {"name": "quad-drone", "script": "showcase/quad-drone/quad_drone.py"}
+  {"name": "quad-drone", "script": "showcase/quad-drone/quad_drone.py"},
+  {"name": "soccer-goal", "script": "showcase/soccer-goal/soccer_goal.py"}
 ]

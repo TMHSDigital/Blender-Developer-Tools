@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 40 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 41 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -404,7 +404,7 @@
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
-          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">1</span></button>
+          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">2</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">1</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">1</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">1</span></button>
@@ -1464,6 +1464,17 @@
           <a class="card-link" href="quad-drone/">View showcase piece<span class="sr-only"> quad-drone</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="sports" data-name="soccer-goal">
+        <a class="card-media" href="soccer-goal/" tabindex="-1" aria-hidden="true">
+          <img src="assets/soccer-goal-hero.webp" alt="A white youth soccer goal on a turf patch with a painted goal line, seen at three-quarter: mitred posts and crossbar, sloped rear supports and a sagging diamond-mesh net edged in red rope." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="soccer-goal/">soccer-goal</a></h2>
+          <p class="teaches">A procedural freestanding 5 × 2 m youth soccer goal — posts and crossbar in one oval aluminium extrusion with a net channel, mitred and welded at the corners, cast corner brackets, foot connectors and rear hubs, sloped supports and a steel ground frame pinned by staples and spikes, and a sagging diamond-mesh net whose red head rope runs through 53 nylon clips — on a turf patch with a painted goal line, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 34804 tris, ten materials with 2514 paint, 9028 cord, 160 rope, 340 steel, 1464 cast, 3604 nylon, 1000 galvanised, 196 turf, 16 line-paint and 102 soil faces, UVs in 0..1 with zero AABB overlap, outer AABB 6.220×2.640×2.153 m, zmin 0 and all 3 ground bars bedded 2.5 mm into the turf, hygiene 0 including zero coplanar cross-shell pairs, both sloped supports 65 mm into their bracket sockets and 80 mm into their hubs, the head rope through all 53 clip loops (axis offset 0.000 m, ceiling 0.0012), a clear mouth of 5.0002 × 2.0001 m with the posts plumb and the crossbar level, the back panel sagging 0.148 m below its chord (band 0.110–0.180), LOD ratios in band, collider 168 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-bar 16; --short-support 17; --unclip-net 18; --wide-mouth 19; --taut-net 20.</p>
+          <a class="card-link" href="soccer-goal/">View showcase piece<span class="sr-only"> soccer-goal</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1498,7 +1509,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 40 showcase pieces';
+      var COUNT_LABEL = '52 examples, 41 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

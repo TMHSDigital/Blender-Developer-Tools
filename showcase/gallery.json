@@ -570,6 +570,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "soccer-goal",
+      "dir": "showcase/soccer-goal",
+      "category": "sports",
+      "teaches": "A procedural freestanding 5 × 2 m youth soccer goal — posts and crossbar in one oval aluminium extrusion with a net channel, mitred and welded at the corners, cast corner brackets, foot connectors and rear hubs, sloped supports and a steel ground frame pinned by staples and spikes, and a sagging diamond-mesh net whose red head rope runs through 53 nylon clips — on a turf patch with a painted goal line, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A white youth soccer goal on a turf patch with a painted goal line, seen at three-quarter: mitred posts and crossbar, sloped rear supports and a sagging diamond-mesh net edged in red rope.",
+      "witnessesFix": "Recomputed: 34804 tris, ten materials with 2514 paint, 9028 cord, 160 rope, 340 steel, 1464 cast, 3604 nylon, 1000 galvanised, 196 turf, 16 line-paint and 102 soil faces, UVs in 0..1 with zero AABB overlap, outer AABB 6.220×2.640×2.153 m, zmin 0 and all 3 ground bars bedded 2.5 mm into the turf, hygiene 0 including zero coplanar cross-shell pairs, both sloped supports 65 mm into their bracket sockets and 80 mm into their hubs, the head rope through all 53 clip loops (axis offset 0.000 m, ceiling 0.0012), a clear mouth of 5.0002 × 2.0001 m with the posts plumb and the crossbar level, the back panel sagging 0.148 m below its chord (band 0.110–0.180), LOD ratios in band, collider 168 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-bar 16; --short-support 17; --unclip-net 18; --wide-mouth 19; --taut-net 20.",
+      "hero": "docs/gallery/assets/soccer-goal-hero.webp",
+      "preview": "showcase/soccer-goal/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
