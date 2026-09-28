@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.108.0] - 2026-09-28
+
+See [release notes](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.108.0) for details.
+
 ## [0.107.0] - 2026-09-28
 
 See [release notes](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.107.0) for details.
