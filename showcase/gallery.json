@@ -724,6 +724,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "cargo-loader",
+      "dir": "showcase/cargo-loader",
+      "category": "vehicles",
+      "teaches": "A procedural sci-fi industrial cargo loader, a bipedal powered-lift exoframe standing in a crouch and holding a corrugated cargo crate off the ground on two forged L-tines — broad flat feet with rubber soles, grip cleats and toe bumpers; hydraulic legs of lofted box-section shins and thighs pinned at the ankle, knee and hip; arms hung from shoulder yokes, each joint a clevis of two lug bushings straddling an eye bushing with a chrome pin through all three; eight rams (hip and knee, shoulder and elbow), each a collared steel cylinder with a chromed rod, a pinned clevis bracket at each end and a hose from its port; fork carriages with hazard-striped faces; an open roll-cage cockpit with a bucket seat, four-point harness, joystick consoles, amber beacon and work lights; a power pack with a slatted grille, cooling fins, hazard bands, exhaust stacks and cable looms — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A yellow bipedal cargo loader in a crouch, hydraulic rams on its legs and arms, an open roll-cage cockpit with an amber beacon, holding a blue-grey crate on its forks.",
+      "witnessesFix": "Recomputed: 44600 tris, ten materials with 2736 paint, 608 hazard, 3128 chrome, 15328 steel, 2740 rubber, 480 seat-vinyl, 640 harness, 256 beacon, 152 work-light and 516 crate-paint faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.827×1.689×2.974 m, zmin 0 with both soles on the floor, hygiene 0 including zero coplanar cross-shell pairs, all 28 clevis pins 0.000 mm off the axis of each of their three bushings and 0.000° to them (caps 0.3 mm, 0.3°), the crate's base biting both tines by 0.0020 m at every station along a 0.74 m run (band 0.0010–0.0040, run ≥ 0.50), both soles flat and level to 0.000 mm and 0.000° (caps 0.5 mm, 0.2°), all 8 ram rods 0.000 mm off their cylinders' axes and 0.0096° to them (caps 0.3 mm, 0.3°) with 0.1591–0.2858 m of rod exposed (band 0.080–0.340) and 0.060 m engaged (floor 0.040), a 2380.6 kg loader and crate whose mass centre stands 0.4473 m inside the soles' support polygon (floor 0.200), one connected assembly of 414 shells, LOD ratios in band, collider 710 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-pin 17; --lift-crate 18; --tilt-sole 19; --skew-rod 20; --bottom-ram 21; --overload 22; --loose-light 23.",
+      "hero": "docs/gallery/assets/cargo-loader-hero.webp",
+      "preview": "showcase/cargo-loader/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

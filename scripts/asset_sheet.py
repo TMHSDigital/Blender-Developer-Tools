@@ -84,6 +84,7 @@ SELECT = {
     "bowling-pins": (r"^PinDeckLow$", None),
     "pond-edge": (r"^PondLow$", None),
     "stand-mixer": (r"^MixerLow$", None),
+    "cargo-loader": (r"^LoaderLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>51 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>52 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 51 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 52 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>51 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>52 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -160,6 +160,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/bowling-pins/"><img src="showcase/bowling-pins/preview.webp" width="24%" alt="Bowling pins: ten white pins with red neck stripes racked on a dark pin deck at the end of a glossy maple lane with arrows and dots, a marbled violet ball on the approach, between gutters and kickbacks, on a dark studio floor" /></a>
   <a href="showcase/pond-edge/"><img src="showcase/pond-edge/preview.webp" width="24%" alt="Pond edge: a dark rippled pond on a raised soil disc, cattails with brown seed heads and rush tufts on the far bank, notched lily pads and two pink-white water lilies, wet stones and a branch at the waterline, on a dark studio floor" /></a>
   <a href="showcase/stand-mixer/"><img src="showcase/stand-mixer/preview.webp" width="24%" alt="Stand mixer: a slate-blue retro tilt-head stand mixer with a chrome trim band and a brushed steel bowl on a stone countertop, beside a wire whisk, a steel measuring cup and two brown eggs in a terracotta dish, on a dark studio floor" /></a>
+  <a href="showcase/cargo-loader/"><img src="showcase/cargo-loader/preview.webp" width="24%" alt="Cargo loader: a yellow bipedal powered-lift exoframe in a crouch, hydraulic rams and pinned clevises on its legs and arms, an open roll-cage cockpit with a seat, harness and amber beacon, a power pack behind, holding a corrugated blue-grey crate on two forks, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -259,6 +260,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`pond-edge`](showcase/pond-edge/) — the fourth `nature` piece: procedural pond margin on a raised soil disc (a bank sloping from turf through wet mud into a shallow basin, its cut edge showing its soil horizons; the water its own rippled sheet at a declared level, its rim run on under the bank; a cattail clump of arching strap leaves and five stems, each threaded through a velvet seed head with a bare spike; rush and turf tufts; five notched lily pads and two layered water lilies floating; wet stones, a half-submerged branch, pebbles and fallen leaves), whose leaves and stems rooted in the mud, pads floating at the water level, water level and ripple band, seed heads threaded on their stems, water enclosed by the bank and cover joined to the soil are recomputed from the mesh, through the same pipeline. Falsifiers `--float-reeds` exits 17, `--sink-pad` 18, `--flat-water` 19, `--slip-heads` 20, `--short-water` 21, `--float-cover` 22.
 
 [`stand-mixer`](showcase/stand-mixer/) — the fourth `household` piece: procedural retro tilt-head stand mixer on a honed stone countertop section (a cast enamel base foot, neck and streamlined head lofted from superellipse sections, on four rubber feet; a tilt hinge pinned through two neck knuckles; a chrome trim band, blank badge, speed and tilt-lock levers; an attachment hub with cap and thumb screw; a planetary socket carrying a flat beater into a 4.5 L brushed stainless bowl with a rolled rim and strap handle under three bayonet lugs; a cord to a plug; a whisk, a measuring cup and two eggs in a glazed dish), whose feet on the counter, hinge pin coaxial through its knuckles, bowl seated and concentric on its plate, height and brim capacity, beater coaxial with its socket, beater's dime-test clearance to the bowl, mass centre inside the feet and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-hinge` 17, `--offset-bowl` 18, `--shallow-bowl` 19, `--offset-beater` 20, `--long-beater` 21, `--bunch-feet` 22, `--loose-cap` 23.
+
+[`cargo-loader`](showcase/cargo-loader/) — the fourth `vehicles` piece: procedural sci-fi industrial cargo loader, a bipedal powered-lift exoframe (broad flat feet with rubber soles, grip cleats and toe bumpers; hydraulic legs of lofted box-section shins and thighs pinned at the ankle, knee and hip; arms hung from shoulder yokes on towers; every joint a clevis with a chrome pin through two lug bushings and an eye bushing; eight rams, each a collared cylinder with a chromed rod, a pinned bracket at each end and a hose; fork carriages with hazard-striped faces and forged L-tines; an open roll-cage cockpit with a bucket seat, four-point harness, joystick consoles, amber beacon and work lights; a power pack with a slatted grille, cooling fins, hazard bands, exhaust stacks and cable looms; a corrugated cargo crate held on the tines), whose soles grounded, clevis pins coaxial with their bushings, crate resting on both tines, soles level, ram rods coaxial with their cylinders, rod strokes, mass centre of loader and crate inside the soles' support polygon and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-pin` 17, `--lift-crate` 18, `--tilt-sole` 19, `--skew-rod` 20, `--bottom-ram` 21, `--overload` 22, `--loose-light` 23.
 
 </details>
 
