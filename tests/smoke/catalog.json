@@ -117,5 +117,6 @@
   {"name": "quad-drone", "script": "showcase/quad-drone/quad_drone.py"},
   {"name": "soccer-goal", "script": "showcase/soccer-goal/soccer_goal.py"},
   {"name": "fallen-log", "script": "showcase/fallen-log/fallen_log.py"},
-  {"name": "office-chair", "script": "showcase/office-chair/office_chair.py"}
+  {"name": "office-chair", "script": "showcase/office-chair/office_chair.py"},
+  {"name": "hover-bike", "script": "showcase/hover-bike/hover_bike.py"}
 ]
