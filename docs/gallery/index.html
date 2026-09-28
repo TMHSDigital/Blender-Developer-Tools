@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 48 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 49 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -404,7 +404,7 @@
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
-          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">3</span></button>
+          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">3</span></button>
@@ -1552,6 +1552,17 @@
           <a class="card-link" href="motor-scooter/">View showcase piece<span class="sr-only"> motor-scooter</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="sports" data-name="bowling-pins">
+        <a class="card-media" href="bowling-pins/" tabindex="-1" aria-hidden="true">
+          <img src="assets/bowling-pins-hero.webp" alt="Ten white pins with red neck stripes racked on a dark pin deck at the end of a glossy maple lane with arrows and dots, a marbled violet ball resting on the approach." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="bowling-pins/">bowling-pins</a></h2>
+          <p class="teaches">A procedural pin deck end of a ten-pin bowling lane — one laminated slab of 39 maple boards, 41.5 in across, each board&#x27;s top edges chamfered into a V seam and crossed by the joint to a dark pin deck, ten pin spots inlaid on a 12 in equilateral triangle 34 3/16 in from the pit edge, a chevron of targeting arrows and a row of range dots, channel-profile gutters, cappings, kickbacks with sloped noses under mitred aluminium caps and phenolic kick plates, a steel pit-edge bullnose and five sleepers; ten pins lathe-turned from the regulation profile table (15 in tall, 4.766 in belly) with two red neck stripes and a crown band of red teeth; and an 8.5 in marbled resin ball drilled by an exact Boolean with a countersunk thumb hole and two parallel finger holes — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 37078 tris, eleven materials with 358 maple, 358 pin-deck, 13720 pin-white, 1280 pin-red, 1649 ball, 562 bore, 254 phenolic, 142 laminate, 176 aluminium, 1197 inlay and 380 sleeper faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.640×2.301×0.523 m read off the vertices, zmin 0 with all five sleepers on the floor, hygiene 0 including zero coplanar cross-shell pairs, every pin&#x27;s base centre 0.000 mm off its spot (tol 0.5) and 0.6 mm below the deck face (band 0.3–1.0), every pin plumb (0.000°), 0.3810 m tall with a 0.12106 m belly, its radius on all 15 profile-table stations to 0.000 mm (tol 0.2), the ten spots on an exact 12 in lattice (18 edges, rows 1-2-3-4, row pitch 0.26396 m, head spot on the centre line), the ball 0.21590 m across resting 0.60 mm into the lane (band 0.3–0.9), its thumb hole 63.5 mm and finger holes 50.8 mm deep with 25.40 and 20.32 mm bores, a 112.2 mm span and a 26.67 mm bridge, 39 boards flush and straight to 0.000 mm, one connected assembly of 55 shells, LOD ratios in band, collider 277 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-sleeper 16; --offset-pin 17; --float-pin 18; --lean-pin 19; --wide-rack 20; --fat-neck 21; --float-ball 22; --shallow-holes 23; --proud-board 24; --lift-arrows 25.</p>
+          <a class="card-link" href="bowling-pins/">View showcase piece<span class="sr-only"> bowling-pins</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1586,7 +1597,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 48 showcase pieces';
+      var COUNT_LABEL = '52 examples, 49 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

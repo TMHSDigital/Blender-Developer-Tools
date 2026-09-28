@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>48 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>49 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 48 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 49 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>48 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>49 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -157,6 +157,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/boulder-cluster/"><img src="showcase/boulder-cluster/preview.webp" width="24%" alt="Boulder cluster: a speckled granite block, a banded sandstone boulder split in two and a slab resting on a smaller boulder, sunk in a grassy soil mound with pebbles and wildflowers, on a dark studio floor" /></a>
   <a href="showcase/floor-fan/"><img src="showcase/floor-fan/preview.webp" width="24%" alt="Floor fan: a sage-green 1950s pedestal fan with a chrome wire guard over four brass blades, its head turned on a tilt yoke, a telescoping column and a round cast base, its cord looped to a plug, on a dark studio floor" /></a>
   <a href="showcase/motor-scooter/"><img src="showcase/motor-scooter/preview.webp" width="24%" alt="Motor scooter: a pastel sea-green 1960s step-through scooter with a two-tone cream and oxblood dual saddle, louvred side cowls, a curved chrome-trimmed leg shield, split-rim wheels and a black silencer, on its centre stand on a dark studio floor" /></a>
+  <a href="showcase/bowling-pins/"><img src="showcase/bowling-pins/preview.webp" width="24%" alt="Bowling pins: ten white pins with red neck stripes racked on a dark pin deck at the end of a glossy maple lane with arrows and dots, a marbled violet ball on the approach, between gutters and kickbacks, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -250,6 +251,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`floor-fan`](showcase/floor-fan/) — the third `household` piece: procedural 1950s oscillating pedestal fan (a hollow two-tier cast base on a rubber gasket with a rotary speed switch and badge, a telescoping column with a knurled height-lock collar, a strap yoke with a tilt knob, a slotted motor housing with an oscillation knob, a two-half wire guard of spokes and rings welded to clipped rim rings, four swept brass blades on a hub with a spinner nut, and a cord to a plug), whose rotor and head coaxial with the guard, spokes seated in their rim rings, plumb column on the base's axis, blade-tip clearance, equal blade spacing, tip-over angle and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--offset-hub` exits 17, `--short-spoke` 18, `--lean-column` 19, `--long-blades` 20, `--skew-blade` 21, `--hollow-base` 22, `--loose-spinner` 23.
 
 [`motor-scooter`](showcase/motor-scooter/) — the third `vehicles` piece: procedural 1960s Italian step-through motor scooter (a pressed-steel tail with two bulbous side cowls, louvres on the engine side and chrome belt trims, a floorboard with runner strips pressed up into the tail and a leg shield convex in plan, arched into the headset and rimmed in chrome, with a horn cast and grille, a single-sided front end with a raked column, trailing link, coil spring and a crested mudguard, a headset carrying the headlamp, speedometer, grips, levers and mirrors, a two-tone piped dual saddle with a grab strap, 10-inch split rims in block-tread tyres, an alloy engine case with a finned cylinder, silencer and kick-start, a luggage rack, tail lamp and plate, and a centre stand), whose tyres and stand feet grounded, wheel axles level and parallel, steering trail, body mirror symmetry excluding the engine side, wheelbase, mass centre inside the support polygon, single connected assembly and the leg shield seated in the floorboard are recomputed from the mesh, through the same pipeline. Falsifiers `--float-tyre` exits 16, `--toe-wheel` 17, `--steep-head` 18, `--odd-body` 19, `--short-wheelbase` 20, `--narrow-stand` 21, `--pop-speedo` 22, `--lift-shield` 23.
+
+[`bowling-pins`](showcase/bowling-pins/) — the fourth `sports` piece: procedural pin deck end of a ten-pin lane (a slab of 39 V-seamed maple boards crossed by the pin-deck joint, ten inlaid pin spots on a 12 in triangle, targeting arrows and range dots, channel gutters, cappings, kickbacks with sloped noses, aluminium caps and kick plates, a steel pit edge and sleepers; ten pins lathe-turned from the regulation profile table with red neck stripes and a crown band; an 8.5 in marbled ball drilled by an exact Boolean with a countersunk thumb hole and two parallel finger holes), whose sleepers grounded, pins centred on their spots, seated, plumb and to size, spots on the exact lattice, turned profile, ball resting on the lane at its radius, hole depths, bores, span and bridge, boards flush and parallel and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-sleeper` exits 16, `--offset-pin` 17, `--float-pin` 18, `--lean-pin` 19, `--wide-rack` 20, `--fat-neck` 21, `--float-ball` 22, `--shallow-holes` 23, `--proud-board` 24, `--lift-arrows` 25.
 
 </details>
 
