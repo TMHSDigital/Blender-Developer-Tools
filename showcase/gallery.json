@@ -640,6 +640,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "boulder-cluster",
+      "dir": "showcase/boulder-cluster",
+      "category": "nature",
+      "teaches": "A procedural glacial boulder cluster — four boulders cut from ellipsoids by closed-form cleavage planes with weathered bevels, a speckled granite block, a banded sandstone boulder split in two with matching crack faces and bedding, a sandstone slab resting flat on a smaller granite boulder, lichen crusts and moss cushions on the tops and north faces — sunk into a soil mound with grass tufts, pebbles and wildflowers, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A speckled granite block, a banded sandstone boulder split in two and a slab resting on a smaller boulder, sunk in a grassy soil mound with pebbles and wildflowers.",
+      "witnessesFix": "Recomputed: 40244 tris, eight materials with 4440 granite, 3798 sandstone, 2184 lichen, 1760 moss, 5251 grass, 2734 soil, 1944 gravel and 1400 flower faces, UVs in 0..1 with zero AABB overlap, outer AABB 4.444×3.215×1.366 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, every boulder sunk into the soil in all eight flank sectors (shallowest 0.069 m, floor 0.030; deepest vertex 0.149 m, cap 0.30), the slab seated 0.010 m into the boulder under it (band 0.004–0.030) with its mass centre 0.157 m inside its footprint (floor 0.03), the split halves' crack faces 1.00° apart (cap 3°) across a 0.0775 m gap (band 0.050–0.100) with 0.009 m slide, 0.961 of the lichen and moss top area facing up or north (floor 0.85), all 497 ground-cover shells joined to the soil, LOD ratios in band, rock collider 292 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --perch-boulder 17; --float-slab 18; --perch-slab 19; --skew-half 20; --sunny-lichen 21; --float-cover 22.",
+      "hero": "docs/gallery/assets/boulder-cluster-hero.webp",
+      "preview": "showcase/boulder-cluster/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

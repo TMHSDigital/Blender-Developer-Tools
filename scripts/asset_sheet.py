@@ -78,6 +78,7 @@ SELECT = {
     "office-chair": (r"^ChairLow$", None),
     "hover-bike": (r"^HoverBikeLow$", None),
     "weight-rack": (r"^RackLow$", None),
+    "boulder-cluster": (r"^ClusterLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),
