@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>53 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>54 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 53 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 54 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>53 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>54 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -162,6 +162,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/stand-mixer/"><img src="showcase/stand-mixer/preview.webp" width="24%" alt="Stand mixer: a slate-blue retro tilt-head stand mixer with a chrome trim band and a brushed steel bowl on a stone countertop, beside a wire whisk, a steel measuring cup and two brown eggs in a terracotta dish, on a dark studio floor" /></a>
   <a href="showcase/cargo-loader/"><img src="showcase/cargo-loader/preview.webp" width="24%" alt="Cargo loader: a yellow bipedal powered-lift exoframe in a crouch, hydraulic rams and pinned clevises on its legs and arms, an open roll-cage cockpit with a seat, harness and amber beacon, a power pack behind, holding a corrugated blue-grey crate on two forks, on a dark studio floor" /></a>
   <a href="showcase/archery-target/"><img src="showcase/archery-target/preview.webp" width="24%" alt="Archery target: a straw boss with a gold, red, blue, black and white face and five arrows, leaning on a timber easel numbered 12 with a hinged rear leg and a splay chain, on a turf patch with a leather quiver and a snapped arrow in the grass, on a dark studio floor" /></a>
+  <a href="showcase/cactus-garden/"><img src="showcase/cactus-garden/preview.webp" width="24%" alt="Cactus garden: a ribbed saguaro with three arms, rows of spines and cream flowers on its crown, a barrel cactus with red hooked spines and yellow fruit, a prickly pear with magenta fruit, an agave rosette and sandstone rocks on a raised sand disc, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -265,6 +266,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`cargo-loader`](showcase/cargo-loader/) — the fourth `vehicles` piece: procedural sci-fi industrial cargo loader, a bipedal powered-lift exoframe (broad flat feet with rubber soles, grip cleats and toe bumpers; hydraulic legs of lofted box-section shins and thighs pinned at the ankle, knee and hip; arms hung from shoulder yokes on towers; every joint a clevis with a chrome pin through two lug bushings and an eye bushing; eight rams, each a collared cylinder with a chromed rod, a pinned bracket at each end and a hose; fork carriages with hazard-striped faces and forged L-tines; an open roll-cage cockpit with a bucket seat, four-point harness, joystick consoles, amber beacon and work lights; a power pack with a slatted grille, cooling fins, hazard bands, exhaust stacks and cable looms; a corrugated cargo crate held on the tines), whose soles grounded, clevis pins coaxial with their bushings, crate resting on both tines, soles level, ram rods coaxial with their cylinders, rod strokes, mass centre of loader and crate inside the soles' support polygon and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-pin` 17, `--lift-crate` 18, `--tilt-sole` 19, `--skew-rod` 20, `--bottom-ram` 21, `--overload` 22, `--loose-light` 23.
 
 [`archery-target`](showcase/archery-target/) — the fifth `sports` piece: procedural archery range target (a compressed-straw boss coiled from rope courses that show on its back and edge, bound with doubled jute twine tight over the crests; an 80 cm ten-zone World Archery face with ring lines, an X ring and a printed X, held by target pins; a timber easel leaning it back 12° on toe skids with knee braces, a ledge with a stop lip on a bolted rail and gussets, a numbered butt board, a strap hinge pinned to a rear leg in a steel ferrule and foot, a splay chain between eye bolts; five arrows in the face, one glancing into the edge, one snapped with its fletched half on the grass, a leather quiver of arrows among grass tufts on a turf patch), whose supports bedded in the turf, hinge pin coaxial with its knuckles, boss seated on its ledge and leaning on both legs, regulation gold height and size, points buried in the straw, fletching clear of the face, vanes at 120°, ring radii of the scoring table, forward tip angle and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-hinge` 17, `--lift-boss` 18, `--high-boss` 19, `--shallow-arrow` 20, `--short-arrow` 21, `--skew-vane` 22, `--wide-gold` 23, `--short-skids` 24, `--loose-pin` 25.
+
+[`cactus-garden`](showcase/cactus-garden/) — the fifth `nature` piece: procedural Sonoran cactus garden on a raised sand-and-gravel disc (a 2.2 m saguaro of fourteen pleated ribs with rounded crests, three arms leaving the trunk through a smooth collar and turning up through wide elbows, a corky boot and scars, felt areoles with radiating spine clusters down every crest and cream flowers on the crown; a fishhook barrel cactus with a red hooked central at every areole and a ring of yellow fruit; a prickly pear of twelve broad sage paddles fused pad on pad in four tiers, with glochids and magenta fruit; a blue agave rosette, cleaved sandstone rocks, a bleached branch, fallen saguaro ribs, dry bunchgrass and gravel), whose arms biting into the trunk, pads jointed into their parents, plumb saguaro with its mass over its foot, ribs at equal stations, spines rooted in the skin, plants bedded in the sand and cover joined to the sand are recomputed from the mesh, through the same pipeline. Falsifiers `--short-arm` exits 17, `--shallow-pad` 18, `--lean-saguaro` 19, `--skew-ribs` 20, `--float-spines` 21, `--perch-barrel` 22, `--float-cover` 23.
 
 </details>
 

@@ -752,6 +752,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "cactus-garden",
+      "dir": "showcase/cactus-garden",
+      "category": "nature",
+      "teaches": "A procedural Sonoran cactus garden on a raised sand-and-gravel disc — a 2.2 m saguaro, a column of fourteen pleated ribs with rounded crests, three arms that leave the trunk through a smooth collar, run out and turn up, a corky boot and scars, cream flowers on its crown, and a row of felt areoles down every rib crest, each with a radiating spine cluster; a fishhook barrel cactus of eighteen ribs with a red hooked central spine at every areole and a ring of yellow fruit round its crown; a prickly pear of twelve broad sage paddles grown pad on pad in four tiers, each fused into the rim of the one below, dotted with glochids and carrying magenta fruit; a blue agave rosette, cleaved sandstone rocks, a sun-bleached branch, two fallen saguaro ribs, dry bunchgrass and gravel — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A Sonoran cactus garden on a raised sand disc: a ribbed saguaro with three arms and cream crown flowers, a red-hooked barrel cactus, a prickly pear with magenta fruit, an agave and sandstone rocks.",
+      "witnessesFix": "Recomputed: 45364 tris, ten materials with 3694 sand, 9332 skin, 13254 spine, 432 fruit, 976 flower, 481 agave, 1080 rock, 600 gravel, 666 wood and 1222 grass faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.995×2.608×2.375 m read off the vertices, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all three saguaro arms biting 0.1154–0.1222 m into the trunk (band 0.080–0.160), all nine child pads fused 0.0297–0.0313 m into their parents' rims along their own axes (band 0.022–0.040), the saguaro plumb (lean 0.000°, cap 1°) with its mass 0.0012 m off its foot (cap 0.050), 2.2004 m tall (2.20 ± 0.05) and 0.3376 m across its crests (band 0.30–0.37), 14 trunk and 18 barrel ribs with a 0.000° crest-gap spread (cap 2°), all 898 spine clusters rooted 0.00363–0.00602 m under the skin (band 0.0030–0.0080), saguaro, barrel and root pads bedded 0.0498–0.0829 m in the sand (band 0.025–0.150) and 13 agave leaves 0.0424–0.0531 m (band 0.020–0.100), all 1118 shells joined to the sand, LOD ratios in band, sand collider 112 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --short-arm 17; --shallow-pad 18; --lean-saguaro 19; --skew-ribs 20; --float-spines 21; --perch-barrel 22; --float-cover 23.",
+      "hero": "docs/gallery/assets/cactus-garden-hero.webp",
+      "preview": "showcase/cactus-garden/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
