@@ -710,6 +710,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "stand-mixer",
+      "dir": "showcase/stand-mixer",
+      "category": "household",
+      "teaches": "A procedural retro tilt-head kitchen stand mixer on a honed limestone countertop section — a cast enamel body lofted from superellipse sections (a pebble-shaped base foot on four rubber feet, a neck leaning back as it rises, a streamlined motor head) hinged at the back on a pin through two neck knuckles; a chrome trim band wrapped on the head's own sections, a blank badge, a speed lever and a tilt-lock lever; an attachment hub with its cap and thumb screw on the nose; a planetary socket carrying a flat beater whose frame follows the bowl's wall into a 4.5 L brushed stainless bowl with a rolled rim and strap handle, clamped under three bayonet lugs; a cord to a plug; and a balloon whisk, a measuring cup and two brown eggs in a glazed dish — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A slate-blue retro stand mixer with a chrome band and a brushed steel bowl on a stone countertop, beside a wire whisk, a steel measuring cup and two brown eggs in a terracotta dish.",
+      "witnessesFix": "Recomputed: 29620 tris, eight materials with 4328 enamel, 2626 chrome, 5560 stainless, 91 stone, 1174 rubber, 812 ceramic, 760 egg and 562 beater faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.470×0.570×0.389 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four feet sunk 0.00025–0.00070 m into the counter (band 0.0001–0.0008), the hinge pin 0.000000 m off the axis of both neck knuckles and the head knuckle (cap 0.0003) and spanning all three, the bowl seated 0.00050 m into its plate (band 0.0002–0.0010) and 0.000000 m off its axis (cap 0.0003) with all three lugs engaged, the mixer 0.35899 m tall (0.360 ± 0.006) and the bowl holding 4.5465 L to the brim (4.5 ± 0.35), the beater shaft 0.000000 m off the planetary socket's axis (cap 0.0003) and clearing the bowl's wall by 0.00245 m and its floor by 0.00250 m (band 0.0012–0.0040), the mass centre 0.0658 m inside the feet's support polygon (floor 0.040) at 13.94 kg, one connected assembly of 52 shells, LOD ratios in band, collider 2329 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-hinge 17; --offset-bowl 18; --shallow-bowl 19; --offset-beater 20; --long-beater 21; --bunch-feet 22; --loose-cap 23.",
+      "hero": "docs/gallery/assets/stand-mixer-hero.webp",
+      "preview": "showcase/stand-mixer/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

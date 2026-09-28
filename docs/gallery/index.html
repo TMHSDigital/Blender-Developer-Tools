@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 50 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 51 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -406,7 +406,7 @@
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
           <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">4</span></button>
-          <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">3</span></button>
+          <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">4</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">3</span></button>
         </div>
       </div>
@@ -1574,6 +1574,17 @@
           <a class="card-link" href="pond-edge/">View showcase piece<span class="sr-only"> pond-edge</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="household" data-name="stand-mixer">
+        <a class="card-media" href="stand-mixer/" tabindex="-1" aria-hidden="true">
+          <img src="assets/stand-mixer-hero.webp" alt="A slate-blue retro stand mixer with a chrome band and a brushed steel bowl on a stone countertop, beside a wire whisk, a steel measuring cup and two brown eggs in a terracotta dish." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="stand-mixer/">stand-mixer</a></h2>
+          <p class="teaches">A procedural retro tilt-head kitchen stand mixer on a honed limestone countertop section — a cast enamel body lofted from superellipse sections (a pebble-shaped base foot on four rubber feet, a neck leaning back as it rises, a streamlined motor head) hinged at the back on a pin through two neck knuckles; a chrome trim band wrapped on the head&#x27;s own sections, a blank badge, a speed lever and a tilt-lock lever; an attachment hub with its cap and thumb screw on the nose; a planetary socket carrying a flat beater whose frame follows the bowl&#x27;s wall into a 4.5 L brushed stainless bowl with a rolled rim and strap handle, clamped under three bayonet lugs; a cord to a plug; and a balloon whisk, a measuring cup and two brown eggs in a glazed dish — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 29620 tris, eight materials with 4328 enamel, 2626 chrome, 5560 stainless, 91 stone, 1174 rubber, 812 ceramic, 760 egg and 562 beater faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.470×0.570×0.389 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four feet sunk 0.00025–0.00070 m into the counter (band 0.0001–0.0008), the hinge pin 0.000000 m off the axis of both neck knuckles and the head knuckle (cap 0.0003) and spanning all three, the bowl seated 0.00050 m into its plate (band 0.0002–0.0010) and 0.000000 m off its axis (cap 0.0003) with all three lugs engaged, the mixer 0.35899 m tall (0.360 ± 0.006) and the bowl holding 4.5465 L to the brim (4.5 ± 0.35), the beater shaft 0.000000 m off the planetary socket&#x27;s axis (cap 0.0003) and clearing the bowl&#x27;s wall by 0.00245 m and its floor by 0.00250 m (band 0.0012–0.0040), the mass centre 0.0658 m inside the feet&#x27;s support polygon (floor 0.040) at 13.94 kg, one connected assembly of 52 shells, LOD ratios in band, collider 2329 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-hinge 17; --offset-bowl 18; --shallow-bowl 19; --offset-beater 20; --long-beater 21; --bunch-feet 22; --loose-cap 23.</p>
+          <a class="card-link" href="stand-mixer/">View showcase piece<span class="sr-only"> stand-mixer</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1608,7 +1619,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 50 showcase pieces';
+      var COUNT_LABEL = '52 examples, 51 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

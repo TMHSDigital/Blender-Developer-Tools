@@ -83,6 +83,7 @@ SELECT = {
     "motor-scooter": (r"^ScooterLow$", None),
     "bowling-pins": (r"^PinDeckLow$", None),
     "pond-edge": (r"^PondLow$", None),
+    "stand-mixer": (r"^MixerLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

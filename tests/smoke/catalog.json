@@ -124,5 +124,6 @@
   {"name": "floor-fan", "script": "showcase/floor-fan/floor_fan.py"},
   {"name": "motor-scooter", "script": "showcase/motor-scooter/motor_scooter.py"},
   {"name": "bowling-pins", "script": "showcase/bowling-pins/bowling_pins.py"},
-  {"name": "pond-edge", "script": "showcase/pond-edge/pond_edge.py"}
+  {"name": "pond-edge", "script": "showcase/pond-edge/pond_edge.py"},
+  {"name": "stand-mixer", "script": "showcase/stand-mixer/stand_mixer.py"}
 ]
