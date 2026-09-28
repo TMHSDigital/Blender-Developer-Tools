@@ -626,6 +626,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "weight-rack",
+      "dir": "showcase/weight-rack",
+      "category": "sports",
+      "teaches": "A procedural home-gym strength set — a half rack of punched, numbered square uprights on bolted feet with rubber pads, side rails on bolted flanges, a pull-up bar, J-hooks with UHMW saddles and spotter arms on pull pins seated in the holes, plate-storage horns, an Olympic barbell with a knurled shaft, collars and sleeves loaded with bumpers (steel hubs, raised rims and numerals) and cast-iron change plates behind coiled spring clips, and two hex dumbbells — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A red home-gym half rack holding an Olympic barbell loaded with blue and yellow bumpers on J-hooks, plates on storage horns and two hex dumbbells, on a dark studio floor.",
+      "witnessesFix": "Recomputed: 44264 tris, twelve materials with 4758 powder-coat, 3036 bore, 4196 zinc, 3348 chrome, 256 knurl, 1328 rubber, 104 UHMW, 3112 numeral, 864 blue, 576 yellow, 576 green and 2240 cast-iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.200×1.636×2.092 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four pads and four dumbbell heads on the floor, all four pull pins on their holes' axes (0.000 mm) 7.0 mm deep, the bar seated in both J-hook saddles (−0.20 mm) and level (0.0000°) at 2.200 m, 0.450 m bumpers, twelve plates on six sleeves within 0.80 mm of their axes with every gap −0.50 mm (band −0.8 to −0.2 mm), the loaded bar's mass centre 0.002 mm off its midpoint (tol 2 mm), one connected rack plus two dumbbells, LOD ratios in band, collider 598 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-pin 17; --float-bar 18; --hook-high 19; --gap-plate 20; --odd-load 21; --loose-horn 22.",
+      "hero": "docs/gallery/assets/weight-rack-hero.webp",
+      "preview": "showcase/weight-rack/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

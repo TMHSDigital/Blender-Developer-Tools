@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 44 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 45 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -404,7 +404,7 @@
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
-          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">2</span></button>
+          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">3</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">2</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">2</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">2</span></button>
@@ -1508,6 +1508,17 @@
           <a class="card-link" href="hover-bike/">View showcase piece<span class="sr-only"> hover-bike</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="sports" data-name="weight-rack">
+        <a class="card-media" href="weight-rack/" tabindex="-1" aria-hidden="true">
+          <img src="assets/weight-rack-hero.webp" alt="A red home-gym half rack holding an Olympic barbell loaded with blue and yellow bumpers on J-hooks, plates on storage horns and two hex dumbbells, on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="weight-rack/">weight-rack</a></h2>
+          <p class="teaches">A procedural home-gym strength set — a half rack of punched, numbered square uprights on bolted feet with rubber pads, side rails on bolted flanges, a pull-up bar, J-hooks with UHMW saddles and spotter arms on pull pins seated in the holes, plate-storage horns, an Olympic barbell with a knurled shaft, collars and sleeves loaded with bumpers (steel hubs, raised rims and numerals) and cast-iron change plates behind coiled spring clips, and two hex dumbbells — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 44264 tris, twelve materials with 4758 powder-coat, 3036 bore, 4196 zinc, 3348 chrome, 256 knurl, 1328 rubber, 104 UHMW, 3112 numeral, 864 blue, 576 yellow, 576 green and 2240 cast-iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.200×1.636×2.092 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four pads and four dumbbell heads on the floor, all four pull pins on their holes&#x27; axes (0.000 mm) 7.0 mm deep, the bar seated in both J-hook saddles (−0.20 mm) and level (0.0000°) at 2.200 m, 0.450 m bumpers, twelve plates on six sleeves within 0.80 mm of their axes with every gap −0.50 mm (band −0.8 to −0.2 mm), the loaded bar&#x27;s mass centre 0.002 mm off its midpoint (tol 2 mm), one connected rack plus two dumbbells, LOD ratios in band, collider 598 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --offset-pin 17; --float-bar 18; --hook-high 19; --gap-plate 20; --odd-load 21; --loose-horn 22.</p>
+          <a class="card-link" href="weight-rack/">View showcase piece<span class="sr-only"> weight-rack</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1542,7 +1553,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 44 showcase pieces';
+      var COUNT_LABEL = '52 examples, 45 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];
