@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>42 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>43 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 42 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 43 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>42 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>43 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -151,6 +151,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/quad-drone/"><img src="showcase/quad-drone/preview.webp" width="24%" alt="Quad drone: a white-and-graphite camera quadcopter on four carbon arms with red lock rings, twin-blade props, rubber-footed skids and a three-axis gimbal camera, on a dark studio floor" /></a>
   <a href="showcase/soccer-goal/"><img src="showcase/soccer-goal/preview.webp" width="24%" alt="Soccer goal: a white 5 by 2 m youth goal with sloped rear supports and a sagging diamond-mesh net edged in red rope, on a turf patch with a painted goal line, on a dark studio floor" /></a>
   <a href="showcase/fallen-log/"><img src="showcase/fallen-log/preview.webp" width="24%" alt="Fallen log: a mossy log settled into a soil mound, its dark furrowed bark peeled in patches, a hollow ringed butt, tiers of shelf fungi, toadstools, ferns and fallen leaves, on a dark studio floor" /></a>
+  <a href="showcase/office-chair/"><img src="showcase/office-chair/preview.webp" width="24%" alt="Office chair: a tangerine-upholstered mesh-back task chair with a headrest, T-arms, a chrome gas lift and a polished five-star base on twin-wheel casters, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -232,6 +233,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`soccer-goal`](showcase/soccer-goal/) — the second `sports` piece: procedural freestanding 5 × 2 m youth soccer goal (posts and crossbar in one oval aluminium extrusion with a net channel, mitred and welded at the corners, cast corner brackets, foot connectors and rear hubs, sloped supports and a steel ground frame pinned by staples and spikes, a sagging diamond-mesh net with a red head rope through 53 nylon clips, a turf patch with a painted goal line), whose ground bars bedded in the turf, supports seated in their sockets, head rope threaded through every clip, clear mouth size with plumb posts, and catenary sag of the back panel are recomputed from the mesh, through the same pipeline. Falsifiers `--float-bar` exits 16, `--short-support` 17, `--unclip-net` 18, `--wide-mouth` 19, `--taut-net` 20.
 
 [`fallen-log`](showcase/fallen-log/) — the second `nature` piece: procedural fallen forest log (one furrowed lathe along a bowed axis, bark peeled to sapwood scored by beetle galleries, a rotted hollow saw-cut butt with growth rings, a splintered snapped top, broken branch stubs, moss cushions on the top and shaded side, three tiers of bracket fungi, a soil mound with toadstools, ferns and fallen leaves), whose bed along its length, brackets rooted in the bark, mass centre over its contact patch, moss on up- and shade-facing surfaces and ground cover rooted in the soil are recomputed from the mesh, through the same pipeline. Falsifiers `--hump-ground` exits 17, `--float-fungi` 18, `--tilt-ground` 19, `--sunny-moss` 20, `--float-litter` 21.
+
+[`office-chair`](showcase/office-chair/) — the second `household` piece: procedural ergonomic task chair (polished aluminium five-star base with ribbed spokes and five swivelled twin-wheel casters, a chrome gas lift in a telescoping cover under a tilt mechanism with knob and levers, a contoured upholstered seat with a piped welt, a reclined mesh back with a lumbar pad and headrest on an aluminium spine, height-adjustable T-arms), whose ten wheels on the floor, five-star spacing with plumb swivel stems on one circle, gas-lift column coaxial with hub and socket, mirrored level armrests with seat height and mass centre inside the caster contact hull, and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-caster` exits 16, `--skew-spoke` 17, `--offset-column` 18, `--uneven-arms` 19, `--loose-wheel` 20.
 
 </details>
 
