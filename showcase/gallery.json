@@ -892,6 +892,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "broadleaf-oak",
+      "dir": "showcase/broadleaf-oak",
+      "category": "nature",
+      "teaches": "A procedural mature, open-grown English oak on a sloping grassy soil disc — a short fluted trunk with ridged bark flaring through six buttresses into surface roots bedded in the soil, a low fork into five crooked scaffold limbs that divide three more times, every branch a tapered tube seated inside its parent and narrowing past each junction by its child's area (da Vinci's rule), a broad domed crown of lobed oak leaves in clusters on every twig tip, dead twigs, acorns (scaly cup and glossy nut) hanging in twos and threes on long stalks and lying in the grass among fallen leaves and tufts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A broad oak with a short fluted trunk and crooked spreading limbs under a domed crown of lobed green leaves, on a grassy soil disc with surface roots, tufts, fallen leaves and acorns.",
+      "witnessesFix": "Recomputed: 68350 tris, eight materials with 7447 bark, 43840 leaf, 132 deadwood, 1350 nut, 1100 cup, 1918 soil, 2880 grass and 1088 litter faces, UVs in 0..1 with zero AABB overlap, outer AABB 11.282×9.306×7.999 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 260 branches seated in their parents (shallowest base vertex 0.092 of the parent's radius inside it, min 0.06), every one of 255 junctions within da Vinci's area rule 0.959–0.987 (band 0.90–1.05) with no child wider than 0.67 of its parent and the scaffolds taking 0.894 of the trunk's area at the fork, all 25 nuts 0.011 m inside their cups (band 0.006–0.020), the trunk 0.554° off plumb (max 1.0°) with the leaf mass 0.297 m off its axis (max 0.45) and 0.731 m across at breast height, the foot sealed in the soil in 8 of 8 sectors and six roots bedded at every station (shallowest 0.029 m, min 0.010), all 1370 leaf petioles inside their own twigs on 255 carriers, 7 acorn stalks in their branches and 15 pedicels in stalk and cup, all 66 ground-cover pieces bedded and joined to the soil, LOD ratios in band, bole collider 54 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-branches 17; --pop-nuts 18; --lean-crown 19; --fat-twigs 20; --perch-trunk and --arch-roots 21; --orphan-clump 22; --drop-acorns 23; --float-cover 24.",
+      "hero": "docs/gallery/assets/broadleaf-oak-hero.webp",
+      "preview": "showcase/broadleaf-oak/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

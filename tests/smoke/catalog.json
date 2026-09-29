@@ -137,5 +137,6 @@
   {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"},
   {"name": "traffic-cones", "script": "showcase/traffic-cones/traffic_cones.py"},
   {"name": "mushroom-stump", "script": "showcase/mushroom-stump/mushroom_stump.py"},
-  {"name": "go-kart", "script": "showcase/go-kart/go_kart.py"}
+  {"name": "go-kart", "script": "showcase/go-kart/go_kart.py"},
+  {"name": "broadleaf-oak", "script": "showcase/broadleaf-oak/broadleaf_oak.py"}
 ]

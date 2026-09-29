@@ -95,6 +95,7 @@ SELECT = {
     "planet-rover": (r"^RoverLow$", None),
     "traffic-cones": (r"^ConesLow$", None),
     "go-kart": (r"^KartLow$", None),
+    "broadleaf-oak": (r"^OakLow$", None),
     "mushroom-stump": (r"^StumpLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),

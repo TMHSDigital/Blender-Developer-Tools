@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>63 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>64 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 63 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 64 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>63 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>64 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -172,6 +172,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/traffic-cones/"><img src="showcase/traffic-cones/preview.webp" width="24%" alt="Traffic cones: orange cones with white reflective collars on a patch of asphalt with a worn white line, three standing in a row, three nested in a stack and one knocked over showing its open base, before a striped A-frame barricade with an amber warning lamp" /></a>
   <a href="showcase/mushroom-stump/"><img src="showcase/mushroom-stump/preview.webp" width="24%" alt="Mushroom stump: a sawn tree stump with ringed, cracked end grain and torn splinters on a sloping soil disc, buttress roots in the soil, moss, banded shelf fungi, honey mushroom clusters, red fly agarics, ferns and fallen leaves" /></a>
   <a href="showcase/go-kart/"><img src="showcase/go-kart/preview.webp" width="24%" alt="Go-kart: yellow go-kart on a patch of track asphalt before a red and white kerb: bent red tube chassis, black seat, finned engine with chain to the rear axle, slick tyres on silver rims." /></a>
+  <a href="showcase/broadleaf-oak/"><img src="showcase/broadleaf-oak/preview.webp" width="24%" alt="Broadleaf oak: a broad oak with a short fluted trunk and crooked spreading limbs under a domed crown of lobed green leaves, on a grassy soil disc with surface roots, tufts, fallen leaves and acorns" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -295,6 +296,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`mushroom-stump`](showcase/mushroom-stump/) — the seventh `nature` piece: procedural felled-tree stump on a sloping forest-floor soil disc (one furrowed lathe about a plumb axis flaring through five buttresses into the ground, plated bark peeled to sapwood in two patches, a level saw cut with weathered growth rings round a dark heartwood, radial drying checks notching the rim and a strip of torn holding wood with long splinters, five surface roots lying in the soil and diving into it, moss on the shaded flank, two tiers of turkey-tail brackets, three fly agarics with warted caps, pleated gills, a volva and a hanging skirt, two clusters of ringed honey fungus out of a root and the stump's foot, fallen leaves, ferns, twigs and pebbles), whose foot sealed in the soil all round, caps seated on their stipes, level cut and stated size, roots bedded along their run, stipes rooted in their soil or wood, brackets rooted in the bark, moss on up- and shade-facing surfaces and ground cover joined to the soil are recomputed from the mesh, through the same pipeline. `--perch-stump` exits 17 on the stump sealed all round, `--float-caps` 18 on every cap seated on its stipe, `--tilt-cut` and `--fat-stump` 19 on the level cut and stated size, `--arch-roots` 20 on the roots bedded, `--float-mushrooms` 21 on every stipe rooted in its host, `--float-brackets` 22 on the brackets rooted in the bark, `--sunny-moss` 23 on moss facing up or into the shade, `--float-cover` 24 on the ground cover joined to the soil, while the envelope holds.
 
 [`go-kart`](showcase/go-kart/) — the eighth `vehicles` piece: procedural rental go-kart on a patch of kart-track asphalt against a red and white kerb (a 30 mm tube chassis whose main loop is one bar swept round every bend, cross tubes ending inside the rails with welded gussets, bearing hangers and kingpin C-brackets; spindles on kingpin bolts with 14° caster; a three-spoke wheel on a raked column in a bushing, a steering plate and two tie rods on rod-end eyes; a bolted nose, side pods on nerf bars and a curved front panel; a moulded seat on stays, a floor tray, two pedals, a strapped fuel tank with its line and a lead ballast block; a finned four-stroke clamped to the right rail with a pull-start, air-box and silencer, driving the live rear axle through a clutch, an 88-link chain solved to a whole number of pitches and a 60-tooth sprocket; bearing carriers, a brake disc and caliper; a tubular rear bumper; four loaded slicks on split rims with valve stems, the fronts narrower than the rears), whose tyres pressed into the asphalt in one plane, hubs and bearings coaxial with their axles, tie-rod eyes on their pins, tyre beads and chain seated, frame, bodywork and wheels mirrored at the stated wheelbase and tracks, caster, mass centre inside the support polygon and one connected assembly are recomputed from the mesh, through the same pipeline. `--float-tyre` exits 16 on every tyre grounded, `--cock-hub`, `--drop-bearing` and `--short-tierod` 17 on joint fit, `--sink-tyre` and `--lift-chain` 18 on the bead and chain seats, `--toe-wheel`, `--wide-track`, `--odd-frame` and `--no-caster` 19 on mirror, size and caster, `--aft-ballast` 20 on the stance, `--loose-ballast` 21 on one connected assembly, while the envelope holds.
+
+[`broadleaf-oak`](showcase/broadleaf-oak/) — the eighth `nature` piece: procedural mature, open-grown English oak on a sloping grassy soil disc (a short fluted, ridged trunk flaring through six buttresses into surface roots bedded in the soil, a low fork into five crooked scaffold limbs that divide three more times into 260 tapered branches, each seated in its parent and narrowing past every junction by its child's area, a broad domed crown of 1370 lobed oak leaves in clusters on every twig tip, dead twigs, acorns with scaly cups and glossy nuts hanging on stalks and lying in the grass among curled fallen leaves, tufts and sticks), whose branch seats, da Vinci taper, nuts seated in their cups, plumb trunk and balanced crown, foot and roots sealed in the soil, leaves carried by their twigs, acorns hung on their stalks and ground cover joined to the soil are recomputed from the mesh, through the same pipeline. `--float-branches` exits 17 on every branch seated in its parent, `--pop-nuts` 18 on every nut seated in its cup, `--lean-crown` 19 on plumb and balance, `--fat-twigs` 20 on the taper and area rule, `--perch-trunk` and `--arch-roots` 21 on the trunk and roots sealed in the soil, `--orphan-clump` 22 on every leaf cluster carried by its twig, `--drop-acorns` 23 on the hanging acorns on their stalks, `--float-cover` 24 on the ground cover joined to the soil, while the envelope holds.
 
 </details>
 
