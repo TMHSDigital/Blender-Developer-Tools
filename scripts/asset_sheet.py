@@ -93,6 +93,7 @@ SELECT = {
     "palm-tree": (r"^PalmLow$", None),
     "wingback-armchair": (r"^ArmchairLow$", None),
     "planet-rover": (r"^RoverLow$", None),
+    "traffic-cones": (r"^ConesLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

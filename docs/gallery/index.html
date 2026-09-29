@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 60 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 61 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -407,7 +407,7 @@
           <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">6</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">6</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">6</span></button>
-          <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">6</span></button>
+          <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">7</span></button>
         </div>
       </div>
       <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">
@@ -1684,6 +1684,17 @@
           <a class="card-link" href="planet-rover/">View showcase piece<span class="sr-only"> planet-rover</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="vehicles" data-name="traffic-cones">
+        <a class="card-media" href="traffic-cones/" tabindex="-1" aria-hidden="true">
+          <img src="assets/traffic-cones-hero.webp" alt="Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="traffic-cones/">traffic-cones</a></h2>
+          <p class="teaches">A procedural roadworks set on a cut-out patch of asphalt — a broken-edged asphalt slab with a worn white road line and two sealed tar cracks; seven 720 mm PVC traffic cones, each a hollow lathed body with a moulded bead and a rolled lip round an open tip, bonded into a square rubber base with chamfered corners, a raked top, a collar, four moulded lugs and a recess underneath, and hooped with 4 in and 6 in retroreflective collars; three standing in a taper line, three nested in a stack whose wall thickness sets the nesting pitch, and one knocked over onto the edge of its base and the lip of its tip, its roll solved so both touch; a folding A-frame barricade of four square steel legs hinged in pairs on pivot bolts, spread by pinned straps on spacers, each foot in a rubber pad, carrying two boards on each face split on 45-degree lines into orange and white retroreflective stripes and bolted to the legs; and a warning lamp with amber fresnel lenses on a bracket bolted to the top board — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 45816 tris, eleven materials with 6048 cone PVC, 4088 reflective, 8096 rubber, 596 asphalt, 56 road paint, 496 tar, 64 orange sheeting, 384 board, 2912 steel, 720 black plastic and 696 lens faces, UVs in 0..1 with zero AABB overlap, outer AABB 3.037×2.037×1.335 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 10 supports (five cone bases, the fallen cone&#x27;s body and four barricade pads) 1.5 mm into the slab (band 0.8–3.0 mm), 4 boards biting their legs 1.5 mm at all 8 joints (band 0.8–3.0 mm), 14 collars seated 0.600 mm into their bodies and 1.400 mm proud, 6 upright cones 0.0000° off plumb at 0.720 m on bases 0.356 m across the flats, the barricade&#x27;s 4 legs mirrored within 0.0001 mm, one stack of 3 at a 0.036 m pitch with each inner wall bearing 0.847–1.105 mm on the wall below (band 0.4–2.0 mm), one connected assembly of 125 shells, LOD ratios in band, collider 493 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-cone 16; --gap-board 17; --float-band 18; --lean-cone 19; --skew-leg 19; --loose-stack 20; --loose-lamp 21.</p>
+          <a class="card-link" href="traffic-cones/">View showcase piece<span class="sr-only"> traffic-cones</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1718,7 +1729,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 60 showcase pieces';
+      var COUNT_LABEL = '52 examples, 61 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

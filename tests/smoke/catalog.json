@@ -134,5 +134,6 @@
   {"name": "skate-ramp", "script": "showcase/skate-ramp/skate_ramp.py"},
   {"name": "palm-tree", "script": "showcase/palm-tree/palm_tree.py"},
   {"name": "wingback-armchair", "script": "showcase/wingback-armchair/wingback_armchair.py"},
-  {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"}
+  {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"},
+  {"name": "traffic-cones", "script": "showcase/traffic-cones/traffic_cones.py"}
 ]
