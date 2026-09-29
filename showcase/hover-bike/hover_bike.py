@@ -2,29 +2,37 @@
 
 Asserts budget conformance of a procedural hover bike (a speeder parked on
 its landing skids) after composing shipped pipeline pieces: bmesh
-construction, UVs, nine materials, high-to-low normal bake, LOD chain,
+construction, UVs, ten materials, high-to-low normal bake, LOD chain,
 convex collider, Unity glTF export.
 
 The bike rides on two ducted fans, one ahead of the rider and one behind.
 Between them a sculpted fuselage is lofted from superellipse sections along
 the bike's length: a painted livery canopy over a dark belly, a parting-line
-groove along both flanks and three transverse panel seams, intake grilles on
-the tank flanks, louvred vents on the tail flanks and a vent on the tank's
-crown. The fuselage's nose and tail run into the two shrouds. A headlight
-pod sits on the tank's front slope (a housing, an emissive lamp and a glass
-lens), a tinted windscreen stands behind it, and behind that a riser in a
-pleated dust boot carries a top clamp, clip-on handlebars with ribbed grips,
-bar-end weights, brake-lever perches and levers, and an instrument cluster
-with an emissive screen. A saddle with stitched, pleated padding is draped
-over the fuselage's crown. Two exhaust nozzles leave the tail flanks over
-the rear fan, each with a glowing core and a tail cone.
+groove along both flanks and three transverse panel seams. On it: intake
+grilles, tail vents, a crown vent, cooling fins and a finned heat sink;
+access panels (a panel proud of a dark gasket by an even seam, hex
+fasteners at the corners), an alloy service plate on the belly, a decal
+plate, a hinged charge-port door; a pillion grab rail over the tail and a
+tail-light cluster between the exhaust nozzles. A headlight pod sits on the
+tank's front slope, a low fly screen behind it. Twin chrome stanchions in
+pleated boots run through two sculpted triple clamps to fork caps; clip-on
+clamps carry the bars with switch pods, lever perches, levers on pivot
+bolts, ribbed grips and bar-end weights; an instrument cluster with an
+emissive screen stands on a bracket under a small visor. A stitched,
+pleated saddle is draped over the crown.
 
 Each fan is a shroud (an airfoil-section ring: livery outside, dark inside,
 with an accent band and a marker light) around a static motor can on four
 canted stator vanes, a rotor hub, a spinner and seven twisted, lofted
-blades. The two rotors are handed. Two booms join the shrouds under the
-fuselage, tied by two cross tubes and carrying the foot pegs. Four struts
-hang two landing skids from pads under the shrouds.
+blades. The two rotors are handed. Two aerofoil pylons (chord vertical in
+the downwash) run from shroud to shroud, flared into both shroud walls,
+tied into the belly by fairing webs, with a fastener row, a conduit in
+P-clips along the crest and a foot peg. Under each pylon, at both ends, a
+twin-plate pressed link hangs from a pylon lug to a skid lug, and an oleo
+shock (anodised barrel, preload collar, boot, chrome rod) runs from a pylon
+clevis to the link's middle: every joint a headed pin through two bosses
+and one eye. The links carry two ski-section skid shoes on replaceable wear
+strips, with bolted end caps, tied by two cross braces.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
@@ -34,7 +42,9 @@ ground, ``--offset-hub`` the fan hubs coaxial with their shrouds,
 ``--long-blades`` the blade-tip clearance band, ``--odd-hull`` the hull's
 mirror symmetry, ``--skew-blade`` equal blade spacing, ``--narrow-skids``
 the mass centre inside the skids' support polygon, ``--pop-lens`` one
-connected assembly.
+connected assembly, ``--offset-pin`` every pin coaxial with its bushings,
+``--skew-rod`` and ``--short-rod`` every shock rod coaxial with its barrel
+and inside its stroke band.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -73,8 +83,8 @@ import gallery_asset_quality  # noqa: E402
 HULL_XE = 0.515             # hull ends, each inside its shroud's wall
 HULL_N = 2.6                # section superellipse exponent
 HULL_PART = 0.60            # parting line (the shoulder), as a fraction of belly-to-crown
-HULL_SEGS = 64
-HULL_STATIONS = 66
+HULL_SEGS = 56
+HULL_STATIONS = 46
 GROOVE = 0.0016             # panel-seam depth
 PANEL_X = (-0.44, 0.02, 0.36)
 CAP_CHAMFER = 0.002
@@ -92,7 +102,7 @@ W_KEYS = [(-0.515, 0.082), (-0.45, 0.110), (-0.34, 0.142), (-0.18, 0.152),
 # --- Ducted fans ---------------------------------------------------------------
 DUCT_X = 0.80               # fan axes at x = +-0.80 on the centreline
 DUCT_Z0 = 0.30              # shroud trailing edge
-DUCT_SEGS = 80
+DUCT_SEGS = 72
 # shroud section (r, dz): throat 0.262 m, lip crown at dz 0.219, closed ring
 DUCT_PROFILE = [
     (0.2700, 0.000), (0.2648, 0.030), (0.2627, 0.070), (0.2620, 0.110),
@@ -111,8 +121,7 @@ SPIN = {1: 1.0, -1: -1.0}   # front rotor counter-clockwise from above, rear clo
 BLADE_STATIONS = [
     (0.00, 0.042, 0.0065, 46.0), (0.08, 0.050, 0.0060, 43.0), (0.18, 0.060, 0.0055, 39.0),
     (0.30, 0.066, 0.0050, 35.0), (0.45, 0.068, 0.0045, 31.0), (0.60, 0.066, 0.0040, 28.0),
-    (0.75, 0.062, 0.0036, 26.0), (0.88, 0.057, 0.0032, 24.5), (0.96, 0.052, 0.0030, 23.5),
-    (1.00, 0.046, 0.0028, 23.0),
+    (0.75, 0.062, 0.0036, 26.0), (0.88, 0.057, 0.0032, 24.5), (1.00, 0.046, 0.0028, 23.0),
 ]
 AIRFOIL_X = (1.0, 0.72, 0.45, 0.22, 0.07, 0.0, 0.07, 0.22, 0.45, 0.72)
 BLADE_CAMBER = 0.045
@@ -120,26 +129,69 @@ BLADE_PIVOT = 0.40
 VANE_DEG = (45.0, 135.0, 225.0, 315.0)
 VANE_CANT = 12.0
 
-# --- Frame, skids, pegs ----------------------------------------------------------
-BOOM_Y = 0.200
-BOOM_Z = 0.350
-BOOM_R = 0.022
-BOOM_X = 0.585
-CROSS_X = (-0.28, 0.28)
+# --- Pylons: aerofoil fairings from shroud to shroud, chord vertical ---------------
+PYLON_Y = 0.230
+PYLON_Z = 0.370             # half-chord height
+PYLON_X = 0.625             # ends, inside the shroud walls
+PYLON_CHORD = 0.074
+PYLON_T = 0.34              # thickness / chord
+PYLON_FLARE_X = 0.440       # the fillet into the shroud starts here
+PYLON_FLARE = 1.45          # section growth at the shroud
+PYLON_TE = 0.97             # blunt trailing edge (the underside), fraction of chord
+PYLON_SEC = (0.02, 0.07, 0.16, 0.30, 0.46, 0.64, 0.82, PYLON_TE)
+PYLON_BOLTS = (-0.39, -0.24, -0.05, 0.10, 0.24, 0.39)
+WEB_X = (-0.20, 0.20)       # fairing webs from the pylons into the belly
+WEB_Z = 0.415
+WEB_SEC = (0.05, 0.20, 0.45, 0.72, 0.96)
 PEG_X = -0.12
-SKID_Y = 0.260
+
+# --- Landing gear: per corner a twin-plate link and an oleo shock -----------------
+# (|x|, z) of the pins (the wear strips' soles are the floor, z = 0); the
+# gear lies in the vertical planes y = +-GEAR_Y under the pylons, pins along y.
+GEAR_Y = PYLON_Y
+LINK_TOP = (0.505, 0.292)   # pin A: pylon lug, link top
+LINK_BOT = (0.640, 0.074)   # pin B: skid lug, link foot
+SHOCK_TOP = (0.330, 0.300)  # pin C: pylon clevis, shock top eye
+SHOCK_AT = 0.56             # pin E, the shock's foot, along the link A -> B
+PAD_Z = (0.322, 0.348)      # mount pads engulfing the pylon's trailing edge
+PIN_R = 0.0060
+BUSH_RI = 0.0055            # a bushing's bore bites 0.5 mm into its pin
+EYE_HALF = 0.0085           # a member eye's half-width along its pin
+EYE_RO = 0.0125
+CHEEK_Y = 0.0140            # cheek / link-plate mid-plane, off the joint's centre
+BOSS_HALF = 0.0035
+BOSS_RO = 0.0140
+PLATE_HALF = 0.0025
+PIN_BITE = 0.0005           # pin head and nut seat inside the outer bosses
+JOINT_SEGS = 8
+# shock stations along its axis from pin C (s = 0) to pin E (s = L)
+CYL_S = (0.010, 0.150)      # body from the top eye's neck to the gland
+CYL_R = 0.0220
+ROD_R = 0.0085
+ROD_IN = 0.085              # the rod's inner end inside the barrel
+BOOT_S = (0.146, 0.188)
+# --- Skids ------------------------------------------------------------------------
+SKID_Y = GEAR_Y
 SKID_Y_NARROW = 0.150       # --narrow-skids
-SKID_R = 0.021
-SKID_X = 0.78
-SKID_TIP = (0.95, 0.095)
-STRUT_AZ = 126.0            # pad azimuth on the front shroud (mirrored aft)
-PAD_R = 0.285
-STRUT_SKID_X = 0.600
+SKID_W = 0.033              # shoe half-width: a ski, flat below and domed above
+SKID_HT = 0.020             # crown over the section's centre line
+SKID_HB = 0.008             # sole under it
+STRIP_T = 0.0100            # wear strip thickness; the shoe rides this far up
+STRIP_HW = 0.024
+STRIP_X = 0.700
+SKID_X = 0.76
+SKID_TIP = (0.93, 0.098)
+BRACE_X = 0.585
+BRACE_R = 0.0085
 FLOAT_SKID = 0.004          # --float-skid
 
 # --- Cockpit ----------------------------------------------------------------------
 RISER_X = 0.250
 CLAMP_Z = 0.985
+FORK_Y = 0.058
+FORK_R = 0.0165
+FORK_TOP = 1.012
+BAR_Z = 0.996
 BAR_HALF = 0.31
 HEAD_Z = 0.600              # headlight axis height
 SEAT_X0 = -0.330
@@ -164,33 +216,37 @@ LONG_BLADES = 0.012
 ODD_HULL = 0.004
 SKEW_DEG = 4.0
 POP_LENS = 0.020
+OFFSET_PIN = 0.0015         # --offset-pin: the front-left link's foot pin, along x
+SKEW_ROD = 0.0015           # --skew-rod: the rear-left rod, across its axis
+SHORT_ROD = 0.045           # --short-rod: the rear-left rod's inner end, drawn out
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (2.236, 0.660, 1.056)
-BASE_TRIS_MIN = 43700
-BASE_TRIS_MAX = 45300
+OUTER_SIZE = (2.234, 0.660, 1.112)
+BASE_TRIS_MIN = 45000
+BASE_TRIS_MAX = 46000
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 9
+MATERIAL_COUNT = 10
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 2280
+COLLIDER_TRIS_MAX = 1990
 BAKE_RES = 1024
 CAGE_EXTRUSION = 0.004
-LIVERY_FACES_MIN = 3310
-GRAPHITE_FACES_MIN = 5450
-METAL_FACES_MIN = 3650
-RUBBER_FACES_MIN = 1380
-LEATHER_FACES_MIN = 2230
-LIGHT_FACES_MIN = 585
-GLASS_FACES_MIN = 600
-ACCENT_FACES_MIN = 3530
-CARBON_FACES_MIN = 1360
+LIVERY_FACES_MIN = 3490
+GRAPHITE_FACES_MIN = 5365
+METAL_FACES_MIN = 5525
+RUBBER_FACES_MIN = 1200
+LEATHER_FACES_MIN = 1620
+LIGHT_FACES_MIN = 490
+GLASS_FACES_MIN = 460
+ACCENT_FACES_MIN = 2565
+CARBON_FACES_MIN = 1235
+CHROME_FACES_MIN = 1215
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -217,9 +273,27 @@ SIZE_TOL = 0.004
 # Blade spacing: seven blades per rotor, equal gaps.
 SPACING_TOL_DEG = 0.3
 # Stance: the mass centre stands this far inside the skids' contact polygon.
-DENSITY = (1600.0, 1400.0, 2700.0, 1200.0, 300.0, 1200.0, 2500.0, 2700.0, 1600.0)
+DENSITY = (1600.0, 1400.0, 2700.0, 1200.0, 300.0, 1200.0, 2500.0, 2700.0, 1600.0, 7800.0)
 HULL_DENSITY = 250.0        # the fuselage is a hollow monocoque with its internals
 STANCE_MARGIN = 0.200
+# Joints: every pin through three bushings (two outer bosses, one eye).
+JOINT_COUNT = 16
+JOINT_BUSHINGS = 3
+PIN_OFFSET_MAX = 0.0003
+PIN_TILT_MAX_DEG = 0.3
+# Shocks: the rod on the barrel's axis; its travel inside the stroke band.
+SHOCK_COUNT = 4
+ROD_OFFSET_MAX = 0.0003
+ROD_TILT_MAX_DEG = 0.3
+EXPOSED_MIN = 0.100         # rod out of the gland
+EXPOSED_MAX = 0.140
+ENGAGE_MIN = 0.045          # rod still inside the barrel
+# Face tags ("part" = role * 100 + unit) for the parts the audits read.
+R_STRIP = 1
+R_PIN = 2
+R_BUSH = 3
+R_CYL = 4
+R_ROD = 5
 # Hero yaw: the nose turned toward the camera's right.
 HERO_YAW_DEG = -62.0
 WALL_Y = 2.8
@@ -233,8 +307,11 @@ LIGHT_IDX = 5
 GLASS_IDX = 6
 ACCENT_IDX = 7
 CARBON_IDX = 8
+CHROME_IDX = 9
 
 ZAX = Vector((0.0, 0.0, 1.0))
+YAX = Vector((0.0, 1.0, 0.0))
+XAX = Vector((1.0, 0.0, 0.0))
 
 
 def eevee_engine_id():
@@ -666,7 +743,7 @@ def hull_stations():
     return st
 
 
-def add_hull(bm, odd_hull):
+def add_hull(bm):
     rings, ring_mats, dark = [], [], []
     for x, inset, is_groove in hull_stations():
         pts, seg_mats = hull_ring(max(-HULL_XE, min(HULL_XE, x)), inset)
@@ -683,11 +760,13 @@ def add_hull(bm, odd_hull):
     f1 = bm.faces.new(tuple(rings[-1]))
     f0.material_index = GRAPHITE_IDX
     f1.material_index = GRAPHITE_IDX
-    if odd_hull:
-        # a sideways bow, zero at both ends: an odd term in y
-        for ring in rings:
-            for v in ring:
-                v.co.y += ODD_HULL * math.cos(0.5 * math.pi * v.co.x / HULL_XE)
+
+
+def bow(verts):
+    """--odd-hull: a sideways bow, zero at both hull ends: an odd term in y."""
+    for v in verts:
+        x = max(-HULL_XE, min(HULL_XE, v.co.x))
+        v.co.y += ODD_HULL * math.cos(0.5 * math.pi * x / HULL_XE)
 
 
 def surface_frame(p, along):
@@ -751,9 +830,8 @@ def add_fan(bm, side, bevel_verts, offset_hub=False, long_blades=False, skew_bla
               seg_mats=[GRAPHITE_IDX if j in DUCT_SEG_DARK else LIVERY_IDX
                         for j in range(len(DUCT_PROFILE))])
     # accent band hooped onto the cylindrical outer wall (inner 3 mm inside it)
-    add_lathe(bm, [(0.3110, 0.100), (0.3165, 0.1015), (0.3180, 0.1040), (0.3180, 0.1310),
-                   (0.3165, 0.1335), (0.3110, 0.1350)], DUCT_SEGS, ACCENT_IDX, center=base,
-              phase=math.pi / DUCT_SEGS)
+    add_lathe(bm, [(0.3110, 0.100), (0.3172, 0.1025), (0.3172, 0.1325), (0.3110, 0.1350)],
+              DUCT_SEGS, ACCENT_IDX, center=base, phase=math.pi / DUCT_SEGS)
     # marker light on the shroud's nose (front) or tail (rear)
     e = Vector((side, 0.0, 0.0))
     rot = frame(e, (0.0, 1.0, 0.0))
@@ -761,7 +839,7 @@ def add_fan(bm, side, bevel_verts, offset_hub=False, long_blades=False, skew_bla
                              base + e * 0.314 + ZAX * 0.066, rot, LIGHT_IDX)
     # motor can on four canted stator vanes
     add_lathe(bm, [(0.020, -0.014), (0.046, -0.002), (0.062, 0.018), (0.0655, 0.040),
-                   (0.0655, 0.090), (0.0625, 0.095)], 40, GRAPHITE_IDX, center=base, solid=True)
+                   (0.0655, 0.090), (0.0625, 0.095)], 32, GRAPHITE_IDX, center=base, solid=True)
     for k, deg in enumerate(VANE_DEG):
         a = math.radians(deg)
         e_r = Vector((math.cos(a), math.sin(a), 0.0))
@@ -775,10 +853,10 @@ def add_fan(bm, side, bevel_verts, offset_hub=False, long_blades=False, skew_bla
     # rotor: hub, spinner, blades
     shift = Vector((0.0, OFFSET_HUB, 0.0)) if offset_hub else Vector()
     axis = base + shift
-    add_lathe(bm, [(0.0700, 0.088), (0.0780, 0.092), (0.0780, 0.126), (0.0740, 0.130)], 40,
-              METAL_IDX, center=axis, solid=True, phase=math.pi / 40.0)
+    add_lathe(bm, [(0.0700, 0.088), (0.0780, 0.092), (0.0780, 0.126), (0.0740, 0.130)], 32,
+              METAL_IDX, center=axis, solid=True, phase=math.pi / 32.0)
     add_lathe(bm, [(0.0660, 0.124), (0.0685, 0.128), (0.0620, 0.145), (0.0480, 0.160),
-                   (0.0280, 0.170), (0.0080, 0.174)], 40, ACCENT_IDX, center=axis, solid=True)
+                   (0.0280, 0.170), (0.0080, 0.174)], 32, ACCENT_IDX, center=axis, solid=True)
     tip = BLADE_TIP + (LONG_BLADES if long_blades else 0.0)
     park = math.radians(10.0 if side > 0 else 35.0)
     for b in range(BLADES_PER_FAN):
@@ -789,86 +867,382 @@ def add_fan(bm, side, bevel_verts, offset_hub=False, long_blades=False, skew_bla
         add_blade(bm, axis, e_r, SPIN[side], tip)
 
 
-def add_frame(bm, bevel_verts, narrow, float_skid):
-    """Booms, cross tubes, foot pegs, pads, struts, saddles and skids."""
+class Tagger:
+    """Face tags for the parts the audits read: ``part`` = role * 100 + unit.
+    Everything else keeps 0."""
+
+    def __init__(self, bm):
+        self.bm = bm
+        self.layer = bm.faces.layers.int.new("part")
+
+    def __call__(self, role, unit=0):
+        return _Tag(self, role * 100 + unit)
+
+
+class _Tag:
+    def __init__(self, tg, code):
+        self.tg, self.code = tg, code
+
+    def __enter__(self):
+        self.n0 = len(self.tg.bm.faces)
+        return self
+
+    def __exit__(self, *exc):
+        bm = self.tg.bm
+        bm.faces.ensure_lookup_table()
+        for i in range(self.n0, len(bm.faces)):
+            bm.faces[i][self.tg.layer] = self.code
+        return False
+
+
+def add_loft(bm, rings, mat_idx):
+    """Closed loops of equal length joined in order, n-gon caps."""
+    vs = [[bm.verts.new(p) for p in r] for r in rings]
+    n = len(vs[0])
+    faces = []
+    for r0, r1 in zip(vs, vs[1:]):
+        for k in range(n):
+            m = (k + 1) % n
+            faces.append(bm.faces.new((r0[k], r0[m], r1[m], r1[k])))
+    faces.append(bm.faces.new(tuple(reversed(vs[0]))))
+    faces.append(bm.faces.new(tuple(vs[-1])))
+    _mark(faces, mat_idx)
+    return [v for r in vs for v in r]
+
+
+def smooth01(t):
+    t = min(1.0, max(0.0, t))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def circle_pts(c, r, n=12, phase=0.0):
+    return [(c[0] + r * math.cos(phase + 2.0 * math.pi * k / n),
+             c[1] + r * math.sin(phase + 2.0 * math.pi * k / n)) for k in range(n)]
+
+
+def aerofoil_loop(chord, t, sec=PYLON_SEC):
+    """Symmetric section, leading edge first: [(u, w)], u metres along the
+    chord from the leading edge, w across it; the trailing edge is blunt."""
+    pts = [(0.0, 0.0)]
+    pts += [(f * chord, naca_half(f, t) * chord) for f in sec]
+    pts += [(f * chord, -naca_half(f, t) * chord) for f in reversed(sec)]
+    return pts
+
+
+def add_hex(bm, base, nrm, r, h, mat_idx, bury=0.001):
+    """Hex bolt head standing on ``base`` along ``nrm``, its foot buried."""
+    n = Vector(nrm).normalized()
+    hint = XAX if abs(n.x) < 0.9 else YAX
+    return add_lathe(bm, [(r, -bury), (r, h), (0.72 * r, h + 0.0012)], 6, mat_idx,
+                     center=base, rot=frame(n, hint), solid=True, phase=math.pi / 12.0)
+
+
+def add_xz_plate(bm, outline, y, half, mat_idx):
+    """Planar outline [(x, z)] extruded across y from y - half to y + half."""
+    rot = Matrix(((1.0, 0.0, 0.0), (0.0, 0.0, 1.0), (0.0, 1.0, 0.0)))
+    return add_prism(bm, outline, -half, half, (0.0, y, 0.0), rot, mat_idx)
+
+
+def pylon_scale(x):
+    return 1.0 + (PYLON_FLARE - 1.0) * smooth01(
+        (abs(x) - PYLON_FLARE_X) / (PYLON_X - PYLON_FLARE_X))
+
+
+def pylon_ring(x, y0):
+    c = PYLON_CHORD * pylon_scale(x)
+    top = PYLON_Z + 0.5 * c
+    return [(x, y0 + w, top - u) for u, w in aerofoil_loop(c, PYLON_T)]
+
+
+def add_pylons(bm, bevel_verts):
+    """Two aerofoil pylons from shroud to shroud, chord vertical in the fans'
+    downwash, flared into both shroud walls and tied into the belly by two
+    fairing webs each; a fastener row on the outer face, a conduit in
+    P-clips along the crest, a foot peg."""
+    xs = [-PYLON_X, -0.595, -0.555, -0.515, -0.475, -PYLON_FLARE_X]
+    xs = xs + [-x for x in reversed(xs)]
+    zb = PYLON_Z + 0.5 * PYLON_CHORD - 0.30 * PYLON_CHORD
+    yb = PYLON_Y + naca_half(0.30, PYLON_T) * PYLON_CHORD
+    zc = PYLON_Z + 0.5 * PYLON_CHORD + 0.0040
     for s in (1.0, -1.0):
-        y = s * BOOM_Y
-        add_tube(bm, [(-BOOM_X, y, BOOM_Z), (BOOM_X, y, BOOM_Z)], BOOM_R, 20, METAL_IDX)
-        for sx in (1.0, -1.0):
-            # flange where the boom enters the shroud
-            add_lathe(bm, [(0.0195, 0.000), (0.0290, 0.002), (0.0300, 0.006), (0.0300, 0.016),
-                           (0.0195, 0.018)], 32, ACCENT_IDX,
-                      center=(sx * 0.546, y, BOOM_Z), rot=frame((sx, 0.0, 0.0), ZAX),
-                      phase=math.pi / 32.0)
+        y0 = s * PYLON_Y
+        add_loft(bm, [pylon_ring(x, y0) for x in xs], LIVERY_IDX)
+        # fastener row along the thickest line of the outer face
+        for x in PYLON_BOLTS:
+            add_hex(bm, Vector((x, s * yb, zb)), (0.0, s, 0.0), 0.0042, 0.0028, METAL_IDX)
+        # conduit along the crest, its ends running into the flares
+        add_tube(bm, [(-0.560, y0, zc), (0.560, y0, zc)], 0.0048, 8, RUBBER_IDX,
+                 phase=math.pi / 8.0)
+        for x in (-0.30, 0.0, 0.30):
+            add_lathe(bm, [(0.0044, -0.0030), (0.0064, -0.0030), (0.0064, 0.0030),
+                           (0.0044, 0.0030)], 8, METAL_IDX, center=(x, y0, zc),
+                      rot=frame(XAX, ZAX), phase=math.pi / 8.0)
+        # fairing webs into the belly: chord along the bike, flaring at the skin
+        for x in WEB_X:
+            yh = hull_side_y(x, WEB_Z) - 0.010
+            p0 = Vector((x, s * (PYLON_Y + 0.004), PYLON_Z + 0.006))
+            p1 = Vector((x, s * yh, WEB_Z))
+            rings = []
+            for t, k in ((0.0, 1.0), (0.55, 1.0), (0.80, 1.10), (0.92, 1.28), (1.0, 1.45)):
+                p = p0 + (p1 - p0) * t
+                c = 0.055 * k
+                rings.append([(p.x + 0.5 * c - u, p.y, p.z + w)
+                              for u, w in aerofoil_loop(c, 0.30, WEB_SEC)])
+            add_loft(bm, rings, GRAPHITE_IDX)
         # foot peg: a ribbed rubber tread on a boss, accent end cap
         rot = frame((0.0, s, 0.0), (1.0, 0.0, 0.0))
 
         def ribs(ii, j):
             return 0.90 if (j in (2, 3) and ii % 2) else 1.0
 
-        add_lathe(bm, [(0.0130, 0.012), (0.0165, 0.016), (0.0175, 0.022), (0.0175, 0.080),
-                       (0.0165, 0.084), (0.0140, 0.086)], 24, RUBBER_IDX,
-                  center=(PEG_X, y, BOOM_Z), rot=rot, solid=True, rmod=ribs)
-        add_lathe(bm, [(0.0105, 0.083), (0.0150, 0.0855), (0.0155, 0.093), (0.0105, 0.097)],
-                  24, ACCENT_IDX, center=(PEG_X, y, BOOM_Z), rot=rot, solid=True,
-                  phase=math.pi / 24.0)
-    for cx in CROSS_X:
-        add_tube(bm, [(cx, -BOOM_Y, BOOM_Z + 0.006), (cx, BOOM_Y, BOOM_Z + 0.006)], 0.0155, 16,
-                 METAL_IDX, phase=math.pi / 16.0)
-    sy_abs = SKID_Y_NARROW if narrow else SKID_Y
+        add_lathe(bm, [(0.0130, 0.006), (0.0165, 0.010), (0.0175, 0.016), (0.0175, 0.074),
+                       (0.0165, 0.078), (0.0140, 0.080)], 16, RUBBER_IDX,
+                  center=(PEG_X, y0, PYLON_Z), rot=rot, solid=True, rmod=ribs)
+        add_lathe(bm, [(0.0105, 0.077), (0.0150, 0.0795), (0.0155, 0.087), (0.0105, 0.091)],
+                  16, ACCENT_IDX, center=(PEG_X, y0, PYLON_Z), rot=rot, solid=True,
+                  phase=math.pi / 16.0)
+
+
+def corner_pins(e):
+    """Pins A (link top), B (link foot), C (shock top), E (shock foot) of
+    the corner at the front (e = 1) or rear (e = -1), in the plane y = 0."""
+    a = Vector((e * LINK_TOP[0], 0.0, LINK_TOP[1]))
+    b = Vector((e * LINK_BOT[0], 0.0, LINK_BOT[1]))
+    c = Vector((e * SHOCK_TOP[0], 0.0, SHOCK_TOP[1]))
+    return a, b, c, a + (b - a) * SHOCK_AT
+
+
+def add_ring(bm, tg, unit, c, z0, z1, ro, phase, mat_idx=METAL_IDX):
+    """One bushing on a joint (a boss or an eye), about the pin's axis (y).
+    The three on a joint are turned to different phases, so their bores
+    never share a face plane."""
+    with tg(R_BUSH, unit):
+        add_lathe(bm, [(BUSH_RI, z0), (ro, z0), (ro, z1), (BUSH_RI, z1)], JOINT_SEGS, mat_idx,
+                  center=c, rot=frame(YAX, XAX), phase=phase)
+
+
+def add_bosses(bm, tg, unit, c):
+    for sy in (1.0, -1.0):
+        z0, z1 = sy * (CHEEK_Y - BOSS_HALF), sy * (CHEEK_Y + BOSS_HALF)
+        add_ring(bm, tg, unit, c, min(z0, z1), max(z0, z1), BOSS_RO,
+                 0.0 if sy > 0 else 0.5 * math.pi / JOINT_SEGS)
+
+
+def add_pin(bm, tg, unit, c):
+    """Headed pin with a nut, through two bosses and the eye between them."""
+    zo = CHEEK_Y + BOSS_HALF - PIN_BITE
+    prof = [(0.0095, -zo - 0.0032), (0.0095, -zo), (PIN_R, -zo), (PIN_R, zo), (0.0098, zo),
+            (0.0098, zo + 0.0036)]
+    with tg(R_PIN, unit):
+        add_lathe(bm, prof, JOINT_SEGS, CHROME_IDX, center=c, rot=frame(YAX, XAX), solid=True)
+
+
+def add_gear(bm, tg, bevel_verts, offset_pin, skew_rod, short_rod):
+    """Four corners, each a twin-plate pressed link from a pylon lug (A) to
+    a skid lug (B) and an oleo shock from a pylon clevis (C) to the link's
+    middle (E): every joint a pin through two bosses and one eye."""
     for s in (1.0, -1.0):
-        sy = s * sy_abs
+        yc = s * GEAR_Y
+        dy = Vector((0.0, yc, 0.0))
+        for e in (1.0, -1.0):
+            k = (0 if s > 0 else 2) + (0 if e > 0 else 1)
+            a, b, c, pe = [p + dy for p in corner_pins(e)]
+            ua, ub, uc, ue = 4 * k, 4 * k + 1, 4 * k + 2, 4 * k + 3
+            top = PAD_Z[0] + 0.008
+            # mount pads engulfing the pylon's trailing edge
+            for p in (a, c):
+                bevel_verts += add_rbox(bm, 0.024, 0.0200, 0.005,
+                                        [(0.002, PAD_Z[0]), (0.0, PAD_Z[0] + 0.003),
+                                         (0.0, PAD_Z[1])], (p.x, yc, 0.0),
+                                        Matrix.Identity(3), GRAPHITE_IDX, n_corner=2)
+            # pylon lug at A: a single eye between the link plates
+            ol = hull2d(circle_pts((a.x, a.z), 0.0115, 8) + [(a.x - 0.016, top), (a.x + 0.016, top)])
+            add_xz_plate(bm, ol, yc, 0.0075, METAL_IDX)
+            add_ring(bm, tg, ua, a, -EYE_HALF, EYE_HALF, EYE_RO, math.pi / JOINT_SEGS)
+            add_pin(bm, tg, ua, a)
+            # pylon clevis at C: two cheeks straddling the shock's top eye
+            for sy in (1.0, -1.0):
+                g = 0.0004 if sy > 0 else 0.0
+                ol = hull2d(circle_pts((c.x, c.z), 0.0120 + g, 8)
+                            + [(c.x - 0.017 - g, top + g), (c.x + 0.017 + g, top + g)])
+                add_xz_plate(bm, ol, yc + sy * CHEEK_Y, PLATE_HALF, METAL_IDX)
+            add_bosses(bm, tg, uc, c)
+            add_ring(bm, tg, uc, c, -EYE_HALF, EYE_HALF, EYE_RO, math.pi / JOINT_SEGS)
+            add_pin(bm, tg, uc, c)
+            # twin pressed link plates A -> E -> B with bosses, a spacer between
+            for sy in (1.0, -1.0):
+                g = 0.0004 if sy > 0 else 0.0
+                ol = hull2d(circle_pts((a.x, a.z), 0.0210 + g, 10)
+                            + circle_pts((pe.x, pe.z), 0.0200 + g, 10)
+                            + circle_pts((b.x, b.z), 0.0190 + g, 10))
+                bevel_verts += add_xz_plate(bm, ol, yc + sy * CHEEK_Y, PLATE_HALF, METAL_IDX)
+            for p, u in ((a, ua), (pe, ue), (b, ub)):
+                add_bosses(bm, tg, u, p)
+            add_lathe(bm, [(0.0065, -CHEEK_Y), (0.0065, CHEEK_Y)], 8, METAL_IDX,
+                      center=(a + pe) * 0.5, rot=frame(YAX, XAX), solid=True)
+            # skid lug at B on a pad clamped round the shoe's crown
+            bl = b
+            shoe_top = STRIP_T - 0.001 + SKID_HB + SKID_HT
+            bevel_verts += add_rbox(bm, 0.032, 0.0230, 0.006,
+                                    [(0.0, shoe_top - 0.006), (0.0, shoe_top + 0.004),
+                                     (0.002, shoe_top + 0.006)], (b.x, yc, 0.0),
+                                    Matrix.Identity(3), GRAPHITE_IDX, n_corner=2)
+            ol = hull2d(circle_pts((bl.x, bl.z), 0.0115, 8)
+                        + [(bl.x - 0.019, shoe_top + 0.001), (bl.x + 0.019, shoe_top + 0.001)])
+            add_xz_plate(bm, ol, yc, 0.0075, METAL_IDX)
+            add_ring(bm, tg, ub, bl, -EYE_HALF, EYE_HALF, EYE_RO, math.pi / JOINT_SEGS)
+            shift = Vector((OFFSET_PIN, 0.0, 0.0)) if (offset_pin and k == 2) else Vector()
+            add_pin(bm, tg, ub, bl + shift)
+            add_pin(bm, tg, ue, pe)
+            # the shock: barrel with a preload collar, chrome rod, boot, rod eye
+            ax = (pe - c).normalized()
+            ln = (pe - c).length
+            rot = frame(ax, YAX)
+            with tg(R_CYL, k):
+                add_lathe(bm, [(0.0075, CYL_S[0]), (0.0150, CYL_S[0] + 0.008),
+                               (CYL_R, CYL_S[0] + 0.016), (CYL_R, CYL_S[1] - 0.012),
+                               (CYL_R - 0.003, CYL_S[1] - 0.006), (0.0140, CYL_S[1] - 0.003),
+                               (0.0140, CYL_S[1])], 12, ACCENT_IDX, center=c, rot=rot, solid=True)
+            add_lathe(bm, [(CYL_R - 0.0005, 0.034), (0.0250, 0.0355), (0.0250, 0.0505),
+                           (CYL_R - 0.0005, 0.052)], 12, GRAPHITE_IDX, center=c, rot=rot,
+                      phase=math.pi / 12.0)
+            r_in = ROD_IN + (SHORT_ROD if (short_rod and k == 3) else 0.0)
+            rc = c + (ax.cross(YAX).normalized() * SKEW_ROD if (skew_rod and k == 3) else Vector())
+            with tg(R_ROD, k):
+                add_lathe(bm, [(ROD_R, r_in), (ROD_R, ln - 0.013), (0.0065, ln - 0.009)], 10,
+                          CHROME_IDX, center=rc, rot=rot, solid=True)
+            prof = [(0.0125, BOOT_S[0])]
+            ds = (BOOT_S[1] - BOOT_S[0] - 0.004) / 3.0
+            for i in range(3):
+                prof += [(0.0165, BOOT_S[0] + 0.002 + ds * (i + 0.25)),
+                         (0.0138, BOOT_S[0] + 0.002 + ds * (i + 0.75))]
+            prof += [(0.0105, BOOT_S[1])]
+            add_lathe(bm, prof, 10, RUBBER_IDX, center=c, rot=rot, solid=True,
+                      phase=math.pi / 10.0)
+            add_ring(bm, tg, ue, pe, -EYE_HALF, EYE_HALF, EYE_RO, math.pi / JOINT_SEGS)
+
+
+def add_skids(bm, tg, bevel_verts, narrow, float_skid):
+    """Two painted skid shoes (a ski section: flat sole, domed crown,
+    upturned tips) on replaceable wear strips, bolted end caps and side
+    bolts; two cross braces."""
+    sy_abs = SKID_Y_NARROW if narrow else SKID_Y
+    zc0 = STRIP_T - 0.001 + SKID_HB
+    nsec = 14
+    for side, s in enumerate((1.0, -1.0)):
+        yc = s * sy_abs
         lift = FLOAT_SKID if (float_skid and s > 0) else 0.0
-        z = SKID_R + lift
-        path = fillet_path([(-SKID_TIP[0], sy, SKID_TIP[1] + lift), (-SKID_X, sy, z),
-                            (SKID_X, sy, z), (SKID_TIP[0], sy, SKID_TIP[1] + lift)], 0.11, 8)
-        add_tube(bm, path, SKID_R, 16, METAL_IDX)
-        for p0, p1 in ((path[1], path[0]), (path[-2], path[-1])):
-            d = (p1 - p0).normalized()
-            add_lathe(bm, [(0.0150, -0.010), (0.0205, 0.000), (0.0210, 0.010), (0.0150, 0.020)],
-                      24, ACCENT_IDX, center=p1, rot=frame(d, ZAX), solid=True,
-                      phase=math.pi / 24.0)
-        for sx in (1.0, -1.0):
-            a = math.radians(STRUT_AZ if sx > 0 else 180.0 - STRUT_AZ) * 1.0
-            fan = Vector((sx * DUCT_X, 0.0, DUCT_Z0))
-            e_r = Vector((math.cos(a), s * math.sin(a), 0.0))
-            e_t = ZAX.cross(e_r)
-            anchor = fan + e_r * PAD_R
-            add_rbox(bm, 0.0140, 0.0260, 0.007,
-                     [(0.0015, -0.036), (0.0, -0.034), (0.0, 0.012)], anchor,
-                     Matrix((e_r, e_t, ZAX)).transposed(), GRAPHITE_IDX)
-            foot = Vector((sx * STRUT_SKID_X, sy, SKID_R))
-            add_rbox(bm, 0.032, 0.0250, 0.009,
-                     [(0.0, -0.006), (0.0, 0.026), (0.003, 0.030)], foot, Matrix.Identity(3),
-                     GRAPHITE_IDX)
-            add_tube(bm, [anchor - ZAX * 0.022, foot + ZAX * 0.020], 0.0175, 16, METAL_IDX)
+        zc = zc0 + lift
+        path = fillet_path([(-SKID_TIP[0], yc, SKID_TIP[1] + lift), (-SKID_X, yc, zc),
+                            (SKID_X, yc, zc), (SKID_TIP[0], yc, SKID_TIP[1] + lift)], 0.10, 7)
+        rings = []
+        for i, p in enumerate(path):
+            t = (path[min(i + 1, len(path) - 1)] - path[max(i - 1, 0)]).normalized()
+            up = t.cross(YAX).normalized()
+            kk = 1.0 - 0.15 * smooth01((abs(p.x) - SKID_X) / (SKID_TIP[0] - SKID_X))
+            ring = []
+            for q in range(nsec):
+                a = 2.0 * math.pi * q / nsec
+                sa = math.sin(a)
+                n = 2.4 if sa >= 0.0 else 5.0
+                h = SKID_HT if sa >= 0.0 else SKID_HB
+                ring.append(p + YAX * (SKID_W * kk * _se(math.cos(a), n))
+                            + up * (h * kk * _se(sa, n)))
+            rings.append(ring)
+        add_loft(bm, rings, LIVERY_IDX)
+        with tg(R_STRIP, side):
+            add_rbox(bm, STRIP_HW, 0.5 * STRIP_T, 0.0025,
+                     [(0.003, -STRIP_X), (0.0, -STRIP_X + 0.006), (0.0, STRIP_X - 0.006),
+                      (0.003, STRIP_X)], (0.0, yc, 0.5 * STRIP_T + lift), frame(XAX, YAX),
+                     GRAPHITE_IDX, n_corner=2)
+        # bolted end caps over the upturned tips
+        for p_end, p_prev in ((path[0], path[1]), (path[-1], path[-2])):
+            d = (p_end - p_prev).normalized()
+            rot = frame(d, YAX)
+            bevel_verts += add_rbox(bm, 0.85 * SKID_W + 0.003, 0.85 * SKID_HT + 0.003, 0.009,
+                                    [(0.0, -0.028), (0.0, 0.002), (0.004, 0.008), (0.010, 0.011)],
+                                    p_end, rot, ACCENT_IDX, n_corner=2)
+            for sy in (1.0, -1.0):
+                add_hex(bm, p_end - d * 0.013 + YAX * (sy * (0.85 * SKID_W + 0.003)),
+                        (0.0, sy, 0.0), 0.0035, 0.0024, METAL_IDX)
+        # the wear strip's through-bolts, heads on the shoe's outer side
+        for x in (-0.46, -0.16, 0.16, 0.46):
+            add_hex(bm, Vector((x, yc + s * (SKID_W - 0.0008), zc)), (0.0, s, 0.0),
+                    0.0036, 0.0024, METAL_IDX, bury=0.0012)
+    # cross braces tying the two shoes, collars at the shoes
+    for e in (1.0, -1.0):
+        x = e * BRACE_X
+        z = zc0 + 0.006
+        add_tube(bm, [(x, -(sy_abs - 0.006), z), (x, sy_abs - 0.006, z)], BRACE_R, 10, METAL_IDX)
+        for sy in (1.0, -1.0):
+            add_lathe(bm, [(BRACE_R - 0.0005, -0.004), (0.0125, -0.004), (0.0125, 0.004),
+                           (BRACE_R - 0.0005, 0.004)], 10, ACCENT_IDX,
+                      center=(x, sy * (sy_abs - SKID_W - 0.002), z), rot=frame(YAX, XAX),
+                      phase=math.pi / 10.0)
+
+
+def clamp_outline(k):
+    """A triple clamp in plan: bosses round both stanchions and the stem."""
+    return hull2d(circle_pts((RISER_X, FORK_Y), 0.0265 * k, 12)
+                  + circle_pts((RISER_X, -FORK_Y), 0.0265 * k, 12)
+                  + circle_pts((RISER_X + 0.030, 0.0), 0.024 * k, 12))
 
 
 def add_cockpit(bm, bevel_verts, pop_lens):
-    """Riser, boot, clamp, bars, grips, levers, cluster, windscreen, headlight."""
-    zt = hull_top(RISER_X, 0.0)
-
-    # pleated rubber dust boot on the hull, riser column above it
-    prof = [(0.050, -0.030)]
-    for k in range(6):
-        z = 0.004 + 0.014 * k
-        prof += [(0.049 - 0.002 * k, z), (0.043 - 0.002 * k, z + 0.007)]
-    prof += [(0.036, 0.090), (0.030, 0.094)]
-    add_lathe(bm, prof, 32, RUBBER_IDX, center=(RISER_X, 0.0, zt), solid=True)
-    add_lathe(bm, [(0.0280, 0.060), (0.0300, 0.064), (0.0300, CLAMP_Z - zt - 0.006),
-                   (0.0285, CLAMP_Z - zt)], 32, METAL_IDX, center=(RISER_X, 0.0, zt),
-              solid=True, phase=math.pi / 32.0)
-    # top clamp
-    add_rbox(bm, 0.034, 0.078, 0.014, [(0.003, CLAMP_Z - 0.012), (0.0, CLAMP_Z - 0.009),
-                                       (0.0, CLAMP_Z + 0.028), (0.004, CLAMP_Z + 0.032)],
-             (RISER_X, 0.0, 0.0), Matrix.Identity(3), METAL_IDX, n_corner=4)
-    bz = CLAMP_Z + 0.010
+    """Fork, triple clamps, clip-ons, bars, grips, levers, switch pods,
+    cluster, windscreen, headlight."""
+    ident = Matrix.Identity(3)
+    # twin chrome stanchions in pleated boots, through two triple clamps
     for s in (1.0, -1.0):
-        p0 = Vector((RISER_X, s * 0.020, bz))
-        p1 = Vector((RISER_X + 0.004, s * 0.150, bz))
-        p2 = Vector((RISER_X - 0.036, s * BAR_HALF, bz + 0.022))
+        fc = Vector((RISER_X, s * FORK_Y, 0.0))
+        zt = hull_top(RISER_X, s * FORK_Y)
+        add_lathe(bm, [(FORK_R, zt - 0.030), (FORK_R, FORK_TOP - 0.002),
+                       (FORK_R - 0.002, FORK_TOP)], 16, CHROME_IDX, center=fc, solid=True)
+        prof = [(0.0260, zt - 0.020)]
+        for k in range(4):
+            z = zt + 0.004 + 0.012 * k
+            prof += [(0.0255 - 0.0012 * k, z), (0.0205 - 0.0012 * k, z + 0.006)]
+        prof += [(0.0200, zt + 0.054), (0.0170, zt + 0.057)]
+        add_lathe(bm, prof, 12, RUBBER_IDX, center=fc, solid=True, phase=math.pi / 12.0)
+        # fork cap (preload adjuster) and the clip-on clamp under it
+        add_lathe(bm, [(0.0150, FORK_TOP - 0.004), (0.0172, FORK_TOP), (0.0172, FORK_TOP + 0.010),
+                       (0.0125, FORK_TOP + 0.014)], 12, ACCENT_IDX, center=fc, solid=True)
+        add_lathe(bm, [(FORK_R - 0.0005, BAR_Z - 0.011), (0.0250, BAR_Z - 0.011),
+                       (0.0250, BAR_Z + 0.011), (FORK_R - 0.0005, BAR_Z + 0.011)], 16,
+                  METAL_IDX, center=fc, phase=math.pi / 16.0)
+    for k, (z0, z1) in enumerate(((0.903, 0.925), (0.962, 0.982))):
+        bevel_verts += add_prism(bm, clamp_outline(1.0 - 0.06 * k), z0, z1, (0.0, 0.0, 0.0),
+                                 ident, METAL_IDX)
+        # pinch bolts on the clamp's rear face, one per stanchion
+        for s in (1.0, -1.0):
+            add_hex(bm, Vector((RISER_X - 0.0265 * (1.0 - 0.06 * k) + 0.0008,
+                                s * (FORK_Y + 0.006), 0.5 * (z0 + z1))),
+                    (-1.0, 0.0, 0.0), 0.0040, 0.0028, CHROME_IDX)
+    # steering stem between the clamps and its nut on top
+    sc = (RISER_X + 0.030, 0.0, 0.0)
+    add_lathe(bm, [(0.0135, 0.918), (0.0135, 0.969)], 12, CHROME_IDX, center=sc, solid=True)
+    add_lathe(bm, [(0.0125, 0.9795), (0.0125, 0.9905), (0.0090, 0.9925)], 6, ACCENT_IDX,
+              center=sc, solid=True)
+    for s in (1.0, -1.0):
+        p0 = Vector((RISER_X, s * (FORK_Y + 0.020), BAR_Z))
+        p1 = Vector((RISER_X + 0.004, s * 0.150, BAR_Z))
+        p2 = Vector((RISER_X - 0.036, s * BAR_HALF, BAR_Z + 0.022))
         pts = fillet_path([p0, p1, p2], 0.05, 6)
-        add_tube(bm, pts, 0.0110, 16, METAL_IDX)
+        add_tube(bm, pts, 0.0110, 12, METAL_IDX)
+        d0 = (p1 - p0).normalized()
+        # clip-on boss where the bar leaves the clamp
+        add_lathe(bm, [(0.0145, -0.004), (0.0145, 0.016), (0.0120, 0.020)], 12, METAL_IDX,
+                  center=p0, rot=frame(d0, ZAX), solid=True)
+        # switch pod: housing on the bar, two buttons facing the rider
+        pp = p1 - d0 * 0.046
+        rot = frame(d0, ZAX)
+        add_rbox(bm, 0.0135, 0.0165, 0.006, [(0.002, -0.012), (0.0, -0.010), (0.0, 0.010),
+                                             (0.002, 0.012)], pp, rot, GRAPHITE_IDX, n_corner=2)
+        back = -rot.col[1] if rot.col[1].x > 0.0 else rot.col[1]
+        for q, mat, h in ((1.0, ACCENT_IDX, 0.0025), (-1.0, CHROME_IDX, 0.0019)):
+            add_lathe(bm, [(0.0040, -0.0015 - h), (0.0040, h), (0.0030, h + 0.0010)], 8, mat,
+                      center=pp + back * 0.0160 + ZAX * (q * 0.0055), rot=frame(back, ZAX),
+                      solid=True, phase=(0.0 if q > 0 else math.pi / 8.0))
         d = (p2 - p1).normalized()
         g0 = p1 + d * 0.050
 
@@ -881,14 +1255,14 @@ def add_cockpit(bm, bevel_verts, pop_lens):
         gprof += [(0.0175, 0.106), (0.0175, 0.112), (0.0160, 0.115)]
         grip_len = (p2 - g0).length
         rot = frame(d, ZAX)
-        add_lathe(bm, gprof, 24, RUBBER_IDX, center=g0, rot=rot, solid=True, rmod=grip)
-        add_lathe(bm, [(0.0120, 0.000), (0.0170, 0.004), (0.0180, 0.014), (0.0130, 0.021)], 24,
+        add_lathe(bm, gprof, 12, RUBBER_IDX, center=g0, rot=rot, solid=True, rmod=grip)
+        add_lathe(bm, [(0.0120, 0.000), (0.0170, 0.004), (0.0180, 0.014), (0.0130, 0.021)], 16,
                   ACCENT_IDX, center=g0 + d * (grip_len - 0.004), rot=rot, solid=True,
-                  phase=math.pi / 24.0)
-        # brake-lever perch and lever
+                  phase=math.pi / 16.0)
+        # brake-lever perch, lever on its pivot bolt
         perch = p1 + d * 0.028
-        add_lathe(bm, [(0.0145, 0.000), (0.0190, 0.002), (0.0190, 0.016), (0.0145, 0.018)], 24,
-                  METAL_IDX, center=perch, rot=rot, solid=True, phase=math.pi / 48.0)
+        add_lathe(bm, [(0.0145, 0.000), (0.0190, 0.002), (0.0190, 0.016), (0.0145, 0.018)], 16,
+                  METAL_IDX, center=perch, rot=rot, solid=True, phase=math.pi / 32.0)
         fwd = d.cross(ZAX).normalized()
         if fwd.x < 0.0:
             fwd = -fwd
@@ -897,28 +1271,44 @@ def add_cockpit(bm, bevel_verts, pop_lens):
         lv2 = lv1 + d * 0.105 - fwd * 0.004
         bevel_verts += add_bar(bm, [lv0, lv1, lv2], ZAX, 0.0060, 0.0028, 0.0018, ACCENT_IDX,
                                fillet=0.012)
-    # instrument cluster facing the rider, emissive screen on its face
+        add_lathe(bm, [(0.0042, -0.0065), (0.0042, 0.0060), (0.0030, 0.0072)], 8, CHROME_IDX,
+                  center=lv0 + fwd * 0.004, solid=True, phase=math.pi / 16.0)
+    # instrument cluster facing the rider, emissive screen on its face,
+    # on a bracket from the top clamp
     n_c = Vector((-1.0, 0.0, 1.25)).normalized()
-    c = Vector((RISER_X + 0.050, 0.0, CLAMP_Z + 0.045))
+    c = Vector((RISER_X + 0.060, 0.0, CLAMP_Z + 0.045))
     rot = frame(n_c, (0.0, 1.0, 0.0))
-    add_rbox(bm, 0.082, 0.044, 0.014, [(0.003, -0.052), (0.0, -0.049), (0.0, -0.003),
+    add_rbox(bm, 0.070, 0.036, 0.012, [(0.003, -0.044), (0.0, -0.041), (0.0, -0.003),
                                        (0.003, 0.0)], c, rot, GRAPHITE_IDX, n_corner=4)
-    bevel_verts += add_prism(bm, rrect(0.064, 0.031, 0.006), -0.0015, 0.0012, c, rot, LIGHT_IDX)
-    # windscreen: a curved tinted plate buried in the crown ahead of the bars
-    ws_hw = 0.122
+    bevel_verts += add_prism(bm, rrect(0.054, 0.025, 0.005), -0.0015, 0.0012, c, rot, LIGHT_IDX)
+    add_bar(bm, [Vector((RISER_X + 0.034, 0.0, 0.976)), Vector((RISER_X + 0.058, 0.0, 0.996)),
+                 c - n_c * 0.030], YAX, 0.012, 0.0045, 0.002, METAL_IDX, fillet=0.010)
+    # visor: a small tinted screen rising off the cluster's front edge
+    ex, ey = rot.col[0], rot.col[1]
+    d_v = Vector((0.55, 0.0, 1.0)).normalized()
+
+    def visor(u, v):
+        uu = 2.0 * u - 1.0
+        p = (c + ex * (0.074 * (1.0 - 0.18 * v * v) * uu) + ey * -0.030 - n_c * 0.006
+             + d_v * (0.078 * v) + XAX * (0.014 * (1.0 - uu * uu) * math.sin(0.5 * math.pi * v)))
+        return p, Vector((1.0, -0.25 * uu, 0.55)).normalized()
+
+    add_sheet(bm, visor, 10, 4, 0.003, GLASS_IDX)
+    # fly screen: a low tinted fairing from the tank's crown to the clamps
+    ws_hw = 0.118
 
     def screen(u, v):
         uu = 2.0 * u - 1.0
         y = ws_hw * (1.0 - 0.30 * v * v) * uu
-        xb = 0.428 - 0.030 * uu * uu
+        xb = 0.440 - 0.030 * uu * uu
         zb = hull_top(xb, y) - 0.026
-        xt = 0.352 - 0.022 * uu * uu
-        zt_ = CLAMP_Z - 0.030 - 0.022 * uu * uu
+        xt = 0.392 - 0.022 * uu * uu
+        zt_ = 0.958 - 0.024 * uu * uu
         p = Vector((xb + (xt - xb) * v + 0.014 * math.sin(math.pi * v), y, zb + (zt_ - zb) * v))
-        nrm = Vector((1.0, -0.20 * uu, 0.62)).normalized()
+        nrm = Vector((1.0, -0.20 * uu, 0.55)).normalized()
         return p, nrm
 
-    add_sheet(bm, screen, 16, 10, 0.004, GLASS_IDX)
+    add_sheet(bm, screen, 12, 6, 0.004, GLASS_IDX)
     # headlight pod on the tank's front slope
     lo, hi = 0.36, HULL_XE
     for _ in range(60):
@@ -932,16 +1322,16 @@ def add_cockpit(bm, bevel_verts, pop_lens):
     rot = frame(ax, ZAX)
     hc = Vector((xh, 0.0, HEAD_Z))
     add_lathe(bm, [(0.0540, -0.090), (0.0575, -0.030), (0.0585, 0.024), (0.0560, 0.034),
-                   (0.0470, 0.036), (0.0440, 0.030), (0.0430, 0.012)], 48, LIVERY_IDX,
+                   (0.0470, 0.036), (0.0440, 0.030), (0.0430, 0.012)], 32, LIVERY_IDX,
               center=hc, rot=rot, solid=True,
               seg_mats=[LIVERY_IDX, LIVERY_IDX, METAL_IDX, METAL_IDX, METAL_IDX, METAL_IDX],
               cap_mats=(LIVERY_IDX, METAL_IDX))
-    add_lathe(bm, [(0.0400, 0.008), (0.0400, 0.016), (0.0300, 0.020), (0.0120, 0.023)], 32,
-              LIGHT_IDX, center=hc, rot=rot, solid=True, phase=math.pi / 64.0)
+    add_lathe(bm, [(0.0400, 0.008), (0.0400, 0.016), (0.0300, 0.020), (0.0120, 0.023)], 24,
+              LIGHT_IDX, center=hc, rot=rot, solid=True, phase=math.pi / 48.0)
     lens = hc + ax * (POP_LENS if pop_lens else 0.0)
     add_lathe(bm, [(0.0445, 0.020), (0.0450, 0.029), (0.0405, 0.039), (0.0260, 0.046),
-                   (0.0090, 0.049)], 48, GLASS_IDX, center=lens, rot=rot, solid=True,
-              phase=math.pi / 48.0)
+                   (0.0090, 0.049)], 32, GLASS_IDX, center=lens, rot=rot, solid=True,
+              phase=math.pi / 32.0)
 
 
 def add_seat(bm):
@@ -949,7 +1339,7 @@ def add_seat(bm):
     inside it, its top carries puffed pleats between stitched seams."""
     seams = [SEAT_SEAM0 + SEAT_PITCH * k for k in range(SEAT_SEAMS + 1)]
     xs = []
-    n_st = 60
+    n_st = 44
     for k in range(n_st):
         x = SEAT_X0 + (SEAT_X1 - SEAT_X0) * k / (n_st - 1)
         if all(abs(x - g) > 0.004 for g in seams):
@@ -959,7 +1349,7 @@ def add_seat(bm):
     xs.sort()
     xs = ([(SEAT_X0 - 0.004, 0.010, False), (SEAT_X0 - 0.0015, 0.003, False)] + xs
           + [(SEAT_X1 + 0.0015, 0.003, False), (SEAT_X1 + 0.004, 0.010, False)])
-    m = 32
+    m = 28
     rings = []
     for x, inset, seam in xs:
         xc = max(SEAT_X0, min(SEAT_X1, x))
@@ -990,8 +1380,56 @@ def add_seat(bm):
     _mark(faces, LEATHER_IDX)
 
 
+def hull_patch(bm, s, x0, x1, f0, f1, proud, depth, mat_idx, nu=4, nv=4, below=False):
+    """A plate conforming to the fuselage's flank: x from x0 to x1, height
+    f0..f1 as fractions of the crown's height over the parting line (or,
+    ``below``, of the belly's depth under it); its face ``proud`` off the
+    skin, its back ``depth`` inside it."""
+
+    def surf(u, v):
+        x = x0 + (x1 - x0) * u
+        zc, _w, ht, hb = hull_dims(x)
+        f = f0 + (f1 - f0) * v
+        z = zc - hb * f if below else zc + ht * f
+        p = Vector((x, s * hull_side_y(x, z), z))
+        n = hull_normal(p)
+        return p + n * proud, n
+
+    add_sheet(bm, surf, nu, nv, proud + depth, mat_idx)
+    return surf
+
+
+def flank_point(s, x, f, proud=0.0, below=False):
+    zc, _w, ht, hb = hull_dims(x)
+    z = zc - hb * f if below else zc + ht * f
+    p = Vector((x, s * hull_side_y(x, z), z))
+    n = hull_normal(p)
+    return p + n * proud, n
+
+
+def access_panel(bm, s, x0, x1, f0, f1, face_mat, bolts=True, below=False,
+                 gasket=GRAPHITE_IDX):
+    """A removable panel: a dark gasket proud of the skin, the panel proud
+    of the gasket inset by an even seam, hex fasteners at the corners."""
+    _zc, _w, ht, hb = hull_dims(0.5 * (x0 + x1))
+    h = hb if below else ht
+    g = 0.0040
+    # skin, gasket and panel faces each at least 1 mm apart, fronts and backs
+    hull_patch(bm, s, x0, x1, f0, f1, 0.0010, 0.0040, gasket, below=below)
+    hull_patch(bm, s, x0 + g, x1 - g, f0 + g / h, f1 - g / h, 0.0025, 0.0015, face_mat,
+               below=below)
+    if bolts:
+        ix, iz = 0.009, 0.009 / h
+        for x in (x0 + ix, x1 - ix):
+            for f in (f0 + iz, f1 - iz):
+                p, n = flank_point(s, x, f, 0.0025, below)
+                add_hex(bm, p, n, 0.0032, 0.0018, METAL_IDX)
+
+
 def add_details(bm, bevel_verts):
-    """Intake grilles, tail vents, crown vent, exhaust nozzles."""
+    """Intake grilles, tail vents, cooling fins, a heat sink, access panels,
+    a decal plate, a charge-port door, crown vent, grab rail, tail light,
+    exhaust nozzles."""
     for s in (1.0, -1.0):
         # intake grille on the tank flank
         x = 0.200
@@ -1010,18 +1448,80 @@ def add_details(bm, bevel_verts):
                                  -0.016, 0.016, p, grille_frame(p, (1.0, 0.0, 0.0)),
                                  GRAPHITE_IDX)
         # cooling fins on the dark flank under the rider's knee
-        for k, x in enumerate((-0.085, 0.085)):
-            zc, _w, _ht, hb = hull_dims(x)
-            z = zc - 0.46 * hb
-            p = Vector((x, s * hull_side_y(x, z), z))
-            bevel_verts += add_prism(bm, comb_outline(0.040, -0.008, 0.0008, 6, 0.0026, 0.0060),
-                                     -0.070 - 0.001 * k, 0.070 + 0.001 * k, p,
-                                     grille_frame(p, (0.0, 0.0, 1.0)), METAL_IDX)
+        x = 0.085
+        zc, _w, _ht, hb = hull_dims(x)
+        z = zc - 0.46 * hb
+        p = Vector((x, s * hull_side_y(x, z), z))
+        bevel_verts += add_prism(bm, comb_outline(0.040, -0.008, 0.0008, 6, 0.0026, 0.0060),
+                                 -0.070, 0.070, p, grille_frame(p, (0.0, 0.0, 1.0)), METAL_IDX)
+        # heat sink near the tail: upright fins across the rear flank
+        x = -0.335
+        zc, _w, _ht, hb = hull_dims(x)
+        z = zc - 0.36 * hb
+        p = Vector((x, s * hull_side_y(x, z), z))
+        bevel_verts += add_prism(bm, comb_outline(0.052, -0.010, 0.0008, 7, 0.0022, 0.0105),
+                                 -0.032, 0.032, p, grille_frame(p, (1.0, 0.0, 0.0)), METAL_IDX)
+        # access panel on the tank flank, fore of the grille
+        access_panel(bm, s, 0.040, 0.136, 0.08, 0.50, LIVERY_IDX)
+        # alloy service plate on the dark belly, between heat sink and fins
+        access_panel(bm, s, -0.215, -0.040, 0.14, 0.44, METAL_IDX, below=True,
+                     gasket=RUBBER_IDX)
+        # decal plate under the saddle's edge: a dark board, an anodised field
+        hull_patch(bm, s, -0.188, -0.058, 0.07, 0.42, 0.0010, 0.0040, GRAPHITE_IDX)
+        _zc, _w, ht, _hb = hull_dims(-0.123)
+        g = 0.0060
+        hull_patch(bm, s, -0.188 + g, -0.058 - g, 0.07 + g / ht, 0.42 - g / ht, 0.0022,
+                   0.0015, ACCENT_IDX)
+        if s > 0:
+            # a second panel where the near side has its charge port
+            access_panel(bm, s, 0.262, 0.344, 0.12, 0.46, LIVERY_IDX)
+    # charge-port door on the near (y-) flank: hinged along its top edge,
+    # an anodised latch tab at its foot
+    s = -1.0
+    x0, x1, f0, f1 = 0.270, 0.336, 0.16, 0.44
+    access_panel(bm, s, x0, x1, f0, f1, LIVERY_IDX, bolts=False)
+    _zc, _w, ht, _hb = hull_dims(0.5 * (x0 + x1))
+    pa, _n = flank_point(s, x0 + 0.006, f1 - 0.004 / ht, 0.0040)
+    pb, _n = flank_point(s, x1 - 0.006, f1 - 0.004 / ht, 0.0040)
+    add_tube(bm, [pa, pb], 0.0032, 8, METAL_IDX)
+    pl, nl = flank_point(s, 0.5 * (x0 + x1), f0 + 0.010 / ht, 0.0024)
+    bevel_verts += add_prism(bm, rrect(0.009, 0.004, 0.002), -0.0010, 0.0028, pl,
+                             frame(nl, XAX), ACCENT_IDX)
     # crown vent ahead of the saddle
     x = 0.100
     p = Vector((x, 0.0, hull_top(x, 0.0)))
     bevel_verts += add_prism(bm, comb_outline(0.032, -0.008, 0.0008, 6, 0.0020, 0.0036),
                              -0.045, 0.045, p, grille_frame(p, (1.0, 0.0, 0.0)), GRAPHITE_IDX)
+    # pillion grab rail: a bent bar from both flanks, arching over the tail
+    yf = hull_side_y(-0.355, 0.745) - 0.006
+    rail = []
+    for s in (-1.0, 1.0):
+        half = [(-0.355, yf, 0.745), (-0.366, 0.132, 0.790), (-0.430, 0.112, 0.806),
+                (-0.472, 0.052, 0.806)]
+        pts = [Vector((x, s * y, z)) for x, y, z in half]
+        rail += pts if s < 0 else list(reversed(pts))
+    add_tube(bm, fillet_path(rail, 0.030, 3), 0.0105, 8, METAL_IDX, phase=math.pi / 8.0)
+    for s in (1.0, -1.0):
+        p, n = flank_point(s, -0.355, (0.745 - hull_dims(-0.355)[0]) / hull_dims(-0.355)[2])
+        add_lathe(bm, [(0.0150, -0.004), (0.0150, 0.004), (0.0110, 0.007)], 12, METAL_IDX,
+                  center=p, rot=frame(n, XAX), solid=True)
+    # tail light cluster on the tail's rear slope: housing, lamp, dividers
+    lo, hi = -HULL_XE, -0.36
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if hull_top(mid, 0.0) < 0.700:
+            lo = mid
+        else:
+            hi = mid
+    p = Vector((0.5 * (lo + hi), 0.0, 0.700))
+    rot = frame(hull_normal(p), YAX)
+    bevel_verts += add_rbox(bm, 0.048, 0.017, 0.008, [(0.002, -0.014), (0.0, -0.011),
+                                                     (0.0, 0.004), (0.002, 0.006)],
+                            p, rot, GRAPHITE_IDX, n_corner=3)
+    add_prism(bm, rrect(0.040, 0.010, 0.006), 0.0040, 0.0066, p, rot, LIGHT_IDX)
+    for q, h in ((-0.013, 0.0075), (0.013, 0.0079)):
+        add_prism(bm, rrect(0.0014, 0.0115 + h - 0.0075, 0.0006), h - 0.0025, h,
+                  p + rot.col[0] * q, rot, GRAPHITE_IDX)
     # exhaust nozzles out of the tail flanks, over the rear fan
     ax = Vector((-1.0, 0.0, 0.0))
     rot = frame(ax, ZAX)
@@ -1029,37 +1529,46 @@ def add_details(bm, bevel_verts):
         c = Vector((NOZZLE_X, s * NOZZLE_Y, NOZZLE_Z))
 
         def petals(ii, j):
-            return 0.965 if (j in (2, 3) and ii % 3 == 0) else 1.0
+            return 0.965 if (j in (2, 3) and ii % 2 == 0) else 1.0
 
         # a cup: closed at its buried back, its bore floored at the glow
         add_lathe(bm, [(0.0480, -0.160), (0.0505, 0.020), (0.0540, 0.160), (0.0520, 0.193),
                        (0.0470, 0.198), (0.0395, 0.188), (0.0355, 0.160), (0.0355, 0.120)],
-                  48, METAL_IDX, center=c, rot=rot, solid=True, rmod=petals)
-        add_lathe(bm, [(0.0505, 0.090), (0.0560, 0.092), (0.0575, 0.100), (0.0575, 0.128),
-                       (0.0560, 0.136), (0.0505, 0.138)], 48, ACCENT_IDX, center=c, rot=rot,
-                  phase=math.pi / 48.0)
-        add_lathe(bm, [(0.0365, 0.114), (0.0365, 0.124), (0.0300, 0.128), (0.0100, 0.130)], 32,
-                  LIGHT_IDX, center=c, rot=rot, solid=True, phase=k * math.pi / 64.0)
+                  24, METAL_IDX, center=c, rot=rot, solid=True, rmod=petals)
+        add_lathe(bm, [(0.0505, 0.090), (0.0575, 0.093), (0.0575, 0.135), (0.0505, 0.138)],
+                  24, ACCENT_IDX, center=c, rot=rot, phase=math.pi / 24.0)
+        add_lathe(bm, [(0.0365, 0.114), (0.0365, 0.124), (0.0300, 0.128), (0.0100, 0.130)], 20,
+                  LIGHT_IDX, center=c, rot=rot, solid=True, phase=k * math.pi / 40.0)
         add_lathe(bm, [(0.0160, 0.122), (0.0150, 0.150), (0.0100, 0.168), (0.0040, 0.180),
-                       (0.0010, 0.182)], 24, METAL_IDX, center=c, rot=rot, solid=True,
-                  phase=math.pi / 24.0)
+                       (0.0010, 0.182)], 12, METAL_IDX, center=c, rot=rot, solid=True,
+                  phase=math.pi / 12.0)
 
 
 def build_bike_mesh(name, bevel_offset, bevel_segments, float_skid=False, offset_hub=False,
                     long_blades=False, odd_hull=False, skew_blade=False, narrow_skids=False,
-                    pop_lens=False):
+                    pop_lens=False, offset_pin=False, skew_rod=False, short_rod=False):
     bm = bmesh.new()
     try:
         bevel_verts = []
-        add_hull(bm, odd_hull)
+        tg = Tagger(bm)
+        add_hull(bm)
+        n_hull = len(bm.verts)
         for side in (1, -1):
             f = side == FALSIFY_FAN
             add_fan(bm, side, bevel_verts, offset_hub=offset_hub and f,
                     long_blades=long_blades and f, skew_blade=skew_blade and f)
-        add_frame(bm, bevel_verts, narrow_skids, float_skid)
+        add_pylons(bm, bevel_verts)
+        add_gear(bm, tg, bevel_verts, offset_pin, skew_rod, short_rod)
+        add_skids(bm, tg, bevel_verts, narrow_skids, float_skid)
         add_cockpit(bm, bevel_verts, pop_lens)
         add_seat(bm)
+        n_det = len(bm.verts)
         add_details(bm, bevel_verts)
+        if odd_hull:
+            # the fuselage bows, and everything laid on its skin with it
+            bm.verts.ensure_lookup_table()
+            bow([bm.verts[i] for i in range(n_hull)]
+                + [bm.verts[i] for i in range(n_det, len(bm.verts))])
 
         if bevel_offset > 0.0:
             # Chamfer the prism plates' rims, one pass per material with
@@ -1177,21 +1686,81 @@ def _math(nt, op, a, b=None):
     return n.outputs["Value"]
 
 
+def metal(name, color, roughness, env, stops, roughness_var=0.06, noise_scale=60.0):
+    """Metal with a studio carried in the material (copied from
+    showcase/road-bicycle, after espresso-machine). On a dark stage a metal
+    mirrors the dark stage and reads as grey plastic; here the world-space
+    reflection vector looks up a soft studio — a bright horizon band, a dim
+    ceiling, the floor dark only straight down, the key's side brighter —
+    added as emission, so gunmetal and chrome read as metal in the hero and
+    on the asset sheet alike."""
+    mat = principled(name, color, 1.0, roughness, roughness_var=roughness_var,
+                     noise_scale=noise_scale)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    out = nt.nodes["Material Output"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Reflection"], sep.inputs[0])
+    mz = nt.nodes.new("ShaderNodeMapRange")
+    mz.inputs["From Min"].default_value = -1.0
+    mz.inputs["From Max"].default_value = 1.0
+    nt.links.new(sep.outputs["Z"], mz.inputs["Value"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    cr = ramp.color_ramp
+    cr.interpolation = "EASE"
+    cr.elements[0].position, cr.elements[0].color = stops[0][0], (stops[0][1],) * 3 + (1.0,)
+    cr.elements[1].position, cr.elements[1].color = stops[-1][0], (stops[-1][1],) * 3 + (1.0,)
+    for pos, val in stops[1:-1]:
+        e = cr.elements.new(pos)
+        e.color = (val, val, val, 1.0)
+    nt.links.new(mz.outputs["Result"], ramp.inputs["Fac"])
+    mx = nt.nodes.new("ShaderNodeMapRange")
+    mx.inputs["From Min"].default_value = -1.0
+    mx.inputs["From Max"].default_value = 1.0
+    mx.inputs["To Min"].default_value = 1.0
+    mx.inputs["To Max"].default_value = 0.40
+    nt.links.new(sep.outputs["X"], mx.inputs["Value"])
+    side = nt.nodes.new("ShaderNodeMath")
+    side.operation = "MULTIPLY"
+    nt.links.new(mx.outputs["Result"], side.inputs[0])
+    side.inputs[1].default_value = env
+    tint = nt.nodes.new("ShaderNodeMixRGB")
+    tint.blend_type = "MULTIPLY"
+    tint.inputs[0].default_value = 1.0
+    tint.inputs[2].default_value = color
+    nt.links.new(ramp.outputs["Color"], tint.inputs[1])
+    em = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(tint.outputs[0], em.inputs["Color"])
+    nt.links.new(side.outputs["Value"], em.inputs["Strength"])
+    add = nt.nodes.new("ShaderNodeAddShader")
+    nt.links.new(bsdf.outputs["BSDF"], add.inputs[0])
+    nt.links.new(em.outputs["Emission"], add.inputs[1])
+    nt.links.new(add.outputs["Shader"], out.inputs["Surface"])
+    return mat
+
+
+# a muted teal: the fleet's contact-sheet saturation band holds it
+LIVERY_RGB = (0.058, 0.196, 0.208, 1.0)
+
+
 def bike_materials():
     """(livery, graphite, metal, rubber, leather, light, glass, accent,
-    carbon): shared by the check and the render.
+    carbon, chrome): shared by the check and the render.
 
-    The livery is a deep teal metallic paint under a clear coat, with twin
+    The livery is a muted teal metallic paint under a clear coat, with twin
     pearl racing stripes either side of the centreline (object-space Y); the
-    belly, inner shroud walls, grilles and clamp pads a dark composite;
-    booms, struts, skids, vanes and the riser gunmetal; grips, boot and
-    pegs rubber; the saddle espresso leather; the lights emit by object-space
-    X: warm white at the headlight, cyan on the screen, blue plasma in the
-    nozzles, red on the rear shroud; the lens and windscreen smoked glass;
-    spinners, levers, flanges and bands orange anodised aluminium; the blades
-    glossy carbon.
+    belly, inner shroud walls, grilles, pads, gaskets and wear strips a dark
+    composite; the gear, skid shoes, vanes and clamps gunmetal with the
+    studio term; grips, boots, conduits and pegs rubber; the saddle espresso
+    leather; the lights emit by object-space X: warm white at the headlight,
+    cyan on the screen, blue plasma in the nozzles, red on the rear shroud
+    and — by object-space |Y| as well — on the tail light between the
+    nozzles; the lens and windscreen smoked glass; spinners, levers, caps,
+    collars and bands orange anodised aluminium; the blades glossy carbon;
+    stanchions, shock rods and pins chrome.
     """
-    livery = principled("BikeLivery", (0.020, 0.215, 0.235, 1.0), 0.45, 0.30,
+    livery = principled("BikeLivery", LIVERY_RGB, 0.45, 0.30,
                         roughness_var=0.05, noise_scale=24.0, coat=0.7)
     nt = livery.node_tree
     bsdf = nt.nodes["Principled BSDF"]
@@ -1203,14 +1772,15 @@ def bike_materials():
                    _math(nt, "LESS_THAN", ay, 0.042))
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
-    mix.inputs[6].default_value = (0.020, 0.215, 0.235, 1.0)
+    mix.inputs[6].default_value = LIVERY_RGB
     mix.inputs[7].default_value = (0.78, 0.78, 0.75, 1.0)
     nt.links.new(stripe, mix.inputs[0])
     nt.links.new(mix.outputs[2], bsdf.inputs["Base Color"])
     graphite = principled("BikeComposite", (0.042, 0.044, 0.050, 1.0), 0.0, 0.46,
                           roughness_var=0.08, mottle=0.15, noise_scale=70.0)
-    metal = principled("BikeGunmetal", (0.30, 0.31, 0.33, 1.0), 1.0, 0.32,
-                       roughness_var=0.08, noise_scale=90.0)
+    gunmetal = metal("BikeGunmetal", (0.36, 0.37, 0.39, 1.0), 0.30, 0.34,
+                     [(0.0, 0.03), (0.18, 0.05), (0.30, 0.20), (0.40, 0.60), (0.48, 1.0),
+                      (0.60, 0.40), (0.80, 0.25), (1.0, 0.18)], noise_scale=90.0)
     rubber = principled("BikeRubber", (0.021, 0.021, 0.023, 1.0), 0.0, 0.74,
                         roughness_var=0.08, noise_scale=80.0)
     leather = principled("BikeSaddle", (0.040, 0.030, 0.026, 1.0), 0.0, 0.46,
@@ -1236,17 +1806,30 @@ def bike_materials():
     e3 = els.new(0.675)
     e3.color = (1.0, 0.93, 0.80, 1.0)              # headlight and front marker
     nt.links.new(fac, ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    # the tail light sits between the nozzles: aft of x -0.30 and inside
+    # |y| 0.046, where no nozzle core reaches (theirs start at |y| 0.0485)
+    tail = _math(nt, "MULTIPLY", _math(nt, "LESS_THAN", sep.outputs["X"], -0.30),
+                 _math(nt, "LESS_THAN", _math(nt, "ABSOLUTE", sep.outputs["Y"]), 0.046))
+    red = nt.nodes.new("ShaderNodeMix")
+    red.data_type = "RGBA"
+    nt.links.new(tail, red.inputs[0])
+    nt.links.new(ramp.outputs["Color"], red.inputs[6])
+    red.inputs[7].default_value = (1.0, 0.05, 0.03, 1.0)
+    nt.links.new(red.outputs[2], bsdf.inputs["Base Color"])
     for key in ("Emission Color", "Emission"):
         if key in bsdf.inputs:
-            nt.links.new(ramp.outputs["Color"], bsdf.inputs[key])
+            nt.links.new(red.outputs[2], bsdf.inputs[key])
             break
     glass = principled("BikeSmokedGlass", (0.040, 0.075, 0.095, 1.0), 0.25, 0.03, coat=1.0)
     accent = principled("BikeAnodised", (0.88, 0.25, 0.025, 1.0), 1.0, 0.30,
                         roughness_var=0.06, noise_scale=60.0)
     carbon = principled("BikeCarbon", (0.026, 0.027, 0.030, 1.0), 0.0, 0.26,
                         roughness_var=0.06, mottle=0.12, noise_scale=160.0, coat=0.8)
-    return livery, graphite, metal, rubber, leather, light, glass, accent, carbon
+    chrome = metal("BikeChrome", (0.90, 0.90, 0.92, 1.0), 0.10, 0.80,
+                   [(0.0, 0.01), (0.30, 0.02), (0.38, 0.90), (0.47, 1.0), (0.53, 0.06),
+                    (0.66, 0.08), (0.74, 0.75), (0.88, 0.60), (1.0, 0.20)],
+                   roughness_var=0.03, noise_scale=70.0)
+    return livery, graphite, gunmetal, rubber, leather, light, glass, accent, carbon, chrome
 
 
 def assign_slots(obj, wanted):
@@ -1392,8 +1975,14 @@ def shell_polys(me, groups):
 
 
 class Shell:
-    def __init__(self, me, idx, verts, polys):
+    def __init__(self, me, idx, verts, polys, tags=None):
         self.idx = idx
+        codes = {}
+        for p in polys:
+            c = tags[p.index] if tags else 0
+            codes[c] = codes.get(c, 0) + 1
+        code = max(codes, key=codes.get) if codes else 0
+        self.role, self.unit = code // 100, code % 100
         self.verts = verts
         pts = [me.vertices[i].co.copy() for i in verts]
         self.pts = pts
@@ -1429,10 +2018,27 @@ def _annulus_about_mean(s, r_min, r_max):
     return min(d) > r_min and max(d) < r_max
 
 
+def lathe_axis(pts):
+    """A turned part's axis (copied from showcase/cargo-loader): the
+    eigenvector whose eigenvalue stands apart from the other two (its radial
+    pair is equal by symmetry), so it holds for a long pin and a short, wide
+    bushing alike."""
+    p = np.array([tuple(v) for v in pts], dtype=np.float64)
+    c = p.mean(axis=0)
+    q = p - c
+    w, vecs = np.linalg.eigh(q.T @ q / len(p))
+    if (w[2] - w[1]) > (w[1] - w[0]):
+        return Vector(c), Vector(vecs[:, 2])
+    return Vector(c), Vector(vecs[:, 0])
+
+
 def classify(me):
     groups = shells(me)
     polys = shell_polys(me, groups)
-    parts = [Shell(me, i, g, polys[i]) for i, g in enumerate(groups)]
+    tags = [0] * len(me.polygons)
+    if "part" in me.attributes:
+        me.attributes["part"].data.foreach_get("value", tags)
+    parts = [Shell(me, i, g, polys[i], tags) for i, g in enumerate(groups)]
     out = {"all": parts, "groups": groups}
     # the fuselage: the long two-tone shell; the shrouds: the two rings
     out["hull"] = next((s for s in parts if LIVERY_IDX in s.mats and GRAPHITE_IDX in s.mats
@@ -1448,9 +2054,65 @@ def classify(me):
     out["cans"] = [s for s in parts if s.mat == GRAPHITE_IDX and 0.12 < s.size.x < 0.14
                    and abs(s.size.x - s.size.y) < 0.004 and _annulus_about_mean(s, 0.015, 0.07)]
     out["blades"] = [s for s in parts if s.mat == CARBON_IDX]
-    out["skids"] = [s for s in parts if s.mat == METAL_IDX and s.size.x > 1.5]
+    # the skids' ground contact is their wear strips
+    out["skids"] = sorted((s for s in parts if s.role == R_STRIP), key=lambda s: s.unit)
     out["seat"] = next((s for s in parts if s.mat == LEATHER_IDX), None)
+    for key, role in (("pins", R_PIN), ("bushings", R_BUSH), ("cyls", R_CYL), ("rods", R_ROD)):
+        out[key] = {}
+        for s in parts:
+            if s.role == role:
+                out[key].setdefault(s.unit, []).append(s)
     return out
+
+
+def joint_audit(cls):
+    """Every joint: one pin through three bushings; each bushing's centre on
+    the pin's axis, its axis parallel to the pin's, its centre within the
+    pin's span (after showcase/cargo-loader)."""
+    worst_off, worst_tilt, bad = 0.0, 0.0, []
+    units = sorted(set(cls["pins"]) | set(cls["bushings"]))
+    for u in units:
+        pins = cls["pins"].get(u, [])
+        bush = cls["bushings"].get(u, [])
+        if len(pins) != 1 or len(bush) != JOINT_BUSHINGS:
+            bad.append((u, len(pins), len(bush)))
+            continue
+        pc, pa = lathe_axis(pins[0].pts)
+        proj = [(p - pc).dot(pa) for p in pins[0].pts]
+        lo, hi = min(proj), max(proj)
+        for b in bush:
+            bc, ba = lathe_axis(b.pts)
+            r = bc - pc
+            along = r.dot(pa)
+            worst_off = max(worst_off, (r - pa * along).length)
+            worst_tilt = max(worst_tilt, math.degrees(math.acos(min(1.0, abs(ba.dot(pa))))))
+            if not (lo < along < hi):
+                bad.append((u, "span", round(along, 4)))
+    return {"joints": len(units), "offset": worst_off, "tilt": worst_tilt, "bad": bad}
+
+
+def shock_audit(cls):
+    """Each shock: the rod coaxial with its barrel; the rod's length out of
+    the gland, and its length still inside the barrel."""
+    res = {"shocks": 0, "offset": 0.0, "tilt": 0.0, "exposed": [], "engage": []}
+    for u in sorted(set(cls["cyls"]) | set(cls["rods"])):
+        cyl = cls["cyls"].get(u, [])
+        rod = cls["rods"].get(u, [])
+        if len(cyl) != 1 or len(rod) != 1:
+            continue
+        res["shocks"] += 1
+        cc, ca = lathe_axis(cyl[0].pts)
+        rc, ra = lathe_axis(rod[0].pts)
+        if ca.dot(rc - cc) < 0.0:
+            ca = -ca
+        r = rc - cc
+        res["offset"] = max(res["offset"], (r - ca * r.dot(ca)).length)
+        res["tilt"] = max(res["tilt"], math.degrees(math.acos(min(1.0, abs(ra.dot(ca))))))
+        cyl_hi = max((p - cc).dot(ca) for p in cyl[0].pts)
+        rod_proj = [(p - cc).dot(ca) for p in rod[0].pts]
+        res["exposed"].append(max(rod_proj) - cyl_hi)
+        res["engage"].append(cyl_hi - min(rod_proj))
+    return res
 
 
 def fan_audit(cls):
@@ -1705,11 +2367,12 @@ def export_unity(path, objects):
 
 def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offset_hub=False,
           long_blades=False, odd_hull=False, skew_blade=False, narrow_skids=False,
-          pop_lens=False):
+          pop_lens=False, offset_pin=False, skew_rod=False, short_rod=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(float_skid=float_skid, offset_hub=offset_hub, long_blades=long_blades,
                  odd_hull=odd_hull, skew_blade=skew_blade, narrow_skids=narrow_skids,
-                 pop_lens=pop_lens)
+                 pop_lens=pop_lens, offset_pin=offset_pin, skew_rod=skew_rod,
+                 short_rod=short_rod)
     low = build_bike_mesh("HoverBikeLow", bevel_offset=0.0006, bevel_segments=1, **flags)
     high = build_bike_mesh("HoverBikeHigh", bevel_offset=0.0006, bevel_segments=3, **flags)
     mats = bike_materials()
@@ -1752,6 +2415,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offse
     seat_z = cls["seat"].hi.z if cls["seat"] else 0.0
     stance = stance_audit(cls)
     ncomp, comp_sizes = connected_components(cls)
+    joints = joint_audit(cls)
+    shocks = shock_audit(cls)
 
     img, tex = setup_bake_image(low, target)
     if img is None:
@@ -1806,6 +2471,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offse
     print(f"measured mass={stance['mass']:.3f}kg com=({stance['com'].x:.4f},"
           f"{stance['com'].y:.4f},{stance['com'].z:.4f}) margin={stance['margin']:.4f}")
     print(f"measured components={ncomp} sizes={comp_sizes[-5:]}")
+    print(f"measured joints={joints['joints']} pin_offset={joints['offset']:.6f} "
+          f"pin_tilt={joints['tilt']:.4f} bad={joints['bad'][:4]}")
+    print(f"measured shocks={shocks['shocks']} rod_offset={shocks['offset']:.6f} "
+          f"rod_tilt={shocks['tilt']:.4f} exposed={[round(e, 4) for e in shocks['exposed']]} "
+          f"engage={[round(e, 4) for e in shocks['engage']]}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return (fail(f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]", 4),) + none3
@@ -1816,7 +2486,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offse
               (METAL_IDX, METAL_FACES_MIN, "gunmetal"), (RUBBER_IDX, RUBBER_FACES_MIN, "rubber"),
               (LEATHER_IDX, LEATHER_FACES_MIN, "leather"), (LIGHT_IDX, LIGHT_FACES_MIN, "light"),
               (GLASS_IDX, GLASS_FACES_MIN, "glass"), (ACCENT_IDX, ACCENT_FACES_MIN, "anodised"),
-              (CARBON_IDX, CARBON_FACES_MIN, "carbon"))
+              (CARBON_IDX, CARBON_FACES_MIN, "carbon"), (CHROME_IDX, CHROME_FACES_MIN, "chrome"))
     for idx, floor, label in floors:
         if idx_counts.get(idx, 0) < floor:
             return (fail(f"{label} faces {idx_counts.get(idx, 0)} < {floor}", 5),) + none3
@@ -1872,6 +2542,20 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offse
                      f"polygon < {STANCE_MARGIN}", 21),) + none3
     if ncomp != 1:
         return (fail(f"assembly splits into {ncomp} components {comp_sizes}", 22),) + none3
+    if (joints["joints"] != JOINT_COUNT or joints["bad"] or joints["offset"] > PIN_OFFSET_MAX
+            or joints["tilt"] > PIN_TILT_MAX_DEG):
+        return (fail(f"joints: {joints['joints']} (want {JOINT_COUNT}), {joints['bad'][:4]}, a "
+                     f"bushing {joints['offset']:.6f} m off its pin's axis (cap {PIN_OFFSET_MAX}), "
+                     f"tilt {joints['tilt']:.4f} deg (cap {PIN_TILT_MAX_DEG})", 24),) + none3
+    if (shocks["shocks"] != SHOCK_COUNT or shocks["offset"] > ROD_OFFSET_MAX
+            or shocks["tilt"] > ROD_TILT_MAX_DEG
+            or any(not (EXPOSED_MIN <= e <= EXPOSED_MAX) for e in shocks["exposed"])
+            or any(g < ENGAGE_MIN for g in shocks["engage"])):
+        return (fail(f"shocks: {shocks['shocks']} (want {SHOCK_COUNT}), rod "
+                     f"{shocks['offset']:.6f} m off its barrel's axis (cap {ROD_OFFSET_MAX}), tilt "
+                     f"{shocks['tilt']:.4f} deg; exposed rod {[round(e, 4) for e in shocks['exposed']]} "
+                     f"m (band {EXPOSED_MIN}-{EXPOSED_MAX}), engaged "
+                     f"{[round(g, 4) for g in shocks['engage']]} m (floor {ENGAGE_MIN})", 25),) + none3
     return 0, low, target, tex
 
 
@@ -1937,7 +2621,7 @@ def render_still(low, target, tex, path, engine):
 
     # The house rig scaled to a 2.2 m vehicle: warm key upper left, cool
     # fill low right, cool rim behind, warm wedge pooled on the back wall.
-    light("Key", (-2.2, -2.6, 2.6), 96.0, 1.4, (1.0, 0.93, 0.84), spread=30.0)
+    light("Key", (-2.2, -2.6, 2.6), 90.0, 1.4, (1.0, 0.93, 0.84), spread=30.0)
     light("Fill", (2.8, -1.9, 0.6), 17.0, 3.2, (0.72, 0.82, 1.0))
     light("Rim", (-1.0, 1.8, 1.6), 90.0, 1.2, (0.62, 0.78, 1.0))
     light("Wedge", (2.4, 2.4, 1.0), 180.0, 2.0, (1.0, 0.68, 0.38),
@@ -1950,7 +2634,7 @@ def render_still(low, target, tex, path, engine):
     cam.location = centre + view * 3.55 + Vector((0.0, 0.0, 1.55))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = centre + Vector((0.0, 0.0, -0.05))
+    aim.location = centre + Vector((0.0, 0.0, -0.07))
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -2005,6 +2689,9 @@ def main():
     p.add_argument("--skew-blade", action="store_true")
     p.add_argument("--narrow-skids", action="store_true")
     p.add_argument("--pop-lens", action="store_true")
+    p.add_argument("--offset-pin", action="store_true")
+    p.add_argument("--skew-rod", action="store_true")
+    p.add_argument("--short-rod", action="store_true")
     args = p.parse_args(argv)
 
     code, low, target, tex = check(
@@ -2018,6 +2705,9 @@ def main():
         skew_blade=args.skew_blade,
         narrow_skids=args.narrow_skids,
         pop_lens=args.pop_lens,
+        offset_pin=args.offset_pin,
+        skew_rod=args.skew_rod,
+        short_rod=args.short_rod,
     )
     if code:
         return code
