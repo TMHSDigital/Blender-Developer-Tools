@@ -1,6 +1,6 @@
 # Wingback armchair
 
-A showcase piece, not an example, and the seventh in the `household`
+A showcase piece, not an example, and the sixth in the `household`
 category. It builds a procedural reading corner: a Queen Anne /
 Chesterfield-style wingback armchair in oxblood leather beside a round side
 table with a brass reading lamp and two books, on a fringed wool rug.
