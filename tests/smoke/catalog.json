@@ -136,5 +136,6 @@
   {"name": "wingback-armchair", "script": "showcase/wingback-armchair/wingback_armchair.py"},
   {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"},
   {"name": "traffic-cones", "script": "showcase/traffic-cones/traffic_cones.py"},
-  {"name": "mushroom-stump", "script": "showcase/mushroom-stump/mushroom_stump.py"}
+  {"name": "mushroom-stump", "script": "showcase/mushroom-stump/mushroom_stump.py"},
+  {"name": "go-kart", "script": "showcase/go-kart/go_kart.py"}
 ]

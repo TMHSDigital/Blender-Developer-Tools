@@ -878,6 +878,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "go-kart",
+      "dir": "showcase/go-kart",
+      "category": "vehicles",
+      "teaches": "A procedural rental go-kart on a patch of kart-track asphalt against a red and white kerb — a 30 mm tube chassis whose main loop is one bar swept round every bend, cross tubes ending inside the rails with welded gussets, bearing hangers and kingpin C-brackets; spindles on kingpin bolts with 14° caster, a raked column in a bushing, a steering plate and two tie rods on rod-end eyes; a bolted nose, side pods on nerf bars and a front panel; a moulded seat on stays, a floor tray, pedals, a strapped fuel tank and a lead ballast block; a finned four-stroke clamped to the rail driving the live rear axle through a clutch, an 88-link chain solved to a whole number of pitches and a 60-tooth sprocket, bearing carriers, a brake disc and caliper; and four loaded slicks on split rims with valve stems, the fronts narrower than the rears — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "Yellow go-kart on a patch of track asphalt before a red and white kerb: bent red tube chassis, black seat, finned engine with chain to the rear axle, slick tyres on silver rims.",
+      "witnessesFix": "Recomputed: 73294 tris, thirteen materials with 3168 frame paint, 6678 chrome, 7512 rubber, 1320 bodywork, 1548 seat, 11090 aluminium, 1920 engine casting, 4104 steel, 1308 black plastic, 96 fuel tank, 168 lead, 646 asphalt and 126 kerb paint faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.012×1.817×0.640 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 4 tyres pressed 1.5 mm into the asphalt with their patches in one plane (band 0.8–3.0 mm), 4 hubs and 2 bearings 0.0 mm off their axles (≤ 0.3 mm), 4 tie-rod eyes on their pins and biting their plates 0.3–0.5 mm, tyre beads seated 0.864–1.000 mm on the rims (band 0.4–2.0 mm), the chain's inner edge 1.911–1.946 mm under both tooth-root circles (band 0.8–3.0 mm), frame and bodywork mirrored within 0.043 mm and the wheels within 0.0001 mm, wheelbase 1.040 m and tracks 1.100 / 1.200 m, caster 14.0°, the mass centre 0.368 m inside the tyres' support polygon (≥ 0.312 m), one connected assembly of 285 shells, LOD ratios in band, collider 710 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-tyre 16; --cock-hub 17; --drop-bearing 17; --short-tierod 17; --sink-tyre 18; --lift-chain 18; --toe-wheel 19; --wide-track 19; --odd-frame 19; --no-caster 19; --aft-ballast 20; --loose-ballast 21.",
+      "hero": "docs/gallery/assets/go-kart-hero.webp",
+      "preview": "showcase/go-kart/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
