@@ -1,33 +1,41 @@
-"""Game-ready ergonomic office chair — a showcase piece, not an example.
+"""Game-ready ergonomic task chair on a chair mat — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural task chair after composing
-shipped pipeline pieces: bmesh construction, UVs, nine materials,
-high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a procedural task chair and its desk-corner
+floor vignette after composing shipped pipeline pieces: bmesh construction,
+UVs, fourteen materials, high-to-low normal bake, LOD chain, convex
+collider, Unity glTF export.
 
 The chair stands on a polished aluminium five-star base: five lofted spokes,
 each a crowned section with two channels and a centre rib on its underside,
-running from a moulded hub out to a socket boss. A twin-wheel caster hangs
-from every boss on a plumb swivel stem: a bearing washer, a nylon web and
-hood, a chrome axle and two crowned wheels (nylon hub, grey tread) that
-trail the stem by a fixed offset, each caster swivelled its own way. A
-chrome gas-lift column rises out of the hub through a two-stage telescoping
-cover into the conical socket of a graphite tilt mechanism, which carries a
-tilt-spring housing, a knurled tension knob and two lever paddles. The seat
-is a moulded pan under a contoured upholstered cushion: dished seating area,
-side bolsters, a waterfall front, a panel seam and a piped welt. An
-aluminium spine sweeps from the back of the mechanism up behind a reclined
-mesh back — a moulded frame round a sheer woven panel, a cross bar and hub
-plate behind it, and a sliding lumbar pad on straps. Two height-adjustable
-T-arms rise from aluminium brackets under the pan: post, button, pad plate
-and a soft pad.
+running from a moulded hub out to a socket boss. A hooded twin-wheel caster
+hangs from every boss on a plumb swivel stem, each swivelled its own way,
+and every wheel presses into a smoked polycarbonate chair mat with a
+bevelled edge and a lip that runs forward under a desk. A chrome gas-lift
+column rises out of the hub through a two-stage telescoping cover into the
+socket of a synchro-tilt mechanism: tilt-spring housing, a knurled tension
+knob and two lever paddles. The seat is a moulded graphite shell cupping a
+two-tone upholstered cushion: a woven muted-teal centre panel sculpted
+with a rear dish and two thigh channels that rolls over a waterfall front,
+mid-grey knit side panels, a piped welt in the seam groove between them and another on
+the top edge. An aluminium spine sweeps from the mechanism up behind a
+reclined mesh back: an elastomeric weave stretched over a graphite frame
+that thickens toward its foot, a cross bar and hub plate behind it, and an
+S-curved lumbar pad on straps whose ends clamp the frame's sides as
+sliders. A headrest of the same mesh in its own frame rides on an
+aluminium stem. Two 4D armrests rise from aluminium brackets under the
+shell: a telescoping post cover, a post with a height button and a pivot
+button, a pad plate and a soft pad. A snake plant in a speckled stone pot
+stands on the floor beside the mat.
 
 Budgets are declared below and recomputed from the generated result. They
 are not API-contract witnesses. Each falsifier violates one named budget:
 ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh hygiene,
-``--lift-z`` grounded zmin, ``--float-caster`` every wheel on the floor,
-``--skew-spoke`` the five-star geometry, ``--offset-column`` the gas lift
-coaxial with hub and socket, ``--uneven-arms`` mirrored level armrests,
-``--loose-wheel`` one connected assembly.
+``--lift-z`` grounded zmin, ``--float-caster`` every wheel pressed into
+the mat, ``--curl-mat`` the mat flat on the floor, ``--skew-spoke`` the
+five-star geometry, ``--offset-column`` the gas lift coaxial with hub and
+socket, ``--uneven-arms`` mirrored level armrests, ``--loose-wheel`` one
+connected chair, ``--float-lumbar`` the lumbar sliders clamped on the back
+frame, ``--float-leaves`` every leaf rooted in the pot's soil.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts are
 not byte-identical across Blender versions — the LOD gate is a ratio band,
@@ -115,11 +123,13 @@ SLEEVES = (
 )
 SOCKET_PROFILE = [(0.020, 0.344), (0.030, 0.347), (0.034, 0.356), (0.036, 0.384)]
 MECH_C = (0.0, 0.010, 0.398)
-MECH_SIZE = (0.170, 0.240, 0.042)
+MECH_SIZE = (0.170, 0.240, 0.040)   # top 1 mm under the cushion's floor
 TILT_C = (0.0, -0.070, 0.386)
 TILT_R = 0.020
 TILT_HALF = 0.100
 KNOB_C = (0.0, -0.105, 0.388)
+KNOB_PROFILE = [(0.006, -0.005), (0.019, -0.005), (0.021, -0.003), (0.021, 0.028),
+                (0.0195, 0.034), (0.013, 0.038), (0.005, 0.040)]
 LEVERS = (
     [(0.060, 0.000, 0.392), (0.150, -0.020, 0.388), (0.205, -0.055, 0.385)],
     [(-0.060, -0.020, 0.390), (-0.140, -0.040, 0.386), (-0.190, -0.070, 0.383)],
@@ -133,25 +143,35 @@ SEAT_RMIN = 0.010
 SEAT_CY = -0.030
 SEAT_TAPER = 0.05            # back edge this much narrower than the front
 SEAT_BULGE = 0.035           # sides bow out this much at mid-depth
-SEAT_Z0 = 0.419
-SEAT_TOP = 0.485
-# (inset, z): bottom inside the pan, boxing side, a rounded top edge, a
-# gently crowned top panel with a seam groove round the seating area
+SEAT_Z0 = 0.425              # the sculpting fades in from here ...
+SEAT_ZFULL = 0.050           # ... over this rise, so no ring folds past another
+SEAT_RING = dict(nc=8, nsx=12, nsy=12)
+# (inset, z): bottom inside the shell, boxing side, a rounded top edge, the
+# grey knit side panel, a seam groove, then the teal centre panel crowned in
 SEAT_PROFILE = [(0.014, 0.419), (0.006, 0.4205), (0.001, 0.428), (0.000, 0.440),
-                (0.000, 0.452), (0.002, 0.462), (0.006, 0.4700), (0.012, 0.4765),
-                (0.020, 0.4805), (0.030, 0.4830), (0.045, 0.4845), (0.060, 0.4850),
-                (0.068, 0.4812), (0.076, 0.4850), (0.095, 0.4866), (0.125, 0.4880),
-                (0.155, 0.4890), (0.180, 0.4895)]
-SEAT_DISH = 0.010
-SEAT_WATERFALL = 0.016
-SEAT_BOLSTER = 0.007
+                (0.000, 0.452), (0.002, 0.462), (0.006, 0.4700), (0.012, 0.4770),
+                (0.020, 0.4815), (0.030, 0.4840), (0.042, 0.4852), (0.052, 0.4856),
+                (0.058, 0.4846), (0.062, 0.4826), (0.066, 0.4846), (0.072, 0.4860),
+                (0.084, 0.4872), (0.098, 0.4882), (0.112, 0.4889), (0.126, 0.4894),
+                (0.140, 0.4897), (0.156, 0.4899), (0.174, 0.4900), (0.194, 0.4900),
+                (0.214, 0.4900)]
+SEAM_RING = 13               # the groove bottom: centre panel from here in
+SEAT_DISH = 0.012
+SEAT_WATERFALL = 0.024
+SEAT_CHANNEL = 0.011         # thigh channels either side of the centre line
+SEAT_CHANNEL_X = 0.095
+SEAT_BOLSTER = 0.009
 PIPE_R = 0.0032
-PIPE_AT = (4, 5)             # the welt runs on the seam between these two rings
+PIPE_AT = (7, 8)             # the edge welt runs on the seam between these rings
 PIPE_OUT = 0.0016            # centre outside the surface, so it bites by R - OUT
-PAN_HX = 0.245
-PAN_HY = 0.232
-PAN_RC = 0.095
-PAN_PROFILE = [(0.006, 0.405), (0.000, 0.409), (0.000, 0.421), (0.004, 0.425)]
+GROOVE_R = 0.0024            # a second welt laid in the seam groove
+GROOVE_UP = 0.0010
+WELT_PHASE = math.pi / 6.0     # a hexagon with a vertex on top: no welt face lies flat
+PAN_HX = 0.254
+PAN_HY = 0.244
+PAN_RC = 0.100
+PAN_PROFILE = [(0.020, 0.398), (0.008, 0.4005), (0.002, 0.406), (0.000, 0.416),
+               (0.001, 0.425), (0.004, 0.4290), (0.009, 0.4300)]
 
 # --- Back ----------------------------------------------------------------------
 BACK_O = Vector((0.0, 0.235, 0.530))
@@ -166,26 +186,31 @@ LUMBAR_V = 0.170
 LUMBAR_SIG = 0.090
 LUMBAR_BULGE = 0.022
 MESH_T = 0.003
-MESH_INSETS = (0.000, 0.012, 0.030, 0.055, 0.085, 0.120, 0.155, 0.190)
+MESH_INSETS = (0.000, 0.014, 0.040, 0.080, 0.130, 0.190)
 FRAME_HA = 0.0150            # frame tube half depth (along the surface normal)
-FRAME_HB = 0.0125
+FRAME_HB = (0.0125, 0.0195)  # half width in the back's plane: top rail, foot
+FRAME_THICK_V = (0.46, 0.10)  # the frame swells from the first v to the second
 CROSS_V = 0.260
 CROSS_OFF = -0.0115
 CROSS_R = 0.0085
-PAD_HX = 0.170
-PAD_HY = 0.045
+PAD_HX = 0.165
+PAD_HY = 0.052
 PAD_RC = 0.040
+PAD_S = 0.0055               # S-curve amplitude across the lumbar pad's face
 PAD_PROFILE = [(0.010, -0.0005), (0.003, 0.0020), (0.000, 0.0070), (0.002, 0.0120),
                (0.008, 0.0155), (0.018, 0.0170), (0.030, 0.0175)]
-STRAP_U = (0.150, 0.241)
-STRAP_HV = 0.022
+STRAP_U = (0.150, BACK_HX - 0.006)   # from inside the pad to inside the slider
+STRAP_HV = 0.020
 STRAP_OFF = (0.0010, 0.0042)
-HEAD_V = 0.705               # headrest pad centre, on the back's surface
-HEAD_HX = 0.135
-HEAD_HY = 0.058
+SLIDER_HV = 0.030            # slider half length along the frame
+SLIDER_WALL = 0.004          # clamp wall over the frame tube
+HEAD_V = 0.725               # headrest centre, on the back's surface
+HEAD_OFF = 0.018             # carried this far forward of the back's surface
+HEAD_HX = 0.140
+HEAD_HY = 0.062
 HEAD_RC = 0.050
-HEAD_PROFILE = [(0.012, -0.016), (0.004, -0.012), (0.000, -0.002), (0.000, 0.012),
-                (0.004, 0.022), (0.012, 0.028), (0.024, 0.031), (0.040, 0.032)]
+HEAD_INSETS = (0.000, 0.010, 0.028, 0.048)
+HEAD_FRAME = (0.011, 0.010)
 
 # --- Arms (right arm at +X; the left is its mirror) -----------------------------
 ARM_X = 0.273
@@ -195,31 +220,65 @@ BRACKET_PTS = [(0.100, 0.401), (0.200, 0.401), (0.245, 0.404), (0.266, 0.418),
                (0.273, 0.440), (0.273, 0.500), (0.273, 0.600)]
 BRACKET_HALF = (0.006, 0.025)
 POST_PROFILE = [(0.003, 0.505), (0.000, 0.509), (0.000, 0.646), (0.003, 0.650)]
+COVER_PROFILE = [(0.004, 0.496), (0.000, 0.500), (0.000, 0.584), (0.003, 0.588)]
 SUPPORT_PROFILE = [(0.003, 0.645), (0.000, 0.648), (0.000, 0.657), (0.003, 0.660)]
-ARMPAD_PROFILE = [(0.008, 0.6555), (0.002, 0.6580), (0.000, 0.6660), (0.002, 0.6760),
-                  (0.008, 0.6830), (0.018, 0.6860), (0.030, 0.6870)]
+ARMPAD_PROFILE = [(0.008, 0.6555), (0.002, 0.6580), (0.000, 0.6660), (0.002, 0.6780),
+                  (0.008, 0.6860), (0.018, 0.6895), (0.030, 0.6905)]
+
+# --- Floor vignette: a chair mat under the casters, a potted plant beside it --
+MAT_T = 0.004                # polycarbonate sheet thickness
+MAT_SINK = 0.0006            # the casters press this far into the sheet
+CHAIR_Z = MAT_T - MAT_SINK   # so the chair is built this far off the floor
+MAT_HX = 0.600
+MAT_HY = 0.640
+MAT_CY = 0.060
+MAT_RC = 0.060
+MAT_TONGUE = 0.200           # the lip that runs forward under a desk
+MAT_TONGUE_HX = 0.250
+MAT_TONGUE_SHOULDER = 0.090
+MAT_RING = dict(nc=6, nsx=36, nsy=12)
+# (inset, z): a chamfered foot, a short wall and a bevelled top edge
+MAT_PROFILE = [(0.0015, 0.0), (0.0, 0.0008), (0.0, 0.0014), (0.005, 0.0031),
+               (0.011, 0.0039), (0.016, MAT_T)]
+PLANT_C = (0.880, -0.080)
+POT_SEGS = 40
+# a planter with a foot, a swelling belly, a waist and a rolled lip
+POT_PROFILE = [(0.004, 0.000), (0.092, 0.000), (0.100, 0.003), (0.103, 0.012),
+               (0.100, 0.022), (0.116, 0.060), (0.136, 0.130), (0.146, 0.200),
+               (0.143, 0.250), (0.141, 0.266), (0.150, 0.274), (0.152, 0.284),
+               (0.148, 0.292), (0.140, 0.291), (0.132, 0.280), (0.126, 0.200),
+               (0.110, 0.060), (0.090, 0.040), (0.004, 0.036)]
+# soil biting the pot's inner wall by 1.2 mm, crowned toward the middle
+SOIL_PROFILE = [(0.004, 0.215), (0.1283, 0.215), (0.1313, 0.255), (0.085, 0.2575),
+                (0.004, 0.2595)]
+SOIL_TOP = 0.2595
+LEAF_COUNT = 9
+LEAF_STATIONS = 10
+LEAF_ROOT = 0.025            # blade bases buried at least this far under the crown
+LEAF_ROOT_STEP = 0.001       # and each 1 mm deeper than the last, so no two base caps share a plane
 
 # --- Budgets ------------------------------------------------------------------------
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.678, 0.693, 1.279)
-BASE_TRIS_MIN = 35200
-BASE_TRIS_MAX = 36800
+OUTER_SIZE = (1.635, 1.480, 1.317)
+BASE_TRIS_MIN = 43700
+BASE_TRIS_MAX = 45200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 9
+MATERIAL_COUNT = 14
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 1040
+COLLIDER_TRIS_MAX = 580
 BAKE_RES = 1024
 CAGE_EXTRUSION = 0.004
-FACE_FLOORS = (("fabric", 2000), ("mesh", 1350), ("shell", 2050), ("nylon", 3950),
-               ("aluminium", 4100), ("chrome", 1240), ("rubber", 1820),
-               ("leatherette", 1540), ("steel", 510))
+FACE_FLOORS = (("fabric", 1330), ("mesh", 1450), ("shell", 3260), ("nylon", 4100),
+               ("aluminium", 3950), ("chrome", 1370), ("rubber", 1820),
+               ("leatherette", 1600), ("steel", 510), ("border", 1060), ("mat", 790),
+               ("ceramic", 750), ("soil", 220), ("leaf", 715))
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -228,10 +287,14 @@ COPLANAR_NORMAL_EPS = 1e-4
 COPLANAR_PLANE_EPS = 1e-4
 COPLANAR_CENTRE_MAX = 0.05
 LIFT_Z = 0.05
-# Named supports: all ten wheels on the floor.
+# Named supports: every wheel pressed into the mat, the mat's underside flat
+# on the floor, the pot on the floor.
 WHEEL_COUNT = 10
+WHEEL_SINK = (0.0003, 0.0010)
 FLOAT_CASTER = 3
 FLOAT_LIFT = 0.005
+MAT_FLAT_EPS = 1e-4
+CURL_MAT = 0.006             # the back-left corner of the mat curled up
 # Five-star geometry: spokes and bosses 72 degrees apart, bosses and swivel
 # stems on one circle, stems plumb, coaxial with their bosses, and seated in
 # them to a banded depth.
@@ -261,13 +324,29 @@ STAR_TOL = 0.005
 STANCE_MARGIN = 0.12
 # Densities by material slot (kg/m^3). Foam cushions and pads are light;
 # the mechanism is a pressed-steel housing modelled solid, so steel takes
-# an effective density.
-DENSITY = (50.0, 400.0, 1150.0, 1150.0, 2700.0, 7850.0, 1200.0, 300.0, 3000.0)
-# Connected assembly: one wheel slid off its axle end.
+# an effective density. The mat and the plant are not part of the chair's
+# mass.
+DENSITY = (50.0, 400.0, 1150.0, 1150.0, 2700.0, 7850.0, 1200.0, 300.0, 3000.0, 50.0,
+           1200.0, 2000.0, 1300.0, 700.0)
+# Connected chair: one wheel slid off its axle end.
 LOOSE_CASTER = 0
 LOOSE_SLIDE = 0.024
+# Lumbar sliders clamp the frame: every slider vertex a banded distance off
+# the frame tube it rides on.
+SLIDER_GAP = (0.0020, 0.0065)
+FLOAT_LUMBAR = 0.006
+# Plant: every leaf's base buried in the soil to a banded depth, inside the pot.
+LEAF_DEPTH = (0.015, 0.045)
+LEAF_WALL_CLEAR = 0.010
+FLOAT_LEAVES = 0.040
+
 HERO_YAW_DEG = 18.0
 WALL_Y = 3.2
+CAM_LENS = 50.0
+CAM_VIEW = (-0.55, -0.83)
+CAM_DIST = 4.75
+CAM_LIFT = 0.72
+AIM_OFFSET = (0.0, 0.0, -0.13)
 
 FABRIC_IDX = 0
 MESH_IDX = 1
@@ -278,14 +357,20 @@ CHROME_IDX = 5
 RUBBER_IDX = 6
 LEATHER_IDX = 7
 STEEL_IDX = 8
+BORDER_IDX = 9
+MAT_IDX = 10
+CERAMIC_IDX = 11
+SOIL_IDX = 12
+LEAF_IDX = 13
 
 # Part tags (face attribute "part" = kind * 100 + index). Measurements read
 # positions off the mesh; the tag only says which shell is which part.
 (SPOKE, BOSS, STEM, WHEEL, AXLE, WEB, HOOD, WASHER, HUB, COLUMN, SLEEVE, SOCKET, MECH,
  TILT, KNOB, LEVER, PADDLE, PAN, CUSHION, PIPING, FRAME, MESHPANEL, LUMBAR, STRAP,
  CROSSBAR, BACKHUB, SPINE, BRACKET, POST, SUPPORT, ARMPAD, BUTTON, HEADSTEM,
- HEADREST) = range(1, 35)
-ARM_KINDS = (BRACKET, POST, SUPPORT, ARMPAD, BUTTON)
+ HEADFRAME, HEADMESH, HEADHUB, SLIDER, COVER, PIVOT, MAT, POT, SOIL, LEAF) = range(1, 44)
+ARM_KINDS = (BRACKET, POST, SUPPORT, ARMPAD, BUTTON, COVER, PIVOT)
+VIGNETTE_KINDS = (MAT, POT, SOIL, LEAF)
 
 
 def eevee_engine_id():
@@ -385,31 +470,33 @@ def add_lathe(bm, profile, segs, mat_idx, center=(0.0, 0.0, 0.0), rot=None,
     return [v for ring in rings for v in ring]
 
 
-def add_loft(bm, rings_co, mat_idx, closed=False, caps=True):
+def add_loft(bm, rings_co, mat_idx, closed=False, caps=True, band_mats=None, cap_mats=None):
     """Rings of points (each a closed loop, equal counts) joined in order.
     ``closed`` joins the last ring back to the first (a torus-like tube);
-    otherwise ``caps`` closes both ends with n-gons."""
+    otherwise ``caps`` closes both ends with n-gons. ``band_mats(i)`` gives
+    the material of the band between rings ``i`` and ``i + 1``."""
     rings = [[bm.verts.new(p) for p in ring] for ring in rings_co]
-    faces = []
     n = len(rings)
     m = len(rings[0])
     for i in range(n if closed else n - 1):
         r0, r1 = rings[i], rings[(i + 1) % n]
+        mat = band_mats(i) if band_mats else mat_idx
         for k in range(m):
             k1 = (k + 1) % m
-            faces.append(bm.faces.new((r0[k], r0[k1], r1[k1], r1[k])))
+            bm.faces.new((r0[k], r0[k1], r1[k1], r1[k])).material_index = mat
     if not closed and caps:
-        faces.append(bm.faces.new(tuple(reversed(rings[0]))))
-        faces.append(bm.faces.new(tuple(rings[-1])))
-    _mark(faces, mat_idx)
+        c0, c1 = cap_mats if cap_mats else (mat_idx, mat_idx)
+        bm.faces.new(tuple(reversed(rings[0]))).material_index = c0
+        bm.faces.new(tuple(rings[-1])).material_index = c1
     return [v for ring in rings for v in ring]
 
 
 def sweep_rings(pts, section, normals=None, side=None, closed=False):
     """Section [(a, b), ...] placed along a polyline: ``a`` along the frame
-    normal, ``b`` along the binormal. The normal comes from ``normals`` (a
-    surface), from a fixed ``side`` axis (a planar path), or by parallel
-    transport."""
+    normal, ``b`` along the binormal. ``section`` may be a function of the
+    point index, for a member whose section changes along its length. The
+    normal comes from ``normals`` (a surface), from a fixed ``side`` axis
+    (a planar path), or by parallel transport."""
     pts = [Vector(p) for p in pts]
     n = len(pts)
     rings = []
@@ -435,7 +522,8 @@ def sweep_rings(pts, section, normals=None, side=None, closed=False):
             nv = (prev - t * prev.dot(t)).normalized()
             prev = nv
             bv = t.cross(nv)
-        rings.append([p + nv * sa + bv * sb for sa, sb in section])
+        sec = section(i) if callable(section) else section
+        rings.append([p + nv * sa + bv * sb for sa, sb in sec])
     return rings
 
 
@@ -569,6 +657,10 @@ def smooth01(t):
     return t * t * (3.0 - 2.0 * t)
 
 
+def frac(x):
+    return x - math.floor(x)
+
+
 # --------------------------------------------------------------------------
 # Parts
 # --------------------------------------------------------------------------
@@ -622,7 +714,7 @@ def add_caster(bm, k, skew=0.0, lift=0.0, slide=0.0):
     up = Z_AX * lift
     # stem, washer: plumb about the swivel axis
     tag(bm, add_lathe(bm, STEM_PROFILE, 12, CHROME_IDX, center=stem, solid=True), STEM, k)
-    tag(bm, add_lathe(bm, WASHER_PROFILE, 16, CHROME_IDX, center=stem + up), WASHER, k)
+    tag(bm, add_lathe(bm, WASHER_PROFILE, 14, CHROME_IDX, center=stem + up), WASHER, k)
     # axle frame: local Z along the axle, local X along the trail
     axle_c = stem + xl * TRAIL + Z_AX * WHEEL_R + up
     rot = Matrix((xl, -Z_AX, yl)).transposed()
@@ -681,12 +773,16 @@ def hull2d(pts):
 
 
 def seat_contour(x, y):
-    """Top-surface shaping: a dish toward the back, a waterfall at the
-    front, bolsters at the sides. Every term is even in x."""
-    dish = -SEAT_DISH * math.exp(-((x / 0.15) ** 2 + ((y - 0.03) / 0.14) ** 2))
-    fall = -SEAT_WATERFALL * smooth01((-0.10 - y) / 0.14)
-    bolster = SEAT_BOLSTER * smooth01((abs(x) - 0.12) / 0.10)
-    return dish + fall + bolster
+    """Top-surface sculpting: a dish toward the back, two thigh channels
+    along the front half, a waterfall that rolls the front edge down,
+    bolsters at the sides. Every term is even in x."""
+    ax = abs(x)
+    dish = -SEAT_DISH * math.exp(-((x / 0.15) ** 2 + ((y - 0.04) / 0.13) ** 2))
+    channel = (-SEAT_CHANNEL * math.exp(-((ax - SEAT_CHANNEL_X) / 0.036) ** 2)
+               * smooth01((0.06 - y) / 0.12))
+    fall = -SEAT_WATERFALL * smooth01((-0.09 - y) / 0.15)
+    bolster = SEAT_BOLSTER * smooth01((ax - 0.13) / 0.09)
+    return dish + channel + fall + bolster
 
 
 def seat_plan(x, y):
@@ -696,13 +792,47 @@ def seat_plan(x, y):
 
 
 def seat_xform(x, y, z):
-    zf = min(1.0, max(0.0, (z - SEAT_Z0) / (SEAT_TOP - SEAT_Z0)))
+    zf = smooth01((z - SEAT_Z0) / SEAT_ZFULL)
     return Vector((x * seat_plan(x, y), y + SEAT_CY, z + zf * seat_contour(x, y)))
 
 
 def pan_xform(x, y, z):
-    # the pan follows the cushion's plan but not its contour
+    # the shell follows the cushion's plan but not its contour
     return Vector((x * seat_plan(x, y), y + SEAT_CY, z))
+
+
+def welt_ring(d0, z0, d1, z1, out):
+    """A cord's centre on the seam between two profile points, pushed
+    ``out`` along the profile's outward normal."""
+    ln = math.hypot(d1 - d0, z1 - z0)
+    dp = 0.5 * (d0 + d1) - out * (z1 - z0) / ln
+    zp = 0.5 * (z0 + z1) + out * (d1 - d0) / ln
+    return [seat_xform(x, y, zp)
+            for x, y in rrect_loop(SEAT_HX - dp, SEAT_HY - dp, max(SEAT_RC - dp, SEAT_RMIN),
+                                   **SEAT_RING)]
+
+
+def add_seat(bm):
+    tag(bm, add_loft(bm, rrect_rings(PAN_HX, PAN_HY, PAN_RC, SEAT_RMIN, PAN_PROFILE, pan_xform,
+                                     **SEAT_RING), SHELL_IDX), PAN)
+    # two-tone cushion: grey knit side panels out to the groove, teal centre
+    rings = rrect_rings(SEAT_HX, SEAT_HY, SEAT_RC, SEAT_RMIN, SEAT_PROFILE, seat_xform,
+                        **SEAT_RING)
+    tag(bm, add_loft(bm, rings, FABRIC_IDX,
+                     band_mats=lambda i: FABRIC_IDX if i >= SEAM_RING else BORDER_IDX,
+                     cap_mats=(BORDER_IDX, FABRIC_IDX)), CUSHION)
+    # piped welt along the top edge, biting the cushion by PIPE_R - PIPE_OUT
+    (d0, z0), (d1, z1) = SEAT_PROFILE[PIPE_AT[0]], SEAT_PROFILE[PIPE_AT[1]]
+    tag(bm, add_sweep(bm, welt_ring(d0, z0, d1, z1, PIPE_OUT), circle_section(PIPE_R, 6, WELT_PHASE),
+                      LEATHER_IDX, side=Z_AX, closed=True), PIPING, 0)
+    # a second welt laid in the seam groove, its centre GROOVE_UP over the
+    # groove bottom so it bites the bottom and sits between the walls
+    dg, zg = SEAT_PROFILE[SEAM_RING]
+    groove = [seat_xform(x, y, zg + GROOVE_UP)
+              for x, y in rrect_loop(SEAT_HX - dg, SEAT_HY - dg, max(SEAT_RC - dg, SEAT_RMIN),
+                                     **SEAT_RING)]
+    tag(bm, add_sweep(bm, groove, circle_section(GROOVE_R, 6, WELT_PHASE), LEATHER_IDX, side=Z_AX,
+                      closed=True), PIPING, 1)
 
 
 def back_axes():
@@ -745,36 +875,65 @@ def back_loop(d, nc=10, nsx=10, nsy=12):
     return out
 
 
-def add_back(bm):
-    # frame: a closed moulded tube on the outline
+def frame_hb(v):
+    """The frame's half width in the back's plane: slim along the top rail,
+    swelling toward the foot where it takes the load."""
+    return FRAME_HB[0] + (FRAME_HB[1] - FRAME_HB[0]) * smooth01(
+        (FRAME_THICK_V[0] - v) / (FRAME_THICK_V[0] - FRAME_THICK_V[1]))
+
+
+def frame_section(v, grow=0.0):
+    return superellipse_section(FRAME_HA + grow, frame_hb(v) + grow, 12, 2.8)
+
+
+def add_mesh_panel(bm, loops, point, kind):
+    """A stretched mesh: front and back skins MESH_T apart on a surface,
+    lofted from its outermost loop (the frame's centreline) inward."""
+    front = [[point(u, v, 0.5 * MESH_T) for u, v in lp] for lp in loops]
+    back = [[point(u, v, -0.5 * MESH_T) for u, v in lp] for lp in loops]
+    tag(bm, add_loft(bm, list(reversed(front)) + back, MESH_IDX), kind)
+
+
+def add_back(bm, lumbar_shift=0.0):
+    # frame: a closed moulded tube on the outline, slim at the top rail and
+    # swelling toward the foot
     outline = back_loop(0.0)
     pts = [back_point(u, v) for u, v in outline]
     nrm = [back_normal(u, v) for u, v in outline]
-    tag(bm, add_sweep(bm, pts, superellipse_section(FRAME_HA, FRAME_HB, 12, 2.8), SHELL_IDX,
+    tag(bm, add_sweep(bm, pts, lambda i: frame_section(outline[i][1]), SHELL_IDX,
                       normals=nrm, closed=True), FRAME)
-    # sheer woven panel: front and back skins from the frame's centreline in
-    front = [[back_point(u, v, 0.5 * MESH_T) for u, v in back_loop(d)] for d in MESH_INSETS]
-    back = [[back_point(u, v, -0.5 * MESH_T) for u, v in back_loop(d)] for d in MESH_INSETS]
-    rings = list(reversed(front)) + back
-    tag(bm, add_loft(bm, rings, MESH_IDX), MESHPANEL)
-    # lumbar pad on the panel's front, and its straps to the frame
-    pad = rrect_rings(PAD_HX, PAD_HY, PAD_RC, 0.008, PAD_PROFILE,
-                      lambda x, y, z: back_point(x, y + LUMBAR_V, z), nc=6, nsx=10, nsy=2)
-    tag(bm, add_loft(bm, pad, FABRIC_IDX), LUMBAR)
+    # elastomeric mesh stretched from the frame's centreline in
+    add_mesh_panel(bm, [back_loop(d) for d in MESH_INSETS], back_point, MESHPANEL)
+    # lumbar: an S-curved pad on the mesh, straps out to two sliders that
+    # clamp the frame's sides; ``lumbar_shift`` floats the whole unit forward
+    _vdir, ndir = back_axes()
+    shift = ndir * lumbar_shift
+
+    def pad_point(x, y, z):
+        s = PAD_S * math.sin(math.pi * y / PAD_HY) * max(0.0, z) / PAD_PROFILE[-1][1]
+        return back_point(x, y + LUMBAR_V, z + s) + shift
+
+    tag(bm, add_loft(bm, rrect_rings(PAD_HX, PAD_HY, PAD_RC, 0.008, PAD_PROFILE, pad_point,
+                                     nc=6, nsx=10, nsy=6), FABRIC_IDX), LUMBAR)
     sec = rect_section(STRAP_HV, 0.5 * (STRAP_OFF[1] - STRAP_OFF[0]), 0.0008)
     mid = 0.5 * (STRAP_OFF[0] + STRAP_OFF[1])
     for side in (-1.0, 1.0):
         rings = []
         for i in range(7):
             u = side * (STRAP_U[0] + (STRAP_U[1] - STRAP_U[0]) * i / 6)
-            rings.append([back_point(u, LUMBAR_V + sv, mid + so) for sv, so in sec])
+            rings.append([back_point(u, LUMBAR_V + sv, mid + so) + shift for sv, so in sec])
         if side < 0:
             rings = [list(reversed(r)) for r in rings]
         tag(bm, add_loft(bm, rings, SHELL_IDX), STRAP, 0 if side > 0 else 1)
+        # slider: a sleeve on the frame's own section, SLIDER_WALL proud of it
+        vs = [LUMBAR_V - SLIDER_HV + 2.0 * SLIDER_HV * i / 4 for i in range(5)]
+        spts = [back_point(side * BACK_HX, v) + shift for v in vs]
+        snrm = [back_normal(side * BACK_HX, v) for v in vs]
+        tag(bm, add_sweep(bm, spts, lambda i: frame_section(vs[i], SLIDER_WALL), NYLON_IDX,
+                          normals=snrm), SLIDER, 0 if side > 0 else 1)
     # cross bar and hub plate behind the panel
     cross = [back_point(-0.241 + 0.482 * i / 15, CROSS_V, CROSS_OFF) for i in range(16)]
     tag(bm, add_sweep(bm, cross, circle_section(CROSS_R, 12), SHELL_IDX), CROSSBAR)
-    _vdir, ndir = back_axes()
     hub_c = back_point(0.0, CROSS_V, -0.006)
     tag(bm, add_lathe(bm, [(0.036, 0.0), (0.040, 0.003), (0.040, 0.020), (0.036, 0.024)], 32,
                       SHELL_IDX, center=hub_c, rot=frame_from(-ndir, X_AX), solid=True), BACKHUB)
@@ -787,16 +946,31 @@ def add_back(bm):
             back_point(0.0, CROSS_V, -0.020)]
     tag(bm, add_sweep(bm, catmull(ctrl, per=4), superellipse_section(0.008, 0.026, 20, 4.0),
                       ALU_IDX, side=X_AX), SPINE)
-    # headrest: an aluminium stem up the back from the hub plate, clear of the
-    # frame's top rail, into an upholstered pad
+    # headrest: an aluminium stem up the back from the hub plate, clear of
+    # the frame's top rail, into a hub behind a framed mesh pad carried
+    # HEAD_OFF forward of the back's surface
+    def head_point(u, v, off=0.0):
+        return back_point(u, v, HEAD_OFF + off)
+
     ctrl = [back_point(0.0, CROSS_V + 0.014, -0.019), back_point(0.0, 0.42, -0.028),
-            back_point(0.0, 0.60, -0.036), back_point(0.0, 0.655, -0.024),
-            back_point(0.0, HEAD_V, -0.004)]
+            back_point(0.0, 0.60, -0.036), back_point(0.0, 0.672, -0.018),
+            head_point(0.0, HEAD_V, -0.008)]
     tag(bm, add_sweep(bm, catmull(ctrl, per=5), superellipse_section(0.006, 0.019, 16, 4.0),
                       ALU_IDX, side=X_AX), HEADSTEM)
-    head = rrect_rings(HEAD_HX, HEAD_HY, HEAD_RC, 0.008, HEAD_PROFILE,
-                       lambda x, y, z: back_point(x, y + HEAD_V, z), nc=8, nsx=10, nsy=3)
-    tag(bm, add_loft(bm, head, FABRIC_IDX), HEADREST)
+    hc = head_point(0.0, HEAD_V, -0.0055)
+    tag(bm, add_lathe(bm, [(0.026, -0.0020), (0.030, 0.0), (0.030, 0.0030), (0.027, 0.0040)],
+                      28, SHELL_IDX, center=hc, rot=frame_from(back_normal(0.0, HEAD_V), X_AX),
+                      solid=True), HEADHUB)
+
+    def head_loop(d):
+        return [(x, y + HEAD_V) for x, y in
+                rrect_loop(HEAD_HX - d, HEAD_HY - d, max(HEAD_RC - d, 0.008), 6, 10, 3)]
+
+    outline = head_loop(0.0)
+    tag(bm, add_sweep(bm, [head_point(u, v) for u, v in outline],
+                      superellipse_section(HEAD_FRAME[0], HEAD_FRAME[1], 10, 2.8), SHELL_IDX,
+                      normals=[back_normal(u, v) for u, v in outline], closed=True), HEADFRAME)
+    add_mesh_panel(bm, [head_loop(d) for d in HEAD_INSETS], head_point, HEADMESH)
 
 
 def add_arm(bm, side, raise_=0.0):
@@ -809,19 +983,89 @@ def add_arm(bm, side, raise_=0.0):
     def at(cx, cy, dz):
         return lambda x, y, z: Vector((cx + x, cy + y, z + dz))
 
+    # telescoping cover fixed on the bracket; the post slides in it
+    cover = rrect_rings(0.025, 0.039, 0.016, 0.004, COVER_PROFILE, at(s * ARM_X, ARM_Y, 0.0),
+                        nc=5, nsx=2, nsy=3)
+    tag(bm, add_loft(bm, cover, SHELL_IDX), COVER, side)
     post = rrect_rings(0.020, 0.034, 0.012, 0.004, POST_PROFILE, at(s * ARM_X, ARM_Y, raise_),
                        nc=5, nsx=2, nsy=3)
-    tag(bm, add_loft(bm, post, SHELL_IDX), POST, side)
-    btn = Vector((s * ARM_X, ARM_Y - 0.034 + 0.001, 0.625)) + up
-    tag(bm, add_lathe(bm, [(0.0065, 0.0), (0.0065, 0.0030), (0.0055, 0.0048), (0.0020, 0.0053)],
-                      20, CHROME_IDX, center=btn, rot=frame_from(-Y_AX, X_AX), solid=True),
-        BUTTON, side)
+    tag(bm, add_loft(bm, post, NYLON_IDX), POST, side)
+    btn_prof = [(0.0065, 0.0), (0.0065, 0.0030), (0.0055, 0.0048), (0.0020, 0.0053)]
+    btn = Vector((s * ARM_X, ARM_Y - 0.034 + 0.001, 0.622)) + up
+    tag(bm, add_lathe(bm, btn_prof, 20, CHROME_IDX, center=btn, rot=frame_from(-Y_AX, X_AX),
+                      solid=True), BUTTON, side)
+    # the pivot / width button on the post's outer face
+    piv = Vector((s * (ARM_X + 0.020 - 0.001), ARM_Y + 0.004, 0.628)) + up
+    tag(bm, add_lathe(bm, btn_prof, 20, CHROME_IDX, center=piv,
+                      rot=frame_from(X_AX * s, Z_AX), solid=True), PIVOT, side)
     sup = rrect_rings(0.028, 0.110, 0.024, 0.004, SUPPORT_PROFILE, at(s * ARM_X, PAD_Y, raise_),
                       nc=6, nsx=2, nsy=6)
     tag(bm, add_loft(bm, sup, SHELL_IDX), SUPPORT, side)
-    pad = rrect_rings(0.040, 0.125, 0.034, 0.004, ARMPAD_PROFILE, at(s * ARM_X, PAD_Y, raise_),
+    pad = rrect_rings(0.042, 0.128, 0.036, 0.004, ARMPAD_PROFILE, at(s * ARM_X, PAD_Y, raise_),
                       nc=6, nsx=3, nsy=8)
     tag(bm, add_loft(bm, pad, LEATHER_IDX), ARMPAD, side)
+
+
+def mat_loop(d):
+    """The mat's plan at an inset: a rounded rectangle whose front edge
+    carries a lip forward under the desk, even in x."""
+    r = max(MAT_RC - d, 0.010)
+    out = []
+    for x, y in rrect_loop(MAT_HX - d, MAT_HY - d, r, **MAT_RING):
+        if y < 0.0:
+            y -= MAT_TONGUE * smooth01(
+                (MAT_TONGUE_HX + MAT_TONGUE_SHOULDER - abs(x)) / MAT_TONGUE_SHOULDER)
+        out.append((x, y + MAT_CY))
+    return out
+
+
+def add_mat(bm, curl=False):
+    rings = []
+    for d, z in MAT_PROFILE:
+        ring = []
+        for x, y in mat_loop(d):
+            zz = z
+            if curl:
+                zz += CURL_MAT * smooth01(((-x) + (y - MAT_CY) - 0.72) / 0.40)
+            ring.append(Vector((x, y, zz)))
+        rings.append(ring)
+    tag(bm, add_loft(bm, rings, MAT_IDX), MAT)
+
+
+def add_plant(bm, lift=0.0):
+    c = Vector((PLANT_C[0], PLANT_C[1], 0.0))
+    tag(bm, add_lathe(bm, POT_PROFILE, POT_SEGS, CERAMIC_IDX, center=c, solid=True), POT)
+    tag(bm, add_lathe(bm, SOIL_PROFILE, POT_SEGS, SOIL_IDX, center=c, phase=math.pi / POT_SEGS,
+                      solid=True), SOIL)
+    # snake-plant blades: a folded V section, lanceolate in width, leaning
+    # out and turning slowly, every base buried LEAF_ROOT under the crown
+    for i in range(LEAF_COUNT):
+        a = 0.4 + i * 2.39996323
+        rb = 0.014 + 0.048 * math.sqrt((i + 0.5) / LEAF_COUNT)
+        h = 0.44 + 0.30 * frac(i * 0.618034 + 0.27)
+        w = 0.058 + 0.024 * frac(i * 0.414214 + 0.61)
+        lean = math.radians(2.0 + 8.0 * (rb - 0.014) / 0.048 + 3.0 * frac(i * 0.732051 + 0.2))
+        twist = math.radians(-35.0 + 70.0 * frac(i * 0.259921 + 0.13))
+        er = Vector((math.cos(a), math.sin(a), 0.0))
+        et = Vector((-math.sin(a), math.cos(a), 0.0))
+        base = c + er * rb + Z_AX * (SOIL_TOP - LEAF_ROOT - LEAF_ROOT_STEP * i + lift)
+        reach = h * math.tan(lean)
+        rings = []
+        for s in range(LEAF_STATIONS):
+            t = s / (LEAF_STATIONS - 1)
+            p = base + Z_AX * (h * t) + er * (reach * t ** 1.6)
+            tang = (Z_AX * h + er * (reach * 1.6 * t ** 0.6)).normalized()
+            ang = twist * t
+            across = et * math.cos(ang) + er * math.sin(ang)
+            across = (across - tang * across.dot(tang)).normalized()
+            depth = tang.cross(across)
+            hw = max(0.0025, 0.5 * w * math.sin(math.pi * (0.10 + 0.90 * t)) ** 0.7)
+            fold = 0.30 * hw
+            th = 0.0008 + 0.0030 * (1.0 - t)
+            sec = [(-1.0, fold), (-0.5, 0.25 * fold), (0.0, 0.0), (0.5, 0.25 * fold),
+                   (1.0, fold), (0.5, 0.25 * fold - th), (0.0, -th), (-0.5, 0.25 * fold - th)]
+            rings.append([p + across * (u * hw) + depth * dd for u, dd in sec])
+        tag(bm, add_loft(bm, rings, LEAF_IDX), LEAF, i)
 
 
 # --------------------------------------------------------------------------
@@ -829,7 +1073,8 @@ def add_arm(bm, side, raise_=0.0):
 # --------------------------------------------------------------------------
 
 def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float_caster=False,
-                     offset_column=False, uneven_arms=False, loose_wheel=False):
+                     offset_column=False, uneven_arms=False, loose_wheel=False,
+                     float_lumbar=False, curl_mat=False, float_leaves=False):
     bm = bmesh.new()
     try:
         bm.faces.layers.int.new("part")
@@ -841,7 +1086,7 @@ def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float
             skew = math.radians(SKEW_DEG) if (skew_spoke and k == SKEW_SPOKE) else 0.0
             bearing, stem, _xl, _yl = caster_frame(k, skew)
             tag(bm, add_spoke(bm, bearing), SPOKE, k)
-            tag(bm, add_lathe(bm, BOSS_PROFILE, 28, ALU_IDX, center=stem, solid=True), BOSS, k)
+            tag(bm, add_lathe(bm, BOSS_PROFILE, 24, ALU_IDX, center=stem, solid=True), BOSS, k)
             bevel_verts += add_caster(
                 bm, k, skew,
                 lift=FLOAT_LIFT if (float_caster and k == FLOAT_CASTER) else 0.0,
@@ -853,7 +1098,7 @@ def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float
         for i, prof in enumerate(SLEEVES):
             tag(bm, add_lathe(bm, prof, 36, NYLON_IDX, phase=math.pi / 36.0 * i), SLEEVE, i)
 
-        # --- tilt mechanism
+        # --- synchro-tilt mechanism
         tag(bm, add_lathe(bm, SOCKET_PROFILE, 32, STEEL_IDX, solid=True), SOCKET)
         mech = add_box(bm, MECH_C, MECH_SIZE, STEEL_IDX)
         tag(bm, mech, MECH)
@@ -863,11 +1108,9 @@ def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float
                                (TILT_R, -TILT_HALF + 0.002), (TILT_R, TILT_HALF - 0.002),
                                (TILT_R - 0.002, TILT_HALF), (0.012, TILT_HALF)], 24, STEEL_IDX,
                           center=tc, rot=frame_from(X_AX, Z_AX), solid=True), TILT)
-        knob = [(0.006, -0.005), (0.015, -0.005), (0.017, -0.003), (0.017, 0.024),
-                (0.0155, 0.030), (0.010, 0.033), (0.004, 0.035)]
-        tag(bm, add_lathe(bm, knob, 32, NYLON_IDX, center=KNOB_C, rot=frame_from(-Y_AX, X_AX),
-                          solid=True, rmod=lambda i, j: 0.93 if (j in (2, 3) and i % 2) else 1.0),
-            KNOB)
+        tag(bm, add_lathe(bm, KNOB_PROFILE, 36, NYLON_IDX, center=KNOB_C,
+                          rot=frame_from(-Y_AX, X_AX), solid=True,
+                          rmod=lambda i, j: 0.92 if (j in (2, 3) and i % 2) else 1.0), KNOB)
         for i, ctrl in enumerate(LEVERS):
             path = catmull([Vector(p) for p in ctrl], per=4)
             tag(bm, add_sweep(bm, path, circle_section(0.0042, 10), STEEL_IDX), LEVER, i)
@@ -881,24 +1124,9 @@ def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float
                 v.co = c + off - Z_AX * (off.z * 0.55)
             tag(bm, paddle, PADDLE, i)
 
-        # --- seat pan and cushion
-        tag(bm, add_loft(bm, rrect_rings(PAN_HX, PAN_HY, PAN_RC, SEAT_RMIN, PAN_PROFILE,
-                                         pan_xform, nc=8, nsx=8, nsy=8), NYLON_IDX), PAN)
-        tag(bm, add_loft(bm, rrect_rings(SEAT_HX, SEAT_HY, SEAT_RC, SEAT_RMIN, SEAT_PROFILE,
-                                         seat_xform, nc=8, nsx=8, nsy=8), FABRIC_IDX), CUSHION)
-        # piped welt: a cord laid along the top edge seam, biting the cushion
-        (d0, z0), (d1, z1) = SEAT_PROFILE[PIPE_AT[0]], SEAT_PROFILE[PIPE_AT[1]]
-        ln = math.hypot(d1 - d0, z1 - z0)
-        # outward in the profile plane: toward smaller inset, and up the bank
-        dp = 0.5 * (d0 + d1) - PIPE_OUT * (z1 - z0) / ln
-        zp = 0.5 * (z0 + z1) + PIPE_OUT * (d1 - d0) / ln
-        weld = [seat_xform(x, y, zp)
-                for x, y in rrect_loop(SEAT_HX - dp, SEAT_HY - dp, SEAT_RC - dp, 12, 16, 16)]
-        tag(bm, add_sweep(bm, weld, circle_section(PIPE_R, 8), LEATHER_IDX, side=Z_AX,
-                          closed=True), PIPING)
-
-        # --- back, spine and arms
-        add_back(bm)
+        # --- seat shell, cushion and welts; back, spine, headrest; arms
+        add_seat(bm)
+        add_back(bm, FLOAT_LUMBAR if float_lumbar else 0.0)
         add_arm(bm, 0, UNEVEN_ARM if uneven_arms else 0.0)
         add_arm(bm, 1)
 
@@ -919,6 +1147,13 @@ def build_chair_mesh(name, bevel_offset, bevel_segments, skew_spoke=False, float
                     bmesh.ops.bevel(bm, geom=edges, offset=off, segments=bevel_segments,
                                     profile=0.5, affect="EDGES", clamp_overlap=True,
                                     material=mat_idx)
+
+        # the chair stands on the mat: wheels CHAIR_Z off the floor, which
+        # leaves them MAT_SINK into the sheet
+        for v in bm.verts:
+            v.co.z += CHAIR_Z
+        add_mat(bm, curl=curl_mat)
+        add_plant(bm, FLOAT_LEAVES if float_leaves else 0.0)
 
         bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-5)
         bmesh.ops.dissolve_degenerate(bm, dist=1e-6)
@@ -1000,95 +1235,225 @@ def principled(name, color, metallic, roughness, roughness_var=0.0, mottle=0.0,
     return mat
 
 
-def weave(nt, coord, scale, strength):
-    """Two crossed wave-band textures: a plain weave as a factor and a bump."""
-    out = []
-    for axis in ("X", "Z"):
-        wv = nt.nodes.new("ShaderNodeTexWave")
-        wv.wave_type = "BANDS"
-        wv.bands_direction = axis
-        wv.inputs["Scale"].default_value = scale
-        wv.inputs["Distortion"].default_value = 0.0
-        nt.links.new(coord.outputs["Object"], wv.inputs["Vector"])
-        out.append(wv)
-    mul = nt.nodes.new("ShaderNodeMath")
-    mul.operation = "MULTIPLY"
-    nt.links.new(out[0].outputs["Fac"], mul.inputs[0])
-    nt.links.new(out[1].outputs["Fac"], mul.inputs[1])
-    bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = strength
-    bump.inputs["Distance"].default_value = 0.0006
-    nt.links.new(mul.outputs["Value"], bump.inputs["Height"])
-    return mul, bump
+def add_studio(mat, color, env, stops):
+    """A studio carried in the material (after espresso-machine): the
+    world-space reflection vector looks up a soft band of softboxes round the
+    horizon, brighter on the key's side, added as emission. A metal on a dark
+    stage mirrors the dark stage and reads as grey plastic without it."""
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    out = nt.nodes["Material Output"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Reflection"], sep.inputs[0])
+    mz = nt.nodes.new("ShaderNodeMapRange")
+    mz.inputs["From Min"].default_value = -1.0
+    mz.inputs["From Max"].default_value = 1.0
+    nt.links.new(sep.outputs["Z"], mz.inputs["Value"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    cr = ramp.color_ramp
+    cr.elements[0].position, cr.elements[0].color = stops[0][0], (stops[0][1],) * 3 + (1.0,)
+    cr.elements[1].position, cr.elements[1].color = stops[-1][0], (stops[-1][1],) * 3 + (1.0,)
+    for pos, val in stops[1:-1]:
+        e = cr.elements.new(pos)
+        e.color = (val, val, val, 1.0)
+    nt.links.new(mz.outputs["Result"], ramp.inputs["Fac"])
+    mx = nt.nodes.new("ShaderNodeMapRange")
+    mx.inputs["From Min"].default_value = -1.0
+    mx.inputs["From Max"].default_value = 1.0
+    mx.inputs["To Min"].default_value = 1.0
+    mx.inputs["To Max"].default_value = 0.40
+    nt.links.new(sep.outputs["X"], mx.inputs["Value"])
+    side = nt.nodes.new("ShaderNodeMath")
+    side.operation = "MULTIPLY"
+    nt.links.new(mx.outputs["Result"], side.inputs[0])
+    side.inputs[1].default_value = env
+    tint = nt.nodes.new("ShaderNodeMixRGB")
+    tint.blend_type = "MULTIPLY"
+    tint.inputs[0].default_value = 1.0
+    tint.inputs[2].default_value = color
+    nt.links.new(ramp.outputs["Color"], tint.inputs[1])
+    em = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(tint.outputs[0], em.inputs["Color"])
+    nt.links.new(side.outputs["Value"], em.inputs["Strength"])
+    add = nt.nodes.new("ShaderNodeAddShader")
+    surface = out.inputs["Surface"].links[0].from_socket if out.inputs["Surface"].links \
+        else bsdf.outputs["BSDF"]
+    nt.links.new(surface, add.inputs[0])
+    nt.links.new(em.outputs["Emission"], add.inputs[1])
+    nt.links.new(add.outputs["Shader"], out.inputs["Surface"])
+    return mat
 
 
-def chair_materials():
-    """(fabric, mesh, shell, nylon, aluminium, chrome, rubber, leatherette,
-    steel): shared by the check and the render.
+STUDIO_METAL = [(0.0, 0.03), (0.28, 0.08), (0.40, 0.55), (0.48, 1.0), (0.60, 0.35), (1.0, 0.20)]
+STUDIO_SATIN = [(0.0, 0.02), (0.30, 0.04), (0.42, 0.40), (0.50, 1.0), (0.62, 0.30), (1.0, 0.12)]
 
-    The seat and lumbar pad are a tangerine woven upholstery; the back is a
-    sheer charcoal mesh in a warm-white moulded frame; casters, hub, pan
-    and cover are black nylon; the star, spine and arm brackets are
-    brushed aluminium; the column, stems and axles chrome; the treads grey
-    polyurethane; the arm pads and welt black leatherette; the mechanism
-    graphite-painted steel.
-    """
-    # heather and a fine nap; no wave bands (distorted bands read as wood grain)
-    fabric = principled("ChairFabric", (0.66, 0.22, 0.045, 1.0), 0.0, 0.80)
-    nt = fabric.node_tree
+
+def bands(nt, coord, axis, scale, profile="SIN", distortion=0.0):
+    wv = nt.nodes.new("ShaderNodeTexWave")
+    wv.wave_type = "BANDS"
+    wv.bands_direction = axis
+    wv.wave_profile = profile
+    wv.inputs["Scale"].default_value = scale
+    wv.inputs["Distortion"].default_value = distortion
+    nt.links.new(coord.outputs["Object"], wv.inputs["Vector"])
+    return wv
+
+
+def math_node(nt, op, a, b):
+    m = nt.nodes.new("ShaderNodeMath")
+    m.operation = op
+    for i, x in enumerate((a, b)):
+        if isinstance(x, (int, float)):
+            m.inputs[i].default_value = x
+        else:
+            nt.links.new(x, m.inputs[i])
+    return m.outputs["Value"]
+
+
+def woven(name, dark, light, weave_scale, bump_strength, heather_scale=160.0, sheen=0.5):
+    """Upholstery: a heathered yarn tone over a plain weave. The weave is
+    the product of crossed sine bands on two object axes (the third axis
+    added in, so the sloped lumbar pad weaves too), carried mostly in the
+    bump and a little in the tone. Undistorted: distorted bands read as
+    wood grain."""
+    mat = principled(name, light, 0.0, 0.82)
+    nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
     heather = nt.nodes.new("ShaderNodeTexNoise")
-    heather.inputs["Scale"].default_value = 160.0
+    heather.inputs["Scale"].default_value = heather_scale
     heather.inputs["Detail"].default_value = 8.0
     nt.links.new(coord.outputs["Object"], heather.inputs["Vector"])
+    bx = bands(nt, coord, "X", weave_scale)
+    by = bands(nt, coord, "Y", weave_scale)
+    bz = bands(nt, coord, "Z", weave_scale)
+    warp = math_node(nt, "MULTIPLY", math_node(nt, "ADD", by.outputs["Fac"], bz.outputs["Fac"]),
+                     0.5)
+    cloth = math_node(nt, "MULTIPLY", bx.outputs["Fac"], warp)
+    tone = math_node(nt, "ADD", math_node(nt, "MULTIPLY", heather.outputs["Fac"], 0.8),
+                     math_node(nt, "MULTIPLY", cloth, 0.30))
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (0.46, 0.130, 0.026, 1.0)
-    ramp.color_ramp.elements[1].position = 0.70
-    ramp.color_ramp.elements[1].color = (0.72, 0.250, 0.052, 1.0)
-    nt.links.new(heather.outputs["Fac"], ramp.inputs["Fac"])
+    ramp.color_ramp.elements[0].color = dark
+    ramp.color_ramp.elements[1].position = 0.80
+    ramp.color_ramp.elements[1].color = light
+    nt.links.new(tone, ramp.inputs["Fac"])
     nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
-    nap = nt.nodes.new("ShaderNodeTexNoise")
-    nap.inputs["Scale"].default_value = 900.0
-    nap.inputs["Detail"].default_value = 2.0
-    nt.links.new(coord.outputs["Object"], nap.inputs["Vector"])
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.18
-    bump.inputs["Distance"].default_value = 0.0005
-    nt.links.new(nap.outputs["Fac"], bump.inputs["Height"])
+    bump.inputs["Strength"].default_value = bump_strength
+    bump.inputs["Distance"].default_value = 0.0006
+    nt.links.new(cloth, bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
-    _set(bsdf, "Sheen Weight", 0.5)
+    _set(bsdf, "Sheen Weight", sheen)
+    return mat
 
-    mesh = principled("ChairMesh", (0.030, 0.031, 0.034, 1.0), 0.0, 0.55)
-    nt = mesh.node_tree
+
+def mesh_material():
+    """Elastomeric mesh: horizontal elastomer ribs over fine vertical
+    strands, open between them. The open cells are transparent, so the
+    frame, spine and stage show through, and the ribs catch the light."""
+    mat = principled("ChairMesh", (0.19, 0.19, 0.20, 1.0), 0.0, 0.48)
+    nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
-    mul, bump = weave(nt, coord, 55.0, 0.45)
+    ribs = math_node(nt, "GREATER_THAN", bands(nt, coord, "Z", MESH_RIB_SCALE).outputs["Fac"],
+                     0.58)
+    strands = math_node(nt, "GREATER_THAN",
+                        bands(nt, coord, "X", MESH_STRAND_SCALE).outputs["Fac"], 0.55)
+    solid = math_node(nt, "MAXIMUM", ribs, math_node(nt, "MULTIPLY", strands, 0.75))
+    tone = nt.nodes.new("ShaderNodeMixRGB")
+    tone.inputs["Color1"].default_value = (0.085, 0.086, 0.090, 1.0)
+    tone.inputs["Color2"].default_value = (0.25, 0.25, 0.26, 1.0)
+    nt.links.new(ribs, tone.inputs["Fac"])
+    nt.links.new(tone.outputs["Color"], bsdf.inputs["Base Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.5
+    bump.inputs["Distance"].default_value = 0.0008
+    nt.links.new(ribs, bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
-    # a sheer weave: part of the light passes through the open cells
     out = nt.nodes["Material Output"]
     transp = nt.nodes.new("ShaderNodeBsdfTransparent")
     mixs = nt.nodes.new("ShaderNodeMixShader")
-    mixs.inputs["Fac"].default_value = 0.62
+    nt.links.new(solid, mixs.inputs["Fac"])
     nt.links.new(transp.outputs["BSDF"], mixs.inputs[1])
     nt.links.new(bsdf.outputs["BSDF"], mixs.inputs[2])
     nt.links.new(mixs.outputs["Shader"], out.inputs["Surface"])
+    return mat
 
-    shell = principled("ChairShell", (0.62, 0.61, 0.58, 1.0), 0.0, 0.36,
-                       roughness_var=0.05, mottle=0.03, noise_scale=40.0)
+
+MESH_RIB_SCALE = 42.0
+MESH_STRAND_SCALE = 120.0
+
+
+def leaf_material():
+    """Sansevieria: dark green with the paler wavy cross-bands the plant is
+    known by, waxy."""
+    mat = principled("PlantLeaf", (0.030, 0.070, 0.034, 1.0), 0.0, 0.42, coat=0.25)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    wv = bands(nt, coord, "Z", 7.0, distortion=16.0)
+    wv.inputs["Detail"].default_value = 4.0
+    wv.inputs["Detail Scale"].default_value = 2.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.35
+    ramp.color_ramp.elements[0].color = (0.018, 0.044, 0.022, 1.0)
+    ramp.color_ramp.elements[1].position = 0.75
+    ramp.color_ramp.elements[1].color = (0.050, 0.085, 0.042, 1.0)
+    nt.links.new(wv.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    return mat
+
+
+def chair_materials():
+    """Slot order: fabric, mesh, shell, nylon, aluminium, chrome, rubber,
+    leatherette, steel, border, mat, ceramic, soil, leaf. Shared by the check
+    and the render.
+
+    The seat's centre panel and the lumbar pad are a muted-teal woven
+    upholstery, the seat's side panels a mid-grey knit; the back and
+    headrest are a grey elastomeric mesh in graphite frames; the seat shell,
+    arm plates and covers are graphite plastic with a satin sheen; the
+    casters, hub, posts, sliders and sleeves black nylon; the star, spine,
+    headrest stem and arm brackets polished aluminium; the column, stems,
+    axles and buttons chrome; the treads grey polyurethane; the arm pads and
+    welts black leatherette; the mechanism graphite-painted steel. The mat is
+    a smoked polycarbonate sheet; the pot a speckled stone ceramic.
+    """
+    fabric = woven("ChairFabric", (0.060, 0.105, 0.120, 1.0), (0.150, 0.250, 0.275, 1.0),
+                   110.0, 0.35)
+    mesh = mesh_material()
+    shell = principled("ChairShell", (0.040, 0.041, 0.045, 1.0), 0.0, 0.36,
+                       roughness_var=0.05, mottle=0.08, noise_scale=40.0)
+    add_studio(shell, (0.55, 0.57, 0.62, 1.0), 0.10, STUDIO_SATIN)
     nylon = principled("ChairNylon", (0.022, 0.022, 0.025, 1.0), 0.0, 0.42,
                        roughness_var=0.08, noise_scale=70.0)
-    alu = principled("ChairAluminium", (0.86, 0.87, 0.89, 1.0), 1.0, 0.32,
-                     roughness_var=0.06, noise_scale=120.0)
-    chrome = principled("ChairChrome", (0.92, 0.92, 0.94, 1.0), 1.0, 0.09)
+    add_studio(nylon, (0.55, 0.57, 0.62, 1.0), 0.05, STUDIO_SATIN)
+    alu = principled("ChairAluminium", (0.88, 0.89, 0.91, 1.0), 1.0, 0.20,
+                     roughness_var=0.05, noise_scale=120.0)
+    add_studio(alu, (0.80, 0.81, 0.83, 1.0), 0.60, STUDIO_METAL)
+    chrome = principled("ChairChrome", (0.93, 0.93, 0.95, 1.0), 1.0, 0.07)
+    add_studio(chrome, (0.90, 0.90, 0.92, 1.0), 0.80, STUDIO_METAL)
     rubber = principled("ChairTread", (0.115, 0.115, 0.12, 1.0), 0.0, 0.62,
                         roughness_var=0.06, noise_scale=90.0)
-    leather = principled("ChairLeatherette", (0.030, 0.027, 0.025, 1.0), 0.0, 0.40,
+    leather = principled("ChairLeatherette", (0.030, 0.029, 0.029, 1.0), 0.0, 0.38,
                          roughness_var=0.10, mottle=0.25, noise_scale=260.0)
-    steel = principled("ChairSteel", (0.060, 0.062, 0.068, 1.0), 0.6, 0.46,
+    steel = principled("ChairSteel", (0.060, 0.062, 0.068, 1.0), 0.6, 0.42,
                        roughness_var=0.08, noise_scale=60.0)
-    return fabric, mesh, shell, nylon, alu, chrome, rubber, leather, steel
+    add_studio(steel, (0.55, 0.60, 0.68, 1.0), 0.14, STUDIO_SATIN)
+    border = woven("ChairBorderFabric", (0.045, 0.047, 0.052, 1.0), (0.105, 0.108, 0.116, 1.0),
+                   200.0, 0.25, heather_scale=300.0, sheen=0.3)
+    mat = principled("MatPolycarbonate", (0.050, 0.053, 0.058, 1.0), 0.0, 0.32,
+                     roughness_var=0.08, noise_scale=8.0, coat=0.25)
+    add_studio(mat, (0.55, 0.57, 0.62, 1.0), 0.05, STUDIO_SATIN)
+    ceramic = principled("PotCeramic", (0.200, 0.192, 0.180, 1.0), 0.0, 0.64,
+                         roughness_var=0.08, mottle=0.35, noise_scale=320.0)
+    soil = principled("PotSoil", (0.034, 0.025, 0.018, 1.0), 0.0, 0.94,
+                      mottle=0.45, noise_scale=180.0)
+    leaf = leaf_material()
+    return (fabric, mesh, shell, nylon, alu, chrome, rubber, leather, steel, border, mat,
+            ceramic, soil, leaf)
 
 
 def assign_slots(obj, wanted):
@@ -1243,6 +1608,7 @@ class Shell:
         self.kind, self.part = tg // 100, tg % 100
         remap = {vi: n for n, vi in enumerate(verts)}
         self.tri_idx = [[remap[v] for v in p.vertices] for p in polys]
+        self.down = [p.normal.z < -0.99 for p in polys]
         self.tree = BVHTree.FromPolygons([tuple(p) for p in pts], self.tri_idx)
 
 
@@ -1262,13 +1628,14 @@ def classify(me):
         by.setdefault(s.kind, []).append(s)
     for v in by.values():
         v.sort(key=lambda s: s.part)
-    return {"all": parts, "groups": groups, "by": by}
+    chair = [s for s in parts if s.kind not in VIGNETTE_KINDS]
+    return {"all": parts, "chair": chair, "groups": groups, "by": by}
 
 
-def slab_axis(s, frac=0.1):
+def slab_axis(s, frac_=0.1):
     """Axis of a turned part from the XY centroids of its bottom and top slabs."""
-    z0 = s.lo.z + frac * s.size.z
-    z1 = s.hi.z - frac * s.size.z
+    z0 = s.lo.z + frac_ * s.size.z
+    z1 = s.hi.z - frac_ * s.size.z
     bot = [p for p in s.pts if p.z <= z0]
     top = [p for p in s.pts if p.z >= z1]
     a = sum(bot, Vector()) / len(bot)
@@ -1283,6 +1650,40 @@ def axis_at(origin, direction, z):
 
 def tilt_deg(direction):
     return math.degrees(math.acos(min(1.0, abs(direction.z))))
+
+
+def surface_below(tree, x, y, z_from):
+    """Height of a shell's surface straight below (x, y), by a ray cast on
+    that shell's own tree; None when the ray misses it."""
+    hit = tree.ray_cast(Vector((x, y, z_from)), Vector((0.0, 0.0, -1.0)))
+    return None if hit[0] is None else hit[0].z
+
+
+def support_audit(by):
+    """Named supports: the mat's underside flat on the floor, every wheel
+    pressed into the mat under it, the pot on the floor."""
+    out = {}
+    mats = by.get(MAT, [])
+    pots = by.get(POT, [])
+    wheels = by.get(WHEEL, [])
+    out["mats"], out["pots"], out["wheels"] = len(mats), len(pots), len(wheels)
+    if len(mats) != 1 or len(pots) != 1:
+        return out
+    mat = mats[0]
+    under = set()
+    for tri, down in zip(mat.tri_idx, mat.down):
+        if down:
+            under.update(tri)
+    out["mat_under_n"] = len(under)
+    out["mat_under_z"] = max(mat.pts[i].z for i in under) if under else 9.0
+    sinks = []
+    for w in wheels:
+        low = min(w.pts, key=lambda p: p.z)
+        top = surface_below(mat.tree, low.x, low.y, low.z + 0.05)
+        sinks.append(-9.0 if top is None else top - low.z)
+    out["wheel_sink"] = (min(sinks), max(sinks)) if sinks else (0.0, 0.0)
+    out["pot_z"] = pots[0].lo.z
+    return out
 
 
 def star_audit(by):
@@ -1346,8 +1747,8 @@ def shell_mass(s):
 
 
 def stance_audit(cls):
-    """Armrests mirrored and level; seat, armrest and star sizes; mass
-    centre inside the polygon of the wheels' floor contacts."""
+    """Armrests mirrored and level; seat, armrest and star sizes; the
+    chair's mass centre inside the polygon of the wheels' contacts."""
     by = cls["by"]
     out = {}
     worst = 0.0
@@ -1372,7 +1773,7 @@ def stance_audit(cls):
     out["arm_over"] = min(s.hi.z for s in by[ARMPAD]) - cushion[0].hi.z
     total = 0.0
     mom = Vector()
-    for s in cls["all"]:
+    for s in cls["chair"]:
         if s.mat is None:
             continue
         vol, cen = shell_mass(s)
@@ -1396,8 +1797,7 @@ def stance_audit(cls):
     return out
 
 
-def connected_components(cls):
-    parts = cls["all"]
+def connected_components(parts):
     n = len(parts)
     parent = list(range(n))
 
@@ -1423,6 +1823,40 @@ def connected_components(cls):
     for i in range(n):
         sizes[find(i)] = sizes.get(find(i), 0) + 1
     return len(roots), sorted(sizes.values())
+
+
+def lumbar_audit(by):
+    """Each slider hugs the frame tube it rides on: every slider vertex a
+    banded distance off the frame's surface, all round."""
+    sliders, frames = by.get(SLIDER, []), by.get(FRAME, [])
+    if len(sliders) != 2 or len(frames) != 1:
+        return None
+    frame = frames[0]
+    gaps = []
+    for s in sliders:
+        d = [(frame.tree.find_nearest(p)[0] - p).length for p in s.pts]
+        gaps.append((min(d), max(d)))
+    return {"sliders": len(sliders), "gap": (min(g[0] for g in gaps), max(g[1] for g in gaps))}
+
+
+def leaf_audit(by):
+    """Every leaf's base buried in the soil to a banded depth, measured
+    against the soil's own surface straight above it, and inside the pot."""
+    leaves, soils = by.get(LEAF, []), by.get(SOIL, [])
+    if len(soils) != 1:
+        return None
+    soil = soils[0]
+    axis = Vector((0.5 * (soil.lo.x + soil.hi.x), 0.5 * (soil.lo.y + soil.hi.y), 0.0))
+    soil_r = 0.5 * max(soil.size.x, soil.size.y)
+    depths, reach = [], []
+    for lf in leaves:
+        base = [p for p in lf.pts if p.z <= lf.lo.z + 0.002]
+        b = sum(base, Vector()) / len(base)
+        top = surface_below(soil.tree, b.x, b.y, soil.hi.z + 0.05)
+        depths.append(-9.0 if top is None else top - lf.lo.z)
+        reach.append(max(math.hypot(p.x - axis.x, p.y - axis.y) for p in base))
+    return {"leaves": len(leaves), "depth": (min(depths), max(depths)) if depths else (0, 0),
+            "wall_clear": soil_r - max(reach) if reach else -9.0}
 
 
 def add_stray_vert(me):
@@ -1529,11 +1963,17 @@ def export_unity(path, objects):
     )
 
 
+def _r(v):
+    return tuple(round(x, 5) for x in v) if isinstance(v, tuple) else round(v, 5)
+
+
 def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, skew_spoke=False,
-          offset_column=False, uneven_arms=False, loose_wheel=False):
+          offset_column=False, uneven_arms=False, loose_wheel=False, float_lumbar=False,
+          curl_mat=False, float_leaves=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(skew_spoke=skew_spoke, float_caster=float_caster, offset_column=offset_column,
-                 uneven_arms=uneven_arms, loose_wheel=loose_wheel)
+                 uneven_arms=uneven_arms, loose_wheel=loose_wheel, float_lumbar=float_lumbar,
+                 curl_mat=curl_mat, float_leaves=float_leaves)
     low = build_chair_mesh("ChairLow", bevel_offset=0.0008, bevel_segments=1, **flags)
     high = build_chair_mesh("ChairHigh", bevel_offset=0.0008, bevel_segments=3, **flags)
     mats = chair_materials()
@@ -1568,12 +2008,13 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, ske
     hyg = hygiene_audit(low.data)
     cls = classify(low.data)
     zf = zfight_pairs(low.data, cls["groups"])
-    wheels = cls["by"].get(WHEEL, [])
-    wheel_z = [w.lo.z for w in wheels]
+    sup = support_audit(cls["by"])
     star = star_audit(cls["by"])
     column = column_audit(cls["by"])
     stance = stance_audit(cls)
-    ncomp, comp_sizes = connected_components(cls)
+    ncomp, comp_sizes = connected_components(cls["chair"])
+    lumbar = lumbar_audit(cls["by"])
+    leaves = leaf_audit(cls["by"])
 
     img, tex = setup_bake_image(low, steel)
     if img is None:
@@ -1617,9 +2058,9 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, ske
     print(f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
           f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
           f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}")
-    print(f"measured shells={len(cls['all'])} wheels={len(wheels)} "
-          f"wheel_zmin=({min(wheel_z or [0]):.5f},{max(wheel_z or [0]):.5f})")
-    print(f"measured star={ {k: (tuple(round(x, 5) for x in v) if isinstance(v, tuple) else round(v, 5)) for k, v in star.items()} }")
+    print(f"measured shells={len(cls['all'])} chair_shells={len(cls['chair'])} "
+          f"supports={ {k: _r(v) for k, v in sup.items()} }")
+    print(f"measured star={ {k: _r(v) for k, v in star.items()} }")
     if column:
         print(f"measured column coax_hub={column['coax_hub']:.6f} "
               f"coax_socket={column['coax_socket']:.6f} tilt={column['tilt']:.4f} "
@@ -1630,6 +2071,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, ske
               f"mass={stance['mass']:.2f}kg com=({stance['com'].x:.4f},{stance['com'].y:.4f},"
               f"{stance['com'].z:.4f}) margin={stance['margin']:.4f} hull_n={stance['hull_n']}")
     print(f"measured components={ncomp} sizes={comp_sizes[-5:]}")
+    if lumbar:
+        print(f"measured lumbar sliders={lumbar['sliders']} gap={_r(lumbar['gap'])}")
+    if leaves:
+        print(f"measured leaves={leaves['leaves']} depth={_r(leaves['depth'])} "
+              f"wall_clear={leaves['wall_clear']:.4f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return (fail(f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]", 4),) + none1
@@ -1661,9 +2107,17 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, ske
         return (fail(f"hygiene {hyg} zfight={zf}", 15),) + none1
     if bb[2] > ZMIN_EPS:
         return (fail(f"grounded zmin={bb[2]:.5f}", 16),) + none1
-    if len(wheels) != WHEEL_COUNT or max(wheel_z) > ZMIN_EPS:
-        return (fail(f"wheels: {len(wheels)} (want {WHEEL_COUNT}), highest wheel bottom "
-                     f"{max(wheel_z or [0]):.5f} > {ZMIN_EPS}", 16),) + none1
+    if sup["mats"] != 1 or sup["pots"] != 1:
+        return (fail(f"supports: {sup['mats']} mats, {sup['pots']} pots (want 1 and 1)", 16),) + none1
+    if sup["mat_under_z"] > MAT_FLAT_EPS:
+        return (fail(f"mat not flat on the floor: underside rises to {sup['mat_under_z']:.5f} "
+                     f"> {MAT_FLAT_EPS}", 16),) + none1
+    if (sup["wheels"] != WHEEL_COUNT or not (WHEEL_SINK[0] <= sup["wheel_sink"][0]
+                                             and sup["wheel_sink"][1] <= WHEEL_SINK[1])):
+        return (fail(f"wheels: {sup['wheels']} (want {WHEEL_COUNT}), pressed into the mat "
+                     f"{_r(sup['wheel_sink'])} outside {WHEEL_SINK}", 16),) + none1
+    if sup["pot_z"] > ZMIN_EPS:
+        return (fail(f"pot off the floor: {sup['pot_z']:.5f}", 16),) + none1
     if ("spacing" not in star or star["spacing"] > SPACING_TOL_DEG
             or star["boss_r"][1] - star["boss_r"][0] > RADIUS_RANGE_MAX
             or star["stem_r"][1] - star["stem_r"][0] > RADIUS_RANGE_MAX
@@ -1683,7 +2137,16 @@ def check(skip_decimate, lift_z=False, stray_vert=False, float_caster=False, ske
             or stance["margin"] < STANCE_MARGIN):
         return (fail(f"stance and size: {stance}, star diameter {star.get('star_d')}", 19),) + none1
     if ncomp != 1:
-        return (fail(f"assembly splits into {ncomp} components {comp_sizes}", 20),) + none1
+        return (fail(f"chair splits into {ncomp} components {comp_sizes}", 20),) + none1
+    if (lumbar is None or not (SLIDER_GAP[0] <= lumbar["gap"][0]
+                               and lumbar["gap"][1] <= SLIDER_GAP[1])):
+        return (fail(f"lumbar sliders not clamped on the frame: {lumbar} (band {SLIDER_GAP})",
+                     21),) + none1
+    if (leaves is None or leaves["leaves"] != LEAF_COUNT
+            or not (LEAF_DEPTH[0] <= leaves["depth"][0] and leaves["depth"][1] <= LEAF_DEPTH[1])
+            or leaves["wall_clear"] < LEAF_WALL_CLEAR):
+        return (fail(f"leaves not rooted in the soil: {leaves} (depth band {LEAF_DEPTH}, "
+                     f"wall clear >= {LEAF_WALL_CLEAR})", 22),) + none1
     return 0, low
 
 
@@ -1713,6 +2176,7 @@ def render_still(low, path, engine):
     fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
+    floor.location.z = -0.001
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
     wall.location = (0.0, centre.y + WALL_Y, 0.0)
@@ -1737,22 +2201,20 @@ def render_still(low, path, engine):
         ob.rotation_euler = (aim_at - ob.location).normalized().to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    # The house rig scaled to a 1.1 m prop: warm key upper left, cool fill
+    # The house rig scaled to the vignette: warm key upper left, cool fill
     # low right, cool rim behind, warm wedge pooled on the back wall.
-    light("Key", (-1.9, -2.3, 2.1), 85.0, 1.2, (1.0, 0.95, 0.90), spread=26.0)
-    light("Fill", (2.4, -1.6, 0.4), 12.0, 3.0, (0.72, 0.82, 1.0))
-    light("Rim", (-0.8, 1.4, 1.2), 50.0, 1.0, (0.62, 0.78, 1.0))
-    light("Wedge", (2.1, 2.3, 0.9), 165.0, 1.8, (1.0, 0.68, 0.38),
-          target=(centre.x + 2.4, centre.y + WALL_Y, 0.45))
+    for name, offset, energy, size, col, target, spread in LIGHTS:
+        light(name, offset, energy, size, col,
+              None if target is None else centre + Vector(target), spread)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = CAM_LENS
     cam = bpy.data.objects.new("Cam", cam_data)
-    view = Vector((-0.55, -0.83, 0.0)).normalized()
-    cam.location = centre + view * 3.95 + Vector((0.0, 0.0, 0.95))
+    view = Vector((CAM_VIEW[0], CAM_VIEW[1], 0.0)).normalized()
+    cam.location = centre + view * CAM_DIST + Vector((0.0, 0.0, CAM_LIFT))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = centre + Vector((0.0, 0.0, -0.035))
+    aim.location = centre + Vector(AIM_OFFSET)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1775,7 +2237,6 @@ def render_still(low, path, engine):
     if path.lower().endswith(".webp"):
         scene.render.image_settings.quality = 90
     scene.render.filepath = path
-    # Standard, not AgX: AgX washes the tangerine upholstery toward pastel
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low],
@@ -1785,11 +2246,21 @@ def render_still(low, path, engine):
     # asset-quality floors return 11, which this piece spends on the
     # collider ceiling; remap at the call site
     if gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
-        return 21
+        return 23
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)
     return 0
+
+
+# (name, offset from the vignette centre, energy, size, colour, target
+# offset or None for the centre, spread)
+LIGHTS = (
+    ("Key", (-2.4, -2.9, 2.6), 118.0, 1.4, (1.0, 0.95, 0.90), None, 28.0),
+    ("Fill", (3.0, -2.0, 0.6), 18.0, 3.4, (0.72, 0.82, 1.0), None, None),
+    ("Rim", (-1.0, 1.8, 1.6), 80.0, 1.2, (0.62, 0.78, 1.0), None, None),
+    ("Wedge", (3.0, 1.6, 1.6), 140.0, 2.0, (1.0, 0.68, 0.38), (3.2, WALL_Y - 0.9, -0.66), None),
+)
 
 
 def main():
@@ -1801,10 +2272,13 @@ def main():
     p.add_argument("--stray-vert", action="store_true")
     p.add_argument("--lift-z", action="store_true")
     p.add_argument("--float-caster", action="store_true")
+    p.add_argument("--curl-mat", action="store_true")
     p.add_argument("--skew-spoke", action="store_true")
     p.add_argument("--offset-column", action="store_true")
     p.add_argument("--uneven-arms", action="store_true")
     p.add_argument("--loose-wheel", action="store_true")
+    p.add_argument("--float-lumbar", action="store_true")
+    p.add_argument("--float-leaves", action="store_true")
     args = p.parse_args(argv)
 
     code, low = check(
@@ -1816,6 +2290,9 @@ def main():
         offset_column=args.offset_column,
         uneven_arms=args.uneven_arms,
         loose_wheel=args.loose_wheel,
+        float_lumbar=args.float_lumbar,
+        curl_mat=args.curl_mat,
+        float_leaves=args.float_leaves,
     )
     if code:
         return code
