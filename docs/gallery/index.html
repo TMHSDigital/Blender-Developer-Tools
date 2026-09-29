@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 56 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 57 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -404,7 +404,7 @@
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
-          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">5</span></button>
+          <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">6</span></button>
           <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">5</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">5</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">5</span></button>
@@ -1640,6 +1640,17 @@
           <a class="card-link" href="road-bicycle/">View showcase piece<span class="sr-only"> road-bicycle</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="sports" data-name="skate-ramp">
+        <a class="card-media" href="skate-ramp/" tabindex="-1" aria-hidden="true">
+          <img src="assets/skate-ramp-hero.webp" alt="A plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="skate-ramp/">skate-ramp</a></h2>
+          <p class="teaches">A procedural backyard quarter-pipe, 1.2 m high on a 1.8 m transition and 2.44 m wide, with a skateboard on its deck — five plywood transition templates (curved bands with a solid toe and an arm under the deck) on 2x4 sills with studs and a back post sistered to their faces, nine 2x4 stringers under a two-layer 12 mm plywood skin whose joints are offset between layers and land on stringers, 143 screws in rows over the stringers, a 60 mm steel coping pipe standing proud of the transition on five welded, bolted tabs, a steel kicker plate ground to a lip at the toe on a timber toe block, a worn stencilled roundel and wheel marks on the riding face; the skateboard a seven-ply maple deck with concave and kicktails under grip tape, two trucks (baseplate, raked kingpin, bushings, hanger, pivot arm, axle) and four urethane wheels on bearings — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 31164 tris, nine materials with 3268 plywood, 1479 framing, 1086 steel, 7304 hardware, 1100 maple, 900 grip, 1536 urethane, 892 alloy and 464 bushing faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.529×2.440×1.339 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all five sills, the toe block and the plate on the floor, the riding face a circle of radius 1.80000 m (98 samples, 0.000 mm deviation, cap 1.0 mm) tangent to the ground, deck at 1.20000 m, five templates each 2.00 mm into its sill (band 1–6 mm) and 0.90–0.91 mm into the skin (band 0.3–2.5 mm), the coping straight and square to the width with a 5.00 mm reveal (band 2–8 mm) and 3.86 mm above the deck, the kicker plate 0.01 mm off flush (cap 0.6 mm) with a 0.80 mm toe, top seams at 0.84 and 1.84 m and the inner at 1.24 m (stagger 0.400 m, floor 0.30) each 43.9 mm inside its stringer, 143 screws 17.4 mm inside a stringer and 17.0 mm inside a sheet, four wheels 0.50 mm into the deck (band 0.2–1.2 mm), every wheel 0.000 mm off its axle, one connected assembly of 309 shells, LOD ratios in band, collider 350 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-sill 16; --short-rib 17; --small-wheel 18; --sag-skin 19; --sink-coping 20; --proud-plate 21; --stack-seams 22; --miss-screws 23; --skew-wheel 24; --lift-grip 25.</p>
+          <a class="card-link" href="skate-ramp/">View showcase piece<span class="sr-only"> skate-ramp</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1674,7 +1685,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 56 showcase pieces';
+      var COUNT_LABEL = '52 examples, 57 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

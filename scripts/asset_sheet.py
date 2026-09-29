@@ -89,6 +89,7 @@ SELECT = {
     "cactus-garden": (r"^CactusLow$", None),
     "espresso-machine": (r"^EspressoLow$", None),
     "road-bicycle": (r"^BicycleLow$", None),
+    "skate-ramp": (r"^RampLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>56 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>57 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 56 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 57 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>56 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>57 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -165,6 +165,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/cactus-garden/"><img src="showcase/cactus-garden/preview.webp" width="24%" alt="Cactus garden: a ribbed saguaro with three arms, rows of spines and cream flowers on its crown, a barrel cactus with red hooked spines and yellow fruit, a prickly pear with magenta fruit, an agave rosette and sandstone rocks on a raised sand disc, on a dark studio floor" /></a>
   <a href="showcase/espresso-machine/"><img src="showcase/espresso-machine/preview.webp" width="24%" alt="Espresso machine: a brushed stainless E61 espresso machine with twin gauges, a chrome group head and a walnut-handled portafilter over a shot cup, cups on its warmer tray, beside a tamper, milk pitcher and knock box on a stone counter" /></a>
   <a href="showcase/road-bicycle/"><img src="showcase/road-bicycle/preview.webp" width="24%" alt="Road bicycle: a deep red lugged-steel road bicycle leaning on its kickstand, with chromed lugs and fork socks, tan-wall 700c wheels, a honey leather saddle, cream-taped drop bars and a chain over a double crankset" /></a>
+  <a href="showcase/skate-ramp/"><img src="showcase/skate-ramp/preview.webp" width="24%" alt="Skate ramp: a plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -274,6 +275,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`espresso-machine`](showcase/espresso-machine/) — the fifth `household` piece: procedural prosumer E61 espresso machine on a honed stone countertop section (a black chassis behind a brushed stainless front panel, side panels folded round its edges with louvred vent slots cut through each sheet, a warmer tray with a bent rail and four upturned cups, adjustable feet; the chromed E61 group with its neck, gasket, mushroom cap and a lever pinned through two bosses; a spouted portafilter with a walnut handle; steam and hot-water valves with fluted bakelite knobs and wands on ball joints; twin gauges with printed dials in chrome bezels; a toggle and pilot lamp; a drip tray whose slotted grate carries a shot cup of espresso; a knock box, a tamper and a milk pitcher), whose feet on the counter, lever pin coaxial through its bosses, cups seated on their hosts, body size, portafilter coaxial and seated to the gasket, gauge glasses recessed in their bezels, drip tray inside the footprint, mass centre inside the feet and single connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--offset-pin` 17, `--sink-cup` 18, `--narrow-body` 19, `--offset-pf` 20, `--drop-pf` 21, `--proud-gauge` 22, `--shift-tray` 23, `--bunch-feet` 24, `--loose-knob` 25.
 
 [`road-bicycle`](showcase/road-bicycle/) — the fifth `vehicles` piece: procedural 1970s lugged-steel road bicycle leaning on its side kickstand (a 56 cm diamond frame in chromed, spear-pointed lugs, tapered stays with chrome tips, a chrome-crowned fork with socks; two 700c wheels of 36 spokes laced three-cross from both flanges of small-flange hubs to nipples through box-section rims, quick-release skewers, tan-wall tyres with a file-tread crown; a 52/42 crankset with quill pedals, toe clips and straps, a six-speed freewheel and a roller chain of 112 individual links solved round the ring, the cog and both jockeys; front and rear derailleurs, down-tube shifters, side-pull calipers, gum-hooded levers on cotton-taped drop bars, a quill stem, a leather saddle on rails, a bottle in a bolted cage), whose hubs coaxial with their dropouts, spoke seats in flange and nipple, wheels in the frame's plane, steering trail, three-cross lacing, chain seated on ring and cog, straight chain line, mass centre inside the tyres-and-foot triangle and one connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-tyre` exits 16, `--slip-wheel` 17, `--short-spoke` 18, `--dish-wheel` 19, `--steep-head` 20, `--bunch-spokes` 21, `--lift-chain` 22, `--shift-rollers` 23, `--tuck-stand` 24, `--pop-bottle` 25.
+
+[`skate-ramp`](showcase/skate-ramp/) — the sixth `sports` piece: procedural backyard quarter-pipe, 1.2 m on a 1.8 m transition (five plywood transition templates on 2x4 sills with sistered studs and a back post, nine 2x4 stringers under a two-layer plywood skin with joints offset between layers and landing on stringers, screw rows over every stringer, a steel coping pipe on welded, bolted tabs, a steel kicker plate ground to a lip on a toe block, a worn stencilled roundel and wheel marks; a skateboard on the deck with a seven-ply concave deck, kicktails, grip tape, two trucks and four wheels on bearings), whose sills on the floor, templates seated on sills and under the skin, wheels on the deck, circular transition, coping reveal, flush kicker plate, staggered seams, screws over stringers, coaxial wheels and one connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-sill` exits 16, `--short-rib` 17, `--small-wheel` 18, `--sag-skin` 19, `--sink-coping` 20, `--proud-plate` 21, `--stack-seams` 22, `--miss-screws` 23, `--skew-wheel` 24, `--lift-grip` 25.
 
 </details>
 

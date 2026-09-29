@@ -794,6 +794,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "skate-ramp",
+      "dir": "showcase/skate-ramp",
+      "category": "sports",
+      "teaches": "A procedural backyard quarter-pipe, 1.2 m high on a 1.8 m transition and 2.44 m wide, with a skateboard on its deck — five plywood transition templates (curved bands with a solid toe and an arm under the deck) on 2x4 sills with studs and a back post sistered to their faces, nine 2x4 stringers under a two-layer 12 mm plywood skin whose joints are offset between layers and land on stringers, 143 screws in rows over the stringers, a 60 mm steel coping pipe standing proud of the transition on five welded, bolted tabs, a steel kicker plate ground to a lip at the toe on a timber toe block, a worn stencilled roundel and wheel marks on the riding face; the skateboard a seven-ply maple deck with concave and kicktails under grip tape, two trucks (baseplate, raked kingpin, bushings, hanger, pivot arm, axle) and four urethane wheels on bearings — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck.",
+      "witnessesFix": "Recomputed: 31164 tris, nine materials with 3268 plywood, 1479 framing, 1086 steel, 7304 hardware, 1100 maple, 900 grip, 1536 urethane, 892 alloy and 464 bushing faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.529×2.440×1.339 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all five sills, the toe block and the plate on the floor, the riding face a circle of radius 1.80000 m (98 samples, 0.000 mm deviation, cap 1.0 mm) tangent to the ground, deck at 1.20000 m, five templates each 2.00 mm into its sill (band 1–6 mm) and 0.90–0.91 mm into the skin (band 0.3–2.5 mm), the coping straight and square to the width with a 5.00 mm reveal (band 2–8 mm) and 3.86 mm above the deck, the kicker plate 0.01 mm off flush (cap 0.6 mm) with a 0.80 mm toe, top seams at 0.84 and 1.84 m and the inner at 1.24 m (stagger 0.400 m, floor 0.30) each 43.9 mm inside its stringer, 143 screws 17.4 mm inside a stringer and 17.0 mm inside a sheet, four wheels 0.50 mm into the deck (band 0.2–1.2 mm), every wheel 0.000 mm off its axle, one connected assembly of 309 shells, LOD ratios in band, collider 350 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-sill 16; --short-rib 17; --small-wheel 18; --sag-skin 19; --sink-coping 20; --proud-plate 21; --stack-seams 22; --miss-screws 23; --skew-wheel 24; --lift-grip 25.",
+      "hero": "docs/gallery/assets/skate-ramp-hero.webp",
+      "preview": "showcase/skate-ramp/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
