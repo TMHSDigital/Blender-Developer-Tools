@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>58 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>59 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 58 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 59 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>58 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>59 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -167,6 +167,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/road-bicycle/"><img src="showcase/road-bicycle/preview.webp" width="24%" alt="Road bicycle: a deep red lugged-steel road bicycle leaning on its kickstand, with chromed lugs and fork socks, tan-wall 700c wheels, a honey leather saddle, cream-taped drop bars and a chain over a double crankset" /></a>
   <a href="showcase/skate-ramp/"><img src="showcase/skate-ramp/preview.webp" width="24%" alt="Skate ramp: a plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck" /></a>
   <a href="showcase/palm-tree/"><img src="showcase/palm-tree/preview.webp" width="24%" alt="Palm tree: a coconut palm leaning on a raised disc of beach sand, its ringed trunk curving up to a crown of drooping pinnate fronds over green coconuts, fallen coconuts, a frond and driftwood below" /></a>
+  <a href="showcase/wingback-armchair/"><img src="showcase/wingback-armchair/preview.webp" width="24%" alt="Wingback armchair: an oxblood leather wingback with a deep-button tufted back, rolled arms trimmed with brass nailheads and a piped seat cushion, beside a side table with a brass reading lamp and books on a fringed rug" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -280,6 +281,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`skate-ramp`](showcase/skate-ramp/) — the sixth `sports` piece: procedural backyard quarter-pipe, 1.2 m on a 1.8 m transition (five plywood transition templates on 2x4 sills with sistered studs and a back post, nine 2x4 stringers under a two-layer plywood skin with joints offset between layers and landing on stringers, screw rows over every stringer, a steel coping pipe on welded, bolted tabs, a steel kicker plate ground to a lip on a toe block, a worn stencilled roundel and wheel marks; a skateboard on the deck with a seven-ply concave deck, kicktails, grip tape, two trucks and four wheels on bearings), whose sills on the floor, templates seated on sills and under the skin, wheels on the deck, circular transition, coping reveal, flush kicker plate, staggered seams, screws over stringers, coaxial wheels and one connected assembly are recomputed from the mesh, through the same pipeline. Falsifiers `--float-sill` exits 16, `--short-rib` 17, `--small-wheel` 18, `--sag-skin` 19, `--sink-coping` 20, `--proud-plate` 21, `--stack-seams` 22, `--miss-screws` 23, `--skew-wheel` 24, `--lift-grip` 25.
 
 [`palm-tree`](showcase/palm-tree/) — the sixth `nature` piece: procedural coconut palm on a raised disc of rippled beach sand (a 4.47 m trunk rising from a swollen, lobed bole with a mat of 24 roots flaring out into the sand, leaning along a curve and coming back upright under the crown, tapering, ringed with 25 leaf scars at an even pitch; a fibrous boss of leaf bases carrying eighteen pinnate fronds in a golden-angle spiral, each a curved, drooping rachis with 36 pairs of folded leaflets hanging below it in a V, young fronds rising and old ones hanging; two dead fronds, two spear leaves and twelve green and ripening coconuts in bunches under the frond bases; two fallen coconuts, a fallen frond, driftwood, seashells and sea grass), whose fronds seated in the crown, coconuts attached under it, trunk height and lean with the crown's mass inside the root plate, leaf-scar rings at an even pitch, trunk and roots bedded in the sand, fallen coconuts resting in it and beach litter joined to it are recomputed from the mesh, through the same pipeline. Falsifiers `--short-petioles` exits 17, `--drop-coconut` 18, `--short-roots` 19, `--bunch-rings` 20, `--perch-trunk` 21, `--float-nuts` 22, `--float-cover` 23.
+
+[`wingback-armchair`](showcase/wingback-armchair/) — the seventh `household` piece: procedural reading corner on a fringed wool rug (a Queen Anne / Chesterfield wingback in oxblood leather: a reclined back deep-button tufted with thirteen buttons on a diamond lattice, each seated in a funnelled dimple, the leather puffed into pillows and folded into sharp pleats along every line joining two buttons; wings sweeping forward into rolled arms with a tucked English roll, crowned scroll fronts, piped welts and rows of brass nailheads, a nailed front rail, a loose crowned cushion with piped welts on both seams, cabriole front legs on pad feet and splayed rear legs in brass ferrules; beside it a walnut tripod side table with a brass reading lamp, a linen shade and two cloth-bound books), whose feet sunk into the rug, legs tenoned into the body, buttons seated in their dimples, mirror symmetry and size, diamond lattice, table's mass centre inside its feet, cushion resting on the deck and evenly spaced, seated nailheads are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--short-legs` 17, `--sink-buttons` 18, `--odd-wing` 19, `--drift-buttons` 20, `--narrow-tripod` 21, `--lift-cushion` 22, `--bunch-nails` 23.
 
 </details>
 

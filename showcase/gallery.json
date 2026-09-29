@@ -822,6 +822,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "wingback-armchair",
+      "dir": "showcase/wingback-armchair",
+      "category": "household",
+      "teaches": "A procedural reading corner on a fringed wool rug — a Queen Anne / Chesterfield wingback armchair in oxblood leather whose tall reclined back is deep-button tufted, thirteen buttons on a diamond lattice each seated in a funnelled dimple with the leather puffed into pillows between them and folded into sharp pleats along every line that joins two buttons; two wings sweeping forward from the back into rolled arms, each arm one lofted scroll section with an English roll tucked under on the outside, a crowned front, a piped welt round the front seam and a row of brass nailheads following the scroll; a nailed front rail, a loose cushion with a crowned top and piped welts on both seams, cabriole front legs on pad feet and square rear legs splayed into brass ferrules; beside it a walnut tripod side table with a brass reading lamp (knopped stem, harp, finial, linen shade) and two cloth-bound books — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "An oxblood leather wingback armchair with a deep-button tufted back and brass-nailed rolled arms, beside a tripod side table with a brass reading lamp and books, on a fringed rug.",
+      "witnessesFix": "Recomputed: 44324 tris, nine materials with 15712 leather, 3628 wood, 4825 brass, 672 shade, 668 rug, 1512 fringe, 124 cloth, 12 paper and 212 bulb faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.030×1.400×1.160 m read off the vertices, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 4 chair feet and 3 table feet sunk 0.0020 m into the rug (band 0.0008–0.0040), all 4 legs tenoned 0.0288–0.0319 m into the body (band 0.012–0.045), all 13 buttons seated 0.0025 m (band 0.0012–0.0045) and 0.0074 m proud in dimples 0.0169–0.0185 m deep (min 0.008), the body mirror-symmetric to 0.000000 m over 10620 vertices (max 0.0005) with the seat 0.4531 m, the back 1.1113 m and the width 0.8683 m, 16 diagonal button pairs at 0.1617–0.1626 m (spread 0.00089, cap 0.004), the mass centre of table, lamp and books 0.0922 m inside the feet's triangle (min 0.045), the cushion pressed 0.0020 m into the deck (band 0.0008–0.0040), 28 + 28 + 19 nailheads at a 0.03000 m pitch with zero spread, seated 0.0010–0.0013 m, LOD ratios in band, collider 802 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-foot 16; --short-legs 17; --sink-buttons 18; --odd-wing 19; --drift-buttons 20; --narrow-tripod 21; --lift-cushion 22; --bunch-nails 23.",
+      "hero": "docs/gallery/assets/wingback-armchair-hero.webp",
+      "preview": "showcase/wingback-armchair/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

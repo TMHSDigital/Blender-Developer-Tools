@@ -91,6 +91,7 @@ SELECT = {
     "road-bicycle": (r"^BicycleLow$", None),
     "skate-ramp": (r"^RampLow$", None),
     "palm-tree": (r"^PalmLow$", None),
+    "wingback-armchair": (r"^ArmchairLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),
     "grindstone": (r"^GrindstoneLow$", None),
