@@ -808,6 +808,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "palm-tree",
+      "dir": "showcase/palm-tree",
+      "category": "nature",
+      "teaches": "A procedural coconut palm on a raised disc of rippled beach sand — a trunk that rises from a swollen, lobed bole with a mat of roots flaring out of it into the sand, leans away along a curve and comes back upright under the crown, tapering, ringed with leaf scars at an even pitch; a fibrous boss of leaf bases carrying eighteen pinnate fronds in a golden-angle spiral, each a curved, drooping rachis with 36 pairs of folded leaflets hanging below it in a V, the young fronds high and rising, the old ones low and hanging; two dead brown fronds against the trunk, two unopened spear leaves, and bunches of green and ripening coconuts under the frond bases; two fallen coconuts, a fallen frond, a driftwood branch, seashells and sea grass — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A coconut palm leaning on a raised disc of beach sand: a ringed, curving trunk, a crown of drooping pinnate fronds over green coconuts, and fallen coconuts, a frond, driftwood and grass below.",
+      "witnessesFix": "Recomputed: 45196 tris, eight materials with 3694 sand, 4752 bark, 14828 frond, 1243 dead frond, 1344 husk, 846 shell, 146 driftwood and 1118 grass faces, UVs in 0..1 with zero AABB overlap, outer AABB 5.265×5.150×6.026 m read off the vertices, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 22 fronds and spears seated 0.0871–0.1217 m in the boss (band 0.060–0.160), all 12 coconuts biting 0.0229–0.0297 m into it (band 0.012–0.045) below its centre, the trunk 4.4735 m tall (4.47 ± 0.05) with its crown 0.8056 m off the foot (band 0.60–1.00) and the mass centre of trunk and crown 0.2081 m inside the root plate of 24 roots (min 0.080), 25 leaf-scar rings at a 0.14498 m pitch with a 0.00136 m spread (cap 0.006), the trunk bedded 0.0990 m (band 0.030–0.200) and root tips 0.0644–0.0716 m (band 0.020–0.100) under the sand, the fallen coconuts resting 0.0198–0.0207 m into it (band 0.010–0.050), all 1566 shells joined to the sand, LOD ratios in band, trunk collider 44 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --short-petioles 17; --drop-coconut 18; --short-roots 19; --bunch-rings 20; --perch-trunk 21; --float-nuts 22; --float-cover 23.",
+      "hero": "docs/gallery/assets/palm-tree-hero.webp",
+      "preview": "showcase/palm-tree/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

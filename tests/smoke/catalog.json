@@ -131,5 +131,6 @@
   {"name": "cactus-garden", "script": "showcase/cactus-garden/cactus_garden.py"},
   {"name": "espresso-machine", "script": "showcase/espresso-machine/espresso_machine.py"},
   {"name": "road-bicycle", "script": "showcase/road-bicycle/road_bicycle.py"},
-  {"name": "skate-ramp", "script": "showcase/skate-ramp/skate_ramp.py"}
+  {"name": "skate-ramp", "script": "showcase/skate-ramp/skate_ramp.py"},
+  {"name": "palm-tree", "script": "showcase/palm-tree/palm_tree.py"}
 ]
