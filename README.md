@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>59 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>60 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 59 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 60 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>59 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>60 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -168,6 +168,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/skate-ramp/"><img src="showcase/skate-ramp/preview.webp" width="24%" alt="Skate ramp: a plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck" /></a>
   <a href="showcase/palm-tree/"><img src="showcase/palm-tree/preview.webp" width="24%" alt="Palm tree: a coconut palm leaning on a raised disc of beach sand, its ringed trunk curving up to a crown of drooping pinnate fronds over green coconuts, fallen coconuts, a frond and driftwood below" /></a>
   <a href="showcase/wingback-armchair/"><img src="showcase/wingback-armchair/preview.webp" width="24%" alt="Wingback armchair: an oxblood leather wingback with a deep-button tufted back, rolled arms trimmed with brass nailheads and a piped seat cushion, beside a side table with a brass reading lamp and books on a fringed rug" /></a>
+  <a href="showcase/planet-rover/"><img src="showcase/planet-rover/preview.webp" width="24%" alt="Planet rover: a six-wheeled rocker-bogie rover with gold-foil sides, a camera mast, a dish antenna and a finned power unit, its arm drilling a boulder on red-grey regolith with wheel ruts" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -283,6 +284,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`palm-tree`](showcase/palm-tree/) — the sixth `nature` piece: procedural coconut palm on a raised disc of rippled beach sand (a 4.47 m trunk rising from a swollen, lobed bole with a mat of 24 roots flaring out into the sand, leaning along a curve and coming back upright under the crown, tapering, ringed with 25 leaf scars at an even pitch; a fibrous boss of leaf bases carrying eighteen pinnate fronds in a golden-angle spiral, each a curved, drooping rachis with 36 pairs of folded leaflets hanging below it in a V, young fronds rising and old ones hanging; two dead fronds, two spear leaves and twelve green and ripening coconuts in bunches under the frond bases; two fallen coconuts, a fallen frond, driftwood, seashells and sea grass), whose fronds seated in the crown, coconuts attached under it, trunk height and lean with the crown's mass inside the root plate, leaf-scar rings at an even pitch, trunk and roots bedded in the sand, fallen coconuts resting in it and beach litter joined to it are recomputed from the mesh, through the same pipeline. Falsifiers `--short-petioles` exits 17, `--drop-coconut` 18, `--short-roots` 19, `--bunch-rings` 20, `--perch-trunk` 21, `--float-nuts` 22, `--float-cover` 23.
 
 [`wingback-armchair`](showcase/wingback-armchair/) — the seventh `household` piece: procedural reading corner on a fringed wool rug (a Queen Anne / Chesterfield wingback in oxblood leather: a reclined back deep-button tufted with thirteen buttons on a diamond lattice, each seated in a funnelled dimple, the leather puffed into pillows and folded into sharp pleats along every line joining two buttons; wings sweeping forward into rolled arms with a tucked English roll, crowned scroll fronts, piped welts and rows of brass nailheads, a nailed front rail, a loose crowned cushion with piped welts on both seams, cabriole front legs on pad feet and splayed rear legs in brass ferrules; beside it a walnut tripod side table with a brass reading lamp, a linen shade and two cloth-bound books), whose feet sunk into the rug, legs tenoned into the body, buttons seated in their dimples, mirror symmetry and size, diamond lattice, table's mass centre inside its feet, cushion resting on the deck and evenly spaced, seated nailheads are recomputed from the mesh, through the same pipeline. Falsifiers `--float-foot` exits 16, `--short-legs` 17, `--sink-buttons` 18, `--odd-wing` 19, `--drift-buttons` 20, `--narrow-tripod` 21, `--lift-cushion` 22, `--bunch-nails` 23.
+
+[`planet-rover`](showcase/planet-rover/) — the sixth `vehicles` piece: procedural six-wheeled planetary science rover on a patch of rocky red-grey regolith (a cream warm-electronics body with quilted gold-foil blankets, a deck of instrument boxes, inlets and a calibration target, a finned power unit on struts between two radiator banks; a rocker on each side pivoting on a boss in the body and a bogie pinned in a clevis on its front end, the two rockers linked through a differential bar on the deck; six drum wheels with 24 chevron grousers, curved flexure spokes and drive actuators, the four corners on steering actuators; a camera mast, a high-gain dish on a two-axis gimbal, a whip; a 5-DOF arm drilling a boulder; harnesses along every leg; ruts behind the wheel lines and 19 broken rocks), the regolith fitted so every wheel sinks 11–19 mm into it. `--float-wheel` exits 16 on every wheel sunk in band, `--offset-pin` 17 on the pivot pins coaxial with their bushings, `--sink-grousers` 18 on the grousers seated on the drum, `--lean-mast` 19 on the mast plumb and the rover's size, `--jam-rocker` 20 on the rockers equal and opposite through the differential, `--offset-steer` 21 on the steering axes through the wheel centres, `--camber-wheel` 22 on the axles level and lateral, `--bunch-grousers` 23 on the grouser pitch, `--overload-turret` 24 on the mass centre inside the support polygon by the 45° tip margin, `--loose-dish` 25 on one connected assembly, while the envelope holds.
 
 </details>
 

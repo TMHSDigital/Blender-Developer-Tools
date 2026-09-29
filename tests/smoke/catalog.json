@@ -133,5 +133,6 @@
   {"name": "road-bicycle", "script": "showcase/road-bicycle/road_bicycle.py"},
   {"name": "skate-ramp", "script": "showcase/skate-ramp/skate_ramp.py"},
   {"name": "palm-tree", "script": "showcase/palm-tree/palm_tree.py"},
-  {"name": "wingback-armchair", "script": "showcase/wingback-armchair/wingback_armchair.py"}
+  {"name": "wingback-armchair", "script": "showcase/wingback-armchair/wingback_armchair.py"},
+  {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"}
 ]
