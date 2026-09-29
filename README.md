@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>61 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>62 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 61 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 62 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>61 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>62 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -170,6 +170,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wingback-armchair/"><img src="showcase/wingback-armchair/preview.webp" width="24%" alt="Wingback armchair: an oxblood leather wingback with a deep-button tufted back, rolled arms trimmed with brass nailheads and a piped seat cushion, beside a side table with a brass reading lamp and books on a fringed rug" /></a>
   <a href="showcase/planet-rover/"><img src="showcase/planet-rover/preview.webp" width="24%" alt="Planet rover: a six-wheeled rocker-bogie rover with gold-foil sides, a camera mast, a dish antenna and a finned power unit, its arm drilling a boulder on red-grey regolith" /></a>
   <a href="showcase/traffic-cones/"><img src="showcase/traffic-cones/preview.webp" width="24%" alt="Traffic cones: orange cones with white reflective collars on a patch of asphalt with a worn white line, three standing in a row, three nested in a stack and one knocked over showing its open base, before a striped A-frame barricade with an amber warning lamp" /></a>
+  <a href="showcase/mushroom-stump/"><img src="showcase/mushroom-stump/preview.webp" width="24%" alt="Mushroom stump: a sawn tree stump with ringed, cracked end grain and torn splinters on a sloping soil disc, buttress roots in the soil, moss, banded shelf fungi, honey mushroom clusters, red fly agarics, ferns and fallen leaves" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -289,6 +290,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`planet-rover`](showcase/planet-rover/) — the sixth `vehicles` piece: procedural six-wheeled planetary science rover on a patch of rocky red-grey regolith (a cream warm-electronics body with quilted gold-foil blankets, a deck of instrument boxes, inlets and a calibration target, a finned power unit on struts between two radiator banks; a rocker on each side pivoting on a boss in the body and a bogie pinned in a clevis on its front end, the two rockers linked through a differential bar on the deck; six drum wheels with 24 chevron grousers, curved flexure spokes and drive actuators, the four corners on steering actuators; a camera mast, a high-gain dish on a two-axis gimbal, a whip; a 5-DOF arm drilling a boulder; harnesses along every leg; ruts behind the wheel lines and 19 broken rocks), the regolith fitted so every wheel sinks 11–19 mm into it. `--float-wheel` exits 16 on every wheel sunk in band, `--offset-pin` 17 on the pivot pins coaxial with their bushings, `--sink-grousers` 18 on the grousers seated on the drum, `--lean-mast` 19 on the mast plumb and the rover's size, `--jam-rocker` 20 on the rockers equal and opposite through the differential, `--offset-steer` 21 on the steering axes through the wheel centres, `--camber-wheel` 22 on the axles level and lateral, `--bunch-grousers` 23 on the grouser pitch, `--overload-turret` 24 on the mass centre inside the support polygon by the 45° tip margin, `--loose-dish` 25 on one connected assembly, while the envelope holds.
 
 [`traffic-cones`](showcase/traffic-cones/) — the seventh `vehicles` piece: procedural roadworks set on a cut-out patch of asphalt (a broken edge, a worn white road line and two sealed tar cracks; seven 720 mm PVC cones, each a hollow lathed body with a moulded bead and a rolled lip round an open tip, bonded into a square rubber base with chamfered corners, a raked top, a collar, four lugs and a recess underneath, and hooped with two retroreflective collars; three standing in a taper line, three nested in a stack and one knocked over onto the edge of its base and its lip; a folding A-frame barricade of four square steel legs hinged in pairs on pivot bolts, spread by pinned straps, footed in rubber pads, with two striped boards bolted to each face and a warning lamp with amber fresnel lenses on a bracket), the cone wall sized so each cone in the stack bears 1 mm on the one below at a 36 mm pitch. `--float-cone` exits 16 on every support bedded in the slab, `--gap-board` 17 on the boards biting their legs, `--float-band` 18 on the collars seated on their bodies, `--lean-cone` and `--skew-leg` 19 on the cones plumb at real size and the legs mirror-symmetric, `--loose-stack` 20 on the nesting pitch and wall bite, `--loose-lamp` 21 on one connected assembly, while the envelope holds.
+
+[`mushroom-stump`](showcase/mushroom-stump/) — the seventh `nature` piece: procedural felled-tree stump on a sloping forest-floor soil disc (one furrowed lathe about a plumb axis flaring through five buttresses into the ground, plated bark peeled to sapwood in two patches, a level saw cut with weathered growth rings round a dark heartwood, radial drying checks notching the rim and a strip of torn holding wood with long splinters, five surface roots lying in the soil and diving into it, moss on the shaded flank, two tiers of turkey-tail brackets, three fly agarics with warted caps, pleated gills, a volva and a hanging skirt, two clusters of ringed honey fungus out of a root and the stump's foot, fallen leaves, ferns, twigs and pebbles), whose foot sealed in the soil all round, caps seated on their stipes, level cut and stated size, roots bedded along their run, stipes rooted in their soil or wood, brackets rooted in the bark, moss on up- and shade-facing surfaces and ground cover joined to the soil are recomputed from the mesh, through the same pipeline. `--perch-stump` exits 17 on the stump sealed all round, `--float-caps` 18 on every cap seated on its stipe, `--tilt-cut` and `--fat-stump` 19 on the level cut and stated size, `--arch-roots` 20 on the roots bedded, `--float-mushrooms` 21 on every stipe rooted in its host, `--float-brackets` 22 on the brackets rooted in the bark, `--sunny-moss` 23 on moss facing up or into the shade, `--float-cover` 24 on the ground cover joined to the soil, while the envelope holds.
 
 </details>
 

@@ -135,5 +135,6 @@
   {"name": "palm-tree", "script": "showcase/palm-tree/palm_tree.py"},
   {"name": "wingback-armchair", "script": "showcase/wingback-armchair/wingback_armchair.py"},
   {"name": "planet-rover", "script": "showcase/planet-rover/planet_rover.py"},
-  {"name": "traffic-cones", "script": "showcase/traffic-cones/traffic_cones.py"}
+  {"name": "traffic-cones", "script": "showcase/traffic-cones/traffic_cones.py"},
+  {"name": "mushroom-stump", "script": "showcase/mushroom-stump/mushroom_stump.py"}
 ]
