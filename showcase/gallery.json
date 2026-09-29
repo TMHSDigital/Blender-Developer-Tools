@@ -780,6 +780,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "road-bicycle",
+      "dir": "showcase/road-bicycle",
+      "category": "vehicles",
+      "teaches": "A procedural 1970s lugged-steel road bicycle standing on its side kickstand — a 56 cm diamond frame of round tubes joined in chromed, spear-pointed lugs at the head tube, seat cluster and bottom bracket, tapered stays in chromed tips, a fork with a chromed sloping crown and socks; two 700c wheels, each a box-section rim with 36 spokes laced three-cross from both flanges of a small-flange hub to nipples through the rim, quick-release skewers and tan-wall tyres with a black file-tread crown; a 52/42 crankset with quill pedals, toe clips and straps, a six-speed freewheel, a roller chain of 112 individual links solved round the ring, the cog and both jockey wheels, front and rear derailleurs, down-tube shifters, side-pull calipers with pads a millimetre off the rims, levers under gum hoods on cotton-taped drop bars, a quill stem, a leather saddle on rails and a bottle in a bolted wire cage — leaned 5° onto its stand, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A deep red lugged-steel road bicycle leaning on its kickstand: chromed lugs and fork socks, tan-wall 700c wheels, a honey leather saddle, cream-taped drop bars and a chain over a double crankset.",
+      "witnessesFix": "Recomputed: 46092 tris, ten materials with 1048 paint, 6438 chrome, 6950 alloy, 8239 steel, 540 tread, 952 gum, 356 leather, 1080 tape, 1810 black and 176 bottle faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.670×0.438×0.997 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs across 112 chain links, both tyres and the stand foot on the ground, both hubs 0.000000 m off their dropout eyes (cap 0.0005), every one of 72 spokes 3.00 mm deep in its flange (band 2.0–4.0 mm) and 4.50 mm inside its nipple on its axis, both rims 0.000 mm off the frame's plane (cap 1.0 mm), seat tube 0.5800 m, wheelbase 0.99982 m, trail 0.05536 m (band 0.045–0.065), lacing 36/36 with 18 per flange, pitch 0.000° off and every spoke three-cross (60.000°), 30 rollers seated on the ring and 10 on the cog 1.20–3.40 mm above the root (band 0.5–6.5 mm), every roller and the cog 0.000 mm off the chain line (cap 1.0 mm), the mass centre 0.0393 m inside the support triangle (floor 0.020) at 11.80 kg, one connected assembly of 685 shells, LOD ratios in band, collider 880 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-tyre 16; --slip-wheel 17; --short-spoke 18; --dish-wheel 19; --steep-head 20; --bunch-spokes 21; --lift-chain 22; --shift-rollers 23; --tuck-stand 24; --pop-bottle 25.",
+      "hero": "docs/gallery/assets/road-bicycle-hero.webp",
+      "preview": "showcase/road-bicycle/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

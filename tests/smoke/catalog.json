@@ -129,5 +129,6 @@
   {"name": "cargo-loader", "script": "showcase/cargo-loader/cargo_loader.py"},
   {"name": "archery-target", "script": "showcase/archery-target/archery_target.py"},
   {"name": "cactus-garden", "script": "showcase/cactus-garden/cactus_garden.py"},
-  {"name": "espresso-machine", "script": "showcase/espresso-machine/espresso_machine.py"}
+  {"name": "espresso-machine", "script": "showcase/espresso-machine/espresso_machine.py"},
+  {"name": "road-bicycle", "script": "showcase/road-bicycle/road_bicycle.py"}
 ]
