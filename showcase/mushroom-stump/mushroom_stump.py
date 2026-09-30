@@ -8,16 +8,22 @@ collider, Unity glTF export.
 The stump is one lathe about a plumb axis: a chainsaw cut 0.50 m above the
 soil, 0.62 m across the bark, flaring through five buttresses into the
 ground. Its plated bark is cut by sixteen narrow furrows and peeled away in
-two patches that show the sapwood. The cut face carries growth rings round
-a dark heartwood and five radial drying checks that notch the rim, and a
-strip of torn holding wood stands up where the tree broke off its hinge.
-Five surface roots run out of the buttresses and dive into the soil. Moss
-cushions grow on the shaded north flank; two tiers of turkey-tail brackets
-grow out of the bark; three fly agarics (a mature cap, a domed one and a
-button) stand on the soil in front of it, each on a bulbous, volva-ringed
-stipe with a hanging skirt; two clusters of honey fungus grow on thin
-ringed stipes out of a root and out of the stump's foot. Ground cover is
-fallen leaves, two clumps of ferns, twigs and a few broken pebbles.
+two patches: the sapwood lies a bark's thickness under a ragged torn lip,
+weathered grey with beetle galleries, and bark flakes curl off the edge.
+The top is the felling: a back cut with growth rings round a dark
+heartwood and five radial drying checks, and beyond the hinge chord the
+undercut floor a step lower, a low band of torn hinge fibres along the
+step's edge. Five surface roots run out of the buttresses and dive into
+the soil. Thin moss cushions lie on the bark as built, furrows and all,
+on the shaded north flank and in two root crotches, their lumpy rims
+tongued along the furrows and ringed by satellite tufts; two tiers of
+turkey-tail brackets grow out of the bark; three fly agarics (a mature
+cap, a domed one and a button) stand on the soil in front of it, each on
+a bulbous, volva-ringed stipe with a hanging skirt; two clusters of honey
+fungus grow on thin ringed stipes out of a root and out of the stump's
+foot. Ground cover is fallen leaves, two clumps of bipinnate ferns (the
+frond builder of showcase/fern-mossy-rock, copied inline), twigs and a
+few broken pebbles.
 
 Budgets are declared below and recomputed from the generated result. They
 are not API-contract witnesses. Each falsifier violates one named budget:
@@ -28,7 +34,10 @@ the saw cut level, ``--fat-stump`` the stump's stated size, ``--arch-roots``
 the roots bedded along their run, ``--float-mushrooms`` every stipe rooted
 in its host, ``--float-brackets`` the brackets rooted in the bark,
 ``--sunny-moss`` the moss on up- and shade-facing surfaces,
-``--float-cover`` the ground cover joined to the soil.
+``--float-cover`` the ground cover joined to the soil, ``--flat-felling``
+and ``--tall-hinge`` the felling step and the low hinge band,
+``--flush-peel`` and ``--float-flakes`` the torn bark round each peel and
+its flakes rooted in it, ``--slab-moss`` the moss a thin shell on the bark.
 
 Seeded, not random: ``random.Random(SEED)`` draws the whole plan before
 anything is built, so flags never shift the stream. DECIMATE COLLAPSE
@@ -73,11 +82,11 @@ R_CUT = 0.307           # bark radius at the cut, before out-of-round and furrow
 TAPER = 0.07            # the bole widens this fraction from the cut to the soil
 ELLIPSE = 0.035
 CUT_H = 0.50            # saw cut above the soil at the axis
-STUMP_SIDES = 96
-STUMP_SIDES_HIGH = 192
+STUMP_SIDES = 128
+STUMP_SIDES_HIGH = 256
 FURROWS = 16
 FURROW_D = 0.016
-BARK_T = 0.022          # the sapwood lies this far under the plates
+BARK_T = 0.026          # the sapwood lies this far under the plate crests
 # buttresses: (azimuth deg, half-width rad, strength); a root runs out of each
 LOBES = ((-10.0, 0.34, 1.00), (96.0, 0.30, 0.85), (165.0, 0.33, 0.95),
          (235.0, 0.30, 0.80), (300.0, 0.33, 1.00))
@@ -85,27 +94,42 @@ FLARE = 0.17
 FLARE_H = 0.11
 FOOT_OFFS = (-0.045, 0.010, 0.032, 0.066)   # foot rings: above the soil under each vertex
 UPPER_Z0 = 0.13         # first level ring above the soil at the axis (lifted clear of the foot)
-UPPER_STEP = 0.034
+UPPER_STEP = 0.024
 PEEL_LOW = 0.05
 PEEL_TOP_CLEAR = 0.035
 # peeled bark: (height above the soil m, azimuth deg, half-height m, half-arc m)
-PEELS = ((0.33, 34.0, 0.085, 0.085), (0.16, 128.0, 0.050, 0.060))
+PEELS = ((0.32, 34.0, 0.092, 0.080), (0.16, 128.0, 0.052, 0.060))
+# the torn bark round a peel lifts off the wood: a lip this far proud of the
+# plates at the edge, fading out over PEEL_LIP_W of the patch's radius
+PEEL_LIP = 0.006
+PEEL_LIP_W = 0.30
+# bark flakes curling off each peel's edge: (count per patch)
+FLAKES = (7, 5)
+FLAKE_NL = 6
+FLAKE_NW = 4
+FLAKE_BITE = 0.007
+FLAKE_T = 0.0035
 # the cut face: rings as fractions of the wood's radius, bark ring first
 CAP_FR = (0.965, 0.90, 0.80, 0.68, 0.55, 0.42, 0.29, 0.16)
 # radial drying checks: (azimuth deg, reach inward as a fraction of the radius)
 CHECKS = ((14.0, 0.46), (104.0, 0.62), (198.0, 0.38), (262.0, 0.30), (318.0, 0.54))
 CHECK_D = 0.016
-# the felling: the tree fell toward FALL_DEG; the hinge's holding wood tore
-# along a chord HINGE_OFF toward the fall
-FALL_DEG = 60.0
-HINGE_OFF = 0.075
-HINGE_N = 34
-HINGE_SPIKES = (12, 16, 24)
-HINGE_H = 0.060
-HINGE_W = 0.017          # half-width at the base, across the chord
-HINGE_BITE = 0.015
+# the felling: the tree fell toward FALL_DEG. The undercut (the notch's
+# floor) is the segment beyond the hinge chord, HINGE_OFF toward the fall;
+# the back cut, sawn from the other side, stands STEP above it, and the
+# holding wood tore along the step's edge as a low band of fibres.
+FALL_DEG = 120.0
+HINGE_OFF = 0.172
+STEP = 0.034
+STEP_W = 0.006           # the step face's run across the chord
+HINGE_N = 64
+HINGE_SPAN = 0.66        # the torn band covers this fraction of the chord
+HINGE_H = 0.022          # a typical torn fibre above the back cut
+HINGE_HW = 0.018         # the band's reach back from the step edge
+HINGE_BITE = 0.007
 TILT_CUT_DEG = 5.0       # --tilt-cut: the cut plane turned about the hinge chord
 FAT_STUMP = 1.08         # --fat-stump: every stump radius scaled
+TALL_HINGE = 1.25        # --tall-hinge: every torn fibre this much taller
 
 # --- Roots -----------------------------------------------------------------
 ROOT_SIDES = 8
@@ -115,17 +139,23 @@ ROOT_PROF = ((0.28, 0.110, 0.100), (0.38, 0.075, 0.085), (0.48, 0.045, 0.072),
              (0.83, -0.018, 0.036), (0.90, -0.032, 0.029), (0.96, -0.046, 0.023),
              (1.00, -0.058, 0.018))
 ROOT_RINGS = 24
-ROOT_REACH = (0.62, 0.72)
-ARCH_ROOTS = 0.090       # --arch-roots: each root's middle raised off its bed
+ROOT_REACH = (0.56, 0.64)
+ARCH_ROOTS = 0.120       # --arch-roots: each root's middle raised off its bed
 
 # --- Moss and brackets -------------------------------------------------------
-# moss cushions on the shaded north flank: (height m, azimuth deg, half-height m, half-arc m)
-MOSS = ((0.24, 90.0, 0.130, 0.120), (0.43, 74.0, 0.050, 0.075), (0.12, 116.0, 0.060, 0.090),
-        (0.37, 100.0, 0.045, 0.060))
-MOSS_T = 0.026
-MOSS_EDGE = 0.003
+# moss on the shaded north flank and in the root crotches either side of
+# it: (height m, azimuth deg, half-height m, half-arc m, satellite tufts)
+MOSS = ((0.25, 86.0, 0.110, 0.100, 8), (0.42, 66.0, 0.036, 0.058, 3),
+        (0.085, 58.0, 0.038, 0.072, 4), (0.080, 148.0, 0.034, 0.060, 4))
+MOSS_K = 7               # rings from the centre to the rim
+MOSS_M = 36              # spokes round the rim
+MOSS_T = 0.0105          # a cushion's thickness over the bark at its heart
+MOSS_EDGE = 0.002        # its rim this far inside the bark
 MOSS_BITE = 0.006
-MOSS_STAGGER = 0.0015
+MOSS_STAGGER = 0.004
+TUFT_R = (0.007, 0.016)  # a satellite tuft's radius
+TUFT_BITE = 0.0022       # a tuft's base this far in: well clear of the cushions' bases
+SLAB_T = 0.026           # --slab-moss: the old cushion, a dome over the plate crests
 # turkey-tail tiers: (top height m, azimuth deg, height step m, [(width, reach)...])
 TIERS = ((0.34, 134.0, -0.050, ((0.15, 0.085), (0.13, 0.075), (0.10, 0.060))),
          (0.37, -6.0, -0.046, ((0.15, 0.085), (0.13, 0.075), (0.10, 0.058))))
@@ -138,9 +168,9 @@ FLOAT_BRACKETS = 0.035
 
 # --- Mushrooms -------------------------------------------------------------
 # fly agarics on the soil: (x, y, cap radius, stipe height, stipe radius, dome, lean x, lean y)
-AGARICS = ((0.44, 0.47, 0.076, 0.168, 0.0138, 1.00, -0.06, 0.05),
-           (0.65, 0.32, 0.052, 0.120, 0.0105, 1.45, 0.10, -0.04),
-           (0.30, 0.66, 0.031, 0.052, 0.0090, 2.00, 0.02, 0.08))
+AGARICS = ((0.38, 0.41, 0.076, 0.168, 0.0138, 1.00, -0.06, 0.05),
+           (0.57, 0.27, 0.052, 0.120, 0.0105, 1.45, 0.10, -0.04),
+           (0.25, 0.58, 0.031, 0.052, 0.0090, 2.00, 0.02, 0.08))
 AG_SIDES = 32
 AG_SINK = 0.030          # the bulb's foot under the soil
 AG_BITE = 0.014          # the stipe's tip inside its cap
@@ -155,29 +185,41 @@ FLOAT_CAPS = 0.024       # --float-caps: every cap moved up its axis
 FLOAT_MUSH = 0.050       # --float-mushrooms: every mushroom moved off its host
 
 # --- Ground ----------------------------------------------------------------
-SOIL_A = (0.98, 0.92)
-SOIL_N = 44
+SOIL_A = (0.84, 0.80)
+SOIL_N = 40
 SOIL_H0 = 0.15
 SLOPE = 0.15             # the ground rises toward the back (-Y)
 SOIL_EDGE = 0.16
 SOIL_FLOOR = 0.012
-N_LEAVES = 110
+N_LEAVES = 96
 LEAF_BITE = 0.006
 FLOAT_COVER = 0.025
-FERN_CLUMPS = (((-0.63, -0.24), (150.0, 188.0, 222.0, 258.0), (0.36, 0.44)),
-               ((-0.03, -0.69), (218.0, 252.0, 286.0, 320.0), (0.38, 0.46)))
-FERN_PINNAE = 14
+# fern clumps behind the stump: (centre, fronds, heading deg, fan deg)
+FERN_CLUMPS = (((-0.56, -0.12), 6, 192.0, 150.0), ((0.50, -0.36), 6, 335.0, 165.0))
+FROND_L = (0.44, 0.62)
+FROND_RINGS = 16
+FROND_SIDES = 5
+FROND_SIDES_HIGH = 7
+R_STIPE = 0.0032
+R_RACHIS_TIP = 0.0010
+STIPE_F = 0.19           # the stipe's share of the frond
+PINNAE = (9, 11)         # per side, by frond length
+PINNULES_MAX = 3
+PINNA_TWIST = 0.20
+PINNA_SEP = math.radians(8.0)
+PINNA_STEP = 0.04
+FROND_SINK = 0.025       # a frond's foot this far under the soil
 # twigs: (x, y, yaw deg, length, radius)
-TWIGS = ((-0.50, 0.47, 20.0, 0.32, 0.010), (0.12, 0.72, -35.0, 0.24, 0.008),
-         (0.62, -0.40, 70.0, 0.28, 0.009))
-PEBBLES = ((0.15, 0.66, 0.045), (0.70, 0.10, 0.035), (-0.30, 0.60, 0.030), (0.56, 0.60, 0.040))
+TWIGS = ((-0.43, 0.40, 20.0, 0.30, 0.010), (0.02, 0.655, 5.0, 0.20, 0.008),
+         (-0.05, -0.55, 0.0, 0.24, 0.009))
+PEBBLES = ((0.13, 0.57, 0.045), (0.60, 0.09, 0.035), (-0.26, 0.52, 0.030), (0.56, -0.20, 0.040))
 STONE_BED = 0.010
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (1.9961, 1.8965, 0.7807)
-BASE_TRIS_MIN = 34700
-BASE_TRIS_MAX = 35800
+OUTER_SIZE = (1.9351, 1.6283, 0.6888)
+BASE_TRIS_MIN = 56150
+BASE_TRIS_MAX = 57250
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -191,7 +233,7 @@ COLLIDER_TRIS_MAX = 75
 BAKE_RES = 512
 CAGE_EXTRUSION = 0.01
 # bark, wood, moss, bracket, agaric, honey, flesh, soil, litter, fern, stone, twig
-FACE_FLOORS = (2280, 930, 860, 1440, 600, 1640, 3640, 1900, 1450, 3660, 345, 190)
+FACE_FLOORS = (4000, 1530, 2770, 1440, 600, 1640, 3640, 1580, 1100, 16100, 345, 190)
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -228,6 +270,18 @@ MOSS_TOP_DOT = 0.3
 MOSS_UP_Z = 0.25
 MOSS_SHADE_Y = 0.5
 MOSS_FRAC_MIN = 0.85
+# Felling: the undercut floor's depth under the back-cut plane, and the
+# torn band's tallest fibre over that plane.
+STEP_BAND = (0.028, 0.041)
+HINGE_TIP_BAND = (0.018, 0.034)
+# Peel: the torn bark's stand over the exposed sapwood round each peel,
+# and each flake's root in the bark.
+RECESS_BAND = (0.020, 0.034)
+FLAKE_BITE_BAND = (0.002, 0.020)
+FLOAT_FLAKES = 0.020     # --float-flakes: every flake moved off the bark along its normal
+# Moss: a conforming shell, its top's greatest height over the bark along
+# the bark's normal.
+MOSS_THICK_BAND = (0.006, 0.016)
 # Hero yaw about Z only (level on the stage).
 HERO_YAW_DEG = 180.0
 WALL_Y = 4.0
@@ -249,7 +303,7 @@ MAT_LABELS = ("bark", "wood", "moss", "bracket", "agaric", "honey", "flesh", "so
 
 # face Part codes, so every audit classifies shells by what built them
 P_SOIL, P_STUMP, P_ROOT, P_HINGE, P_MOSS, P_BRACKET, P_STIPE, P_CAP, P_LEAF, P_FERN, \
-    P_TWIG, P_PEBBLE = range(1, 13)
+    P_TWIG, P_PEBBLE, P_FLAKE = range(1, 14)
 
 
 def eevee_engine_id():
@@ -291,6 +345,17 @@ def hor(v):
     return Vector((v.x, v.y, 0.0))
 
 
+def hash01(a, b, c):
+    """A closed-form draw in [0, 1) from three indices: per-part variety
+    that no flag can shift (copied from showcase/fern-mossy-rock)."""
+    x = math.sin(a * 12.9898 + b * 78.233 + c * 37.719 + SEED * 0.0137) * 43758.5453
+    return x - math.floor(x)
+
+
+def rotate_about(v, axis, ang):
+    return Matrix.Rotation(ang, 3, axis) @ v
+
+
 # --------------------------------------------------------------------------
 # The stump's closed-form shape
 # --------------------------------------------------------------------------
@@ -313,6 +378,20 @@ def cut_z(x, y, soil0, tilt):
         f = fall_dir()
         z += math.tan(math.radians(TILT_CUT_DEG)) * ((x - h.x) * f.x + (y - h.y) * f.y)
     return z
+
+
+def notch(x, y, fat=1.0):
+    """0 on the back cut, 1 on the undercut floor beyond the hinge chord,
+    a straight ramp down the step face between them. ``fat`` scales the
+    chord with the stump, so --fat-stump keeps the top's topology."""
+    f = fall_dir()
+    d = (x * f.x + y * f.y) / fat
+    return min(max((d - (HINGE_OFF - 0.5 * STEP_W)) / STEP_W, 0.0), 1.0)
+
+
+def top_z(x, y, soil0, tilt, step, fat=1.0):
+    """The stump's top: the back cut, and the undercut floor ``step`` under it."""
+    return cut_z(x, y, soil0, tilt) - step * notch(x, y, fat)
 
 
 def lobe(a):
@@ -354,9 +433,25 @@ def peel_field(zrel, a, patches):
         da = wrap(a - p["a"]) * R_CUT / p["ha"]
         r = math.hypot(ds, da)
         th = math.atan2(da, ds)
-        edge = 1.0 + 0.22 * math.sin(3.0 * th + p["ph"]) + 0.12 * math.sin(7.0 * th + 2.0 * p["ph"])
-        best = max(best, edge - r)
+        best = max(best, peel_edge(p, th) - r)
     return best
+
+
+def peel_edge(p, th):
+    """A peel's torn outline, in patch radii, at angle ``th`` round it."""
+    ph = p["ph"]
+    return (1.0 + 0.20 * math.sin(3.0 * th + ph) + 0.10 * math.sin(7.0 * th + 2.0 * ph)
+            + 0.06 * math.sin(11.0 * th + 3.0 * ph) + 0.04 * math.sin(17.0 * th + 5.0 * ph))
+
+
+def peel_lip(field, zrel, a):
+    """The torn bark round a peel curls off the wood: proudest at the edge,
+    ragged along it, gone PEEL_LIP_W of a patch radius out."""
+    if field > 0.0 or field < -PEEL_LIP_W:
+        return 0.0
+    s = 1.0 + field / PEEL_LIP_W
+    rag = 0.60 + 0.25 * math.sin(41.0 * a + 23.0 * zrel) + 0.15 * math.sin(67.0 * a - 37.0 * zrel)
+    return PEEL_LIP * s ** 1.6 * rag
 
 
 # --------------------------------------------------------------------------
@@ -371,8 +466,23 @@ def plan_stump():
 
     peels = [{"z": z, "a": math.radians(a), "hz": hz, "ha": ha, "ph": u(0.0, TAU)}
              for z, a, hz, ha in PEELS]
-    moss = [{"z": z, "a": math.radians(a), "hz": hz * u(0.92, 1.08), "ha": ha * u(0.92, 1.08),
-             "ph": u(0.0, TAU), "tone": rng.random()} for z, a, hz, ha in MOSS]
+    flakes = []
+    for pi, n in enumerate(FLAKES):
+        th0 = u(0.0, TAU)
+        for k in range(n):
+            flakes.append({"patch": pi, "th": th0 + TAU * (k + u(-0.3, 0.3)) / n,
+                           "L": u(0.024, 0.046), "W": u(0.018, 0.032), "curl": u(0.010, 0.026),
+                           "cup": u(0.002, 0.005), "tone": rng.random()})
+    moss = []
+    for z, a, hz, ha, ntuft in MOSS:
+        patch = {"z": z, "a": math.radians(a), "hz": hz * u(0.92, 1.08), "ha": ha * u(0.92, 1.08),
+                 "ph": u(0.0, TAU), "ph2": u(0.0, TAU), "tone": rng.random(), "tufts": []}
+        th0 = u(0.0, TAU)
+        for k in range(ntuft):
+            patch["tufts"].append({"th": th0 + TAU * (k + u(-0.25, 0.25)) / ntuft,
+                                   "out": u(1.02, 1.28), "r": u(*TUFT_R), "ph": u(0.0, TAU),
+                                   "tone": rng.random()})
+        moss.append(patch)
     shelves = []
     for ti, (z0, a0, dz, sizes) in enumerate(TIERS):
         for k, (w, d) in enumerate(sizes):
@@ -387,18 +497,18 @@ def plan_stump():
                       "wig": u(0.06, 0.12) * (1.0 if k % 2 else -1.0), "ph": u(0.0, TAU),
                       "scale": 0.80 + 0.20 * s, "tone": rng.random()})
     # the holding wood: each torn fibre bundle its own height, lean and
-    # width, a few long splinters among short stubs
+    # width; short stubs between them, now and then a longer splinter
     hinge = []
     for i in range(HINGE_N + 1):
         v = rng.random()
         if i % 2:
-            h = u(0.10, 0.28)                       # the torn floor between splinters
+            h = u(0.22, 0.50)                       # the torn floor between splinters
         else:
-            h = 0.30 + 0.70 * v ** 1.5
-            if i in HINGE_SPIKES:
-                h = u(1.7, 2.2)                     # the long splinters
-        hinge.append({"h": h, "lean": u(0.08, 0.40), "slide": u(-0.006, 0.006),
-                      "w": u(0.75, 1.15)})
+            h = 0.55 + 0.55 * v ** 1.3
+            if rng.random() < 0.14:
+                h = u(1.30, 1.65)                   # a longer splinter
+        hinge.append({"h": h, "lean": u(0.10, 0.45), "slide": u(-0.0025, 0.0025),
+                      "w": u(0.75, 1.20), "front": u(0.0, 0.004)})
     agarics = [{"tone": u(0.0, 0.3), "spin": u(0.0, TAU), "cap_tone": rng.random()} for _ in AGARICS]
     honey = []
     for host, which, station, count in HONEY:
@@ -417,18 +527,43 @@ def plan_stump():
                             "tone": u(0.7, 1.0), "cap_tone": rng.random(),
                             "dx": u(-0.012, 0.012), "dy": u(-0.012, 0.012)})
         honey.append({"host": host, "which": which, "station": station, "members": members})
+    # bipinnate fronds, as showcase/fern-mossy-rock grows them, at a third
+    # of its size: in each clump the young fronds stand up, the old ones
+    # arch out and down
     ferns = []
-    for (cx, cy), yaws, (h0, h1) in FERN_CLUMPS:
-        for yaw in yaws:
-            ferns.append({"x": cx + u(-0.03, 0.03), "y": cy + u(-0.03, 0.03),
-                          "yaw": math.radians(yaw + u(-8.0, 8.0)), "h": u(h0, h1),
-                          "reach": u(0.26, 0.32), "lp": u(0.085, 0.11),
-                          "tone": rng.random(), "curl": u(0.25, 0.40), "tw0": u(-0.12, 0.12)})
+    for (cx, cy), n, head, fan in FERN_CLUMPS:
+        order = list(range(n))
+        rng.shuffle(order)
+        for k in range(n):
+            az = math.radians(head + fan * ((k + 0.5) / n - 0.5) + u(-8.0, 8.0))
+            age = order[k] / (n - 1)
+            L = u(*FROND_L) * (0.90 + 0.12 * age)
+            off = u(0.010, 0.024)
+            bx, by = cx + math.cos(az) * off, cy + math.sin(az) * off
+            fr = {"id": len(ferns), "base": Vector((bx, by, soil_height(bx, by) - FROND_SINK)),
+                  "az": az, "L": L,
+                  "e0": math.radians(80.0 - 22.0 * age + u(-3.0, 3.0)),
+                  "etip": math.radians(-4.0 - 30.0 * age + u(-5.0, 5.0)),
+                  "curv": u(1.5, 1.9), "lat": u(-0.25, 0.25), "twist": u(-0.30, 0.30),
+                  "rings": FROND_RINGS, "sb": STIPE_F + u(-0.02, 0.02), "r0": R_STIPE * u(0.9, 1.1),
+                  "lmax": u(0.150, 0.170) * L, "peak": u(0.26, 0.38), "tone": rng.random()}
+            fr["n_side"] = PINNAE[0] + int(round((PINNAE[1] - PINNAE[0]) * min(1.0, max(
+                0.0, (L - FROND_L[0]) / (FROND_L[1] - FROND_L[0])))))
+            # a frond that would run into the stump or the soil stands up
+            # steeper and arches less until it clears
+            for _t in range(16):
+                if frond_clear(fr):
+                    break
+                fr["e0"] = min(fr["e0"] + math.radians(3.0), math.radians(86.0))
+                fr["etip"] = fr["etip"] + math.radians(5.0)
+            fr["pinnae"] = plan_pinnae(fr, fr["n_side"], fr["lmax"], PINNULES_MAX, fr["id"] + 1)
+            ferns.append(fr)
+    separate_pinnae(ferns)
     twigs = [{"bend": u(-0.25, 0.25), "fork": u(0.35, 0.6), "tone": rng.random()} for _ in TWIGS]
     pebbles = [{"yaw": u(0.0, TAU), "jit": [rng.random() for _ in range(8)]} for _ in PEBBLES]
 
     avoid = ([((x, y), 0.12) for x, y, *_rest in AGARICS]
-             + [((c[0][0], c[0][1]), 0.24) for c in FERN_CLUMPS]
+             + [((c[0][0], c[0][1]), 0.20) for c in FERN_CLUMPS]
              + [((x, y), r + 0.05) for x, y, r in PEBBLES])
     leaves = []
     tries = 0
@@ -437,11 +572,11 @@ def plan_stump():
         x = u(-1.0, 1.0) * SOIL_A[0]
         y = u(-1.0, 1.0) * SOIL_A[1]
         rr = math.hypot(x / SOIL_A[0], y / SOIL_A[1])
-        if rr > 0.84 or math.hypot(x, y) < 0.44:
+        if rr > 0.88 or math.hypot(x, y) < 0.40:
             continue
         # drifts, not a ring: the litter gathers in patches
         drift = 0.5 + 0.5 * math.sin(3.1 * x + 1.3) * math.sin(2.7 * y + 0.4)
-        if rng.random() > 0.15 + 0.85 * drift:
+        if rng.random() > 0.25 + 0.75 * drift:
             continue
         near_root = False
         for rt in roots:
@@ -460,9 +595,160 @@ def plan_stump():
         leaves.append({"x": x, "y": y, "yaw": u(0.0, TAU), "len": ln,
                        "wid": u(0.40, 0.60), "curl": u(0.002, 0.008), "tilt": u(-0.14, 0.14),
                        "tone": rng.random() ** 1.3})
-    return {"peels": peels, "moss": moss, "shelves": shelves, "roots": roots, "hinge": hinge,
-            "agarics": agarics, "honey": honey, "ferns": ferns, "twigs": twigs,
+    return {"peels": peels, "flakes": flakes, "moss": moss, "shelves": shelves, "roots": roots,
+            "hinge": hinge, "agarics": agarics, "honey": honey, "ferns": ferns, "twigs": twigs,
             "pebbles": pebbles, "leaves": leaves}
+
+
+# --------------------------------------------------------------------------
+# Fern fronds (adapted from showcase/fern-mossy-rock, inline, not imported)
+# --------------------------------------------------------------------------
+
+def frond_dir(fr, s):
+    th = fr["e0"] + (fr["etip"] - fr["e0"]) * s ** fr["curv"]
+    ps = fr["az"] + fr["lat"] * s * s
+    return Vector((math.cos(th) * math.cos(ps), math.cos(th) * math.sin(ps), math.sin(th)))
+
+
+def frond_path(fr):
+    """Rachis points, tangents and blade side vectors (horizontal, left of
+    the heading, turned by the frond's twist)."""
+    n = fr["rings"]
+    step = fr["L"] / (n - 1)
+    p = fr["base"].copy()
+    pts = [p.copy()]
+    for i in range(1, n):
+        s = (i - 0.5) / (n - 1)
+        p = p + frond_dir(fr, s) * step
+        pts.append(p.copy())
+    tans, sides = [], []
+    for i in range(n):
+        a = pts[max(i - 1, 0)]
+        b = pts[min(i + 1, n - 1)]
+        t = (b - a).normalized()
+        s = i / (n - 1)
+        ps = fr["az"] + fr["lat"] * s * s
+        sv = Vector((-math.sin(ps), math.cos(ps), 0.0))
+        sv = (sv - t * sv.dot(t)).normalized()
+        sv = rotate_about(sv, t, fr["twist"] * s)
+        tans.append(t)
+        sides.append(sv)
+    return pts, tans, sides
+
+
+def rachis_radius(fr, s):
+    return R_RACHIS_TIP + (fr["r0"] - R_RACHIS_TIP) * (1.0 - s) ** 0.75
+
+
+def path_at(path, s):
+    pts, _tans, sides = path
+    n = len(pts)
+    x = min(max(s, 0.0), 1.0) * (n - 1)
+    j = min(int(x), n - 2)
+    f = x - j
+    p = pts[j].lerp(pts[j + 1], f)
+    t = (pts[j + 1] - pts[j]).normalized()
+    sv = sides[j].lerp(sides[j + 1], f)
+    sv = (sv - t * sv.dot(t)).normalized()
+    return p, t, sv
+
+
+def pinna_profile(u, peak):
+    """Pinna length along the blade (0 at its base, 1 at the tip): the
+    lowest pinnae shorter, the longest a third of the way up, tapering to
+    a point."""
+    if u < peak:
+        return 0.50 + 0.50 * math.sin(0.5 * math.pi * u / peak)
+    return 0.06 + 0.94 * math.cos(0.5 * math.pi * min(1.0, (u - peak) / (1.0 - peak))) ** 1.15
+
+
+def plan_pinnae(fr, n_side, lmax, npin_max, key0):
+    """Alternate pinnae: stations on the two sides interleave by half a
+    spacing, crowding a little toward the tip."""
+    peak = fr["peak"]
+    out = []
+    for side, off in ((1.0, 0.0), (-1.0, 0.5)):
+        for i in range(n_side):
+            u = 0.015 + 0.955 * ((i + off + 0.25) / n_side) ** 0.94
+            ell = lmax * pinna_profile(u, peak) * (0.94 + 0.12 * hash01(key0, i, side))
+            npin = max(1, min(npin_max, int(round(ell / 0.0200))))
+            k = key0 * 1000.0 + i * 2 + (0 if side > 0 else 1)
+            out.append({"u": u, "i": i, "side": side, "ell": ell, "npin": npin, "key": k,
+                        "beta": math.radians(76.0 - 26.0 * u + 6.0 * (hash01(k, 1, 1) - 0.5)),
+                        "roll": PINNA_TWIST * ((i % 3) - 1) + 0.03 * (hash01(k, 1, 2) - 0.5),
+                        "droop": 0.004 + 0.006 * hash01(k, 1, 3),
+                        "sweep": 0.05 + 0.08 * hash01(k, 1, 4),
+                        "rise": 0.08 + 0.08 * hash01(k, 1, 7)})
+    return out
+
+
+def pinna_frame(fr, pn, path):
+    """Where a pinna leaves the rachis and how it is set: its station, the
+    rachis point, the rachis tangent, the blade normal, the pinna's axis
+    and its unturned normal."""
+    s = fr["sb"] + pn["u"] * (0.985 - fr["sb"])
+    p, t, sv = path_at(path, s)
+    nb = t.cross(sv).normalized()
+    sg = pn["side"]
+    be = pn["beta"]
+    e1 = (t * math.cos(be) + sv * (sg * math.sin(be)) + nb * pn["rise"]).normalized()
+    e30 = (nb - e1 * nb.dot(e1)).normalized()
+    return s, p, t, nb, e1, e30
+
+
+def separate_pinnae(fronds):
+    """Turn each pinna about its own axis, in PINNA_STEP steps either side
+    of its planned twist, until its normal is PINNA_SEP off the normal of
+    every pinna already set whose faces can come within
+    COPLANAR_CENTRE_MAX of its own. Returns how many could not be cleared."""
+    placed = []
+    cos_sep = math.cos(PINNA_SEP)
+    failed = 0
+    for fr in fronds:
+        path = frond_path(fr)
+        for pn in sorted(fr["pinnae"], key=lambda q: (q["u"], q["side"])):
+            _s, p, _t, _nb, e1, e30 = pinna_frame(fr, pn, path)
+            half = 0.5 * pn["ell"]
+            c = p + e1 * half
+            near = [n for q, n, h in placed if (q - c).length < half + h + COPLANAR_CENTRE_MAX]
+            r0 = pn["roll"]
+            best = None
+            for k in range(41):
+                r = r0 + ((k + 1) // 2) * PINNA_STEP * (1.0 if k % 2 else -1.0)
+                n = rotate_about(e30, e1, r)
+                if all(abs(n.dot(m)) < cos_sep for m in near):
+                    best = r
+                    break
+            if best is None:
+                failed += 1
+                best = r0
+            pn["roll"] = best
+            placed.append((c, rotate_about(e30, e1, best), half))
+    return failed
+
+
+def frond_clear(fr):
+    """True if the frond keeps off the stump and above the soil."""
+    pts, _tans, sides = frond_path(fr)
+    for i, p in enumerate(pts):
+        s = i / (len(pts) - 1)
+        zrel = p.z - SOIL_H0
+        rr = stump_radius(zrel, math.atan2(p.y, p.x)) + 0.05
+        if math.hypot(p.x, p.y) < rr and p.z < SOIL_H0 + CUT_H + 0.05:
+            return False
+        if i > 2 and p.z < soil_height(p.x, p.y) + 0.05:
+            return False
+        if s >= fr["sb"]:
+            u = (s - fr["sb"]) / (1.0 - fr["sb"])
+            half = fr["lmax"] * pinna_profile(u, fr["peak"])
+            for sg in (1.0, -1.0):
+                q = p + sides[i] * (sg * half)
+                if q.z < soil_height(q.x, q.y) + 0.03:
+                    return False
+                if math.hypot(q.x, q.y) < stump_radius(q.z - SOIL_H0, math.atan2(q.y, q.x)) + 0.02 \
+                        and q.z < SOIL_H0 + CUT_H + 0.05:
+                    return False
+    return True
 
 
 # --------------------------------------------------------------------------
@@ -478,9 +764,23 @@ class Builder:
         self.radial = v.new("Radial")
         self.peel = v.new("Peel")
         self.check = v.new("Check")
+        self.notch = v.new("Notch")
+        # the packed UVMap first, so it stays the active (baked, exported)
+        # map; LeafUV runs across (x) and along (y) each fern pinna for its veins
+        self.uv = bm.loops.layers.uv.new("UVMap")
+        self.luv = bm.loops.layers.uv.new("LeafUV")
+        self.leaf_uv = {}
 
-    def vert(self, co):
-        return self.bm.verts.new(co)
+    def vert(self, co, luv=None):
+        v = self.bm.verts.new(co)
+        if luv is not None:
+            self.leaf_uv[v] = luv
+        return v
+
+    def finish_luv(self, faces):
+        for f in faces:
+            for loop in f.loops:
+                loop[self.luv].uv = self.leaf_uv.get(loop.vert, (0.5, 0.5))
 
     def face(self, verts, mat, tone, part, ident=0.0, zone=0.0, grain=0.0):
         out = []
@@ -702,17 +1002,26 @@ def check_dip(j, sides, frac):
 
 
 def build_stump(B, plan, sides, G, flags):
+    bm = B.bm
     soil0 = G.z(0.0, 0.0)
     fat = FAT_STUMP if flags["fat_stump"] else 1.0
     tilt = flags["tilt_cut"]
     perch = flags["perch_stump"]
+    flush = flags["flush_peel"]
+    step = 0.0 if flags["flat_felling"] else STEP
     peels = plan["peels"]
     angles = [TAU * j / sides for j in range(sides)]
 
     def bark_r(zrel, a):
+        """The built bark: plates and furrows, a torn lip curling proud round
+        each peel, and inside it the sapwood a bark's thickness down."""
         field = peel_field(zrel, a, peels)
         rr = stump_radius(zrel, a, fat)
-        return (rr - BARK_T if field > 0.0 else rr + furrow(zrel, a) * fat), field
+        if flush:
+            return (rr if field > 0.0 else rr + furrow(zrel, a) * fat), field
+        if field > 0.0:
+            return rr - BARK_T * fat, field
+        return rr + (furrow(zrel, a) + peel_lip(field, zrel, a)) * fat, field
 
     grid = []
     fields = []
@@ -742,7 +1051,7 @@ def build_stump(B, plan, sides, G, flags):
         for j, a in enumerate(angles):
             r, field = bark_r(zrel, a)
             x, y = r * math.cos(a), r * math.sin(a)
-            z = zb + f * (cut_z(x, y, soil0, tilt) - zb)
+            z = zb + f * (top_z(x, y, soil0, tilt, step, fat) - zb)
             if i == n_up:
                 z -= 0.7 * check_dip(j, sides, 1.0)
             ring.append(Vector((x, y, z)))
@@ -754,9 +1063,11 @@ def build_stump(B, plan, sides, G, flags):
     for ring, pf in zip(verts, fields):
         for v, field in zip(ring, pf):
             v[B.radial] = 1.0
-            # the torn edge, for the bark shader: 0.5 exactly on the patch
-            # outline, so the edge is cut between vertices, not along faces
-            v[B.peel] = min(1.0, max(0.0, 0.5 + 2.0 * field))
+            # the torn edge, for the bark shader and the peel audit: 0.5
+            # exactly on the patch outline, 1 well inside, 0 well outside
+            v[B.peel] = min(1.0, max(0.0, 0.5 + field))
+    for v in verts[-1]:
+        v[B.notch] = notch(v.co.x, v.co.y, fat)
     flags_ = [[fl > 0.0 for fl in pf] for pf in fields]
     for i in range(len(verts) - 1):
         for j in range(sides):
@@ -785,10 +1096,12 @@ def build_stump(B, plan, sides, G, flags):
         m = (j + 1) % sides
         B.face((verts[0][m], verts[0][j], bottom), BARK_IDX, 0.25, P_STUMP)
 
-    # the saw cut: the bark's top edge, then the end grain ring by ring to
-    # the pith, notched by the drying checks
-    rb = [stump_radius(CUT_H, a, fat) - BARK_T for a in angles]
+    # the sawn top: the bark's top edge, then the end grain ring by ring to
+    # the pith, notched by the drying checks; the undercut floor ``step``
+    # under the back cut beyond the hinge chord
+    rb = [stump_radius(CUT_H, a, fat) - BARK_T * fat for a in angles]
     prev = verts[-1]
+    top = []
     spec = [(1.0, BARK_IDX, 1.0, 0.0)] + [(k, WOOD_IDX, k, 1.0) for k in CAP_FR]
     for frac, mat, radial, grain in spec:
         ring = []
@@ -797,50 +1110,139 @@ def build_stump(B, plan, sides, G, flags):
             y = rb[j] * frac * math.sin(a)
             dip = check_dip(j, sides, frac)
             weather = 0.0012 * math.sin(9.0 * x + 2.0) * math.cos(8.0 * y + 1.0)
-            v = B.vert(Vector((x, y, cut_z(x, y, soil0, tilt) - dip + weather)))
+            v = B.vert(Vector((x, y, top_z(x, y, soil0, tilt, step, fat) - dip + weather)))
             v[B.radial] = radial
             v[B.check] = dip / CHECK_D
+            v[B.notch] = notch(x, y, fat)
             ring.append(v)
         for j in range(sides):
             m = (j + 1) % sides
-            B.face((prev[j], prev[m], ring[m], ring[j]), mat, 0.25 if mat == BARK_IDX else 0.6,
-                   P_STUMP, 0.0, 0.0, grain)
+            top.append(B.face((prev[j], prev[m], ring[m], ring[j]), mat,
+                              0.25 if mat == BARK_IDX else 0.6, P_STUMP, 0.0, 0.0, grain))
         prev = ring
-    pith = B.vert(Vector((0.0, 0.0, cut_z(0.0, 0.0, soil0, tilt) - 0.001)))
+    zp = top_z(0.0, 0.0, soil0, tilt, step, fat) - 0.001
+    pith = B.vert(Vector((0.0, 0.0, zp)))
     pith[B.radial] = 0.0
+    pith[B.notch] = notch(0.0, 0.0, fat)
     for j in range(sides):
         m = (j + 1) % sides
-        B.face((prev[j], prev[m], pith), WOOD_IDX, 0.6, P_STUMP, 0.0, 0.0, 1.0)
+        top.append(B.face((prev[j], prev[m], pith), WOOD_IDX, 0.6, P_STUMP, 0.0, 0.0, 1.0))
 
-    # the holding wood: a jagged strip of torn fibres standing on the hinge
-    # chord, leaning toward the fall, its foot set into the cut
+    # the step: cut the top along both edges of the step face, so the ramp
+    # between the back cut and the undercut floor is its own strip of faces
     fd = fall_dir()
+    for off, level in ((HINGE_OFF - 0.5 * STEP_W, 0.0), (HINGE_OFF + 0.5 * STEP_W, 1.0)):
+        geom = set(top)
+        for f in top:
+            geom.update(f.verts)
+            geom.update(f.edges)
+        ret = bmesh.ops.bisect_plane(bm, geom=list(geom), dist=1e-7, plane_co=fd * (off * fat),
+                                     plane_no=fd)
+        for g in ret["geom_cut"]:
+            if isinstance(g, bmesh.types.BMVert):
+                # a vertex on the cut came from an edge across the ramp: its
+                # height was interpolated along the edge, so set the step's
+                # share of it to this edge of the ramp
+                g.co.z += step * (g[B.notch] - level)
+                g[B.notch] = level
+        top = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMFace)]
+    grain_l = B.L["EndGrain"]
+    for f in top:
+        ns = [v[B.notch] for v in f.verts]
+        if f.material_index == WOOD_IDX and min(ns) < 0.5 < max(ns):
+            f[grain_l] = 0.4        # the step face: torn fibres
+
+    # the holding wood: a low band of torn fibres along the step's edge,
+    # its back foot set into the back cut, its front face running down the
+    # step to below the undercut floor, the fibres leaning toward the fall
     hd = Vector((-fd.y, fd.x, 0.0))
-    hp = hinge_point()
+    hp = hinge_point() * fat
     rmin = min(rb)
-    half = math.sqrt(max(rmin * rmin - HINGE_OFF * HINGE_OFF, 0.01)) * 0.66
+    half = math.sqrt(max(rmin * rmin - (HINGE_OFF * fat) ** 2, 0.01)) * HINGE_SPAN
+    tall = TALL_HINGE if flags["tall_hinge"] else 1.0
+    back = -0.5 * STEP_W
     stations = []
     for i, fib in enumerate(plan["hinge"]):
         t = -1.0 + 2.0 * i / HINGE_N
         env = max(0.0, 1.0 - t * t)
         p = hp + hd * (t * half)
-        h = HINGE_H * (0.25 + 0.75 * env ** 0.5) * fib["h"]
-        zc0 = cut_z(p.x, p.y, soil0, tilt)
-        w0 = HINGE_W * (0.45 + 0.55 * env ** 0.5) * fib["w"]
-        wt = 0.22 * w0
-        tip = fd * (fib["lean"] * h) + hd * fib["slide"]
+        z0 = cut_z(p.x, p.y, soil0, tilt)
+        h = HINGE_H * (0.30 + 0.70 * env ** 0.5) * fib["h"] * tall
+        w = HINGE_HW * (0.55 + 0.45 * env ** 0.5) * fib["w"]
+        lean = fd * (fib["lean"] * h) + hd * fib["slide"]
         stations.append((
-            B.vert(Vector((p.x, p.y, zc0 - HINGE_BITE)) - fd * w0),
-            B.vert(Vector((p.x, p.y, zc0 + h)) - fd * wt + tip),
-            B.vert(Vector((p.x, p.y, zc0 + h)) + fd * wt + tip),
-            B.vert(Vector((p.x, p.y, zc0 - HINGE_BITE)) + fd * w0),
+            B.vert(p + fd * (back - w) + UP * (z0 - HINGE_BITE)),
+            B.vert(p + fd * (back - 0.40 * w) + lean + UP * (z0 + h)),
+            B.vert(p + fd * (back + 0.15 * w) + lean + UP * (z0 + 0.70 * h)),
+            B.vert(p + fd * (0.5 * STEP_W + 0.004 + fib["front"]) + UP * (z0 - step - HINGE_BITE)),
+            B.vert(p + fd * (back - 0.003) + UP * (z0 - step - HINGE_BITE)),
         ))
+    n5 = 5
     for s0, s1 in zip(stations, stations[1:]):
-        for a, b in ((0, 1), (1, 2), (2, 3), (3, 0)):
+        for a in range(n5):
+            b = (a + 1) % n5
             B.face((s0[a], s1[a], s1[b], s0[b]), WOOD_IDX, 0.8, P_HINGE, 0.0, 0.0, 0.4)
     B.face(tuple(reversed(stations[0])), WOOD_IDX, 0.8, P_HINGE, 0.0, 0.0, 0.4)
     B.face(tuple(stations[-1]), WOOD_IDX, 0.8, P_HINGE, 0.0, 0.0, 0.4)
-    return StumpSurface(grid, sides), soil0
+
+    # bark flakes lifting off each peel's torn edge
+    surf = StumpSurface(grid, sides)
+    lift = FLOAT_FLAKES if flags["float_flakes"] else 0.0
+    for k, fl in enumerate(plan["flakes"]):
+        add_flake(B, fl, peels[fl["patch"]], soil0, bark_r, surf, fat, lift, k + 1)
+    return surf, soil0
+
+
+def add_flake(B, fl, patch, soil0, bark_r, surf, fat, lift, ident):
+    """A bark flake curling off a peel's torn edge: a thin cupped plate, its
+    root set into the bark just outside the edge, lying over the edge and
+    lifting off the sapwood toward its ragged tip."""
+    th = fl["th"]
+    e = peel_edge(patch, th)
+    ct, st = math.cos(th), math.sin(th)
+    # metres per patch radius along the ray and across it
+    along = math.hypot(ct * patch["hz"], st * patch["ha"])
+    across = math.hypot(st * patch["hz"], ct * patch["ha"])
+    rho0 = e + 0.16
+    nl, nw = FLAKE_NL, FLAKE_NW
+    top = [[None] * (nw + 1) for _ in range(nl + 1)]
+    bot = [[None] * (nw + 1) for _ in range(nl + 1)]
+    for j in range(nl + 1):
+        s = j / nl
+        rho = rho0 - fl["L"] * s / along
+        wid = fl["W"] * (1.0 - 0.55 * s ** 1.5) * (1.0 + 0.25 * math.sin(7.0 * th + 3.0 * s))
+        for i in range(nw + 1):
+            v = 2.0 * i / nw - 1.0
+            lat = 0.5 * wid * v / across
+            ds = rho * ct - lat * st
+            da = rho * st + lat * ct
+            zrel = patch["z"] + ds * patch["hz"]
+            a = patch["a"] + da * patch["ha"] / R_CUT
+            nr = Vector((math.cos(a), math.sin(a), 0.0))
+            crest = stump_radius(zrel, a, fat) + 0.8 * PEEL_LIP * fat
+            # the root under the bark as built: the closed form, or the
+            # mesh between its vertices where that lies lower
+            built = hor(surf.point(soil0 + zrel, a)).length
+            root = min(bark_r(zrel, a)[0], built) - FLAKE_BITE
+            r = root + (crest - root) * smoothstep(s, 0.0, 0.35) + fl["curl"] * s * s
+            r += fl["cup"] * (1.0 - v * v) * s + lift
+            # the tip is torn, not cut: its corners reach unevenly
+            p = Vector((0.0, 0.0, soil0 + zrel)) + nr * r
+            hth = 0.5 * FLAKE_T * (1.0 - 0.6 * s) * (1.0 - v * v) ** 0.5
+            vt = B.vert(p + nr * hth)
+            top[j][i] = vt
+            shared = i in (0, nw) or j == nl
+            bot[j][i] = vt if shared else B.vert(p - nr * hth)
+    tone = fl["tone"]
+    for j in range(nl):
+        for i in range(nw):
+            B.face((top[j][i], top[j + 1][i], top[j + 1][i + 1], top[j][i + 1]),
+                   BARK_IDX, tone, P_FLAKE, ident, 0.0)
+            B.face((bot[j][i + 1], bot[j + 1][i + 1], bot[j + 1][i], bot[j][i]),
+                   BARK_IDX, tone, P_FLAKE, ident, 1.0)
+    for i in range(nw):
+        B.face((top[0][i], top[0][i + 1], bot[0][i + 1], bot[0][i]), BARK_IDX, tone,
+               P_FLAKE, ident, 1.0)
 
 
 def root_profile():
@@ -880,17 +1282,31 @@ def build_roots(B, plan, G, arch):
     return lines
 
 
-def add_moss(B, surf, patch, rot, bite, soil0):
-    """A moss cushion: a lens over a patch of the bark, its rim tucked under
-    the bark surface and its base inside the stump."""
-    K = 6
-    M = 20
-    zc = soil0 + patch["z"]
-    ac = patch["a"] + rot
+def add_cushion(B, surf, zc, ac, hz, ha, outline, lump, T, bite, tone, K, M, soil0, slab, fat,
+                lens, cone=False):
+    """A moss cushion: a thin shell laid on the bark as built — plates,
+    furrows and all — so its top follows the furrows. It thins from its
+    heart to a feathered rim tucked MOSS_EDGE under the bark, and its base
+    sits ``bite`` inside the stump. ``hz`` and ``ha`` are its half-height
+    and half-arc in metres; ``outline(th)`` its rim in those radii.
+    ``slab`` builds the old cushion instead: a dome over the plate crests."""
 
-    def lump(z, a):
-        return (0.72 + 0.28 * math.sin(13.0 * z + 6.0 * a + patch["ph"])
-                * math.sin(7.4 * z - 5.0 * a + 1.3 * patch["ph"]))
+    # never over the sawn rim: a cushion near it is squashed to stop short
+    reach_up = max(outline(TAU * m / M) * math.cos(TAU * m / M) for m in range(M))
+    hz = min(hz, (soil0 + CUT_H - 0.030 - zc) / max(reach_up, 1e-6))
+
+    def at(rho, th):
+        e = outline(th)
+        return zc + rho * e * hz * math.cos(th), ac + rho * e * ha * math.sin(th) / R_CUT
+
+    def top_pt(z, a, rho):
+        if slab:
+            nr = Vector((math.cos(a), math.sin(a), 0.0))
+            p = Vector((0.0, 0.0, z)) + nr * stump_radius(z - soil0, a, fat)
+            return p + nr * (SLAB_T * max(0.0, 1.0 - rho * rho) ** 0.5 * lump(z, a) - MOSS_EDGE)
+        p = surf.point(z, a)
+        n = surf.normal(z, a)
+        return p + n * (T * max(0.0, 1.0 - rho * rho) ** 0.45 * lump(z, a) - MOSS_EDGE * rho ** 4)
 
     top_rings = []
     bot_rings = []
@@ -900,32 +1316,69 @@ def add_moss(B, surf, patch, rot, bite, soil0):
         br = []
         for m in range(M):
             th = TAU * m / M
-            edge = 1.0 + 0.20 * math.sin(3.0 * th + patch["ph"]) + 0.10 * math.sin(5.0 * th + 2.0 * patch["ph"])
-            z = zc + rho * edge * patch["hz"] * math.cos(th)
-            a = ac + rho * edge * patch["ha"] * math.sin(th) / R_CUT
-            p = surf.point(z, a)
-            nrm = surf.normal(z, a)
-            thick = MOSS_T * max(0.0, 1.0 - rho * rho) ** 0.5 * lump(z, a)
-            tv = B.vert(p + nrm * (thick - MOSS_EDGE))
+            z, a = at(rho, th)
+            tv = B.vert(top_pt(z, a, rho))
             tr.append(tv)
-            br.append(tv if k == K else B.vert(p - nrm * bite))
+            br.append(tv if (k == K or cone) else B.vert(surf.point(z, a) - surf.normal(z, a)
+                                                  * (bite + lens * (1.0 - rho * rho))))
         top_rings.append(tr)
         bot_rings.append(br)
-    p0 = surf.point(zc, ac)
-    n0 = surf.normal(zc, ac)
-    ct = B.vert(p0 + n0 * (MOSS_T * lump(zc, ac) - MOSS_EDGE))
-    cb = B.vert(p0 - n0 * bite)
-    tone = patch["tone"]
-    for rings, centre, flip in ((top_rings, ct, False), (bot_rings, cb, True)):
+    ct = B.vert(top_pt(zc, ac, 0.0))
+    # the base bellies into the stump, each cushion by its own depth, so no
+    # two bases run parallel; a tuft's base is one cone from its rim
+    cb = B.vert(surf.point(zc, ac) - surf.normal(zc, ac) * (bite + lens))
+    # Zone: the top's distance from the heart (0..1), 2 on the base
+    for m in range(M):
+        q = (m + 1) % M
+        B.face((top_rings[0][m], top_rings[0][q], ct), MOSS_IDX, tone, P_MOSS, 0.0, 0.5 / K)
+        if cone:
+            B.face((top_rings[-1][q], top_rings[-1][m], cb), MOSS_IDX, tone, P_MOSS, 0.0, 2.0)
+        else:
+            B.face((bot_rings[0][q], bot_rings[0][m], cb), MOSS_IDX, tone, P_MOSS, 0.0, 2.0)
+    for k, (t0, t1, b0, b1) in enumerate(zip(top_rings, top_rings[1:], bot_rings, bot_rings[1:])):
+        zone = (k + 1.5) / K
         for m in range(M):
             q = (m + 1) % M
-            tri = (rings[0][m], rings[0][q], centre)
-            B.face(tri[::-1] if flip else tri, MOSS_IDX, tone, P_MOSS)
-        for r0, r1 in zip(rings, rings[1:]):
-            for m in range(M):
-                q = (m + 1) % M
-                quad = (r0[m], r1[m], r1[q], r0[q])
-                B.face(quad[::-1] if flip else quad, MOSS_IDX, tone, P_MOSS)
+            B.face((t0[m], t1[m], t1[q], t0[q]), MOSS_IDX, tone, P_MOSS, 0.0, zone)
+            if not cone:
+                B.face((b0[q], b1[q], b1[m], b0[m]), MOSS_IDX, tone, P_MOSS, 0.0, 2.0)
+
+
+def add_moss(B, surf, patch, rot, bite, soil0, slab, fat):
+    """A moss patch: a main cushion with a lumpy, lobed rim that runs out in
+    tongues along the bark's furrows, and a few satellite tufts round it."""
+    zc = soil0 + patch["z"]
+    ac = patch["a"] + rot
+    ph, ph2 = patch["ph"], patch["ph2"]
+    hz, ha = patch["hz"], patch["ha"]
+
+    def outline(th):
+        e = (1.0 + 0.16 * math.sin(3.0 * th + ph) + 0.09 * math.sin(5.0 * th + 2.0 * ph)
+             + 0.06 * math.sin(9.0 * th + ph2) + 0.04 * math.sin(14.0 * th + 3.0 * ph2))
+        # tongues up and down the furrows: moss creeps along the fissures
+        z = zc + e * hz * math.cos(th)
+        a = ac + e * ha * math.sin(th) / R_CUT
+        v = -furrow(z - soil0, a) / FURROW_D
+        return e * (1.0 + 0.30 * v * math.cos(th) ** 2)
+
+    def lump(z, a):
+        return (0.80 + 0.12 * math.sin(61.0 * z + 23.0 * a + ph) * math.sin(37.0 * z - 29.0 * a + ph2)
+                + 0.08 * math.sin(143.0 * z + 71.0 * a + 2.0 * ph))
+
+    add_cushion(B, surf, zc, ac, hz, ha, outline, lump, MOSS_T, bite, patch["tone"], MOSS_K,
+                MOSS_M, soil0, slab, fat, 0.08 * hz * (0.7 + 0.6 * patch["tone"]))
+    for k, tf in enumerate(patch["tufts"]):
+        e = outline(tf["th"]) * tf["out"]
+        tz = min(zc + e * hz * math.cos(tf["th"]), soil0 + CUT_H - 0.035 - tf["r"])
+        ta = ac + e * ha * math.sin(tf["th"]) / R_CUT
+        tph = tf["ph"]
+
+        def t_outline(th, tph=tph):
+            return 1.0 + 0.15 * math.sin(3.0 * th + tph) + 0.08 * math.sin(5.0 * th + 2.0 * tph)
+
+        add_cushion(B, surf, tz, ta, tf["r"], tf["r"], t_outline, lump, 0.75 * MOSS_T,
+                    TUFT_BITE + 0.0004 * k, tf["tone"], 3, 14, soil0, slab, fat,
+                    tf["r"] * (0.25 + 0.30 * tf["tone"]), cone=True)
 
 
 def add_shelf(B, surf, shelf, float_off, bite, soil0, ident):
@@ -1061,7 +1514,9 @@ def add_honey(B, base, out, m, ident, float_cap, shift):
         zones.append(min(1.0, (t + 0.5 / (n - 1))))
     add_tube(B, pts, radii, HONEY_SIDES, FLESH_IDX, m["tone"], P_STIPE, ident, zones=zones)
     tan = (pts[-1] - pts[-2]).normalized()
-    axis = (tan + UP * 0.8).normalized()
+    # each cap tipped its own way, so shingled neighbours never share a plane
+    wob = Vector(((hash01(ident, 7, 1) - 0.5) * 0.20, (hash01(ident, 7, 2) - 0.5) * 0.20, 0.0))
+    axis = (tan + UP * 0.8 + wob).normalized()
     cap_o = pts[-1] - axis * HONEY_BITE + axis * (FLOAT_CAPS if float_cap else 0.0)
     add_cap(B, cap_o, axis, HONEY_CAP, HONEY_MARGIN, m["rc"], m["dome"], HONEY_CAP_SIDES,
             m["spin"], HONEY_IDX, m["tone"], ident)
@@ -1087,53 +1542,131 @@ def add_leaf(B, G, lf, lift):
              lf["tone"], P_LEAF)
 
 
-def add_fern(B, G, fd):
-    base, _n = G.hit(fd["x"], fd["y"])
-    base = base - Vector((0.0, 0.0, 0.03))
-    hdir = Vector((math.cos(fd["yaw"]), math.sin(fd["yaw"]), 0.0))
-    H, R = fd["h"], fd["reach"]
-    pts = []
-    steps = 12
-    for k in range(steps):
-        t = k / (steps - 1)
-        z = H * (2.0 * t - t * t) * (1.0 - fd["curl"] * t ** 3) + 0.03 * min(1.0, t * 8.0)
-        pts.append(base + hdir * (R * t ** 1.25) + UP * z)
-    radii = [0.0060 - 0.0040 * (k / (steps - 1)) for k in range(steps)]
-    add_tube(B, pts, radii, 5, FERN_IDX, fd["tone"], P_FERN)
+def fan_strip(B, P, run, faces, tone, zone):
+    """Triangles from outline vertex ``P`` over the costa ``run``."""
+    for c0, c1 in zip(run, run[1:]):
+        faces.append(B.face((c0, P, c1), FERN_IDX, tone, P_FERN, 0.0, zone))
 
-    def at(t):
-        x = t * (steps - 1)
-        i = min(int(x), steps - 2)
-        f = x - i
-        return pts[i].lerp(pts[i + 1], f), (pts[i + 1] - pts[i]).normalized()
 
-    for k in range(FERN_PINNAE):
-        t = 0.22 + 0.73 * k / (FERN_PINNAE - 1)
-        lp = fd["lp"] * max(0.18, math.sin(math.pi * (t - 0.12) / 0.92)) ** 0.7
-        for side, dt in ((1.0, 0.0), (-1.0, 0.012)):
-            p, tan = at(min(0.995, t + dt))
-            bn = (UP - tan * UP.dot(tan)).normalized()
-            # each pinna twists a little about the rachis: neighbours along
-            # one side are otherwise translated copies in one blade plane.
-            # Period 3, so any two neighbours differ by at least 0.1 rad.
-            tw = 0.10 * ((k % 3) - 1) + (0.04 if side < 0 else 0.0) + fd["tw0"]
-            bn = (bn * math.cos(tw) + tan.cross(bn) * math.sin(tw)).normalized()
-            sd = tan.cross(bn) * side
-            e1 = (sd * math.cos(0.35) + tan * math.sin(0.35) - bn * 0.12).normalized()
-            e2 = (tan - e1 * tan.dot(e1)).normalized()
-            e3 = e1.cross(e2).normalized()
-            wp = 0.24 * lp
-            dr = 0.22 + 0.05 * ((k + (1 if side < 0 else 0)) % 4)
-            rib = 0.0022 + 0.0006 * (k % 2)
-            outline = []
-            for f, sg in ((0.0, 0.0), (0.22, 1.0), (0.5, 1.0), (0.78, 1.0), (1.0, 0.0),
-                          (0.78, -1.0), (0.5, -1.0), (0.22, -1.0)):
-                hw = wp * math.sin(math.pi * f) ** 0.6 if 0.0 < f < 1.0 else 0.0
-                droop = dr * lp * f * f
-                outline.append(p + e1 * (f * lp) + e2 * (sg * hw) - bn * droop)
-            mid = p + e1 * (0.45 * lp) - bn * (dr * lp * 0.2)
-            add_lens(B, outline, mid + e3 * rib, mid - e3 * rib, FERN_IDX, fd["tone"], P_FERN,
-                     0.5 + 0.5 * t)
+def add_pinna(B, base, e1, e2, e3, ell, pn, tone):
+    """A pinna cut into pinnules: one closed, thin shell (adapted from
+    showcase/fern-mossy-rock). A costa runs from the base (inside the
+    rachis) to the apex, curving toward the frond's tip; alternate oblong
+    pinnules on its two sides are lobes cut almost to the costa. The rim is
+    shared by a top and a bottom surface, each fanned from its own costa
+    vertices, so every rim edge has one face above and one below."""
+    npin = pn["npin"]
+    sweep, droop = pn["sweep"], pn["droop"]
+    key = pn["key"]
+    lam0 = 0.150
+    wing0 = 0.028
+    alpha = math.radians(70.0)
+    # the costa stands this proud of the rim above and below, in pinna
+    # lengths, never under 30 um: the smallest pinnae stay clear of the
+    # doubles merge
+    lift_t = max(0.0012, 0.000030 / ell)
+    lift_b = max(0.0010, 0.000025 / ell)
+
+    def frame(x):
+        a = Vector((1.0, 2.0 * sweep * x)).normalized()
+        return a, Vector((-a.y, a.x))
+
+    def cpt(x):
+        return Vector((x, sweep * x * x))
+
+    def world(q2, x, lift=0.0):
+        z = -droop * x * x + lift
+        return base + e1 * (q2.x * ell) + e2 * (q2.y * ell) + e3 * (z * ell)
+
+    x0, x1 = 0.07, 0.90
+    dx = (x1 - x0) / npin
+    lobes = {1.0: [], -1.0: []}
+    stations = []
+    for sg, off in ((1.0, 0.25), (-1.0, 0.75)):
+        for j in range(npin):
+            stations.append((x0 + (j + off) * dx, sg, j))
+    stations.sort()
+    top, bot = {}, {}
+    for xj, sg, j in stations:
+        c = cpt(xj)
+        lift = 1.0 - 0.7 * xj
+        top[(sg, j)] = B.vert(world(c, xj, lift_t * lift), luv=(0.5, xj))
+        bot[(sg, j)] = B.vert(world(c, xj, -lift_b * lift), luv=(0.5, xj))
+    vb = B.vert(base, luv=(0.5, 0.0))
+    va = B.vert(world(cpt(1.0), 1.0), luv=(0.5, 1.0))
+    reach = lam0 + wing0 * 2.0
+    for sg in (1.0, -1.0):
+        for j in range(npin):
+            xj = x0 + (j + (0.25 if sg > 0 else 0.75)) * dx
+            a, b = frame(xj)
+            c = cpt(xj)
+            k2 = key * 7.0 + j * 2 + (0 if sg > 0 else 1)
+            lam = lam0 * (1.0 - 0.60 * xj) * (1.0 if sg > 0 else 0.90) * (0.90 + 0.20 * hash01(k2, 3, 1))
+            w = 0.80 * dx
+            wing = wing0 * (1.0 + 0.8 * xj)
+            ca, sa = math.cos(alpha), math.sin(alpha)
+            B1 = Vector((-0.5 * w, wing))
+            B2 = Vector((0.5 * w, wing))
+            T = Vector((lam * ca + 0.15 * w, wing + lam * sa)) + Vector(((hash01(k2, 3, 2) - 0.5) * 0.2 * w, 0.0))
+            e_p = (T - B1).normalized()
+            e_d = (T - B2).normalized()
+            E1 = B1 * 0.35 + T * 0.65 + Vector((-e_p.y, e_p.x)) * (0.22 * w)
+            E2 = B2 * 0.35 + T * 0.65 + Vector((e_d.y, -e_d.x)) * (0.22 * w)
+            run = []
+            for q in (B1, E1, T, E2, B2):
+                q2 = c + a * q.x + b * (sg * q.y)
+                run.append(B.vert(world(q2, xj + q.x),
+                                  luv=(0.5 + 0.5 * sg * q.y / reach, xj + q.x)))
+            lobes[sg].append(run)
+    faces = []
+    for sg in (1.0, -1.0):
+        mine = [(xj, j) for xj, s2, j in stations if s2 == sg]
+        for surf, zone in ((top, 0.0), (bot, 1.0)):
+            costa = [(0.0, vb)] + [(xj, surf[(s2, j)]) for xj, s2, j in stations] + [(1.0, va)]
+            idx = {id(v): i for i, (_x, v) in enumerate(costa)}
+            cv = [v for _x, v in costa]
+            prev = 0
+            for (xj, j), run in zip(mine, lobes[sg]):
+                m = surf[(sg, j)]
+                mi = idx[id(m)]
+                # the gap before this lobe
+                gap = cv[prev:mi + 1]
+                if prev == 0:
+                    fan_strip(B, run[0], gap, faces, tone, zone)
+                else:
+                    P = lobes[sg][mine.index((xj, j)) - 1][-1]
+                    h = (len(gap) - 1) // 2
+                    fan_strip(B, P, gap[:h + 1], faces, tone, zone)
+                    faces.append(B.face((gap[h], P, run[0]), FERN_IDX, tone, P_FERN, 0.0, zone))
+                    fan_strip(B, run[0], gap[h:], faces, tone, zone)
+                for q0, q1 in zip(run, run[1:]):
+                    faces.append(B.face((m, q0, q1), FERN_IDX, tone, P_FERN, 0.0, zone))
+                prev = mi
+            fan_strip(B, lobes[sg][-1][-1], cv[prev:], faces, tone, zone)
+    B.finish_luv(faces)
+
+
+def add_frond(B, fr, detail):
+    """A stipe and rachis as one tapering tube, its foot in the soil, and
+    its pinnae, each its own thin shell set into the rachis."""
+    path = frond_path(fr)
+    pts, _tans, _sides = path
+    n = len(pts)
+    radii = [rachis_radius(fr, i / (n - 1)) for i in range(n)]
+    sides_n = FROND_SIDES_HIGH if detail == "high" else FROND_SIDES
+    tone = fr["tone"]
+    add_tube(B, pts, radii, sides_n, FERN_IDX, tone, P_FERN, phase=fr["az"],
+             zones=[2.0] * (n - 1))
+    for pn in fr["pinnae"]:
+        s, p, t, _nb, e1, e30 = pinna_frame(fr, pn, path)
+        e3 = rotate_about(e30, e1, pn["roll"])
+        e2 = e3.cross(e1).normalized()
+        if e2.dot(t) < 0.0:
+            e2 = -e2
+        k = pn["key"]
+        base = p + t * ((hash01(k, 2, 2) - 0.5) * 0.8 * rachis_radius(fr, s))
+        ptone = min(1.0, max(0.0, tone * 0.6 + 0.4 * hash01(k, 4, 1)))
+        add_pinna(B, base, e1, e2, e3, pn["ell"], pn, ptone)
 
 
 def add_twig(B, G, spec, tw):
@@ -1247,8 +1780,10 @@ def build_mesh(name, plan, detail="low", **flags):
         roots = build_roots(B, plan, G, flags["arch_roots"])
 
         rot = math.pi if flags["sunny_moss"] else 0.0
+        fat = FAT_STUMP if flags["fat_stump"] else 1.0
         for k, patch in enumerate(plan["moss"]):
-            add_moss(B, surf, patch, rot, MOSS_BITE + MOSS_STAGGER * k, soil0)
+            add_moss(B, surf, patch, rot, MOSS_BITE + MOSS_STAGGER * k, soil0, flags["slab_moss"],
+                     fat)
 
         off = FLOAT_BRACKETS if flags["float_brackets"] else 0.0
         for k, shelf in enumerate(plan["shelves"]):
@@ -1287,8 +1822,8 @@ def build_mesh(name, plan, detail="low", **flags):
         lift = FLOAT_COVER if flags["float_cover"] else 0.0
         for lf in plan["leaves"]:
             add_leaf(B, G, lf, lift)
-        for fd in plan["ferns"]:
-            add_fern(B, G, fd)
+        for fr in plan["ferns"]:
+            add_frond(B, fr, detail)
         for spec, tw in zip(TWIGS, plan["twigs"]):
             add_twig(B, G, spec, tw)
         for spec, pb in zip(PEBBLES, plan["pebbles"]):
@@ -1374,7 +1909,7 @@ def triangulate_ngons(bm):
 
 
 def pack_uvs(bm, margin=0.08):
-    uv = bm.loops.layers.uv.new("UVMap")
+    uv = bm.loops.layers.uv["UVMap"]
     faces = list(bm.faces)
     n = len(faces)
     cols = max(1, math.ceil(math.sqrt(n)))
@@ -1560,7 +2095,7 @@ def bark_material():
     furrow_f = remap(nt, ridge, 0.0, 0.10, 1.0, 0.0)
     brk = noise(nt, mapping(nt, coord, scale=(3.0, 3.0, 24.0)), 2.0, 4.0, 0.5)
     cross = remap(nt, math_node(nt, "ABSOLUTE", math_node(nt, "SUBTRACT", brk, 0.5), 0.0),
-                  0.0, 0.035, 0.85, 0.0)
+                  0.0, 0.028, 0.55, 0.0)
     fine = noise(nt, mapping(nt, coord, scale=(34.0, 34.0, 5.0)), 2.0, 6.0, 0.55)
     col = ramp(nt, plates, ((0.30, (0.052, 0.042, 0.034)), (0.50, (0.090, 0.074, 0.059)),
                             (0.70, (0.135, 0.116, 0.095)), (0.85, (0.175, 0.155, 0.130))))
@@ -1571,11 +2106,16 @@ def bark_material():
     lich = noise(nt, mapping(nt, coord, scale=(1.4, 1.4, 1.4)), 3.0, 5.0, 0.55)
     col = mix_color(nt, col, (0.17, 0.18, 0.13), remap(nt, lich, 0.63, 0.73, 0.0, 0.55))
     col = damp(nt, col, coord, (0.026, 0.028, 0.014), 0.65)
-    # where a boundary face crosses into a peel, the torn edge shows the
-    # sapwood under a dark rim of broken bark
+    # the torn lip round a peel: the bark's broken edge shows the rust-brown
+    # inner bark, ragged, then the sapwood beyond the outline
     peel = attr(nt, "Peel")
-    col = mix_color(nt, col, (0.010, 0.008, 0.006), remap(nt, peel, 0.36, 0.47, 0.0, 1.0))
-    col = mix_color(nt, col, (0.36, 0.25, 0.14), remap(nt, peel, 0.49, 0.51, 0.0, 1.0))
+    rag = noise(nt, coord, 60.0, 3.0, 0.6)
+    edge = math_node(nt, "ADD", peel, math_node(nt, "MULTIPLY", rag, 0.05))
+    col = mix_color(nt, col, (0.030, 0.016, 0.010), remap(nt, edge, 0.40, 0.46, 0.0, 0.8))
+    col = mix_color(nt, col, (0.17, 0.085, 0.040), remap(nt, edge, 0.47, 0.51, 0.0, 1.0))
+    col = mix_color(nt, col, (0.22, 0.19, 0.15), remap(nt, peel, 0.515, 0.53, 0.0, 1.0))
+    # a flake's underside (Zone 1): the inner bark it tore off the wood
+    col = mix_color(nt, col, (0.20, 0.10, 0.050), attr(nt, "Zone"))
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(remap(nt, plates, 0.35, 0.8, 0.95, 0.78), bsdf.inputs["Roughness"])
     bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "MULTIPLY", furrow_f, -1.0),
@@ -1587,17 +2127,25 @@ def bark_material():
 def wood_material():
     mat, nt, bsdf, coord = surface("StumpWood")
     grain = attr(nt, "EndGrain")
-    # sapwood under the peeled bark: pale, streaked up the grain (Z)
-    streak = noise(nt, mapping(nt, coord, scale=(22.0, 22.0, 1.2)), 2.0, 6.0, 0.6)
-    sap = ramp(nt, streak, ((0.30, (0.19, 0.13, 0.075)), (0.55, (0.28, 0.20, 0.12)),
-                            (0.80, (0.34, 0.27, 0.18))))
-    sap = mix_color(nt, sap, (0.20, 0.19, 0.17), remap(nt, noise(nt, coord, 4.0, 4.0, 0.55), 0.4, 0.7, 0.1, 0.55))
-    holes = noise(nt, coord, 40.0, 2.0, 0.5)
-    sap = mix_color(nt, sap, (0.06, 0.035, 0.02), remap(nt, holes, 0.72, 0.76, 0.0, 0.9))
+    # sapwood under the peeled bark: weathered grey-brown, fibres streaked
+    # up the grain (Z), fine dark checks along it, and the winding galleries
+    # bark beetles cut under the bark before it fell away
+    streak = noise(nt, mapping(nt, coord, scale=(30.0, 30.0, 1.0)), 2.0, 6.0, 0.6)
+    sap = ramp(nt, streak, ((0.30, (0.105, 0.080, 0.056)), (0.55, (0.165, 0.130, 0.092)),
+                            (0.80, (0.215, 0.180, 0.135))))
+    sap = mix_color(nt, sap, (0.19, 0.18, 0.165), remap(nt, noise(nt, coord, 4.0, 4.0, 0.55), 0.35, 0.7, 0.2, 0.65))
+    fcheck = noise(nt, mapping(nt, coord, scale=(55.0, 55.0, 2.0)), 2.0, 3.0, 0.5)
+    fck = remap(nt, math_node(nt, "ABSOLUTE", math_node(nt, "SUBTRACT", fcheck, 0.5), 0.0),
+                0.0, 0.025, 0.7, 0.0)
+    sap = mix_color(nt, sap, (0.045, 0.032, 0.022), fck)
+    gal = noise(nt, mapping(nt, coord, scale=(9.0, 9.0, 4.0)), 3.0, 2.0, 0.5)
+    galf = remap(nt, math_node(nt, "ABSOLUTE", math_node(nt, "SUBTRACT", gal, 0.5), 0.0),
+                 0.0, 0.018, 0.85, 0.0)
+    sap = mix_color(nt, sap, (0.060, 0.038, 0.022), galf)
     # torn holding wood: long pale fibres
     fib = noise(nt, mapping(nt, coord, scale=(60.0, 60.0, 3.0)), 2.0, 4.0, 0.6)
-    broken = ramp(nt, fib, ((0.35, (0.26, 0.18, 0.10)), (0.60, (0.46, 0.36, 0.24)),
-                            (0.80, (0.56, 0.47, 0.34))))
+    broken = ramp(nt, fib, ((0.35, (0.11, 0.085, 0.060)), (0.60, (0.22, 0.18, 0.13)),
+                            (0.80, (0.31, 0.27, 0.21))))
     # the saw cut: growth rings on the Radial attribute round a dark
     # heartwood, a pale sapwood band, weathered grey toward the rim
     radial = attr(nt, "Radial")
@@ -1621,7 +2169,7 @@ def wood_material():
     weather = noise(nt, coord, 3.0, 4.0, 0.55)
     wfac = math_node(nt, "ADD", remap(nt, radial, 0.35, 1.0, 0.0, 0.50),
                      remap(nt, weather, 0.38, 0.66, 0.0, 0.50))
-    endcol = mix_color(nt, endcol, (0.200, 0.192, 0.176), wfac)
+    endcol = mix_color(nt, endcol, (0.168, 0.160, 0.146), wfac)
     ringv = late
     stain = noise(nt, coord, 5.0, 5.0, 0.6)
     endcol = mix_color(nt, endcol, (0.07, 0.055, 0.04), remap(nt, stain, 0.60, 0.72, 0.0, 0.6))
@@ -1638,9 +2186,13 @@ def wood_material():
     col = damp(nt, col, coord, (0.10, 0.065, 0.040), 0.45)
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.84
+    sapgrain = math_node(nt, "ADD", math_node(nt, "MULTIPLY", streak, 0.4),
+                         math_node(nt, "ADD", math_node(nt, "MULTIPLY", fck, -0.5),
+                                   math_node(nt, "MULTIPLY", galf, -0.6)))
+    sapgrain = math_node(nt, "MULTIPLY", sapgrain, remap(nt, grain, 0.2, 0.35, 1.0, 0.25))
     bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "MULTIPLY", ringv, -0.25),
                              math_node(nt, "ADD", math_node(nt, "MULTIPLY", saw, 0.15),
-                                       math_node(nt, "MULTIPLY", streak, 0.4))), 0.45, 0.01)
+                                       sapgrain)), 0.45, 0.01)
     return mat
 
 
@@ -1655,6 +2207,11 @@ def moss_material():
     col = mix_color(nt, base, (0.060, 0.070, 0.020), remap(nt, patchy, 0.40, 0.65, 0.55, 0.0))
     col = mix_color(nt, col, (0.018, 0.040, 0.010), remap(nt, fuzz, 0.35, 0.65, 0.65, 0.0))
     col = mix_color(nt, col, (0.20, 0.27, 0.045), remap(nt, tufts, 0.58, 0.74, 0.0, 0.65))
+    # the feathered rim (Zone toward 1): thin, sparse growth, the bark
+    # showing through in flecks
+    rim = math_node(nt, "MULTIPLY", remap(nt, attr(nt, "Zone"), 0.55, 1.0, 0.0, 1.0),
+                    remap(nt, fuzz, 0.30, 0.60, 1.0, 0.2))
+    col = mix_color(nt, col, (0.050, 0.050, 0.026), math_node(nt, "MINIMUM", rim, 0.85))
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.92
     bump(nt, bsdf, math_node(nt, "ADD", fuzz, math_node(nt, "MULTIPLY", tufts, 1.6)), 0.9, 0.008)
@@ -1769,7 +2326,7 @@ def litter_material():
     mat, nt, bsdf, coord = surface("LeafLitter")
     tone = attr(nt, "Tone")
     col = ramp(nt, tone, ((0.0, (0.060, 0.030, 0.012)), (0.40, (0.150, 0.070, 0.022)),
-                          (0.70, (0.300, 0.120, 0.030)), (1.0, (0.450, 0.300, 0.070))))
+                          (0.70, (0.270, 0.125, 0.040)), (1.0, (0.380, 0.270, 0.090))))
     blot = noise(nt, coord, 35.0, 3.0, 0.6)
     col = mix_color(nt, col, (0.08, 0.04, 0.015), remap(nt, blot, 0.45, 0.75, 0.0, 0.5))
     nt.links.new(col, bsdf.inputs["Base Color"])
@@ -1777,15 +2334,57 @@ def litter_material():
     return mat
 
 
+def leaf_uv(nt):
+    luv = nt.nodes.new("ShaderNodeUVMap")
+    luv.uv_map = "LeafUV"
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(luv.outputs["UV"], sep.inputs["Vector"])
+    return sep.outputs
+
+
+def translucent(nt, bsdf, rgb, amount):
+    """Mix a translucent lobe under the surface: a thin leaf lit from the
+    other side."""
+    out = nt.nodes["Material Output"]
+    tr = nt.nodes.new("ShaderNodeBsdfTranslucent")
+    tr.inputs["Color"].default_value = (*rgb, 1.0)
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = amount
+    nt.links.new(bsdf.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
+
+
 def fern_material():
     mat, nt, bsdf, coord = surface("Fern")
+    # Adapted from showcase/fern-mossy-rock's frond: rich green on top with
+    # a waxy sheen, each frond and pinna its own shade, paler toward the
+    # pinnule tips; the underside (Zone 1) paler still with rows of rusty
+    # sori beside the costa; the stipe and rachis (Zone 2) green-brown.
     tone = attr(nt, "Tone")
     zone = attr(nt, "Zone")
-    col = ramp(nt, tone, ((0.0, (0.040, 0.120, 0.020)), (0.5, (0.070, 0.180, 0.030)),
-                          (1.0, (0.110, 0.230, 0.040))))
-    col = mix_color(nt, col, (0.16, 0.30, 0.06), remap(nt, zone, 0.8, 1.0, 0.0, 0.6))
+    top = ramp(nt, tone, ((0.0, (0.030, 0.085, 0.012)), (0.5, (0.050, 0.125, 0.018)),
+                          (1.0, (0.085, 0.165, 0.026))))
+    uvs = leaf_uv(nt)
+    across = math_node(nt, "ABSOLUTE", math_node(nt, "SUBTRACT", uvs["X"], 0.5), 0.0)
+    col = mix_color(nt, top, (0.13, 0.22, 0.045), remap(nt, across, 0.18, 0.46, 0.0, 0.45))
+    vein = remap(nt, across, 0.0, 0.03, 1.0, 0.0)
+    col = mix_color(nt, col, (0.10, 0.17, 0.05), math_node(nt, "MULTIPLY", vein, 0.6))
+    speck = noise(nt, coord, 60.0, 3.0, 0.6)
+    col = mix_color(nt, col, (0.025, 0.060, 0.010), remap(nt, speck, 0.35, 0.7, 0.0, 0.35))
+    under = ramp(nt, tone, ((0.0, (0.090, 0.150, 0.040)), (1.0, (0.130, 0.195, 0.060))))
+    sori = voronoi(nt, coord, 520.0)
+    band = math_node(nt, "MULTIPLY", remap(nt, across, 0.05, 0.10, 0.0, 1.0),
+                     remap(nt, across, 0.18, 0.13, 0.0, 1.0))
+    under = mix_color(nt, under, (0.20, 0.10, 0.035),
+                      math_node(nt, "MULTIPLY", band, remap(nt, sori, 0.25, 0.12, 0.0, 0.9)))
+    col = mix_color(nt, col, under, remap(nt, zone, 0.0, 1.0, 0.0, 1.0))
+    col = mix_color(nt, col, (0.085, 0.075, 0.030), remap(nt, zone, 1.5, 2.0, 0.0, 1.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.55
+    bsdf.inputs["Roughness"].default_value = 0.48
+    bsdf.inputs["Specular IOR Level"].default_value = 0.35
+    bump(nt, bsdf, vein, 0.2, 0.002)
+    translucent(nt, bsdf, (0.10, 0.20, 0.03), 0.28)
     return mat
 
 
@@ -2012,7 +2611,7 @@ def classify(me):
     for key, p in (("soil", P_SOIL), ("stump", P_STUMP), ("roots", P_ROOT), ("hinge", P_HINGE),
                    ("moss", P_MOSS), ("brackets", P_BRACKET), ("stipes", P_STIPE),
                    ("caps", P_CAP), ("leaves", P_LEAF), ("ferns", P_FERN), ("twigs", P_TWIG),
-                   ("pebbles", P_PEBBLE)):
+                   ("pebbles", P_PEBBLE), ("flakes", P_FLAKE)):
         out[key] = of(p)
     return out
 
@@ -2079,18 +2678,24 @@ def cap_audit(cls):
     return out
 
 
-def cut_audit(me, cls):
-    """Plane fit on the sawn face (end-grain faces, checks left out), its
-    tilt; the stump's diameter across the bark just under the cut; the
-    cut's height above the soil at the fit's centre."""
+def end_grain_verts(me):
     grain = face_floats(me, "EndGrain")
     part = face_floats(me, "Part")
-    chk = vert_floats(me, "Check")
     ids = set()
     for p in me.polygons:
         if int(round(part[p.index])) == P_STUMP and grain[p.index] > 0.9:
             ids.update(p.vertices)
-    pts = [me.vertices[i].co for i in ids if chk[i] < 0.01]
+    return ids
+
+
+def cut_audit(me, cls):
+    """Plane fit on the back cut (end-grain faces, checks and the undercut
+    floor left out), its tilt; the stump's diameter across the bark just
+    under the cut; the cut's height above the soil at the fit's centre."""
+    chk = vert_floats(me, "Check")
+    nch = vert_floats(me, "Notch")
+    ids = end_grain_verts(me)
+    pts = [me.vertices[i].co for i in ids if chk[i] < 0.01 and nch[i] < 0.01]
     n = len(pts)
     sx = sum(p.x for p in pts) / n
     sy = sum(p.y for p in pts) / n
@@ -2111,7 +2716,73 @@ def cut_audit(me, cls):
     dy = max(p.y for p in band) - min(p.y for p in band)
     g = ray_down(cls["soil"][0].tree, sx, sy)
     ht = sz - (g if g is not None else 0.0)
-    return tilt, 0.5 * (dx + dy), ht, n
+    return tilt, 0.5 * (dx + dy), ht, n, (sx, sy, sz, a, b)
+
+
+def felling_audit(me, cls, plane):
+    """The undercut floor's mean depth under the back-cut plane (its
+    end-grain vertices, checks left out), and the torn band's tallest
+    vertex over that plane."""
+    sx, sy, sz, a, b = plane
+
+    def under(p):
+        return sz + a * (p.x - sx) + b * (p.y - sy) - p.z
+
+    chk = vert_floats(me, "Check")
+    nch = vert_floats(me, "Notch")
+    floor = [under(me.vertices[i].co) for i in end_grain_verts(me)
+             if chk[i] < 0.01 and nch[i] > 0.99]
+    step = sum(floor) / len(floor) if floor else 0.0
+    tip = max((-under(p) for s in cls["hinge"] for p in s.pts), default=-9.0)
+    return step, tip, len(floor)
+
+
+def peel_audit(me, cls):
+    """Per peel, from the stump's own vertices round its axis (the pith,
+    the one vertex with Radial 0 on the sawn top): how far the torn bark
+    round it stands over the exposed sapwood — the median radius of the
+    lip vertices (Peel 0.2..0.5) less that of the sapwood (Peel over 0.5)."""
+    stump = cls["stump"][0]
+    peel = vert_floats(me, "Peel")
+    radial = vert_floats(me, "Radial")
+    axis = next(me.vertices[vi].co for vi in stump.verts
+                if radial[vi] == 0.0 and me.vertices[vi].co.z > stump.lo.z + 0.1)
+    groups = [{"wood": [], "lip": []} for _ in PEELS]
+    for vi in stump.verts:
+        pv = peel[vi]
+        if pv < 0.2:
+            continue
+        co = me.vertices[vi].co
+        az = math.atan2(co.y - axis.y, co.x - axis.x)
+        k = min(range(len(PEELS)), key=lambda q: abs(wrap(az - math.radians(PEELS[q][1]))))
+        groups[k]["wood" if pv > 0.5 else "lip"].append(math.hypot(co.x - axis.x, co.y - axis.y))
+    recess = [median(g["lip"]) - median(g["wood"]) for g in groups]
+    counts = [(len(g["wood"]), len(g["lip"])) for g in groups]
+    return recess, counts
+
+
+def median(v):
+    v = sorted(v)
+    return v[len(v) // 2] if v else 0.0
+
+
+def moss_thickness(me, cls):
+    """The moss's greatest height over the bark: each top vertex (on a face
+    with Zone under 1.5) measured along the normal of the nearest stump face."""
+    stump = cls["stump"][0]
+    zone = face_floats(me, "Zone")
+    best = -9.0
+    for m in cls["moss"]:
+        ids = set()
+        for poly in m.polys:
+            if zone[poly.index] < 1.5:
+                ids.update(poly.vertices)
+        for vi in ids:
+            p = me.vertices[vi].co
+            loc, nrm, _i, _d = stump.tree.find_nearest(p)
+            if loc is not None:
+                best = max(best, (p - loc).dot(nrm))
+    return best
 
 
 def root_audit(cls):
@@ -2340,7 +3011,8 @@ def export_unity(path, objects):
 
 
 FLAG_NAMES = ("perch_stump", "float_caps", "tilt_cut", "fat_stump", "arch_roots",
-              "float_mushrooms", "float_brackets", "sunny_moss", "float_cover")
+              "float_mushrooms", "float_brackets", "sunny_moss", "float_cover", "flat_felling",
+              "tall_hinge", "flush_peel", "float_flakes", "slab_moss")
 
 
 def mushroom_hosts(plan):
@@ -2399,13 +3071,18 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     soil = cls["soil"][0]
     nsealed, _centre = seal_audit(stump, soil)
     caps = cap_audit(cls)
-    tilt, diam, ht, ncut = cut_audit(low.data, cls)
+    tilt, diam, ht, ncut, plane = cut_audit(low.data, cls)
     root_beds, root_stations = root_audit(cls)
     hosts = mushroom_hosts(plan)
     host_depths = host_audit(cls, hosts)
     depths = fungus_audit(cls["brackets"], stump)
     moss_frac, moss_top = moss_audit(cls["moss"], stump)
     ncover, nloose, loose_leaves = cover_audit(cls)
+    step_d, hinge_tip, nfloor = felling_audit(low.data, cls, plane)
+    recess, peel_counts = peel_audit(low.data, cls)
+    flake_bites = fungus_audit(cls["flakes"], stump)
+    moss_thick = moss_thickness(low.data, cls)
+    n_moss = sum(1 + len(p["tufts"]) for p in plan["moss"])
 
     img, _tex = setup_bake_image(low, bark)
     if img is None:
@@ -2437,7 +3114,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
             pass
 
     n_mush = len(hosts)
-    expected_cover = (len(plan["leaves"]) + len(plan["ferns"]) * (1 + 2 * FERN_PINNAE)
+    expected_cover = (len(plan["leaves"]) + sum(1 + len(fr["pinnae"]) for fr in plan["ferns"])
                       + 2 * len(TWIGS) + len(PEBBLES))
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(f"measured base_tris={base_tris} lod1_tris={lod1_tris} "
@@ -2454,7 +3131,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     print(f"measured shells={len(cls['all'])} roots={len(cls['roots'])} "
           f"hinge={len(cls['hinge'])} moss={len(cls['moss'])} brackets={len(cls['brackets'])} "
           f"stipes={len(cls['stipes'])} caps={len(cls['caps'])} leaves={len(cls['leaves'])} "
-          f"ferns={len(cls['ferns'])} twigs={len(cls['twigs'])} pebbles={len(cls['pebbles'])}")
+          f"ferns={len(cls['ferns'])} twigs={len(cls['twigs'])} pebbles={len(cls['pebbles'])} "
+          f"flakes={len(cls['flakes'])}")
     print(f"measured sealed={nsealed}/{SEAL_SECTORS}")
     print(f"measured cap_bite min={min(caps, default=-9):.4f} max={max(caps, default=-9):.4f} "
           f"n={len(caps)}")
@@ -2467,6 +3145,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
           f"max={max(depths, default=-9):.4f} n={len(depths)}")
     print(f"measured moss_up_shade={moss_frac:.4f} moss_top_area={moss_top:.4f}")
     print(f"measured cover={ncover} loose={nloose} loose_leaves={loose_leaves}")
+    print(f"measured felling step={step_d:.4f} floor_verts={nfloor} hinge_tip={hinge_tip:.4f}")
+    print(f"measured peel recess={[round(r, 4) for r in recess]} "
+          f"verts={peel_counts} flake_bite min={min(flake_bites, default=-9):.4f} "
+          f"max={max(flake_bites, default=-9):.4f} n={len(flake_bites)}")
+    print(f"measured moss_thickness={moss_thick:.4f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return (fail(f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]", 4),) + none2
@@ -2525,12 +3208,28 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
         return (fail(f"brackets rooted: {len(depths)}/{len(plan['shelves'])} shelves, deepest "
                      f"vertex in the bark {min(depths, default=-9):.4f}..{max(depths, default=-9):.4f} "
                      f"not in [{FUNGUS_BITE_MIN}, {FUNGUS_BITE_MAX}]", 22),) + none2
-    if len(cls["moss"]) != len(MOSS) or moss_frac < MOSS_FRAC_MIN:
-        return (fail(f"moss: {len(cls['moss'])}/{len(MOSS)} cushions, {moss_frac:.4f} of top "
+    if len(cls["moss"]) != n_moss or moss_frac < MOSS_FRAC_MIN:
+        return (fail(f"moss: {len(cls['moss'])}/{n_moss} cushions, {moss_frac:.4f} of top "
                      f"area faces up or north (min {MOSS_FRAC_MIN})", 23),) + none2
     if ncover != expected_cover or nloose:
         return (fail(f"ground cover: {ncover}/{expected_cover} shells, {nloose} not joined to "
                      f"the soil ({loose_leaves} leaves)", 24),) + none2
+    if (len(cls["hinge"]) != 1 or not (STEP_BAND[0] <= step_d <= STEP_BAND[1])
+            or not (HINGE_TIP_BAND[0] <= hinge_tip <= HINGE_TIP_BAND[1])):
+        return (fail(f"felling: undercut floor {step_d:.4f} m under the back cut (band "
+                     f"{STEP_BAND}), torn band's tallest fibre {hinge_tip:.4f} m over it (band "
+                     f"{HINGE_TIP_BAND}), {len(cls['hinge'])} band(s)", 25),) + none2
+    n_flakes = sum(FLAKES)
+    if (min(recess) < RECESS_BAND[0] or max(recess) > RECESS_BAND[1]
+            or len(flake_bites) != n_flakes or min(flake_bites) < FLAKE_BITE_BAND[0]
+            or max(flake_bites) > FLAKE_BITE_BAND[1]):
+        return (fail(f"peel: torn bark stands {[round(r, 4) for r in recess]} m over the sapwood "
+                     f"(band {RECESS_BAND}), {len(flake_bites)}/{n_flakes} flakes rooted "
+                     f"{min(flake_bites, default=-9):.4f}..{max(flake_bites, default=-9):.4f} m in "
+                     f"the bark (band {FLAKE_BITE_BAND})", 26),) + none2
+    if not (MOSS_THICK_BAND[0] <= moss_thick <= MOSS_THICK_BAND[1]):
+        return (fail(f"moss stands {moss_thick:.4f} m off the bark at most (band "
+                     f"{MOSS_THICK_BAND}): not a shell laid on the furrows", 27),) + none2
     return 0, low, bark
 
 
@@ -2585,17 +3284,17 @@ def render_still(low, path, engine):
         scene.collection.objects.link(ob)
 
     # Key, fill, rim and the warm wedge, scaled for a 2.2 m disc.
-    light("Key", (-3.2, -3.8, 5.0), 148.0, 2.4, (1.0, 0.95, 0.88), spread=12.0)
+    light("Key", (-3.2, -3.8, 5.0), 162.0, 2.4, (0.94, 0.95, 0.96), spread=12.0)
     light("Fill", (5.0, -3.0, 1.2), 6.0, 6.0, (0.72, 0.82, 1.0))
     light("Rim", (-1.5, 3.0, 2.8), 90.0, 2.4, (0.62, 0.78, 1.0))
-    light("Wedge", (3.2, 1.2, 2.4), 210.0, 3.5, (1.0, 0.68, 0.38),
+    light("Wedge", (3.2, 1.2, 2.4), 180.0, 3.5, (1.0, 0.83, 0.66),
           target=(1.8, WALL_Y - 1.2, 0.0))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
     view = Vector((-0.50, -0.87, 0.0)).normalized()
-    cam.location = centre + view * 3.7 + Vector((0.0, 0.0, 1.95))
+    cam.location = centre + view * 3.30 + Vector((0.0, 0.0, 1.78))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = centre + Vector((0.0, 0.0, -0.20))
@@ -2631,7 +3330,7 @@ def render_still(low, path, engine):
     # asset-quality floors return 11, which this piece spends on the
     # collider ceiling; remap at the call site
     if gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
-        return 25
+        return 28
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)
@@ -2655,6 +3354,11 @@ def main():
     p.add_argument("--float-brackets", action="store_true")
     p.add_argument("--sunny-moss", action="store_true")
     p.add_argument("--float-cover", action="store_true")
+    p.add_argument("--flat-felling", action="store_true")
+    p.add_argument("--tall-hinge", action="store_true")
+    p.add_argument("--flush-peel", action="store_true")
+    p.add_argument("--float-flakes", action="store_true")
+    p.add_argument("--slab-moss", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _bark = check(
