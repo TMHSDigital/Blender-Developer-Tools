@@ -48,19 +48,20 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1730–1870 | 1800 / 1800 / 1800 |
+| Base triangles | 1730–1870 | 1816 / 1816 / 1816 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 |
-| Materials | exactly 4 distinct; ≥160 bark, ≥90 grain, ≥170 metal, ≥150 haft faces | 4 slots; 180 / 216 / 404 / 176 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2192 / 0.2192 / 0.2192 |
+| Materials | exactly 4 distinct; ≥160 bark, ≥90 grain, ≥170 metal, ≥150 haft faces | 4 slots; 180 / 216 / 412 / 176 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.526, 0.526, 1.006) m ± 0.012 | (0.5264, 0.5264, 1.0064) |
 | Collider tris | ≤ 560 | 538 |
-| Export | written, size > 0 | 180588 / 180588 / 180572 bytes |
+| Export | written, size > 0 | 181676 / 181676 / 181660 bytes |
 
 The triangle band, the outer AABB and the collider ceiling were re-fitted
 in the quality pass that added the lap, the rivets and the 16-segment
 oval haft (1472 → 1800 triangles, collider 434 → 538). The triangle band
-is centred on the new measurement, ± 4 %.
+is centred on that measurement, ± 4 %. The axe-head reprofile (a waist
+behind the eye) added one head section: 1800 → 1816.
 
 ### Hygiene
 
@@ -87,11 +88,11 @@ two rivets through the hoop's lap.
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
 | Shell count | exactly 6 | 6 |
-| Haft clearance inside the eye | ≥ 0.006 m | 0.01800 |
-| Haft engagement through the eye | ≥ 0.020 m | 0.08225 |
-| Haft breakout margin below the head | ≥ 0.006 m | 0.02175 |
+| Haft clearance inside the eye | ≥ 0.006 m | 0.01350 |
+| Haft engagement through the eye | ≥ 0.020 m | 0.06925 |
+| Haft breakout margin below the head | ≥ 0.006 m | 0.00875 |
 | Bit bury below the sawn top | ≥ 0.030 m | 0.07871 |
-| Bit inset from the rim | ≥ 0.030 m | 0.14647 |
+| Bit inset from the rim | ≥ 0.030 m | 0.16808 |
 | Hoop bite into the log, every segment | 0.002–0.007 m | 0.00371–0.00422 |
 | Haft clearance above the log | ≥ 0.015 m, 0 verts inside | 0.07531, 0 |
 | Rivet seat into the hoop, each rivet | 0.0008–0.0025 m | 0.00150, 0.00154 |

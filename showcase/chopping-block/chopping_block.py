@@ -155,17 +155,23 @@ BIT_CENTER = (0.010, 0.0, BLOCK_H - 0.030)
 # 530 mm block it read as a trowel. The head is sized off the block, not
 # off an absolute idea of an axe -- half the block diameter is what makes
 # the two objects look like they belong in the same scene.
+# Side profile: poll and eye stand the same height, the cheek waists in
+# behind the eye, and only then does the blade flare to the bit. A head that
+# grew steadily from a 56 mm poll to the 149 mm edge was a wedge with a flat
+# end, and above the wood it read as a box with a lid.
 HEAD_SECTIONS = (
-    (0.000, 0.0280, 0.0215),
-    (0.028, 0.0340, 0.0270),
-    (0.150, 0.0485, 0.0385),
-    (0.330, 0.0520, 0.0280),
-    (0.620, 0.0615, 0.0160),
-    (0.870, 0.0710, 0.0062),
+    (0.000, 0.0300, 0.0205),
+    (0.030, 0.0350, 0.0260),
+    (0.150, 0.0390, 0.0340),
+    (0.330, 0.0390, 0.0300),
+    (0.490, 0.0325, 0.0190),
+    (0.680, 0.0450, 0.0115),
+    (0.870, 0.0660, 0.0055),
     (0.980, 0.0745, 0.0018),
     (1.000, 0.0728, 0.0013),
 )
-HEAD_CHAMFER = 0.0042
+# Forged edges are soft; at 4 mm the poll's corners read as a sawn block.
+HEAD_CHAMFER = 0.0070
 HAFT_LEN = 0.68
 HAFT_DROP = 0.024
 HAFT_BOW = 0.020
