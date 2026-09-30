@@ -16,11 +16,21 @@ bows away from the bit, and hooks toward it at the knob.
 
 The hero sets the block to work: three split billets lie at its foot, each a
 quarter of a small round laid on one split face or the other so some show
-bark and some the split, among sixteen seeded chips. The dressing is
+bark and some the split, among twelve seeded chips. Each billet is its own
+object, smooth on the bark and flat on the split, with sawn ends ringed
+about its own pith; the chips are wedges, thick at the struck end and
+feathered at the tip, tilted as they fell, some with bark on top. Flat
+boxes read as confetti, and one striped mesh made the billets look like planks. The dressing is
 render-only with its own materials (the block's materials sample its baked
 normal map through UVs the dressing does not have). It is not part of the
 asset: no budget reads it, the export does not carry it, and the asset sheet
 renders the block alone.
+
+The end grain only covers faces that look up. The top chamfer and rim chips
+lean out toward the bark and take its cambium brown; pale end grain wrapping
+down them drew a lid on a canister. The top is weathered grey-brown rather
+than fresh pine, and the iron's albedo sits near 0.3: at 0.1 the metallic
+head mirrored the black stage and read as a hole in the frame.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.

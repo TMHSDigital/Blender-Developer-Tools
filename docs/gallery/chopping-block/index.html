@@ -373,7 +373,8 @@
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural chopping block (a log round with a riveted iron hoop and a felling axe buried in the sawn face) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The log is an out-of-round loft whose radius is a closed-form function of angle and height; the hoop, its rivets, the top rim and the drying checks are all generated from that same function, so they stay seated when a dimension changes. The hoop is a lapped strip with two domed rivets through the lap. The axe head is one lofted shell from poll to bit with its chamfers modelled into the section profile, and the haft is swept through the eye rather than pushed into it. The haft is oval, bows away from the bit, and hooks toward it at the knob.</p>
-<p>The hero sets the block to work: three split billets lie at its foot, each a quarter of a small round laid on one split face or the other so some show bark and some the split, among sixteen seeded chips. The dressing is render-only with its own materials (the block&#x27;s materials sample its baked normal map through UVs the dressing does not have). It is not part of the asset: no budget reads it, the export does not carry it, and the asset sheet renders the block alone.</p>
+<p>The hero sets the block to work: three split billets lie at its foot, each a quarter of a small round laid on one split face or the other so some show bark and some the split, among twelve seeded chips. Each billet is its own object, smooth on the bark and flat on the split, with sawn ends ringed about its own pith; the chips are wedges, thick at the struck end and feathered at the tip, tilted as they fell, some with bark on top. Flat boxes read as confetti, and one striped mesh made the billets look like planks. The dressing is render-only with its own materials (the block&#x27;s materials sample its baked normal map through UVs the dressing does not have). It is not part of the asset: no budget reads it, the export does not carry it, and the asset sheet renders the block alone.</p>
+<p>The end grain only covers faces that look up. The top chamfer and rim chips lean out toward the bark and take its cambium brown; pale end grain wrapping down them drew a lid on a canister. The top is weathered grey-brown rather than fresh pine, and the iron&#x27;s albedo sits near 0.3: at 0.1 the metallic head mirrored the black stage and read as a hole in the frame.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
@@ -415,9 +416,9 @@ blender --background --python chopping_block.py -- --output chopping-block.png</
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/chopping-block/chopping_block.py</code>
-        <span>2055 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/chopping-block/chopping_block.py">View on GitHub &rarr;</a></span>
+        <span>2116 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/chopping-block/chopping_block.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="2055">
+      <div class="code" data-lines="2116">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2472,7 +2473,68 @@ blender --background --python chopping_block.py -- --output chopping-block.png</
 2052
 2053
 2054
-2055</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready chopping block — a showcase piece, not an example.
+2055
+2056
+2057
+2058
+2059
+2060
+2061
+2062
+2063
+2064
+2065
+2066
+2067
+2068
+2069
+2070
+2071
+2072
+2073
+2074
+2075
+2076
+2077
+2078
+2079
+2080
+2081
+2082
+2083
+2084
+2085
+2086
+2087
+2088
+2089
+2090
+2091
+2092
+2093
+2094
+2095
+2096
+2097
+2098
+2099
+2100
+2101
+2102
+2103
+2104
+2105
+2106
+2107
+2108
+2109
+2110
+2111
+2112
+2113
+2114
+2115
+2116</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready chopping block — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural splitting block (a hooped log
 round with a felling axe standing in it) after composing shipped pipeline
@@ -3401,14 +3463,16 @@ CHECK_WIDEN = <span class="n">0.012</span>
         nt,
         wave.outputs[<span class="s">&quot;Fac&quot;</span>],
         (
-            (<span class="n">0.30</span>, (<span class="n">0.600</span>, <span class="n">0.450</span>, <span class="n">0.265</span>)),
-            (<span class="n">0.72</span>, (<span class="n">0.520</span>, <span class="n">0.370</span>, <span class="n">0.205</span>)),
-            (<span class="n">0.95</span>, (<span class="n">0.400</span>, <span class="n">0.268</span>, <span class="n">0.140</span>)),
+            (<span class="n">0.30</span>, (<span class="n">0.400</span>, <span class="n">0.300</span>, <span class="n">0.190</span>)),
+            (<span class="n">0.72</span>, (<span class="n">0.335</span>, <span class="n">0.238</span>, <span class="n">0.140</span>)),
+            (<span class="n">0.95</span>, (<span class="n">0.255</span>, <span class="n">0.168</span>, <span class="n">0.090</span>)),
         ),
     )
     weather = noise(nt, coord, <span class="n">6.0</span>, <span class="n">4.0</span>, <span class="n">0.55</span>)
+    <span class="c"># A working block&#x27;s top is weathered grey-brown, not fresh-sawn pine:</span>
+    <span class="c"># the pale face read as a cheese wheel set on a stump.</span>
     base = mix_color(
-        nt, rings, (<span class="n">0.330</span>, <span class="n">0.250</span>, <span class="n">0.170</span>), remap(nt, weather, <span class="n">0.45</span>, <span class="n">0.75</span>, <span class="n">0.0</span>, <span class="n">0.45</span>)
+        nt, rings, (<span class="n">0.235</span>, <span class="n">0.205</span>, <span class="n">0.170</span>), remap(nt, weather, <span class="n">0.40</span>, <span class="n">0.75</span>, <span class="n">0.20</span>, <span class="n">0.65</span>)
     )
     <span class="c"># Radial checks at the angles the geometry notches, widening toward the</span>
     <span class="c"># rim and fading out before the pith, as a drying check does.</span>
@@ -3431,8 +3495,16 @@ CHECK_WIDEN = <span class="n">0.012</span>
     line = remap(nt, nearest, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>)
     fade = remap(nt, rad, <span class="n">0.22</span> * BLOCK_R, <span class="n">0.55</span> * BLOCK_R, <span class="n">0.0</span>, <span class="n">1.0</span>)
     crack = math_node(nt, <span class="s">&quot;MULTIPLY&quot;</span>, line, fade)
+    cracked = mix_color(nt, base, (<span class="n">0.050</span>, <span class="n">0.032</span>, <span class="n">0.020</span>), crack)
+    <span class="c"># Only faces that look up are end grain. The top chamfer and the rim</span>
+    <span class="c"># chips lean out toward the bark, and pale end grain wrapping down them</span>
+    <span class="c"># drew a lid on a canister: there they take the bark&#x27;s cambium brown.</span>
+    geo = nt.nodes.new(<span class="s">&quot;ShaderNodeNewGeometry&quot;</span>)
+    gsep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(geo.outputs[<span class="s">&quot;Normal&quot;</span>], gsep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    side = remap(nt, gsep.outputs[<span class="s">&quot;Z&quot;</span>], <span class="n">0.80</span>, <span class="n">0.93</span>, <span class="n">1.0</span>, <span class="n">0.0</span>)
     nt.links.new(
-        mix_color(nt, base, (<span class="n">0.050</span>, <span class="n">0.032</span>, <span class="n">0.020</span>), crack), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>]
+        mix_color(nt, cracked, (<span class="n">0.085</span>, <span class="n">0.055</span>, <span class="n">0.032</span>), side), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>]
     )
     nt.links.new(
         remap(nt, wave.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.58</span>, <span class="n">0.74</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>]
@@ -3452,15 +3524,17 @@ CHECK_WIDEN = <span class="n">0.012</span>
             nt,
             blot,
             (
-                (<span class="n">0.40</span>, (<span class="n">0.085</span>, <span class="n">0.082</span>, <span class="n">0.079</span>)),
-                (<span class="n">0.60</span>, (<span class="n">0.140</span>, <span class="n">0.136</span>, <span class="n">0.131</span>)),
-                (<span class="n">0.72</span>, (<span class="n">0.130</span>, <span class="n">0.100</span>, <span class="n">0.076</span>)),
-                (<span class="n">0.82</span>, (<span class="n">0.180</span>, <span class="n">0.096</span>, <span class="n">0.052</span>)),
+                (<span class="n">0.40</span>, (<span class="n">0.205</span>, <span class="n">0.200</span>, <span class="n">0.192</span>)),
+                (<span class="n">0.60</span>, (<span class="n">0.330</span>, <span class="n">0.322</span>, <span class="n">0.310</span>)),
+                (<span class="n">0.72</span>, (<span class="n">0.215</span>, <span class="n">0.165</span>, <span class="n">0.120</span>)),
+                (<span class="n">0.82</span>, (<span class="n">0.240</span>, <span class="n">0.130</span>, <span class="n">0.070</span>)),
             ),
         ),
         bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>],
     )
-    nt.links.new(remap(nt, blot, <span class="n">0.35</span>, <span class="n">0.8</span>, <span class="n">0.34</span>, <span class="n">0.60</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="c"># Albedo lifted from ~0.1 to ~0.3: at 0.1 a metallic head mirrored the</span>
+    <span class="c"># black stage and the axe read as a hole cut in the frame.</span>
+    nt.links.new(remap(nt, blot, <span class="n">0.35</span>, <span class="n">0.8</span>, <span class="n">0.30</span>, <span class="n">0.55</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     nt.links.new(remap(nt, blot, <span class="n">0.66</span>, <span class="n">0.80</span>, <span class="n">1.0</span>, <span class="n">0.35</span>), bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>])
     <span class="k">return</span> mat
 
@@ -4266,96 +4340,145 @@ CHECK_WIDEN = <span class="n">0.012</span>
 
 
 <span class="k">def</span> _dressing_materials():
-    <span class="s">&quot;&quot;&quot;Split face and bark for the render-only kindling and chips. Their own
-    materials: the block&#x27;s are wired to its baked normal map through UVs the
-    dressing does not have.&quot;&quot;&quot;</span>
-    <span class="k">def</span> mat(name, base, rough, stripes):
+    <span class="s">&quot;&quot;&quot;Split face, end grain, bark for the render-only kindling and chips.
+    Their own materials: the block&#x27;s are wired to its baked normal map
+    through UVs the dressing does not have. All object-space, and each billet
+    is its own object, so its end rings centre on its own pith.&quot;&quot;&quot;</span>
+    <span class="k">def</span> mat(name):
         m = bpy.data.materials.new(name)
         m.use_nodes = <span class="k">True</span>
         nt = m.node_tree
-        b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
-        coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
-        wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
-        wave.wave_type = <span class="s">&quot;BANDS&quot;</span>
-        wave.bands_direction = <span class="s">&quot;Z&quot;</span> <span class="k">if</span> stripes <span class="k">else</span> <span class="s">&quot;X&quot;</span>
-        wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">6.0</span> <span class="k">if</span> stripes <span class="k">else</span> <span class="n">2.0</span>
-        wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">6.0</span>
-        wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
-        nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], wave.inputs[<span class="s">&quot;Vector&quot;</span>])
-        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
-        ramp.color_ramp.elements[<span class="n">0</span>].color = tuple(c * <span class="n">0.72</span> <span class="k">for</span> c <span class="k">in</span> base) + (<span class="n">1.0</span>,)
-        ramp.color_ramp.elements[<span class="n">1</span>].color = base + (<span class="n">1.0</span>,)
-        nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
-        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
-        <span class="k">return</span> m
-    split = mat(<span class="s">&quot;KindlingSplit&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.46</span>, <span class="n">0.28</span>), <span class="n">0.72</span>, <span class="k">True</span>)
-    bark = mat(<span class="s">&quot;KindlingBark&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.11</span>, <span class="n">0.075</span>), <span class="n">0.9</span>, <span class="k">False</span>)
-    <span class="k">return</span> split, bark
+        <span class="k">return</span> m, nt, nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>], nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+
+    <span class="c"># Split face: fibres torn along the billet (noise squeezed across it).</span>
+    split, nt, b, tc = mat(<span class="s">&quot;KindlingSplit&quot;</span>)
+    fib = noise(nt, mapping(nt, tc.outputs[<span class="s">&quot;Object&quot;</span>], scale=(<span class="n">0.06</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)), <span class="n">60.0</span>, <span class="n">5.0</span>, <span class="n">0.6</span>)
+    nt.links.new(ramp(nt, fib, ((<span class="n">0.35</span>, (<span class="n">0.30</span>, <span class="n">0.21</span>, <span class="n">0.12</span>)), (<span class="n">0.52</span>, (<span class="n">0.47</span>, <span class="n">0.34</span>, <span class="n">0.20</span>)),
+                                (<span class="n">0.70</span>, (<span class="n">0.58</span>, <span class="n">0.44</span>, <span class="n">0.27</span>)))), b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.78</span>
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.5</span>
+    nt.links.new(fib, bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+    <span class="c"># End grain: rings about the billet&#x27;s own axis (local X), darker than the</span>
+    <span class="c"># split face, as a sawn end is.</span>
+    ends, nt, b, tc = mat(<span class="s">&quot;KindlingEnd&quot;</span>)
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    wave.wave_type = <span class="s">&quot;RINGS&quot;</span>
+    wave.rings_direction = <span class="s">&quot;SPHERICAL&quot;</span>
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">26.0</span>
+    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(mapping(nt, tc.outputs[<span class="s">&quot;Object&quot;</span>], scale=(<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)), wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(ramp(nt, wave.outputs[<span class="s">&quot;Fac&quot;</span>], ((<span class="n">0.3</span>, (<span class="n">0.48</span>, <span class="n">0.34</span>, <span class="n">0.19</span>)),
+                                                (<span class="n">0.9</span>, (<span class="n">0.33</span>, <span class="n">0.22</span>, <span class="n">0.12</span>)))),
+                 b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.72</span>
+
+    <span class="c"># Bark: plated and fissured, the block&#x27;s palette.</span>
+    bark, nt, b, tc = mat(<span class="s">&quot;KindlingBark&quot;</span>)
+    plates = noise(nt, mapping(nt, tc.outputs[<span class="s">&quot;Object&quot;</span>], scale=(<span class="n">2.0</span>, <span class="n">9.0</span>, <span class="n">9.0</span>)), <span class="n">6.0</span>, <span class="n">8.0</span>, <span class="n">0.64</span>)
+    nt.links.new(ramp(nt, plates, ((<span class="n">0.40</span>, (<span class="n">0.020</span>, <span class="n">0.013</span>, <span class="n">0.008</span>)), (<span class="n">0.55</span>, (<span class="n">0.075</span>, <span class="n">0.048</span>, <span class="n">0.028</span>)),
+                                   (<span class="n">0.80</span>, (<span class="n">0.150</span>, <span class="n">0.100</span>, <span class="n">0.062</span>)))), b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.88</span>
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.8</span>
+    nt.links.new(plates, bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> split, ends, bark
 
 
 <span class="k">def</span> add_split_kindling(scene):
     <span class="s">&quot;&quot;&quot;Render-only dressing: split billets and chips at the block&#x27;s foot.
 
     A chopping block is read by what it splits. Each billet is a quarter of
-    a small round (two split faces meeting at the pith, bark on the arc),
-    laid on the floor; chips are thin seeded slivers. None of it is part of
-    the asset: no budget reads it, the export does not carry it, and the
-    asset sheet renders the block alone.
+    a small round (two split faces meeting at the pith, bark on the arc,
+    sawn ends showing rings), laid on the floor; chips are tapered wedges
+    tilted as they fell. None of it is part of the asset: no budget reads
+    it, the export does not carry it, and the asset sheet renders the block
+    alone. Returns the dressing objects.
     &quot;&quot;&quot;</span>
-    split, bark = _dressing_materials()
+    split, ends, bark = _dressing_materials()
     rng = random.Random(<span class="n">71</span>)
-    me = bpy.data.meshes.new(<span class="s">&quot;Kindling&quot;</span>)
-    me.materials.append(split)
-    me.materials.append(bark)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        <span class="k">def</span> billet(cx, cy, yaw, r, length, roll):
-            segs = <span class="n">6</span>
+    obs = []
+
+    <span class="k">def</span> emit(name, build, loc, rot):
+        me = bpy.data.meshes.new(name)
+        <span class="k">for</span> m <span class="k">in</span> (split, ends, bark):
+            me.materials.append(m)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            build(bm)
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        obs.append(ob)
+
+    <span class="k">def</span> billet(name, cx, cy, yaw, r, length, roll):
+        <span class="c"># Quarter round about local X; roll 0 rests it on one split face,</span>
+        <span class="c"># 90 degrees on the other, so one shows bark up and one a split face.</span>
+        segs = <span class="n">10</span>
+
+        <span class="k">def</span> build(bm):
             rings = []
             <span class="k">for</span> end <span class="k">in</span> (-<span class="n">0.5</span>, <span class="n">0.5</span>):
-                ring = [Vector((end * length, <span class="n">0.0</span>, <span class="n">0.0</span>))]
+                ring = [bm.verts.new((end * length, <span class="n">0.0</span>, <span class="n">0.0</span>))]
                 <span class="k">for</span> k <span class="k">in</span> range(segs + <span class="n">1</span>):
                     a = (math.pi / <span class="n">2.0</span>) * k / segs
-                    ring.append(Vector((end * length, r * math.cos(a), r * math.sin(a))))
+                    <span class="c"># a little out of round, as split wood is</span>
+                    rr = r * (<span class="n">1.0</span> + <span class="n">0.04</span> * math.sin(<span class="n">3.0</span> * a + end))
+                    ring.append(bm.verts.new((end * length, rr * math.cos(a), rr * math.sin(a))))
                 rings.append(ring)
-            rot = Matrix.Rotation(yaw, <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>) @ Matrix.Rotation(roll, <span class="n">3</span>, <span class="s">&quot;X&quot;</span>)
-            vs = [[bm.verts.new(rot @ p + Vector((cx, cy, <span class="n">0.0</span>))) <span class="k">for</span> p <span class="k">in</span> ring] <span class="k">for</span> ring <span class="k">in</span> rings]
-            a, b = vs
+            a, b = rings
             n = len(a)
             <span class="k">for</span> k <span class="k">in</span> range(n):
                 j = (k + <span class="n">1</span>) % n
                 f = bm.faces.new((a[k], a[j], b[j], b[k]))
-                <span class="c"># faces between arc vertices carry bark; the two through the</span>
-                <span class="c"># pith are split faces</span>
-                f.material_index = <span class="n">1</span> <span class="k">if</span> (k &gt;= <span class="n">1</span> <span class="k">and</span> j &gt;= <span class="n">2</span>) <span class="k">else</span> <span class="n">0</span>
-            bm.faces.new(list(reversed(a))).material_index = <span class="n">0</span>
-            bm.faces.new(b).material_index = <span class="n">0</span>
+                arc = k &gt;= <span class="n">1</span> <span class="k">and</span> j &gt;= <span class="n">2</span>
+                f.material_index = <span class="n">2</span> <span class="k">if</span> arc <span class="k">else</span> <span class="n">0</span>
+                f.smooth = arc
+            bm.faces.new(list(reversed(a))).material_index = <span class="n">1</span>
+            bm.faces.new(b).material_index = <span class="n">1</span>
 
-        <span class="c"># three billets beside the foot, two left and one right;</span>
-        <span class="c"># roll 0 or +90 degrees lays a billet on one split face or the other, so\n        # some show their bark and some their split face</span>
-        billet(-<span class="n">0.45</span>, -<span class="n">0.02</span>, math.radians(<span class="n">62.0</span>), <span class="n">0.088</span>, <span class="n">0.31</span>, <span class="n">0.0</span>)
-        billet(-<span class="n">0.43</span>, -<span class="n">0.19</span>, math.radians(<span class="n">38.0</span>), <span class="n">0.080</span>, <span class="n">0.28</span>, math.radians(<span class="n">90.0</span>))
-        billet(<span class="n">0.42</span>, -<span class="n">0.12</span>, math.radians(<span class="n">118.0</span>), <span class="n">0.084</span>, <span class="n">0.29</span>, math.radians(<span class="n">90.0</span>))
-        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">16</span>):
-            ang = rng.uniform(math.radians(<span class="n">200.0</span>), math.radians(<span class="n">340.0</span>))
-            d = rng.uniform(<span class="n">0.31</span>, <span class="n">0.42</span>)
+        <span class="c"># rolled about local X, then yawed; roll 90 lifts the arc off the floor</span>
+        emit(name, build, (cx, cy, <span class="n">0.0</span>), (roll, <span class="n">0.0</span>, yaw))
+
+    billet(<span class="s">&quot;Billet.A&quot;</span>, -<span class="n">0.45</span>, -<span class="n">0.02</span>, math.radians(<span class="n">62.0</span>), <span class="n">0.088</span>, <span class="n">0.31</span>, <span class="n">0.0</span>)
+    billet(<span class="s">&quot;Billet.B&quot;</span>, -<span class="n">0.43</span>, -<span class="n">0.19</span>, math.radians(<span class="n">38.0</span>), <span class="n">0.080</span>, <span class="n">0.28</span>, math.radians(<span class="n">90.0</span>))
+    billet(<span class="s">&quot;Billet.C&quot;</span>, <span class="n">0.42</span>, -<span class="n">0.12</span>, math.radians(<span class="n">118.0</span>), <span class="n">0.084</span>, <span class="n">0.29</span>, math.radians(<span class="n">90.0</span>))
+
+    <span class="k">def</span> chips(bm):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">12</span>):
+            ang = rng.uniform(math.radians(<span class="n">205.0</span>), math.radians(<span class="n">335.0</span>))
+            d = rng.uniform(<span class="n">0.30</span>, <span class="n">0.46</span>)
             cx, cy = d * math.cos(ang), d * math.sin(ang)
-            sx, sy, sz = rng.uniform(<span class="n">0.020</span>, <span class="n">0.045</span>), rng.uniform(<span class="n">0.008</span>, <span class="n">0.018</span>), <span class="n">0.003</span>
-            geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-            rot = Matrix.Rotation(rng.uniform(<span class="n">0.0</span>, math.pi), <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>)
-            <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
-                v.co = rot @ Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz + sz / <span class="n">2.0</span>)) \
-                    + Vector((cx, cy, <span class="n">0.0</span>))
-            <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
-                f.material_index = <span class="n">0</span>
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
-    ob = bpy.data.objects.new(<span class="s">&quot;Kindling&quot;</span>, me)
-    scene.collection.objects.link(ob)
-    <span class="k">return</span> ob
+            lx, ly = rng.uniform(<span class="n">0.035</span>, <span class="n">0.070</span>), rng.uniform(<span class="n">0.016</span>, <span class="n">0.030</span>)
+            t0, t1 = rng.uniform(<span class="n">0.007</span>, <span class="n">0.011</span>), <span class="n">0.0018</span>
+            <span class="c"># a wedge: full thickness at the struck end, feathered at the tip</span>
+            pts = [(-lx / <span class="n">2</span>, -ly / <span class="n">2</span>, <span class="n">0.0</span>), (lx / <span class="n">2</span>, -ly / <span class="n">2</span>, <span class="n">0.0</span>),
+                   (lx / <span class="n">2</span>, ly / <span class="n">2</span>, <span class="n">0.0</span>), (-lx / <span class="n">2</span>, ly / <span class="n">2</span>, <span class="n">0.0</span>),
+                   (-lx / <span class="n">2</span>, -ly / <span class="n">2</span>, t0), (lx / <span class="n">2</span>, -ly * <span class="n">0.4</span>, t1),
+                   (lx / <span class="n">2</span>, ly * <span class="n">0.4</span>, t1), (-lx / <span class="n">2</span>, ly / <span class="n">2</span>, t0)]
+            tilt = Matrix.Rotation(rng.uniform(-<span class="n">0.25</span>, <span class="n">0.25</span>), <span class="n">3</span>, <span class="s">&quot;X&quot;</span>)
+            rot = Matrix.Rotation(rng.uniform(<span class="n">0.0</span>, math.pi), <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>) @ tilt
+            vs = [bm.verts.new(rot @ Vector(p) + Vector((cx, cy, <span class="n">0.0</span>))) <span class="k">for</span> p <span class="k">in</span> pts]
+            lift = -min(v.co.z <span class="k">for</span> v <span class="k">in</span> vs)
+            <span class="k">for</span> v <span class="k">in</span> vs:
+                v.co.z += lift
+            quads = ((<span class="n">0</span>, <span class="n">3</span>, <span class="n">2</span>, <span class="n">1</span>), (<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">5</span>, <span class="n">4</span>),
+                     (<span class="n">1</span>, <span class="n">2</span>, <span class="n">6</span>, <span class="n">5</span>), (<span class="n">2</span>, <span class="n">3</span>, <span class="n">7</span>, <span class="n">6</span>), (<span class="n">3</span>, <span class="n">0</span>, <span class="n">4</span>, <span class="n">7</span>))
+            <span class="k">for</span> q, quad <span class="k">in</span> enumerate(quads):
+                f = bm.faces.new([vs[k] <span class="k">for</span> k <span class="k">in</span> quad])
+                <span class="c"># every third chip carries its bark on top</span>
+                f.material_index = <span class="n">2</span> <span class="k">if</span> (q == <span class="n">1</span> <span class="k">and</span> i % <span class="n">3</span> == <span class="n">0</span>) <span class="k">else</span> <span class="n">0</span>
+
+    emit(<span class="s">&quot;Chips&quot;</span>, chips, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="k">return</span> obs
 
 
 <span class="k">def</span> render_still(low, wood, tex, path, engine):
@@ -4448,7 +4571,7 @@ CHECK_WIDEN = <span class="n">0.012</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low, kindling], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, *kindling], stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode

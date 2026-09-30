@@ -927,14 +927,16 @@ def grain_material():
         nt,
         wave.outputs["Fac"],
         (
-            (0.30, (0.600, 0.450, 0.265)),
-            (0.72, (0.520, 0.370, 0.205)),
-            (0.95, (0.400, 0.268, 0.140)),
+            (0.30, (0.400, 0.300, 0.190)),
+            (0.72, (0.335, 0.238, 0.140)),
+            (0.95, (0.255, 0.168, 0.090)),
         ),
     )
     weather = noise(nt, coord, 6.0, 4.0, 0.55)
+    # A working block's top is weathered grey-brown, not fresh-sawn pine:
+    # the pale face read as a cheese wheel set on a stump.
     base = mix_color(
-        nt, rings, (0.330, 0.250, 0.170), remap(nt, weather, 0.45, 0.75, 0.0, 0.45)
+        nt, rings, (0.235, 0.205, 0.170), remap(nt, weather, 0.40, 0.75, 0.20, 0.65)
     )
     # Radial checks at the angles the geometry notches, widening toward the
     # rim and fading out before the pith, as a drying check does.
@@ -957,8 +959,16 @@ def grain_material():
     line = remap(nt, nearest, 0.0, 1.0, 1.0, 0.0)
     fade = remap(nt, rad, 0.22 * BLOCK_R, 0.55 * BLOCK_R, 0.0, 1.0)
     crack = math_node(nt, "MULTIPLY", line, fade)
+    cracked = mix_color(nt, base, (0.050, 0.032, 0.020), crack)
+    # Only faces that look up are end grain. The top chamfer and the rim
+    # chips lean out toward the bark, and pale end grain wrapping down them
+    # drew a lid on a canister: there they take the bark's cambium brown.
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    gsep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(geo.outputs["Normal"], gsep.inputs["Vector"])
+    side = remap(nt, gsep.outputs["Z"], 0.80, 0.93, 1.0, 0.0)
     nt.links.new(
-        mix_color(nt, base, (0.050, 0.032, 0.020), crack), bsdf.inputs["Base Color"]
+        mix_color(nt, cracked, (0.085, 0.055, 0.032), side), bsdf.inputs["Base Color"]
     )
     nt.links.new(
         remap(nt, wave.outputs["Fac"], 0.0, 1.0, 0.58, 0.74), bsdf.inputs["Roughness"]
@@ -978,15 +988,17 @@ def iron_material():
             nt,
             blot,
             (
-                (0.40, (0.085, 0.082, 0.079)),
-                (0.60, (0.140, 0.136, 0.131)),
-                (0.72, (0.130, 0.100, 0.076)),
-                (0.82, (0.180, 0.096, 0.052)),
+                (0.40, (0.205, 0.200, 0.192)),
+                (0.60, (0.330, 0.322, 0.310)),
+                (0.72, (0.215, 0.165, 0.120)),
+                (0.82, (0.240, 0.130, 0.070)),
             ),
         ),
         bsdf.inputs["Base Color"],
     )
-    nt.links.new(remap(nt, blot, 0.35, 0.8, 0.34, 0.60), bsdf.inputs["Roughness"])
+    # Albedo lifted from ~0.1 to ~0.3: at 0.1 a metallic head mirrored the
+    # black stage and the axe read as a hole cut in the frame.
+    nt.links.new(remap(nt, blot, 0.35, 0.8, 0.30, 0.55), bsdf.inputs["Roughness"])
     nt.links.new(remap(nt, blot, 0.66, 0.80, 1.0, 0.35), bsdf.inputs["Metallic"])
     return mat
 
@@ -1792,96 +1804,145 @@ def wire_normal(mat, tex):
 
 
 def _dressing_materials():
-    """Split face and bark for the render-only kindling and chips. Their own
-    materials: the block's are wired to its baked normal map through UVs the
-    dressing does not have."""
-    def mat(name, base, rough, stripes):
+    """Split face, end grain, bark for the render-only kindling and chips.
+    Their own materials: the block's are wired to its baked normal map
+    through UVs the dressing does not have. All object-space, and each billet
+    is its own object, so its end rings centre on its own pith."""
+    def mat(name):
         m = bpy.data.materials.new(name)
         m.use_nodes = True
         nt = m.node_tree
-        b = nt.nodes["Principled BSDF"]
-        b.inputs["Roughness"].default_value = rough
-        coord = nt.nodes.new("ShaderNodeTexCoord")
-        wave = nt.nodes.new("ShaderNodeTexWave")
-        wave.wave_type = "BANDS"
-        wave.bands_direction = "Z" if stripes else "X"
-        wave.inputs["Scale"].default_value = 6.0 if stripes else 2.0
-        wave.inputs["Distortion"].default_value = 6.0
-        wave.inputs["Detail"].default_value = 3.0
-        nt.links.new(coord.outputs["Object"], wave.inputs["Vector"])
-        ramp = nt.nodes.new("ShaderNodeValToRGB")
-        ramp.color_ramp.elements[0].color = tuple(c * 0.72 for c in base) + (1.0,)
-        ramp.color_ramp.elements[1].color = base + (1.0,)
-        nt.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
-        nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
-        return m
-    split = mat("KindlingSplit", (0.62, 0.46, 0.28), 0.72, True)
-    bark = mat("KindlingBark", (0.16, 0.11, 0.075), 0.9, False)
-    return split, bark
+        return m, nt, nt.nodes["Principled BSDF"], nt.nodes.new("ShaderNodeTexCoord")
+
+    # Split face: fibres torn along the billet (noise squeezed across it).
+    split, nt, b, tc = mat("KindlingSplit")
+    fib = noise(nt, mapping(nt, tc.outputs["Object"], scale=(0.06, 1.0, 1.0)), 60.0, 5.0, 0.6)
+    nt.links.new(ramp(nt, fib, ((0.35, (0.30, 0.21, 0.12)), (0.52, (0.47, 0.34, 0.20)),
+                                (0.70, (0.58, 0.44, 0.27)))), b.inputs["Base Color"])
+    b.inputs["Roughness"].default_value = 0.78
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.5
+    nt.links.new(fib, bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+
+    # End grain: rings about the billet's own axis (local X), darker than the
+    # split face, as a sawn end is.
+    ends, nt, b, tc = mat("KindlingEnd")
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "RINGS"
+    wave.rings_direction = "SPHERICAL"
+    wave.inputs["Scale"].default_value = 26.0
+    wave.inputs["Distortion"].default_value = 2.0
+    nt.links.new(mapping(nt, tc.outputs["Object"], scale=(0.0, 1.0, 1.0)), wave.inputs["Vector"])
+    nt.links.new(ramp(nt, wave.outputs["Fac"], ((0.3, (0.48, 0.34, 0.19)),
+                                                (0.9, (0.33, 0.22, 0.12)))),
+                 b.inputs["Base Color"])
+    b.inputs["Roughness"].default_value = 0.72
+
+    # Bark: plated and fissured, the block's palette.
+    bark, nt, b, tc = mat("KindlingBark")
+    plates = noise(nt, mapping(nt, tc.outputs["Object"], scale=(2.0, 9.0, 9.0)), 6.0, 8.0, 0.64)
+    nt.links.new(ramp(nt, plates, ((0.40, (0.020, 0.013, 0.008)), (0.55, (0.075, 0.048, 0.028)),
+                                   (0.80, (0.150, 0.100, 0.062)))), b.inputs["Base Color"])
+    b.inputs["Roughness"].default_value = 0.88
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.8
+    nt.links.new(plates, bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return split, ends, bark
 
 
 def add_split_kindling(scene):
     """Render-only dressing: split billets and chips at the block's foot.
 
     A chopping block is read by what it splits. Each billet is a quarter of
-    a small round (two split faces meeting at the pith, bark on the arc),
-    laid on the floor; chips are thin seeded slivers. None of it is part of
-    the asset: no budget reads it, the export does not carry it, and the
-    asset sheet renders the block alone.
+    a small round (two split faces meeting at the pith, bark on the arc,
+    sawn ends showing rings), laid on the floor; chips are tapered wedges
+    tilted as they fell. None of it is part of the asset: no budget reads
+    it, the export does not carry it, and the asset sheet renders the block
+    alone. Returns the dressing objects.
     """
-    split, bark = _dressing_materials()
+    split, ends, bark = _dressing_materials()
     rng = random.Random(71)
-    me = bpy.data.meshes.new("Kindling")
-    me.materials.append(split)
-    me.materials.append(bark)
-    bm = bmesh.new()
-    try:
-        def billet(cx, cy, yaw, r, length, roll):
-            segs = 6
+    obs = []
+
+    def emit(name, build, loc, rot):
+        me = bpy.data.meshes.new(name)
+        for m in (split, ends, bark):
+            me.materials.append(m)
+        bm = bmesh.new()
+        try:
+            build(bm)
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        obs.append(ob)
+
+    def billet(name, cx, cy, yaw, r, length, roll):
+        # Quarter round about local X; roll 0 rests it on one split face,
+        # 90 degrees on the other, so one shows bark up and one a split face.
+        segs = 10
+
+        def build(bm):
             rings = []
             for end in (-0.5, 0.5):
-                ring = [Vector((end * length, 0.0, 0.0))]
+                ring = [bm.verts.new((end * length, 0.0, 0.0))]
                 for k in range(segs + 1):
                     a = (math.pi / 2.0) * k / segs
-                    ring.append(Vector((end * length, r * math.cos(a), r * math.sin(a))))
+                    # a little out of round, as split wood is
+                    rr = r * (1.0 + 0.04 * math.sin(3.0 * a + end))
+                    ring.append(bm.verts.new((end * length, rr * math.cos(a), rr * math.sin(a))))
                 rings.append(ring)
-            rot = Matrix.Rotation(yaw, 3, "Z") @ Matrix.Rotation(roll, 3, "X")
-            vs = [[bm.verts.new(rot @ p + Vector((cx, cy, 0.0))) for p in ring] for ring in rings]
-            a, b = vs
+            a, b = rings
             n = len(a)
             for k in range(n):
                 j = (k + 1) % n
                 f = bm.faces.new((a[k], a[j], b[j], b[k]))
-                # faces between arc vertices carry bark; the two through the
-                # pith are split faces
-                f.material_index = 1 if (k >= 1 and j >= 2) else 0
-            bm.faces.new(list(reversed(a))).material_index = 0
-            bm.faces.new(b).material_index = 0
+                arc = k >= 1 and j >= 2
+                f.material_index = 2 if arc else 0
+                f.smooth = arc
+            bm.faces.new(list(reversed(a))).material_index = 1
+            bm.faces.new(b).material_index = 1
 
-        # three billets beside the foot, two left and one right;
-        # roll 0 or +90 degrees lays a billet on one split face or the other, so\n        # some show their bark and some their split face
-        billet(-0.45, -0.02, math.radians(62.0), 0.088, 0.31, 0.0)
-        billet(-0.43, -0.19, math.radians(38.0), 0.080, 0.28, math.radians(90.0))
-        billet(0.42, -0.12, math.radians(118.0), 0.084, 0.29, math.radians(90.0))
-        for i in range(16):
-            ang = rng.uniform(math.radians(200.0), math.radians(340.0))
-            d = rng.uniform(0.31, 0.42)
+        # rolled about local X, then yawed; roll 90 lifts the arc off the floor
+        emit(name, build, (cx, cy, 0.0), (roll, 0.0, yaw))
+
+    billet("Billet.A", -0.45, -0.02, math.radians(62.0), 0.088, 0.31, 0.0)
+    billet("Billet.B", -0.43, -0.19, math.radians(38.0), 0.080, 0.28, math.radians(90.0))
+    billet("Billet.C", 0.42, -0.12, math.radians(118.0), 0.084, 0.29, math.radians(90.0))
+
+    def chips(bm):
+        for i in range(12):
+            ang = rng.uniform(math.radians(205.0), math.radians(335.0))
+            d = rng.uniform(0.30, 0.46)
             cx, cy = d * math.cos(ang), d * math.sin(ang)
-            sx, sy, sz = rng.uniform(0.020, 0.045), rng.uniform(0.008, 0.018), 0.003
-            geo = bmesh.ops.create_cube(bm, size=1.0)
-            rot = Matrix.Rotation(rng.uniform(0.0, math.pi), 3, "Z")
-            for v in geo["verts"]:
-                v.co = rot @ Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz + sz / 2.0)) \
-                    + Vector((cx, cy, 0.0))
-            for f in {f for v in geo["verts"] for f in v.link_faces}:
-                f.material_index = 0
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    ob = bpy.data.objects.new("Kindling", me)
-    scene.collection.objects.link(ob)
-    return ob
+            lx, ly = rng.uniform(0.035, 0.070), rng.uniform(0.016, 0.030)
+            t0, t1 = rng.uniform(0.007, 0.011), 0.0018
+            # a wedge: full thickness at the struck end, feathered at the tip
+            pts = [(-lx / 2, -ly / 2, 0.0), (lx / 2, -ly / 2, 0.0),
+                   (lx / 2, ly / 2, 0.0), (-lx / 2, ly / 2, 0.0),
+                   (-lx / 2, -ly / 2, t0), (lx / 2, -ly * 0.4, t1),
+                   (lx / 2, ly * 0.4, t1), (-lx / 2, ly / 2, t0)]
+            tilt = Matrix.Rotation(rng.uniform(-0.25, 0.25), 3, "X")
+            rot = Matrix.Rotation(rng.uniform(0.0, math.pi), 3, "Z") @ tilt
+            vs = [bm.verts.new(rot @ Vector(p) + Vector((cx, cy, 0.0))) for p in pts]
+            lift = -min(v.co.z for v in vs)
+            for v in vs:
+                v.co.z += lift
+            quads = ((0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4),
+                     (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7))
+            for q, quad in enumerate(quads):
+                f = bm.faces.new([vs[k] for k in quad])
+                # every third chip carries its bark on top
+                f.material_index = 2 if (q == 1 and i % 3 == 0) else 0
+
+    emit("Chips", chips, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
+    return obs
 
 
 def render_still(low, wood, tex, path, engine):
@@ -1974,7 +2035,7 @@ def render_still(low, wood, tex, path, engine):
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low, kindling], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low, *kindling], stage=[floor, wall],
     )
     if fcode:
         return fcode
