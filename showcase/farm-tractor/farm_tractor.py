@@ -86,23 +86,26 @@ TRACK_F = 1.220              # front (48 in)
 AX_R = -0.5 * WHEELBASE
 AX_F = 0.5 * WHEELBASE
 R_RT = 0.620                 # rear tyre over the lug tips: 1.240 m (11.2-28 class)
-LUG_H = 0.028
+LUG_H = 0.034
 R_FT = 0.345                 # front tyre: 0.690 m (4.00-19 class)
 SINK = 0.030                 # every tyre pressed this far into the rut's mud
 Z_AR = R_RT - SINK
 Z_AF = R_FT - SINK
 RUT_Y = 0.5 * TRACK_R
 
-# Rear tyre carcass: crown radius against the distance from the mid-plane.
-REAR_CROWN = ((0.000, 0.5920), (0.030, 0.5920), (0.070, 0.5905), (0.100, 0.5860),
-              (0.120, 0.5780), (0.133, 0.5640), (0.1405, 0.5420))
+# Rear tyre carcass, the tread half of its profile: (distance from the
+# mid-plane, radius), over the crown and round the shoulder onto the sidewall.
+REAR_CROWN = ((0.000, 0.5860), (0.030, 0.5860), (0.070, 0.5845), (0.100, 0.5800),
+              (0.120, 0.5722), (0.133, 0.5588), (0.1405, 0.5390), (0.1425, 0.5050))
 LUGS_PER_HALF = 22
-LUG_BITE = 0.004             # lug root below the carcass
+LUG_BITE = 0.004             # lug root below the carcass, along the carcass normal
 LUG_X = 0.010                # each bar crosses the centre line by this much
-LUG_END = 0.137              # the bar's shoulder end, from the mid-plane
+LUG_END = 0.137              # the bar's sweep ends here, from the mid-plane
+LUG_R_END = 0.518            # the bar runs round the shoulder and down the sidewall to here
 LUG_SWEEP = 0.19             # the bar's run back round the tyre (rad), apex to shoulder
-LUG_BW, LUG_TW, LUG_CH = 0.023, 0.016, 0.003
-LUG_ST = (0.0, 0.16, 0.36, 0.56, 0.76, 0.90, 1.0)
+LUG_BW, LUG_TW, LUG_CH = 0.021, 0.013, 0.003
+LUG_ST = (-LUG_X, 0.012, 0.035, 0.070, 0.100, 0.120, 0.133, 0.1405)   # stations (w), then the end
+LUG_TAPER = 0.45             # the bar's height lost from the shoulder to its end on the sidewall
 TYRE_SEGS_R, RIM_SEGS_R = 96, 64
 TYRE_SEGS_F, RIM_SEGS_F = 72, 48
 TYRE_BITE = 0.0012           # beads hooped this far onto the bead seats (a rim facet's
@@ -159,8 +162,8 @@ LOOSE_LAMP = 0.004           # --loose-lamp: tail lamp off its mudguard
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from the vertices.
 OUTER_SIZE = (3.5839, 2.0869, 1.7330)
-BASE_TRIS_MIN = 121000
-BASE_TRIS_MAX = 123600
+BASE_TRIS_MIN = 123100
+BASE_TRIS_MAX = 125700
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -200,7 +203,7 @@ TYRE_SEAT_MIN = 0.0004
 TYRE_SEAT_MAX = 0.0020
 LUG_BITE_MIN = 0.0020
 LUG_BITE_MAX = 0.0060
-LUG_PROUD_MIN = 0.020
+LUG_PROUD_MIN = 0.030
 LUGS = 4 * LUGS_PER_HALF
 # Mirror and size.
 MIRROR_EPS = 0.0005
@@ -237,7 +240,7 @@ SOIL_IDX = 10
 WATER_IDX = 11
 
 FACE_FLOORS = {
-    PAINT_IDX: 8080, WHEEL_IDX: 8590, RUBBER_IDX: 14290, IRON_IDX: 6890, STEEL_IDX: 10000,
+    PAINT_IDX: 8080, WHEEL_IDX: 8590, RUBBER_IDX: 15260, IRON_IDX: 6890, STEEL_IDX: 10000,
     ZINC_IDX: 2350, BLACK_IDX: 2660, GLASS_IDX: 790, EXHAUST_IDX: 1060, CORE_IDX: 50,
     SOIL_IDX: 11660, WATER_IDX: 128,
 }
@@ -259,6 +262,7 @@ Y = Vector((0.0, 1.0, 0.0))
 Z = Vector((0.0, 0.0, 1.0))
 TONE = "PartTone"
 WEAR = "EdgeWear"
+PACK = "TreadMud"
 
 
 def eevee_engine_id():
@@ -305,6 +309,7 @@ class Build:
         self.bm = bm
         self.tag = bm.faces.layers.int.new("part")
         self.tone = bm.faces.layers.float.new(TONE)
+        self.pack = bm.faces.layers.float.new(PACK)
         self.groups = {}
 
     def part(self, tag=T_NONE, tone=0.5, *groups):
@@ -1210,20 +1215,52 @@ def build_front_support(b, flags):
 # Wheels
 # --------------------------------------------------------------------------
 
-def rear_crown_r(w):
-    w = abs(w)
-    for (w0, r0), (w1, r1) in zip(REAR_CROWN, REAR_CROWN[1:]):
-        if w <= w1:
-            return r0 + (r1 - r0) * (w - w0) / (w1 - w0)
-    return REAR_CROWN[-1][1]
+def _crown_normal(i):
+    """The carcass profile's outward normal (in w, r) at REAR_CROWN vertex i:
+    the mean of its two segments' normals."""
+    ns = []
+    for j0, j1 in ((i - 1, i), (i, i + 1)):
+        if 0 <= j0 and j1 < len(REAR_CROWN):
+            (w0, r0), (w1, r1) = REAR_CROWN[j0], REAR_CROWN[j1]
+            d = math.hypot(w1 - w0, r1 - r0)
+            ns.append(((r0 - r1) / d, (w1 - w0) / d))
+    nw, nr = sum(n[0] for n in ns), sum(n[1] for n in ns)
+    d = math.hypot(nw, nr)
+    return nw / d, nr / d
+
+
+def lug_stations():
+    """The bar's stations over the carcass: (w, r) on the profile and its
+    outward normal there, from over the centre line round the shoulder and
+    down the sidewall to LUG_R_END."""
+    out = []
+    for w in LUG_ST:
+        aw = abs(w)
+        for i, ((w0, r0), (w1, r1)) in enumerate(zip(REAR_CROWN, REAR_CROWN[1:])):
+            if aw <= w1 + 1e-9:
+                f = (aw - w0) / (w1 - w0)
+                r = r0 + (r1 - r0) * f
+                if f > 1.0 - 1e-6:
+                    n = _crown_normal(i + 1)
+                elif f < 1e-6:
+                    n = _crown_normal(i)
+                else:
+                    d = math.hypot(w1 - w0, r1 - r0)
+                    n = ((r0 - r1) / d, (w1 - w0) / d)
+                out.append((w, r, n[0] if w >= 0.0 else -n[0], n[1]))
+                break
+    (w0, r0), (w1, r1) = REAR_CROWN[-2], REAR_CROWN[-1]
+    f = (r0 - LUG_R_END) / (r0 - r1)
+    d = math.hypot(w1 - w0, r1 - r0)
+    out.append((w0 + (w1 - w0) * f, LUG_R_END, (r0 - r1) / d, (w1 - w0) / d))
+    return out
 
 
 def rear_tyre_profile(bite):
     rim = RIM_R
     rs = rim["RS"] - bite
     rfl, wf = rim["RFL"], rim["Wf"]
-    half = [(0.5920, 0.030), (0.5905, 0.070), (0.5860, 0.100), (0.5780, 0.120), (0.5640, 0.133),
-            (0.5420, 0.1405), (0.5050, 0.1425), (0.4600, 0.1400), (0.4250, 0.1345),
+    half = [(r, w) for w, r in REAR_CROWN[1:]] + [(0.4600, 0.1400), (0.4250, 0.1345),
             (0.4000, 0.1320), (rfl + 0.008, 0.1285), (rfl + 0.0015, wf - 0.0006),
             (rim["RS"] + 0.003, wf - 0.0012), (rs, wf - 0.004), (rs, wf - 0.020)]
     return half + [(r, -w) for r, w in reversed(half)]
@@ -1267,25 +1304,29 @@ def build_lugs(b, C, spin, groups, lift=0.0, tall=0.0, bunch=False):
     its apex over the centre line back round the tyre to the shoulder, so the
     apex meets the ground first. ``spin`` -1 builds the tread about the
     wheel's own outboard axis instead, which on the right-hand wheel turns the
-    tyre round."""
+    tyre round. Past the sweep the bar runs round the shoulder and down the
+    sidewall, each section set out along the carcass normal, so the bars'
+    ends stand as a ring of teeth round the tyre seen from the side."""
     bm = b.bm
+    stations = lug_stations()
+    w_sh = REAR_CROWN[4][0]
     for h in (1.0, -1.0):
         for n in range(LUGS_PER_HALF):
             th_a = lug_theta(n, h)
             if bunch and h < 0 and n % 4 == 1:
                 th_a -= math.radians(BUNCH_DEG)
             rings = []
-            for t in LUG_ST:
-                w = h * (-LUG_X + t * (LUG_END + LUG_X))
-                rc = rear_crown_r(w)
-                hgt = LUG_H * (1.0 - 0.40 * smoothstep(0.78, 1.0, t)) + tall
-                root = rc - LUG_BITE + lift
-                top = rc + hgt + lift
+            for k, (ws, rc, nw, nr) in enumerate(stations):
+                t = min(1.0, (ws + LUG_X) / (LUG_END + LUG_X))
+                u = 1.0 if k == len(stations) - 1 else (smoothstep(w_sh, LUG_ST[-1], ws) * 0.55)
+                hgt = LUG_H * (1.0 - LUG_TAPER * u) + tall
                 th = th_a - LUG_SWEEP * (0.85 * t + 0.15 * t * t)
-                sec = [(-LUG_BW, root), (LUG_BW, root), (LUG_TW, top - LUG_CH),
-                       (LUG_TW - LUG_CH, top), (-LUG_TW + LUG_CH, top), (-LUG_TW, top - LUG_CH)]
+                sec = [(-LUG_BW, -LUG_BITE), (LUG_BW, -LUG_BITE), (LUG_TW, hgt - LUG_CH),
+                       (LUG_TW - LUG_CH, hgt), (-LUG_TW + LUG_CH, hgt), (-LUG_TW, hgt - LUG_CH)]
                 ring = []
-                for dt, rr in sec:
+                for dt, dn in sec:
+                    rr = rc + nr * (dn + lift)
+                    w = h * (ws + nw * (dn + lift))
                     a = th + dt / rc
                     ring.append(C + Vector((spin * rr * math.sin(a), spin * w, rr * math.cos(a))))
                 rings.append(ring)
@@ -1315,8 +1356,14 @@ def build_rear_wheel(b, s, flags):
     ax = Y * s
     rot = frame(ax, Z)
     bite = SINK_BITE if (flags["sink_tyre"] and s < 0) else TYRE_BITE
+    nf = len(bm.faces)
     with b.part(T_TYRE, 0.40 if s > 0 else 0.60, "tr", gw, "tyre_R" + side):
         add_lathe(bm, rear_tyre_profile(bite), TYRE_SEGS_R, RUBBER_IDX, center=C, rot=rot)
+    # mud packed between the bars: the crown's faces, not the sidewall's
+    bm.faces.ensure_lookup_table()
+    for i in range(nf, len(bm.faces)):
+        q = bm.faces[i].calc_center_median() - C
+        bm.faces[i][b.pack] = smoothstep(0.540, 0.566, (q - ax * q.dot(ax)).length)
     spin = -1.0 if (flags["reverse_lugs"] and s < 0) else 1.0
     build_lugs(b, C, spin, ("tr", gw, "lugs_R" + side),
                lift=FLOAT_LUGS if (flags["float_lugs"] and s > 0) else 0.0,
@@ -2258,13 +2305,16 @@ def _stretched(nt, coord_socket, sx, sy, sz):
 def worn(name, col_a, col_b, rough, metallic=0.0, primer=None, bare=None, chip=0.0,
          rust=0.0, rust_col=(0.20, 0.085, 0.035, 1.0), mud_top=0.30, mud_amt=0.8,
          mud_col=(0.115, 0.082, 0.055, 1.0), spray=0.0, bump=0.10, bump_scale=300.0,
-         coat=0.0, oil=0.0, fade=0.0, grime=0.0, scuff=0.0):
+         coat=0.0, oil=0.0, fade=0.0, grime=0.0, scuff=0.0, pack=0.0,
+         pack_col=(0.150, 0.108, 0.070, 1.0)):
     """A designed, weathered surface: a per-part tone between two colours,
     paint chipped through to primer and to bare metal where the edge-wear
     attribute is high, sparse scuffs through to primer on the faces, paint
     faded where it faces the sky, grime darkening toward the ground, rust
     streaks running down, mud rising from the ground with a splashed edge and
-    flecks above it, oily darkening, roughness breakup and a fine bump."""
+    flecks above it, oily darkening, mud packed in clumps where the
+    TreadMud attribute marks a tyre's crown between its bars, roughness
+    breakup and a fine bump."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -2361,6 +2411,23 @@ def worn(name, col_a, col_b, rough, metallic=0.0, primer=None, bare=None, chip=0
         orr = _ramp(nt, 0.45, _gray(0.0), 0.70, _gray(oil))
         nt.links.new(on.outputs["Fac"], orr.inputs["Fac"])
         col = _mix(nt, orr.outputs["Color"], col, (0.02, 0.018, 0.015, 1.0))
+    pk_m = None
+    if pack > 0.0:
+        pk = nt.nodes.new("ShaderNodeAttribute")
+        pk.attribute_name = PACK
+        pn = _node(nt, "ShaderNodeTexNoise", Scale=16.0, Detail=6.0, Roughness=0.6)
+        nt.links.new(obj, pn.inputs["Vector"])
+        pg = _ramp(nt, 0.36, _gray(0.0), 0.46, _gray(pack))
+        nt.links.new(pn.outputs["Fac"], pg.inputs["Fac"])
+        pk_m = _math(nt, "MULTIPLY", pk.outputs["Fac"], pg.outputs["Color"])
+        pc = _ramp(nt, 0.35, (0.62, 0.62, 0.62, 1.0), 0.75, (1.12, 1.12, 1.12, 1.0))
+        nt.links.new(pn.outputs["Fac"], pc.inputs["Fac"])
+        tinted = nt.nodes.new("ShaderNodeMixRGB")
+        tinted.blend_type = "MULTIPLY"
+        tinted.inputs[0].default_value = 1.0
+        tinted.inputs[1].default_value = pack_col
+        nt.links.new(pc.outputs["Color"], tinted.inputs[2])
+        col = _mix(nt, pk_m, col, tinted.outputs[0])
     # mud from the ground up, a splashed edge, and flecks above it
     hmap = _node(nt, "ShaderNodeMapRange")
     hmap.inputs["From Min"].default_value = SOIL_T - 0.02
@@ -2404,6 +2471,8 @@ def worn(name, col_a, col_b, rough, metallic=0.0, primer=None, bare=None, chip=0
         bn = _node(nt, "ShaderNodeTexNoise", Scale=bump_scale, Detail=6.0)
         nt.links.new(obj, bn.inputs["Vector"])
         bh = _math(nt, "ADD", bn.outputs["Fac"], _math(nt, "MULTIPLY", mud, 0.8))
+        if pk_m is not None:
+            bh = _math(nt, "ADD", bh, _math(nt, "MULTIPLY", pk_m, 1.5))
         bp = _node(nt, "ShaderNodeBump", Strength=bump)
         bp.inputs["Distance"].default_value = 0.0008
         nt.links.new(bh, bp.inputs["Height"])
@@ -2608,7 +2677,7 @@ def set_materials():
                  spray=0.9)
     rubber = worn("TyreRubber", (0.030, 0.029, 0.028, 1.0), (0.040, 0.038, 0.036, 1.0), 0.80,
                   mud_top=0.22, mud_amt=0.95, mud_col=(0.10, 0.072, 0.048, 1.0), spray=0.7,
-                  bump=0.15, bump_scale=500.0)
+                  bump=0.15, bump_scale=500.0, pack=1.0)
     iron = worn("CastIron", (0.070, 0.078, 0.072, 1.0), (0.058, 0.064, 0.060, 1.0), 0.62,
                 metallic=0.35, primer=(0.20, 0.08, 0.05, 1.0), bare=(0.24, 0.23, 0.22, 1.0), chip=0.8,
                 rust=0.6, mud_top=0.30, mud_amt=0.85, spray=0.8, bump=0.25, bump_scale=420.0,
@@ -3026,11 +3095,16 @@ def lug_audit(cls):
         for lg in lugs:
             deep, proud = -9.0, -9.0
             for p in lg.pts:
+                # inside or out by the radial ray; how far by the nearest
+                # carcass face, since down the shoulder the carcass normal
+                # runs nearly along the axis, not the radius
                 hr, rho = carcass_radius(t, c, a, p)
                 if hr is None:
                     continue
-                deep = max(deep, hr - rho)
-                proud = max(proud, rho - hr)
+                d = (t.tree.find_nearest(p)[0] - p).length
+                sd = d if rho < hr else -d
+                deep = max(deep, sd)
+                proud = max(proud, -sd)
             if deep < -8.0:
                 res["orphans"] += 1
             res["bite"][0] = min(res["bite"][0], deep)

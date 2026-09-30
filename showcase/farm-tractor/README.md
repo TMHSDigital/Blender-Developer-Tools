@@ -20,8 +20,11 @@ marks, text or maker's livery) standing in the ruts of a muddy farmyard:
   washers, knuckles, kingpins, spindles, hubs and caps; steering arms and a
   tie rod on vertical pins;
 - rear wheels: 1.240 m tyres whose carcass carries **44 chevron bars** (two
-  staggered halves of 22), each rooted in the carcass and running from its
-  apex over the centre line back round the tyre to the shoulder; 28 in
+  staggered halves of 22), 34 mm tall, each rooted in the carcass and
+  running from its apex over the centre line back round the tyre, then round
+  the shoulder and down the sidewall, so the bars' ends stand as a ring of
+  teeth round the tyre seen from the side; mud packed on the crown between
+  the bars; 28 in
   drop-centre rims, dished pressed discs on eight welded clamp lugs, wheel
   nuts, **two cast-iron half-moon weights** per wheel with bolts and a cast
   grip, valve stems; front wheels: 0.690 m three-rib tyres on 19 in rims and
@@ -69,16 +72,16 @@ value is read from their vertices.
 
 | Axis | Declared | Measured (5.2.1) |
 | --- | --- | --- |
-| Base triangles | 121000–123600 | 122272 |
+| Base triangles | 123100–125700 | 124384 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2198 |
-| Materials | exactly 12 distinct; ≥8080 body paint, ≥8590 wheel paint, ≥14290 rubber, ≥6890 cast iron, ≥10000 steel, ≥2350 zinc, ≥2660 black enamel, ≥790 glass, ≥1060 exhaust, ≥50 radiator core, ≥11660 soil, ≥128 water faces | 12 slots; 8792 / 9344 / 15536 / 7498 / 10876 / 2556 / 2900 / 868 / 1160 / 56 / 12676 / 140 |
+| Materials | exactly 12 distinct; ≥8080 body paint, ≥8590 wheel paint, ≥15260 rubber, ≥6890 cast iron, ≥10000 steel, ≥2350 zinc, ≥2660 black enamel, ≥790 glass, ≥1060 exhaust, ≥50 radiator core, ≥11660 soil, ≥128 water faces | 12 slots; 8792 / 9344 / 16592 / 7498 / 10876 / 2556 / 2900 / 868 / 1160 / 56 / 12676 / 140 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (3.5839, 2.0869, 1.7330) m ± 0.01, read off the vertices | (3.5839, 2.0869, 1.7330), zmin 0 |
 | Collider tris | ≤ 1040 | 944 |
-| Export | written, size > 0, removed after measuring | 9352088 bytes |
+| Export | written, size > 0, removed after measuring | 9499928 bytes |
 
-Every falsifier leaves the triangle count at 122272 and the envelope at
+Every falsifier leaves the triangle count at 124384 and the envelope at
 (3.5839, 2.0869, 1.7330): they move parts, never add or remove them.
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
@@ -86,8 +89,8 @@ series, so the LOD gate is a ratio band, not an exact count. Bake pixels
 are stochastic, so the bake gate is `has_data` plus operator `FINISHED`,
 not byte-identity. Construction uses no RNG; two default runs print
 identical measurements, and 4.5.11 and 5.1.2 print the same measurements
-as 5.2.1 (LOD2 decimates to 26898 triangles there against 26874, ratio
-0.2200 against 0.2198, and the export differs by 8 bytes).
+as 5.2.1 (LOD2 decimates to 27364 triangles there against 27340, ratio
+0.2200 against 0.2198).
 
 ### Hygiene and grounding
 
@@ -122,14 +125,14 @@ now counts from the centre out.
 | Joint fit: each front hub against its spindle and each rear hub against its half-shaft (axis of revolution and centre against the host's principal axis); the pivot pin against both bushings | 4 hubs, 2 bushings; ≤ 0.3 mm off, ≤ 0.3° | 4, 2; 0.0 mm, 0.0° |
 | Joint fit: every link eye on a pin (lower links, lift arms, lift rods, top link, tie rod): centre on the pin's axis, axis along it, the pin past both faces | 14 eyes; ≤ 0.5 mm, ≤ 1.0°, ≥ 2 mm past | 14; 0.0 mm, 0.0°, ≥ 8.5 mm |
 | Tyre seat: per tyre, per angular segment, the bead vertices against the rim's bead seat (a ray toward the axis along each vertex's own radial) | 4 tyres, each on a rim; 0.4–2.0 mm | 0.683–0.962 mm |
-| Lugs: each bar's deepest root vertex inside the carcass (a ray onto the carcass along the vertex's radial), its crown proud of it | 88 bars; 2.0–6.0 mm; ≥ 20 mm proud | 88; 3.932–3.997 mm; 28.311 mm |
+| Lugs: each bar's deepest root vertex inside the carcass, its crown proud of it (inside or out by a ray onto the carcass along the vertex's radial; how far by the nearest carcass face, since down the shoulder the carcass normal runs nearly along the axle) | 88 bars; 2.0–6.0 mm; ≥ 30 mm proud | 88; 3.985–3.999 mm; 34.289 mm |
 | Mirror: every body-paint vertex against its partner across the centre plane between the half-shafts (KD-tree) | ≤ 0.5 mm | 0.0001 mm |
 | Wheels: front and rear carcasses paired, centres and extents compared | ≤ 0.5 mm | 0.0001 mm |
 | Size: wheelbase and both tracks from the carcasses' centres | 1.780 / 1.220 / 1.320 m ± 4 mm | 1.7800 / 1.2200 / 1.3200 |
 | Size: each rear tyre's diameter, twice its farthest vertex from the rim's axis | 1.240 m ± 6 mm | 1.2400, 1.2400 |
 | Tread pitch: per rear tyre and half, the bars' angles round the axle | every gap within 0.25° of 360/22 | 0.0000° |
 | Handing: every rear bar's apex ahead of its shoulder end in forward rolling (about +Y, the same for both wheels) | ≥ 5° | 10.886° |
-| Stance: mass centre (per-shell volume × a per-material density) inside the support **triangle**: the two rear contact patches and the front-axle pivot | ≥ 0.330 m (a quarter of the rear track) | 0.4151 m (1541 kg) |
+| Stance: mass centre (per-shell volume × a per-material density) inside the support **triangle**: the two rear contact patches and the front-axle pivot | ≥ 0.330 m (a quarter of the rear track) | 0.4120 m (1539 kg) |
 | One connected assembly (union of shells whose BVH trees overlap, the patch included) | 1 component | 1 (505 shells) |
 
 The support is a triangle, not the four tyres' rectangle: the front axle
@@ -163,14 +166,14 @@ envelope unchanged and every budget checked before the target green.
 | `--cant-pin` | pivot pin coaxial with its bushings (the pin turned 1.5° in plan: 1.894 mm, 1.5°) | 17 |
 | `--unpin-link` | link eyes on their pins (the top link 8 mm short: its rear eye 8.0 mm off the stowage pin) | 17 |
 | `--sink-tyre` | tyre bead seat (the right rear bead 3 mm into its seat: 2.762 mm) | 18 |
-| `--float-lugs` | bars rooted in the carcass (the left rear bars lifted 7 mm: −3.068 mm) | 18 |
+| `--float-lugs` | bars rooted in the carcass (the left rear bars lifted 7 mm off the carcass along its normal: −3.056 mm) | 18 |
 | `--skew-wheel` | rear wheels mirrored (the left rear wheel 6 mm aft of its hub: 6.000 mm) | 19 |
 | `--wide-track` | rear track at its stated size (each rear wheel 4 mm out: 1.3280 m) | 19 |
 | `--tall-lugs` | rear tyre diameter at its stated size (bars 8 mm taller: 1.256 m) | 19 |
 | `--odd-fender` | body mirror symmetry (the left mudguard bowed 3 mm out: 3.000 mm) | 19 |
 | `--bunch-lugs` | even bar pitch (every fourth bar of one right rear half turned 2°: 2.000°) | 20 |
 | `--reverse-lugs` | chevron handing (the right rear tread built about its outboard axis: −10.886°) | 21 |
-| `--offset-pivot` | stance (the pivot pin and bushings 0.30 m to the right: 0.3074 m) | 22 |
+| `--offset-pivot` | stance (the pivot pin and bushings 0.30 m to the right: 0.3100 m) | 22 |
 | `--loose-lamp` | one connected assembly (the tail lamp 4 mm off its mudguard: 2 components, 4 and 501 shells) | 23 |
 
 `--float-tyre` lifts the carcass alone while the rest of the tractor and
@@ -234,7 +237,9 @@ sky, darkens with grime toward the ground, takes sparse scuffs and rust
 streaks, and is splashed with mud rising from the rut. Cast iron is
 near-black and rough, not chrome; zinc is kept to the caps, bezels, lamp
 housings and the bonnet strip. The mud is wet and glossy only on the
-up-facing rut floors.
+up-facing rut floors. A `TreadMud` face attribute marks the rear carcasses'
+crowns; the rubber packs them with clumped, lumpy mud there, so the clean
+black bars stand out of it.
 
 ## Exit codes
 
