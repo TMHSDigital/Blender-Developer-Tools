@@ -424,9 +424,9 @@ blender --background --python sea_stack_arch.py -- --output arch.png</code></pre
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/sea-stack-arch/sea_stack_arch.py</code>
-        <span>3313 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/sea-stack-arch/sea_stack_arch.py">View on GitHub &rarr;</a></span>
+        <span>3323 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/sea-stack-arch/sea_stack_arch.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="3313">
+      <div class="code" data-lines="3323">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -3739,7 +3739,17 @@ blender --background --python sea_stack_arch.py -- --output arch.png</code></pre
 3310
 3311
 3312
-3313</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready sea stack and arch — a showcase piece, not an example.
+3313
+3314
+3315
+3316
+3317
+3318
+3319
+3320
+3321
+3322
+3323</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready sea stack and arch — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural coastal diorama tile after
 composing shipped pipeline pieces: bmesh construction, UVs, eight
@@ -7024,8 +7034,18 @@ FLAG_NAMES = (<span class="s">&quot;gap_lintel&quot;</span>, <span class="s">&qu
     p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
-    <span class="k">for</span> name <span class="k">in</span> FLAG_NAMES:
-        p.add_argument(<span class="s">&quot;--&quot;</span> + name.replace(<span class="s">&quot;_&quot;</span>, <span class="s">&quot;-&quot;</span>), action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--gap-lintel&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lean-stack&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--cut-pillar&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--close-arch&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--tilt-beds&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--flush-beds&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--flat-sea&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-sea&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-foam&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--perch-talus&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--pile-talus&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-cover&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _rock = check(
