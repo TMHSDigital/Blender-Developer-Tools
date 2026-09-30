@@ -5,29 +5,36 @@ composing shipped pipeline pieces: bmesh construction, UVs, ten
 materials, high-to-low normal bake, LOD chain, convex boulder collider,
 Unity glTF export.
 
-A large boulder, cleaved into broken faces with weathered bevels and split
-by a deep crack, is sunk into a soil bank that rises toward the back. A
-thick moss cushion lies over its top and drapes down its shaded front
-flank, a conforming shell whose lumpy edge tucks into the stone; smaller
-cushions sit on the far block and low on the flank. At its downhill foot a
-male fern's shuttlecock crown rises from a scaly rootstock bedded in the
-soil: ten arching bipinnate fronds, each a tapering rachis carrying
-alternate pinnae cut into pinnules, with three fiddleheads unrolling at the
-centre and old stipe bases round the rootstock. A smaller fern grows out of
-the crack. Beech litter, pebbles, a fallen twig and wood sorrel lie at the
-foot.
+A gritstone boulder, cleaved by deep planes into broad flat fracture faces
+that meet at crisp, slightly weathered arrises, with two stepped ledges
+broken out of it and a deep crack splitting it down its front, is sunk
+into a soil bank that rises toward the back. A moss cushion lies over its
+larger block and drapes down its shaded front: a conforming shell with a
+lobed outline, deepest in the stone's hollows, feathering to nothing at its
+edge and tucked into the stone and over the crack's lip, with bare patches
+where the stone shows through. Smaller cushions and nine satellite tufts
+sit round it. The stone is warm buff and grey, pitted, rain-streaked,
+spotted with lichen, stained green round the moss and dark where the soil
+wicks up its foot. Beside it a male fern's shuttlecock crown rises from a
+scaly rootstock bedded in the soil: eleven arching bipinnate fronds, each a
+tapering rachis carrying alternate pinnae cut into pinnules, with three
+fiddleheads unrolling at the centre and old stipe bases round the
+rootstock. A smaller fern grows out of the crack. Beech litter, pebbles, a
+fallen twig and wood sorrel lie at the foot.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
-hygiene, ``--lift-z`` grounded zmin, ``--float-fronds`` / ``--lift-crown``
-every frond rooted in its crown and the crown bedded in the soil,
+hygiene, ``--lift-z`` grounded zmin, ``--smooth-rock`` the stone's turning
+concentrated in crisp arrises, ``--float-fronds`` / ``--lift-crown`` every
+frond rooted in its crown and the crown bedded in the soil,
 ``--float-moss`` the moss cushion's thickness band on the rock,
-``--perch-rock`` the boulder sealed all round, ``--sunny-moss`` moss facing
-up or into the shade, ``--perch-crack-fern`` the crack fern rooted in the
-crack, ``--flat-taper`` / ``--opposite-pinnae`` pinnae alternating and
-tapering along the rachis, ``--open-crozier`` every fiddlehead a real
-spiral, ``--float-cover`` the ground cover bedded in the soil.
+``--slab-moss`` the cushion feathering out at its rim, ``--perch-rock`` the
+boulder sealed all round, ``--sunny-moss`` moss facing up or into the
+shade, ``--perch-crack-fern`` the crack fern rooted in the crack,
+``--flat-taper`` / ``--opposite-pinnae`` pinnae alternating and tapering
+along the rachis, ``--open-crozier`` every fiddlehead a real spiral,
+``--float-cover`` the ground cover bedded in the soil.
 
 Seeded, not random: ``random.Random(SEED)`` draws the whole plan before
 anything is built, so flags never shift the stream. DECIMATE COLLAPSE
@@ -71,8 +78,8 @@ UP = Vector((0.0, 0.0, 1.0))
 SHADE = Vector((0.0, -1.0, 0.0))
 
 # --- Ground ------------------------------------------------------------------
-SOIL_A = (1.12, 1.03)    # soil disc half-axes before the wobble, m
-SOIL_C = (0.10, 0.02)    # its centre, drawn toward the fern so no bare soil is spare
+SOIL_A = (0.95, 0.78)    # soil disc half-axes before the wobble, m
+SOIL_C = (0.16, 0.12)    # its centre, drawn toward the fern so no bare soil is spare
 SOIL_N = 34
 SOIL_H0 = 0.20
 SLOPE = 0.19             # the bank rises toward the back (+Y), m per m
@@ -80,21 +87,36 @@ SOIL_EDGE = 0.16         # the rim rolls down over this fraction of the radius
 SOIL_FLOOR = 0.02
 
 # --- Boulder -----------------------------------------------------------------
-ROCK_XY = (-0.06, 0.24)
+ROCK_XY = (-0.10, 0.20)
 ROCK_YAW = 12.0
-ROCK_AXES = (0.76, 0.60, 0.56)
-ROCK_O = (0.18, -0.04, 0.02)   # the radial field's origin; the crack plane passes through it
+ROCK_AXES = (0.74, 0.60, 0.80)
+ROCK_O = (0.02, -0.04, 0.02)   # the radial field's origin; the crack plane passes through it
 # cleavage planes (normal, offset as a fraction of the ellipsoid's support,
-# weathering bevel): a tilted top, a broad front face, the flanks
-ROCK_PLANES = (((0.10, -0.22, 1.0), 0.52, 0.110), ((0.06, -1.0, 0.18), 0.64, 0.070),
-               ((-1.0, 0.10, 0.20), 0.64, 0.045), ((0.45, 0.90, 0.20), 0.66, 0.040),
-               ((0.92, -0.28, 0.38), 0.66, 0.035), ((-0.55, -0.62, 0.52), 0.64, 0.040),
-               ((-0.40, 0.75, 0.55), 0.66, 0.040), ((0.30, -0.70, 0.75), 0.66, 0.035),
-               ((-0.75, -0.15, -0.35), 0.70, 0.045), ((0.20, -0.80, -0.30), 0.72, 0.045))
+# weathering bevel): deep cuts, so broad flat fracture faces meet at crisp,
+# slightly rounded arrises — a tilted top, a broad front face, oblique
+# shoulders and the flanks
+ROCK_PLANES = (((0.16, -0.26, 1.0), 0.50, 0.018), ((0.04, -1.0, 0.06), 0.55, 0.020),
+               ((-1.0, 0.14, 0.06), 0.56, 0.020), ((0.30, 1.0, 0.12), 0.56, 0.020),
+               ((1.0, -0.12, 0.16), 0.58, 0.018), ((-0.62, -0.58, 0.40), 0.56, 0.016),
+               ((0.10, -0.74, 0.70), 0.56, 0.016), ((0.66, -0.66, 0.30), 0.58, 0.018),
+               ((-0.52, 0.52, 0.66), 0.58, 0.016), ((0.60, 0.50, 0.60), 0.58, 0.016),
+               ((-0.75, -0.15, -0.35), 0.70, 0.030), ((0.20, -0.80, -0.30), 0.72, 0.030))
+# stepped ledges: a block broken out of an arris, the region beyond both
+# planes (normal, offset fraction) removed; the step's own bevel
+ROCK_NOTCHES = ((((0.0, 0.0, 1.0), 0.30), ((-1.0, 0.10, 0.10), 0.40), 0.016),
+                (((0.10, -1.0, 0.0), 0.44), ((0.95, 0.0, 0.30), 0.42), 0.016))
+# --smooth-rock: the recipe that shipped first and read as a smooth lump
+SMOOTH_SCALE = 0.90
+SMOOTH_PLANES = (((0.10, -0.22, 1.0), 0.52, 0.110), ((0.06, -1.0, 0.18), 0.64, 0.070),
+                 ((-1.0, 0.10, 0.20), 0.64, 0.045), ((0.45, 0.90, 0.20), 0.66, 0.040),
+                 ((0.92, -0.28, 0.38), 0.66, 0.035), ((-0.55, -0.62, 0.52), 0.64, 0.040),
+                 ((-0.40, 0.75, 0.55), 0.66, 0.040), ((0.30, -0.70, 0.75), 0.66, 0.035),
+                 ((-0.75, -0.15, -0.35), 0.70, 0.045), ((0.20, -0.80, -0.30), 0.72, 0.045))
 ROCK_CHIPS = 7
 ROCK_AMP = 0.034
-ROCK_N = 28
-ROCK_N_HIGH = 40
+ROCK_FLAT = 0.90         # how much of the waves the flat fracture faces lose
+ROCK_N = 36
+ROCK_N_HIGH = 52
 ROCK_FOOT = 0.040        # the buried underside is cut flat this far over Z = 0
 COLLIDER_N = 4
 # the crack: a V cut along a plane through the origin, ``CRACK_W`` half-wide
@@ -114,18 +136,32 @@ SECTORS = 8
 # the drape, thickness m, rings, segments, drape direction, reach toward
 # the far flank as a fraction). The main cushion sits on the larger
 # block's crown and drapes down its shaded front.
-MOSS = (((-0.74, -0.30, 0.60), 0.40, 1.75, 0.058, 16, 72, (0.10, -1.0, -0.55), 0.70),
-        ((0.46, 0.10, 0.88), 0.15, 1.15, 0.034, 7, 32, (0.0, -1.0, -0.5), 1.0),
-        ((-0.52, -0.80, 0.12), 0.13, 1.30, 0.032, 7, 30, (0.0, -1.0, -0.5), 1.0),
-        ((0.44, -0.80, 0.30), 0.12, 1.25, 0.030, 7, 30, (0.0, -1.0, -0.5), 1.0))
+MOSS = (((-0.66, -0.42, 0.62), 0.40, 1.75, 0.042, 16, 72, (0.10, -1.0, -0.55), 0.70),
+        ((0.46, 0.10, 0.88), 0.16, 1.15, 0.030, 10, 40, (0.0, -1.0, -0.5), 1.0),
+        ((-0.52, -0.80, 0.12), 0.14, 1.30, 0.028, 10, 40, (0.0, -1.0, -0.5), 1.0),
+        ((0.44, -0.80, 0.30), 0.13, 1.25, 0.026, 10, 40, (0.0, -1.0, -0.5), 1.0))
+# satellite tufts round the cushions and in the stone's hollows
+MOSS_TUFTS = (((-0.28, -0.58, 0.76), 0.060), ((-0.60, -0.70, 0.40), 0.055),
+              ((-0.62, -0.76, -0.02), 0.050), ((0.62, -0.62, 0.50), 0.050),
+              ((-0.45, 0.20, 0.87), 0.065), ((0.42, -0.84, 0.34), 0.045),
+              ((0.80, -0.50, 0.10), 0.045), ((-0.70, 0.30, 0.64), 0.055),
+              ((0.10, 0.62, 0.78), 0.050))
+TUFT_THICK = 0.011
 MOSS_TUCK = 0.005        # the cushion's rim this far inside the stone
 MOSS_BITE = 0.006
 MOSS_CLEAR = 0.020       # rim kept this far over the soil
-MOSS_CRACK_CLEAR = 0.070  # and this far back from the crack's lip
+MOSS_CRACK_CLEAR = -0.030  # and it may run this far past the crack's lip
+MOSS_EDGE = 0.42         # the cushion feathers to nothing over this outer share of its radius
+MOSS_HOLLOW_STEP = 0.07  # rad: the ring of stone a hollow is judged against
+MOSS_HOLLOW_FULL = 0.012  # m below its ring for the full extra depth
+MOSS_HOLLOW_GAIN = 0.8
+MOSS_WINDOWS = 2         # bare patches in a large cushion
+MOSS_WIN_DEPTH = 0.0035
+MOSS_TOP_MIN = 0.0015
 SUNNY_D = (0.32, 0.92, 0.22)   # --sunny-moss: the main cushion's centre on the sunny back face
 
 # --- Fern crown --------------------------------------------------------------
-CROWN_XY = (0.44, -0.40)
+CROWN_XY = (0.66, -0.22)
 KNOB_R = (0.080, 0.074, 0.056)   # rootstock half-axes
 KNOB_SINK = 0.034        # its centre this far under the soil
 FRONDS = 11
@@ -165,9 +201,9 @@ CKNOB_R = 0.030
 CKNOB_DEPTH = 0.52       # its centre this fraction of the crack's depth down
 
 # --- Ground cover ------------------------------------------------------------
-LITTER = 56
-PEBBLES = 16
-SORREL = 8
+LITTER = 48
+PEBBLES = 14
+SORREL = 7
 TWIGS = 1
 LEAFLET_SEP = math.radians(14.0)  # sorrel leaflets' planes kept this far apart
 REST_SINK = 0.004        # a lying body's most-buried vertex this far under the soil
@@ -175,9 +211,9 @@ SORREL_BURY = 0.030
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (2.2896, 2.2209, 0.8601)
-BASE_TRIS_MIN = 76800
-BASE_TRIS_MAX = 77600
+OUTER_SIZE = (2.2872, 1.9008, 1.1111)
+BASE_TRIS_MIN = 86300
+BASE_TRIS_MAX = 87200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -191,7 +227,7 @@ COLLIDER_TRIS_MAX = 200
 BAKE_RES = 512
 CAGE_EXTRUSION = 0.01
 # face floors: rock, moss, frond, stipe, crozier, rootstock, soil, litter, twig, sorrel
-FACE_FLOORS = (9800, 2200, 48400, 1480, 750, 290, 2350, 1940, 64, 2230)
+FACE_FLOORS = (15600, 4360, 48400, 1480, 750, 290, 2350, 1660, 64, 2060)
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -208,9 +244,15 @@ KNOB_SEAL_EPS = 0.010
 FLOAT_FRONDS = 0.060     # --float-fronds starts each stipe this far out along its path
 LIFT_CROWN = 0.050       # --lift-crown raises the rootstock alone
 # Moss seat: the cushion's thickness over the stone along the stone's normal
-MOSS_BAND = (0.006, 0.080)
+MOSS_BAND = (0.001, 0.055)
 MOSS_IN_MIN = 0.001      # rim and underside at least this far inside the stone
 FLOAT_MOSS = 0.040
+MOSS_RIM_MAX = 0.010     # the last ring before the tucked rim at most this far over the stone
+# Cleaved: the share of the stone's turning taken in arrises sharper than
+# CRISP_ANG (faces at least FACET_CLEAR over the soil, the crack left out)
+CRISP_ANG = 20.0
+FACET_CLEAR = 0.020
+CRISP_MIN = 0.42
 # Sealed: every sector's most-buried flank vertex under the soil
 SEAL_EPS = 0.020
 # Moss facing: area share of cushion faces facing up or into the shade
@@ -381,15 +423,29 @@ class Rock:
     notched by the crack. ``M`` maps the frame to the world."""
 
     def __init__(self, plan):
-        self.axes = Vector(ROCK_AXES)
+        self.smooth = plan.get("smooth_rock", False)
+        # --smooth-rock: its shallow cuts leave more of the ellipsoid, so it
+        # is drawn smaller to keep the stone's size
+        self.axes = Vector(ROCK_AXES) * (SMOOTH_SCALE if self.smooth else 1.0)
         self.o = Vector(ROCK_O)
         self.waves = plan["rock_waves"]
         self.planes = []
-        for nrm, f, k in tuple(ROCK_PLANES) + tuple(plan["rock_chips"]):
+        self.notches = []
+        cuts = tuple(ROCK_PLANES) + tuple(plan["rock_chips"])
+        if self.smooth:
+            # --smooth-rock: the shipped recipe — shallow cuts through broad
+            # bevels, the waves at full height on every face
+            cuts = SMOOTH_PLANES
+        for nrm, f, k in cuts:
             n = Vector(nrm).normalized()
             self.planes.append((n, f * self.support(n), k))
+        if not self.smooth:
+            for (n1, f1), (n2, f2), k in ROCK_NOTCHES:
+                a, b = Vector(n1).normalized(), Vector(n2).normalized()
+                self.notches.append((a, f1 * self.support(a), b, f2 * self.support(b), k))
         self.nc = Vector(CRACK_N).normalized()
-        self.bottom = plan.get("rock_bottom")
+        # --smooth-rock sits at its own depth, so it cuts its own flat foot
+        self.bottom = None if self.smooth else plan.get("rock_bottom")
         self.M = Matrix.Identity(4)
         self.Mi = Matrix.Identity(4)
 
@@ -422,11 +478,19 @@ class Rock:
             t = (h - n.dot(self.o)) / dn
             tmin = min(tmin, t)
             r = smin(r, t, k)
+        for n1, h1, n2, h2, k in self.notches:
+            d1, d2 = n1.dot(d), n2.dot(d)
+            if d1 <= 1e-6 or d2 <= 1e-6:
+                continue
+            t = -smin(-(h1 - n1.dot(self.o)) / d1, -(h2 - n2.dot(self.o)) / d2, k)
+            tmin = min(tmin, t)
+            r = smin(r, t, k)
         if self.bottom is not None and d.z < -1e-6:
             r = smin(r, (self.bottom - self.o.z) / d.z, 0.04)
         flat = smoothstep(te - tmin, 0.0, 0.06)
         p = self.o + d * r
-        return r + ROCK_AMP * self.fbm(p) * (1.0 - 0.6 * flat)
+        keep = 0.4 if self.smooth else 1.0 - ROCK_FLAT
+        return r + ROCK_AMP * self.fbm(p) * (1.0 - (1.0 - keep) * flat)
 
     def crack_depth(self, d, r0):
         dist = abs(self.nc.dot(d)) * r0
@@ -746,7 +810,7 @@ def separate_pinnae(fronds):
             near = [n for q, n, h in placed if (q - c).length < half + h + COPLANAR_CENTRE_MAX]
             r0 = pn["roll"]
             best = None
-            for k in range(41):
+            for k in range(61):
                 r = r0 + ((k + 1) // 2) * PINNA_STEP * (1.0 if k % 2 else -1.0)
                 n = rotate_about(e30, e1, r)
                 if all(abs(n.dot(m)) < cos_sep for m in near):
@@ -917,24 +981,6 @@ def plan_scene():
             continue
         twigs.append((s[0], s[1], u(0.0, TAU), u(0.34, 0.42), rng.random()))
         taken.append((s[0], s[1], 0.20))
-    litter = []
-    for k in range(LITTER):
-        # most of it drifts against the boulder's foot; the rest lies open
-        s = spot(0.80, 0.03, 0.30, 0.12, 0.03) if k % 3 else spot(0.80, 0.03, 9.0, 0.12, 0.03)
-        if s is None:
-            continue
-        litter.append((s[0], s[1], u(0.0, TAU), u(0.090, 0.125), rng.random(),
-                       (1.0 if rng.random() < 0.5 else -1.0) * u(0.20, 0.32)))
-        taken.append((s[0], s[1], 0.035))
-    pebbles = []
-    for k in range(PEBBLES):
-        near = k < PEBBLES * 0.6
-        s = spot(0.78, 0.02, 0.22 if near else 9.0, 0.14, 0.02)
-        if s is None:
-            continue
-        r = 0.018 + 0.030 * rng.random() ** 1.6
-        pebbles.append((s[0], s[1], r, u(0.0, TAU), rng.random(), [u(-1, 1) for _ in range(26)]))
-        taken.append((s[0], s[1], r * 1.3))
     sorrel = []
     for _k in range(SORREL):
         s = spot(0.74, 0.10, 9.0, 0.20, 0.10)
@@ -945,6 +991,24 @@ def plan_scene():
                   for _l in range(3 + (1 if rng.random() < 0.6 else 0))]
         sorrel.append((s[0], s[1], leaves))
         taken.append((s[0], s[1], 0.08))
+    pebbles = []
+    for k in range(PEBBLES):
+        near = k < PEBBLES * 0.6
+        s = spot(0.78, 0.02, 0.22 if near else 9.0, 0.14, 0.02)
+        if s is None:
+            continue
+        r = 0.018 + 0.030 * rng.random() ** 1.6
+        pebbles.append((s[0], s[1], r, u(0.0, TAU), rng.random(), [u(-1, 1) for _ in range(26)]))
+        taken.append((s[0], s[1], r * 1.3))
+    litter = []
+    for k in range(LITTER):
+        # most of it drifts against the boulder's foot; the rest lies open
+        s = spot(0.84, 0.03, 0.40, 0.12, 0.012) if k % 3 else spot(0.84, 0.03, 9.0, 0.12, 0.012)
+        if s is None:
+            continue
+        litter.append((s[0], s[1], u(0.0, TAU), u(0.090, 0.125), rng.random(),
+                       (1.0 if rng.random() < 0.5 else -1.0) * u(0.20, 0.32)))
+        taken.append((s[0], s[1], 0.030))
     plan["cover"] = {"litter": litter, "pebbles": pebbles, "sorrel": sorrel, "twigs": twigs}
     return plan
 
@@ -989,6 +1053,8 @@ class Builder:
         self.ring = bm.verts.layers.int.new("Ring")
         self.tip = bm.verts.layers.float.new("Tip")
         self.crack = bm.verts.layers.float.new("Crack")
+        self.soil_h = bm.verts.layers.float.new("SoilH")
+        self.moss_d = bm.verts.layers.float.new("MossD")
         # the packed UVMap first, so it stays the active (baked, exported) map;
         # LeafUV runs across (x) and along (y) each pinna and leaf for its veins
         self.uv = bm.loops.layers.uv.new("UVMap")
@@ -1294,7 +1360,23 @@ def add_stub(B, st, knob_c):
              KNOB_ID, phase=st["az"], jag=jag)
 
 
-def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
+def moss_height(thick, rho, lump, hollow, window, slab):
+    """The cushion's height over the stone at ring fraction ``rho``: full in
+    the middle, feathering to nothing over the outer MOSS_EDGE of the
+    radius, deeper in the stone's hollows; dipping under the stone in a
+    window. ``slab``: the shipped profile, near full height to the last
+    ring before the rim."""
+    if slab:
+        return thick * max(0.0, 1.0 - rho * rho) ** 0.35 * lump
+    t = thick * smoothstep(1.0 - rho, 0.0, MOSS_EDGE) * lump * (1.0 + MOSS_HOLLOW_GAIN * hollow)
+    f = smoothstep(window, 0.02, 0.85)
+    t = t * (1.0 - f) - MOSS_WIN_DEPTH * f
+    if t < MOSS_TOP_MIN:
+        return max(min(t, -MOSS_IN_MIN * 2.0), -MOSS_WIN_DEPTH)
+    return t
+
+
+def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False, slab=False):
     """A moss cushion laid on the stone: a lens over a patch of the surface,
     stretched down the fall line, its rim tucked into the stone and its
     base inside it. Its outline stops short of the crack lip and of the
@@ -1318,19 +1400,46 @@ def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
     def ok(d):
         r, rr0, _c = rock.sample(d)
         ragged = 0.5 + 0.5 * math.sin(37.0 * d.y + 23.0 * d.z + ph) * math.cos(19.0 * d.z - 11.0 * d.y)
+        # the rim runs, on a ragged line, over the crack's lip and a little
+        # way down into it
         if sgn0 * rock.nc.dot(d) * rr0 < CRACK_W + MOSS_CRACK_CLEAR + 0.05 * ragged:
             return False
         p = rock.M @ (rock.o + d * r)
         return p.z > ground(p.x, p.y) + MOSS_CLEAR
 
     def dir_at(th, rho):
-        edge = (1.0 + 0.14 * math.sin(2.0 * th + ph) + 0.10 * math.sin(3.0 * th + 2.0 * ph)
-                + 0.07 * math.sin(7.0 * th + ph) + 0.05 * math.sin(11.0 * th + 3.0 * ph)
-                + 0.035 * math.sin(23.0 * th + 5.0 * ph))
+        # a lobed outline: broad lobes and deep inlets, finer scallops
+        edge = (1.0 + 0.16 * math.sin(2.0 * th + ph) + 0.13 * math.sin(3.0 * th + 2.0 * ph)
+                + 0.12 * math.sin(5.0 * th + 4.0 * ph) + 0.09 * math.sin(7.0 * th + ph)
+                + 0.06 * math.sin(11.0 * th + 3.0 * ph) + 0.04 * math.sin(17.0 * th + 5.0 * ph)
+                + 0.025 * math.sin(23.0 * th + 5.0 * ph))
         ax = math.cos(th) * (stretch if math.cos(th) > 0.0 else 1.0)
         ay = math.sin(th) * (far if math.sin(th) < 0.0 else 1.0)
-        rr = rho * edge * radius / r0
+        rr = rho * max(edge, 0.35) * radius / r0
         return (d0 + e1 * (rr * ax) + e2 * (rr * ay)).normalized()
+
+    def hollow(d):
+        """How far the stone at ``d`` lies below its neighbours round it: a
+        hollow or furrow, where moss gathers deepest."""
+        r = rock.sample(d)[1]
+        a1, a2 = perp_basis(d)
+        h = 0.0
+        for v in (a1, -a1, a2, -a2):
+            h += rock.sample((d + v * MOSS_HOLLOW_STEP).normalized())[1]
+        return max(0.0, min(1.0, (0.25 * h - r) / MOSS_HOLLOW_FULL))
+
+    wins = [] if slab else [
+        (TAU * (hash01(idx, 11, 0) + 0.5 * w), 0.38 + 0.25 * hash01(idx, 12, w), 0.19 + 0.05 * hash01(idx, 13, w))
+        for w in range(MOSS_WINDOWS if K >= 14 else 0)]
+
+    def window(th, rho):
+        """Bare patches where the stone shows through: 1 at a window's heart."""
+        x, y = rho * math.cos(th), rho * math.sin(th)
+        w = 0.0
+        for wt, wr, ws in wins:
+            dx, dy = x - wr * math.cos(wt), y - wr * math.sin(wt)
+            w = max(w, math.exp(-(dx * dx + dy * dy) / (ws * ws)))
+        return w
 
     # the outline: shrink each spoke until every ring on it clears the
     # crack and the soil
@@ -1361,6 +1470,10 @@ def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
 
     Rm = rock.M.to_3x3()
     tone = hash01(idx, 9, 2)
+    # each shell tucked to its own depth: two rims on one flat fracture face
+    # at the same depth would lie in one plane
+    tuck = MOSS_TUCK + 0.0005 * idx
+    bite = MOSS_BITE * (1.0 + 0.06 * idx)
     top_rings, bot_rings, lumps = [], [], []
     for k in range(1, K + 1):
         rho = k / K
@@ -1375,14 +1488,16 @@ def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
             nrm = (nrm + fn).normalized()
             lr.append(lump(th, rho) if k < K else 0.5)
             if k == K:
-                v = B.vert(p + nrm * (lift - MOSS_TUCK), ring=k)
+                v = B.vert(p + nrm * (lift - tuck), ring=k)
                 tr.append(v)
                 br.append(v)
             else:
-                t = thick * max(0.0, 1.0 - rho * rho) ** 0.35 * lump(th, rho)
-                tr.append(B.vert(p + nrm * (t + lift), ring=k))
+                t, rk = moss_height(thick, rho, lump(th, rho), hollow(d), window(th, rho), slab), k
+                if t < 0.0:
+                    rk = -2          # a window: this top vertex lies inside the stone
+                tr.append(B.vert(p + nrm * (t + lift), ring=rk))
                 if k in (K // 2, K - 1):
-                    br.append(B.vert(p - nrm * (MOSS_BITE * (0.6 + 1.2 * (1.0 - rho)) - lift),
+                    br.append(B.vert(p - nrm * (bite * (0.6 + 1.2 * (1.0 - rho)) - lift),
                                      ring=-1))
                 else:
                     br.append(None)
@@ -1394,8 +1509,9 @@ def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
     if f0.dot(n0) < 0.0:
         f0 = -f0
     n0 = (n0 + f0).normalized()
-    ct = B.vert(p0 + n0 * (thick * lump(0.0, 0.0) + lift), ring=0)
-    cb = B.vert(p0 - n0 * (1.8 * MOSS_BITE - lift), ring=-1)
+    t0 = moss_height(thick, 0.0, lump(0.0, 0.0), hollow(d0), window(0.0, 0.0), slab)
+    ct = B.vert(p0 + n0 * (t0 + lift), ring=0)
+    cb = B.vert(p0 - n0 * (1.8 * bite - lift), ring=-1)
     ident = 700 + idx
     def zone(a, b):
         # a top face's zone: 0.5 in a hollow to 1 on a hummock (0 marks the
@@ -1419,6 +1535,15 @@ def add_moss(B, rock, tree, spec, idx, ground, lift=0.0, sunny=False):
         for m in range(Mseg):
             q = (m + 1) % Mseg
             B.face((r0_[q], r1_[q], r1_[m], r0_[m]), MOSS_IDX, tone, P_MOSS, ident, zone=0.0)
+
+
+def moss_specs():
+    """The cushions, then the satellite tufts (seeded sizes, closed-form)."""
+    out = list(MOSS)
+    for k, (d, r) in enumerate(MOSS_TUFTS):
+        out.append((d, r * (0.85 + 0.3 * hash01(k, 21, 1)), 1.15,
+                    TUFT_THICK * (0.8 + 0.4 * hash01(k, 21, 2)), 6, 20, (0.0, -1.0, -0.5), 1.0))
+    return out
 
 
 def add_soil(B):
@@ -1458,6 +1583,8 @@ def add_rock(B, rock_mesh, tone):
     for p, c in zip(rock_mesh.world(), rock_mesh.crack):
         v = B.vert(p)
         v[B.crack] = min(1.0, c / CRACK_D)
+        # height over the bank, for the damp band the soil wicks up the foot
+        v[B.soil_h] = p.z - soil_height(p.x, p.y)
         verts.append(v)
     for q in rock_mesh.quads:
         a, b, c, d = (verts[i] for i in q)
@@ -1471,6 +1598,18 @@ def add_rock(B, rock_mesh, tone):
         else:
             B.face((a, b, d), ROCK_IDX, tone, P_ROCK, 1, zone=z)
             B.face((b, c, d), ROCK_IDX, tone, P_ROCK, 1, zone=z)
+    return verts
+
+
+def stain_rock(B, rock_verts, moss_verts):
+    """Each stone vertex's distance to the nearest moss: the shader greens
+    and darkens the stone round a cushion, so its edge feathers out."""
+    kd = KDTree(len(moss_verts))
+    for i, v in enumerate(moss_verts):
+        kd.insert(v.co, i)
+    kd.balance()
+    for v in rock_verts:
+        v[B.moss_d] = min(1.0, kd.find(v.co)[2])
 
 
 LITTER_SIDE = ((0.07, 0.10), (0.18, 0.21), (0.32, 0.28), (0.48, 0.30), (0.64, 0.27), (0.78, 0.20),
@@ -1582,6 +1721,10 @@ def build_cover(B, plan, G, flags):
         for v in vs:
             v.co = c + rot @ (v.co - c)
         settle(vs, G, REST_SINK - lift)
+        for v in vs:
+            # a pebble is damp only where it touches the soil
+            v[B.soil_h] = 0.06 + 4.0 * (v.co.z - c.z)
+            v[B.moss_d] = 1.0
     set_leaflets = []
     cos_sep = math.cos(LEAFLET_SEP)
     for k, (x, y, leaves) in enumerate(cov["sorrel"]):
@@ -1644,10 +1787,11 @@ def build_mesh(name, plan, detail="low", **flags):
         # a temp tree for ray casts needs face normals first
         bm.normal_update()
         G = Ground(BVHTree.FromBMesh(bm))
-        rock = Rock(plan)
+        rock = Rock(dict(plan, smooth_rock=flags["smooth_rock"]))
         place_rock(rock, flags["perch_rock"])
         rm = RockMesh(rock, ROCK_N_HIGH if detail == "high" else ROCK_N)
-        add_rock(B, rm, 0.45)
+        rock_verts = add_rock(B, rm, 0.45)
+        n_before = len(bm.verts)
         # the moss snaps to the stone as built: a tree of the shipped faces
         tri_pts = rm.world()
         tri = []
@@ -1659,8 +1803,11 @@ def build_mesh(name, plan, detail="low", **flags):
                 tri += [(a, b, d), (b, c, d)]
         rtree = BVHTree.FromPolygons([tuple(p) for p in tri_pts], tri)
         lift = FLOAT_MOSS if flags["float_moss"] else 0.0
-        for i, spec in enumerate(MOSS):
-            add_moss(B, rock, rtree, spec, i, soil_height, lift, flags["sunny_moss"])
+        for i, spec in enumerate(moss_specs()):
+            add_moss(B, rock, rtree, spec, i, soil_height, lift, flags["sunny_moss"],
+                     flags["slab_moss"])
+        bm.verts.ensure_lookup_table()
+        stain_rock(B, rock_verts, [bm.verts[i] for i in range(n_before, len(bm.verts))])
 
         # the crown
         kc = plan["knob_c"] + (UP * LIFT_CROWN if flags["lift_crown"] else Vector())
@@ -1936,47 +2083,79 @@ def translucent(nt, bsdf, rgb, amount):
 
 def rock_material():
     mat, nt, bsdf, coord = surface("Gritstone")
-    # A cool grey woodland gritstone: isotropic mottling, fine grain driving
-    # roughness and a small bump, a seeded tone per stone (the pebbles share
-    # it), green algae in the hollows and down the shaded foot, pale lichen
-    # crust on the upper faces, and fresh, paler stone in the crack.
+    # A warm buff woodland gritstone: isotropic mottling from grey to buff,
+    # coarse quartz grains driving roughness and a pitted bump, a seeded tone
+    # per stone (the pebbles share it), rain streaks broken down the steep
+    # faces, green algae in the hollows, pale sage and orange lichen spots on
+    # the upper faces, a dark damp band where the soil wicks up the foot, and
+    # a black throat to the crack.
     tone = attr(nt, "Tone")
-    mottle = noise(nt, coord, 2.6, 6.0, 0.62)
-    col = ramp(nt, mottle, ((0.25, (0.070, 0.066, 0.058)), (0.50, (0.130, 0.122, 0.108)),
-                            (0.78, (0.200, 0.188, 0.165))))
-    col = mix_color(nt, col, (0.150, 0.118, 0.085), remap(nt, tone, 0.2, 0.9, 0.0, 0.45))
-    blot = noise(nt, coord, 7.5, 4.0, 0.6)
-    col = mix_color(nt, col, (0.045, 0.045, 0.042), remap(nt, blot, 0.48, 0.66, 0.0, 0.65))
-    grain = noise(nt, coord, 160.0, 2.0, 0.5)
-    col = mix_color(nt, col, (0.050, 0.050, 0.050), remap(nt, grain, 0.40, 0.70, 0.45, 0.0))
-    # lichen: pale sage rosettes, and a few orange ones on the upper faces
-    ros = voronoi(nt, mapping(nt, coord, scale=(1.0, 1.0, 1.0)), 8.0)
-    sage = math_node(nt, "MULTIPLY", remap(nt, ros, 0.20, 0.12, 0.0, 0.85),
-                     remap(nt, noise(nt, coord, 3.0, 2.0, 0.5), 0.45, 0.60, 0.0, 1.0))
-    col = mix_color(nt, col, (0.30, 0.32, 0.25), sage)
-    ros2 = voronoi(nt, mapping(nt, coord, scale=(1.3, 1.1, 1.2)), 13.0)
-    ora = math_node(nt, "MULTIPLY", remap(nt, ros2, 0.10, 0.05, 0.0, 0.9),
-                    remap(nt, noise(nt, coord, 2.2, 2.0, 0.5), 0.58, 0.66, 0.0, 1.0))
-    cav = attr(nt, "Cavity")
+    mottle = noise(nt, coord, 2.4, 6.0, 0.62)
+    col = ramp(nt, mottle, ((0.28, (0.125, 0.102, 0.072)), (0.50, (0.225, 0.180, 0.118)),
+                            (0.74, (0.300, 0.245, 0.160))))
+    col = mix_color(nt, col, (0.150, 0.136, 0.115), remap(nt, tone, 0.2, 0.9, 0.30, 0.0))
+    # weathered grey rind over broad patches, fresher buff stone between
+    rind = noise(nt, coord, 1.1, 3.0, 0.5)
+    col = mix_color(nt, col, (0.092, 0.087, 0.078), remap(nt, rind, 0.46, 0.62, 0.0, 0.65))
+    blot = noise(nt, coord, 6.5, 4.0, 0.6)
+    col = mix_color(nt, col, (0.070, 0.064, 0.055), remap(nt, blot, 0.50, 0.68, 0.0, 0.55))
+    # quartz grit: dark and pale grains, isotropic
+    grit = voronoi(nt, coord, 150.0)
+    grain = noise(nt, coord, 170.0, 2.0, 0.5)
+    col = mix_color(nt, col, (0.050, 0.046, 0.040), remap(nt, grain, 0.42, 0.68, 0.50, 0.0))
+    col = mix_color(nt, col, (0.34, 0.30, 0.22), remap(nt, grit, 0.10, 0.02, 0.0, 0.35))
+    # pitting: weathered-out grains, dark little hollows
+    pits = voronoi(nt, mapping(nt, coord, scale=(1.0, 1.0, 1.0)), 38.0)
+    pitmask = math_node(nt, "MULTIPLY", remap(nt, pits, 0.09, 0.03, 0.0, 1.0),
+                        remap(nt, noise(nt, coord, 4.0, 2.0, 0.5), 0.40, 0.58, 0.2, 1.0))
+    col = mix_color(nt, col, (0.030, 0.027, 0.023), math_node(nt, "MULTIPLY", pitmask, 0.8))
     nx = normal_xyz(nt)
-    algae = math_node(nt, "MAXIMUM", remap(nt, cav, 0.05, 0.40, 0.0, 0.8),
-                      math_node(nt, "MULTIPLY", remap(nt, nx["Y"], -0.2, -0.8, 0.0, 0.55),
-                                remap(nt, noise(nt, coord, 5.0, 4.0, 0.6), 0.40, 0.60, 0.0, 1.0)))
-    col = mix_color(nt, col, (0.050, 0.075, 0.030), algae)
-    streak = noise(nt, mapping(nt, coord, scale=(14.0, 14.0, 1.2)), 1.0, 4.0, 0.55)
-    col = mix_color(nt, col, (0.030, 0.031, 0.029), remap(nt, streak, 0.50, 0.68, 0.0, 0.60))
-    low = remap(nt, coord_z(nt, coord), 0.18, 0.55, 0.55, 0.0)
-    col = mix_color(nt, col, (0.040, 0.050, 0.024), low)
-    ora = math_node(nt, "MULTIPLY", ora, remap(nt, nx["Z"], 0.1, 0.6, 0.0, 1.0))
-    col = mix_color(nt, col, (0.42, 0.22, 0.05), ora)
+    steep = remap(nt, math_node(nt, "ABSOLUTE", nx["Z"], 0.0), 0.55, 0.20, 0.0, 1.0)
+    # rain streaks: broken dark runs down the steep faces only
+    streak = noise(nt, mapping(nt, coord, scale=(9.0, 9.0, 1.6)), 1.0, 4.0, 0.55)
+    runs = math_node(nt, "MULTIPLY", remap(nt, streak, 0.52, 0.68, 0.0, 0.55),
+                     math_node(nt, "MULTIPLY", steep,
+                               remap(nt, noise(nt, coord, 3.2, 2.0, 0.5), 0.42, 0.60, 0.0, 1.0)))
+    col = mix_color(nt, col, (0.045, 0.043, 0.038), runs)
+    cav = attr(nt, "Cavity")
+    algae = math_node(nt, "MAXIMUM", remap(nt, cav, 0.05, 0.40, 0.0, 0.75),
+                      math_node(nt, "MULTIPLY", remap(nt, nx["Y"], -0.3, -0.9, 0.0, 0.40),
+                                remap(nt, noise(nt, coord, 5.0, 4.0, 0.6), 0.42, 0.62, 0.0, 1.0)))
+    col = mix_color(nt, col, (0.060, 0.078, 0.034), algae)
+    up = remap(nt, nx["Z"], 0.15, 0.65, 0.0, 1.0)
+    # lichen: pale sage rosettes, orange spots and dark crust dots, upper faces
+    ros = voronoi(nt, coord, 9.0)
+    sage = math_node(nt, "MULTIPLY", remap(nt, ros, 0.16, 0.09, 0.0, 0.9),
+                     remap(nt, noise(nt, coord, 3.0, 2.0, 0.5), 0.44, 0.58, 0.0, 1.0))
+    col = mix_color(nt, col, (0.26, 0.29, 0.20), math_node(nt, "MULTIPLY", sage,
+                                                           remap(nt, nx["Z"], -0.3, 0.4, 0.3, 1.0)))
+    ros2 = voronoi(nt, mapping(nt, coord, scale=(1.3, 1.1, 1.2)), 15.0)
+    ora = math_node(nt, "MULTIPLY", remap(nt, ros2, 0.10, 0.05, 0.0, 0.95),
+                    remap(nt, noise(nt, coord, 2.2, 2.0, 0.5), 0.54, 0.62, 0.0, 1.0))
+    col = mix_color(nt, col, (0.46, 0.25, 0.05), math_node(nt, "MULTIPLY", ora, up))
+    ros3 = voronoi(nt, mapping(nt, coord, scale=(0.9, 1.2, 1.0)), 24.0)
+    crust = math_node(nt, "MULTIPLY", remap(nt, ros3, 0.08, 0.04, 0.0, 0.85),
+                      remap(nt, noise(nt, coord, 2.8, 2.0, 0.5), 0.50, 0.60, 0.0, 1.0))
+    col = mix_color(nt, col, (0.030, 0.030, 0.026), crust)
+    # the damp band: the stone darkens and greens where it meets the soil
+    damp = remap(nt, math_node(nt, "ADD", attr(nt, "SoilH"),
+                               math_node(nt, "MULTIPLY", noise(nt, coord, 7.0, 3.0, 0.6), 0.06)),
+                 0.07, 0.17, 1.0, 0.0)
+    col = mix_color(nt, col, (0.032, 0.034, 0.020), math_node(nt, "MULTIPLY", damp, 0.85))
+    # moss stain: the stone greens and darkens round each cushion
+    stain = math_node(nt, "MULTIPLY", remap(nt, attr(nt, "MossD"), 0.0, 0.09, 1.0, 0.0),
+                      remap(nt, noise(nt, coord, 9.0, 3.0, 0.6), 0.30, 0.60, 0.35, 1.0))
+    col = mix_color(nt, col, (0.040, 0.056, 0.022), math_node(nt, "MULTIPLY", stain, 0.85))
     crack = attr(nt, "Crack")
-    col = mix_color(nt, col, (0.018, 0.017, 0.016), remap(nt, crack, 0.35, 0.95, 0.0, 0.9))
-    col = mix_color(nt, col, (0.30, 0.27, 0.23), math_node(nt, "MULTIPLY", attr(nt, "Zone"),
-                                                           remap(nt, crack, 0.0, 0.3, 0.45, 0.0)))
+    col = mix_color(nt, col, (0.012, 0.011, 0.010), remap(nt, crack, 0.25, 0.80, 0.0, 0.95))
     nt.links.new(col, bsdf.inputs["Base Color"])
-    nt.links.new(remap(nt, grain, 0.3, 0.7, 0.72, 0.92), bsdf.inputs["Roughness"])
-    add_bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "MULTIPLY", mottle, 0.5),
-                                 math_node(nt, "MULTIPLY", grain, 0.35)), 0.35, 0.01)
+    rough = remap(nt, grain, 0.3, 0.7, 0.70, 0.92)
+    nt.links.new(math_node(nt, "SUBTRACT", rough, math_node(nt, "MULTIPLY", damp, 0.25)),
+                 bsdf.inputs["Roughness"])
+    height = math_node(nt, "ADD", math_node(nt, "MULTIPLY", mottle, 0.4),
+                       math_node(nt, "ADD", math_node(nt, "MULTIPLY", grain, 0.30),
+                                 math_node(nt, "MULTIPLY", pitmask, -0.8)))
+    add_bump(nt, bsdf, height, 0.40, 0.01)
     return mat
 
 
@@ -2441,7 +2620,7 @@ def moss_audit(me, cls):
     rock = cls["rock"][0]
     ring = vert_vals(me, "Ring")
     zone_of = cls["zone_of"]
-    tops, ins = [], []
+    tops, ins, rims = [], [], []
     area = 0.0
     good = 0.0
     for s in cls["moss"]:
@@ -2462,11 +2641,47 @@ def moss_audit(me, cls):
             h = (co - loc).dot(nrm)
             if i in top_v and 0 <= ring[i] < kmax:
                 tops.append(h)
+                if ring[i] == kmax - 1:
+                    # the last ring before the tucked rim: the cushion's edge
+                    rims.append(h)
             else:
                 ins.append(-h)
             if ring[i] == kmax:
                 rim_v.add(i)
-    return tops, ins, (good / area if area else 0.0)
+    return tops, ins, rims, (good / area if area else 0.0)
+
+
+def facet_audit(me, cls):
+    """How broken the boulder reads: of all the turning between neighbouring
+    stone faces above the soil (dihedral angle times edge length, the crack
+    left out), the share taken in arrises sharper than CRISP_ANG. Broad
+    flat fracture faces meeting at tight arrises put most of it there; a
+    rounded lump spreads it thin over many shallow folds."""
+    rock = cls["rock"][0]
+    soil = cls["soil"][0]
+    crack = vert_vals(me, "Crack", float)
+    by = {p.index: p for p in rock.polys}
+    above = {}
+    for p in rock.polys:
+        g = ray_down(soil.tree, p.center.x, p.center.y)
+        above[p.index] = g is None or p.center.z > g + FACET_CLEAR
+    edge_faces = {}
+    for p in rock.polys:
+        for ek in p.edge_keys:
+            edge_faces.setdefault(ek, []).append(p.index)
+    total = crisp = 0.0
+    lim = math.radians(CRISP_ANG)
+    for (a, b), fs in edge_faces.items():
+        if len(fs) != 2 or not (above[fs[0]] and above[fs[1]]):
+            continue
+        if crack[a] > 0.02 or crack[b] > 0.02:
+            continue
+        ang = by[fs[0]].normal.angle(by[fs[1]].normal, 0.0)
+        w = ang * (me.vertices[a].co - me.vertices[b].co).length
+        total += w
+        if ang > lim:
+            crisp += w
+    return crisp / total if total > 0.0 else 0.0, total
 
 
 def crack_fern_audit(cls):
@@ -2783,7 +2998,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     n_cover = len(cov["litter"]) + len(cov["pebbles"]) + sum(len(s[2]) for s in cov["sorrel"]) \
         + 2 * len(cov["twigs"])
     stalk_bites, pinna_bites, knob_seal = rooted_audit(low.data, cls)
-    moss_tops, moss_ins, facing = moss_audit(low.data, cls)
+    moss_tops, moss_ins, moss_rims, facing = moss_audit(low.data, cls)
+    facets = facet_audit(low.data, cls)
     rock_seal = sector_seal(cls["rock"][0].pts, cls["soil"][0])
     ck_bite, ck_void, ck_reach = crack_fern_audit(cls)
     pins = pinna_audit(low.data, cls)
@@ -2841,6 +3057,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
           f"knob_seal min={min(knob_seal):.4f} sectors={sum(1 for b in knob_seal if b >= KNOB_SEAL_EPS)}")
     print(f"measured moss top min={min(moss_tops):.4f} max={max(moss_tops):.4f} n={len(moss_tops)} "
           f"inside min={min(moss_ins):.4f} n={len(moss_ins)} facing={facing:.4f}")
+    print(f"measured moss rim max={max(moss_rims):.4f} n={len(moss_rims)} "
+          f"crisp={facets[0]:.4f} turning={facets[1]:.3f}")
     print(f"measured rock_seal min={min(rock_seal):.4f} sectors={sum(1 for b in rock_seal if b >= SEAL_EPS)}"
           f" all={[round(b, 3) for b in rock_seal]}")
     print(f"measured crack_fern bite={ck_bite:.4f} in_void={ck_void} walls={ck_reach:.4f}")
@@ -2884,6 +3102,10 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
         return (fail(f"hygiene {hyg} zfight={zf}", 15),) + none2
     if bb[2] > ZMIN_EPS:
         return (fail(f"grounded zmin={bb[2]:.5f}", 16),) + none2
+    if facets[0] < CRISP_MIN:
+        return (fail(f"cleaved: {facets[0]:.4f} of the stone's turning in arrises sharper than "
+                     f"{CRISP_ANG} deg (min {CRISP_MIN}) — a rounded lump, not broken stone",
+                     27),) + none2
     if (len(cls["stipes"]) != n_fronds or len(pinna_bites) != n_pinnae
             or len(stalk_bites) != n_stalks or min(stalk_bites) < STIPE_BITE_MIN
             or min(pinna_bites) < PINNA_BITE_MIN or min(knob_seal) < KNOB_SEAL_EPS):
@@ -2893,12 +3115,16 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
                      f"shallowest pinna base {min(pinna_bites):.4f} inside its rachis (min "
                      f"{PINNA_BITE_MIN}), rootstock's worst sector {min(knob_seal):.4f} under the "
                      f"soil (min {KNOB_SEAL_EPS})", 17),) + none2
-    if (len(cls["moss"]) != len(MOSS) or min(moss_tops) < MOSS_BAND[0]
+    if (len(cls["moss"]) != len(moss_specs()) or min(moss_tops) < MOSS_BAND[0]
             or max(moss_tops) > MOSS_BAND[1] or min(moss_ins) < MOSS_IN_MIN):
-        return (fail(f"moss seat: {len(cls['moss'])}/{len(MOSS)} cushions, top "
+        return (fail(f"moss seat: {len(cls['moss'])}/{len(moss_specs())} cushions, top "
                      f"{min(moss_tops):.4f}..{max(moss_tops):.4f} m over the stone (band "
                      f"{MOSS_BAND}), rim and underside {min(moss_ins):.4f} inside it (min "
                      f"{MOSS_IN_MIN})", 18),) + none2
+    if max(moss_rims) > MOSS_RIM_MAX:
+        return (fail(f"moss rim: the cushions' last ring before the rim stands {max(moss_rims):.4f} m "
+                     f"over the stone (max {MOSS_RIM_MAX}) — a slab edge, not a feathered one",
+                     28),) + none2
     if min(rock_seal) < SEAL_EPS:
         return (fail(f"boulder sealed: worst sector {min(rock_seal):.4f} m under the soil (min "
                      f"{SEAL_EPS}); {sum(1 for b in rock_seal if b >= SEAL_EPS)}/{SECTORS} sectors",
@@ -2997,7 +3223,7 @@ def render_still(low, path, engine):
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
     view = Vector((-0.50, -0.86, 0.0)).normalized()
-    cam.location = centre + view * 4.0 + Vector((0.0, 0.0, 0.72))
+    cam.location = centre + view * 3.55 + Vector((0.0, 0.0, 0.72))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = centre + Vector((0.0, 0.0, -0.08))
@@ -3041,7 +3267,8 @@ def render_still(low, path, engine):
 
 
 FLAG_NAMES = ("float_fronds", "lift_crown", "float_moss", "perch_rock", "sunny_moss",
-              "perch_crack_fern", "flat_taper", "opposite_pinnae", "open_crozier", "float_cover")
+              "perch_crack_fern", "flat_taper", "opposite_pinnae", "open_crozier", "float_cover",
+              "smooth_rock", "slab_moss")
 
 
 def main():
@@ -3062,6 +3289,8 @@ def main():
     p.add_argument("--opposite-pinnae", action="store_true")
     p.add_argument("--open-crozier", action="store_true")
     p.add_argument("--float-cover", action="store_true")
+    p.add_argument("--smooth-rock", action="store_true")
+    p.add_argument("--slab-moss", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _rock = check(
