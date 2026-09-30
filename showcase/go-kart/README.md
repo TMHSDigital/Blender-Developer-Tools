@@ -4,7 +4,7 @@ A showcase piece, not an example, and the eighth in the `vehicles`
 category: things that move. It builds a rental/racing go-kart (generic, no
 marks or text) parked on a patch of kart-track asphalt:
 
-- the patch, 1.98 × 1.54 m and 60 mm thick, broken on three edges by a
+- the patch, 1.87 × 1.50 m and 60 mm thick, broken on three edges by a
   closed-form jitter that fades to nothing toward the fourth, which runs
   straight against a red and white kerb: a ramped, crowned kerb section
   lofted in six painted stripes, its foot tucked under the asphalt's
@@ -21,13 +21,28 @@ marks or text) parked on a patch of kart-track asphalt:
   column's foot and two tie rods (rod-end eyes, lock nuts, pins) to the
   spindles' arms; spindles (sleeve, stub axle, spacer, arm) on kingpin bolts
   with 14° caster;
-- bodywork, bolted: a low nose on two bumper bars, two side pods on chrome
-  nerf bars, and a curved front panel on two bracket rods; a tubular rear
-  bumper with plugged ends;
+- blue moulded bodywork: a nose cone on two bumper bars ahead of the front
+  axle (a raised centre hump, lipped shoulders falling into a valley, a
+  rounded chin); a front panel leaning back 40° from its foot sunk in the
+  hump, bulged forward, its sides wrapped back and top corners rounded,
+  carrying a plain white number plate pressed into its face; two side pods
+  on chrome nerf bars (tapered in and down at the front, flared at the rear,
+  a raised outer crest stepping down to a deck with seven grip ribs, a
+  groove along the outer wall); a tubular rear bumper with plugged ends;
+- ten flat strap brackets, each welded to a tube at one end and bolted flat
+  to a moulding at the other: two from the column support's top bar bent
+  down against the panel's back, two angle straps in the wedge behind the
+  panel's foot (one leg on the panel, one on the hump), two from the front
+  crossmember to the nose's back face, and one from each nerf bar to its
+  pod's inner wall;
 - a floor tray, a moulded seat on a cross tube with two stays to the hangers
   and two front brackets to the rails, a fuel tank strapped to the tray with
   its line to the carburettor, two pedals, and a three-plate lead ballast
-  block bolted to the tray;
+  block bolted to the tray; a brake master cylinder (reservoir, boot,
+  pushrod from the brake pedal) on a block bolted to the tray, its hose
+  clipped along the left rail and up to the caliper; the throttle cable from
+  the right pedal along the right rail, up inboard of the air-box and down
+  onto the carburettor;
 - a small four-stroke clamped to the right rail on a mount plate: finned
   cylinder and head leaning 25° forward, bearing cover, fan shroud and
   pull-start, air-box, carburettor, plug and lead, and an exhaust header to
@@ -50,8 +65,8 @@ witness an API contract. "It rendered without error" is not a check.
 `export_preset_unity.py` (helpers copied inline, not imported).
 
 Intended size: wheelbase 1.040 m, front track 1.100 m and rear track
-1.200 m (tyre centre to tyre centre); overall 1.73 × 1.40 m, the seat back
-0.47 m over the asphalt. The patch with its kerb is 2.01 × 1.82 m; the top
+1.200 m (tyre centre to tyre centre); overall 1.75 × 1.40 m, the seat back
+0.47 m over the asphalt. The patch with its kerb is 1.90 × 1.77 m; the top
 of the envelope is the seat back at 0.64 m. The origin is under the patch
 centre at the slab's underside.
 
@@ -64,24 +79,24 @@ value is read from their vertices.
 
 | Axis | Declared | Measured (5.2.1) |
 | --- | --- | --- |
-| Base triangles | 72500–74100 | 73294 |
+| Base triangles | 81000–82700 | 81854 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2200 |
-| Materials | exactly 13 distinct; ≥2910 frame paint, ≥6140 chrome, ≥6910 rubber, ≥1210 bodywork, ≥1420 seat, ≥10200 aluminium, ≥1760 engine casting, ≥3770 steel, ≥1200 black plastic, ≥88 fuel tank, ≥154 lead, ≥590 asphalt, ≥115 kerb paint faces | 13 slots; 3168 / 6678 / 7512 / 1320 / 1548 / 11090 / 1920 / 4104 / 1308 / 96 / 168 / 646 / 126 |
+| Materials | exactly 14 distinct; ≥2910 frame paint, ≥6430 chrome, ≥7530 rubber, ≥3410 bodywork, ≥1420 seat, ≥11650 aluminium, ≥1760 engine casting, ≥3790 steel, ≥1550 black plastic, ≥158 fuel tank, ≥154 lead, ≥590 asphalt, ≥115 kerb paint, ≥114 number plate faces | 14 slots; 3168 / 6994 / 8188 / 3708 / 1548 / 12666 / 1920 / 4130 / 1686 / 172 / 168 / 646 / 126 / 124 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (2.0115, 1.8172, 0.6397) m ± 0.01, read off the vertices | (2.0115, 1.8172, 0.6397), zmin 0 |
-| Collider tris | ≤ 780 | 710 |
-| Export | written, size > 0, removed after measuring | 5394644 bytes |
+| Outer AABB | (1.8950, 1.7738, 0.6397) m ± 0.01, read off the vertices | (1.8950, 1.7738, 0.6397), zmin 0 |
+| Collider tris | ≤ 900 | 816 |
+| Export | written, size > 0, removed after measuring | 6084452 bytes |
 
-Every falsifier leaves the triangle count at 73294 and the envelope at
-(2.0115, 1.8172, 0.6397): they move parts, never add or remove them.
+Every falsifier leaves the triangle count at 81854 and the envelope at
+(1.8950, 1.7738, 0.6397): they move parts, never add or remove them.
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels
 are stochastic, so the bake gate is `has_data` plus operator `FINISHED`,
 not byte-identity. Construction uses no RNG; two default runs print
 identical measurements, and 4.5.11 and 5.1.2 print the same measurements
-as 5.2.1 (the export differs by 80 bytes).
+as 5.2.1 (the export differs by 76 bytes).
 
 ### Hygiene and grounding
 
@@ -117,15 +132,25 @@ fastener aimed at one triangulation floated over the other.
 | Joint fit: each tie-rod eye on its pin (plan offset) and biting the plate under it (a ray down onto the steering arm or plate) | 4 eyes; ≤ 0.5 mm; bite 0.2–1.5 mm | 4; 0.0 mm; 0.3 / 0.5 mm |
 | Tyre seat: per tyre, per angular segment, the bead vertices against the rim's bead seat (a ray toward the axis along each vertex's own radial) | 4 tyres, each on a rim; 0.4–2.0 mm | 0.864–1.000 mm |
 | Chain seat: per sprocket, one bin per tooth over the middle half of the wrap, the tooth-root circle less the chain's inner edge; the chain's plane against the sprocket's | 2 sprockets; 0.8–3.0 mm; ≤ 0.5 mm | 1.911 and 1.943–1.946 mm; 0.005 / 0.006 mm |
-| Mirror: every frame-paint and bodywork vertex against its partner across the loop's centre plane (KD-tree) | ≤ 0.5 mm | 0.043 mm |
+| Mirror: every frame-paint and bodywork vertex (nose, panel, pods, grip ribs) against its partner across the loop's centre plane (KD-tree) | ≤ 0.5 mm | 0.043 mm |
 | Wheels: front and rear tyres paired, centres and extents compared | ≤ 0.5 mm | 0.0001 mm |
 | Size: wheelbase and both tracks from the tyres' own centres | 1.040 / 1.100 / 1.200 m ± 4 mm | 1.0400 / 1.1000 / 1.2000 |
 | Caster: each kingpin sleeve's principal axis, tilt back in plan | 2 kingpins; 10–18° | 14.0°, 14.0° |
-| Stance: mass centre (per-shell volume × a per-material density) inside the convex hull of the four contact patches | ≥ 0.312 m (30 % of the wheelbase) | 0.368 m (88.3 kg) |
-| One connected assembly (union of shells whose BVH trees overlap, the patch included) | 1 component | 1 (285 shells) |
+| Stance: mass centre (per-shell volume × a per-material density) inside the convex hull of the four contact patches | ≥ 0.312 m (30 % of the wheelbase) | 0.3735 m (88.6 kg) |
+| One connected assembly (union of shells whose BVH trees overlap, the patch included) | 1 component | 1 (330 shells) |
+| Bodywork brackets: per strap, its bite into every moulding or tube it meets (the deepest strap vertex inside that shell: nearest-face distance, signed by a three-ray parity vote); the two deepest are its two joints | 10 brackets; both joints 0.5–2.5 mm | 10; welded ends 0.90–1.99 mm, tabs 1.00–1.47 mm |
 
 Densities are effective: tubes, rims and tyres are modelled solid but are
 hollow, so each material carries a density that makes its mass plausible.
+
+The bracket bite is signed by ray parity, not by the nearest face's normal:
+beside the panel's 4 mm rim the nearest face is the rim strip, and its
+normal read the tab's back face, 2 mm behind the panel, as 1.96 mm inside.
+Each panel tab's width follows the panel's own across-direction: laid along
+world Y, the wrapped sides tipped one edge of the tab off the panel.
+Measuring it also found the nose inside out: `recalc_face_normals` had
+turned it, so every closed island is now oriented by its signed volume
+before shipping.
 
 ### Falsifiers
 
@@ -149,7 +174,8 @@ envelope unchanged and every budget checked before the target green.
 | `--odd-frame` | chassis mirror symmetry (the left rail bowed 3 mm out: 1.819 mm) | 19 |
 | `--no-caster` | caster band (kingpins vertical: 0.0°) | 19 |
 | `--aft-ballast` | stance (the 8 kg ballast moved behind the axle: 0.2887 m) | 20 |
-| `--loose-ballast` | one connected assembly (the ballast lifted 3 mm off the tray: 2 components, 5 and 280 shells) | 21 |
+| `--loose-ballast` | one connected assembly (the ballast lifted 3 mm off the tray: 2 components, 5 and 325 shells) | 21 |
+| `--float-nose` | bodywork brackets (the nose and its bolts slid 3 mm forward: both nose brackets' tabs −2.0 mm) | 23 |
 
 `--float-tyre` lifts the tyre alone, after the patch is flattened, while the
 slab still grounds the box. `--toe-wheel` turns the whole corner (spindle,
@@ -161,7 +187,9 @@ tooth phase of the seated chain: phasing the teeth to the lifted pins, and
 lifts of 1.7, 2.0, 2.5, 3.0 and 3.5 mm, each put a chain face within 0.1 mm
 of a tooth flat's plane and exited 15. The assembly falsifier first lifted
 a side pod, which broke the bodywork's mirror and exited 19; the ballast
-stack is measured by nothing else.
+stack is measured by nothing else. `--float-nose` moves the nose along X
+only, so the mirror holds, the nose stays on its bumper bars and on the
+panel's foot (one assembly), and the slab still sets the envelope.
 
 ## Run
 
@@ -182,13 +210,14 @@ blender --background --python go_kart.py -- --odd-frame
 blender --background --python go_kart.py -- --no-caster
 blender --background --python go_kart.py -- --aft-ballast
 blender --background --python go_kart.py -- --loose-ballast
+blender --background --python go_kart.py -- --float-nose
 blender --background --python go_kart.py -- --output kart.png
 ```
 
 Smoke passes no flags.
 
 The hero looks from the front right and above, so the nose, the front
-panel and the right-hand wheels lead, the engine, chain and silencer show
+panel with its plate and the right-hand wheels lead, the engine, chain and silencer show
 over the right pod, and the kerb runs behind. The wall stands 5 m behind
 the patch and the warm wedge pools on it behind the kart. Default stage; no
 deviation.
@@ -203,13 +232,21 @@ the kerb's stripes are the same attribute picking red or white. Grime rises
 from the asphalt on every part and scuffs are sparse. Chrome, aluminium,
 steel and the casting carry a studio reflection term so they do not read as
 grey plastic on a dark stage; the track asphalt is streaked darker along
-the racing line.
+the racing line. The bodywork's lower half carries dark tyre-rubber streaks
+and light scratches, both stretched fore and aft; the frame is scratched
+through to steel low down; the frame, casting, aluminium, steel and chrome
+darken with oily grime toward the engine.
+
+The livery is blue with a white number plate, so the warm notes are the
+red frame and the kerb. The yellow livery the piece first shipped with
+filled the lower half of the hero and measured a wedge warmth of +0.288,
+out of the calibration band (−0.144 to +0.105); blue measures −0.094.
 
 ## Exit codes
 
 File-local. `9` is a valid check code. `10` is reserved for
 `gallery_framing.check_framing` on the `--output` path. `15`–`19` are the
-hygiene and joint-fit family. `20` and `21` are file-local. `22` is the
+hygiene and joint-fit family. `20`, `21` and `23` are file-local. `22` is the
 asset-quality floor on the render path: `check_asset_quality` returns 11,
 which this piece already spends on the collider ceiling, so the call site
 remaps it.
@@ -221,7 +258,7 @@ remaps it.
 | 2 | argparse / usage |
 | 3 | Mesh did not build / no UV layer |
 | 4 | Base triangle count outside range |
-| 5 | Material count ≠ 13 distinct slots, or a face-count floor missed |
+| 5 | Material count ≠ 14 distinct slots, or a face-count floor missed |
 | 6 | UVs outside 0..1 |
 | 7 | UV AABB overlap above tolerance |
 | 8 | World AABB off declared outer size |
@@ -239,3 +276,4 @@ remaps it.
 | 20 | Stance: the mass centre too near an edge of the support polygon (`--aft-ballast`) |
 | 21 | Assembly splits into more than one connected component (`--loose-ballast`) |
 | 22 | Asset-quality floor (render path only; remapped from 11) |
+| 23 | Bodywork brackets: not 10 straps, or a strap's weld or tab out of its bite band (`--float-nose`) |

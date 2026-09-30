@@ -1,7 +1,7 @@
 """Game-ready go-kart on a patch of kart track - a showcase piece, not an example.
 
 Asserts budget conformance of a procedural rental/racing go-kart after
-composing shipped pipeline pieces: bmesh construction, UVs, thirteen
+composing shipped pipeline pieces: bmesh construction, UVs, fourteen
 materials, high-to-low normal bake, LOD chain, convex collider, Unity glTF
 export.
 
@@ -12,13 +12,19 @@ bend, cross tubes that end inside the rails, welded gussets, bearing hangers,
 kingpin brackets and a steering-column support; a floor tray; a moulded seat
 on stays; a steering wheel on a raked column in a bushing, a steering plate
 and two tie rods to the spindles' arms; spindles on kingpins with caster;
-a plastic nose on bumper bars and two side pods on nerf bars, all bolted; a
-tubular rear bumper; a small engine (finned cylinder, fan shroud and
-pull-start, air-box, exhaust and silencer) clamped to the right rail, driving
-a live rear axle through a clutch, a chain and a sprocket; bearing carriers,
-a brake disc and caliper, two pedals, a fuel tank with its line, a lead
-ballast block; and four slick tyres on split rims with valve stems, the
-fronts narrower than the rears.
+blue moulded bodywork: a nose cone on bumper bars ahead of the front axle
+(a raised hump, lipped shoulders, a rounded chin), a curved front panel
+leaning back from the hump with a plain white number plate, and two side
+pods (a raised outer crest, a stepped deck with grip ribs, a groove along
+the wall) on nerf bars; ten flat strap brackets welded to the tubes and
+bolted flat to the mouldings; a tubular rear bumper; a small engine (finned
+cylinder, fan shroud and pull-start, air-box, exhaust and silencer) clamped
+to the right rail, driving a live rear axle through a clutch, a chain and a
+sprocket; bearing carriers, a brake disc and caliper, a master cylinder
+pushed by the brake pedal with its hose along the left rail to the caliper,
+the throttle cable along the right rail to the carburettor, a fuel tank with
+its line, a lead ballast block; and four slick tyres on split rims with
+valve stems, the fronts narrower than the rears.
 
 Budgets are declared below and recomputed from the generated result. They
 are not API-contract witnesses. Each falsifier violates one named budget:
@@ -26,8 +32,9 @@ are not API-contract witnesses. Each falsifier violates one named budget:
 and ``--float-tyre`` grounding, ``--cock-hub``, ``--drop-bearing`` and
 ``--short-tierod`` joint fit, ``--sink-tyre`` and ``--lift-chain`` seat
 conformance, ``--toe-wheel``, ``--wide-track``, ``--odd-frame`` and
-``--no-caster`` mirror, size and angle, ``--aft-ballast`` the stance and
-``--loose-ballast`` one connected assembly.
+``--no-caster`` mirror, size and angle, ``--aft-ballast`` the stance,
+``--loose-ballast`` one connected assembly and ``--float-nose`` the
+bodywork brackets.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts are
 not byte-identical across Blender versions - the LOD gate is a ratio band.
@@ -63,15 +70,15 @@ import gallery_asset_quality  # noqa: E402
 
 # --- Track patch (world frame) -------------------------------------------------
 SLAB_T = 0.060
-SLAB_X = 0.990               # half length
-SLAB_Y0 = -0.870             # front edge (broken)
-SLAB_Y1 = 0.670              # back edge: straight, against the kerb
-SLAB_CORNER = 0.140
+SLAB_X = 0.935               # half length
+SLAB_Y0 = -0.850             # front edge (broken)
+SLAB_Y1 = 0.650              # back edge: straight, against the kerb
+SLAB_CORNER = 0.120
 SLAB_PERIM = 132
-SLAB_JITTER = 0.020
+SLAB_JITTER = 0.016
 SLAB_TOP_CH = 0.008
 SLAB_BOT_CH = 0.004
-KERB_HALF_L = 0.980          # stops short of the slab's sides: no shared end plane
+KERB_HALF_L = 0.925          # stops short of the slab's sides: no shared end plane
 KERB_W = 0.260
 KERB_H = 0.032               # crest above the asphalt
 KERB_BITE = 0.012            # the kerb's foot runs this far under the asphalt edge
@@ -79,7 +86,7 @@ KERB_STRIPES = 6
 KERB_Z0 = 0.002              # underside: off the slab's underside plane
 
 # --- Kart layout (kart frame: x forward, y left, z up from the asphalt top) -----
-KART_X = -0.040
+KART_X = -0.050
 KART_Y = -0.100
 WHEELBASE = 1.040
 TRACK_F = 1.100              # tyre centre to tyre centre
@@ -164,22 +171,29 @@ TOE_DEG = 1.5                # --toe-wheel: left front corner
 WIDE_TRACK = 0.0040          # --wide-track: each rear wheel outward
 ODD_FRAME = 0.0030           # --odd-frame: left rail bowed outward
 LOOSE_BALLAST = 0.0030       # --loose-ballast: the ballast stack lifted off the tray
+FLOAT_NOSE = 0.0030          # --float-nose: the nose and its bolts slid forward off its brackets
+
+# Bodywork brackets: flat straps welded to a tube at one end and bolted flat
+# against a moulding at the other.
+BRACKET_T = 0.0030           # strap thickness
+TUBE_BITE = 0.0020           # a strap's welded end sunk into its tube
+TAB_BITE = 0.0010            # a strap's tab pressed into the moulding it is bolted to
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from the vertices.
-OUTER_SIZE = (2.0115, 1.8172, 0.6397)
-BASE_TRIS_MIN = 72500
-BASE_TRIS_MAX = 74100
+OUTER_SIZE = (1.8950, 1.7738, 0.6397)
+BASE_TRIS_MIN = 81000
+BASE_TRIS_MAX = 82700
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 13
+MATERIAL_COUNT = 14
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 780
+COLLIDER_TRIS_MAX = 900
 BAKE_RES = 1024
 CAGE_EXTRUSION = 0.006
 
@@ -220,18 +234,23 @@ SIZE_TOL = 0.004
 CASTER_MIN = 10.0
 CASTER_MAX = 18.0
 KINGPINS = 2
+# Bodywork brackets: every strap bites both the tube it is welded to and the
+# moulding it is bolted to.
+BRACKETS = 10
+BRACKET_BITE_MIN = 0.0005
+BRACKET_BITE_MAX = 0.0025
 # Stance: the mass centre stands inside the tyres' support polygon by at
 # least 30 % of the wheelbase.
 STANCE_MARGIN = 0.30 * WHEELBASE
 DENSITY = (1900.0, 3000.0, 450.0, 120.0, 1700.0, 1600.0, 1500.0, 5000.0, 250.0, 500.0,
-           11340.0, 0.0, 0.0)
+           11340.0, 0.0, 0.0, 950.0)
 
 HERO_YAW_DEG = 0.0
 CAM_VIEW = (0.62, -0.78)
-CAM_DIST = 4.2
+CAM_DIST = 3.95
 CAM_LENS = 50.0
 CAM_LIFT = 1.75
-AIM_OFFSET = (0.0, 0.0, -0.20)
+AIM_OFFSET = (0.0, 0.0, -0.26)
 WALL_Y = 5.0
 
 PAINT_IDX = 0
@@ -247,22 +266,23 @@ TANK_IDX = 9
 LEAD_IDX = 10
 ASPHALT_IDX = 11
 KERB_IDX = 12
+PLATE_IDX = 13
 
 FACE_FLOORS = {
-    PAINT_IDX: 2910, CHROME_IDX: 6140, RUBBER_IDX: 6910, BODY_IDX: 1210, SEAT_IDX: 1420,
-    ALU_IDX: 10200, CASTING_IDX: 1760, STEEL_IDX: 3770, BLACK_IDX: 1200, TANK_IDX: 88,
-    LEAD_IDX: 154, ASPHALT_IDX: 590, KERB_IDX: 115,
+    PAINT_IDX: 2910, CHROME_IDX: 6430, RUBBER_IDX: 7530, BODY_IDX: 3410, SEAT_IDX: 1420,
+    ALU_IDX: 11650, CASTING_IDX: 1760, STEEL_IDX: 3790, BLACK_IDX: 1550, TANK_IDX: 158,
+    LEAD_IDX: 154, ASPHALT_IDX: 590, KERB_IDX: 115, PLATE_IDX: 114,
 }
 MAT_LABELS = ("frame paint", "chrome", "rubber", "bodywork", "seat", "aluminium",
               "engine casting", "steel", "black plastic", "fuel tank", "lead", "asphalt",
-              "kerb paint")
+              "kerb paint", "number plate")
 
 # Part tags: a face attribute naming which part a face belongs to, so the
 # audits can find the shells they measure. Every measured value is read from
 # the vertices, never from these constants.
 (T_NONE, T_SLAB, T_KERB, T_LOOP, T_FRAME, T_TYRE, T_RIM, T_HUB_F, T_HUB_R, T_STUB,
  T_AXLE, T_BEARING, T_KINGPIN, T_ARM, T_TAB, T_PIN, T_EYE, T_CHAIN, T_SPROCKET,
- T_BODY, T_BALLAST, T_SEAT) = range(22)
+ T_BODY, T_BALLAST, T_SEAT, T_BAR, T_BRACKET) = range(24)
 
 X = Vector((1.0, 0.0, 0.0))
 Y = Vector((0.0, 1.0, 0.0))
@@ -595,13 +615,17 @@ def add_bar(bm, pts, wax, half_w, half_t, rc, mat_idx, fillet=0.008, filleted=Fa
     """Flat bar: its width lies along ``wax``, its thickness across it;
     rounded-rectangle section."""
     pts = [Vector(p) for p in pts] if filleted else fillet_path(pts, fillet)
-    wax = Vector(wax).normalized()
+    if not isinstance(wax, list):
+        wax = Vector(wax).normalized()
     sec = rrect(half_w, half_t, rc, 2)
+    waxes = [Vector(w).normalized() for w in wax] if isinstance(wax, list) else None
     rings = []
     for i, p in enumerate(pts):
         a = pts[max(i - 1, 0)]
         b = pts[min(i + 1, len(pts) - 1)]
         t = (b - a).normalized()
+        if waxes is not None:
+            wax = waxes[i]
         w = (wax - t * wax.dot(t)).normalized()
         th = t.cross(w)
         rings.append([bm.verts.new(p + w * x + th * y) for x, y in sec])
@@ -1844,32 +1868,61 @@ def build_seat_mounts(b, dz):
 
 
 def pod_section(y_in, y_out, zb, zt_in, zt_out, n):
-    pts = [(y_in, zb), (y_out - 0.010, zb), (y_out, zb + 0.022), (y_out, zt_out - 0.010),
-           (y_out - 0.016, zt_out), (y_in + 0.018, zt_in), (y_in, zt_in - 0.014)]
+    """A moulded pod's section (left pod, y outward): a flat floor, an outer
+    wall with a moulded groove along it and a slight bulge, a raised outer
+    crest, a step down to the inner deck, and a plain inner wall."""
+    h = zt_out - zb
+    hi = zt_in - zb
+    pts = [(y_in, zb + 0.14 * hi), (y_in + 0.012, zb), (y_out - 0.024, zb),
+           (y_out - 0.002, zb + 0.28 * h), (y_out - 0.001, zb + 0.44 * h),
+           (y_out - 0.006, zb + 0.48 * h), (y_out, zb + 0.52 * h),
+           (y_out + 0.003, zb + 0.72 * h), (y_out - 0.010, zt_out),
+           (y_out - 0.034, zt_out - 0.003), (y_out - 0.046, zt_in + 0.002),
+           (y_in + 0.022, zt_in), (y_in, zt_in - 0.16 * hi)]
     return rpoly(pts, 0.009, n)
 
 
-POD_ST = [(-0.328, 0.478, 0.650, 0.090, 0.196, 0.172),
-          (-0.320, 0.472, 0.658, 0.083, 0.204, 0.178),
-          (-0.290, 0.470, 0.662, 0.081, 0.208, 0.181),
-          (-0.050, 0.470, 0.664, 0.081, 0.210, 0.182),
-          (0.160, 0.470, 0.662, 0.081, 0.204, 0.177),
-          (0.260, 0.472, 0.654, 0.082, 0.180, 0.158),
-          (0.315, 0.476, 0.640, 0.086, 0.150, 0.134),
-          (0.330, 0.482, 0.628, 0.092, 0.128, 0.118)]
-NOSE_ST = [(0.616, 0.404, 0.078, 0.158, 0.196, 0.250),
-           (0.626, 0.414, 0.070, 0.160, 0.196, 0.262),
-           (0.680, 0.420, 0.066, 0.150, 0.180, 0.272),
-           (0.740, 0.420, 0.064, 0.136, 0.160, 0.276),
-           (0.800, 0.414, 0.065, 0.120, 0.139, 0.272),
-           (0.850, 0.400, 0.068, 0.104, 0.119, 0.262),
-           (0.884, 0.380, 0.074, 0.093, 0.104, 0.246),
-           (0.900, 0.356, 0.080, 0.087, 0.095, 0.226)]
+# (x, y inner, y outer, bottom, inner deck, outer crest): the front tapers in
+# and down toward the front wheel, the rear rises and flares ahead of the rear
+# tyre
+POD_ST = [(-0.330, 0.478, 0.656, 0.090, 0.184, 0.198),
+          (-0.322, 0.472, 0.664, 0.083, 0.190, 0.208),
+          (-0.295, 0.470, 0.670, 0.081, 0.192, 0.214),
+          (-0.230, 0.470, 0.670, 0.081, 0.188, 0.210),
+          (-0.140, 0.470, 0.667, 0.081, 0.181, 0.204),
+          (-0.030, 0.470, 0.662, 0.081, 0.177, 0.200),
+          (0.080, 0.470, 0.657, 0.081, 0.176, 0.198),
+          (0.170, 0.470, 0.648, 0.081, 0.172, 0.192),
+          (0.235, 0.471, 0.634, 0.082, 0.162, 0.180),
+          (0.282, 0.474, 0.614, 0.084, 0.148, 0.164),
+          (0.314, 0.478, 0.594, 0.087, 0.136, 0.150),
+          (0.330, 0.484, 0.580, 0.092, 0.128, 0.140)]
+POD_RIB_X = (-0.140, -0.100, -0.060, -0.020, 0.020, 0.060, 0.100)
+POD_RIB_H = 0.0044           # grip rib height over the deck
+POD_RIB_BITE = 0.0006
+
+# (x, half width, bottom, shoulder, hump half width, hump top): a low nose
+# cone ahead of the front axle, a raised centre hump that carries the front
+# panel's foot, lipped shoulders toward the wheels and a rounded chin
+NOSE_ST = [(0.650, 0.394, 0.081, 0.160, 0.204, 0.209),
+           (0.657, 0.400, 0.075, 0.166, 0.210, 0.215),
+           (0.700, 0.412, 0.074, 0.165, 0.208, 0.214),
+           (0.760, 0.418, 0.074, 0.160, 0.202, 0.205),
+           (0.820, 0.414, 0.075, 0.150, 0.192, 0.188),
+           (0.870, 0.402, 0.077, 0.138, 0.180, 0.166),
+           (0.900, 0.386, 0.080, 0.128, 0.170, 0.148),
+           (0.918, 0.366, 0.084, 0.120, 0.162, 0.134),
+           (0.928, 0.346, 0.090, 0.114, 0.154, 0.124)]
 
 
-def nose_section(hw, zb, zs, zt, chw, n):
-    pts = [(-hw, zb), (hw, zb), (hw, zs), (chw, zt), (-chw, zt), (-hw, zs)]
-    return rpoly(pts, 0.012, n)
+def nose_section(hw, zb, zs, hc, zc, n):
+    """The nose's section: flat floor, outer wall to a lip along each
+    shoulder, the shoulder falling into a valley, a ramp up to the hump."""
+    right = [(hw - 0.022, zb), (hw, zb + 0.022), (hw, zs - 0.014), (hw - 0.010, zs + 0.010),
+             (hw - 0.028, zs + 0.002), (hc + 0.045, zs + 0.004), (hc, zc - 0.008),
+             (hc - 0.030, zc)]
+    left = [(-y, z) for y, z in reversed(right)]
+    return rpoly(right + left, 0.012, n)
 
 
 def surface_hit(tree, x, y, z_top=1.0):
@@ -1880,43 +1933,185 @@ def surface_hit(tree, x, y, z_top=1.0):
     return hit, nrm
 
 
-def build_body(b, n_corner, flags):
-    """Nose on bumper bars and side pods on nerf bars, bolted."""
-    bm = b.bm
-    # nose bars from the front crossmember into the nose
-    for s in (-1.0, 1.0):
-        with b.part(T_NONE, 0.5, "kart"):
-            add_tube(bm, fillet_path([Vector((0.600, s * 0.140, Z_F)),
-                                      Vector((0.690, s * 0.140, 0.092)),
-                                      Vector((0.820, s * 0.170, 0.100))], 0.04, 5), 0.0110, 12,
-                     CHROME_IDX)
-    loops = []
-    for x, hw, zb, zs, zt, chw in NOSE_ST:
-        loops.append([Vector((x, u, v)) for u, v in nose_section(hw, zb, zs, zt, chw, n_corner)])
+def loft_tree(loops):
     tmp = bmesh.new()
     try:
         add_loft(tmp, loops, BODY_IDX)
         tri_short(tmp, list(tmp.faces))
         tmp.normal_update()
-        tree = BVHTree.FromBMesh(tmp)
+        return BVHTree.FromBMesh(tmp)
     finally:
         tmp.free()
-    with b.part(T_BODY, 0.5, "kart"):
-        nf = len(bm.faces)
-        add_loft(bm, loops, BODY_IDX)
-        bm.faces.ensure_lookup_table()
-        tri_short(bm, [bm.faces[i] for i in range(nf, len(bm.faces))])
-    for k, (x, y) in enumerate(((0.700, 0.300), (0.700, -0.300), (0.820, 0.250), (0.820, -0.250))):
-        hit, nrm = surface_hit(tree, x, y)
+
+
+def add_loft_short(bm, loops, mat_idx):
+    nf = len(bm.faces)
+    vs = add_loft(bm, loops, mat_idx)
+    bm.faces.ensure_lookup_table()
+    tri_short(bm, [bm.faces[i] for i in range(nf, len(bm.faces))])
+    return vs
+
+
+def panel_point(u, v):
+    """The front panel's front face, u across (-1..1), v up (0..1): a
+    moulding leaning back 40 deg from its foot in the nose's hump toward the
+    column, bulged forward, its sides wrapped back and its top corners
+    rounded down."""
+    vv = v * (1.0 - 0.16 * u ** 4)
+    x = 0.705 - 0.180 * vv + 0.028 * math.sin(math.pi * vv) - (0.030 + 0.030 * vv) * u * u
+    y = (0.185 - 0.030 * vv) * u
+    z = 0.200 + 0.200 * vv + 0.012 * u * u * vv
+    return Vector((x, y, z))
+
+
+PANEL_T = 0.004
+
+
+def panel_surf(u, v, eps=1e-4):
+    """Point and forward normal of the panel's front face at (u, v)."""
+    p = panel_point(u, v)
+    du = panel_point(min(1.0, u + eps), v) - panel_point(max(-1.0, u - eps), v)
+    dv = panel_point(u, min(1.0, v + eps)) - panel_point(u, max(0.0, v - eps))
+    n = du.cross(dv).normalized()
+    if n.x < 0.0:
+        n = -n
+    return p, n
+
+
+def panel_back(u, v, off):
+    """A point ``off`` behind the panel's back face at (u, v)."""
+    p, n = panel_surf(u, v)
+    return p - n * (PANEL_T + off)
+
+
+def add_strap(bm, pts, wax, mat_idx=None, fillet=0.006):
+    """A bodywork bracket: 20 mm flat strap, BRACKET_T thick."""
+    if not isinstance(wax, list):
+        pts = fillet_path(pts, fillet, 2)
+    return add_bar(bm, pts, wax, 0.010, 0.5 * BRACKET_T, 0.0010,
+                   ALU_IDX if mat_idx is None else mat_idx, filleted=True)
+
+
+def panel_du(u, v, eps=1e-4):
+    """The panel's across-direction at (u, v): a tab's width must follow it,
+    or the wrapped sides tip one edge of the tab off the panel."""
+    return (panel_point(min(1.0, u + eps), v) - panel_point(max(-1.0, u - eps), v)).normalized()
+
+
+def weld_end(axis_pt, axis_dir, towards, r_host):
+    """The welded end of a strap on a tube: on the tube's surface line
+    facing ``towards``, TUBE_BITE under the surface."""
+    a = Vector(axis_dir).normalized()
+    d = Vector(towards) - Vector(axis_pt)
+    d = (d - a * d.dot(a)).normalized()
+    return Vector(axis_pt) + d * (r_host - TUBE_BITE)
+
+
+def build_body(b, n_corner, flags):
+    """A moulded nose on bumper bars, two moulded pods on nerf bars and a
+    curved front panel with a number plate; every moulding bolted to flat
+    strap brackets welded to the tubes."""
+    bm = b.bm
+    half_t = 0.5 * BRACKET_T
+    tab = half_t - TAB_BITE          # a tab's centre plane behind the face it bites
+    # bumper bars from the front crossmember forward into the nose
+    for s in (-1.0, 1.0):
+        with b.part(T_BAR, 0.5, "kart"):
+            add_tube(bm, fillet_path([Vector((0.600, s * 0.140, Z_F)),
+                                      Vector((0.636, s * 0.140, 0.104)),
+                                      Vector((0.860, s * 0.160, 0.112))], 0.04, 5), 0.0110, 12,
+                     CHROME_IDX)
+    # the nose
+    loops = []
+    for k, (x, hw, zb, zs, hc, zc) in enumerate(NOSE_ST):
+        loops.append([Vector((x, u, v)) for u, v in nose_section(hw, zb, zs, hc, zc, n_corner)])
+    nose_tree = loft_tree(loops)
+    with b.part(T_BODY, 0.5, "kart", "nose"):
+        add_loft_short(bm, loops, BODY_IDX)
+    for k, (x, y) in enumerate(((0.720, 0.330), (0.720, -0.330), (0.850, 0.300), (0.850, -0.300))):
+        hit, nrm = surface_hit(nose_tree, x, y)
         if hit is not None:
-            with b.part(T_NONE, 0.5, "kart"):
+            with b.part(T_NONE, 0.5, "kart", "nose"):
                 add_dome(bm, hit - nrm * 0.0002 * k, nrm, CHROME_IDX, r=0.0075, h=0.0042)
-    # nerf bars and pods
+    # nose brackets: straps welded on the front crossmember, their tabs bolted
+    # flat to the nose's back face
+    x_back = NOSE_ST[0][0]
+    for s in (-1.0, 1.0):
+        y = s * 0.215
+        xt = x_back - tab
+        p0 = weld_end(Vector((0.600, y, Z_F)), Y, Vector((0.612, y, 0.100)), TUBE_R)
+        with b.part(T_BRACKET, 0.5, "kart"):
+            add_strap(bm, [p0, Vector((0.614, y, 0.098)), Vector((xt, y, 0.118)),
+                           Vector((xt, y, 0.166))], Y)
+        with b.part(T_NONE, 0.5, "kart"):
+            add_hex(bm, Vector((xt, y, 0.146)), -X, half_t - 0.0003, half_t + 0.0045, 0.0055,
+                    CHROME_IDX)
+    # the front panel, its foot sunk in the nose's hump
+    with b.part(T_BODY, 0.5, "kart"):
+        add_sheet(bm, lambda uu, vv: panel_surf(2.0 * uu - 1.0, vv), 14, 12, PANEL_T, BODY_IDX)
+    # a plain number plate on its face, pressed 1 mm into it
+    u0, u1, v0, v1 = -0.72, 0.72, 0.24, 0.74
+
+    def plate(uu, vv):
+        p, n = panel_surf(u0 + (u1 - u0) * uu, v0 + (v1 - v0) * vv)
+        return p + n * 0.0015, n
+    with b.part(T_NONE, 0.5, "kart"):
+        add_sheet(bm, plate, 8, 6, 0.0025, PLATE_IDX)
+    # upper brackets: straps welded on the column support's top bar, their
+    # feet bent down flat against the panel's back
+    for s in (-1.0, 1.0):
+        u = s * 0.40
+        tabs = [panel_back(u, v, tab) for v in (0.94, 0.90, 0.86, 0.82, 0.78)]
+        y = tabs[0].y
+        p0 = weld_end(Vector((0.282, y, 0.212)), Y, tabs[0], CROSS_R)
+        with b.part(T_BRACKET, 0.5, "kart"):
+            add_strap(bm, [p0] + tabs, panel_du(u, 0.86))
+        p, n = panel_surf(u, 0.86)
+        with b.part(T_NONE, 0.5, "kart"):
+            add_dome(bm, p + n * 0.0002, n, CHROME_IDX, r=0.0068, h=0.0040)
+        with b.part(T_NONE, 0.5, "kart"):
+            add_hex(bm, tabs[2], -n, half_t - 0.0003, half_t + 0.0040, 0.0052, CHROME_IDX)
+    # lower brackets: an angle strap in the wedge behind the panel's foot, one
+    # leg bolted to the panel, the other to the nose's hump
+    for s in (-1.0, 1.0):
+        u = s * 0.55
+
+        def seat_z(q):
+            hit, _nrm = surface_hit(nose_tree, q.x, q.y)
+            return hit.z + tab if hit is not None else -1.0
+        lo_v, hi_v = 0.0, 0.14
+        for _ in range(40):
+            mid = 0.5 * (lo_v + hi_v)
+            q = panel_back(u, mid, tab)
+            if q.z < seat_z(q):
+                lo_v = mid
+            else:
+                hi_v = mid
+        corner = panel_back(u, hi_v, tab)
+        leg = [panel_back(u, v, tab) for v in (0.25, 0.20, 0.15)]
+        foot = []
+        for dx in (0.012, 0.024):
+            q = Vector((corner.x - dx, corner.y, 0.0))
+            q.z = seat_z(q)
+            foot.append(q)
+        path = fillet_path(leg + [corner] + foot, 0.004, 3)
+        du = panel_du(u, 0.20)
+        waxes = [Y if q.x < corner.x - 0.0015 else du for q in path]
+        with b.part(T_BRACKET, 0.5, "kart"):
+            add_strap(bm, path, waxes)
+        p, n = panel_surf(u, 0.20)
+        with b.part(T_NONE, 0.5, "kart"):
+            add_dome(bm, p + n * 0.0002, n, CHROME_IDX, r=0.0062, h=0.0036)
+        fb = foot[-1] + Vector((0.004, 0.0, 0.0))
+        with b.part(T_NONE, 0.5, "kart"):
+            add_hex(bm, Vector((fb.x, fb.y, 0.0)), Z, fb.z + half_t - 0.0003,
+                    fb.z + half_t + 0.0042, 0.0050, CHROME_IDX)
+    # nerf bars, pods, their grip ribs, bolts and brackets
     for s in (-1.0, 1.0):
         gp = "podL" if s > 0 else "podR"
         for k, x in enumerate((0.160, -0.220)):
             ry = rail_y(x)
-            with b.part(T_NONE, 0.5, "kart"):
+            with b.part(T_BAR, 0.5, "kart"):
                 # level under the pod, its top 1.5 mm into the pod's floor
                 add_tube(bm, fillet_path([Vector((x, s * ry, Z_F)), Vector((x, s * 0.400, 0.0715)),
                                           Vector((x, s * 0.630, 0.0715))], 0.05, 5), 0.0110, 12,
@@ -1927,63 +2122,49 @@ def build_body(b, n_corner, flags):
             if s < 0:
                 sec = [(-u, v) for u, v in reversed(sec)]
             loops.append([Vector((x, u, v)) for u, v in sec])
-        tmp = bmesh.new()
-        try:
-            add_loft(tmp, loops, BODY_IDX)
-            tri_short(tmp, list(tmp.faces))
-            tmp.normal_update()
-            tree = BVHTree.FromBMesh(tmp)
-        finally:
-            tmp.free()
+        tree = loft_tree(loops)
         with b.part(T_BODY, 0.5, "kart", gp):
-            nf = len(bm.faces)
-            add_loft(bm, loops, BODY_IDX)
-            bm.faces.ensure_lookup_table()
-            tri_short(bm, [bm.faces[i] for i in range(nf, len(bm.faces))])
-        for k, (x, y) in enumerate(((0.130, 0.590), (0.190, 0.590), (-0.250, 0.590),
-                                    (-0.190, 0.590))):
+            add_loft_short(bm, loops, BODY_IDX)
+        for k, (x, y) in enumerate(((0.130, 0.560), (0.190, 0.560), (-0.250, 0.560),
+                                    (-0.190, 0.560))):
             hit, nrm = surface_hit(tree, x, s * y)
             if hit is not None:
                 with b.part(T_NONE, 0.5, "kart", gp):
                     add_dome(bm, hit - nrm * 0.0002 * k, nrm, CHROME_IDX, r=0.0070, h=0.0040)
-
-
-def panel_point(u, v):
-    """The front panel: a plate curved back at its sides, leaning back over
-    the pedals, its foot inside the nose."""
-    x = 0.645 - 0.090 * v - 0.025 * u * u
-    y = 0.205 * u * (1.0 - 0.14 * v)
-    z = 0.085 + 0.285 * v + 0.012 * u * u
-    return Vector((x, y, z))
-
-
-def build_front_panel(b):
-    bm = b.bm
-
-    def surf(uu, vv, eps=1e-4):
-        u = 2.0 * uu - 1.0
-        p = panel_point(u, vv)
-        du = panel_point(min(1.0, u + eps), vv) - panel_point(max(-1.0, u - eps), vv)
-        dv = panel_point(u, min(1.0, vv + eps)) - panel_point(u, max(0.0, vv - eps))
-        n = du.cross(dv).normalized()
-        if n.x < 0.0:
-            n = -n
-        return p, n
-    with b.part(T_BODY, 0.5, "kart"):
-        add_sheet(bm, surf, 16, 10, 0.004, BODY_IDX)
-    # two bracket rods up from the front crossmember behind the panel, and
-    # the bolts through the panel into them
-    for s in (-1.0, 1.0):
-        u = s * 0.50
-        top = panel_point(u, 0.82)
-        _p, n = surf(0.5 + 0.5 * u, 0.82)
-        end = top - n * 0.0020
-        with b.part(T_NONE, 0.5, "kart"):
-            add_tube(bm, fillet_path([Vector((0.600, s * 0.100, Z_F)),
-                                      Vector((0.600, s * 0.100, 0.120)),
-                                      end - n * 0.010, end], 0.03, 4), 0.0060, 10, CHROME_IDX)
-        with b.part(T_NONE, 0.5, "kart"):
-            add_dome(bm, top + n * 0.0002, n, CHROME_IDX, r=0.0070, h=0.0040)
+        # moulded grip ribs across the deck, following its surface
+        # (each rib a little taller and deeper than the last, its ends staggered:
+        # ribs on one flat deck would otherwise share their top, bottom and end
+        # planes)
+        for i, x in enumerate(POD_RIB_X):
+            h = POD_RIB_H + 0.00031 * i
+            bite = POD_RIB_BITE + 0.00017 * i
+            y0, y1 = 0.500 + 0.0011 * i, 0.600 - 0.0013 * i
+            pts = []
+            for k in range(3):
+                y = y0 + (y1 - y0) * k / 2.0
+                hit, nrm = surface_hit(tree, x, s * y)
+                if hit is not None:
+                    pts.append(hit + nrm * (0.5 * h - bite))
+            if len(pts) == 3:
+                with b.part(T_NONE, 0.5, "kart", gp):
+                    add_bar(bm, pts, X, 0.0050, 0.5 * h, 0.0018, BODY_IDX, filleted=True)
+        # pod brackets: straps welded on the nerf bars, their tabs bolted flat
+        # to the pod's inner wall
+        for k, x in enumerate((0.160, -0.220)):
+            y_in = 0.470
+            yt = s * (y_in - tab)
+            # the strap stands across the bar: sunk until its corners are under
+            # the bar's surface
+            p0 = Vector((x, s * 0.452, 0.0715 + 0.0040))
+            with b.part(T_BRACKET, 0.5, "kart"):
+                add_strap(bm, [p0, Vector((x, s * 0.452, 0.094)), Vector((x, yt, 0.104)),
+                               Vector((x, yt, 0.150))], X)
+            with b.part(T_NONE, 0.5, "kart"):
+                add_dome(bm, Vector((x, yt - s * (half_t - 0.0008), 0.132)), -Y * s, CHROME_IDX,
+                         r=0.0060, h=0.0034)
+    if flags["float_nose"]:
+        for v in b.groups["nose"]:
+            v.co.x += FLOAT_NOSE
 
 
 def build_rear_bumper(b):
@@ -2086,6 +2267,82 @@ def build_tank(b, xe):
         add_tube(bm, fillet_path(line, 0.04, 5), 0.0038, 8, RUBBER_IDX)
 
 
+def rail_run(s, x_hi, x_lo, bumps=(0.160, -0.220)):
+    """Points along the top outer shoulder of the left (s=+1) or right rail
+    from ``x_hi`` back to ``x_lo``, for a line clipped to the rail; lifted
+    over the nerf bars' roots."""
+    pts = [p for p in loop_path() if p.y * s > 0.05 and x_lo <= p.x <= x_hi]
+    pts.sort(key=lambda p: -p.x)
+    out = []
+    for i, p in enumerate(pts):
+        a = pts[max(i - 1, 0)]
+        c = pts[min(i + 1, len(pts) - 1)]
+        t = (c - a).normalized()
+        o = Vector((-t.y, t.x, 0.0))
+        if o.y * s < 0.0:
+            o = -o
+        q = p + (o + Z) * (0.7071 * (TUBE_R + 0.0032))
+        for xb in bumps:
+            q.z += 0.0040 * max(0.0, 1.0 - abs(p.x - xb) / 0.030)
+        out.append(q)
+    return out
+
+
+def build_controls(b, xe, wd):
+    """Brake master cylinder on the tray, pushed by the left pedal, its hose
+    clipped along the left rail to the caliper; the throttle cable from the
+    right pedal along the right rail and up to the carburettor."""
+    bm = b.bm
+    ztray = Z_F - TUBE_R + 0.0008
+    mc = Vector((0.400, 0.170, 0.072))
+    with b.part(T_NONE, 0.5, "kart"):
+        lathe_on(bm, [(0.0105, -0.035), (0.0125, -0.032), (0.0125, 0.030), (0.0105, 0.035)], 20,
+                 ALU_IDX, mc, X)
+    with b.part(T_NONE, 0.35, "kart"):
+        lathe_on(bm, [(0.0080, 0.034), (0.0092, 0.038), (0.0078, 0.042), (0.0090, 0.046),
+                      (0.0050, 0.050)], 14, RUBBER_IDX, mc, X)
+    with b.part(T_NONE, 0.5, "kart"):
+        add_rbox(bm, 0.016, 0.019, 0.004, chamfered(mc.z - 0.0115 - ztray + 0.001, 0.0010),
+                 (mc.x + 0.0037, mc.y, ztray - 0.001), Matrix.Identity(3), ALU_IDX, n_corner=2)
+    ztop = mc.z - 0.0115
+    for k, (dx, dy) in enumerate(((-0.009, 0.0148), (0.009, -0.0148))):
+        with b.part(T_NONE, 0.5, "kart"):
+            add_hex(bm, Vector((mc.x + 0.0037 + dx, mc.y + dy, 0.0)), Z, ztop - 0.0003 - 0.00015 * k,
+                    ztop + 0.0040 + 0.0002 * k, 0.0038, CHROME_IDX)
+    res = mc + Vector((-0.012, 0.0, 0.0115))
+    with b.part(T_NONE, 0.5, "kart"):
+        lathe_on(bm, [(0.0090, -0.002), (0.0095, 0.004), (0.0095, 0.028), (0.0085, 0.031)], 16,
+                 TANK_IDX, res, Z)
+    with b.part(T_NONE, 0.5, "kart"):
+        lathe_on(bm, [(0.0102, 0.0295), (0.0108, 0.031), (0.0108, 0.037), (0.0060, 0.040)], 16,
+                 BLACK_IDX, res, Z)
+    # pushrod from the boot to the brake pedal's arm
+    with b.part(T_NONE, 0.5, "kart"):
+        add_rod(bm, mc, (Vector((0.528, 0.120, 0.130)) - mc).normalized(), 0.044,
+                (Vector((0.528, 0.120, 0.130)) - mc).length, 0.0035, STEEL_IDX, segs=10)
+    # brake hose: out of the cylinder's back, along the left rail, up to the caliper
+    ca = math.radians(140.0)
+    cc = Vector((AX_R + 0.074 * math.cos(ca), wd, Z_AR + 0.074 * math.sin(ca)))
+    run = rail_run(1.0, 0.300, -0.400)
+    hose = ([mc + Vector((-0.030, 0.0, 0.0)), mc + Vector((-0.050, 0.004, -0.002)),
+             Vector((0.330, 0.215, run[0].z + 0.004))] + run
+            + [Vector((-0.430, 0.286, 0.100)), Vector((-0.470, 0.268, 0.165)),
+               Vector((-0.520, 0.262, 0.212)), Vector((-0.550, 0.255, 0.214)),
+               cc + Vector((0.011, 0.016, 0.018))])
+    with b.part(T_NONE, 0.5, "kart"):
+        add_tube(bm, fillet_path(hose, 0.03, 2), 0.0040, 8, RUBBER_IDX)
+    # throttle cable: from the right pedal's arm, along the right rail, up
+    # inboard of the air-box and down onto the carburettor
+    run = rail_run(-1.0, 0.330, 0.000)
+    cable = ([Vector((0.528, -0.120, 0.130)), Vector((0.500, -0.160, 0.100)),
+              Vector((0.440, -0.205, 0.080))] + run
+             + [Vector((-0.030, -0.226, 0.150)), Vector((-0.060, -0.222, 0.300)),
+                Vector((-0.095, -0.226, 0.345)), Vector((xe + 0.163, -0.255, 0.352)),
+                Vector((xe + 0.153, -0.300, 0.318)), Vector((xe + 0.153, -0.310, 0.278))])
+    with b.part(T_NONE, 0.5, "kart"):
+        add_tube(bm, fillet_path(cable, 0.03, 2), 0.0025, 6, BLACK_IDX)
+
+
 def build_ballast(b, aft, loose):
     """Lead plates stacked on the floor tray and bolted through it."""
     bm = b.bm
@@ -2110,6 +2367,33 @@ def build_ballast(b, aft, loose):
             v.co.z += LOOSE_BALLAST
 
 
+def orient_islands(bm):
+    """Outward normals on every closed island, by its signed volume: the
+    heuristic in recalc_face_normals turned the nose inside out."""
+    bm.faces.index_update()
+    seen = [False] * len(bm.faces)
+    for f0 in bm.faces:
+        if seen[f0.index]:
+            continue
+        seen[f0.index] = True
+        stack, isl = [f0], []
+        while stack:
+            f = stack.pop()
+            isl.append(f)
+            for e in f.edges:
+                for g in e.link_faces:
+                    if not seen[g.index]:
+                        seen[g.index] = True
+                        stack.append(g)
+        vol = 0.0
+        for f in isl:
+            vs = [lp.vert.co for lp in f.loops]
+            for k in range(1, len(vs) - 1):
+                vol += vs[0].dot(vs[k].cross(vs[k + 1]))
+        if vol < 0.0:
+            bmesh.ops.reverse_faces(bm, faces=isl)
+
+
 def build_mesh(name, n_corner, flags):
     bm = bmesh.new()
     _HEX[0] = 0
@@ -2126,16 +2410,16 @@ def build_mesh(name, n_corner, flags):
             ends[s] = build_front_corner(b, s, caster, TOE_DEG if (flags["toe_wheel"] and s > 0) else 0.0)
         build_steering_column(b)
         build_tie_rods(b, ends, flags["short_tierod"])
-        build_rear(b, flags)
+        wd = build_rear(b, flags)
         xe = build_drivetrain(b, flags)
         build_engine(b, xe)
         dz = build_seat(b)
         build_seat_mounts(b, dz)
         build_body(b, n_corner, flags)
         build_rear_bumper(b)
-        build_front_panel(b)
         build_floor_and_pedals(b)
         build_tank(b, xe)
+        build_controls(b, xe, wd)
         build_ballast(b, flags["aft_ballast"], flags["loose_ballast"])
         # loaded tyres: every tread vertex under the contact plane lies on it
         zc = -SINK
@@ -2153,6 +2437,7 @@ def build_mesh(name, n_corner, flags):
         triangulate_ngons(bm)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        orient_islands(bm)
         for face in bm.faces:
             face.smooth = True
         for edge in bm.edges:
@@ -2209,7 +2494,7 @@ def _gray(v):
 
 def weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col, scuff_amt,
               scuff_scale=38.0, metallic=0.0, rough_var=0.08, bump=0.0, bump_scale=600.0,
-              coat=0.0):
+              coat=0.0, wear=0.0, wear_col=(0.5, 0.5, 0.5, 1.0), streak=0.0, hot=None):
     """A designed surface (after traffic-cones): a per-part tone between two
     colours (the PartTone face attribute), grime rising from the asphalt to
     ``dirt_top``, sparse scuffs, roughness breakup and an optional fine bump."""
@@ -2246,6 +2531,56 @@ def weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col
     sr = _ramp(nt, 0.60, _gray(0.0), 0.70, _gray(scuff_amt))
     nt.links.new(sn.outputs["Fac"], sr.inputs["Fac"])
     col = _mix(nt, sr.outputs["Color"], grime, scuff_col)
+    if hot is not None:
+        # oily grime round the engine: distance from its centre, broken up
+        hc, hr, hcol, hamt = hot
+        dist = nt.nodes.new("ShaderNodeVectorMath")
+        dist.operation = "DISTANCE"
+        dist.inputs[1].default_value = hc
+        nt.links.new(coord.outputs["Object"], dist.inputs[0])
+        hm = _node(nt, "ShaderNodeMapRange")
+        hm.inputs["From Min"].default_value = 0.0
+        hm.inputs["From Max"].default_value = hr
+        hm.inputs["To Min"].default_value = hamt
+        hm.inputs["To Max"].default_value = 0.0
+        nt.links.new(dist.outputs["Value"], hm.inputs["Value"])
+        hn = _node(nt, "ShaderNodeTexNoise", Scale=14.0, Detail=8.0)
+        nt.links.new(coord.outputs["Object"], hn.inputs["Vector"])
+        hr_ = _ramp(nt, 0.30, _gray(0.35), 0.62, _gray(1.0))
+        nt.links.new(hn.outputs["Fac"], hr_.inputs["Fac"])
+        hmul = nt.nodes.new("ShaderNodeMath")
+        hmul.operation = "MULTIPLY"
+        hmul.use_clamp = True
+        nt.links.new(hm.outputs["Result"], hmul.inputs[0])
+        nt.links.new(hr_.outputs["Color"], hmul.inputs[1])
+        col = _mix(nt, hmul.outputs["Value"], col, hcol)
+    if streak > 0.0 or wear > 0.0:
+        # the lower half of a moulding takes the knocks: tyre rubber rubbed on
+        # in dark streaks, and light scratches through the surface, both
+        # stretched fore and aft
+        low = _node(nt, "ShaderNodeMapRange")
+        low.inputs["From Min"].default_value = SLAB_T + 0.09
+        low.inputs["From Max"].default_value = SLAB_T + 0.20
+        low.inputs["To Min"].default_value = 1.0
+        low.inputs["To Max"].default_value = 0.20
+        nt.links.new(sep.outputs["Z"], low.inputs["Value"])
+        for amt, scale, lo_, hi_, mark in ((streak, (0.9, 9.0, 12.0), 0.56, 0.70,
+                                            (0.022, 0.021, 0.021, 1.0)),
+                                           (wear, (1.4, 34.0, 34.0), 0.63, 0.67, wear_col)):
+            if amt <= 0.0:
+                continue
+            mp = nt.nodes.new("ShaderNodeMapping")
+            mp.inputs["Scale"].default_value = scale
+            nt.links.new(coord.outputs["Object"], mp.inputs["Vector"])
+            stn = _node(nt, "ShaderNodeTexNoise", Scale=3.0, Detail=8.0)
+            nt.links.new(mp.outputs["Vector"], stn.inputs["Vector"])
+            str_ = _ramp(nt, lo_, _gray(0.0), hi_, _gray(amt))
+            nt.links.new(stn.outputs["Fac"], str_.inputs["Fac"])
+            smul = nt.nodes.new("ShaderNodeMath")
+            smul.operation = "MULTIPLY"
+            nt.links.new(str_.outputs["Color"], smul.inputs[0])
+            nt.links.new(low.outputs["Result"], smul.inputs[1])
+            col = _mix(nt, smul.outputs["Value"], col, mark)
     nt.links.new(col, bsdf.inputs["Base Color"])
     rr = _ramp(nt, 0.30, _gray(max(0.03, rough - rough_var)), 0.70,
                _gray(min(0.95, rough + rough_var)))
@@ -2425,36 +2760,44 @@ def principled(name, color, metallic, roughness):
 def set_materials():
     """Slot order: frame paint, chrome/zinc, rubber, bodywork, seat,
     aluminium, engine casting, dark steel, black plastic, fuel tank, lead,
-    asphalt, kerb paint. Shared by the check and the render."""
+    asphalt, kerb paint, number plate. Shared by the check and the render.
+    The bodywork is blue with a white plate, so the warm accents are the
+    red frame and kerb: the yellow livery this piece first shipped with
+    filled the lower half of the hero and pushed the wedge warmth to
+    +0.288, out of the calibration band."""
+    eng = Vector((engine_x() + KART_X, -0.305 + KART_Y, Z_ENG + SLAB_T))
+    oil = (0.030, 0.025, 0.020, 1.0)
     paint = weathered("FramePaint", (0.58, 0.035, 0.022, 1.0), (0.50, 0.030, 0.026, 1.0), 0.30,
                       (0.12, 0.08, 0.05, 1.0), 0.10, 0.6, (0.20, 0.17, 0.15, 1.0), 0.45,
-                      scuff_scale=30.0, coat=0.35)
+                      scuff_scale=30.0, coat=0.35, wear=0.75, wear_col=(0.26, 0.25, 0.24, 1.0),
+                      hot=(eng, 0.34, oil, 0.80))
     add_studio(paint, (0.55, 0.20, 0.18, 1.0), 0.10, STUDIO)
     chrome = weathered("Chrome", (0.80, 0.80, 0.82, 1.0), (0.74, 0.75, 0.77, 1.0), 0.14,
                        (0.25, 0.22, 0.19, 1.0), 0.08, 0.5, (0.45, 0.44, 0.42, 1.0), 0.3,
-                       metallic=1.0, rough_var=0.05, scuff_scale=40.0)
+                       metallic=1.0, rough_var=0.05, scuff_scale=40.0, hot=(eng, 0.30, oil, 0.55))
     add_studio(chrome, (0.70, 0.72, 0.76, 1.0), 0.75, STUDIO)
     rubber = weathered("TyreRubber", (0.034, 0.033, 0.032, 1.0), (0.046, 0.044, 0.042, 1.0), 0.72,
                        (0.13, 0.12, 0.11, 1.0), 0.02, 0.5, (0.075, 0.072, 0.07, 1.0), 0.8,
                        scuff_scale=26.0, bump=0.15, bump_scale=700.0)
-    body = weathered("Bodywork", (0.90, 0.56, 0.015, 1.0), (0.86, 0.50, 0.012, 1.0), 0.34,
-                     (0.25, 0.18, 0.10, 1.0), 0.08, 0.45, (0.62, 0.50, 0.30, 1.0), 0.16,
-                     scuff_scale=30.0, coat=0.35)
+    body = weathered("Bodywork", (0.018, 0.090, 0.36, 1.0), (0.014, 0.072, 0.30, 1.0), 0.34,
+                     (0.030, 0.034, 0.042, 1.0), 0.08, 0.40, (0.030, 0.085, 0.24, 1.0), 0.45,
+                     scuff_scale=30.0, coat=0.35, wear=0.45, wear_col=(0.30, 0.36, 0.48, 1.0),
+                     streak=0.75)
     seat = weathered("SeatGlass", (0.060, 0.064, 0.074, 1.0), (0.070, 0.074, 0.084, 1.0), 0.30,
                      (0.12, 0.11, 0.10, 1.0), 0.05, 0.3, (0.16, 0.16, 0.17, 1.0), 0.15,
-                     scuff_scale=18.0, coat=1.0)
+                     scuff_scale=18.0, coat=1.0, wear=0.5, wear_col=(0.20, 0.20, 0.21, 1.0))
     alu = weathered("Aluminium", (0.70, 0.71, 0.72, 1.0), (0.62, 0.63, 0.64, 1.0), 0.38,
                     (0.26, 0.23, 0.20, 1.0), 0.08, 0.6, (0.50, 0.50, 0.50, 1.0), 0.35,
-                    metallic=1.0, rough_var=0.10, scuff_scale=36.0)
+                    metallic=1.0, rough_var=0.10, scuff_scale=36.0, hot=(eng, 0.30, oil, 0.60))
     add_studio(alu, (0.62, 0.64, 0.67, 1.0), 0.30, STUDIO)
     casting = weathered("EngineCasting", (0.50, 0.50, 0.48, 1.0), (0.42, 0.42, 0.41, 1.0), 0.58,
                         (0.18, 0.15, 0.12, 1.0), 0.30, 0.55, (0.30, 0.28, 0.26, 1.0), 0.55,
                         metallic=0.85, rough_var=0.10, scuff_scale=30.0, bump=0.35,
-                        bump_scale=500.0)
+                        bump_scale=500.0, hot=(eng + Vector((0.0, 0.0, -0.08)), 0.22, oil, 0.55))
     add_studio(casting, (0.50, 0.50, 0.50, 1.0), 0.18, STUDIO)
     steel = weathered("DarkSteel", (0.22, 0.21, 0.20, 1.0), (0.17, 0.16, 0.15, 1.0), 0.40,
                       (0.14, 0.10, 0.07, 1.0), 0.10, 0.5, (0.30, 0.22, 0.15, 1.0), 0.5,
-                      metallic=1.0, rough_var=0.10, scuff_scale=24.0)
+                      metallic=1.0, rough_var=0.10, scuff_scale=24.0, hot=(eng, 0.30, oil, 0.60))
     add_studio(steel, (0.45, 0.45, 0.46, 1.0), 0.30, STUDIO)
     black = weathered("BlackPlastic", (0.024, 0.024, 0.026, 1.0), (0.034, 0.034, 0.036, 1.0), 0.46,
                       (0.14, 0.13, 0.11, 1.0), 0.05, 0.3, (0.11, 0.11, 0.11, 1.0), 0.5)
@@ -2466,8 +2809,12 @@ def set_materials():
                      metallic=0.6, scuff_scale=40.0)
     asphalt = asphalt_material()
     kerb = kerb_material()
+    plate = weathered("NumberPlate", (0.86, 0.86, 0.84, 1.0), (0.82, 0.82, 0.80, 1.0), 0.32,
+                      (0.30, 0.26, 0.20, 1.0), 0.05, 0.3, (0.55, 0.53, 0.50, 1.0), 0.25,
+                      scuff_scale=24.0, coat=0.35, wear=0.5, wear_col=(0.48, 0.47, 0.45, 1.0),
+                      streak=0.35)
     return (paint, chrome, rubber, body, seat, alu, casting, steel, black, tank, lead, asphalt,
-            kerb)
+            kerb, plate)
 
 
 def assign_slots(obj, wanted):
@@ -2669,7 +3016,8 @@ def classify(me):
                    ("rims", T_RIM), ("hubs_f", T_HUB_F), ("hubs_r", T_HUB_R), ("stubs", T_STUB),
                    ("axles", T_AXLE), ("bearings", T_BEARING), ("kingpins", T_KINGPIN),
                    ("arms", T_ARM), ("tabs", T_TAB), ("pins", T_PIN), ("eyes", T_EYE),
-                   ("chains", T_CHAIN), ("sprockets", T_SPROCKET), ("ballast", T_BALLAST)):
+                   ("chains", T_CHAIN), ("sprockets", T_SPROCKET), ("ballast", T_BALLAST),
+                   ("brackets", T_BRACKET)):
         out[key] = [s for s in parts if s.tag == t]
     out["slab_top"] = max(s.hi.z for s in out["slab"]) if out["slab"] else 0.0
     out["kart"] = [s for s in parts if s.tag not in (T_SLAB, T_KERB)]
@@ -2885,6 +3233,57 @@ def caster_audit(cls):
         if a.z < 0.0:
             a = -a
         out.append(math.degrees(math.atan2(-a.x, a.z)))
+    return out
+
+
+_RAYS = (Vector((0.5774, 0.5774, 0.5774)), Vector((-0.6247, 0.3123, 0.7158)),
+         Vector((0.2673, -0.8018, 0.5345)))
+
+
+def is_inside(tree, p):
+    """Ray parity, majority of three rays: a nearest-face normal misreads a
+    point beside a thin plate's rim."""
+    votes = 0
+    for d in _RAYS:
+        n = 0
+        o = Vector(p)
+        for _ in range(64):
+            hit = tree.ray_cast(o, d)[0]
+            if hit is None:
+                break
+            n += 1
+            o = hit + d * 1e-6
+        votes += n % 2
+    return votes >= 2
+
+
+def inside_depth(host, p):
+    """How far ``p`` lies inside the closed shell ``host`` (negative: its
+    distance outside): the distance to the nearest face, signed by parity."""
+    loc, _nrm, _i, d = host.tree.find_nearest(p)
+    if loc is None:
+        return -9.0
+    return d if is_inside(host.tree, p) else -d
+
+
+def bracket_audit(cls):
+    """Per bracket strap, its bite into each moulding or tube it meets (the
+    deepest strap vertex inside that shell, read by nearest-face signed
+    distance); the two deepest are the two joints the strap makes."""
+    hosts = [s for s in cls["all"] if s.tag in (T_BODY, T_LOOP, T_FRAME, T_BAR)
+             and len(s.pts) > 64]
+    out = []
+    for br in cls["brackets"]:
+        lo, hi = br.lo - Vector((0.01, 0.01, 0.01)), br.hi + Vector((0.01, 0.01, 0.01))
+        bites = []
+        for h in hosts:
+            if (h.lo.x > hi.x or h.hi.x < lo.x or h.lo.y > hi.y or h.hi.y < lo.y
+                    or h.lo.z > hi.z or h.hi.z < lo.z):
+                continue
+            bites.append(max(inside_depth(h, p) for p in br.pts))
+        bites.sort(reverse=True)
+        bites += [-9.0, -9.0]
+        out.append((bites[0], bites[1]))
     return out
 
 
@@ -3106,6 +3505,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     casters = caster_audit(cls)
     stance = stance_audit(cls)
     ncomp, comp_sizes = connected_components(cls)
+    brackets = bracket_audit(cls)
 
     img, tex = setup_bake_image(low, target)
     if img is None:
@@ -3168,6 +3568,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     print(f"measured mass={stance['mass']:.2f}kg com=({stance['com'].x:.4f},{stance['com'].y:.4f},"
           f"{stance['com'].z:.4f}) margin={stance['margin']:.4f}")
     print(f"measured components={ncomp} sizes={comp_sizes[-5:]}")
+    print(f"measured brackets={len(brackets)} bites_mm="
+          f"{[(round(a * 1000, 3), round(c * 1000, 3)) for a, c in brackets]}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return (fail(f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]", 4),) + none3
@@ -3242,6 +3644,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
                      f"< {STANCE_MARGIN:.4f}", 20),) + none3
     if ncomp != 1:
         return (fail(f"assembly splits into {ncomp} components {comp_sizes}", 21),) + none3
+    if (len(brackets) != BRACKETS
+            or any(not (BRACKET_BITE_MIN <= v <= BRACKET_BITE_MAX) for pair in brackets for v in pair)):
+        return (fail(f"brackets: {len(brackets)} (want {BRACKETS}), bites "
+                     f"{[(round(a * 1000, 3), round(c * 1000, 3)) for a, c in brackets]} mm "
+                     f"(band [{BRACKET_BITE_MIN * 1000}, {BRACKET_BITE_MAX * 1000}])", 23),) + none3
     return 0, low, target, tex
 
 
@@ -3311,10 +3718,10 @@ def render_still(low, target, tex, path, engine):
     # Key from the camera's left and high, a cool fill low right, a cool rim
     # behind to lift the kart off the wall, and the warm wedge pooled on the
     # back wall.
-    light("Key", (-1.6, -3.8, 3.6), 124.0, 2.6, (1.0, 0.95, 0.90), spread=34.0)
-    light("Fill", (4.2, -2.2, 1.0), 15.0, 6.0, (0.72, 0.82, 1.0))
+    light("Key", (-1.6, -3.8, 3.6), 156.0, 2.6, (1.0, 0.95, 0.90), spread=34.0)
+    light("Fill", (4.2, -2.2, 1.0), 34.0, 6.0, (0.72, 0.82, 1.0))
     light("Rim", (-1.8, 2.6, 2.4), 100.0, 2.2, (0.62, 0.78, 1.0))
-    light("Wedge", (-1.4, 2.8, 1.8), 150.0, 3.6, (1.0, 0.76, 0.50),
+    light("Wedge", (-1.4, 2.8, 1.8), 165.0, 3.6, (1.0, 0.76, 0.50),
           target=(centre.x - 0.8, WALL_Y, 0.5))
 
     cam_data = bpy.data.cameras.new("Cam")
@@ -3347,7 +3754,7 @@ def render_still(low, target, tex, path, engine):
     if path.lower().endswith(".webp"):
         scene.render.image_settings.quality = 90
     scene.render.filepath = path
-    # Standard, not AgX: AgX washes the yellow bodywork and the red paint grey
+    # Standard, not AgX: AgX washes the blue bodywork and the red paint grey
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low],
@@ -3384,6 +3791,7 @@ def main():
     p.add_argument("--no-caster", action="store_true")
     p.add_argument("--aft-ballast", action="store_true")
     p.add_argument("--loose-ballast", action="store_true")
+    p.add_argument("--float-nose", action="store_true")
     args = p.parse_args(argv)
 
     code, low, target, tex = check(
@@ -3402,6 +3810,7 @@ def main():
         no_caster=args.no_caster,
         aft_ballast=args.aft_ballast,
         loose_ballast=args.loose_ballast,
+        float_nose=args.float_nose,
     )
     if code:
         return code
