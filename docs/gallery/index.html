@@ -381,7 +381,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 66 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples, 67 showcase pieces</span>
         <div class="density" role="group" aria-label="Show">
           <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
@@ -405,7 +405,7 @@
           <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
           <button class="density-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">36</span></button>
           <button class="density-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">6</span></button>
-          <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">9</span></button>
+          <button class="density-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">10</span></button>
           <button class="density-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">6</span></button>
           <button class="density-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">9</span></button>
         </div>
@@ -1750,6 +1750,17 @@
           <a class="card-link" href="fern-mossy-rock/">View showcase piece<span class="sr-only"> fern-mossy-rock</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="nature" data-name="sea-stack-arch">
+        <a class="card-media" href="sea-stack-arch/" tabindex="-1" aria-hidden="true">
+          <img src="assets/sea-stack-arch-hero.webp" alt="A layered sandstone sea arch on a wave-cut rock platform, a sea stack beside it on its own island, foam at the waterline, fallen blocks, and grass and pink sea thrift on the tops." width="1280" height="720" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="sea-stack-arch/">sea-stack-arch</a></h2>
+          <p class="teaches">A procedural coastal diorama tile — a fragment of a horizontally bedded sandstone headland on a wave-cut rock platform, sixteen hard and soft beds at one set of heights in every column with the soft beds undercut so the hard beds project as ledges, vertical joint faces shared by both legs and the lintel, blocks set back and fallen out between the joints, a natural arch of two stepped legs carrying a lintel over a channel, a sea stack of the same beds on its own island, a rippled sea at a declared level with its rim run under the platform, a foam line at the waterline, tide pools, fallen blocks and boulders, and turf with sea grass and sea thrift on the tops — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 78182 tris, eight materials with 44404 sandstone, 10654 shelf, 4778 water, 1480 foam, 864 cobble, 3932 turf, 5147 grass and 1248 thrift faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.544×1.923×1.618 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs across 37 flat-bedded shells, every soft bed&#x27;s end rings inside the hard beds either side (35 joints, 0.0026–0.0142 m) with the lintel&#x27;s lowest bed biting both legs 0.012 m, the stack&#x27;s mass centre 0.122 m inside its foot notch&#x27;s footprint (min 0.050), both legs and the stack sealed in the platform in 8 of 8 sectors (worst 0.037 m, min 0.020), a clear aperture 0.368 m wide and 0.737 m high (min 0.20 × 0.60), all 18 hard bed tops level (0.00°) and continuous across the columns, the 19 soft beds undercut 0.013–0.029 m (band 0.008–0.090), the sea at 0.1050 m with a 0.0024 m ripple and both pools flat, every water rim 0.012 m under the platform (min 0.008), the foam within 0.0043 m of the waterline with its land edge 0.014 m under the rock, all 13 loose rocks sealed in every sector and none overlapping, all 289 roots of grass and thrift 0.008–0.019 m in the turf or stone and none loose, LOD ratios in band, five-hull collider 342 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --gap-lintel 17; --lean-stack 19; --cut-pillar 20; --close-arch 21; --tilt-beds 22; --flush-beds 23; --flat-sea 24; --short-sea 25; --lift-foam 26; --perch-talus 27; --pile-talus 28; --float-cover 29.</p>
+          <a class="card-link" href="sea-stack-arch/">View showcase piece<span class="sr-only"> sea-stack-arch</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1784,7 +1795,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 66 showcase pieces';
+      var COUNT_LABEL = '52 examples, 67 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];

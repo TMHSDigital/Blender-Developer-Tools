@@ -140,5 +140,6 @@
   {"name": "go-kart", "script": "showcase/go-kart/go_kart.py"},
   {"name": "broadleaf-oak", "script": "showcase/broadleaf-oak/broadleaf_oak.py"},
   {"name": "farm-tractor", "script": "showcase/farm-tractor/farm_tractor.py"},
-  {"name": "fern-mossy-rock", "script": "showcase/fern-mossy-rock/fern_mossy_rock.py"}
+  {"name": "fern-mossy-rock", "script": "showcase/fern-mossy-rock/fern_mossy_rock.py"},
+  {"name": "sea-stack-arch", "script": "showcase/sea-stack-arch/sea_stack_arch.py"}
 ]
