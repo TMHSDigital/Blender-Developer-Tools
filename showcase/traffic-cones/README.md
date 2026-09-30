@@ -191,7 +191,10 @@ their boundaries are hard edges on a flat face and cannot z-fight. Every
 cone, board and leg carries a `PartTone` face attribute that the shaders
 read to move each part between two tones, so no two cones are the same
 orange. Grime rises from the slab on every part; scuffs are sparse and
-small. The steel is galvanised, grey and rough, with a studio reflection
+small. The cone PVC and its collars also carry level rub marks, black on
+the orange and grey on the sheeting: a noise squashed sixteen-fold in
+height, so each mark runs round the cone like a tyre or boot rub rather
+than up it. The steel is galvanised, grey and rough, with a studio reflection
 term so it does not read as plastic on a dark stage.
 
 ## Exit codes

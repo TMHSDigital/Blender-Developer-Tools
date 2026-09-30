@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/traffic-cones-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
+  <meta property="og:image:alt" content="Scuffed orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="traffic-cones — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural roadworks set on a cut-out patch of asphalt — a broken-edged asphalt slab with a worn white road line and two sealed tar cracks; seven 720 mm PVC traffic cones, each a hollow lathed body with a moulded bead and a rolled lip round an open tip, bonded into a square rubber base with chamfered corners, a raked top, a collar, four moulded lugs and a recess underneath, and hooped with 4 in and 6 in retroreflective collars; three standing in a taper line, three nested in a stack whose wall thickness sets the nesting pitch, and one knocked over onto the edge of its base and the lip of its tip, its roll solved so both touch; a folding A-frame barricade of four square steel legs hinged in pairs on pivot bolts, spread by pinned straps on spacers, each foot in a rubber pad, carrying two boards on each face split on 45-degree lines into orange and white retroreflective stripes and bolted to the legs; and a warning lamp with amber fresnel lenses on a bracket bolted to the top board — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/traffic-cones-hero.webp" />
-  <meta name="twitter:image:alt" content="Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
+  <meta name="twitter:image:alt" content="Scuffed orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -359,8 +359,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../planet-rover/" aria-label="Previous showcase piece: planet-rover"><span aria-hidden="true">&larr;</span> planet-rover</a><span class="pager-pos hud">61 of 67 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../mushroom-stump/" aria-label="Next showcase piece: mushroom-stump">mushroom-stump <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp.">
-      <img src="../assets/traffic-cones-hero.webp" alt="Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Scuffed orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp.">
+      <img src="../assets/traffic-cones-hero.webp" alt="Scuffed orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 45816 tris, eleven materials with 6048 cone PVC, 4088 reflective, 8096 rubber, 596 asphalt, 56 road paint, 496 tar, 64 orange sheeting, 384 board, 2912 steel, 720 black plastic and 696 lens faces, UVs in 0..1 with zero AABB overlap, outer AABB 3.037×2.037×1.335 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all 10 supports (five cone bases, the fallen cone&#x27;s body and four barricade pads) 1.5 mm into the slab (band 0.8–3.0 mm), 4 boards biting their legs 1.5 mm at all 8 joints (band 0.8–3.0 mm), 14 collars seated 0.600 mm into their bodies and 1.400 mm proud, 6 upright cones 0.0000° off plumb at 0.720 m on bases 0.356 m across the flats, the barricade&#x27;s 4 legs mirrored within 0.0001 mm, one stack of 3 at a 0.036 m pitch with each inner wall bearing 0.847–1.105 mm on the wall below (band 0.4–2.0 mm), one connected assembly of 125 shells, LOD ratios in band, collider 493 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-cone 16; --gap-board 17; --float-band 18; --lean-cone 19; --skew-leg 19; --loose-stack 20; --loose-lamp 21.</div>
@@ -411,7 +411,7 @@ blender --background --python traffic_cones.py -- --output cones.png</code></pre
 <p>Smoke passes no flags.</p>
 <p>The hero looks from the front left and above, so the taper line of cones reads in front of the barricade, the stack&#x27;s three bases show at the left and the fallen cone&#x27;s open base and recess face the lens. The wall stands 6 m behind the patch, and the warm wedge pools on it to the right. Default stage; no deviation.</p>
 <h2 id="shading">Shading<a class="anchor" href="#shading" aria-label="Link to this section">#</a></h2>
-<p>The cone bodies, bases, lens, housing and every lathe are smooth-shaded; chamfers, the patch&#x27;s rims and every material boundary stay crisp through sharp edges above 35°. The stripes are cut into the board&#x27;s own faces, so their boundaries are hard edges on a flat face and cannot z-fight. Every cone, board and leg carries a <code>PartTone</code> face attribute that the shaders read to move each part between two tones, so no two cones are the same orange. Grime rises from the slab on every part; scuffs are sparse and small. The steel is galvanised, grey and rough, with a studio reflection term so it does not read as plastic on a dark stage.</p>
+<p>The cone bodies, bases, lens, housing and every lathe are smooth-shaded; chamfers, the patch&#x27;s rims and every material boundary stay crisp through sharp edges above 35°. The stripes are cut into the board&#x27;s own faces, so their boundaries are hard edges on a flat face and cannot z-fight. Every cone, board and leg carries a <code>PartTone</code> face attribute that the shaders read to move each part between two tones, so no two cones are the same orange. Grime rises from the slab on every part; scuffs are sparse and small. The cone PVC and its collars also carry level rub marks, black on the orange and grey on the sheeting: a noise squashed sixteen-fold in height, so each mark runs round the cone like a tyre or boot rub rather than up it. The steel is galvanised, grey and rough, with a studio reflection term so it does not read as plastic on a dark stage.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family. <code>20</code> and <code>21</code> are file-local. <code>22</code> is the asset-quality floor on the render path: <code>check_asset_quality</code> returns 11, which this piece already spends on the collider ceiling, so the call site remaps it.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 11 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, coplanar cross-shell pairs</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a support outside its sink band, or not 10 supports (<code>--lift-z</code>, <code>--float-cone</code>)</td></tr><tr><td>17</td><td>A board&#x27;s bite into a leg outside its band, or not 4 boards and 8 joints (<code>--gap-board</code>)</td></tr><tr><td>18</td><td>A collar&#x27;s seat or stand-off outside its band, or a collar with no host, or not 14 collars (<code>--float-band</code>)</td></tr><tr><td>19</td><td>A cone not plumb, its height or base width off, or the legs not mirror-symmetric, or not 6 upright cones and 4 legs (<code>--lean-cone</code>, <code>--skew-leg</code>)</td></tr><tr><td>20</td><td>Nesting: not one stack of 3, or a pitch or wall bite outside its band (<code>--loose-stack</code>)</td></tr><tr><td>21</td><td>Assembly splits into more than one connected component (<code>--loose-lamp</code>)</td></tr><tr><td>22</td><td>Asset-quality floor (render path only; remapped from 11)</td></tr></tbody></table></div>
@@ -420,9 +420,9 @@ blender --background --python traffic_cones.py -- --output cones.png</code></pre
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/traffic-cones/traffic_cones.py</code>
-        <span>2244 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/traffic-cones/traffic_cones.py">View on GitHub &rarr;</a></span>
+        <span>2256 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/traffic-cones/traffic_cones.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="2244">
+      <div class="code" data-lines="2256">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2666,7 +2666,19 @@ blender --background --python traffic_cones.py -- --output cones.png</code></pre
 2241
 2242
 2243
-2244</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready traffic cone and barrier set — a showcase piece, not an example.
+2244
+2245
+2246
+2247
+2248
+2249
+2250
+2251
+2252
+2253
+2254
+2255
+2256</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready traffic cone and barrier set — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural roadworks set after composing
 shipped pipeline pieces: bmesh construction, UVs, eleven materials,
@@ -3801,10 +3813,12 @@ TONE = <span class="s">&quot;PartTone&quot;</span>
 
 <span class="k">def</span> weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col, scuff_amt,
               scuff_scale=<span class="n">38.0</span>, metallic=<span class="n">0.0</span>, rough_var=<span class="n">0.08</span>, bump=<span class="n">0.0</span>, bump_scale=<span class="n">600.0</span>,
-              coat=<span class="n">0.0</span>):
+              coat=<span class="n">0.0</span>, rub=<span class="n">0.0</span>, rub_col=(<span class="n">0.030</span>, <span class="n">0.027</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)):
     <span class="s">&quot;&quot;&quot;A designed surface: a per-part tone between two colours (the PartTone
     face attribute), grime rising from the slab to ``dirt_top``, sparse
-    scuffs, roughness breakup and an optional fine bump.&quot;&quot;&quot;</span>
+    scuffs, ``rub``: level black tyre and boot rubs (a noise squashed flat,
+    so each mark runs round the part, not up it), roughness breakup and an
+    optional fine bump.&quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
@@ -3838,6 +3852,15 @@ TONE = <span class="s">&quot;PartTone&quot;</span>
     sr = _ramp(nt, <span class="n">0.60</span>, _gray(<span class="n">0.0</span>), <span class="n">0.70</span>, _gray(scuff_amt))
     nt.links.new(sn.outputs[<span class="s">&quot;Fac&quot;</span>], sr.inputs[<span class="s">&quot;Fac&quot;</span>])
     col = _mix(nt, sr.outputs[<span class="s">&quot;Color&quot;</span>], grime, scuff_col)
+    <span class="k">if</span> rub &gt; <span class="n">0.0</span>:
+        mp = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+        mp.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">16.0</span>)
+        nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mp.inputs[<span class="s">&quot;Vector&quot;</span>])
+        rn = _node(nt, <span class="s">&quot;ShaderNodeTexNoise&quot;</span>, Scale=<span class="n">3.2</span>, Detail=<span class="n">6.0</span>, Roughness=<span class="n">0.62</span>)
+        nt.links.new(mp.outputs[<span class="s">&quot;Vector&quot;</span>], rn.inputs[<span class="s">&quot;Vector&quot;</span>])
+        rk = _ramp(nt, <span class="n">0.635</span>, _gray(<span class="n">0.0</span>), <span class="n">0.700</span>, _gray(rub))
+        nt.links.new(rn.outputs[<span class="s">&quot;Fac&quot;</span>], rk.inputs[<span class="s">&quot;Fac&quot;</span>])
+        col = _mix(nt, rk.outputs[<span class="s">&quot;Color&quot;</span>], col, rub_col)
     nt.links.new(col, bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     rr = _ramp(nt, <span class="n">0.30</span>, _gray(max(<span class="n">0.03</span>, rough - rough_var)), <span class="n">0.70</span>,
                _gray(min(<span class="n">0.95</span>, rough + rough_var)))
@@ -4010,10 +4033,11 @@ TONE = <span class="s">&quot;PartTone&quot;</span>
     plastic, amber lens. Shared by the check and the render.&quot;&quot;&quot;</span>
     cone = weathered(<span class="s">&quot;ConePVC&quot;</span>, (<span class="n">0.90</span>, <span class="n">0.19</span>, <span class="n">0.012</span>, <span class="n">1.0</span>), (<span class="n">0.74</span>, <span class="n">0.20</span>, <span class="n">0.040</span>, <span class="n">1.0</span>), <span class="n">0.46</span>,
                      (<span class="n">0.13</span>, <span class="n">0.085</span>, <span class="n">0.050</span>, <span class="n">1.0</span>), <span class="n">0.26</span>, <span class="n">0.85</span>, (<span class="n">0.30</span>, <span class="n">0.10</span>, <span class="n">0.04</span>, <span class="n">1.0</span>), <span class="n">0.55</span>,
-                     scuff_scale=<span class="n">26.0</span>, coat=<span class="n">0.15</span>)
+                     scuff_scale=<span class="n">26.0</span>, coat=<span class="n">0.15</span>, rub=<span class="n">0.92</span>)
     reflect = weathered(<span class="s">&quot;ReflectiveWhite&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.78</span>, <span class="n">0.76</span>, <span class="n">1.0</span>), (<span class="n">0.66</span>, <span class="n">0.66</span>, <span class="n">0.63</span>, <span class="n">1.0</span>), <span class="n">0.30</span>,
                         (<span class="n">0.36</span>, <span class="n">0.32</span>, <span class="n">0.26</span>, <span class="n">1.0</span>), <span class="n">0.40</span>, <span class="n">0.60</span>, (<span class="n">0.50</span>, <span class="n">0.50</span>, <span class="n">0.49</span>, <span class="n">1.0</span>), <span class="n">0.65</span>,
-                        scuff_scale=<span class="n">70.0</span>, bump=<span class="n">0.12</span>, bump_scale=<span class="n">900.0</span>)
+                        scuff_scale=<span class="n">70.0</span>, bump=<span class="n">0.12</span>, bump_scale=<span class="n">900.0</span>, rub=<span class="n">0.6</span>,
+                        rub_col=(<span class="n">0.10</span>, <span class="n">0.095</span>, <span class="n">0.088</span>, <span class="n">1.0</span>))
     rubber = weathered(<span class="s">&quot;RubberBase&quot;</span>, (<span class="n">0.036</span>, <span class="n">0.035</span>, <span class="n">0.034</span>, <span class="n">1.0</span>), (<span class="n">0.050</span>, <span class="n">0.048</span>, <span class="n">0.045</span>, <span class="n">1.0</span>), <span class="n">0.78</span>,
                        (<span class="n">0.17</span>, <span class="n">0.155</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">0.03</span>, <span class="n">0.55</span>, (<span class="n">0.10</span>, <span class="n">0.098</span>, <span class="n">0.095</span>, <span class="n">1.0</span>), <span class="n">0.8</span>,
                        scuff_scale=<span class="n">20.0</span>, bump=<span class="n">0.25</span>, bump_scale=<span class="n">400.0</span>)
@@ -4949,7 +4973,7 @@ TONE = <span class="s">&quot;PartTone&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/traffic-cones-hero.webp" alt="Orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
+    <img src="../assets/traffic-cones-hero.webp" alt="Scuffed orange cones on a patch of asphalt, three in a row, three stacked and one knocked over showing its open base, before a striped A-frame barricade with an amber lamp." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -1133,10 +1133,12 @@ def _gray(v):
 
 def weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col, scuff_amt,
               scuff_scale=38.0, metallic=0.0, rough_var=0.08, bump=0.0, bump_scale=600.0,
-              coat=0.0):
+              coat=0.0, rub=0.0, rub_col=(0.030, 0.027, 0.025, 1.0)):
     """A designed surface: a per-part tone between two colours (the PartTone
     face attribute), grime rising from the slab to ``dirt_top``, sparse
-    scuffs, roughness breakup and an optional fine bump."""
+    scuffs, ``rub``: level black tyre and boot rubs (a noise squashed flat,
+    so each mark runs round the part, not up it), roughness breakup and an
+    optional fine bump."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -1170,6 +1172,15 @@ def weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col
     sr = _ramp(nt, 0.60, _gray(0.0), 0.70, _gray(scuff_amt))
     nt.links.new(sn.outputs["Fac"], sr.inputs["Fac"])
     col = _mix(nt, sr.outputs["Color"], grime, scuff_col)
+    if rub > 0.0:
+        mp = nt.nodes.new("ShaderNodeMapping")
+        mp.inputs["Scale"].default_value = (1.0, 1.0, 16.0)
+        nt.links.new(coord.outputs["Object"], mp.inputs["Vector"])
+        rn = _node(nt, "ShaderNodeTexNoise", Scale=3.2, Detail=6.0, Roughness=0.62)
+        nt.links.new(mp.outputs["Vector"], rn.inputs["Vector"])
+        rk = _ramp(nt, 0.635, _gray(0.0), 0.700, _gray(rub))
+        nt.links.new(rn.outputs["Fac"], rk.inputs["Fac"])
+        col = _mix(nt, rk.outputs["Color"], col, rub_col)
     nt.links.new(col, bsdf.inputs["Base Color"])
     rr = _ramp(nt, 0.30, _gray(max(0.03, rough - rough_var)), 0.70,
                _gray(min(0.95, rough + rough_var)))
@@ -1342,10 +1353,11 @@ def set_materials():
     plastic, amber lens. Shared by the check and the render."""
     cone = weathered("ConePVC", (0.90, 0.19, 0.012, 1.0), (0.74, 0.20, 0.040, 1.0), 0.46,
                      (0.13, 0.085, 0.050, 1.0), 0.26, 0.85, (0.30, 0.10, 0.04, 1.0), 0.55,
-                     scuff_scale=26.0, coat=0.15)
+                     scuff_scale=26.0, coat=0.15, rub=0.92)
     reflect = weathered("ReflectiveWhite", (0.78, 0.78, 0.76, 1.0), (0.66, 0.66, 0.63, 1.0), 0.30,
                         (0.36, 0.32, 0.26, 1.0), 0.40, 0.60, (0.50, 0.50, 0.49, 1.0), 0.65,
-                        scuff_scale=70.0, bump=0.12, bump_scale=900.0)
+                        scuff_scale=70.0, bump=0.12, bump_scale=900.0, rub=0.6,
+                        rub_col=(0.10, 0.095, 0.088, 1.0))
     rubber = weathered("RubberBase", (0.036, 0.035, 0.034, 1.0), (0.050, 0.048, 0.045, 1.0), 0.78,
                        (0.17, 0.155, 0.14, 1.0), 0.03, 0.55, (0.10, 0.098, 0.095, 1.0), 0.8,
                        scuff_scale=20.0, bump=0.25, bump_scale=400.0)
