@@ -42,11 +42,14 @@ PLANETS = [
 ]
 MOON_HOST = "Lapis"           # the moon orbits the outer planet
 MOON_OFFSET = 0.62            # distance from its planet, along local +X
-MOON_ANGLE = 163.0            # moon-pivot spin, degrees
+# moon-pivot spin, degrees: with Lapis at 152 the moon lands at 210 world,
+# out past the planet's flank instead of in front of the arm feeding it
+MOON_ANGLE = 58.0
 MOON_R = 0.12
 PEDESTAL_TOP = 0.22
 COLUMN_TOP = 2.45
 SUN_Z = 2.62
+RISER_GAP = 0.16              # arm runs this far below the planet's underside
 EPS = 1e-5
 
 
@@ -75,6 +78,18 @@ def sphere(name, radius):
         bm, u_segments=32, v_segments=16, radius=radius))
 
 
+def lathe(name, profile, segments=64):
+    """Turned part: spin an (r, z) profile about Z, welding the axis seam."""
+    def build(bm):
+        vs = [bm.verts.new((r, 0.0, z)) for r, z in profile]
+        edges = [bm.edges.new((a, b)) for a, b in zip(vs, vs[1:])]
+        bmesh.ops.spin(bm, geom=vs + edges, cent=(0, 0, 0), axis=(0, 0, 1),
+                       angle=2 * math.pi, steps=segments, use_merge=True)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return new_mesh_obj(name, build)
+
+
 def empty(name, location):
     obj = bpy.data.objects.new(name, None)  # object_data=None -> EMPTY
     obj.location = location
@@ -93,8 +108,11 @@ def build_orrery(skip_mpi=False):
     """Author the whole hierarchy with bpy.data (no object-mode operators)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    pedestal = cylinder("Pedestal", 1.15, PEDESTAL_TOP, segments=48)
-    pedestal.location = (0.0, 0.0, PEDESTAL_TOP / 2)
+    # stepped, moulded foot turned in one profile; top face at PEDESTAL_TOP
+    pedestal = lathe("Pedestal", [
+        (0.0, 0.0), (1.22, 0.0), (1.24, 0.02), (1.24, 0.07), (1.20, 0.085),
+        (1.06, 0.09), (1.02, 0.11), (1.02, 0.15), (0.96, 0.17), (0.60, 0.19),
+        (0.30, 0.205), (0.16, PEDESTAL_TOP), (0.0, PEDESTAL_TOP)])
     column = cylinder("Column", 0.07, COLUMN_TOP - PEDESTAL_TOP, segments=24)
     column.location = (0.0, 0.0, (PEDESTAL_TOP + COLUMN_TOP) / 2)
     sun = sphere("Sun", 0.28)
@@ -103,16 +121,24 @@ def build_orrery(skip_mpi=False):
     rig = {"sun": sun, "pedestal": pedestal, "planets": {}}
     for name, radius, height, angle, size, color in PLANETS:
         pivot = empty(f"Pivot.{name}", (0.0, 0.0, height))
+        # the arm runs under the planet and a riser post carries it up, so the
+        # orbit ring drawn at arm height passes beneath the sphere, not through
+        drop = size + RISER_GAP
         arm = cylinder(f"Arm.{name}", 0.035, radius, segments=12)
         arm.rotation_euler = (0.0, math.pi / 2, 0.0)
-        arm.location = (radius / 2, 0.0, height)
+        arm.location = (radius / 2, 0.0, height - drop)
+        riser = cylinder(f"Riser.{name}", 0.026, drop, segments=12)
+        riser.location = (radius, 0.0, height - drop / 2)
+        cup = lathe(f"Cup.{name}", [(0.0, -0.05), (0.05, -0.05), (0.075, 0.0),
+                                    (0.0, 0.0)], segments=24)
+        cup.location = (radius, 0.0, height - size * 0.94)
         planet = sphere(name, size)
         planet.location = (radius, 0.0, height)
         # everything is placed at its theta=0 WORLD position first, then
         # parented with the keep-world idiom -- nothing may move here
         bpy.context.view_layer.update()
-        parent_keep_world(arm, pivot, skip_mpi=skip_mpi)
-        parent_keep_world(planet, pivot, skip_mpi=skip_mpi)
+        for part in (arm, riser, cup, planet):
+            parent_keep_world(part, pivot, skip_mpi=skip_mpi)
         rig["planets"][name] = {
             "pivot": pivot, "planet": planet, "angle": math.radians(angle),
             "p0": Vector((radius, 0.0, height)),
@@ -121,7 +147,7 @@ def build_orrery(skip_mpi=False):
     host = rig["planets"][MOON_HOST]
     pc0 = host["p0"].copy()
     moon_pivot = empty("Pivot.Moon", pc0)
-    rod = cylinder("Arm.Moon", 0.02, MOON_OFFSET, segments=12)
+    rod = cylinder("Arm.Moon", 0.026, MOON_OFFSET, segments=12)
     rod.rotation_euler = (0.0, math.pi / 2, 0.0)
     rod.location = pc0 + Vector((MOON_OFFSET / 2, 0.0, 0.0))
     moon = sphere("Moon", MOON_R)
@@ -228,6 +254,37 @@ def principled(name, color, metallic, roughness, emission=0.0):
     return mat
 
 
+def mottled(name, color, roughness, scale, emission=0.0, hi=None):
+    """Principled whose base colour wanders between a darker shade of `color`
+    and `hi` on object-space noise, with a matching faint bump — a planet
+    that reads as a mineral, not a billiard ball. Emission (the sun) takes
+    the same mottle."""
+    mat = principled(name, color, 0.0, roughness, emission=emission)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = 6.0
+    nt.links.new(coord.outputs["Object"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    lo = tuple(c * 0.6 for c in color[:3]) + (1.0,)
+    hi = hi or tuple(min(1.0, c * 1.3) for c in color[:3]) + (1.0,)
+    ramp.color_ramp.elements[0].position = 0.35
+    ramp.color_ramp.elements[0].color = lo
+    ramp.color_ramp.elements[1].position = 0.68
+    ramp.color_ramp.elements[1].color = hi
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    if emission:
+        nt.links.new(ramp.outputs["Color"], bsdf.inputs["Emission Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.12
+    nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
 def orbit_ring(name, radius, height, mat):
     """Decorative brass orbit line: a bevelled circle curve (data API)."""
     cu = bpy.data.curves.new(name, type='CURVE')
@@ -249,10 +306,13 @@ def orbit_ring(name, radius, height, mat):
 def render_still(rig, path, engine):
     scene = bpy.context.scene
     brass = principled("Brass", (0.62, 0.40, 0.16, 1.0), 1.0, 0.32)
-    dark_bronze = principled("Bronze", (0.16, 0.11, 0.07, 1.0), 1.0, 0.45)
+    # lacquered walnut foot: a metal base mirrored the black stage and vanished
+    dark_bronze = principled("Walnut", (0.075, 0.034, 0.016, 1.0), 0.0, 0.2)
     # At emission 3.2 the sun clipped to a peach-white bulb and read as a
     # lamp; a lower strength keeps it an orange star against the brass.
-    sun_mat = principled("SunGlow", (1.0, 0.42, 0.06, 1.0), 0.0, 0.4, emission=1.3)
+    # Granulated orange-to-gold star: the mottle keeps it a sun, not a bulb.
+    sun_mat = mottled("SunGlow", (1.0, 0.42, 0.06, 1.0), 0.4, 9.0, emission=1.3,
+                      hi=(1.0, 0.72, 0.18, 1.0))
     moon_mat = principled("MoonSilver", (0.82, 0.84, 0.88, 1.0), 1.0, 0.25)
 
     rig["sun"].data.materials.append(sun_mat)
@@ -261,15 +321,32 @@ def render_still(rig, path, engine):
     rig["moon"]["moon"].data.materials.append(moon_mat)
     bpy.data.objects["Arm.Moon"].data.materials.append(brass)
     for name, radius, height, angle, size, color in PLANETS:
-        bpy.data.objects[f"Arm.{name}"].data.materials.append(brass)
+        for part in ("Arm", "Riser", "Cup"):
+            bpy.data.objects[f"{part}.{name}"].data.materials.append(brass)
         planet = bpy.data.objects[name]
-        planet.data.materials.append(principled(f"M.{name}", color, 0.0, 0.22))
-        for poly in planet.data.polygons:
-            poly.use_smooth = True
-        orbit_ring(f"Ring.{name}", radius, height, brass)
-    for obj_name in ("Sun", "Moon", "Pedestal", "Column"):
-        for poly in bpy.data.objects[obj_name].data.polygons:
-            poly.use_smooth = True
+        planet.data.materials.append(mottled(f"M.{name}", color, 0.3, 4.5 / size))
+        # ring at arm height, so it runs under the planet into the riser foot
+        drop = size + RISER_GAP
+        orbit_ring(f"Ring.{name}", radius, height - drop, brass)
+        # column collar where the arm's pivot sleeve rides
+        collar = lathe(f"Collar.{name}", [(0.0, -0.06), (0.10, -0.06), (0.12, -0.03),
+                                          (0.12, 0.03), (0.10, 0.06), (0.0, 0.06)])
+        collar.location = (0.0, 0.0, height - drop)
+        collar.data.materials.append(brass)
+    # finial under the sun and a foot collar where the column meets the base
+    for obj_name, z, prof in (
+            ("Finial", COLUMN_TOP - 0.1, [(0.0, -0.1), (0.08, -0.1), (0.14, 0.02),
+                                          (0.11, 0.1), (0.0, 0.1)]),
+            ("Foot", PEDESTAL_TOP, [(0.0, 0.0), (0.2, 0.0), (0.16, 0.05),
+                                    (0.10, 0.09), (0.0, 0.09)])):
+        part = lathe(obj_name, prof)
+        part.location = (0.0, 0.0, z)
+        part.data.materials.append(brass)
+    for ob in scene.objects:
+        if ob.type == 'MESH':
+            # smooth, but keep the turned profiles' steps crisp (4.1+ mesh API)
+            ob.data.shade_smooth()
+            ob.data.set_sharp_from_angle(angle=math.radians(40))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -314,7 +391,7 @@ def render_still(rig, path, engine):
     cam_data.lens = 40.0
     cam = bpy.data.objects.new("Cam", cam_data)
     cam.location = (0.0, -7.8, 2.7)
-    cam.rotation_euler = (math.radians(81.0), 0.0, 0.0)
+    cam.rotation_euler = (math.radians(80.2), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
 

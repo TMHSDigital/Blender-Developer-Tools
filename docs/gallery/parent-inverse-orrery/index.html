@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/parent-inverse-orrery-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
+  <meta property="og:image:alt" content="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="parent-inverse-orrery — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/parent-inverse-orrery-hero.webp" />
-  <meta name="twitter:image:alt" content="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
+  <meta name="twitter:image:alt" content="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -359,8 +359,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon.">
-      <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon.">
+      <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Bare `.parent =` really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.</div>
@@ -395,9 +395,9 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png --
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/parent-inverse-orrery/parent_inverse_orrery.py</code>
-        <span>380 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery/parent_inverse_orrery.py">View on GitHub &rarr;</a></span>
+        <span>457 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery/parent_inverse_orrery.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="380">
+      <div class="code" data-lines="457">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -777,7 +777,84 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png --
 377
 378
 379
-380</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A brass orrery parented through the data API — a runnable example.
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A brass orrery parented through the data API — a runnable example.
 
 Witnesses the object-parenting contract that generated code gets wrong most
 often. Assigning `child.parent = pivot` alone re-interprets the child&#x27;s local
@@ -821,11 +898,14 @@ PLANETS = [
 ]
 MOON_HOST = <span class="s">&quot;Lapis&quot;</span>           <span class="c"># the moon orbits the outer planet</span>
 MOON_OFFSET = <span class="n">0.62</span>            <span class="c"># distance from its planet, along local +X</span>
-MOON_ANGLE = <span class="n">163.0</span>            <span class="c"># moon-pivot spin, degrees</span>
+<span class="c"># moon-pivot spin, degrees: with Lapis at 152 the moon lands at 210 world,</span>
+<span class="c"># out past the planet&#x27;s flank instead of in front of the arm feeding it</span>
+MOON_ANGLE = <span class="n">58.0</span>
 MOON_R = <span class="n">0.12</span>
 PEDESTAL_TOP = <span class="n">0.22</span>
 COLUMN_TOP = <span class="n">2.45</span>
 SUN_Z = <span class="n">2.62</span>
+RISER_GAP = <span class="n">0.16</span>              <span class="c"># arm runs this far below the planet&#x27;s underside</span>
 EPS = <span class="n">1e-5</span>
 
 
@@ -854,6 +934,18 @@ EPS = <span class="n">1e-5</span>
         bm, u_segments=<span class="n">32</span>, v_segments=<span class="n">16</span>, radius=radius))
 
 
+<span class="k">def</span> lathe(name, profile, segments=<span class="n">64</span>):
+    <span class="s">&quot;&quot;&quot;Turned part: spin an (r, z) profile about Z, welding the axis seam.&quot;&quot;&quot;</span>
+    <span class="k">def</span> build(bm):
+        vs = [bm.verts.new((r, <span class="n">0.0</span>, z)) <span class="k">for</span> r, z <span class="k">in</span> profile]
+        edges = [bm.edges.new((a, b)) <span class="k">for</span> a, b <span class="k">in</span> zip(vs, vs[<span class="n">1</span>:])]
+        bmesh.ops.spin(bm, geom=vs + edges, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), axis=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>),
+                       angle=<span class="n">2</span> * math.pi, steps=segments, use_merge=<span class="k">True</span>)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=<span class="n">1e-5</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    <span class="k">return</span> new_mesh_obj(name, build)
+
+
 <span class="k">def</span> empty(name, location):
     obj = bpy.data.objects.new(name, <span class="k">None</span>)  <span class="c"># object_data=None -&gt; EMPTY</span>
     obj.location = location
@@ -872,8 +964,11 @@ EPS = <span class="n">1e-5</span>
     <span class="s">&quot;&quot;&quot;Author the whole hierarchy with bpy.data (no object-mode operators).&quot;&quot;&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
 
-    pedestal = cylinder(<span class="s">&quot;Pedestal&quot;</span>, <span class="n">1.15</span>, PEDESTAL_TOP, segments=<span class="n">48</span>)
-    pedestal.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, PEDESTAL_TOP / <span class="n">2</span>)
+    <span class="c"># stepped, moulded foot turned in one profile; top face at PEDESTAL_TOP</span>
+    pedestal = lathe(<span class="s">&quot;Pedestal&quot;</span>, [
+        (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.22</span>, <span class="n">0.0</span>), (<span class="n">1.24</span>, <span class="n">0.02</span>), (<span class="n">1.24</span>, <span class="n">0.07</span>), (<span class="n">1.20</span>, <span class="n">0.085</span>),
+        (<span class="n">1.06</span>, <span class="n">0.09</span>), (<span class="n">1.02</span>, <span class="n">0.11</span>), (<span class="n">1.02</span>, <span class="n">0.15</span>), (<span class="n">0.96</span>, <span class="n">0.17</span>), (<span class="n">0.60</span>, <span class="n">0.19</span>),
+        (<span class="n">0.30</span>, <span class="n">0.205</span>), (<span class="n">0.16</span>, PEDESTAL_TOP), (<span class="n">0.0</span>, PEDESTAL_TOP)])
     column = cylinder(<span class="s">&quot;Column&quot;</span>, <span class="n">0.07</span>, COLUMN_TOP - PEDESTAL_TOP, segments=<span class="n">24</span>)
     column.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, (PEDESTAL_TOP + COLUMN_TOP) / <span class="n">2</span>)
     sun = sphere(<span class="s">&quot;Sun&quot;</span>, <span class="n">0.28</span>)
@@ -882,16 +977,24 @@ EPS = <span class="n">1e-5</span>
     rig = {<span class="s">&quot;sun&quot;</span>: sun, <span class="s">&quot;pedestal&quot;</span>: pedestal, <span class="s">&quot;planets&quot;</span>: {}}
     <span class="k">for</span> name, radius, height, angle, size, color <span class="k">in</span> PLANETS:
         pivot = empty(<span class="s">f&quot;</span><span class="s">Pivot.</span>{name}<span class="s">&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, height))
+        <span class="c"># the arm runs under the planet and a riser post carries it up, so the</span>
+        <span class="c"># orbit ring drawn at arm height passes beneath the sphere, not through</span>
+        drop = size + RISER_GAP
         arm = cylinder(<span class="s">f&quot;</span><span class="s">Arm.</span>{name}<span class="s">&quot;</span>, <span class="n">0.035</span>, radius, segments=<span class="n">12</span>)
         arm.rotation_euler = (<span class="n">0.0</span>, math.pi / <span class="n">2</span>, <span class="n">0.0</span>)
-        arm.location = (radius / <span class="n">2</span>, <span class="n">0.0</span>, height)
+        arm.location = (radius / <span class="n">2</span>, <span class="n">0.0</span>, height - drop)
+        riser = cylinder(<span class="s">f&quot;</span><span class="s">Riser.</span>{name}<span class="s">&quot;</span>, <span class="n">0.026</span>, drop, segments=<span class="n">12</span>)
+        riser.location = (radius, <span class="n">0.0</span>, height - drop / <span class="n">2</span>)
+        cup = lathe(<span class="s">f&quot;</span><span class="s">Cup.</span>{name}<span class="s">&quot;</span>, [(<span class="n">0.0</span>, -<span class="n">0.05</span>), (<span class="n">0.05</span>, -<span class="n">0.05</span>), (<span class="n">0.075</span>, <span class="n">0.0</span>),
+                                    (<span class="n">0.0</span>, <span class="n">0.0</span>)], segments=<span class="n">24</span>)
+        cup.location = (radius, <span class="n">0.0</span>, height - size * <span class="n">0.94</span>)
         planet = sphere(name, size)
         planet.location = (radius, <span class="n">0.0</span>, height)
         <span class="c"># everything is placed at its theta=0 WORLD position first, then</span>
         <span class="c"># parented with the keep-world idiom -- nothing may move here</span>
         bpy.context.view_layer.update()
-        parent_keep_world(arm, pivot, skip_mpi=skip_mpi)
-        parent_keep_world(planet, pivot, skip_mpi=skip_mpi)
+        <span class="k">for</span> part <span class="k">in</span> (arm, riser, cup, planet):
+            parent_keep_world(part, pivot, skip_mpi=skip_mpi)
         rig[<span class="s">&quot;planets&quot;</span>][name] = {
             <span class="s">&quot;pivot&quot;</span>: pivot, <span class="s">&quot;planet&quot;</span>: planet, <span class="s">&quot;angle&quot;</span>: math.radians(angle),
             <span class="s">&quot;p0&quot;</span>: Vector((radius, <span class="n">0.0</span>, height)),
@@ -900,7 +1003,7 @@ EPS = <span class="n">1e-5</span>
     host = rig[<span class="s">&quot;planets&quot;</span>][MOON_HOST]
     pc0 = host[<span class="s">&quot;p0&quot;</span>].copy()
     moon_pivot = empty(<span class="s">&quot;Pivot.Moon&quot;</span>, pc0)
-    rod = cylinder(<span class="s">&quot;Arm.Moon&quot;</span>, <span class="n">0.02</span>, MOON_OFFSET, segments=<span class="n">12</span>)
+    rod = cylinder(<span class="s">&quot;Arm.Moon&quot;</span>, <span class="n">0.026</span>, MOON_OFFSET, segments=<span class="n">12</span>)
     rod.rotation_euler = (<span class="n">0.0</span>, math.pi / <span class="n">2</span>, <span class="n">0.0</span>)
     rod.location = pc0 + Vector((MOON_OFFSET / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
     moon = sphere(<span class="s">&quot;Moon&quot;</span>, MOON_R)
@@ -1007,6 +1110,37 @@ EPS = <span class="n">1e-5</span>
     <span class="k">return</span> mat
 
 
+<span class="k">def</span> mottled(name, color, roughness, scale, emission=<span class="n">0.0</span>, hi=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Principled whose base colour wanders between a darker shade of `color`
+    and `hi` on object-space noise, with a matching faint bump — a planet
+    that reads as a mineral, not a billiard ball. Emission (the sun) takes
+    the same mottle.&quot;&quot;&quot;</span>
+    mat = principled(name, color, <span class="n">0.0</span>, roughness, emission=emission)
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    lo = tuple(c * <span class="n">0.6</span> <span class="k">for</span> c <span class="k">in</span> color[:<span class="n">3</span>]) + (<span class="n">1.0</span>,)
+    hi = hi <span class="k">or</span> tuple(min(<span class="n">1.0</span>, c * <span class="n">1.3</span>) <span class="k">for</span> c <span class="k">in</span> color[:<span class="n">3</span>]) + (<span class="n">1.0</span>,)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = lo
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.68</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = hi
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">if</span> emission:
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.12</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
 <span class="k">def</span> orbit_ring(name, radius, height, mat):
     <span class="s">&quot;&quot;&quot;Decorative brass orbit line: a bevelled circle curve (data API).&quot;&quot;&quot;</span>
     cu = bpy.data.curves.new(name, type=<span class="s">&#x27;CURVE&#x27;</span>)
@@ -1028,10 +1162,13 @@ EPS = <span class="n">1e-5</span>
 <span class="k">def</span> render_still(rig, path, engine):
     scene = bpy.context.scene
     brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.40</span>, <span class="n">0.16</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>)
-    dark_bronze = principled(<span class="s">&quot;Bronze&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.11</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.45</span>)
+    <span class="c"># lacquered walnut foot: a metal base mirrored the black stage and vanished</span>
+    dark_bronze = principled(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.075</span>, <span class="n">0.034</span>, <span class="n">0.016</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.2</span>)
     <span class="c"># At emission 3.2 the sun clipped to a peach-white bulb and read as a</span>
     <span class="c"># lamp; a lower strength keeps it an orange star against the brass.</span>
-    sun_mat = principled(<span class="s">&quot;SunGlow&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.4</span>, emission=<span class="n">1.3</span>)
+    <span class="c"># Granulated orange-to-gold star: the mottle keeps it a sun, not a bulb.</span>
+    sun_mat = mottled(<span class="s">&quot;SunGlow&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.4</span>, <span class="n">9.0</span>, emission=<span class="n">1.3</span>,
+                      hi=(<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.18</span>, <span class="n">1.0</span>))
     moon_mat = principled(<span class="s">&quot;MoonSilver&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.84</span>, <span class="n">0.88</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.25</span>)
 
     rig[<span class="s">&quot;sun&quot;</span>].data.materials.append(sun_mat)
@@ -1040,15 +1177,32 @@ EPS = <span class="n">1e-5</span>
     rig[<span class="s">&quot;moon&quot;</span>][<span class="s">&quot;moon&quot;</span>].data.materials.append(moon_mat)
     bpy.data.objects[<span class="s">&quot;Arm.Moon&quot;</span>].data.materials.append(brass)
     <span class="k">for</span> name, radius, height, angle, size, color <span class="k">in</span> PLANETS:
-        bpy.data.objects[<span class="s">f&quot;</span><span class="s">Arm.</span>{name}<span class="s">&quot;</span>].data.materials.append(brass)
+        <span class="k">for</span> part <span class="k">in</span> (<span class="s">&quot;Arm&quot;</span>, <span class="s">&quot;Riser&quot;</span>, <span class="s">&quot;Cup&quot;</span>):
+            bpy.data.objects[<span class="s">f&quot;</span>{part}<span class="s">.</span>{name}<span class="s">&quot;</span>].data.materials.append(brass)
         planet = bpy.data.objects[name]
-        planet.data.materials.append(principled(<span class="s">f&quot;</span><span class="s">M.</span>{name}<span class="s">&quot;</span>, color, <span class="n">0.0</span>, <span class="n">0.22</span>))
-        <span class="k">for</span> poly <span class="k">in</span> planet.data.polygons:
-            poly.use_smooth = <span class="k">True</span>
-        orbit_ring(<span class="s">f&quot;</span><span class="s">Ring.</span>{name}<span class="s">&quot;</span>, radius, height, brass)
-    <span class="k">for</span> obj_name <span class="k">in</span> (<span class="s">&quot;Sun&quot;</span>, <span class="s">&quot;Moon&quot;</span>, <span class="s">&quot;Pedestal&quot;</span>, <span class="s">&quot;Column&quot;</span>):
-        <span class="k">for</span> poly <span class="k">in</span> bpy.data.objects[obj_name].data.polygons:
-            poly.use_smooth = <span class="k">True</span>
+        planet.data.materials.append(mottled(<span class="s">f&quot;</span><span class="s">M.</span>{name}<span class="s">&quot;</span>, color, <span class="n">0.3</span>, <span class="n">4.5</span> / size))
+        <span class="c"># ring at arm height, so it runs under the planet into the riser foot</span>
+        drop = size + RISER_GAP
+        orbit_ring(<span class="s">f&quot;</span><span class="s">Ring.</span>{name}<span class="s">&quot;</span>, radius, height - drop, brass)
+        <span class="c"># column collar where the arm&#x27;s pivot sleeve rides</span>
+        collar = lathe(<span class="s">f&quot;</span><span class="s">Collar.</span>{name}<span class="s">&quot;</span>, [(<span class="n">0.0</span>, -<span class="n">0.06</span>), (<span class="n">0.10</span>, -<span class="n">0.06</span>), (<span class="n">0.12</span>, -<span class="n">0.03</span>),
+                                          (<span class="n">0.12</span>, <span class="n">0.03</span>), (<span class="n">0.10</span>, <span class="n">0.06</span>), (<span class="n">0.0</span>, <span class="n">0.06</span>)])
+        collar.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, height - drop)
+        collar.data.materials.append(brass)
+    <span class="c"># finial under the sun and a foot collar where the column meets the base</span>
+    <span class="k">for</span> obj_name, z, prof <span class="k">in</span> (
+            (<span class="s">&quot;Finial&quot;</span>, COLUMN_TOP - <span class="n">0.1</span>, [(<span class="n">0.0</span>, -<span class="n">0.1</span>), (<span class="n">0.08</span>, -<span class="n">0.1</span>), (<span class="n">0.14</span>, <span class="n">0.02</span>),
+                                          (<span class="n">0.11</span>, <span class="n">0.1</span>), (<span class="n">0.0</span>, <span class="n">0.1</span>)]),
+            (<span class="s">&quot;Foot&quot;</span>, PEDESTAL_TOP, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.2</span>, <span class="n">0.0</span>), (<span class="n">0.16</span>, <span class="n">0.05</span>),
+                                    (<span class="n">0.10</span>, <span class="n">0.09</span>), (<span class="n">0.0</span>, <span class="n">0.09</span>)])):
+        part = lathe(obj_name, prof)
+        part.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, z)
+        part.data.materials.append(brass)
+    <span class="k">for</span> ob <span class="k">in</span> scene.objects:
+        <span class="k">if</span> ob.type == <span class="s">&#x27;MESH&#x27;</span>:
+            <span class="c"># smooth, but keep the turned profiles&#x27; steps crisp (4.1+ mesh API)</span>
+            ob.data.shade_smooth()
+            ob.data.set_sharp_from_angle(angle=math.radians(<span class="n">40</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1093,7 +1247,7 @@ EPS = <span class="n">1e-5</span>
     cam_data.lens = <span class="n">40.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
     cam.location = (<span class="n">0.0</span>, -<span class="n">7.8</span>, <span class="n">2.7</span>)
-    cam.rotation_euler = (math.radians(<span class="n">81.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.rotation_euler = (math.radians(<span class="n">80.2</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
@@ -1196,7 +1350,7 @@ EPS = <span class="n">1e-5</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
+    <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." />
   </dialog>
   <footer>
     <div class="statusbar">

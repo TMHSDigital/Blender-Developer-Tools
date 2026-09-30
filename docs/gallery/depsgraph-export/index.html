@@ -400,9 +400,9 @@ blender --background --python depsgraph_export.py -- --obj exported.obj</code></
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/depsgraph-export/depsgraph_export.py</code>
-        <span>614 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/depsgraph-export/depsgraph_export.py">View on GitHub &rarr;</a></span>
+        <span>646 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/depsgraph-export/depsgraph_export.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="614">
+      <div class="code" data-lines="646">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1016,7 +1016,39 @@ blender --background --python depsgraph_export.py -- --obj exported.obj</code></
 611
 612
 613
-614</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Depsgraph-evaluated export — a runnable example.
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Depsgraph-evaluated export — a runnable example.
 
 Witnesses the depsgraph lifetime contract AND that modifiers actually ship in
 exports. Builds a game controller whose shell is a sparse quad control cage
@@ -1259,6 +1291,29 @@ ROWS = (
     <span class="k">return</span> mat
 
 
+<span class="k">def</span> grain(mat, scale=<span class="n">90.0</span>, strength=<span class="n">0.05</span>, rough_jitter=<span class="n">0.08</span>):
+    <span class="s">&quot;&quot;&quot;Moulded-plastic texture: fine noise bump plus a roughness wander, so a
+    large shell stops reading as one flat CG gloss.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = strength
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    base = bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value
+    rmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rmap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = base - rough_jitter
+    rmap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = base + rough_jitter
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rmap.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rmap.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
 <span class="k">def</span> _smooth(me, angle=<span class="n">35.0</span>):
     <span class="s">&quot;&quot;&quot;Smooth shading with sharp breaks above `angle` (4.1+ mesh API).&quot;&quot;&quot;</span>
     me.shade_smooth()
@@ -1272,8 +1327,10 @@ ROWS = (
 
     me = bpy.data.meshes.new(<span class="s">&quot;Gamepad.Shell&quot;</span>)
     build_shell_cage(me)
-    me.materials.append(principled(<span class="s">&quot;Gamepad.Cobalt&quot;</span>, (<span class="n">0.014</span>, <span class="n">0.105</span>, <span class="n">0.54</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.34</span>))
-    me.materials.append(principled(<span class="s">&quot;Gamepad.Graphite&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.032</span>, <span class="n">0.040</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>))
+    me.materials.append(grain(principled(<span class="s">&quot;Gamepad.Cobalt&quot;</span>, (<span class="n">0.014</span>, <span class="n">0.105</span>, <span class="n">0.54</span>, <span class="n">1.0</span>),
+                                         <span class="n">0.0</span>, <span class="n">0.34</span>)))
+    me.materials.append(grain(principled(<span class="s">&quot;Gamepad.Graphite&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.032</span>, <span class="n">0.040</span>, <span class="n">1.0</span>),
+                                         <span class="n">0.0</span>, <span class="n">0.55</span>), strength=<span class="n">0.12</span>))
     _smooth(me, <span class="k">None</span>)
     shell = bpy.data.objects.new(<span class="s">&quot;Gamepad.Shell&quot;</span>, me)
     coll.objects.link(shell)
@@ -1285,11 +1342,16 @@ ROWS = (
     <span class="c"># limit surface, not the cage, or every button floats above the plastic.</span>
     dg = bpy.context.evaluated_depsgraph_get()
 
-    <span class="k">def</span> seat(ob, x, y, sink=<span class="n">0.02</span>):
-        hit, loc, nrm, _ = shell.ray_cast(Vector((x, y, <span class="n">5.0</span>)), Vector((<span class="n">0</span>, <span class="n">0</span>, -<span class="n">1</span>)),
-                                          depsgraph=dg)
+    <span class="k">def</span> seat(ob, x, y, sink=<span class="n">0.02</span>, back_z=<span class="k">None</span>):
+        <span class="s">&quot;&quot;&quot;Seat on the deck below (x, y), or — with back_z — on the rear
+        shoulder wall at height back_z, casting forward from behind.&quot;&quot;&quot;</span>
+        <span class="k">if</span> back_z <span class="k">is</span> <span class="k">None</span>:
+            origin, ray = Vector((x, y, <span class="n">5.0</span>)), Vector((<span class="n">0</span>, <span class="n">0</span>, -<span class="n">1</span>))
+        <span class="k">else</span>:
+            origin, ray = Vector((x, <span class="n">5.0</span>, back_z)), Vector((<span class="n">0</span>, -<span class="n">1</span>, <span class="n">0</span>))
+        hit, loc, nrm, _ = shell.ray_cast(origin, ray, depsgraph=dg)
         <span class="k">if</span> <span class="k">not</span> hit:
-            <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span>{ob.name}<span class="s">: no shell under (</span>{x}<span class="s">, </span>{y}<span class="s">)</span><span class="s">&quot;</span>)
+            <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span>{ob.name}<span class="s">: no shell at </span>{tuple(origin)}<span class="s">&quot;</span>)
         rot = nrm.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_matrix().to_4x4()
         ob.matrix_world = Matrix.Translation(loc - nrm * sink) @ rot
         ob.parent = shell   <span class="c"># shell sits at the identity, so no parent inverse</span>
@@ -1322,10 +1384,12 @@ ROWS = (
     part(<span class="s">&quot;Gamepad.Start&quot;</span>, part_extrusion, satin, <span class="n">0.62</span>, <span class="n">0.62</span>, _stadium(<span class="n">0.36</span>, <span class="n">0.13</span>), <span class="n">0.06</span>, <span class="n">0.02</span>)
     home = principled(<span class="s">&quot;Gamepad.Home&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.50</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.3</span>, emission=<span class="n">0.8</span>)
     part(<span class="s">&quot;Gamepad.Home&quot;</span>, part_disc, home, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.16</span>, <span class="n">0.06</span>, <span class="n">28</span>, <span class="n">0.02</span>)
+    <span class="c"># Bumpers ride the rear shoulder wall, high under the deck lip, instead of</span>
+    <span class="c"># lying on top of the deck and overhanging its back edge.</span>
     <span class="k">for</span> side <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
         b = part(<span class="s">f&quot;</span><span class="s">Gamepad.Bumper</span>{<span class="s">&#x27;L&#x27;</span> <span class="k">if</span> side &lt; <span class="n">0</span> <span class="k">else</span> <span class="s">&#x27;R&#x27;</span>}<span class="s">&quot;</span>, part_extrusion, satin,
-                 side * <span class="n">2.2</span>, <span class="n">1.16</span>, _stadium(<span class="n">1.5</span>, <span class="n">0.34</span>), <span class="n">0.15</span>, <span class="n">0.05</span>)
-        b.rotation_euler.z += math.radians(-side * <span class="n">8.0</span>)
+                 side * <span class="n">2.15</span>, <span class="n">1.0</span>, _stadium(<span class="n">1.4</span>, <span class="n">0.26</span>), <span class="n">0.14</span>, <span class="n">0.05</span>)
+        seat(b, side * <span class="n">2.15</span>, <span class="k">None</span>, sink=<span class="n">0.06</span>, back_z=<span class="n">0.40</span>)
     <span class="k">return</span> shell
 
 

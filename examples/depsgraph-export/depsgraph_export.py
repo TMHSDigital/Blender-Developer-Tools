@@ -241,6 +241,29 @@ def principled(name, color, metallic, roughness, emission=0.0):
     return mat
 
 
+def grain(mat, scale=90.0, strength=0.05, rough_jitter=0.08):
+    """Moulded-plastic texture: fine noise bump plus a roughness wander, so a
+    large shell stops reading as one flat CG gloss."""
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = 4.0
+    nt.links.new(coord.outputs["Object"], noise.inputs["Vector"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = strength
+    nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    base = bsdf.inputs["Roughness"].default_value
+    rmap = nt.nodes.new("ShaderNodeMapRange")
+    rmap.inputs["To Min"].default_value = base - rough_jitter
+    rmap.inputs["To Max"].default_value = base + rough_jitter
+    nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+    nt.links.new(rmap.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
 def _smooth(me, angle=35.0):
     """Smooth shading with sharp breaks above `angle` (4.1+ mesh API)."""
     me.shade_smooth()
@@ -254,8 +277,10 @@ def build():
 
     me = bpy.data.meshes.new("Gamepad.Shell")
     build_shell_cage(me)
-    me.materials.append(principled("Gamepad.Cobalt", (0.014, 0.105, 0.54, 1.0), 0.0, 0.34))
-    me.materials.append(principled("Gamepad.Graphite", (0.030, 0.032, 0.040, 1.0), 0.0, 0.55))
+    me.materials.append(grain(principled("Gamepad.Cobalt", (0.014, 0.105, 0.54, 1.0),
+                                         0.0, 0.34)))
+    me.materials.append(grain(principled("Gamepad.Graphite", (0.030, 0.032, 0.040, 1.0),
+                                         0.0, 0.55), strength=0.12))
     _smooth(me, None)
     shell = bpy.data.objects.new("Gamepad.Shell", me)
     coll.objects.link(shell)
@@ -267,11 +292,16 @@ def build():
     # limit surface, not the cage, or every button floats above the plastic.
     dg = bpy.context.evaluated_depsgraph_get()
 
-    def seat(ob, x, y, sink=0.02):
-        hit, loc, nrm, _ = shell.ray_cast(Vector((x, y, 5.0)), Vector((0, 0, -1)),
-                                          depsgraph=dg)
+    def seat(ob, x, y, sink=0.02, back_z=None):
+        """Seat on the deck below (x, y), or — with back_z — on the rear
+        shoulder wall at height back_z, casting forward from behind."""
+        if back_z is None:
+            origin, ray = Vector((x, y, 5.0)), Vector((0, 0, -1))
+        else:
+            origin, ray = Vector((x, 5.0, back_z)), Vector((0, -1, 0))
+        hit, loc, nrm, _ = shell.ray_cast(origin, ray, depsgraph=dg)
         if not hit:
-            raise RuntimeError(f"{ob.name}: no shell under ({x}, {y})")
+            raise RuntimeError(f"{ob.name}: no shell at {tuple(origin)}")
         rot = nrm.to_track_quat('Z', 'Y').to_matrix().to_4x4()
         ob.matrix_world = Matrix.Translation(loc - nrm * sink) @ rot
         ob.parent = shell   # shell sits at the identity, so no parent inverse
@@ -304,10 +334,12 @@ def build():
     part("Gamepad.Start", part_extrusion, satin, 0.62, 0.62, _stadium(0.36, 0.13), 0.06, 0.02)
     home = principled("Gamepad.Home", (1.0, 0.50, 0.10, 1.0), 0.0, 0.3, emission=0.8)
     part("Gamepad.Home", part_disc, home, 0.0, 0.0, 0.16, 0.06, 28, 0.02)
+    # Bumpers ride the rear shoulder wall, high under the deck lip, instead of
+    # lying on top of the deck and overhanging its back edge.
     for side in (-1, 1):
         b = part(f"Gamepad.Bumper{'L' if side < 0 else 'R'}", part_extrusion, satin,
-                 side * 2.2, 1.16, _stadium(1.5, 0.34), 0.15, 0.05)
-        b.rotation_euler.z += math.radians(-side * 8.0)
+                 side * 2.15, 1.0, _stadium(1.4, 0.26), 0.14, 0.05)
+        seat(b, side * 2.15, None, sink=0.06, back_z=0.40)
     return shell
 
 
