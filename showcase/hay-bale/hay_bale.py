@@ -648,12 +648,14 @@ def _shape_loaf(verts, flake=False):
         # flared spikes. The ripple is slow (7, not 14) — at 14 it aliased
         # against the subdivision grid and read as a checkerboard quilt.
         if abs(nx) > 0.82:
-            # Strata in Z, not rings in r. A cut bale end shows the flake
-            # layers edge-on; a concentric ripple is not what that looks
-            # like, and at BAKE_RES it resolved into a pixelated bullseye
-            # on the hero that read as a printed target.
+            # The end is the face of the last flake: a mat of stems, lumpy
+            # in both directions. Concentric rings baked into a printed
+            # target; horizontal strata (sin in z alone) baked into cake
+            # layers gouged across the end. A product of slow terms in y and
+            # z reads as packed straw and stays even in x.
             edge = 1.0 - min(1.0, max(abs(ny), abs(nz))) ** 3
-            strata = math.sin((z / BALE_Z) * math.pi * 6.0)
+            strata = (math.sin((z / BALE_Z) * math.pi * 3.0 + 0.7)
+                      * math.cos((y / BALE_Y) * math.pi * 2.4))
             v.co.x += math.copysign(NAP_AMP * strata * edge, x)
 
 
@@ -862,33 +864,68 @@ def _stretched_noise(nt, coord, stretch, scale, detail):
 
 
 def straw_material(name):
-    """Straw: fibres, colour break-up and a fibre bump, not a flat mustard.
+    """Straw: stems, flake seams, colour break-up and a bump, not felt.
 
-    The bale read as a wrapped parcel because its hay was one flat colour
-    with a soft noise. Straw is streaks: a dense fibre field stretched
-    along the bale, a weaker crossing field for the strands that lie the
-    other way, colour pulled between pale straw and dark tan by the fibres,
-    a faint green cast from low-frequency noise, and a bump from the same
-    fibres so every strand catches light.
+    Stems lie across the bale in the plane of each packed flake, sharpened
+    into distinct light and dark lines; a warped saw wave along X cuts the
+    seams between flakes, darkened and grooved; colour runs from dark tan
+    through gold to pale straw with a faint green cast from low-frequency
+    noise. All object-space, so it is continuous across the per-face UV
+    cells the bake uses.
     """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
-    along = _stretched_noise(nt, coord, (0.07, 1.0, 1.0), 110.0, 6.0)
-    across = _stretched_noise(nt, coord, (1.0, 0.09, 1.0), 90.0, 4.0)
+    # Stems lie ACROSS the bale, in the plane of each flake the plunger
+    # packed: long along Y, a weaker folded set along Z. Fibres streaked
+    # along X (the old field) ran with the length like brushed felt, and the
+    # bale read as an upholstered cushion. Sharpened by the map range so each
+    # stem is a crisp light/dark line, not a soft smear.
+    along = _stretched_noise(nt, coord, (1.0, 0.05, 1.0), 150.0, 3.0)
+    across = _stretched_noise(nt, coord, (1.0, 1.0, 0.08), 120.0, 3.0)
     fib = nt.nodes.new("ShaderNodeMix")
     fib.data_type = "FLOAT"
-    _sock(fib.inputs, "Factor_Float").default_value = 0.32
+    _sock(fib.inputs, "Factor_Float").default_value = 0.35
     nt.links.new(along.outputs["Fac"], _sock(fib.inputs, "A_Float"))
     nt.links.new(across.outputs["Fac"], _sock(fib.inputs, "B_Float"))
+    sharp = nt.nodes.new("ShaderNodeMapRange")
+    sharp.inputs["From Min"].default_value = 0.38
+    sharp.inputs["From Max"].default_value = 0.62
+    nt.links.new(_sock(fib.outputs, "Result_Float"), sharp.inputs["Value"])
+    # Flake seams: a saw wave along X at the flake pitch, its drop warped by
+    # noise so the seams wander like packed slices instead of ruled lines.
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "BANDS"
+    wave.bands_direction = "X"
+    wave.wave_profile = "SAW"
+    wave.inputs["Scale"].default_value = 1.0 / FLAKE_W / 2.6
+    wave.inputs["Distortion"].default_value = 2.4
+    wave.inputs["Detail"].default_value = 2.0
+    wave.inputs["Detail Scale"].default_value = 1.5
+    nt.links.new(coord.outputs["Object"], wave.inputs["Vector"])
+    seam = nt.nodes.new("ShaderNodeMapRange")
+    seam.interpolation_type = "SMOOTHSTEP"
+    seam.inputs["From Min"].default_value = 0.0
+    seam.inputs["From Max"].default_value = 0.09
+    seam.inputs["To Min"].default_value = 1.0
+    seam.inputs["To Max"].default_value = 0.0
+    nt.links.new(wave.outputs["Fac"], seam.inputs["Value"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.34
-    ramp.color_ramp.elements[0].color = (0.36, 0.25, 0.075, 1.0)
-    ramp.color_ramp.elements[1].position = 0.66
-    ramp.color_ramp.elements[1].color = (0.88, 0.71, 0.31, 1.0)
-    nt.links.new(_sock(fib.outputs, "Result_Float"), ramp.inputs["Fac"])
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[0].color = (0.30, 0.21, 0.065, 1.0)
+    mid = ramp.color_ramp.elements.new(0.55)
+    mid.color = (0.66, 0.50, 0.19, 1.0)
+    ramp.color_ramp.elements[-1].position = 1.0
+    ramp.color_ramp.elements[-1].color = (0.93, 0.79, 0.42, 1.0)
+    nt.links.new(sharp.outputs["Result"], ramp.inputs["Fac"])
+    shade = nt.nodes.new("ShaderNodeMix")
+    shade.data_type = "RGBA"
+    shade.blend_type = "MULTIPLY"
+    nt.links.new(seam.outputs["Result"], _sock(shade.inputs, "Factor_Float"))
+    nt.links.new(ramp.outputs["Color"], _sock(shade.inputs, "A_Color"))
+    _sock(shade.inputs, "B_Color").default_value = (0.38, 0.33, 0.25, 1.0)
     patch = nt.nodes.new("ShaderNodeTexNoise")
     patch.inputs["Scale"].default_value = 4.0
     patch.inputs["Detail"].default_value = 2.0
@@ -897,18 +934,25 @@ def straw_material(name):
     green.data_type = "RGBA"
     green.blend_type = "MULTIPLY"
     nt.links.new(patch.outputs["Fac"], _sock(green.inputs, "Factor_Float"))
-    nt.links.new(ramp.outputs["Color"], _sock(green.inputs, "A_Color"))
+    nt.links.new(_sock(shade.outputs, "Result_Color"), _sock(green.inputs, "A_Color"))
     _sock(green.inputs, "B_Color").default_value = (0.90, 0.95, 0.74, 1.0)
     nt.links.new(_sock(green.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    # Dry stems carry a waxy sheen; the gaps between them are matte.
     rough = nt.nodes.new("ShaderNodeMapRange")
-    rough.inputs["To Min"].default_value = 0.95
-    rough.inputs["To Max"].default_value = 0.70
-    nt.links.new(_sock(fib.outputs, "Result_Float"), rough.inputs["Value"])
+    rough.inputs["To Min"].default_value = 0.92
+    rough.inputs["To Max"].default_value = 0.58
+    nt.links.new(sharp.outputs["Result"], rough.inputs["Value"])
     nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    # Stem relief minus the seam groove, one height field for the bump.
+    height = nt.nodes.new("ShaderNodeMath")
+    height.operation = "MULTIPLY_ADD"
+    nt.links.new(seam.outputs["Result"], height.inputs[0])
+    height.inputs[1].default_value = -1.2
+    nt.links.new(sharp.outputs["Result"], height.inputs[2])
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.65
+    bump.inputs["Strength"].default_value = 0.8
     bump.inputs["Distance"].default_value = 0.004
-    nt.links.new(_sock(fib.outputs, "Result_Float"), bump.inputs["Height"])
+    nt.links.new(height.outputs["Value"], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
@@ -1440,12 +1484,19 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
     return 0, low, high, hay, tex, collider
 
 
+# The bake lands in per-face UV cells (the zero-AABB-overlap budget), so its
+# tangent frame breaks at every cell. At full strength those breaks cut dark
+# gashes along the top edge; the procedural stems carry the fine detail, and
+# the bake keeps the flake relief at this weight.
+NRM_STRENGTH = 0.55
+
+
 def wire_normal(mat, tex):
     """Baked normal map into the BSDF, under the fibre bump if there is one."""
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     nrm = nt.nodes.new("ShaderNodeNormalMap")
-    nrm.inputs["Strength"].default_value = 1.0
+    nrm.inputs["Strength"].default_value = NRM_STRENGTH
     nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
     bump = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBump"), None)
     if bump is not None:

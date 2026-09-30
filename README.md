@@ -134,7 +134,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" width="24%" alt="Tavern stool: a dished round wooden seat holding a pewter tankard, on turned splayed legs with stretchers at two heights and iron ferrules on flat treads, on a dark studio floor" /></a>
   <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a round-bellied cast-iron pot hanging by its bail from a timber tripod on a dark studio floor" /></a>
   <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: an oak ladder with six pale turned hickory rungs through-tenoned into its rails, iron tie-rods under the end rungs and iron shoes, leaning on a barn-board wall with a rope coil on a rung" /></a>
-  <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale with two sisal twine belts on a dark studio floor" /></a>
+  <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale of packed flakes with two orange twine belts on a dark studio floor" /></a>
   <a href="showcase/crate-stack/"><img src="showcase/crate-stack/preview.webp" width="24%" alt="Crate stack: three slatted shipping crates stacked and yawed, each with iron corner straps and runners, on a dark studio floor" /></a>
   <a href="showcase/stone-archway/"><img src="showcase/stone-archway/preview.webp" width="24%" alt="Stone archway: a semicircular masonry arch with coursed piers, projecting imposts, nine voussoirs and a proud keystone, on a dark studio floor" /></a>
   <a href="showcase/rope-bridge/"><img src="showcase/rope-bridge/preview.webp" width="24%" alt="Rope bridge: a sagging plank deck on foot ropes between two pairs of log posts, with lashed hemp hand ropes, suspenders, and ropes staked to the ground, on a dark studio floor" /></a>
@@ -228,7 +228,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`wooden-ladder`](showcase/wooden-ladder/) — procedural timber ladder with raked stiles, evenly pitched rungs, and iron shoes through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--drift-rungs` exits 19.
 
-[`hay-bale`](showcase/hay-bale/) — procedural bound hay bale with sisal twine through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`hay-bale`](showcase/hay-bale/) — procedural bound hay bale with orange polypropylene twine through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`rope-bridge`](showcase/rope-bridge/) — procedural rope footbridge whose plank deck is fitted to a parabola recomputed from the plank tops, with lashed hand ropes and staked foot ropes, through the same pipeline. Falsifiers `--vee-deck` exits 19, `--float-suspenders` exits 18.
 

@@ -1,7 +1,7 @@
 # Hay bale
 
 A showcase piece, not an example. Procedural bound straw bale (cinched
-pillow loaf, end-grain strata, two orange polypropylene belts that
+pillow loaf, a lumpy stem-mat end, two orange polypropylene belts that
 wrap the loaf's own cross-section, a knot loop standing on each) then the shipped pipeline: unique-cell
 UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
@@ -65,7 +65,7 @@ RNG and no version-dependent operator.
 | **Cinch depth** | mid-span minus waist in [0.006, 0.020] m | 0.01053 |
 | Loaf X × Z | (0.921, 0.393) m ± 0.02 | (0.9208, 0.3931) |
 | Hay–twine gap | BVH surface < 0.008 m | 0.00009 |
-| Collider tris | ≤ 400 | 140 |
+| Collider tris | ≤ 400 | 100 |
 | Bake texels | smallest UV cell ≥ 12 px at the baked resolution | 22.43 px at 1024 px |
 | Export | written, size > 0 | 203508 / 203508 / 203496 bytes |
 
@@ -181,7 +181,7 @@ the whole bale erased every ridge and nap in it and left a featureless
 pillow that read as a bar of soap. Twine is cord, so the belts and
 hitch loops stay smooth.
 
-The low mesh carries the form — bulge, waist, ridges, end strata — and
+The low mesh carries the form — bulge, waist, ridges, end relief — and
 the **high mesh carries the straw**: `LOAF_CUTS_HIGH` subdivision plus
 per-band flake offsets, moved onto the low mesh by the bake stage. A low
 mesh dense enough to model flakes directly would cost thousands of
@@ -190,15 +190,24 @@ triangles for detail this piece already has a bake for.
 ## Surface
 
 The bale used to read as a wrapped parcel: flat mustard hay, and a wide
-dark band for twine. The hay is now `straw_material`:
-- a dense fibre field stretched along the bale (noise with X compressed),
-  and a weaker crossing field for the strands that lie the other way;
-- colour pulled between pale straw and dark tan by the fibres, with a
-  faint green cast from low-frequency noise;
-- roughness and a bump from the same fibres, so every strand catches
-  light.
+dark band for twine. Later it read as an upholstered cushion: its fibres
+ran along the length like brushed felt. The hay is now `straw_material`:
+- stems lying *across* the bale, in the plane of each packed flake (noise
+  with Y compressed, a weaker folded set with Z compressed), sharpened by
+  a map range into distinct light and dark stems;
+- flake seams: a saw wave along X at about 2.6 × `FLAKE_W`, warped by
+  noise so the seams wander, darkened and grooved into the bump;
+- colour from dark tan through gold to pale straw, with a faint green cast
+  from low-frequency noise; waxy stems, matte gaps.
 
-The baked normal is chained under that bump (`wire_normal`). The twine
+It is all object-space, so it runs continuously across the per-face UV
+cells. The baked normal is chained under that bump (`wire_normal`) at
+`NRM_STRENGTH` 0.55. The UV budget (zero per-face AABB overlap) gives every
+face its own cell, so the bake's tangent frame breaks at every cell edge; at
+full strength those breaks cut dark gashes along the top edge. The end face
+used to be `sin(z)` strata, which baked into cake layers gouged across the
+end. It is now a product of slow terms in y and z, which reads as the stem mat of
+the last flake. That changed the hull: the collider went from 140 to 100 tris. The twine
 is a 10 × 14 mm orange polypropylene cord standing 6 mm proud. As an
 8 × 10 mm dark brown cord it stood 4 mm proud of the waisted loaf and read
 as a scored cut in every view. The longitudinal ridge dropped from 14 mm to
