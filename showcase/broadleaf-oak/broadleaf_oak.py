@@ -2,19 +2,23 @@
 
 Asserts budget conformance of a procedural mature, open-grown English oak
 (Quercus robur) after composing shipped pipeline pieces: bmesh construction,
-UVs, eight materials, high-to-low normal bake, LOD chain, convex trunk
+UVs, nine materials, high-to-low normal bake, LOD chain, convex trunk
 collider, Unity glTF export.
 
-The trunk is one lathe from a buttressed, fluted foot bedded in a sloping
-grassy soil disc to a low fork. Six surface roots leave the buttresses and
-dive into the soil. Five heavy, crooked scaffold limbs rise out of the fork
-and divide three more times; every branch is a tapered tube that starts
-inside its parent, and a parent narrows past each junction by the area of
-the child it gives off (da Vinci's rule). Every twig tip, and the tip of
-every branch, carries a cluster of lobed oak leaves; the clusters build a
-broad, domed crown. A few twigs are dead. Acorns (a scaly cup and a glossy
-nut) hang in twos and threes on long stalks under the crown, and more lie
-in the grass among fallen leaves and grass tufts.
+The trunk is one massive lathe from a buttressed, fluted, deeply plated
+foot bedded in a grassy mound to a low fork. Seven surface roots leave the
+buttresses and dive into the soil. Five heavy, zig-zag scaffold limbs rise
+out of the fork, the low ones reaching out sideways nearly level, and
+divide three more times; every branch is a tapered tube that starts inside
+its parent, and a parent narrows past each junction by the area of the
+child it gives off (da Vinci's rule). The crown is built of cushions: on
+every live branch end, and along the outer part of every branch that
+carries twigs, a small hidden core holds the carrier, a ring of faceted
+leaf clusters bites into the core, and the outer clusters carry small
+lobed oak leaves. Cluster shading follows its cushion (custom normals), so
+the dome reads as lit billows over dark gaps. A few twigs are dead. Acorns
+hang on stalks under the crown, and more lie in the grass among fallen
+leaves, twigs and tufts.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
@@ -23,9 +27,10 @@ hygiene, ``--lift-z`` grounded zmin, ``--float-branches`` every branch
 seated in its parent, ``--pop-nuts`` every nut seated in its cup,
 ``--lean-crown`` trunk plumb, ``--fat-twigs`` the taper and area rule,
 ``--perch-trunk`` / ``--arch-roots`` the trunk and roots sealed in the
-soil, ``--orphan-clump`` every leaf cluster carried by its twig,
-``--drop-acorns`` the hanging acorns on their stalks, ``--float-cover``
-the ground cover bedded in the soil.
+soil, ``--orphan-clump`` / ``--scatter-clusters`` / ``--shed-leaves``
+every cushion on its carrier, every cluster in its core and every leaf in
+its cluster, ``--drop-acorns`` the hanging acorns on their stalks,
+``--float-cover`` the ground cover bedded in the soil.
 
 Seeded, not random: ``random.Random(SEED)`` draws the whole plan before
 anything is built, so flags never shift the stream. DECIMATE COLLAPSE
@@ -48,7 +53,7 @@ import bmesh
 import bpy
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
-from mathutils.geometry import intersect_line_line
+from mathutils.geometry import intersect_line_line, intersect_ray_tri
 from mathutils.kdtree import KDTree
 
 # Showcase lives at repo-root/showcase/, not under examples/. The framing
@@ -67,115 +72,140 @@ TAU = 2.0 * math.pi
 UP = Vector((0.0, 0.0, 1.0))
 
 # --- Ground ------------------------------------------------------------------
-SOIL_A = (2.55, 2.40)   # soil disc half-axes before the wobble, m
-SOIL_N = 30
-SOIL_H0 = 0.24
-SLOPE = 0.085           # the bank rises toward the back (+Y), m per m
-SOIL_EDGE = 0.14        # the rim rolls down over this fraction of the radius
+SOIL_A = (4.40, 4.10)   # soil disc half-axes before the wobble, m
+SOIL_N = 36
+SOIL_H0 = 0.34          # the mound's crown, at the trunk
+SOIL_RIM_H = 0.06       # the mound's height where the rim starts to roll off
+SLOPE = 0.030           # and it rises a little toward the back (+Y), m per m
+FLARE_HEAP = 0.12       # soil heaped over the root flare round the bole
+FLARE_HEAP_R = 1.40
+SOIL_EDGE = 0.09        # the rim rolls down over this fraction of the radius
 SOIL_FLOOR = 0.02
 
 # --- Trunk -------------------------------------------------------------------
-FORK_Z = 2.30           # the fork, above the soil at the axis
-TRUNK_R0 = 0.400        # nominal radius at the soil (above the flare)
-TRUNK_RF = 0.335        # and at the fork
-TRUNK_SIDES = 36
-TRUNK_SIDES_HIGH = 72
+FORK_Z = 2.15           # the fork, above the soil at the axis
+TRUNK_R0 = 0.600        # nominal radius at the soil (above the flare)
+TRUNK_RF = 0.500        # and at the fork
+TRUNK_SIDES = 84
+TRUNK_SIDES_HIGH = 144
 COLLIDER_SIDES = 14
-FLUTES = 7              # broad flutes round the bole
-FLUTE_AMP = 0.060
-RIDGES = 12             # bark ridges between the furrows
+FLUTES = 8              # broad flutes round the bole
+FLUTE_AMP = 0.085
+RIDGES = 21             # bark plates between deep furrows
 RIDGE_AMP = 0.034
-FLARE_R = 0.44          # buttress reach at the soil, on a root's bearing
-FLARE_H = 0.36
-FLARE_W = 0.30          # buttress half-width, rad
+FLARE_R = 0.72          # buttress reach at the soil, on a root's bearing
+FLARE_H = 0.42
+FLARE_W = 0.27          # buttress half-width, rad
 FOOT_OFFS = (-0.045, 0.030)   # foot rings, off the soil under each vertex
 UPPER_Z0 = 0.17         # the first level ring above the soil at the axis
-UPPER_STEP = 0.16
-DOME = ((0.10, 0.93), (0.19, 0.78), (0.27, 0.56), (0.32, 0.30))  # (dz, r factor)
+UPPER_STEP = 0.15
+DOME = ((0.10, 0.94), (0.20, 0.80), (0.29, 0.58), (0.35, 0.30))  # (dz, r factor)
 SWAY = (0.016, 0.012)
 
 # --- Roots -------------------------------------------------------------------
-ROOTS = 6
+ROOTS = 7
 ROOT_SIDES = 8
-ROOT_RINGS = 16
-ROOT_REACH = (1.45, 2.00)
-ROOT_R = (0.170, 0.030)
+ROOT_RINGS = 18
+ROOT_REACH = (1.90, 2.80)
+ROOT_R = (0.300, 0.045)
 
 # --- Crown -------------------------------------------------------------------
-CROWN_C = Vector((0.0, 0.10, 4.60))   # the crown's envelope centre (absolute)
-CROWN_RX = 5.60
-CROWN_RY = 5.10
-CROWN_RZ = (3.00, 2.45)              # above and below the centre
+CROWN_C = Vector((0.0, 0.10, 5.20))   # the crown's envelope centre (absolute)
+CROWN_RX = 6.30
+CROWN_RY = 5.70
+CROWN_RZ = (3.80, 3.50)              # above and below the centre
 SCAFFOLDS = 5
-SCAFFOLD_ELEV = (15.0, 27.0, 38.0, 50.0, 66.0)
+SCAFFOLD_ELEV = (8.0, 22.0, 38.0, 55.0, 76.0)
+SCAFFOLD_YAW0 = 190.0   # the first (lowest) scaffold's bearing: the low limbs reach out sideways to the hero
 SCAFFOLD_AREA = 0.92    # sum of scaffold areas over the trunk's area at the fork
 SCAFFOLD_F = (0.52, 0.66)
 # per generation: rings, sides, children, child segments (lo), length
 # fraction of the envelope, child radius ratio, crook
-GEN_RINGS = (9, 7, 6, 4)
-GEN_SIDES = (10, 7, 5, 4)
-GEN_SIDES_HIGH = (16, 12, 8, 4)
-GEN_KIDS = (3, 4, 3, 0)
+GEN_RINGS = (11, 8, 6, 4)
+GEN_SIDES = (12, 8, 5, 4)
+GEN_SIDES_HIGH = (20, 12, 8, 4)
+GEN_KIDS = (3, 3, 2, 0)
 GEN_SEG_LO = (2, 1, 1, 0)
 GEN_F = (None, (0.66, 0.84), (0.70, 0.92), None)
 GEN_LMIN = (None, 0.90, 0.60, None)
 KEEP = 0.30             # area a parent keeps for its own tip, past its last child
-GEN_CROOK = (0.20, 0.26, 0.30, 0.22)
+GEN_SHARE = (1.0, 1.0, 0.70)   # of the rest, the share its children take (twigs stay thin)
+GEN_CROOK = (0.30, 0.34, 0.34, 0.24)
 TWIG_L = (0.38, 0.62)
 TAPER = 0.10            # natural thinning along a branch, as area
 R_TIP = 0.008
 DEAD_TWIGS = 5
 
-# --- Leaves ------------------------------------------------------------------
-# half an oak leaf, petiole to apex: (x along, y across) as fractions of
-# its length, lobe tips and sinuses alternating, the auricle first
-LEAF_SIDE = ((0.09, 0.12), (0.21, 0.07), (0.34, 0.25), (0.47, 0.14), (0.63, 0.31),
-             (0.78, 0.17), (0.90, 0.19))
-LEAF_MID = (0.50,)
-LEAF_WID = 0.80
-LEAF_L = (0.54, 0.70)
-TWIG_LEAVES = 3         # along a live twig, plus TIP_LEAVES at its end
-TIP_LEAVES = 3
-END_LEAVES = 1          # along the last segment of a branch, plus TIP_LEAVES
+# --- Foliage -------------------------------------------------------------------
+# Every live branch end carries a clump: a dark, lumpy leaf-mass core
+# flattened toward the light, with small lobed leaves set in it.
+# Half an oak leaf, petiole to apex: (x along, y across) as fractions of
+# its length, lobe tips and sinuses alternating.
+LEAF_SIDE = ((0.16, 0.100), (0.29, 0.080), (0.44, 0.180), (0.60, 0.100), (0.77, 0.170))
+LEAF_WID = 1.0
+LEAF_C = 0.50           # the blade's centre (top and bottom apex), along it
+LEAF_WOB = 0.08         # per-lobe width jitter; the rim stays star-shaped from LEAF_C
+LEAF_L = (0.24, 0.32)
+CORE_R = (0.28, 0.40)   # core radius, interior to outer clumps
+CORE_FLAT = 0.62        # along its axis (out of the crown and up)
+CORE_JIT = 0.18
+BULGE_MIX = 0.60        # a lump's shading normal: out of its cushion, the rest out of the crown
+CORE_N = 1              # a core is a jittered cube, hidden in its clusters
+SAT_N = (5, 11)         # clusters round a core, interior to outer
+SAT_R = (0.25, 0.36)
+SAT_OUT = -0.25         # a cluster's centre this many of its radii outside the core's skin
+LEAF_P = (0.1, 0.8, 0.5)   # leaves per cluster: int(a + b * exposure + c * hash)
+FILLERS = {0: ((6, 1.00), (8, 0.90)), 1: ((2, 1.00), (4, 0.85), (6, 0.90)),
+           2: ((2, 0.75), (4, 0.85))}
+FILLER_RMAX = 0.36      # a filler core is at least this many times as wide as its branch there
+CORE_SEAT = 0.0         # the carrier's tip this many core radii behind its centre
+CLUMP_LEAVES = (5, 12)  # interior to outer
+LEAF_DEPTH = 0.030      # a leaf's petiole this far under its core's skin
+LEAF_LIFT = 1.60        # a blade rises out of the skin this steeply (tan)
+CLUMP_ZMIN = -0.50      # leaves cover the core from its pole down to this cos
+
 
 # --- Acorns ------------------------------------------------------------------
-ACORN_S = 1.25
+ACORN_S = 1.00
 CUP_PROF = ((0.010, 0.000), (0.026, 0.010), (0.032, 0.024), (0.029, 0.032), (0.014, 0.027))
 NUT_PROF = ((0.012, 0.000), (0.024, 0.010), (0.026, 0.030), (0.022, 0.052), (0.013, 0.066),
             (0.005, 0.074))
 NUT_APEX = 0.080
 NUT_SEAT = 0.018        # the nut's foot this far along the axis from the cup's base
 ACORN_SIDES = 8
-ACORN_CLUSTERS = 8
+ACORN_CLUSTERS = 6
 STALK_L = (0.17, 0.26)
 
 # --- Ground cover --------------------------------------------------------------
 TUFTS = 20
-LITTER = 34
-FALLEN_ACORNS = 10
-STICKS = (((1.30, -1.05), (1.95, -0.55), 0.020), ((-1.70, -0.45), (-1.05, -1.05), 0.016))
+LITTER = 70
+FALLEN_ACORNS = 12
+# fallen twigs: (from, to, radius); a fork is (index of its stick, station, to, radius)
+STICKS = (((1.75, -1.55), (2.75, -0.85), 0.024), ((-2.55, -0.70), (-1.60, -1.70), 0.020),
+          ((0.55, -2.70), (1.55, -2.95), 0.016), ((-1.30, 2.10), (-0.35, 2.75), 0.018))
+STICK_FORKS = ((0, 0.45, (2.05, -0.55), 0.012), (1, 0.55, (-1.70, -1.05), 0.011))
 REST_SINK = 0.008       # a lying body's most-buried vertex this far under the soil
 TUFT_BURY = 0.020
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (11.282, 9.306, 7.999)
-BASE_TRIS_MIN = 67700
-BASE_TRIS_MAX = 69000
+OUTER_SIZE = (11.529, 11.716, 8.958)
+BASE_TRIS_MIN = 86250
+BASE_TRIS_MAX = 87150
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 8
+MATERIAL_COUNT = 9
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 60
 BAKE_RES = 512
 CAGE_EXTRUSION = 0.01
-# face floors: bark, leaf, deadwood, nut, cup, soil, grass, litter
-FACE_FLOORS = (7070, 41600, 120, 1280, 1040, 1820, 2730, 1030)
+# face floors: bark, leaf, deadwood, nut, cup, soil, grass, litter, canopy
+FACE_FLOORS = (7110, 14090, 240, 1480, 1210, 2600, 2730, 1590, 41100)
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -186,48 +216,58 @@ COPLANAR_CENTRE_MAX = 0.05
 LIFT_Z = 0.05
 # Branch seat: every vertex of a branch's base cap inside its parent, the
 # shallowest at least SEAT_MIN of the parent's local radius under its skin.
-SEAT_MIN = 0.06
+SEAT_MIN = 0.10
 FLOAT_BRANCHES = 1.30   # --float-branches starts each tube this many parent radii out
 # Taper: at every junction (r_after^2 + r_child^2) / r_before^2 in band,
 # every child no wider than CHILD_MAX of its parent there; at the fork the
 # scaffolds' summed area over the trunk's.
-AREA_BAND = (0.90, 1.05)
-FORK_BAND = (0.80, 1.05)
-CHILD_MAX = 0.80
+AREA_BAND = (0.94, 1.02)
+FORK_BAND = (0.78, 0.90)
+CHILD_MAX = 0.72
 FAT_TWIGS = 1.80
 # Nut in cup: the nut's deepest vertex inside its cup.
-NUT_BITE = (0.006, 0.020)
+NUT_BITE = (0.005, 0.013)
 POP_NUTS = 0.035
 # Plumb and balance.
 LEAN_MAX_DEG = 1.0
-BALANCE_MAX = 0.45
-DBH = 0.731
+BALANCE_MAX = 0.30
+DBH = 1.110
 DBH_TOL = 0.020
 LEAN_BEND = 0.040       # --lean-crown bends the bole x += k (z - z0)^2, z0 <= z <= zc
 LEAN_Z0 = 0.55          # above the soil at the axis
-LEAN_ZC = 2.05
+LEAN_ZC = 1.95
 # Sealed: in each sector round the trunk some trunk vertex SEAL_EPS under the
 # soil; every root station's most-buried vertex ROOT_BED_MIN under it.
 SEAL_SECTORS = 8
 SEAL_EPS = 0.005
 ROOT_STATION = 0.25
-ROOT_BED_MIN = 0.010
+ROOT_BED_MIN = 0.020
 ARCH_LIFT = 0.060
-# Leaf clusters: every leaf's petiole this deep inside its own twig.
-LEAF_BITE_MIN = 0.0015
-ORPHAN_DROP = 0.30
+# Leaf clumps: every core's carrier this deep inside the core, and every
+# leaf's petiole this deep inside its own core.
+CORE_BITE_MIN = 0.040
+LUMP_BITE_MIN = 0.010
+LEAF_BITE_MIN = 0.010
+ORPHAN_DROP = 0.55
+SHED_Q = 0.85           # --shed-leaves slides in the leaves inside this crown_q
+SCATTER_Q = 0.70        # --scatter-clusters pushes out the clusters of clumps inside this crown_q
+SHED_IN = 0.90
+SCATTER_OUT = 0.25      # --scatter-clusters pushes those clusters this far out along their bearing
 # Hanging acorns: stalk in branch, pedicel in stalk and in cup.
-STALK_BITE_MIN = 0.004
+STALK_BITE_MIN = 0.010
 PEDICEL_BITE_MIN = 0.002
 CUP_BITE_MIN = 0.006
 DROP_ACORNS = 0.060
 # Ground cover: most-buried vertex under the soil straight above it.
 REST_BAND = (0.003, 0.030)
-TUFT_BAND = (0.040, 0.090)
+TUFT_BAND = (0.045, 0.080)
 FLOAT_COVER = 0.060
 # Hero yaw about Z only (level on the stage).
 HERO_YAW_DEG = 0.0
-WALL_Y = 9.5
+WALL_Y = 10.5
+CAM_DIST = 29.0
+CAM_DZ = -1.2
+
 
 BARK_IDX = 0
 LEAF_IDX = 1
@@ -237,15 +277,19 @@ CUP_IDX = 4
 SOIL_IDX = 5
 GRASS_IDX = 6
 LITTER_IDX = 7
-MAT_LABELS = ("bark", "leaf", "deadwood", "nut", "cup", "soil", "grass", "litter")
+CANOPY_IDX = 8
+MAT_LABELS = ("bark", "leaf", "deadwood", "nut", "cup", "soil", "grass", "litter", "canopy")
 
 # part tags, one per face, so the audits can name a shell's role
 P_TRUNK, P_ROOT, P_LIMB, P_TWIG, P_DEAD, P_LEAF = 1, 2, 3, 4, 5, 6
 P_STALK, P_PEDICEL, P_CUP, P_NUT = 7, 8, 9, 10
 P_SOIL, P_TUFT, P_LITTER, P_FCUP, P_FNUT, P_STICK = 11, 12, 13, 14, 15, 16
+P_CORE = 17
+P_LUMP = 18
 WOOD_PARTS = (P_TRUNK, P_LIMB, P_TWIG, P_DEAD)
 BRANCH_PARTS = (P_LIMB, P_TWIG, P_DEAD)
-TREE_PARTS = (P_TRUNK, P_LIMB, P_TWIG, P_DEAD, P_LEAF, P_STALK, P_PEDICEL, P_CUP, P_NUT)
+TREE_PARTS = (P_TRUNK, P_LIMB, P_TWIG, P_DEAD, P_LEAF, P_CORE, P_LUMP, P_STALK, P_PEDICEL, P_CUP,
+              P_NUT)
 COVER_PARTS = (P_TUFT, P_LITTER, P_FCUP, P_FNUT, P_STICK)
 
 
@@ -312,9 +356,13 @@ def disc_wobble(th):
 
 
 def soil_height(x, y):
-    """A grassy bank rising toward the back, with low swells."""
-    h = (SOIL_H0 + SLOPE * y + 0.022 * math.sin(1.3 * x + 0.3) * math.cos(1.7 * y + 0.9)
-         + 0.010 * math.sin(3.1 * x - 2.3 * y + 1.2) + 0.005 * math.sin(6.3 * x + 4.9 * y))
+    """A grassy mound, highest round the trunk where the roots have lifted
+    it, rising a little toward the back, with low swells."""
+    q = min(1.0, (x / SOIL_A[0]) ** 2 + (y / SOIL_A[1]) ** 2)
+    h = (SOIL_RIM_H + (SOIL_H0 - SOIL_RIM_H) * (1.0 - q) ** 1.6 + SLOPE * y
+         + FLARE_HEAP * math.exp(-(x * x + y * y) / FLARE_HEAP_R ** 2)
+         + 0.030 * math.sin(1.1 * x + 0.3) * math.cos(1.4 * y + 0.9)
+         + 0.012 * math.sin(2.7 * x - 2.1 * y + 1.2) + 0.005 * math.sin(6.3 * x + 4.9 * y))
     return max(SOIL_FLOOR, h)
 
 
@@ -371,8 +419,17 @@ def trunk_r(zrel, a, yaws, collider=False):
     if not collider:
         r *= 1.0 + FLUTE_AMP * math.cos(FLUTES * a + 0.35 * math.sin(1.3 * zrel + 0.4)) \
             * (0.4 + 0.6 * smoothstep(zrel, 0.0, 0.8))
-        r *= 1.0 + RIDGE_AMP * math.cos(RIDGES * a + 0.6 * math.sin(2.1 * zrel + 3.0 * a))
+        c2 = math.cos(34.0 * a - 1.3 * math.sin(2.7 * zrel + a))
+        r *= 1.0 + RIDGE_AMP * (2.0 * bark_plate(zrel, a) - 1.0 + 0.25 * c2)
     return r
+
+
+def bark_plate(zrel, a):
+    """Rugged plates round the bole: 1 on a plate's broad flat top, 0 down
+    a narrow deep furrow; the furrows wander and fork up the bole."""
+    c = math.cos(RIDGES * a + 0.9 * math.sin(1.9 * zrel + 2.0 * a)
+                 + 0.45 * math.sin(4.3 * zrel - 3.0 * a))
+    return ((1.0 + c) * 0.5) ** 0.35
 
 
 # --------------------------------------------------------------------------
@@ -397,6 +454,64 @@ def env_dist(p, d):
         else:
             hi = mid
     return lo
+
+
+def core_shape(cl):
+    """A clump core's points and triangles: a lumpy cube-sphere ``r``
+    across, flattened along its axis toward the light. A closed-form hash
+    jitters each point, so the plan knows the built skin exactly."""
+    dirs, quads = lump_mesh(cl["n"])
+    a = cl["axis"]
+    e1 = perp(a)
+    e2 = a.cross(e1)
+    r = cl["r"]
+    pts = []
+    for i, d in enumerate(dirs):
+        j = 1.0 + CORE_JIT * (2.0 * hash01(cl["key"], i, 9) - 1.0)
+        pts.append(cl["c"] + (e1 * (d.x * r) + e2 * (d.y * r) + a * (d.z * r * CORE_FLAT)) * j)
+    tris = []
+    for q in quads:
+        if len(q) == 3:
+            tris.append(tuple(q))
+            continue
+        # both diagonals of every quad: the built skin lies between them
+        tris += [(q[0], q[1], q[2]), (q[0], q[2], q[3]), (q[1], q[2], q[3]), (q[3], q[0], q[1])]
+    return pts, tris
+
+
+def core_skin(cl, d):
+    """Distance from a lump's centre along unit ``d`` to its skin (the
+    nearer of either split of each quad)."""
+    best = 9.0
+    pts = cl["pts"]
+    for tri in cl["tris"]:
+        hit = intersect_ray_tri(pts[tri[0]], pts[tri[1]], pts[tri[2]], d, cl["c"], True)
+        if hit is not None and (hit - cl["c"]).dot(d) > 0.0:
+            best = min(best, (hit - cl["c"]).length)
+    return best
+
+
+def leaf_frame(host, d, lk):
+    """A leaf set in lump ``host`` toward unit ``d``: its petiole LEAF_DEPTH
+    under the lump's built skin, the blade rising out of it and turned out
+    of it, rolled a hashed way and a little to the light."""
+    c = host["c"]
+    base = c + d * (core_skin(host, d) - LEAF_DEPTH)
+    swing = perp(d)
+    swing = (swing * math.cos(TAU * hash01(lk, 1, 2))
+             + d.cross(swing) * math.sin(TAU * hash01(lk, 1, 2)))
+    away = d * d.dot(host["axis"]) - host["axis"]
+    tan = (away.normalized() * 0.5 if away.length > 0.2 else Vector()) + swing
+    tan = (tan - d * tan.dot(d)).normalized()
+    e1 = (tan + d * LEAF_LIFT).normalized()
+    e3 = d - e1 * d.dot(e1)
+    e3.normalize()
+    roll = math.radians(70.0) * (hash01(lk, 1, 3) - 0.5)
+    e3 = e3 * math.cos(roll) + e1.cross(e3) * math.sin(roll)
+    e3 = e3 + UP * 0.30
+    e3 = (e3 - e1 * e3.dot(e1)).normalized()
+    return {"base": base, "d": d, "e1": e1, "e3": e3,
+            "L": LEAF_L[0] + (LEAF_L[1] - LEAF_L[0]) * hash01(lk, 3, 1), "key": lk}
 
 
 # --------------------------------------------------------------------------
@@ -429,9 +544,11 @@ def branch_path(base, d, L, steps, crook, rise, droop, ph):
     step = L / (steps - 1)
     for i in range(1, steps):
         s = (i - 0.5) / (steps - 1)
+        # the oak's zig-zag: each segment kinks the other way from the last
         alt = (1.0 if i % 2 else -1.0) * (0.55 + 0.45 * hash01(ph * 31.0, i, 5))
-        dirv = (d + side * (crook * (0.6 * math.sin(TAU * 1.2 * s + ph) + 0.5 * alt))
-                + up2 * (0.5 * crook * math.sin(TAU * 0.9 * s + 2.0 * ph))
+        alt2 = (1.0 if (i // 2) % 2 else -1.0) * (0.4 + 0.6 * hash01(ph * 31.0, i, 6))
+        dirv = (d + side * (crook * (0.5 * math.sin(TAU * 1.2 * s + ph) + 0.7 * alt))
+                + up2 * (crook * (0.4 * math.sin(TAU * 0.9 * s + 2.0 * ph) + 0.35 * alt2))
                 + UP * (rise * (1.0 - s) - droop * s))
         p = p + dirv.normalized() * step
         pts.append(p)
@@ -465,9 +582,10 @@ def plan_tree():
 
     rf = trunk_radius(FORK_Z)
     ws = [u(0.7, 1.3) for _ in range(SCAFFOLDS)]
-    elevs = list(SCAFFOLD_ELEV)
-    rng.shuffle(elevs)
-    yaw0 = u(0.0, TAU)
+    # low, long limbs alternate with steep ones round the bole, so the
+    # crown stands balanced over it
+    elevs = [SCAFFOLD_ELEV[i] for i in (0, 3, 1, 4, 2)]
+    yaw0 = math.radians(SCAFFOLD_YAW0)
     scaff = []
     for k in range(SCAFFOLDS):
         yaw = yaw0 + TAU * k / SCAFFOLDS + u(-0.22, 0.22)
@@ -478,8 +596,8 @@ def plan_tree():
         base = Vector((0.0, 0.0, soil0 + zrel)) + axis_at(zrel)
         L = u(*SCAFFOLD_F) * env_dist(base, d)
         low = 1.0 - (elevs[k] - SCAFFOLD_ELEV[0]) / (SCAFFOLD_ELEV[-1] - SCAFFOLD_ELEV[0])
-        br = new_branch(0, 0, -1, base, d, L, r0, GEN_CROOK[0], 0.10 + 0.25 * (1.0 - low),
-                        0.10 + 0.55 * low)
+        br = new_branch(0, 0, -1, base, d, L, r0, GEN_CROOK[0], 0.16 + 0.22 * (1.0 - low),
+                        0.10 + 0.42 * low)
         br["zrel"] = zrel
         scaff.append(br)
 
@@ -512,7 +630,7 @@ def plan_tree():
         # da Vinci: the children share the parent's area, less what it keeps
         # for its own tip and its natural thinning
         ws = [u(0.7, 1.3) for _ in segs]
-        share = (1.0 - KEEP - TAPER) * br["r0"] * br["r0"]
+        share = GEN_SHARE[g] * (1.0 - KEEP - TAPER) * br["r0"] * br["r0"]
         phi0 = u(0.0, TAU)
         kids = [(seg, math.sqrt(share * w / sum(ws))) for seg, w in zip(segs, ws)]
         br["radii"] = radii_of(br, kids)
@@ -553,56 +671,74 @@ def plan_tree():
     for b in sorted(twigs, key=lambda b: b["pts"][-1].z)[:DEAD_TWIGS]:
         b["dead"] = True
 
-    # leaves: along the outer half of every live twig and at its tip; at the
-    # end of every other branch
+    # clumps: a leaf-mass core on the end of every live branch, flattened
+    # toward the light, with lobed leaves set in it and turned out of it
+    clumps = []
+    sats = []
     leaves = []
     carriers = []
+    stations = []
     for b in branches:
         if b["dead"]:
             continue
         pts = b["pts"]
-        fr = frames(pts)
-        if b["gen"] == 3:
-            stations = [0.46 + 0.36 * i / (TWIG_LEAVES - 1) for i in range(TWIG_LEAVES)]
-        else:
-            n = len(pts)
-            stations = [(n - 2 + 0.45 + 0.35 * i) / (n - 1) for i in range(END_LEAVES)]
-        stations += [0.915, 0.950, 0.985][:TIP_LEAVES]
+        stations.append((b, len(pts) - 1, 1.0))
+        # the lumps of a cushion: more cores along the outer part of every
+        # branch that carries twigs, so the tips' lumps run together
+        for j, f in FILLERS.get(b["gen"], ()):
+            stations.append((b, j, f))
+    for b, j, rfac in stations:
+        pts = b["pts"]
+        tip = pts[j]
+        t = (pts[j] - pts[j - 1]).normalized()
+        out = tip - CROWN_C
+        out = out.normalized() if out.length > 1e-4 else UP.copy()
+        # exposure: 0 deep in the crown, 1 on its skin
+        ex = min(1.0, max(0.0, (crown_q(tip) - 0.55) / 0.40))
+        key = b["id"] * 17.0 + j * 0.37
+        axis = (out * 0.6 + UP + perp(out) * (0.5 * hash01(key, 8, 2) - 0.25)).normalized()
+        r = rfac * (CORE_R[0] + (CORE_R[1] - CORE_R[0]) * ex) * (0.80 + 0.40 * hash01(key, 8, 1))
+        # a filler round a thick limb is widened to hold it
+        r = max(r, b["radii"][j] / FILLER_RMAX)
+        # a tip's core sits past the tip; a filler's is centred on its ring,
+        # lifted a little above the branch
+        c = tip + t * (CORE_SEAT * r) if j == len(pts) - 1 else tip.copy()
+        cl = {"id": len(clumps), "carrier": b["id"], "c": c, "axis": axis, "r": r, "n": CORE_N,
+              "key": key, "ex": ex, "tone": b["tone"], "sats": []}
+        cl["pts"], cl["tris"] = core_shape(cl)
+        clumps.append(cl)
         carriers.append(b["id"])
-        for i, s in enumerate(stations):
-            x = s * (len(pts) - 1)
-            j = min(int(x), len(pts) - 2)
-            f = x - j
-            p = pts[j].lerp(pts[j + 1], f)
-            t = (pts[j + 1] - pts[j]).normalized()
-            _t, nn, bb = fr[j]
-            key = b["id"] * 17.0 + i
-            tip = i >= len(stations) - TIP_LEAVES
-            if tip:
-                phi = b["ph"] + TAU * (i - (len(stations) - TIP_LEAVES)) / TIP_LEAVES
-                fw = 0.95
-            else:
-                phi = b["ph"] + i * 2.513
-                fw = 0.55
-            w = nn * math.cos(phi) + bb * math.sin(phi)
-            out = (p - CROWN_C)
-            out = out.normalized() if out.length > 1e-4 else UP.copy()
-            e1 = (w * 0.70 + t * fw + out * 0.50 + UP * 0.10).normalized()
-            # a leaf turns its face out of the crown and a little up, to the
-            # light, so the crown shows leaf faces from every side
-            U = (out * 1.0 + UP * 0.45 + Vector((hash01(key, 1, 1) - 0.5, hash01(key, 1, 2) - 0.5,
-                                                 hash01(key, 1, 3) - 0.5)) * 0.8).normalized()
-            e3 = U - e1 * U.dot(e1)
-            if e3.length < 0.1:
-                e3 = w - e1 * w.dot(e1)
-            e3.normalize()
-            # the petiole sits inside the twig, a hashed hair off its axis so
-            # no two leaves share a point
-            r_here = b["radii"][j] * (1.0 - f) + b["radii"][j + 1] * f
-            off = (nn * (hash01(key, 2, 1) - 0.5) + bb * (hash01(key, 2, 2) - 0.5)) * (0.5 * r_here)
-            leaves.append({"carrier": b["id"], "base": p + off, "e1": e1, "e3": e3,
-                           "L": LEAF_L[0] + (LEAF_L[1] - LEAF_L[0]) * hash01(key, 3, 1),
-                           "key": key, "tone": b["tone"]})
+        # the cushion: small faceted leaf clusters set round the core, each
+        # biting into it, most on the side out of the crown and up
+        e1a = perp(axis)
+        e2a = axis.cross(e1a)
+        n = max(2, int(round((SAT_N[0] + (SAT_N[1] - SAT_N[0]) * ex) * rfac * rfac)))
+        for i in range(n):
+            sk = key + i + 1.0
+            z = 1.0 - (1.0 - CLUMP_ZMIN) * (i + 0.5) / n
+            phi = i * 2.39996 + b["ph"] + 0.5 * (hash01(sk, 1, 1) - 0.5)
+            d = (axis * z + (e1a * math.cos(phi) + e2a * math.sin(phi))
+                 * math.sqrt(max(0.0, 1.0 - z * z))).normalized()
+            rs = (SAT_R[0] + (SAT_R[1] - SAT_R[0]) * hash01(sk, 2, 1)) * (0.85 + 0.3 * ex)
+            # its centre SAT_BITE of its radius outside the core's built skin
+            # (read by a ray from the core's centre), so it bites into it
+            sc = c + d * (core_skin(cl, d) + SAT_OUT * rs)
+            sax = (d + UP * 0.6).normalized()
+            sat = {"id": len(sats), "clump": cl["id"], "c": sc, "axis": sax, "r": rs, "n": 0,
+                   "key": sk * 3.1, "ex": ex, "tone": b["tone"], "d": d, "leaves": []}
+            sat["pts"], sat["tris"] = core_shape(sat)
+            sats.append(sat)
+            cl["sats"].append(sat)
+            nl = int(LEAF_P[0] + LEAF_P[1] * ex + LEAF_P[2] * hash01(sk, 2, 2))
+            for m in range(nl):
+                lk = sk * 7.0 + m
+                # out of the cluster, away from the core
+                dl = (d * 1.0 + perp(d) * (1.2 * hash01(lk, 1, 4) - 0.6)
+                      + d.cross(perp(d)) * (1.2 * hash01(lk, 1, 5) - 0.6)).normalized()
+                lf = leaf_frame(sat, dl, lk)
+                lf.update({"sat": sat["id"], "carrier": b["id"], "tone": b["tone"], "ex": ex})
+                sat["leaves"].append(lf)
+                leaves.append(lf)
 
     # hanging acorns: under low, outer second-order branches, spread round
     # the crown
@@ -643,7 +779,7 @@ def plan_tree():
             tries += 1
             a = u(0.0, TAU)
             r = math.sqrt(u((rlo / rhi) ** 2, 1.0)) * rhi
-            x, y = r * math.cos(a) * SOIL_A[0] / 2.55, r * math.sin(a) * SOIL_A[1] / 2.55
+            x, y = r * math.cos(a), r * math.sin(a) * SOIL_A[1] / SOIL_A[0]
             if not root_clear(x, y, clear):
                 continue
             if any(math.hypot(x - px, y - py) < spacing for px, py, _s in taken + out):
@@ -652,25 +788,26 @@ def plan_tree():
         return out
 
     taken = []
-    tufts = scatter(TUFTS, 0.95, 2.00, 0.36, 0.16, taken)
+    tufts = scatter(TUFTS, 1.30, 3.30, 0.46, 0.20, taken)
     taken += tufts
-    litter = scatter(LITTER, 0.70, 1.85, 0.20, 0.12, [])
-    fallen = scatter(FALLEN_ACORNS, 0.80, 1.80, 0.20, 0.14, taken)
+    litter = scatter(LITTER, 1.00, 3.20, 0.22, 0.14, [])
+    fallen = scatter(FALLEN_ACORNS, 1.05, 2.90, 0.24, 0.16, taken)
     cover = {
-        "tufts": [(x, y, u(0.12, 0.34), rng.random(), u(0.0, TAU)) for x, y, _s in tufts],
-        "litter": [(x, y, u(0.0, TAU), u(0.30, 0.40), rng.random(), u(-0.12, 0.12)) for x, y, _s in litter],
+        "tufts": [(x, y, u(0.24, 0.46), rng.random(), u(0.0, TAU)) for x, y, _s in tufts],
+        "litter": [(x, y, u(0.0, TAU), u(0.20, 0.27), rng.random(), u(-0.12, 0.12)) for x, y, _s in litter],
         "fallen": [(x, y, u(0.0, TAU), rng.random(), u(-0.25, 0.25)) for x, y, _s in fallen],
-        "sticks": [rng.random() for _s in STICKS],
+        "sticks": [rng.random() for _s in STICKS + STICK_FORKS],
     }
     return {"soil0": soil0, "roots": roots, "root_yaws": root_yaws, "branches": branches,
-            "by_id": by_id, "leaves": leaves, "carriers": carriers, "acorns": acorns,
-            "cover": cover}
+            "by_id": by_id, "leaves": leaves, "clumps": clumps, "sats": sats, "carriers": carriers,
+            "acorns": acorns, "cover": cover}
 
 
-def orphan_carrier(plan):
-    """The live twig whose tip is nearest the crown's centre."""
-    live = [b for b in plan["branches"] if b["gen"] == 3 and not b["dead"]]
-    return min(live, key=lambda b: (b["pts"][-1] - CROWN_C).length)["id"]
+def orphan_clump(plan):
+    """The clump on the live twig whose tip is nearest the crown's centre."""
+    by_id = plan["by_id"]
+    twig = [cl for cl in plan["clumps"] if by_id[cl["carrier"]]["gen"] == 3]
+    return min(twig, key=lambda cl: (cl["c"] - CROWN_C).length)["id"]
 
 
 # --------------------------------------------------------------------------
@@ -693,17 +830,20 @@ class Builder:
         self.ring = bm.verts.layers.int.new("Ring")
         self.tip = bm.verts.layers.float.new("Tip")
         self.grain = bm.verts.layers.float_vector.new("Grain")
+        self.furrow = bm.verts.layers.float.new("Furrow")
+        self.bulge = bm.verts.layers.float_vector.new("Bulge")
         # the packed UVMap first, so it stays the active (baked, exported) map;
         # LeafUV runs across (x) and along (y) each leaf for its veins
         self.uv = bm.loops.layers.uv.new("UVMap")
         self.luv = bm.loops.layers.uv.new("LeafUV")
         self.leaf_uv = {}
 
-    def vert(self, co, ring=-1, tip=0.0, grain=UP):
+    def vert(self, co, ring=-1, tip=0.0, grain=UP, furrow=0.35):
         v = self.bm.verts.new(co)
         v[self.ring] = ring
         v[self.tip] = tip
         v[self.grain] = grain
+        v[self.furrow] = furrow
         return v
 
     def face(self, verts, mat, tone, part, ident=0, parent=-1, cap=0, smooth=None):
@@ -795,13 +935,14 @@ def zipper(A, M, xa, xm):
 
 
 def add_leaf(B, base, e1, e3, L, tone, part, parent, key, mat, droop=0.10, fold=0.22,
-             bottom=0.006):
-    """A lobed oak leaf: one closed, thin shell. The rim (auricles, four
-    lobes a side, apex) is shared by a top and a bottom surface, each
-    zipped to its own midrib, so every rim edge has one face above and one
-    below. The blade folds up from the midrib and droops toward the apex."""
+             bottom=0.006, ident=0):
+    """A lobed oak leaf: one closed, thin shell of 24 triangles. The rim
+    (petiole, three lobes a side, the terminal lobe) is fanned to a
+    top and a bottom centre over the same point of the blade, so every rim
+    edge has one face above and one below and the two never cross. The
+    blade folds up from its midrib and droops toward its apex."""
     e2 = e3.cross(e1)
-    wob = [0.86 + 0.28 * hash01(key, 7, k) for k in range(16)]
+    wob = [1.0 + LEAF_WOB * (2.0 * hash01(key, 7, k) - 1.0) for k in range(10)]
 
     def P(x, y, lift=0.0):
         return base + e1 * (x * L) + e2 * (y * L) + e3 * ((fold * abs(y) - droop * x * x + lift) * L)
@@ -812,35 +953,45 @@ def add_leaf(B, base, e1, e3, L, tone, part, parent, key, mat, droop=0.10, fold=
     B.leaf_uv[vb] = (0.5, 0.0)
     B.leaf_uv[va] = (0.5, 1.0)
     sides = []
-    for sg, off in ((1.0, 0), (-1.0, 8)):
+    for sg, off in ((1.0, 0), (-1.0, 5)):
         run = []
         for k, (x, y) in enumerate(LEAF_SIDE):
             yy = sg * y * LEAF_WID * wob[k + off]
             v = B.vert(P(x, yy), tip=x)
             B.leaf_uv[v] = (0.5 + 0.5 * yy / ymax, x)
             run.append(v)
-        sides.append((sg, run))
-    mids = []
-    for lift in (0.012, -bottom):
-        run = []
-        for x in LEAF_MID:
-            v = B.vert(P(x, 0.0, lift), tip=x)
-            B.leaf_uv[v] = (0.5, x)
-            run.append(v)
-        mids.append(run)
-    xa = [0.0] + [x for x, _y in LEAF_SIDE] + [1.0]
-    xm = [0.0] + list(LEAF_MID) + [1.0]
+        sides.append(run)
+    rim = [vb] + sides[0] + [va] + list(reversed(sides[1]))
+    top = B.vert(P(LEAF_C, 0.0, 0.014), tip=LEAF_C)
+    bot = B.vert(P(LEAF_C, 0.0, -bottom), tip=LEAF_C)
+    B.leaf_uv[top] = (0.5, LEAF_C)
+    B.leaf_uv[bot] = (0.5, LEAF_C)
     faces = []
-    for sg, run in sides:
-        A = [vb] + run + [va]
-        for mi, mid in enumerate(mids):
-            M = [vb] + mid + [va]
-            for tri in zipper(A, M, xa, xm):
-                faces.append(B.face(tri, mat, tone, part, 0, parent, smooth=False))
+    n = len(rim)
+    for k in range(n):
+        a, b = rim[k], rim[(k + 1) % n]
+        faces.append(B.face((a, b, top), mat, tone, part, ident, parent, smooth=False))
+        faces.append(B.face((b, a, bot), mat, tone, part, ident, parent, smooth=False))
     for f in faces:
         for loop in f.loops:
             loop[B.luv].uv = B.leaf_uv.get(loop.vert, (0.5, 0.5))
-    return [vb, va] + [v for _s, run in sides for v in run] + [v for run in mids for v in run]
+    return rim + [top, bot]
+
+
+def add_core(B, cl, shift, tone, ident, parent, part, mass_c):
+    """A leaf-mass lump: one closed, jittered cube-sphere ``r`` across and
+    flattened along its axis toward the light, from its planned points."""
+    _dirs, quads = lump_mesh(cl["n"])
+    verts = []
+    for p in cl["pts"]:
+        v = B.vert(p + shift)
+        a = p - mass_c
+        b = p - CROWN_C
+        v[B.bulge] = (a.normalized() * BULGE_MIX + b.normalized() * (1.0 - BULGE_MIX)).normalized()
+        verts.append(v)
+    for q in quads:
+        B.face([verts[i] for i in q], CANOPY_IDX, tone, part, ident, parent)
+    return verts
 
 
 _CUBE = {}
@@ -877,6 +1028,31 @@ def cube_sphere(n):
                     quads.append(corners if side else corners[::-1])
     _CUBE[n] = (dirs, quads)
     return _CUBE[n]
+
+
+_ICO = []
+
+
+def icosahedron():
+    """Unit directions of an icosahedron's 12 points and its 20 triangles,
+    wound outward."""
+    if _ICO:
+        return _ICO[0]
+    g = (1.0 + math.sqrt(5.0)) / 2.0
+    raw = [(-1, g, 0), (1, g, 0), (-1, -g, 0), (1, -g, 0), (0, -1, g), (0, 1, g), (0, -1, -g),
+           (0, 1, -g), (g, 0, -1), (g, 0, 1), (-g, 0, -1), (-g, 0, 1)]
+    dirs = [Vector(p).normalized() for p in raw]
+    faces = [(0, 11, 5), (0, 5, 1), (0, 1, 7), (0, 7, 10), (0, 10, 11), (1, 5, 9), (5, 11, 4),
+             (11, 10, 2), (10, 7, 6), (7, 1, 8), (3, 9, 4), (3, 4, 2), (3, 2, 6), (3, 6, 8),
+             (3, 8, 9), (4, 9, 5), (2, 4, 11), (6, 2, 10), (8, 6, 7), (9, 8, 1)]
+    _ICO.append((dirs, faces))
+    return _ICO[0]
+
+
+def lump_mesh(n):
+    """A lump's unit directions and faces: an icosahedron (``n`` = 0) or a
+    cube-sphere ``n`` quads a side."""
+    return icosahedron() if n == 0 else cube_sphere(n)
 
 
 def add_tuft(B, G, x, y, h, tone, yaw, key, lift):
@@ -992,10 +1168,12 @@ def add_trunk(B, plan, G, sides, lean, perch, collider=False):
         c = axis_at(zrel, lean)
         ring = []
         for a in angles:
-            r = trunk_r(FORK_Z, a, yaws, True) * f
+            r = trunk_r(FORK_Z, a, yaws, collider) * f
             ring.append(Vector((c.x + r * math.cos(a), c.y + r * math.sin(a), soil0 + zrel)))
         grid.append(ring)
-    verts = [[B.vert(p, ring=i) for p in ring] for i, ring in enumerate(grid)]
+    zrels = [0.0] * len(FOOT_OFFS) + trunk_levels() + [FORK_Z] * len(DOME)
+    verts = [[B.vert(p, ring=i, furrow=1.0 - bark_plate(zrels[i], a)) for p, a in zip(ring, angles)]
+             for i, ring in enumerate(grid)]
     for r0, r1 in zip(verts, verts[1:]):
         for j in range(sides):
             m = (j + 1) % sides
@@ -1017,7 +1195,7 @@ def add_roots(B, plan, G, arch):
             t = i / (ROOT_RINGS - 1)
             q = h * (0.22 + (reach - 0.22) * t) + s * (0.10 * rt["wig"] * math.sin(math.pi * t))
             r = ROOT_R[0] + (ROOT_R[1] - ROOT_R[0]) * t ** 0.8
-            dz = 0.20 * (1.0 - t) ** 3 + 0.22 * r - 0.07 * t * t
+            dz = 0.22 * (1.0 - t) ** 3 + 0.36 * r - 0.06 * t * t
             if arch:
                 dz += (r + ARCH_LIFT) * math.sin(math.pi * min(1.0, max(0.0, (t - 0.30) / 0.45))) ** 2
             pts.append(Vector((q.x, q.y, G.z(q.x, q.y) + dz)))
@@ -1030,7 +1208,7 @@ def add_roots(B, plan, G, arch):
 def build_tree(B, plan, G, detail, flags, tree_verts):
     lean = LEAN_BEND if flags["lean_crown"] else 0.0
     by_id = plan["by_id"]
-    orphan = orphan_carrier(plan) if flags["orphan_clump"] else None
+    orphan = orphan_clump(plan) if flags["orphan_clump"] else None
     for br in plan["branches"]:
         g = br["gen"]
         sides = (GEN_SIDES_HIGH if detail == "high" else GEN_SIDES)[g]
@@ -1057,19 +1235,35 @@ def build_tree(B, plan, G, detail, flags, tree_verts):
         tone = 0.35 + 0.5 * br["tone"]
         tree_verts += add_tube(B, pts, radii, sides, DEAD_IDX if dead else BARK_IDX, tone, part,
                                br["id"], br["parent"], phase=br["ph"], jag=jag)
-    for i, lf in enumerate(plan["leaves"]):
-        base = lf["base"]
-        if orphan is not None and lf["carrier"] == orphan:
-            base = base - UP * ORPHAN_DROP
-        # outer and higher leaves are lighter; the crown's heart is shaded
-        out = min(1.0, max(0.0, crown_q(base) - 0.45) / 0.55)
-        high = min(1.0, max(0.0, (base.z - CROWN_C.z + CROWN_RZ[1]) / (CROWN_RZ[0] + CROWN_RZ[1])))
-        tone = min(1.0, 0.10 + 0.35 * hash01(lf["key"], 4, 1) + 0.25 * out + 0.25 * high
-                   + 0.10 * lf["tone"])
-        tree_verts += add_leaf(B, base, lf["e1"], lf["e3"], lf["L"], tone, P_LEAF, lf["carrier"],
-                               lf["key"], LEAF_IDX,
-                               droop=0.06 + 0.10 * hash01(lf["key"], 5, 1),
-                               fold=0.12 + 0.16 * hash01(lf["key"], 5, 2))
+    for cl in plan["clumps"]:
+        shift = -UP * ORPHAN_DROP if cl["id"] == orphan else Vector()
+        cid = 20000 + cl["id"]
+        high = min(1.0, max(0.0, (cl["c"].z - CROWN_C.z + CROWN_RZ[1]) / (CROWN_RZ[0] + CROWN_RZ[1])))
+        # outer and higher lumps and leaves are lighter; the crown's heart
+        # is shaded
+        tone = min(1.0, 0.10 + 0.45 * cl["ex"] + 0.25 * high + 0.15 * cl["tone"])
+        tree_verts += add_core(B, cl, shift, tone, cid, cl["carrier"], P_CORE, cl["c"])
+        shed = flags["shed_leaves"]
+        for sat in cl["sats"]:
+            sid_ = 40000 + sat["id"]
+            stone = min(1.0, tone + 0.25 * (hash01(sat["key"], 4, 2) - 0.4) + 0.15 * sat["d"].z)
+            # --scatter-clusters: an interior cushion's clusters (and their
+            # leaves) pushed out of its core
+            sshift = shift + (sat["d"] * SCATTER_OUT if flags["scatter_clusters"]
+                              and crown_q(cl["c"]) < SCATTER_Q else Vector())
+            tree_verts += add_core(B, sat, sshift, max(0.0, stone), sid_, cid, P_LUMP, cl["c"])
+            for lf in sat["leaves"]:
+                base = lf["base"] + sshift
+                if shed and crown_q(base) < SHED_Q:
+                    # --shed-leaves: an inner leaf slid in toward the crown's
+                    # centre, clear through and out of its cluster
+                    base = base + (CROWN_C - base).normalized() * SHED_IN
+                ltone = min(1.0, 0.05 + 0.30 * hash01(lf["key"], 4, 1) + 0.35 * lf["ex"]
+                            + 0.25 * high + 0.05 * lf["tone"])
+                tree_verts += add_leaf(B, base, lf["e1"], lf["e3"], lf["L"], ltone, P_LEAF, sid_,
+                                       lf["key"], LEAF_IDX,
+                                       droop=0.06 + 0.10 * hash01(lf["key"], 5, 1),
+                                       fold=0.12 + 0.16 * hash01(lf["key"], 5, 2))
     # hanging acorns: a stalk from inside the branch, two or three pedicels
     # from inside its end, a cup on each and a nut seated in each cup
     sid = 3000
@@ -1137,9 +1331,7 @@ def build_cover(B, plan, G, flags):
         vs += lathe(B, cup0 + ax * (NUT_SEAT * ACORN_S), ax, NUT_PROF, ACORN_SIDES, yaw + 0.3,
                     NUT_IDX, tone, P_FNUT, 7000 + k, -1, apex=NUT_APEX)
         settle(vs, G, REST_SINK - lift)
-    for k, (((ax_, ay), (bx, by), r), tone) in enumerate(zip(STICKS, cov["sticks"])):
-        a = Vector((ax_, ay, 0.0))
-        b = Vector((bx, by, 0.0))
+    def stick_path(a, b, r, tone):
         pts = []
         for i in range(6):
             t = i / 5.0
@@ -1147,8 +1339,26 @@ def build_cover(B, plan, G, flags):
             side = Vector((-(b - a).y, (b - a).x, 0.0)).normalized()
             p += side * (0.03 * math.sin(2.8 * t * math.pi + tone * 6.0))
             pts.append(Vector((p.x, p.y, G.z(p.x, p.y) + r * 0.6)))
+        return pts
+
+    tones = cov["sticks"]
+    paths = []
+    for k, ((ax_, ay), (bx, by), r) in enumerate(STICKS):
+        pts = stick_path(Vector((ax_, ay, 0.0)), Vector((bx, by, 0.0)), r, tones[k])
+        paths.append(pts)
         vs = add_tube(B, pts, [r * (1.0 - 0.45 * i / 5.0) for i in range(6)], 5, DEAD_IDX,
-                      0.4 + 0.4 * tone, P_STICK, 8000 + k)
+                      0.4 + 0.4 * tones[k], P_STICK, 8000 + k)
+        settle(vs, G, REST_SINK - lift)
+    # a side twig forks off two of the sticks, from inside them
+    for m, (si, st, (bx, by), r) in enumerate(STICK_FORKS):
+        k = len(STICKS) + m
+        src = paths[si]
+        x = st * 5.0
+        j = int(x)
+        p0 = src[j].lerp(src[j + 1], x - j)
+        pts = stick_path(Vector((p0.x, p0.y, 0.0)), Vector((bx, by, 0.0)), r, tones[k])
+        vs = add_tube(B, pts, [r * (1.0 - 0.5 * i / 5.0) for i in range(6)], 5, DEAD_IDX,
+                      0.4 + 0.4 * tones[k], P_STICK, 8000 + k)
         settle(vs, G, REST_SINK - lift)
 
 
@@ -1170,10 +1380,10 @@ def build_oak_mesh(name, plan, detail="low", **flags):
         triangulate_ngons(bm)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
-        # Wood, soil and acorns are smooth-shaded (their facets carry in the
-        # silhouette); leaves and grass stay faceted, and every material
+        # Wood, soil, acorns and clump cores are smooth-shaded (their facets
+        # carry in the silhouette); leaves and grass stay faceted, and every material
         # boundary is a hard edge.
-        soft = {BARK_IDX, DEAD_IDX, SOIL_IDX, NUT_IDX, CUP_IDX}
+        soft = {BARK_IDX, DEAD_IDX, SOIL_IDX, NUT_IDX, CUP_IDX, CANOPY_IDX}
         for face in bm.faces:
             if face.material_index in soft:
                 face.smooth = True
@@ -1192,16 +1402,39 @@ def build_oak_mesh(name, plan, detail="low", **flags):
         me.uv_layers["UVMap"].active_render = True
     finally:
         bm.free()
+    mass_normals(me)
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     return obj
+
+
+def mass_normals(me):
+    """Leaf-mass lumps shade as part of their cushion, not as balls of
+    their own: every canopy corner takes the vertex's Bulge (out of the
+    cushion's centre and out of the crown) as a custom normal. Every other
+    corner keeps the normal it has. Bulge is dropped once used."""
+    n_loops = len(me.loops)
+    normals = [0.0] * (3 * n_loops)
+    me.corner_normals.foreach_get("vector", normals)
+    bulge = [0.0] * (3 * len(me.vertices))
+    me.attributes["Bulge"].data.foreach_get("vector", bulge)
+    loop_vert = [0] * n_loops
+    me.loops.foreach_get("vertex_index", loop_vert)
+    for poly in me.polygons:
+        if poly.material_index != CANOPY_IDX:
+            continue
+        for li in poly.loop_indices:
+            vi = loop_vert[li]
+            normals[3 * li:3 * li + 3] = bulge[3 * vi:3 * vi + 3]
+    me.normals_split_custom_set([normals[3 * i:3 * i + 3] for i in range(n_loops)])
+    me.attributes.remove(me.attributes["Bulge"])
 
 
 def add_collider_trunk(B, G):
     """A frustum from under the soil to the fork and a point over the dome:
     the bole's girth without its flutes, buttresses or ridges."""
     soil0 = G.z(0.0, 0.0)
-    rings = [(-0.10, TRUNK_R0 + 0.16), (FORK_Z, TRUNK_RF)]
+    rings = [(-0.10, TRUNK_R0 + 0.24), (FORK_Z, TRUNK_RF)]
     verts = []
     for zrel, r in rings:
         c = axis_at(max(zrel, 0.0))
@@ -1444,18 +1677,22 @@ def bark_material():
     # the pattern runs along each tube: object coordinates squeezed along
     # the Grain point attribute (the tube's own tangent; up the trunk)
     ridge = noise(nt, along(nt, coord, 24.0, 1.4), 1.0, 4.0, 0.55)
-    cells = voronoi_edge(nt, along(nt, coord, 9.0, 2.6), 1.0)
+    cells = voronoi_edge(nt, along(nt, coord, 13.0, 1.7), 1.0)
     grain = noise(nt, along(nt, coord, 30.0, 7.0), 1.0, 6.0, 0.6)
-    fiss = math_node(nt, "MINIMUM", remap(nt, cells, 0.0, 0.05, 0.25, 1.0),
+    fiss = math_node(nt, "MINIMUM", remap(nt, cells, 0.0, 0.035, 0.30, 1.0),
                      remap(nt, ridge, 0.40, 0.53, 0.0, 1.0))
     col = ramp(nt, grain, ((0.25, (0.050, 0.044, 0.037)), (0.55, (0.112, 0.098, 0.082)),
                            (0.85, (0.180, 0.160, 0.135))))
     col = mix_color(nt, (0.018, 0.014, 0.011), col, fiss)
+    # the bole's own furrows (Furrow: 0 on a plate, 1 down a furrow) dark
+    # and deep between the grey plates
+    furrow = attr(nt, "Furrow")
+    col = mix_color(nt, col, (0.012, 0.010, 0.008), remap(nt, furrow, 0.30, 0.85, 0.0, 0.92))
     tone = attr(nt, "Tone")
     col = mix_color(nt, col, (0.070, 0.055, 0.040), remap(nt, tone, 0.0, 1.0, 0.0, 0.35))
     nx = normal_xyz(nt)
     patch = noise(nt, coord, 3.5, 4.0, 0.6)
-    low = remap(nt, coord_z(nt, coord), 0.45, 1.25, 1.0, 0.0)
+    low = remap(nt, coord_z(nt, coord), 0.55, 1.45, 1.0, 0.0)
     face = remap(nt, nx["Y"], 0.05, 0.75, 0.0, 1.0)
     moss_m = math_node(nt, "MULTIPLY", math_node(nt, "MULTIPLY", low, face),
                        remap(nt, patch, 0.38, 0.58, 0.0, 1.0))
@@ -1463,7 +1700,8 @@ def bark_material():
     col = mix_color(nt, col, moss, math_node(nt, "MINIMUM", moss_m, 0.9))
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.9
-    add_bump(nt, bsdf, math_node(nt, "ADD", fiss, math_node(nt, "MULTIPLY", grain, 0.3)), 0.9, 0.03)
+    add_bump(nt, bsdf, math_node(nt, "SUBTRACT", math_node(nt, "ADD", fiss,
+             math_node(nt, "MULTIPLY", grain, 0.3)), furrow), 0.9, 0.03)
     return mat
 
 
@@ -1544,9 +1782,29 @@ def soil_material():
     mask = math_node(nt, "MULTIPLY", remap(nt, sward, 0.36, 0.52, 0.0, 1.0),
                      remap(nt, nx["Z"], 0.5, 0.9, 0.0, 1.0))
     col = mix_color(nt, earth, grass, mask)
+    # last year's leaves drift thick under the crown near the bole: leaf-
+    # sized cells, each its own brown, thinning out into the grass
+    lit = nt.nodes.new("ShaderNodeTexVoronoi")
+    lit.inputs["Scale"].default_value = 9.0
+    nt.links.new(noise_warp(nt, coord), lit.inputs["Vector"])
+    lcell = nt.nodes.new("ShaderNodeSeparateColor")
+    nt.links.new(lit.outputs["Color"], lcell.inputs["Color"])
+    brown = ramp(nt, lcell.outputs[0], ((0.0, (0.045, 0.026, 0.012)), (0.5, (0.110, 0.066, 0.028)),
+                                        (0.8, (0.095, 0.078, 0.034)), (1.0, (0.150, 0.098, 0.044))))
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord, sep.inputs["Vector"])
+    rad = math_node(nt, "SQRT", math_node(nt, "ADD", math_node(nt, "MULTIPLY", sep.outputs["X"],
+                                                                sep.outputs["X"]),
+                                          math_node(nt, "MULTIPLY", sep.outputs["Y"], sep.outputs["Y"])),
+                    0.0)
+    drift = math_node(nt, "MULTIPLY", remap(nt, rad, 1.0, 3.2, 1.0, 0.0),
+                      remap(nt, noise(nt, coord, 1.6, 3.0, 0.6), 0.30, 0.60, 0.35, 1.0))
+    drift = math_node(nt, "MULTIPLY", drift, remap(nt, lcell.outputs[1], 0.15, 0.35, 0.0, 1.0))
+    col = mix_color(nt, col, brown, drift)
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.93
-    add_bump(nt, bsdf, math_node(nt, "ADD", dirt, math_node(nt, "MULTIPLY", fine, 0.5)), 0.4, 0.02)
+    add_bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "ADD", dirt,
+             math_node(nt, "MULTIPLY", fine, 0.5)), math_node(nt, "MULTIPLY", drift, 0.4)), 0.4, 0.02)
     return mat
 
 
@@ -1575,11 +1833,78 @@ def litter_material():
     return mat
 
 
+def canopy_material():
+    mat, nt, bsdf, coord = surface("OakCanopy")
+    # The leaf mass inside a clump: small leaf-sized cells, each its own
+    # green, with dark gaps between them; darker in the crown's heart and
+    # on the clump's underside, lighter where it faces the sky.
+    tone = attr(nt, "Tone")
+    # leaf-sized cells, each its own green and each turned its own way (a
+    # hashed tilt of the shading normal per cell), with dark gaps between
+    wv = noise_warp(nt, coord)
+    vor = nt.nodes.new("ShaderNodeTexVoronoi")
+    vor.inputs["Scale"].default_value = 18.0
+    vor.inputs["Randomness"].default_value = 1.0
+    nt.links.new(wv, vor.inputs["Vector"])
+    cell = nt.nodes.new("ShaderNodeSeparateColor")
+    nt.links.new(vor.outputs["Color"], cell.inputs["Color"])
+    gap = remap(nt, voronoi_edge(nt, wv, 18.0), 0.0, 0.07, 1.0, 0.0)
+    patch = noise(nt, coord, 3.0, 3.0, 0.6)
+    fac = math_node(nt, "ADD", math_node(nt, "MULTIPLY", tone, 0.60),
+                    math_node(nt, "ADD", math_node(nt, "MULTIPLY", cell.outputs[0], 0.28),
+                              remap(nt, patch, 0.35, 0.65, -0.10, 0.12)))
+    col = ramp(nt, fac, ((0.0, (0.006, 0.015, 0.004)), (0.40, (0.018, 0.042, 0.009)),
+                         (0.75, (0.040, 0.080, 0.016)), (1.0, (0.075, 0.125, 0.026))))
+    col = mix_color(nt, col, (0.003, 0.007, 0.002), math_node(nt, "MULTIPLY", gap, 0.8))
+    # the lit top of a lump against its dark underside, and dark crevices
+    # where lumps crowd each other
+    nx = normal_xyz(nt)
+    sky = remap(nt, nx["Z"], -0.6, 0.8, 0.25, 1.0)
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.6
+    shade = math_node(nt, "MULTIPLY", sky, remap(nt, ao.outputs["AO"], 0.2, 1.0, 0.25, 1.0))
+    col = mix_color(nt, (0.002, 0.005, 0.002), col, shade)
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.85
+    bsdf.inputs["Specular IOR Level"].default_value = 0.10
+    tilt = nt.nodes.new("ShaderNodeVectorMath")
+    tilt.operation = "MULTIPLY_ADD"
+    nt.links.new(vor.outputs["Color"], tilt.inputs[0])
+    tilt.inputs[1].default_value = (1.2, 1.2, 1.2)
+    tilt.inputs[2].default_value = (-0.6, -0.6, -0.6)
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    nsum = nt.nodes.new("ShaderNodeVectorMath")
+    nsum.operation = "ADD"
+    nt.links.new(tilt.outputs["Vector"], nsum.inputs[0])
+    nt.links.new(geo.outputs["Normal"], nsum.inputs[1])
+    nrm = nt.nodes.new("ShaderNodeVectorMath")
+    nrm.operation = "NORMALIZE"
+    nt.links.new(nsum.outputs["Vector"], nrm.inputs[0])
+    nt.links.new(nrm.outputs["Vector"], bsdf.inputs["Normal"])
+    return mat
+
+
+def noise_warp(nt, coord):
+    """Object coordinates nudged by a low noise, so leaf cells are not
+    laid out on a lattice."""
+    node = nt.nodes.new("ShaderNodeTexNoise")
+    node.inputs["Scale"].default_value = 2.0
+    node.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord, node.inputs["Vector"])
+    add = nt.nodes.new("ShaderNodeVectorMath")
+    add.operation = "MULTIPLY_ADD"
+    nt.links.new(node.outputs["Color"], add.inputs[0])
+    add.inputs[1].default_value = (0.15, 0.15, 0.15)
+    nt.links.new(coord, add.inputs[2])
+    return add.outputs["Vector"]
+
+
 def oak_materials():
-    """(bark, leaf, deadwood, nut, cup, soil, grass, litter): shared by the
-    check and the render."""
+    """(bark, leaf, deadwood, nut, cup, soil, grass, litter, canopy): shared
+    by the check and the render."""
     return (bark_material(), leaf_material(), deadwood_material(), nut_material(),
-            cup_material(), soil_material(), grass_material(), litter_material())
+            cup_material(), soil_material(), grass_material(), litter_material(),
+            canopy_material())
 
 
 def assign_slots(obj, wanted):
@@ -1807,7 +2132,7 @@ def classify(me):
         return [s for s in parts if s.part in kinds]
 
     for key, kinds in (("trunk", (P_TRUNK,)), ("roots", (P_ROOT,)), ("branches", BRANCH_PARTS),
-                       ("leaves", (P_LEAF,)), ("stalks", (P_STALK,)), ("pedicels", (P_PEDICEL,)),
+                       ("leaves", (P_LEAF,)), ("cores", (P_CORE,)), ("lumps", (P_LUMP,)), ("stalks", (P_STALK,)), ("pedicels", (P_PEDICEL,)),
                        ("cups", (P_CUP,)), ("nuts", (P_NUT,)), ("soil", (P_SOIL,)),
                        ("cover", COVER_PARTS)):
         out[key] = of(*kinds)
@@ -1939,7 +2264,8 @@ def branch_audits(me, cls):
 
 
 def plumb_audit(me, cls, soil0):
-    """Trunk lean (line fit to ring centroids), leaf-mass balance over the
+    """Trunk lean (line fit to ring centroids), foliage balance (leaves and
+    leaf clusters, by area) over the
     base, and breast-height diameter above the soil."""
     ax = cls["axis"]
     rings = [(z, c) for z, c, _r in ax.rings if soil0 + 0.35 <= z <= soil0 + FORK_Z - 0.1]
@@ -1955,7 +2281,7 @@ def plumb_audit(me, cls, soil0):
     area = 0.0
     acc = Vector((0.0, 0.0, 0.0))
     for p in me.polygons:
-        if p.material_index == LEAF_IDX:
+        if p.material_index in (LEAF_IDX, CANOPY_IDX):
             a = p.area
             area += a
             acc += p.center * a
@@ -2004,21 +2330,37 @@ def seal_audit(cls):
 
 
 def leaf_audit(me, cls):
-    """Per leaf: its petiole's depth inside its own carrier (the twig or
-    branch tagged as its Parent)."""
+    """Per clump core: its carrier's (the branch tagged as its Parent)
+    deepest vertex inside it. Per leaf: its petiole's depth inside its own
+    core (tagged as its Parent)."""
     tip = vert_vals(me, "Tip", float)
     wood = cls["wood"]
-    out = []
+    cores = {s.ident: s for s in cls["cores"]}
+    seats = []
     carriers = set()
-    for s in cls["leaves"]:
+    for s in cls["cores"]:
         host = wood.get(s.parent)
         if host is None:
-            out.append(-9.0)
+            seats.append(-9.0)
             continue
         carriers.add(s.parent)
+        seats.append(deepest(s, [q for q in host.pts if s.holds(q)] or host.pts[:1]))
+    lumps = {s.ident: s for s in cls["lumps"]}
+    bites_l = []
+    for s in cls["lumps"]:
+        host = cores.get(s.parent)
+        # the cluster's centroid (the mean of its points) under its core's skin
+        cen = sum(s.pts, Vector()) / len(s.pts)
+        bites_l.append(-9.0 if host is None else signed_depth(host.tree, cen))
+    bites = []
+    for s in cls["leaves"]:
+        host = lumps.get(s.parent)
+        if host is None:
+            bites.append(-9.0)
+            continue
         vi = min(s.verts, key=lambda i: tip[i])
-        out.append(signed_depth(host.tree, me.vertices[vi].co))
-    return out, carriers
+        bites.append(signed_depth(host.tree, me.vertices[vi].co))
+    return seats, bites_l, bites, carriers
 
 
 def acorn_audit(cls):
@@ -2234,13 +2576,15 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     soil0 = ray_down(cls["soil"][0].tree, 0.0, 0.0)
     n_branch = len(plan["branches"])
     n_leaves = len(plan["leaves"])
-    n_carriers = len(plan["carriers"])
+    n_carriers = len(set(plan["carriers"]))
+    n_cores = len(plan["clumps"])
     n_hang = sum(a["n"] for a in plan["acorns"])
-    expected_cover = TUFTS + LITTER + 2 * FALLEN_ACORNS + len(STICKS)
+    expected_cover = TUFTS + LITTER + 2 * FALLEN_ACORNS + len(STICKS) + len(STICK_FORKS)
     seats, seat_missing, areas, widths, fork = branch_audits(low.data, cls)
     lean, balance, dbh, mass_z = plumb_audit(low.data, cls, soil0)
     sealed, root_beds = seal_audit(cls)
-    leaf_bites, carriers = leaf_audit(low.data, cls)
+    core_seats, lump_bites, leaf_bites, carriers = leaf_audit(low.data, cls)
+    n_lumps = len(plan["sats"])
     nuts, stalk_bites, ped_stalk, ped_cup = acorn_audit(cls)
     fnuts = fallen_nut_audit(cls)
     rests, loose = cover_audit(cls)
@@ -2299,7 +2643,9 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     print(f"measured lean_deg={lean:.3f} balance={balance:.4f} mass_z={mass_z:.3f} dbh={dbh:.4f}")
     print(f"measured sealed={sealed}/{SEAL_SECTORS} root_bed min={min(root_beds):.4f} "
           f"n={len(root_beds)}")
-    print(f"measured leaf_bite min={min(leaf_bites):.4f} max={max(leaf_bites):.4f} "
+    print(f"measured core_seat min={min(core_seats):.4f} max={max(core_seats):.4f} "
+          f"n={len(core_seats)} lump_bite min={min(lump_bites):.4f} max={max(lump_bites):.4f} "
+          f"n={len(lump_bites)} leaf_bite min={min(leaf_bites):.4f} max={max(leaf_bites):.4f} "
           f"n={len(leaf_bites)}")
     print(f"measured stalk_bite min={min(stalk_bites):.4f} pedicel_in_stalk "
           f"min={min(ped_stalk):.4f} pedicel_in_cup min={min(ped_cup):.4f} n={len(ped_cup)}")
@@ -2361,11 +2707,15 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
         return (fail(f"sealed: trunk in {sealed}/{SEAL_SECTORS} sectors, {len(root_beds)}/{ROOTS} "
                      f"roots, shallowest root station {min(root_beds):.4f} (min {ROOT_BED_MIN})",
                      21),) + none2
-    if (len(leaf_bites) != n_leaves or len(carriers) != n_carriers
-            or min(leaf_bites) < LEAF_BITE_MIN):
-        return (fail(f"leaf clusters: {len(leaf_bites)}/{n_leaves} leaves on {len(carriers)}/"
-                     f"{n_carriers} twigs, shallowest petiole {min(leaf_bites):.4f} m inside its "
-                     f"twig (min {LEAF_BITE_MIN})", 22),) + none2
+    if (len(leaf_bites) != n_leaves or len(core_seats) != n_cores or len(lump_bites) != n_lumps
+            or len(carriers) != n_carriers or min(core_seats) < CORE_BITE_MIN
+            or min(lump_bites) < LUMP_BITE_MIN or min(leaf_bites) < LEAF_BITE_MIN):
+        return (fail(f"leaf clumps: {len(core_seats)}/{n_cores} cores on {len(carriers)} "
+                     f"carriers, shallowest carrier {min(core_seats):.4f} m inside its core (min "
+                     f"{CORE_BITE_MIN}); {len(lump_bites)}/{n_lumps} clusters, shallowest "
+                     f"{min(lump_bites):.4f} m into its core (min {LUMP_BITE_MIN}); "
+                     f"{len(leaf_bites)}/{n_leaves} leaves, shallowest petiole "
+                     f"{min(leaf_bites):.4f} m inside its cluster (min {LEAF_BITE_MIN})", 22),) + none2
     if (len(cls["stalks"]) != len(plan["acorns"]) or len(ped_cup) != n_hang
             or min(stalk_bites) < STALK_BITE_MIN or min(ped_stalk) < PEDICEL_BITE_MIN
             or min(ped_cup) < CUP_BITE_MIN):
@@ -2377,7 +2727,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     bad = [(k, round(v, 4)) for k, vs in rests.items() for v in vs
            if not (bands[k][0] <= v <= bands[k][1])]
     n_cover = sum(len(v) for v in rests.values())
-    if n_cover != TUFTS + LITTER + FALLEN_ACORNS + len(STICKS) or bad or loose:
+    if n_cover != TUFTS + LITTER + FALLEN_ACORNS + len(STICKS) + len(STICK_FORKS) or bad or loose:
         return (fail(f"ground cover: {n_cover} pieces, out of band {bad[:6]}, {loose} shells "
                      f"not joined to the soil", 24),) + none2
     return 0, low, bark
@@ -2418,7 +2768,7 @@ def render_still(low, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.045, 0.047, 0.054, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.031, 0.033, 0.038, 1.0)
     scene.world = world
 
     def light(name, offset, energy, size, col, target=None, spread=None):
@@ -2436,17 +2786,17 @@ def render_still(low, path, engine):
 
     # Key, fill, rim and the warm wedge, scaled for an 8 m tree. The key's
     # spread keeps it on the crown instead of flooding the near floor.
-    light("Key", (-12.0, -15.0, 10.0), 5150.0, 5.0, (1.0, 0.95, 0.88), spread=30.0)
-    light("Fill", (15.0, -10.0, 1.0), 760.0, 18.0, (0.72, 0.82, 1.0))
+    light("Key", (-12.0, -15.0, 10.0), 7200.0, 5.0, (1.0, 0.95, 0.88), spread=30.0)
+    light("Fill", (15.0, -10.0, 1.0), 1150.0, 18.0, (0.72, 0.82, 1.0))
     light("Rim", (-4.0, 7.0, 6.0), 900.0, 5.0, (0.62, 0.78, 1.0))
-    light("Wedge", (8.5, 3.0, 3.5), 1720.0, 7.0, (1.0, 0.72, 0.44),
+    light("Wedge", (8.5, 3.0, 3.5), 2100.0, 7.0, (1.0, 0.70, 0.42),
           target=(5.0, WALL_Y - 4.0, 0.0))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
     view = Vector((-0.42, -0.91, 0.0)).normalized()
-    cam.location = centre + view * 24.0 + Vector((0.0, 0.0, -1.2))
+    cam.location = centre + view * CAM_DIST + Vector((0.0, 0.0, CAM_DZ))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = centre + Vector((0.0, 0.0, 0.05))
@@ -2490,7 +2840,8 @@ def render_still(low, path, engine):
 
 
 FLAG_NAMES = ("float_branches", "pop_nuts", "lean_crown", "fat_twigs", "perch_trunk",
-              "arch_roots", "orphan_clump", "drop_acorns", "float_cover")
+              "arch_roots", "orphan_clump", "scatter_clusters", "shed_leaves", "drop_acorns",
+              "float_cover")
 
 
 def main():
@@ -2508,6 +2859,8 @@ def main():
     p.add_argument("--perch-trunk", action="store_true")
     p.add_argument("--arch-roots", action="store_true")
     p.add_argument("--orphan-clump", action="store_true")
+    p.add_argument("--scatter-clusters", action="store_true")
+    p.add_argument("--shed-leaves", action="store_true")
     p.add_argument("--drop-acorns", action="store_true")
     p.add_argument("--float-cover", action="store_true")
     args = p.parse_args(argv)
