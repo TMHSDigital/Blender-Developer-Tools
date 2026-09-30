@@ -28,14 +28,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2500–4500 | 3052 / 3052 / 3052 |
+| Base triangles | 2500–4500 | 3148 / 3148 / 3148 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2195 / 0.2195 / 0.2195 |
-| Materials | exactly 2 distinct; ≥400 wood, ≥400 metal faces | 2 slots; 1040 / 854 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
+| Materials | exactly 2 distinct; ≥400 wood, ≥400 metal faces | 2 slots; 1040 / 902 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.621, 0.414, 0.489) m ± 0.015 | (0.6210, 0.4137, 0.4890), zmin 0 |
-| Collider tris | ≤ 280 | 134 |
-| Export | written, size > 0 | 248532 / 248532 / 248516 bytes |
+| Collider tris | ≤ 280 | 126 |
+| Export | written, size > 0 | 254976 / 254976 / 254960 bytes |
 
 Base triangles dropped from **6616 to 2988** in the quality pass:
 overlapping face boxes and a beveled superellipse horn became one
@@ -77,7 +77,7 @@ Recomputed from the generated mesh, not asserted about the script.
 
 The waist was lofted from ellipses, so under the rectangular face it read
 as a turned funnel, not a forged anvil. It is now a superellipse section
-(exponent 4.5) through five stations that flare from the foot in to a
+(exponent 4.5) through seven stations that flare from the foot in to a
 pinch and out to the body. **Waist form** measures corner reach at the
 narrowest ring: how far a section vertex fills its bounding rectangle's
 corner. `--round-waist` restores the ellipse and exits 19 (0.7071).
@@ -93,6 +93,27 @@ low-roughness metal by the geometry normal, as a hammer polishes it; a
 render-only cross-peen hammer lies on the floor beside the stump; and a
 low warm point light off frame stands in for the forge. The hammer is in
 the framing gate's element set, so it has to clear the frame edges too.
+
+A later pass fixed the forging's read, which had been a stack of glued
+boxes:
+- The waist spreads to 0.54 of the face's length under it, on a softer
+  flare above the pinch (power 1.35, was 2). At 0.22 it was a stem under
+  a mushroom cap.
+- The slab, table and foot chamfer their corners (4 mm on the low mesh).
+  Edges with both ends inside the slab outline are hole mouths and stay
+  sharp.
+- The horn grows out of the table: its top runs on from the table top and
+  its belly sweeps down over six rings. That is still fewer than the
+  waist's seven, so the waist-form audit keeps finding the waist. A thin
+  cone on the table's end face read as a funnel on a brick.
+- The staves are weathered oak rather than orange pine.
+- The hammer is lofted: a chamfered face, a swelled eye, and a peen that
+  thins into a blade, on an oval, waisted handle.
+- The hero turns the stand to 30 degrees so the anvil shows its profile.
+  At -42 its long axis pointed almost at the camera.
+
+1942 faces, 3148 tris (was 3052), collider 126 (was 134); every budget and
+falsifier is unchanged.
 
 ### Falsifiers
 

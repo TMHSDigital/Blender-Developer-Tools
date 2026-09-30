@@ -496,6 +496,7 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, roun
 
     pr_half = PRITCHEL_R
     pr_cx = 0.5 * (x_prit0 + x_prit1)
+    before = set(bm.verts)
     add_slotted_slab(
         bm,
         x_heel, x_face1,
@@ -521,16 +522,6 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, roun
         METAL_IDX,
     )
 
-    z_mid = 0.5 * ((z_body0 + 0.004) + (z_face - TABLE_DROP))
-    horn_rings = [
-        oval_ring(x_table1 - 0.018, hy * 0.80, 0.018, z_mid),
-        oval_ring(x_table1 + 0.040, hy * 0.58, 0.015, z_mid - 0.004),
-        oval_ring(x_table1 + 0.095, hy * 0.34, 0.011, z_mid - 0.010),
-        oval_ring(x_table1 + 0.150, hy * 0.16, 0.008, z_mid - 0.016),
-        oval_ring(x_horn1, 0.011, 0.008, z_mid - 0.022),
-    ]
-    horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=True, cap1=True)
-
     add_box_solid(
         bm,
         -FOOT_XY[0] * 0.5, FOOT_XY[0] * 0.5,
@@ -538,20 +529,61 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, roun
         z_foot0, z_foot1 + 0.004,
         METAL_IDX,
     )
-    pinch_hy = 0.028
-    pinch_hx = 0.055
+    # Forged, not sawn: the face, table and foot were sharp-cornered boxes
+    # and the anvil read as blocks glued in a stack. Chamfer their corners
+    # (the hardy and pritchel holes keep sharp mouths: an edge with both ends
+    # strictly inside the slab's outline is a hole edge and is left alone).
+    if bevel_offset > 0.0:
+        new = set(bm.verts) - before
+
+        def in_hole(v):
+            x, y = v.co.x, v.co.y
+            return x_heel + 1e-6 < x < x_face1 - 0.007 and abs(y) < hy - 1e-6
+
+        edges = [
+            e for e in {e for v in new for e in v.link_edges}
+            if len(e.link_faces) == 2 and e.calc_face_angle() > math.radians(60.0)
+            and not (in_hole(e.verts[0]) and in_hole(e.verts[1]))
+        ]
+        bmesh.ops.bevel(
+            bm, geom=edges, offset=min(bevel_offset, 0.004), segments=bevel_segments,
+            profile=0.5, affect="EDGES", clamp_overlap=True,
+        )
+
+    # The horn grows out of the table: its top runs on from the table top and
+    # its belly sweeps down, tapering to a blunt point. A thin cone set on
+    # the table's end face read as a funnel stuck on a brick.
+    z_top = z_face - TABLE_DROP
+    horn_rings = []
+    for dx, ry, rz, drop in (
+        (-0.018, 0.86, 0.021, 0.000),
+        (0.030, 0.70, 0.019, 0.002),
+        (0.075, 0.52, 0.015, 0.005),
+        (0.120, 0.36, 0.012, 0.009),
+        (0.165, 0.22, 0.009, 0.013),
+    ):
+        horn_rings.append(oval_ring(x_table1 + dx, hy * ry, rz, z_top - rz - drop))
+    horn_rings.append(oval_ring(x_horn1, 0.009, 0.006, z_top - 0.006 - 0.019))
+    horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=True, cap1=True)
+
+    pinch_hy = 0.030
+    pinch_hx = 0.060
     t_pinch = 0.48
     foot_hx, foot_hy = FOOT_XY[0] * 0.42, FOOT_XY[1] * 0.46
-    body_hx, body_hy = FACE_LEN * 0.22, hy * 0.42
+    # The waist carries the face: it spreads to most of the face's length
+    # under it. At 0.22 of the face it was a stem under a mushroom cap.
+    body_hx, body_hy = FACE_LEN * 0.54, hy * 0.84
     expo = 2.0 if round_waist else WAIST_P
     real_waist = []
-    for t in (0.0, 0.24, t_pinch, 0.74, 1.0):
+    for t in (0.0, 0.14, 0.30, t_pinch, 0.64, 0.82, 1.0):
         # concave flare: quadratic from the pinch out to each end
         if t <= t_pinch:
             k = ((t_pinch - t) / t_pinch) ** 2
             hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
         else:
-            k = ((t - t_pinch) / (1.0 - t_pinch)) ** 2
+            # Shoulders: a softer power above the pinch, so the body swells
+            # up into the face instead of flaring only at its last ring.
+            k = ((t - t_pinch) / (1.0 - t_pinch)) ** 1.35
             hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
         z = z_foot1 + (z_body0 + 0.002 - z_foot1) * t
         ring = []
@@ -1039,9 +1071,11 @@ def wood_material(name):
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    # Smithy-weathered oak, not varnished pine: the saturated orange staves
+    # read as a toy bucket under Standard view.
+    ramp.color_ramp.elements[0].color = (0.085, 0.050, 0.026, 1.0)
     ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    ramp.color_ramp.elements[1].color = (0.29, 0.18, 0.095, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
@@ -1454,28 +1488,60 @@ def polish_face(mat):
 
 
 def build_hammer(scene, steel, wood):
-    """Render only: a cross-peen hammer lying on the floor against the stump."""
+    """Render only: a cross-peen hammer lying on the floor against the stump.
+
+    The head is lofted along its own axis (Y) from a chamfered striking face
+    through a swelled eye to a peen that thins across the handle into a
+    blade; the handle is oval, waisted behind the head and swelling to the
+    grip. A box on a cylinder read as a mallet from a toy set.
+    """
     me = bpy.data.meshes.new("Hammer")
     bm = bmesh.new()
     try:
-        res = bmesh.ops.create_cone(bm, cap_ends=True, segments=12, radius1=0.013,
-                                    radius2=0.015, depth=0.34)
-        for v in res["verts"]:
-            v.co = Vector((v.co.z, v.co.y, v.co.x))       # handle along +X
-        head = bmesh.ops.create_cube(bm, size=1.0)
-        for v in head["verts"]:
-            v.co = Vector((v.co.x * 0.036 + 0.17, v.co.y * 0.115, v.co.z * 0.036))
-        head_faces = {f for v in head["verts"] for f in v.link_faces}
+        def octo(hx, hz):
+            c = 0.3
+            return [(hx, hz * (1 - c)), (hx * (1 - c), hz), (-hx * (1 - c), hz),
+                    (-hx, hz * (1 - c)), (-hx, -hz * (1 - c)), (-hx * (1 - c), -hz),
+                    (hx * (1 - c), -hz), (hx, -hz * (1 - c))]
+
+        def loft(rings, mat):
+            vs = [[bm.verts.new(p) for p in r] for r in rings]
+            n = len(vs[0])
+            for a_, b_ in zip(vs, vs[1:]):
+                for i in range(n):
+                    j = (i + 1) % n
+                    f = bm.faces.new((a_[i], a_[j], b_[j], b_[i]))
+                    f.material_index = mat
+            for ring, rev in ((vs[0], True), (vs[-1], False)):
+                f = bm.faces.new(list(reversed(ring)) if rev else ring)
+                f.material_index = mat
+            return vs
+
+        # head: (y, half-x across the handle, half-z)
+        head = ((-0.060, 0.0150, 0.0150), (-0.056, 0.0172, 0.0172),
+                (-0.030, 0.0158, 0.0158), (0.000, 0.0185, 0.0185),
+                (0.022, 0.0160, 0.0170), (0.046, 0.0070, 0.0175),
+                (0.058, 0.0022, 0.0165))
+        loft([[Vector((0.17 + x, y, z)) for x, z in octo(hx, hz)] for y, hx, hz in head], 1)
+        # handle along +X, into the eye
+        handle = ((-0.170, 0.0150, 0.0110), (-0.140, 0.0165, 0.0120),
+                  (-0.040, 0.0140, 0.0100), (0.100, 0.0120, 0.0088),
+                  (0.165, 0.0135, 0.0095), (0.180, 0.0130, 0.0092))
+        rings = []
+        for x, ry, rz in handle:
+            rings.append([Vector((x, ry * math.cos(a), rz * math.sin(a)))
+                          for a in (i * 2.0 * math.pi / 12 for i in range(12))])
+        loft(rings, 0)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         for f in bm.faces:
-            f.material_index = 1 if f in head_faces else 0
-            f.smooth = f not in head_faces
+            f.smooth = f.material_index == 0
         bm.to_mesh(me)
     finally:
         bm.free()
     me.materials.append(wood)
     me.materials.append(steel)
     ob = bpy.data.objects.new("Hammer", me)
-    ob.location = (0.27, 0.10, 0.036)
+    ob.location = (0.27, 0.10, 0.0185)
     ob.rotation_euler = (0.0, 0.0, math.radians(62.0))
     scene.collection.objects.link(ob)
     return ob
@@ -1488,7 +1554,10 @@ def render_still(low, _wood, _tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-42.0)
+    # Profile to the lens: the camera sits at azimuth -56 degrees, and at -42
+    # the anvil's long axis pointed almost straight at it, foreshortening a
+    # 0.62 m forging into a stub. At 30 the horn points to frame right.
+    low.rotation_euler.z = math.radians(30.0)
     low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")

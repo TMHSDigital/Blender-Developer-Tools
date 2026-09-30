@@ -363,7 +363,7 @@
       <img src="../assets/anvil-hero.webp" alt="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3052 tris, two materials with 1040 wood and 854 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3148 tris, two materials with 1040 wood and 902 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 126 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
@@ -377,7 +377,7 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>3052 / 3052 / 3052</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2195 / 0.2195 / 0.2195</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 854</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.489) m ± 0.015</td><td>(0.6210, 0.4137, 0.4890), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>134</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>248532 / 248532 / 248516 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>3148 / 3148 / 3148</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.2198</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 902</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.489) m ± 0.015</td><td>(0.6210, 0.4137, 0.4890), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>126</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>254976 / 254976 / 254960 bytes</td></tr></tbody></table></div>
 <p>Base triangles dropped from <strong>6616 to 2988</strong> in the quality pass: overlapping face boxes and a beveled superellipse horn became one slotted slab plus a circular oval loft. Hidden coincident faces were the waste.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17, and the per-piece wood tone its own seed. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3 id="hygiene">Hygiene<a class="anchor" href="#hygiene" aria-label="Link to this section">#</a></h3>
@@ -386,9 +386,12 @@
 <h3 id="joint-fit-and-seat">Joint fit and seat<a class="anchor" href="#joint-fit-and-seat" aria-label="Link to this section">#</a></h3>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Foot-on-head BVH gap</td><td>≤ 0.006 m</td><td>0.00300</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0012–0.008 m</td><td>0.00300</td></tr></tbody></table></div>
 <h3 id="waist-steel-and-stump">Waist, steel and stump<a class="anchor" href="#waist-steel-and-stump" aria-label="Link to this section">#</a></h3>
-<p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through five stations that flare from the foot in to a pinch and out to the body. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
+<p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through seven stations that flare from the foot in to a pinch and out to the body. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
 <p>The steel was satin (metallic 0.92, roughness 0.32) and read as chrome; it is now dark forged steel with rust. Staves and head carry their own wood tone and grain. The stage grid grew from 14 to 60 m. The temp <code>.glb</code> is removed after its size is measured.</p>
 <p>The hero dresses the scene without touching the checked mesh: up-facing steel (the working face and the top of the horn) is mixed toward bright, low-roughness metal by the geometry normal, as a hammer polishes it; a render-only cross-peen hammer lies on the floor beside the stump; and a low warm point light off frame stands in for the forge. The hammer is in the framing gate&#x27;s element set, so it has to clear the frame edges too.</p>
+<p>A later pass fixed the forging&#x27;s read, which had been a stack of glued boxes:</p>
+<ul><li>The waist spreads to 0.54 of the face&#x27;s length under it, on a softer flare above the pinch (power 1.35, was 2). At 0.22 it was a stem under a mushroom cap.</li><li>The slab, table and foot chamfer their corners (4 mm on the low mesh). Edges with both ends inside the slab outline are hole mouths and stay sharp.</li><li>The horn grows out of the table: its top runs on from the table top and its belly sweeps down over six rings. That is still fewer than the waist&#x27;s seven, so the waist-form audit keeps finding the waist. A thin cone on the table&#x27;s end face read as a funnel on a brick.</li><li>The staves are weathered oak rather than orange pine.</li><li>The hammer is lofted: a chamfered face, a swelled eye, and a peen that thins into a blade, on an oval, waisted handle.</li><li>The hero turns the stand to 30 degrees so the anvil shows its profile. At -42 its long axis pointed almost at the camera.</li></ul>
+<p>1942 faces, 3148 tris (was 3052), collider 126 (was 134); every budget and falsifier is unchanged.</p>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-anvil</code></td><td>foot-on-head gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--round-waist</code></td><td>waist form</td><td>19</td></tr></tbody></table></div>
@@ -411,9 +414,9 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/anvil/anvil.py</code>
-        <span>1634 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
+        <span>1703 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1634">
+      <div class="code" data-lines="1703">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2047,7 +2050,76 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
 1631
 1632
 1633
-1634</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
+1634
+1635
+1636
+1637
+1638
+1639
+1640
+1641
+1642
+1643
+1644
+1645
+1646
+1647
+1648
+1649
+1650
+1651
+1652
+1653
+1654
+1655
+1656
+1657
+1658
+1659
+1660
+1661
+1662
+1663
+1664
+1665
+1666
+1667
+1668
+1669
+1670
+1671
+1672
+1673
+1674
+1675
+1676
+1677
+1678
+1679
+1680
+1681
+1682
+1683
+1684
+1685
+1686
+1687
+1688
+1689
+1690
+1691
+1692
+1693
+1694
+1695
+1696
+1697
+1698
+1699
+1700
+1701
+1702
+1703</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural London-pattern anvil on a
 coopered timber stump (stave-chord hoops, sawn head, horn/face/heel
@@ -2545,6 +2617,7 @@ METAL_IDX = <span class="n">1</span>
 
     pr_half = PRITCHEL_R
     pr_cx = <span class="n">0.5</span> * (x_prit0 + x_prit1)
+    before = set(bm.verts)
     add_slotted_slab(
         bm,
         x_heel, x_face1,
@@ -2570,16 +2643,6 @@ METAL_IDX = <span class="n">1</span>
         METAL_IDX,
     )
 
-    z_mid = <span class="n">0.5</span> * ((z_body0 + <span class="n">0.004</span>) + (z_face - TABLE_DROP))
-    horn_rings = [
-        oval_ring(x_table1 - <span class="n">0.018</span>, hy * <span class="n">0.80</span>, <span class="n">0.018</span>, z_mid),
-        oval_ring(x_table1 + <span class="n">0.040</span>, hy * <span class="n">0.58</span>, <span class="n">0.015</span>, z_mid - <span class="n">0.004</span>),
-        oval_ring(x_table1 + <span class="n">0.095</span>, hy * <span class="n">0.34</span>, <span class="n">0.011</span>, z_mid - <span class="n">0.010</span>),
-        oval_ring(x_table1 + <span class="n">0.150</span>, hy * <span class="n">0.16</span>, <span class="n">0.008</span>, z_mid - <span class="n">0.016</span>),
-        oval_ring(x_horn1, <span class="n">0.011</span>, <span class="n">0.008</span>, z_mid - <span class="n">0.022</span>),
-    ]
-    horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
-
     add_box_solid(
         bm,
         -FOOT_XY[<span class="n">0</span>] * <span class="n">0.5</span>, FOOT_XY[<span class="n">0</span>] * <span class="n">0.5</span>,
@@ -2587,20 +2650,61 @@ METAL_IDX = <span class="n">1</span>
         z_foot0, z_foot1 + <span class="n">0.004</span>,
         METAL_IDX,
     )
-    pinch_hy = <span class="n">0.028</span>
-    pinch_hx = <span class="n">0.055</span>
+    <span class="c"># Forged, not sawn: the face, table and foot were sharp-cornered boxes</span>
+    <span class="c"># and the anvil read as blocks glued in a stack. Chamfer their corners</span>
+    <span class="c"># (the hardy and pritchel holes keep sharp mouths: an edge with both ends</span>
+    <span class="c"># strictly inside the slab&#x27;s outline is a hole edge and is left alone).</span>
+    <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+        new = set(bm.verts) - before
+
+        <span class="k">def</span> in_hole(v):
+            x, y = v.co.x, v.co.y
+            <span class="k">return</span> x_heel + <span class="n">1e-6</span> &lt; x &lt; x_face1 - <span class="n">0.007</span> <span class="k">and</span> abs(y) &lt; hy - <span class="n">1e-6</span>
+
+        edges = [
+            e <span class="k">for</span> e <span class="k">in</span> {e <span class="k">for</span> v <span class="k">in</span> new <span class="k">for</span> e <span class="k">in</span> v.link_edges}
+            <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> e.calc_face_angle() &gt; math.radians(<span class="n">60.0</span>)
+            <span class="k">and</span> <span class="k">not</span> (in_hole(e.verts[<span class="n">0</span>]) <span class="k">and</span> in_hole(e.verts[<span class="n">1</span>]))
+        ]
+        bmesh.ops.bevel(
+            bm, geom=edges, offset=min(bevel_offset, <span class="n">0.004</span>), segments=bevel_segments,
+            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>,
+        )
+
+    <span class="c"># The horn grows out of the table: its top runs on from the table top and</span>
+    <span class="c"># its belly sweeps down, tapering to a blunt point. A thin cone set on</span>
+    <span class="c"># the table&#x27;s end face read as a funnel stuck on a brick.</span>
+    z_top = z_face - TABLE_DROP
+    horn_rings = []
+    <span class="k">for</span> dx, ry, rz, drop <span class="k">in</span> (
+        (-<span class="n">0.018</span>, <span class="n">0.86</span>, <span class="n">0.021</span>, <span class="n">0.000</span>),
+        (<span class="n">0.030</span>, <span class="n">0.70</span>, <span class="n">0.019</span>, <span class="n">0.002</span>),
+        (<span class="n">0.075</span>, <span class="n">0.52</span>, <span class="n">0.015</span>, <span class="n">0.005</span>),
+        (<span class="n">0.120</span>, <span class="n">0.36</span>, <span class="n">0.012</span>, <span class="n">0.009</span>),
+        (<span class="n">0.165</span>, <span class="n">0.22</span>, <span class="n">0.009</span>, <span class="n">0.013</span>),
+    ):
+        horn_rings.append(oval_ring(x_table1 + dx, hy * ry, rz, z_top - rz - drop))
+    horn_rings.append(oval_ring(x_horn1, <span class="n">0.009</span>, <span class="n">0.006</span>, z_top - <span class="n">0.006</span> - <span class="n">0.019</span>))
+    horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
+
+    pinch_hy = <span class="n">0.030</span>
+    pinch_hx = <span class="n">0.060</span>
     t_pinch = <span class="n">0.48</span>
     foot_hx, foot_hy = FOOT_XY[<span class="n">0</span>] * <span class="n">0.42</span>, FOOT_XY[<span class="n">1</span>] * <span class="n">0.46</span>
-    body_hx, body_hy = FACE_LEN * <span class="n">0.22</span>, hy * <span class="n">0.42</span>
+    <span class="c"># The waist carries the face: it spreads to most of the face&#x27;s length</span>
+    <span class="c"># under it. At 0.22 of the face it was a stem under a mushroom cap.</span>
+    body_hx, body_hy = FACE_LEN * <span class="n">0.54</span>, hy * <span class="n">0.84</span>
     expo = <span class="n">2.0</span> <span class="k">if</span> round_waist <span class="k">else</span> WAIST_P
     real_waist = []
-    <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.24</span>, t_pinch, <span class="n">0.74</span>, <span class="n">1.0</span>):
+    <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.14</span>, <span class="n">0.30</span>, t_pinch, <span class="n">0.64</span>, <span class="n">0.82</span>, <span class="n">1.0</span>):
         <span class="c"># concave flare: quadratic from the pinch out to each end</span>
         <span class="k">if</span> t &lt;= t_pinch:
             k = ((t_pinch - t) / t_pinch) ** <span class="n">2</span>
             hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
         <span class="k">else</span>:
-            k = ((t - t_pinch) / (<span class="n">1.0</span> - t_pinch)) ** <span class="n">2</span>
+            <span class="c"># Shoulders: a softer power above the pinch, so the body swells</span>
+            <span class="c"># up into the face instead of flaring only at its last ring.</span>
+            k = ((t - t_pinch) / (<span class="n">1.0</span> - t_pinch)) ** <span class="n">1.35</span>
             hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
         z = z_foot1 + (z_body0 + <span class="n">0.002</span> - z_foot1) * t
         ring = []
@@ -3088,9 +3192,11 @@ METAL_IDX = <span class="n">1</span>
     nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
     ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    <span class="c"># Smithy-weathered oak, not varnished pine: the saturated orange staves</span>
+    <span class="c"># read as a toy bucket under Standard view.</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.085</span>, <span class="n">0.050</span>, <span class="n">0.026</span>, <span class="n">1.0</span>)
     ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
-    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.29</span>, <span class="n">0.18</span>, <span class="n">0.095</span>, <span class="n">1.0</span>)
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
     gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
@@ -3503,28 +3609,60 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> build_hammer(scene, steel, wood):
-    <span class="s">&quot;&quot;&quot;Render only: a cross-peen hammer lying on the floor against the stump.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Render only: a cross-peen hammer lying on the floor against the stump.
+
+    The head is lofted along its own axis (Y) from a chamfered striking face
+    through a swelled eye to a peen that thins across the handle into a
+    blade; the handle is oval, waisted behind the head and swelling to the
+    grip. A box on a cylinder read as a mallet from a toy set.
+    &quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Hammer&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">12</span>, radius1=<span class="n">0.013</span>,
-                                    radius2=<span class="n">0.015</span>, depth=<span class="n">0.34</span>)
-        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
-            v.co = Vector((v.co.z, v.co.y, v.co.x))       <span class="c"># handle along +X</span>
-        head = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-        <span class="k">for</span> v <span class="k">in</span> head[<span class="s">&quot;verts&quot;</span>]:
-            v.co = Vector((v.co.x * <span class="n">0.036</span> + <span class="n">0.17</span>, v.co.y * <span class="n">0.115</span>, v.co.z * <span class="n">0.036</span>))
-        head_faces = {f <span class="k">for</span> v <span class="k">in</span> head[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+        <span class="k">def</span> octo(hx, hz):
+            c = <span class="n">0.3</span>
+            <span class="k">return</span> [(hx, hz * (<span class="n">1</span> - c)), (hx * (<span class="n">1</span> - c), hz), (-hx * (<span class="n">1</span> - c), hz),
+                    (-hx, hz * (<span class="n">1</span> - c)), (-hx, -hz * (<span class="n">1</span> - c)), (-hx * (<span class="n">1</span> - c), -hz),
+                    (hx * (<span class="n">1</span> - c), -hz), (hx, -hz * (<span class="n">1</span> - c))]
+
+        <span class="k">def</span> loft(rings, mat):
+            vs = [[bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> r] <span class="k">for</span> r <span class="k">in</span> rings]
+            n = len(vs[<span class="n">0</span>])
+            <span class="k">for</span> a_, b_ <span class="k">in</span> zip(vs, vs[<span class="n">1</span>:]):
+                <span class="k">for</span> i <span class="k">in</span> range(n):
+                    j = (i + <span class="n">1</span>) % n
+                    f = bm.faces.new((a_[i], a_[j], b_[j], b_[i]))
+                    f.material_index = mat
+            <span class="k">for</span> ring, rev <span class="k">in</span> ((vs[<span class="n">0</span>], <span class="k">True</span>), (vs[-<span class="n">1</span>], <span class="k">False</span>)):
+                f = bm.faces.new(list(reversed(ring)) <span class="k">if</span> rev <span class="k">else</span> ring)
+                f.material_index = mat
+            <span class="k">return</span> vs
+
+        <span class="c"># head: (y, half-x across the handle, half-z)</span>
+        head = ((-<span class="n">0.060</span>, <span class="n">0.0150</span>, <span class="n">0.0150</span>), (-<span class="n">0.056</span>, <span class="n">0.0172</span>, <span class="n">0.0172</span>),
+                (-<span class="n">0.030</span>, <span class="n">0.0158</span>, <span class="n">0.0158</span>), (<span class="n">0.000</span>, <span class="n">0.0185</span>, <span class="n">0.0185</span>),
+                (<span class="n">0.022</span>, <span class="n">0.0160</span>, <span class="n">0.0170</span>), (<span class="n">0.046</span>, <span class="n">0.0070</span>, <span class="n">0.0175</span>),
+                (<span class="n">0.058</span>, <span class="n">0.0022</span>, <span class="n">0.0165</span>))
+        loft([[Vector((<span class="n">0.17</span> + x, y, z)) <span class="k">for</span> x, z <span class="k">in</span> octo(hx, hz)] <span class="k">for</span> y, hx, hz <span class="k">in</span> head], <span class="n">1</span>)
+        <span class="c"># handle along +X, into the eye</span>
+        handle = ((-<span class="n">0.170</span>, <span class="n">0.0150</span>, <span class="n">0.0110</span>), (-<span class="n">0.140</span>, <span class="n">0.0165</span>, <span class="n">0.0120</span>),
+                  (-<span class="n">0.040</span>, <span class="n">0.0140</span>, <span class="n">0.0100</span>), (<span class="n">0.100</span>, <span class="n">0.0120</span>, <span class="n">0.0088</span>),
+                  (<span class="n">0.165</span>, <span class="n">0.0135</span>, <span class="n">0.0095</span>), (<span class="n">0.180</span>, <span class="n">0.0130</span>, <span class="n">0.0092</span>))
+        rings = []
+        <span class="k">for</span> x, ry, rz <span class="k">in</span> handle:
+            rings.append([Vector((x, ry * math.cos(a), rz * math.sin(a)))
+                          <span class="k">for</span> a <span class="k">in</span> (i * <span class="n">2.0</span> * math.pi / <span class="n">12</span> <span class="k">for</span> i <span class="k">in</span> range(<span class="n">12</span>))])
+        loft(rings, <span class="n">0</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         <span class="k">for</span> f <span class="k">in</span> bm.faces:
-            f.material_index = <span class="n">1</span> <span class="k">if</span> f <span class="k">in</span> head_faces <span class="k">else</span> <span class="n">0</span>
-            f.smooth = f <span class="k">not</span> <span class="k">in</span> head_faces
+            f.smooth = f.material_index == <span class="n">0</span>
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
     me.materials.append(wood)
     me.materials.append(steel)
     ob = bpy.data.objects.new(<span class="s">&quot;Hammer&quot;</span>, me)
-    ob.location = (<span class="n">0.27</span>, <span class="n">0.10</span>, <span class="n">0.036</span>)
+    ob.location = (<span class="n">0.27</span>, <span class="n">0.10</span>, <span class="n">0.0185</span>)
     ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">62.0</span>))
     scene.collection.objects.link(ob)
     <span class="k">return</span> ob
@@ -3537,7 +3675,10 @@ METAL_IDX = <span class="n">1</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">42.0</span>)
+    <span class="c"># Profile to the lens: the camera sits at azimuth -56 degrees, and at -42</span>
+    <span class="c"># the anvil&#x27;s long axis pointed almost straight at it, foreshortening a</span>
+    <span class="c"># 0.62 m forging into a stub. At 30 the horn points to frame right.</span>
+    low.rotation_euler.z = math.radians(<span class="n">30.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
