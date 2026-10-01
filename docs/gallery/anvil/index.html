@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
+  <meta property="og:image:alt" content="A London-pattern forged anvil with a thick face block, tapered horn and broad flared foot on a hooped oak stand, a cross-peen hammer on the floor beside it." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="anvil — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
-  <meta name="twitter:image:alt" content="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
+  <meta name="twitter:image:alt" content="A London-pattern forged anvil with a thick face block, tapered horn and broad flared foot on a hooped oak stand, a cross-peen hammer on the floor beside it." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -359,11 +359,11 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../wheelbarrow/" aria-label="Previous showcase piece: wheelbarrow"><span aria-hidden="true">&larr;</span> wheelbarrow</a><span class="pager-pos hud">14 of 67 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../water-trough/" aria-label="Next showcase piece: water-trough">water-trough <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank.">
-      <img src="../assets/anvil-hero.webp" alt="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A London-pattern forged anvil with a thick face block, tapered horn and broad flared foot on a hooped oak stand, a cross-peen hammer on the floor beside it.">
+      <img src="../assets/anvil-hero.webp" alt="A London-pattern forged anvil with a thick face block, tapered horn and broad flared foot on a hooped oak stand, a cross-peen hammer on the floor beside it." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3148 tris, two materials with 1040 wood and 902 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 126 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3168 tris, two materials with 1040 wood and 912 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.569 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
@@ -377,21 +377,20 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>3148 / 3148 / 3148</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.2198</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 902</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.489) m ± 0.015</td><td>(0.6210, 0.4137, 0.4890), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>126</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>254976 / 254976 / 254960 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>3168 / 3168 / 3168</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2197 / 0.2197 / 0.2197</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 912</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.569) m ± 0.015</td><td>(0.6210, 0.4137, 0.5690), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>134</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>257068 / 257068 / 257052 bytes</td></tr></tbody></table></div>
 <p>Base triangles dropped from <strong>6616 to 2988</strong> in the quality pass: overlapping face boxes and a beveled superellipse horn became one slotted slab plus a circular oval loft. Hidden coincident faces were the waste.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17, and the per-piece wood tone its own seed. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3 id="hygiene">Hygiene<a class="anchor" href="#hygiene" aria-label="Link to this section">#</a></h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 16 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>16, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.621 m long × 0.180 m high ± 0.05</td><td>0.6210 × 0.1800</td></tr><tr><td><strong>Waist form</strong></td><td>corner reach at the pinch ≥ 0.80 (an ellipse is 0.707)</td><td>0.8572</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 16 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>16, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.621 m long × 0.260 m high ± 0.05</td><td>0.6210 × 0.2600</td></tr><tr><td><strong>Waist form</strong></td><td>corner reach at the pinch ≥ 0.80 (an ellipse is 0.707)</td><td>0.8572</td></tr></tbody></table></div>
 <h3 id="joint-fit-and-seat">Joint fit and seat<a class="anchor" href="#joint-fit-and-seat" aria-label="Link to this section">#</a></h3>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Foot-on-head BVH gap</td><td>≤ 0.006 m</td><td>0.00300</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0012–0.008 m</td><td>0.00300</td></tr></tbody></table></div>
 <h3 id="waist-steel-and-stump">Waist, steel and stump<a class="anchor" href="#waist-steel-and-stump" aria-label="Link to this section">#</a></h3>
-<p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through seven stations that flare from the foot in to a pinch and out to the body. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
+<p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through eight stations: a broad foot, in to a pinch, and out into the underside of the face. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
 <p>The steel was satin (metallic 0.92, roughness 0.32) and read as chrome; it is now dark forged steel with rust. Staves and head carry their own wood tone and grain. The stage grid grew from 14 to 60 m. The temp <code>.glb</code> is removed after its size is measured.</p>
 <p>The hero dresses the scene without touching the checked mesh: up-facing steel (the working face and the top of the horn) is mixed toward bright, low-roughness metal by the geometry normal, as a hammer polishes it; a render-only cross-peen hammer lies on the floor beside the stump; and a low warm point light off frame stands in for the forge. The hammer is in the framing gate&#x27;s element set, so it has to clear the frame edges too.</p>
-<p>A later pass fixed the forging&#x27;s read, which had been a stack of glued boxes:</p>
-<ul><li>The waist spreads to 0.54 of the face&#x27;s length under it, on a softer flare above the pinch (power 1.35, was 2). At 0.22 it was a stem under a mushroom cap.</li><li>The slab, table and foot chamfer their corners (4 mm on the low mesh). Edges with both ends inside the slab outline are hole mouths and stay sharp.</li><li>The horn grows out of the table: its top runs on from the table top and its belly sweeps down over six rings. That is still fewer than the waist&#x27;s seven, so the waist-form audit keeps finding the waist. A thin cone on the table&#x27;s end face read as a funnel on a brick.</li><li>The staves are weathered oak rather than orange pine.</li><li>The hammer is lofted: a chamfered face, a swelled eye, and a peen that thins into a blade, on an oval, waisted handle.</li><li>The hero turns the stand to 30 degrees so the anvil shows its profile. At -42 its long axis pointed almost at the camera.</li></ul>
-<p>1942 faces, 3148 tris (was 3052), collider 126 (was 134); every budget and falsifier is unchanged.</p>
+<p>A later pass rebuilt the forging to London-pattern proportions. The reference is a 165 lb Peddinghaus: 25 in long, 10.5 in tall, a 5 in face and a 9.25 × 11 in base, so height is about 0.42 of length. The first build stood 0.18 m on 0.62 m: a 50 mm face board on a narrow stem over a small plate, with a needle horn.</p>
+<ul><li>The stated body height is now <strong>0.260 m</strong> (<code>BODY_H</code>, was 0.180). The face block is 75 mm thick, and the outer AABB z was refitted from 0.489 to 0.569.</li><li>The body is one superellipse loft of eight rings. It starts at a broad foot (0.250 × 0.164 m, as large as fits inside the stump&#x27;s chime), pinches below mid-height, and swells along the face&#x27;s length into its underside. The heel&#x27;s underside rises 30 mm toward its end.</li><li>The horn is round-sectioned and about as wide as the table at its root. Its top runs on from the table, and its belly is deep enough to sweep into the throat. It has six rings, fewer than the body&#x27;s eight, so the waist-form audit still finds the waist.</li><li>The face block and table chamfer their corners. Hole mouths stay sharp.</li><li>The polished face is a satin sheen (roughness 0.30). At 0.16 it was a mirror of the black stage.</li><li>The staves are weathered oak. The hammer is lofted: a chamfered face, a swelled eye and a peen blade, on an oval handle.</li><li>The hero turns the stand to 30 degrees for the profile, looks down onto the face, and aims at the bbox middle.</li></ul>
 <h3 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h3>
 <p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-anvil</code></td><td>foot-on-head gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--round-waist</code></td><td>waist form</td><td>19</td></tr></tbody></table></div>
@@ -414,9 +413,9 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/anvil/anvil.py</code>
-        <span>1703 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
+        <span>1717 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/anvil/anvil.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1703">
+      <div class="code" data-lines="1717">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -2119,7 +2118,21 @@ blender --background --python anvil.py -- --output anvil.png</code></pre>
 1700
 1701
 1702
-1703</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
+1703
+1704
+1705
+1706
+1707
+1708
+1709
+1710
+1711
+1712
+1713
+1714
+1715
+1716
+1717</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready blacksmith anvil — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural London-pattern anvil on a
 coopered timber stump (stave-chord hoops, sawn head, horn/face/heel
@@ -2192,7 +2205,12 @@ FLOAT_ANVIL = <span class="n">0.010</span>
 FOOT_BITE = <span class="n">0.003</span>
 SEAT_GAP_MAX = <span class="n">0.006</span>
 
-FACE_T = <span class="n">0.050</span>
+<span class="c"># London-pattern proportions, scaled from a 165 lb Peddinghaus (25 in long,</span>
+<span class="c"># 10.5 in tall, 5 in face, 9.25 x 11 in base) to this 0.621 m body: height</span>
+<span class="c"># is about 0.42 of length. The first build stood 0.18 m on a 0.12 m-wide</span>
+<span class="c"># plate with a 50 mm face slab -- a board on a mushroom stem. The foot is</span>
+<span class="c"># capped by what fits inside the stump&#x27;s chime, not by the reference.</span>
+FACE_T = <span class="n">0.075</span>
 FACE_W = <span class="n">0.112</span>
 FACE_LEN = <span class="n">0.280</span>
 TABLE_DROP = <span class="n">0.014</span>
@@ -2200,14 +2218,16 @@ TABLE_LEN = <span class="n">0.046</span>
 HORN_LEN = <span class="n">0.220</span>
 HEEL_LEN = <span class="n">0.095</span>
 FOOT_H = <span class="n">0.030</span>
-FOOT_XY = (<span class="n">0.210</span>, <span class="n">0.124</span>)
-WAIST_H = <span class="n">0.100</span>
+FOOT_XY = (<span class="n">0.250</span>, <span class="n">0.164</span>)
+WAIST_H = <span class="n">0.155</span>
+<span class="c"># Heel underside rises this much toward the heel end, as a forged heel does.</span>
+HEEL_TAPER = <span class="n">0.030</span>
 HARDY_HALF = <span class="n">0.015</span>
 PRITCHEL_R = <span class="n">0.007</span>
 N_SECTION = <span class="n">16</span>
 <span class="c"># The waist is a forged block, not a turned cone: a superellipse section</span>
-<span class="c"># (exponent WAIST_P) lofted through five stations that flare from the foot</span>
-<span class="c"># in to a pinch and out to the body. Corner reach, the most a section vertex</span>
+<span class="c"># (exponent WAIST_P) lofted from the foot, in to a pinch and out</span>
+<span class="c"># into the underside of the face. Corner reach, the most a section vertex</span>
 <span class="c"># fills its bounding rectangle&#x27;s corner, is 0.707 for an ellipse and about</span>
 <span class="c"># 0.86 here; WAIST_REACH_MIN is the floor. --round-waist sets the exponent to</span>
 <span class="c"># 2, the old elliptical funnel.</span>
@@ -2225,9 +2245,10 @@ ZFIGHT_EPS = <span class="n">1e-4</span>
 ZFIGHT_COS = <span class="n">0.998</span>
 BODY_TOL = <span class="n">0.05</span>
 BODY_LEN = <span class="n">0.621</span>
-BODY_H = <span class="n">0.180</span>
+<span class="c"># Stated real-world size: length and height of the 165 lb London pattern above.</span>
+BODY_H = <span class="n">0.260</span>
 BBOX_TOL = <span class="n">0.015</span>
-OUTER_SIZE = (<span class="n">0.621</span>, <span class="n">0.414</span>, <span class="n">0.489</span>)
+OUTER_SIZE = (<span class="n">0.621</span>, <span class="n">0.414</span>, <span class="n">0.569</span>)
 
 BASE_TRIS_MIN = <span class="n">2500</span>
 BASE_TRIS_MAX = <span class="n">4500</span>
@@ -2600,9 +2621,16 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, round_waist=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;London-pattern anvil: one lofted body from foot to face, a slotted
+    face block with a rising heel, the table step, and a horn.
+
+    The body is a single superellipse loft (WAIST_P): a broad foot on the
+    stump head, flaring in to a pinch a little below mid-height, then
+    swelling out along the face&#x27;s length into its underside -- the throat
+    under the horn and the heel&#x27;s overhang are what that swell leaves.
+    &quot;&quot;&quot;</span>
     z_foot0 = z_head - FOOT_BITE + (FLOAT_ANVIL <span class="k">if</span> float_anvil <span class="k">else</span> <span class="n">0.0</span>)
-    z_foot1 = z_foot0 + FOOT_H
-    z_body0 = z_foot1 + WAIST_H
+    z_body0 = z_foot0 + FOOT_H + WAIST_H
     z_face = z_body0 + FACE_T
     hy = FACE_W * <span class="n">0.5</span>
     x_heel = -FACE_LEN * <span class="n">0.5</span> - HEEL_LEN
@@ -2635,25 +2663,19 @@ METAL_IDX = <span class="n">1</span>
         ],
         METAL_IDX,
     )
+    <span class="c"># The heel&#x27;s underside rises toward its end.</span>
+    <span class="k">for</span> v <span class="k">in</span> set(bm.verts) - before:
+        <span class="k">if</span> abs(v.co.x - x_heel) &lt; <span class="n">1e-6</span> <span class="k">and</span> abs(v.co.z - z_body0) &lt; <span class="n">1e-6</span>:
+            v.co.z += HEEL_TAPER
     add_box_solid(
         bm,
         x_face1 - <span class="n">0.006</span>, x_table1,
-        -hy * <span class="n">0.88</span>, hy * <span class="n">0.88</span>,
+        -hy * <span class="n">0.90</span>, hy * <span class="n">0.90</span>,
         z_body0 + <span class="n">0.004</span>, z_face - TABLE_DROP,
         METAL_IDX,
     )
-
-    add_box_solid(
-        bm,
-        -FOOT_XY[<span class="n">0</span>] * <span class="n">0.5</span>, FOOT_XY[<span class="n">0</span>] * <span class="n">0.5</span>,
-        -FOOT_XY[<span class="n">1</span>] * <span class="n">0.5</span>, FOOT_XY[<span class="n">1</span>] * <span class="n">0.5</span>,
-        z_foot0, z_foot1 + <span class="n">0.004</span>,
-        METAL_IDX,
-    )
-    <span class="c"># Forged, not sawn: the face, table and foot were sharp-cornered boxes</span>
-    <span class="c"># and the anvil read as blocks glued in a stack. Chamfer their corners</span>
-    <span class="c"># (the hardy and pritchel holes keep sharp mouths: an edge with both ends</span>
-    <span class="c"># strictly inside the slab&#x27;s outline is a hole edge and is left alone).</span>
+    <span class="c"># Forged, not sawn: chamfer the face block and table. Hole mouths (both</span>
+    <span class="c"># ends strictly inside the slab outline) stay sharp.</span>
     <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
         new = set(bm.verts) - before
 
@@ -2671,51 +2693,50 @@ METAL_IDX = <span class="n">1</span>
             profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>,
         )
 
-    <span class="c"># The horn grows out of the table: its top runs on from the table top and</span>
-    <span class="c"># its belly sweeps down, tapering to a blunt point. A thin cone set on</span>
-    <span class="c"># the table&#x27;s end face read as a funnel stuck on a brick.</span>
+    <span class="c"># Horn: a round-sectioned cone about as wide as the table at its root,</span>
+    <span class="c"># its top running on from the table top and drooping to a blunt point,</span>
+    <span class="c"># its belly deep enough at the root to sweep down into the throat. A</span>
+    <span class="c"># thin flat cone on the table&#x27;s end read as a needle.</span>
     z_top = z_face - TABLE_DROP
     horn_rings = []
     <span class="k">for</span> dx, ry, rz, drop <span class="k">in</span> (
-        (-<span class="n">0.018</span>, <span class="n">0.86</span>, <span class="n">0.021</span>, <span class="n">0.000</span>),
-        (<span class="n">0.030</span>, <span class="n">0.70</span>, <span class="n">0.019</span>, <span class="n">0.002</span>),
-        (<span class="n">0.075</span>, <span class="n">0.52</span>, <span class="n">0.015</span>, <span class="n">0.005</span>),
-        (<span class="n">0.120</span>, <span class="n">0.36</span>, <span class="n">0.012</span>, <span class="n">0.009</span>),
-        (<span class="n">0.165</span>, <span class="n">0.22</span>, <span class="n">0.009</span>, <span class="n">0.013</span>),
+        (-<span class="n">0.030</span>, <span class="n">0.88</span>, <span class="n">0.040</span>, <span class="n">0.000</span>),
+        (<span class="n">0.020</span>, <span class="n">0.74</span>, <span class="n">0.032</span>, <span class="n">0.002</span>),
+        (<span class="n">0.070</span>, <span class="n">0.56</span>, <span class="n">0.024</span>, <span class="n">0.006</span>),
+        (<span class="n">0.120</span>, <span class="n">0.38</span>, <span class="n">0.017</span>, <span class="n">0.011</span>),
+        (<span class="n">0.165</span>, <span class="n">0.22</span>, <span class="n">0.011</span>, <span class="n">0.016</span>),
     ):
         horn_rings.append(oval_ring(x_table1 + dx, hy * ry, rz, z_top - rz - drop))
-    horn_rings.append(oval_ring(x_horn1, <span class="n">0.009</span>, <span class="n">0.006</span>, z_top - <span class="n">0.006</span> - <span class="n">0.019</span>))
+    horn_rings.append(oval_ring(x_horn1, <span class="n">0.008</span>, <span class="n">0.007</span>, z_top - <span class="n">0.007</span> - <span class="n">0.021</span>))
     horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
 
-    pinch_hy = <span class="n">0.030</span>
-    pinch_hx = <span class="n">0.060</span>
-    t_pinch = <span class="n">0.48</span>
-    foot_hx, foot_hy = FOOT_XY[<span class="n">0</span>] * <span class="n">0.42</span>, FOOT_XY[<span class="n">1</span>] * <span class="n">0.46</span>
-    <span class="c"># The waist carries the face: it spreads to most of the face&#x27;s length</span>
-    <span class="c"># under it. At 0.22 of the face it was a stem under a mushroom cap.</span>
-    body_hx, body_hy = FACE_LEN * <span class="n">0.54</span>, hy * <span class="n">0.84</span>
+    <span class="c"># Body: (t up the body, half-length, half-width, centre x). Eight rings,</span>
+    <span class="c"># more than the horn&#x27;s six, so the waist-form audit finds the waist.</span>
+    foot_hx, foot_hy = FOOT_XY[<span class="n">0</span>] * <span class="n">0.5</span>, FOOT_XY[<span class="n">1</span>] * <span class="n">0.5</span>
     expo = <span class="n">2.0</span> <span class="k">if</span> round_waist <span class="k">else</span> WAIST_P
-    real_waist = []
-    <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.14</span>, <span class="n">0.30</span>, t_pinch, <span class="n">0.64</span>, <span class="n">0.82</span>, <span class="n">1.0</span>):
-        <span class="c"># concave flare: quadratic from the pinch out to each end</span>
-        <span class="k">if</span> t &lt;= t_pinch:
-            k = ((t_pinch - t) / t_pinch) ** <span class="n">2</span>
-            hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
-        <span class="k">else</span>:
-            <span class="c"># Shoulders: a softer power above the pinch, so the body swells</span>
-            <span class="c"># up into the face instead of flaring only at its last ring.</span>
-            k = ((t - t_pinch) / (<span class="n">1.0</span> - t_pinch)) ** <span class="n">1.35</span>
-            hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
-        z = z_foot1 + (z_body0 + <span class="n">0.002</span> - z_foot1) * t
+    stations = (
+        (<span class="n">0.00</span>, foot_hx, foot_hy, <span class="n">0.0</span>),
+        (<span class="n">0.10</span>, foot_hx * <span class="n">0.97</span>, foot_hy * <span class="n">0.97</span>, <span class="n">0.0</span>),
+        (<span class="n">0.20</span>, foot_hx * <span class="n">0.78</span>, foot_hy * <span class="n">0.76</span>, <span class="n">0.0</span>),
+        (<span class="n">0.34</span>, foot_hx * <span class="n">0.60</span>, foot_hy * <span class="n">0.58</span>, <span class="n">0.0</span>),
+        (<span class="n">0.48</span>, <span class="n">0.068</span>, <span class="n">0.040</span>, <span class="n">0.0</span>),
+        (<span class="n">0.64</span>, <span class="n">0.082</span>, <span class="n">0.045</span>, -<span class="n">0.006</span>),
+        (<span class="n">0.82</span>, <span class="n">0.118</span>, <span class="n">0.051</span>, -<span class="n">0.014</span>),
+        (<span class="n">1.00</span>, <span class="n">0.168</span>, hy * <span class="n">0.97</span>, -<span class="n">0.022</span>),
+    )
+    body = []
+    z_top_ring = z_body0 + <span class="n">0.002</span>
+    <span class="k">for</span> t, hx, hy_w, cx <span class="k">in</span> stations:
+        z = z_foot0 + (z_top_ring - z_foot0) * t
         ring = []
         <span class="k">for</span> i <span class="k">in</span> range(N_SECTION):
             a = i * (<span class="n">2.0</span> * math.pi / N_SECTION)
             c, sn = math.cos(a), math.sin(a)
-            x = hx * math.copysign(abs(c) ** (<span class="n">2.0</span> / expo), c)
+            x = cx + hx * math.copysign(abs(c) ** (<span class="n">2.0</span> / expo), c)
             y = hy_w * math.copysign(abs(sn) ** (<span class="n">2.0</span> / expo), sn)
             ring.append(Vector((x, y, z)))
-        real_waist.append(ring)
-    loft_open(bm, real_waist, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
+        body.append(ring)
+    loft_open(bm, body, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
     <span class="k">return</span> z_foot0, z_face, list(horn_verts)
 
 
@@ -3584,7 +3605,9 @@ METAL_IDX = <span class="n">1</span>
     ramp.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.82</span>
     ramp.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.97</span>
     nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], ramp.inputs[<span class="s">&quot;Value&quot;</span>])
-    <span class="k">for</span> sock_name, bright <span class="k">in</span> ((<span class="s">&quot;Base Color&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.50</span>, <span class="n">0.52</span>, <span class="n">1.0</span>)), (<span class="s">&quot;Roughness&quot;</span>, <span class="n">0.16</span>)):
+    <span class="c"># Roughness 0.30, not a mirror: at 0.16 the face reflected the black</span>
+    <span class="c"># stage and read as a dark plane; a hammered face is a satin sheen.</span>
+    <span class="k">for</span> sock_name, bright <span class="k">in</span> ((<span class="s">&quot;Base Color&quot;</span>, (<span class="n">0.58</span>, <span class="n">0.58</span>, <span class="n">0.60</span>, <span class="n">1.0</span>)), (<span class="s">&quot;Roughness&quot;</span>, <span class="n">0.30</span>)):
         sock = bsdf.inputs[sock_name]
         src = sock.links[<span class="n">0</span>].from_socket <span class="k">if</span> sock.is_linked <span class="k">else</span> <span class="k">None</span>
         mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
@@ -3740,10 +3763,14 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (span * <span class="n">1.61</span>, -span * <span class="n">2.35</span>, span * <span class="n">1.32</span>)
+    <span class="c"># High enough to look onto the working face: the hardy and pritchel holes</span>
+    <span class="c"># and the hammer-polished steel are how an anvil is read from above.</span>
+    cam.location = (span * <span class="n">1.61</span>, -span * <span class="n">2.35</span>, span * <span class="n">1.72</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.02</span> * span, <span class="n">0.0</span>, <span class="n">0.5</span> * (bb[<span class="n">2</span>] + bb[<span class="n">5</span>]) + <span class="n">0.04</span> * span)
+    <span class="c"># Aim at the bbox middle: the anvil stands 0.08 m taller than it did, and</span>
+    <span class="c"># the old +0.04 span lift pushed the stump&#x27;s foot off the bottom edge.</span>
+    aim.location = (<span class="n">0.02</span> * span, <span class="n">0.0</span>, <span class="n">0.5</span> * (bb[<span class="n">2</span>] + bb[<span class="n">5</span>]) - <span class="n">0.01</span> * span)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -3861,7 +3888,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/anvil-hero.webp" alt="A forged-steel anvil with a hammer-polished face and a flared, squared waist on a hooped timber stump, a cross-peen hammer on the floor and forge light on its flank." />
+    <img src="../assets/anvil-hero.webp" alt="A London-pattern forged anvil with a thick face block, tapered horn and broad flared foot on a hooped oak stand, a cross-peen hammer on the floor beside it." />
   </dialog>
   <footer>
     <div class="statusbar">

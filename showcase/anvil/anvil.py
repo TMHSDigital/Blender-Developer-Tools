@@ -71,7 +71,12 @@ FLOAT_ANVIL = 0.010
 FOOT_BITE = 0.003
 SEAT_GAP_MAX = 0.006
 
-FACE_T = 0.050
+# London-pattern proportions, scaled from a 165 lb Peddinghaus (25 in long,
+# 10.5 in tall, 5 in face, 9.25 x 11 in base) to this 0.621 m body: height
+# is about 0.42 of length. The first build stood 0.18 m on a 0.12 m-wide
+# plate with a 50 mm face slab -- a board on a mushroom stem. The foot is
+# capped by what fits inside the stump's chime, not by the reference.
+FACE_T = 0.075
 FACE_W = 0.112
 FACE_LEN = 0.280
 TABLE_DROP = 0.014
@@ -79,14 +84,16 @@ TABLE_LEN = 0.046
 HORN_LEN = 0.220
 HEEL_LEN = 0.095
 FOOT_H = 0.030
-FOOT_XY = (0.210, 0.124)
-WAIST_H = 0.100
+FOOT_XY = (0.250, 0.164)
+WAIST_H = 0.155
+# Heel underside rises this much toward the heel end, as a forged heel does.
+HEEL_TAPER = 0.030
 HARDY_HALF = 0.015
 PRITCHEL_R = 0.007
 N_SECTION = 16
 # The waist is a forged block, not a turned cone: a superellipse section
-# (exponent WAIST_P) lofted through five stations that flare from the foot
-# in to a pinch and out to the body. Corner reach, the most a section vertex
+# (exponent WAIST_P) lofted from the foot, in to a pinch and out
+# into the underside of the face. Corner reach, the most a section vertex
 # fills its bounding rectangle's corner, is 0.707 for an ellipse and about
 # 0.86 here; WAIST_REACH_MIN is the floor. --round-waist sets the exponent to
 # 2, the old elliptical funnel.
@@ -104,9 +111,10 @@ ZFIGHT_EPS = 1e-4
 ZFIGHT_COS = 0.998
 BODY_TOL = 0.05
 BODY_LEN = 0.621
-BODY_H = 0.180
+# Stated real-world size: length and height of the 165 lb London pattern above.
+BODY_H = 0.260
 BBOX_TOL = 0.015
-OUTER_SIZE = (0.621, 0.414, 0.489)
+OUTER_SIZE = (0.621, 0.414, 0.569)
 
 BASE_TRIS_MIN = 2500
 BASE_TRIS_MAX = 4500
@@ -479,9 +487,16 @@ def build_staves(bm, spans, z0, bevel_offset, bevel_segments):
 
 
 def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, round_waist=False):
+    """London-pattern anvil: one lofted body from foot to face, a slotted
+    face block with a rising heel, the table step, and a horn.
+
+    The body is a single superellipse loft (WAIST_P): a broad foot on the
+    stump head, flaring in to a pinch a little below mid-height, then
+    swelling out along the face's length into its underside -- the throat
+    under the horn and the heel's overhang are what that swell leaves.
+    """
     z_foot0 = z_head - FOOT_BITE + (FLOAT_ANVIL if float_anvil else 0.0)
-    z_foot1 = z_foot0 + FOOT_H
-    z_body0 = z_foot1 + WAIST_H
+    z_body0 = z_foot0 + FOOT_H + WAIST_H
     z_face = z_body0 + FACE_T
     hy = FACE_W * 0.5
     x_heel = -FACE_LEN * 0.5 - HEEL_LEN
@@ -514,25 +529,19 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, roun
         ],
         METAL_IDX,
     )
+    # The heel's underside rises toward its end.
+    for v in set(bm.verts) - before:
+        if abs(v.co.x - x_heel) < 1e-6 and abs(v.co.z - z_body0) < 1e-6:
+            v.co.z += HEEL_TAPER
     add_box_solid(
         bm,
         x_face1 - 0.006, x_table1,
-        -hy * 0.88, hy * 0.88,
+        -hy * 0.90, hy * 0.90,
         z_body0 + 0.004, z_face - TABLE_DROP,
         METAL_IDX,
     )
-
-    add_box_solid(
-        bm,
-        -FOOT_XY[0] * 0.5, FOOT_XY[0] * 0.5,
-        -FOOT_XY[1] * 0.5, FOOT_XY[1] * 0.5,
-        z_foot0, z_foot1 + 0.004,
-        METAL_IDX,
-    )
-    # Forged, not sawn: the face, table and foot were sharp-cornered boxes
-    # and the anvil read as blocks glued in a stack. Chamfer their corners
-    # (the hardy and pritchel holes keep sharp mouths: an edge with both ends
-    # strictly inside the slab's outline is a hole edge and is left alone).
+    # Forged, not sawn: chamfer the face block and table. Hole mouths (both
+    # ends strictly inside the slab outline) stay sharp.
     if bevel_offset > 0.0:
         new = set(bm.verts) - before
 
@@ -550,51 +559,50 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, roun
             profile=0.5, affect="EDGES", clamp_overlap=True,
         )
 
-    # The horn grows out of the table: its top runs on from the table top and
-    # its belly sweeps down, tapering to a blunt point. A thin cone set on
-    # the table's end face read as a funnel stuck on a brick.
+    # Horn: a round-sectioned cone about as wide as the table at its root,
+    # its top running on from the table top and drooping to a blunt point,
+    # its belly deep enough at the root to sweep down into the throat. A
+    # thin flat cone on the table's end read as a needle.
     z_top = z_face - TABLE_DROP
     horn_rings = []
     for dx, ry, rz, drop in (
-        (-0.018, 0.86, 0.021, 0.000),
-        (0.030, 0.70, 0.019, 0.002),
-        (0.075, 0.52, 0.015, 0.005),
-        (0.120, 0.36, 0.012, 0.009),
-        (0.165, 0.22, 0.009, 0.013),
+        (-0.030, 0.88, 0.040, 0.000),
+        (0.020, 0.74, 0.032, 0.002),
+        (0.070, 0.56, 0.024, 0.006),
+        (0.120, 0.38, 0.017, 0.011),
+        (0.165, 0.22, 0.011, 0.016),
     ):
         horn_rings.append(oval_ring(x_table1 + dx, hy * ry, rz, z_top - rz - drop))
-    horn_rings.append(oval_ring(x_horn1, 0.009, 0.006, z_top - 0.006 - 0.019))
+    horn_rings.append(oval_ring(x_horn1, 0.008, 0.007, z_top - 0.007 - 0.021))
     horn_verts, _faces = loft_open(bm, horn_rings, METAL_IDX, cap0=True, cap1=True)
 
-    pinch_hy = 0.030
-    pinch_hx = 0.060
-    t_pinch = 0.48
-    foot_hx, foot_hy = FOOT_XY[0] * 0.42, FOOT_XY[1] * 0.46
-    # The waist carries the face: it spreads to most of the face's length
-    # under it. At 0.22 of the face it was a stem under a mushroom cap.
-    body_hx, body_hy = FACE_LEN * 0.54, hy * 0.84
+    # Body: (t up the body, half-length, half-width, centre x). Eight rings,
+    # more than the horn's six, so the waist-form audit finds the waist.
+    foot_hx, foot_hy = FOOT_XY[0] * 0.5, FOOT_XY[1] * 0.5
     expo = 2.0 if round_waist else WAIST_P
-    real_waist = []
-    for t in (0.0, 0.14, 0.30, t_pinch, 0.64, 0.82, 1.0):
-        # concave flare: quadratic from the pinch out to each end
-        if t <= t_pinch:
-            k = ((t_pinch - t) / t_pinch) ** 2
-            hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
-        else:
-            # Shoulders: a softer power above the pinch, so the body swells
-            # up into the face instead of flaring only at its last ring.
-            k = ((t - t_pinch) / (1.0 - t_pinch)) ** 1.35
-            hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
-        z = z_foot1 + (z_body0 + 0.002 - z_foot1) * t
+    stations = (
+        (0.00, foot_hx, foot_hy, 0.0),
+        (0.10, foot_hx * 0.97, foot_hy * 0.97, 0.0),
+        (0.20, foot_hx * 0.78, foot_hy * 0.76, 0.0),
+        (0.34, foot_hx * 0.60, foot_hy * 0.58, 0.0),
+        (0.48, 0.068, 0.040, 0.0),
+        (0.64, 0.082, 0.045, -0.006),
+        (0.82, 0.118, 0.051, -0.014),
+        (1.00, 0.168, hy * 0.97, -0.022),
+    )
+    body = []
+    z_top_ring = z_body0 + 0.002
+    for t, hx, hy_w, cx in stations:
+        z = z_foot0 + (z_top_ring - z_foot0) * t
         ring = []
         for i in range(N_SECTION):
             a = i * (2.0 * math.pi / N_SECTION)
             c, sn = math.cos(a), math.sin(a)
-            x = hx * math.copysign(abs(c) ** (2.0 / expo), c)
+            x = cx + hx * math.copysign(abs(c) ** (2.0 / expo), c)
             y = hy_w * math.copysign(abs(sn) ** (2.0 / expo), sn)
             ring.append(Vector((x, y, z)))
-        real_waist.append(ring)
-    loft_open(bm, real_waist, METAL_IDX, cap0=True, cap1=True)
+        body.append(ring)
+    loft_open(bm, body, METAL_IDX, cap0=True, cap1=True)
     return z_foot0, z_face, list(horn_verts)
 
 
@@ -1463,7 +1471,9 @@ def polish_face(mat):
     ramp.inputs["From Min"].default_value = 0.82
     ramp.inputs["From Max"].default_value = 0.97
     nt.links.new(sep.outputs["Z"], ramp.inputs["Value"])
-    for sock_name, bright in (("Base Color", (0.50, 0.50, 0.52, 1.0)), ("Roughness", 0.16)):
+    # Roughness 0.30, not a mirror: at 0.16 the face reflected the black
+    # stage and read as a dark plane; a hammered face is a satin sheen.
+    for sock_name, bright in (("Base Color", (0.58, 0.58, 0.60, 1.0)), ("Roughness", 0.30)):
         sock = bsdf.inputs[sock_name]
         src = sock.links[0].from_socket if sock.is_linked else None
         mix = nt.nodes.new("ShaderNodeMix")
@@ -1619,10 +1629,14 @@ def render_still(low, _wood, _tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (span * 1.61, -span * 2.35, span * 1.32)
+    # High enough to look onto the working face: the hardy and pritchel holes
+    # and the hammer-polished steel are how an anvil is read from above.
+    cam.location = (span * 1.61, -span * 2.35, span * 1.72)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.02 * span, 0.0, 0.5 * (bb[2] + bb[5]) + 0.04 * span)
+    # Aim at the bbox middle: the anvil stands 0.08 m taller than it did, and
+    # the old +0.04 span lift pushed the stump's foot off the bottom edge.
+    aim.location = (0.02 * span, 0.0, 0.5 * (bb[2] + bb[5]) - 0.01 * span)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
