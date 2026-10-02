@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ray Cast Space (ray-cast-space) — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/ray-cast-space/" />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/ray-cast-space/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Ray Cast Space (ray-cast-space) — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss." />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/ray-cast-space-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/ray-cast-space-hero.webp" />
+  <meta name="twitter:image:alt" content="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:title" content="Ray Cast Space (ray-cast-space) — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss." />
+  <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="../gallery.css?v=27ce4298f2" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="../../"><span class="site-brand-dot" aria-hidden="true"></span>Blender Developer Tools</a>
+      <button class="site-menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="site-menu-icon" aria-hidden="true"></span>Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <ul><li><a href="../../gallery/#k=examples">Examples</a></li><li><a href="../../gallery/#k=showcase">Showcase</a></li><li><a href="../../#new">What&#x27;s new</a></li><li><a href="../../#skills">Skills</a></li><li><a href="../../#rules">Rules</a></li><li><a href="../../#snippets">Snippets</a></li><li><a href="../../#install">Install</a></li><li class="gh"><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a></li></ul>
+      </nav>
+    </div>
+  </header>
+  <header class="hero">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../" id="crumbGallery">Gallery</a></li><li><a href="../#k=examples">Examples</a></li><li aria-current="page">ray-cast-space</li></ol></nav>
+    <h1>Ray Cast Space</h1>
+    <p class="slug">examples/ray-cast-space/</p>
+    <p>Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss.</p>
+  </header>
+  <main id="main">
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-socket-rename/" aria-label="Previous example: gn-socket-rename"><span aria-hidden="true">&larr;</span> gn-socket-rename</a><span class="pager-pos hud">53 of 54 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../lattice-deform/" aria-label="Next example: lattice-deform">lattice-deform <span aria-hidden="true">&rarr;</span></a></nav>
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere.">
+      <img src="../assets/ray-cast-space-hero.webp" alt="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." width="1280" height="720" fetchpriority="high" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
+    <div class="callout"><span class="tag">witnesses</span> Five closed-form rays on a translated, Z-rotated, non-uniformly scaled block: Scene.ray_cast hits each world point and normal exactly; Object.ray_cast fed matrix_world.inverted() coordinates hits the same polygons, and mapped back lands within 5e-7 m; world coords fed to Object.ray_cast land 0.287 m or more off. --world-to-object exits 4 (1.125 m error).</div>
+    <p class="taglist"><span class="tag">tags</span> <a href="../#tag=objects">objects</a> <a href="../#tag=transforms">transforms</a> <a href="../#tag=depsgraph">depsgraph</a></p>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/ray-cast-space/ray_cast_space.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example of the coordinate-space contract behind Blender&#x27;s two ray casts, the one AI-written code gets wrong most often. <code>Scene.ray_cast(depsgraph, origin, direction)</code> takes and returns <strong>world</strong> space. <code>Object.ray_cast(origin, direction)</code> takes and returns the object&#x27;s <strong>local</strong> space. Feed world coordinates to <code>Object.ray_cast</code> and nothing raises: it quietly misses, or hits the wrong spot.</p>
+<p><strong>What it witnesses:</strong> a target block carries a transform with every ingredient that separates the two spaces: a translation, a 32° turn about Z, and non-uniform scale (1.55 × 0.62 × 0.62). The example casts five rays at closed-form points on three of its faces, arriving obliquely, and checks each one three ways:</p>
+<ol><li><strong><code>Scene.ray_cast</code></strong> hits the closed-form world point (to 1e-4 m). Its normal matches the face&#x27;s world normal, which comes from the inverse-transpose of <code>matrix_world</code>.</li><li><strong><code>Object.ray_cast</code></strong> is fed the origin through <code>matrix_world.inverted()</code> and the direction through that matrix&#x27;s 3×3 part only, because directions do not translate. It must hit the same polygon. Its local hit point, mapped back through <code>matrix_world</code> (and its normal through the inverse-transpose), must land on the same world point and normal.</li><li><strong>The trap must bite on this setup.</strong> The same world origin and direction handed straight to <code>Object.ray_cast</code> either misses or lands at least 0.25 m from the true hit. Without this, the check could pass by coincidence.</li></ol>
+<p>Both 5.2 LTS and 4.5 LTS give identical results: every hit exact to under 1e-6 m, and the world-coordinate trap&#x27;s closest landing 0.287 m away.</p>
+<p>The still shows the block glazed in a teal checker laid out in <strong>object</strong> coordinates. The cells are square in local space, so the non-uniform scale stretches them into the block&#x27;s own grid. The block stands on a walnut plinth. Five orange rays run from brass emitter balls to orange hit rings that sit exactly on three faces: the correct casts. One red ray is the first front-face ray&#x27;s world origin and direction read by <code>Object.ray_cast</code> as if local. In the world that is the ray <code>matrix_world @ origin</code> along <code>matrix_world.to_3x3() @ direction</code>. It starts somewhere else entirely and strikes the far side of the block. A render-only Bevel modifier rounds the block&#x27;s edges after the check has run.</p>
+<h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python ray_cast_space.py --
+
+# Falsifier: feed WORLD coords to Object.ray_cast in the checked path. Must exit 4.
+blender --background --python ray_cast_space.py -- --world-to-object
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python ray_cast_space.py -- --output ray.png
+blender --background --python ray_cast_space.py -- --output ray.png --engine cycles</code></pre>
+<p><code>--world-to-object</code> measured on 5.2.1 and 4.5.11: <code>Object.ray_cast ray 0 mapped back to (1.5668, 1.22769, 1.38161), error 1.1253 m (normal error 1.0000, polygon 2 vs Scene 3)</code>. The cast hit a different face of the block, a metre from the true point.</p>
+<h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td><code>Scene.ray_cast</code> missed, hit another object, or hit off the closed-form world point or normal</td></tr><tr><td>4</td><td><code>Object.ray_cast</code> missed, or its local hit mapped back by <code>matrix_world</code> disagrees with the world point, normal or polygon (<code>--world-to-object</code> lands here)</td></tr><tr><td>5</td><td>The world-coordinate trap did not bite: world coords fed to <code>Object.ray_cast</code> landed within <code>TRAP_MIN</code> of a true hit</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td><code>--output</code> framing violation (Layer 1 fill / margin gate, <code>gallery_framing</code>)</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--world-to-object</code>.</p>
+    </section>
+    <section class="detail-section src" id="source">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/ray-cast-space/ray_cast_space.py</code>
+        <span>476 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ray-cast-space/ray_cast_space.py">View on GitHub &rarr;</a></span>
+      </div>
+      <div class="code" data-lines="476">
+<pre class="gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Object.ray_cast is object-local, Scene.ray_cast is world space — a runnable example.
+
+Witnesses the coordinate-space contract of the two ray casts, the one AI code
+gets wrong most often: ``Scene.ray_cast(depsgraph, origin, direction)`` takes
+and returns WORLD space, while ``Object.ray_cast(origin, direction)`` takes
+and returns the object&#x27;s LOCAL space. A target block carries a non-trivial
+transform (translation, a turn about Z, non-uniform scale). Five rays aimed at
+closed-form points on three of its faces are cast both ways:
+
+- ``Scene.ray_cast`` must hit each closed-form world point, with the face&#x27;s
+  world normal (inverse-transpose of the object matrix) and the target object;
+- ``Object.ray_cast``, fed the origin through ``matrix_world.inverted()`` and
+  the direction through its 3x3 part only (directions do not translate), must
+  hit the same polygon, and its local hit point mapped back by
+  ``matrix_world`` (normal by the inverse-transpose) must land on the same
+  world point and normal;
+- the trap: the same WORLD origin/direction handed straight to
+  ``Object.ray_cast`` must NOT reproduce the hit — every such cast misses or
+  lands at least ``TRAP_MIN`` away, so the check proves the transform matters
+  on this setup rather than passing by coincidence.
+
+``--world-to-object`` feeds world coordinates to ``Object.ray_cast`` in the
+checked path (the bug); the local-hit check catches it (exit 4) and prints
+the measured error.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python ray_cast_space.py --                       # check only
+    blender --background --python ray_cast_space.py -- --world-to-object     # must fail
+    blender --background --python ray_cast_space.py -- --output r.png        # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector, Matrix
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
+<span class="c"># The target: a unit-half-size cube (local coords in [-1, 1]^3) under a</span>
+<span class="c"># transform with every ingredient that separates local from world space.</span>
+TARGET_LOC = (<span class="n">0.35</span>, <span class="n">0.25</span>, <span class="n">0.80</span>)
+TARGET_ROT_Z = math.radians(<span class="n">32.0</span>)
+TARGET_SCALE = (<span class="n">1.55</span>, <span class="n">0.62</span>, <span class="n">0.62</span>)
+
+<span class="c"># Closed-form hit points, authored in LOCAL face coordinates, plus a tangent</span>
+<span class="c"># tilt so the rays arrive obliquely rather than straight down each normal.</span>
+<span class="c"># (face axis, face sign, local point on that face, tilt in local tangent space)</span>
+RAYS = (
+    (<span class="s">&quot;y&quot;</span>, -<span class="n">1</span>, (<span class="n">0.55</span>, -<span class="n">1.0</span>, <span class="n">0.35</span>), (<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">0.25</span>)),
+    (<span class="s">&quot;y&quot;</span>, -<span class="n">1</span>, (-<span class="n">0.45</span>, -<span class="n">1.0</span>, -<span class="n">0.30</span>), (-<span class="n">0.30</span>, <span class="n">0.0</span>, <span class="n">0.20</span>)),
+    (<span class="s">&quot;z&quot;</span>, +<span class="n">1</span>, (<span class="n">0.40</span>, <span class="n">0.30</span>, <span class="n">1.0</span>), (<span class="n">0.25</span>, -<span class="n">0.35</span>, <span class="n">0.0</span>)),
+    (<span class="s">&quot;z&quot;</span>, +<span class="n">1</span>, (-<span class="n">0.60</span>, -<span class="n">0.40</span>, <span class="n">1.0</span>), (-<span class="n">0.20</span>, -<span class="n">0.30</span>, <span class="n">0.0</span>)),
+    (<span class="s">&quot;x&quot;</span>, -<span class="n">1</span>, (-<span class="n">1.0</span>, -<span class="n">0.35</span>, <span class="n">0.30</span>), (<span class="n">0.0</span>, -<span class="n">0.30</span>, <span class="n">0.25</span>)),
+)
+RAY_LEN = <span class="n">1.7</span>        <span class="c"># world distance from each ray origin to its hit</span>
+POS_TOL = <span class="n">1e-4</span>       <span class="c"># world-space hit tolerance</span>
+NRM_TOL = <span class="n">1e-4</span>       <span class="c"># 1 - dot(normal, expected)</span>
+TRAP_MIN = <span class="n">0.25</span>      <span class="c"># a world-coord Object.ray_cast must miss or land this far off</span>
+
+
+<span class="k">def</span> build_target():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    me = bpy.data.meshes.new(<span class="s">&quot;TargetBlock&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">2.0</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(<span class="s">&quot;TargetBlock&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    obj.location = TARGET_LOC
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, TARGET_ROT_Z)
+    obj.scale = TARGET_SCALE
+    bpy.context.view_layer.update()
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> world_rays(obj):
+    <span class="s">&quot;&quot;&quot;Closed-form world rays: (origin, direction, hit point, face normal).
+
+    The hit point is the local face point through matrix_world; the world
+    normal is the local face normal through the inverse-transpose 3x3. The
+    origin sits RAY_LEN back along the (tilted) incoming direction, in the
+    face&#x27;s outer half-space, so on this convex block the first surface the
+    ray meets is that face at that point.
+    &quot;&quot;&quot;</span>
+    mw = obj.matrix_world
+    n_mat = mw.to_3x3().inverted().transposed()
+    out = []
+    <span class="k">for</span> axis, sign, p_local, tilt <span class="k">in</span> RAYS:
+        n_local = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        n_local[<span class="s">&quot;xyz&quot;</span>.index(axis)] = sign
+        p = mw @ Vector(p_local)
+        n = (n_mat @ n_local).normalized()
+        incoming = (n_local + Vector(tilt))       <span class="c"># outward-ish, in local space</span>
+        d = -(mw.to_3x3() @ incoming).normalized()
+        <span class="k">if</span> d.dot(n) &gt;= <span class="n">0.0</span>:
+            <span class="k">raise</span> ValueError(<span class="s">f&quot;</span><span class="s">ray at </span>{p_local}<span class="s"> does not approach its face from outside</span><span class="s">&quot;</span>)
+        out.append((p - RAY_LEN * d, d, p, n))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> object_space(obj, origin, direction):
+    <span class="s">&quot;&quot;&quot;World ray -&gt; the object&#x27;s local space: the origin through the full
+    inverse matrix, the direction through its 3x3 only (no translation).&quot;&quot;&quot;</span>
+    inv = obj.matrix_world.inverted()
+    <span class="k">return</span> inv @ origin, (inv.to_3x3() @ direction).normalized()
+
+
+<span class="k">def</span> check(obj, world_to_object=<span class="k">False</span>):
+    dg = bpy.context.evaluated_depsgraph_get()
+    scene = bpy.context.scene
+    mw = obj.matrix_world
+    n_mat = mw.to_3x3().inverted().transposed()
+    rays = world_rays(obj)
+
+    <span class="c"># 1. Scene.ray_cast: world in, world out</span>
+    scene_hits = []
+    <span class="k">for</span> k, (o, d, p, n) <span class="k">in</span> enumerate(rays):
+        ok, loc, nrm, idx, hit_ob, _m = scene.ray_cast(dg, o, d)
+        <span class="k">if</span> <span class="k">not</span> ok <span class="k">or</span> hit_ob <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> hit_ob.name != obj.name:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: Scene.ray_cast ray </span>{k}<span class="s"> missed the target</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        err, nerr = (loc - p).length, <span class="n">1.0</span> - nrm.normalized().dot(n)
+        <span class="k">if</span> err &gt; POS_TOL <span class="k">or</span> nerr &gt; NRM_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: Scene.ray_cast ray </span>{k}<span class="s"> hit </span>{tuple(round(c, <span class="n">5</span>) <span class="k">for</span> c <span class="k">in</span> loc)}<span class="s"> </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(error </span>{err:<span class="s">.6f</span>}<span class="s"> m, normal error </span>{nerr:<span class="s">.6f</span>}<span class="s">) vs closed form </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{tuple(round(c, <span class="n">5</span>) <span class="k">for</span> c <span class="k">in</span> p)}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        scene_hits.append(idx)
+
+    <span class="c"># 2. Object.ray_cast: local in, local out — map both ways</span>
+    worst = <span class="n">0.0</span>
+    <span class="k">for</span> k, (o, d, p, n) <span class="k">in</span> enumerate(rays):
+        <span class="k">if</span> world_to_object:
+            lo, ld = o, d                      <span class="c"># the bug: world coords as if local</span>
+        <span class="k">else</span>:
+            lo, ld = object_space(obj, o, d)
+        ok, loc, nrm, idx = obj.ray_cast(lo, ld, depsgraph=dg)
+        <span class="k">if</span> <span class="k">not</span> ok:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: Object.ray_cast ray </span>{k}<span class="s"> missed (origin/direction not in </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">object space?)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        p_back = mw @ loc
+        n_back = (n_mat @ nrm).normalized()
+        err, nerr = (p_back - p).length, <span class="n">1.0</span> - n_back.dot(n)
+        worst = max(worst, err)
+        <span class="k">if</span> err &gt; POS_TOL <span class="k">or</span> nerr &gt; NRM_TOL <span class="k">or</span> idx != scene_hits[k]:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: Object.ray_cast ray </span>{k}<span class="s"> mapped back to </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{tuple(round(c, <span class="n">5</span>) <span class="k">for</span> c <span class="k">in</span> p_back)}<span class="s">, error </span>{err:<span class="s">.4f</span>}<span class="s"> m </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(normal error </span>{nerr:<span class="s">.4f</span>}<span class="s">, polygon </span>{idx}<span class="s"> vs Scene </span>{scene_hits[k]}<span class="s">)</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># 3. The trap must actually bite on this setup</span>
+    trap_min = math.inf
+    <span class="k">for</span> k, (o, d, p, n) <span class="k">in</span> enumerate(rays):
+        ok, loc, _nrm, _idx = obj.ray_cast(o, d, depsgraph=dg)
+        dev = (mw @ loc - p).length <span class="k">if</span> ok <span class="k">else</span> math.inf
+        trap_min = min(trap_min, dev)
+    <span class="k">if</span> trap_min &lt; TRAP_MIN:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: world coords fed to Object.ray_cast landed only </span>{trap_min:<span class="s">.4f</span>}<span class="s"> m </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">from a true hit (&lt; </span>{TRAP_MIN}<span class="s">); the transform does not separate the </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">spaces</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    trap_txt = <span class="s">&quot;all miss&quot;</span> <span class="k">if</span> trap_min == math.inf <span class="k">else</span> <span class="s">f&quot;</span><span class="s">closest </span>{trap_min:<span class="s">.3f</span>}<span class="s"> m off</span><span class="s">&quot;</span>
+    print(<span class="s">f&quot;</span><span class="s">rays=</span>{len(rays)}<span class="s"> scene_hits=exact object_local_hits=exact </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">max_mapped_error=</span>{worst:<span class="s">.2e</span>}<span class="s"> m world_coords_trap=</span>{trap_txt}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># Render staging only (not part of the check)</span>
+<span class="c"># --------------------------------------------------------------------------</span>
+
+<span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, emit=<span class="k">None</span>, strength=<span class="n">0.0</span>, alpha=<span class="n">1.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+    <span class="k">if</span> alpha &lt; <span class="n">1.0</span>:
+        b.inputs[<span class="s">&quot;Alpha&quot;</span>].default_value = alpha
+        <span class="k">try</span>:
+            mat.surface_render_method = <span class="s">&#x27;BLENDED&#x27;</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> block_material():
+    <span class="s">&quot;&quot;&quot;Glazed teal ceramic with an OBJECT-space checker: the cells are square
+    in local space, so the non-uniform scale stretches them into the
+    rectangles the eye reads as &#x27;this object has its own coordinates&#x27;. Teal
+    sits opposite the orange rays, so every hit marker reads at thumbnail size.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;LocalSpaceCeramic&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
+    b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.35</span>
+    coords = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    chk = nt.nodes.new(<span class="s">&quot;ShaderNodeTexChecker&quot;</span>)
+    chk.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">4.0</span>
+    chk.inputs[<span class="s">&quot;Color1&quot;</span>].default_value = (<span class="n">0.09</span>, <span class="n">0.36</span>, <span class="n">0.40</span>, <span class="n">1.0</span>)
+    chk.inputs[<span class="s">&quot;Color2&quot;</span>].default_value = (<span class="n">0.035</span>, <span class="n">0.15</span>, <span class="n">0.18</span>, <span class="n">1.0</span>)
+    <span class="c"># Object coords span -1..1; shift to 0..2 so cells line up with face edges</span>
+    add = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    add.operation = <span class="s">&#x27;ADD&#x27;</span>
+    add.inputs[<span class="n">1</span>].default_value = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    nt.links.new(coords.outputs[<span class="s">&quot;Object&quot;</span>], add.inputs[<span class="n">0</span>])
+    nt.links.new(add.outputs[<span class="s">&quot;Vector&quot;</span>], chk.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(chk.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> rod(name, a, b, radius, mat, segs=<span class="n">16</span>):
+    <span class="s">&quot;&quot;&quot;A thin cylinder from a to b (render-only ray segment).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        length = (b - a).length
+        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=segs, radius1=radius,
+                              radius2=radius, depth=length)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = (a + b) / <span class="n">2</span>
+    ob.rotation_euler = (b - a).to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> sphere(name, at, radius, mat):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">12</span>, radius=radius)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = at
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> ring(name, at, normal, r_out, r_in, mat):
+    <span class="s">&quot;&quot;&quot;A flat hit-marker annulus lying on the surface, facing out along normal.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        segs = <span class="n">32</span>
+        outer = [bm.verts.new((r_out * math.cos(<span class="n">2</span> * math.pi * i / segs),
+                               r_out * math.sin(<span class="n">2</span> * math.pi * i / segs), <span class="n">0.0</span>))
+                 <span class="k">for</span> i <span class="k">in</span> range(segs)]
+        inner = [bm.verts.new((r_in * math.cos(<span class="n">2</span> * math.pi * i / segs),
+                               r_in * math.sin(<span class="n">2</span> * math.pi * i / segs), <span class="n">0.0</span>))
+                 <span class="k">for</span> i <span class="k">in</span> range(segs)]
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            j = (i + <span class="n">1</span>) % segs
+            bm.faces.new((outer[i], outer[j], inner[j], inner[i]))
+        ext = bmesh.ops.extrude_face_region(bm, geom=list(bm.faces))
+        top = [e <span class="k">for</span> e <span class="k">in</span> ext[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(e, bmesh.types.BMVert)]
+        bmesh.ops.translate(bm, verts=top, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.006</span>))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = at + normal * <span class="n">0.002</span>
+    ob.rotation_euler = normal.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    dg = bpy.context.evaluated_depsgraph_get()
+    rays = world_rays(obj)
+    <span class="c"># one ghosted trap ray: the first front-face ray&#x27;s WORLD origin/direction</span>
+    <span class="c"># read by Object.ray_cast as if local. In the world that is the ray</span>
+    <span class="c"># matrix_world @ o along matrix_world.to_3x3() @ d; cast it before any</span>
+    <span class="c"># render-only modifier changes the evaluated mesh.</span>
+    mw = obj.matrix_world
+    o, d, p, n = rays[<span class="n">0</span>]
+    t_o = mw @ o
+    t_d = (mw.to_3x3() @ d).normalized()
+    t_ok, t_loc, _n, _i = obj.ray_cast(o, d, depsgraph=dg)
+    t_end = (mw @ t_loc) <span class="k">if</span> t_ok <span class="k">else</span> (t_o + <span class="n">3.0</span> * t_d)
+    obj.data.materials.append(block_material())
+    bev = obj.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)   <span class="c"># render-only, after the check</span>
+    bev.width = <span class="n">0.025</span>
+    bev.segments = <span class="n">3</span>
+    bev.affect = <span class="s">&#x27;EDGES&#x27;</span>
+
+    <span class="c"># emission kept under clipping in Standard view, so the beams stay orange</span>
+    beam = principled(<span class="s">&quot;RayBeam&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.26</span>, <span class="n">0.02</span>), <span class="n">0.3</span>, emit=(<span class="n">1.0</span>, <span class="n">0.26</span>, <span class="n">0.02</span>), strength=<span class="n">1.4</span>)
+    hit_mat = principled(<span class="s">&quot;HitMarker&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.36</span>, <span class="n">0.04</span>), <span class="n">0.25</span>, emit=(<span class="n">1.0</span>, <span class="n">0.36</span>, <span class="n">0.04</span>),
+                         strength=<span class="n">1.8</span>)
+    emitter = principled(<span class="s">&quot;RayEmitter&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.58</span>, <span class="n">0.24</span>), <span class="n">0.38</span>, metal=<span class="n">1.0</span>)
+    trap_beam = principled(<span class="s">&quot;TrapBeam&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.12</span>, <span class="n">0.18</span>), <span class="n">0.4</span>, emit=(<span class="n">1.0</span>, <span class="n">0.1</span>, <span class="n">0.16</span>),
+                           strength=<span class="n">1.2</span>)
+    trap_end = principled(<span class="s">&quot;TrapEnd&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.12</span>, <span class="n">0.18</span>), <span class="n">0.35</span>, emit=(<span class="n">1.0</span>, <span class="n">0.1</span>, <span class="n">0.16</span>),
+                          strength=<span class="n">1.5</span>)
+    plinth_mat = principled(<span class="s">&quot;PlinthWalnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.055</span>, <span class="n">0.025</span>), <span class="n">0.45</span>)
+
+    shown = [obj]
+    <span class="k">for</span> k, (o, d, p, n) <span class="k">in</span> enumerate(rays):
+        shown.append(rod(<span class="s">f&quot;</span><span class="s">Ray</span>{k}<span class="s">&quot;</span>, o, p, <span class="n">0.022</span>, beam))
+        shown.append(sphere(<span class="s">f&quot;</span><span class="s">Emitter</span>{k}<span class="s">&quot;</span>, o, <span class="n">0.07</span>, emitter))
+        shown.append(ring(<span class="s">f&quot;</span><span class="s">Hit</span>{k}<span class="s">&quot;</span>, p, n, <span class="n">0.10</span>, <span class="n">0.045</span>, hit_mat))
+
+    trap = [rod(<span class="s">&quot;TrapRay&quot;</span>, t_o, t_end, <span class="n">0.016</span>, trap_beam),
+            sphere(<span class="s">&quot;TrapEmitter&quot;</span>, t_o, <span class="n">0.06</span>, trap_end)]
+    <span class="k">if</span> <span class="k">not</span> t_ok:
+        trap.append(sphere(<span class="s">&quot;TrapMissEnd&quot;</span>, t_end, <span class="n">0.03</span>, trap_end))
+
+    <span class="c"># a low walnut plinth the block stands on (block bottom at z = loc - scale)</span>
+    base_z = TARGET_LOC[<span class="n">2</span>] - TARGET_SCALE[<span class="n">2</span>]
+    pme = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">64</span>, radius1=<span class="n">1.9</span>,
+                                    radius2=<span class="n">1.9</span>, depth=base_z)
+        <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            v.co.z += base_z / <span class="n">2</span>
+        bm.to_mesh(pme)
+    <span class="k">finally</span>:
+        bm.free()
+    pme.materials.append(plinth_mat)
+    <span class="k">for</span> poly <span class="k">in</span> pme.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, pme)
+    scene.collection.objects.link(plinth)
+    plinth.location = (TARGET_LOC[<span class="n">0</span>], TARGET_LOC[<span class="n">1</span>], <span class="n">0.0</span>)
+    pb = plinth.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+    pb.width = <span class="n">0.02</span>
+    pb.segments = <span class="n">3</span>
+    pb.limit_method = <span class="s">&#x27;ANGLE&#x27;</span>
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    centre = Vector((TARGET_LOC[<span class="n">0</span>], TARGET_LOC[<span class="n">1</span>], <span class="n">1.05</span>))
+
+    <span class="k">def</span> light(name, loc, energy, size, col, aim):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), centre)
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">6.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), centre)
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">1.0</span>, <span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">320.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), centre)
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">4.0</span>, <span class="n">7.5</span>, <span class="n">1.0</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = centre + <span class="n">1.15</span> * Vector((-<span class="n">5.2</span>, -<span class="n">8.6</span>, <span class="n">4.4</span>))
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = centre
+    scene.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    tr.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">48</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the emissive orange rays toward pastel (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=shown + [plinth],
+        elements=shown + trap + [plinth],
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--world-to-object&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;feed world coords to Object.ray_cast in the checked path (must fail)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj = build_target()
+    code = check(obj, world_to_object=args.world_to_object)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;ray-cast-space OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+      </div>
+    </section>
+    <section class="detail-section" id="related" aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <div class="related-grid">
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/parent-inverse-orrery-hero-640.webp" srcset="../assets/parent-inverse-orrery-hero-640.webp 640w, ../assets/parent-inverse-orrery-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../parent-inverse-orrery/">Parent Inverse Orrery</a></h3>
+            <p>Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/depsgraph-export-hero-640.webp" srcset="../assets/depsgraph-export-hero-640.webp 640w, ../assets/depsgraph-export-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A game controller&#x27;s sparse control cage in orange wire and vertex beads beside the smooth subdivided cobalt controller with sticks and colored buttons, on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../depsgraph-export/">Depsgraph Export</a></h3>
+            <p>The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/armature-bend-hero-640.webp" srcset="../assets/armature-bend-hero-640.webp 640w, ../assets/armature-bend-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../armature-bend/">Armature Bend</a></h3>
+            <p>Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gn-socket-rename/" aria-label="Previous example: gn-socket-rename"><span aria-hidden="true">&larr;</span> gn-socket-rename</a><span class="pager-pos hud">53 of 54 examples</span><a rel="next" href="../lattice-deform/" aria-label="Next example: lattice-deform">lattice-deform <span aria-hidden="true">&rarr;</span></a></nav>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
+    <img src="../assets/ray-cast-space-hero.webp" alt="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." />
+  </dialog>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="../../">Blender Developer Tools</a>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span class="ok">exit 0</span>
+      <span class="links"><a href="../../gallery/">Gallery</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases">Releases</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a><a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a></span>
+    </div>
+  </footer>
+  <p class="sr-only" id="srStatus" role="status" aria-live="polite"></p>
+  <script>
+    (function () {
+      var hdr = document.querySelector('.site-header');
+      var btn = hdr && hdr.querySelector('.site-menu-btn');
+      if (!btn) return;
+      function set(open, refocus) {
+        hdr.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (!open && refocus) btn.focus();
+      }
+      btn.addEventListener('click', function () { set(!hdr.classList.contains('open'), false); });
+      hdr.querySelectorAll('.site-nav a').forEach(function (a) {
+        a.addEventListener('click', function () { set(false, false); });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && hdr.classList.contains('open')) set(false, true);
+      });
+      document.addEventListener('click', function (e) {
+        if (hdr.classList.contains('open') && !hdr.contains(e.target)) set(false, false);
+      });
+    })();
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. The dialog fills the viewport,
+        // so a click whose target is the dialog itself is a backdrop click.
+        var full = box.querySelector('img');
+        var nativeBtn = document.getElementById('lightboxNative');
+        function setNative(on) {
+          box.classList.toggle('native', on);
+          nativeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          nativeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+        }
+        hero.addEventListener('click', function () { setNative(false); box.showModal(); });
+        box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+        document.getElementById('lightboxClose').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+        nativeBtn.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+      }
+
+      var srStatus = document.getElementById('srStatus');
+      function announce(msg) {
+        srStatus.textContent = '';
+        setTimeout(function () { srStatus.textContent = msg; }, 50);
+      }
+
+      // Back to the gallery with the filters the reader left it with, and
+      // page through that filtered order when there is one (both written by
+      // the gallery index into sessionStorage; absent, the static links stay).
+      var here = location.pathname.replace(/[/]$/, '').split('/').pop();
+      try {
+        var savedHash = sessionStorage.getItem('bdt-gallery-hash');
+        var crumb = document.getElementById('crumbGallery');
+        if (crumb && savedHash) crumb.setAttribute('href', '../' + savedHash);
+        var order = JSON.parse(sessionStorage.getItem('bdt-gallery-order') || 'null');
+        var at = order ? order.indexOf(here) : -1;
+        if (at !== -1) {
+          Array.prototype.forEach.call(document.querySelectorAll('.pager'), function (nav) {
+            function slot(name, rel) {
+              if (!name) return document.createElement('span');
+              var a = document.createElement('a');
+              a.rel = rel; a.href = '../' + name + '/';
+              a.setAttribute('aria-label', (rel === 'prev' ? 'Previous' : 'Next') + ' in your filter: ' + name);
+              a.innerHTML = rel === 'prev'
+                ? '<span aria-hidden="true">&larr;</span> ' + name
+                : name + ' <span aria-hidden="true">&rarr;</span>';
+              return a;
+            }
+            var pos = nav.querySelector('.pager-pos');
+            var keys = pos.querySelector('.pager-keys');
+            nav.replaceChild(slot(order[at - 1], 'prev'), nav.firstElementChild);
+            nav.replaceChild(slot(order[at + 1], 'next'), nav.lastElementChild);
+            pos.textContent = (at + 1) + ' of ' + order.length + ' in your filter';
+            if (keys) pos.appendChild(keys);
+            nav.setAttribute('aria-label', 'Your filtered gallery');
+          });
+        }
+      } catch (e) {}
+
+      // Clipboard API first; execCommand for non-secure origins (file://,
+      // plain-http previews) where navigator.clipboard is undefined.
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
+      function wireCopy(btn, getText) {
+        btn.addEventListener('click', function () {
+          copyText(getText()).then(function () {
+            btn.textContent = 'Copied'; btn.classList.add('done'); announce('Copied to clipboard');
+          }, function () {
+            btn.textContent = 'Copy failed'; btn.classList.add('fail'); announce('Copy failed');
+          }).then(function () {
+            setTimeout(function () {
+              btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
+            }, 1600);
+          });
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+        var wrap = block;
+        if (block.tagName === 'PRE') {
+          wrap = document.createElement('div');
+          block.parentNode.insertBefore(wrap, block);
+          wrap.appendChild(block);
+        }
+        wrap.classList.add('codewrap');
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'copy-btn'; btn.textContent = 'Copy';
+        var src = block.tagName === 'PRE' ? block : block.querySelector('.code-lines');
+        btn.setAttribute('aria-label', 'Copy code');
+        wireCopy(btn, function () { return src.textContent; });
+        wrap.appendChild(btn);
+      });
+
+      // Long listings start collapsed; with JS off they render in full.
+      var code = document.querySelector('.src .code');
+      if (code) {
+        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
+        if (lines > 120) {
+          code.classList.add('collapsed');
+          var more = document.createElement('button');
+          more.type = 'button'; more.className = 'src-expand';
+          more.setAttribute('aria-expanded', 'false');
+          more.textContent = 'Show all ' + lines + ' lines';
+          code.parentNode.insertBefore(more, code.nextSibling);
+          more.addEventListener('click', function () {
+            var open = code.classList.toggle('collapsed') === false;
+            more.setAttribute('aria-expanded', open ? 'true' : 'false');
+            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
+            if (!open) code.scrollIntoView({ block: 'start' });
+          });
+        }
+      }
+
+      // Left/right arrows page between entries, but only when nothing has
+      // focus and nothing is selected: a focused control, a scrolled code
+      // block, or a text selection keeps its own arrow keys.
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        if (box && box.open) return;
+        var ae = document.activeElement;
+        if (ae && ae !== document.body && ae !== document.documentElement) return;
+        var sel = window.getSelection && window.getSelection();
+        if (sel && !sel.isCollapsed) return;
+        var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
+        if (!rel) return;
+        var a = document.querySelector('.pager a[rel="' + rel + '"]');
+        if (a) { location.href = a.href; }
+      });
+    })();
+
+  </script>
+</body>
+</html>

@@ -701,6 +701,34 @@
       "tags": [
         "geometry-nodes"
       ]
+    },
+    {
+      "name": "ray-cast-space",
+      "dir": "examples/ray-cast-space",
+      "teaches": "Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss.",
+      "alt": "A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere.",
+      "witnessesFix": "Five closed-form rays on a translated, Z-rotated, non-uniformly scaled block: Scene.ray_cast hits each world point and normal exactly; Object.ray_cast fed matrix_world.inverted() coordinates hits the same polygons, and mapped back lands within 5e-7 m; world coords fed to Object.ray_cast land 0.287 m or more off. --world-to-object exits 4 (1.125 m error).",
+      "hero": "docs/gallery/assets/ray-cast-space-hero.webp",
+      "preview": "examples/ray-cast-space/preview.webp",
+      "tags": [
+        "objects",
+        "transforms",
+        "depsgraph"
+      ]
+    },
+    {
+      "name": "lattice-deform",
+      "dir": "examples/lattice-deform",
+      "teaches": "A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).",
+      "alt": "Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out.",
+      "witnessesFix": "Linear lattice deform is exact trilinear interpolation: all 602 evaluated verts land on the closed-form blend of the eight co_deform corners (max error 5.6e-7 through a translated, non-uniformly scaled lattice), the undeformed lattice is the identity, and --bspline (the default interpolation) misses by 0.2145 and exits 4.",
+      "hero": "docs/gallery/assets/lattice-deform-hero.webp",
+      "preview": "examples/lattice-deform/preview.webp",
+      "tags": [
+        "mesh",
+        "modifiers",
+        "depsgraph"
+      ]
     }
   ]
 }

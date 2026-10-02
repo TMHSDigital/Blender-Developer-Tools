@@ -45,7 +45,7 @@
     <p>A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 54 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille.">
       <img src="../assets/car-mirror-symmetry-hero.webp" alt="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -1883,6 +1883,15 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
       <div class="related-grid">
         <article class="card mini">
           <div class="card-media">
+            <img src="../assets/lattice-deform-hero-640.webp" srcset="../assets/lattice-deform-hero-640.webp 640w, ../assets/lattice-deform-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../lattice-deform/">Lattice Deform</a></h3>
+            <p>A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
             <img src="../assets/depsgraph-export-hero-640.webp" srcset="../assets/depsgraph-export-hero-640.webp 640w, ../assets/depsgraph-export-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A game controller&#x27;s sparse control cage in orange wire and vertex beads beside the smooth subdivided cobalt controller with sticks and colored buttons, on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
@@ -1899,18 +1908,9 @@ MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Gla
             <p>Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.</p>
           </div>
         </article>
-        <article class="card mini">
-          <div class="card-media">
-            <img src="../assets/armature-bend-hero-640.webp" srcset="../assets/armature-bend-hero-640.webp 640w, ../assets/armature-bend-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." width="1280" height="720" loading="lazy" decoding="async" />
-          </div>
-          <div class="card-body">
-            <h3><a class="stretch" href="../armature-bend/">Armature Bend</a></h3>
-            <p>Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl.</p>
-          </div>
-        </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 52 examples</span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 54 examples</span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>

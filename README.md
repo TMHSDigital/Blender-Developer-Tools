@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>60 examples</strong> &nbsp;&bull;&nbsp; <strong>72 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>62 examples</strong> &nbsp;&bull;&nbsp; <strong>72 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 60 examples, and 72 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 62 examples, and 72 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -75,7 +75,7 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 
 ## Falsifiers
 
-Every one of the 60 examples carries a **falsifier**: a flag that changes the
+Every one of the 62 examples carries a **falsifier**: a flag that changes the
 input so a real assertion fails. It never disables the assertion, skips the
 check, or short-circuits to an error — it feeds the script something the
 contract says must not pass, and the same check that guards the happy path
@@ -451,7 +451,7 @@ Gallery still is a sky-lit obelisk diptych (8° dusk | 55° midday) so the contr
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 13 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 15 examples</summary>
 
 <table>
 <tr>
@@ -647,6 +647,37 @@ check-only, no gallery still — no geometry
 `ColorStrip.use_linear_modifiers` is a bool on 4.5.11 and 5.1.2; the same
 getattr is `AttributeError` on 5.2.1. Version-guarded `hasattr` then read
 exits 0 on all three. `--assume-present` is red only on 5.2.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/ray-cast-space/"><img src="examples/ray-cast-space/preview.webp" alt="Ray cast space: a teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass emitter balls ending in orange hit rings on three of its faces, and one red ray from the world-coordinate trap striking it from somewhere else, on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [ray-cast-space](examples/ray-cast-space/)
+
+`Object.ray_cast` vs `Scene.ray_cast` — five closed-form rays on a translated, Z-rotated,
+non-uniformly scaled block. `Scene.ray_cast` hits each world point and normal exactly.
+`Object.ray_cast`, fed `matrix_world.inverted()` origins and 3×3-only directions, hits the
+same polygons and maps back within 5e-7 m. Raw world coordinates handed to `Object.ray_cast`
+land 0.287 m or more away (`--world-to-object` exits 4).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/lattice-deform/"><img src="examples/lattice-deform/preview.webp" alt="Lattice deform: two checker-glazed columns on a walnut plinth, each in a steel-rod cage - the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out" /></a>
+</td>
+<td valign="middle">
+
+### [lattice-deform](examples/lattice-deform/)
+
+A 2×2×2 Lattice modifier set to `'KEY_LINEAR'`, with two corners moved through
+`LatticePoint.co_deform`. Witnesses that every evaluated vert lands on the trilinear
+blend of the eight deformed corners, and that the default `'KEY_BSPLINE'` misses it
+(`--bspline` exits 4).
 
 </td>
 </tr>
