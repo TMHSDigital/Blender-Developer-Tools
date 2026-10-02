@@ -255,7 +255,9 @@
       .vp-center { padding: 3.5rem 1rem 1.25rem; }
       .vp-center { order: 1; }
       .hud-bl { order: 2; position: relative; left: auto; bottom: auto; z-index: 3; margin: 0 auto 0.75rem;
-        grid-template-columns: repeat(3, auto auto); gap: 0.15rem 0.7rem; }
+        grid-template-columns: repeat(3, auto auto); gap: 0 0.7rem; align-items: center; }
+      /* 24px touch targets (WCAG 2.5.8) now that the stats are tappable on phones */
+      .hud-bl a { display: inline-flex; align-items: center; min-height: 24px; }
       .clone-row pre { white-space: pre-wrap; overflow-wrap: break-word; }
       .panel-body { padding: 1.1rem 1rem 1.25rem; }
       .panel-head { flex-wrap: wrap; }
