@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sundial-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a round bronze dial plate with inked hour lines fanning from a tall, thin gnomon." />
+  <meta property="og:image:alt" content="A garden sundial: a stepped stone plinth and tapered octagonal granite column under a cap, carrying a round bronze dial with Roman numerals, chapter rings and a triangular gnomon." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="sundial — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural garden sundial — a stepped stone plinth under a tapered octagonal column and cap, a bronze dial plate with inked hour lines and a curved-backed gnomon — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sundial-hero.webp" />
-  <meta name="twitter:image:alt" content="A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a round bronze dial plate with inked hour lines fanning from a tall, thin gnomon." />
+  <meta name="twitter:image:alt" content="A garden sundial: a stepped stone plinth and tapered octagonal granite column under a cap, carrying a round bronze dial with Roman numerals, chapter rings and a triangular gnomon." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -359,11 +359,11 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../toboggan/" aria-label="Previous showcase piece: toboggan"><span aria-hidden="true">&larr;</span> toboggan</a><span class="pager-pos hud">72 of 72 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a round bronze dial plate with inked hour lines fanning from a tall, thin gnomon.">
-      <img src="../assets/sundial-hero.webp" alt="A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a round bronze dial plate with inked hour lines fanning from a tall, thin gnomon." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A garden sundial: a stepped stone plinth and tapered octagonal granite column under a cap, carrying a round bronze dial with Roman numerals, chapter rings and a triangular gnomon.">
+      <img src="../assets/sundial-hero.webp" alt="A garden sundial: a stepped stone plinth and tapered octagonal granite column under a cap, carrying a round bronze dial with Roman numerals, chapter rings and a triangular gnomon." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2404 tris, three materials with 180 stone, 507 bronze and 713 ink faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.600×0.600×1.010 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, the gnomon&#x27;s style edge inclined 45.0000° to the plate at latitude 45° and meeting it at the dial centre, twenty hour and half-hour lines within 0.00001° of tan(H) = sin(lat)·tan(15°h), the gnomon 3.5 mm into the plate, every line 2.0 mm proud and 2.5 mm buried, the noon arrow on the gnomon&#x27;s meridian, and a plumb 0.670 m column. --wrong-latitude exits 17 at 38.000° while the envelope is unchanged; --linear-hours exits 17 with the lines 9.84° out.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3924 tris, three materials with 276 stone, 507 bronze and 1489 ink faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.600×0.600×1.010 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, the gnomon&#x27;s style edge inclined 45.0000° to the plate at latitude 45° and meeting it at the dial centre, twenty hour and half-hour lines, two chapter rings and 28 Roman-numeral strokes on their hour lines, the lines within 0.00001° of tan(H) = sin(lat)·tan(15°h), the gnomon 3.5 mm into the plate, every line 2.0 mm proud and 2.5 mm buried, the noon arrow on the gnomon&#x27;s meridian, and a plumb 0.670 m column. --wrong-latitude exits 17 at 38.000° while the envelope is unchanged; --linear-hours exits 17 with the lines 9.84° out.</div>
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
@@ -371,9 +371,9 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A horizontal garden sundial for 45° north: a stepped stone plinth, a tapered octagonal granite column with a flared foot and collar, a cap, a bronze dial plate with a bead rim, a curved-backed bronze gnomon, and twenty-two inked lines laid out by the dial formula. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<p>A horizontal garden sundial for 45° north: a stepped stone plinth, a tapered octagonal granite column with a flared foot and collar, a cap, a bronze dial plate with a bead rim, a curved-backed bronze gnomon, twenty inked hour and half-hour lines laid out by the dial formula, two chapter rings and Roman numerals VII–XI and I–V, each numeral on its own hour line. Astragal beads ring the column at its foot and under its collar. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
 <h2 id="what-it-composes">What it composes<a class="anchor" href="#what-it-composes" aria-label="Link to this section">#</a></h2>
-<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>frusta, lathed plate and ring, swept ink bars and a lofted gnomon, all in one <code>bmesh</code>, chamfered with <code>bmesh.ops.bevel</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>a face attribute (<code>StoneTone</code>) read by the granite shader</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>speckled, mossy granite with a pitted bump; bronze going green in patches; satin ink</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, a 128-segment high onto the 64-segment low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>a hull per stone block, the plate and the gnomon, merged into a compound</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>frusta, octagonal astragal beads, lathed plate and rings, swept ink bars and numeral strokes and a lofted gnomon, all in one <code>bmesh</code>, chamfered with <code>bmesh.ops.bevel</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>a face attribute (<code>StoneTone</code>) read by the granite shader</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>speckled granite with grime and a low-contrast lichen held to the plinth joints, and a pitted bump; bronze going green in patches; satin ink</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, a 128-segment high onto the 64-segment low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>a hull per stone block, the plate and the gnomon, merged into a compound</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
 <h2 id="the-budget-that-matters">The budget that matters<a class="anchor" href="#the-budget-that-matters" aria-label="Link to this section">#</a></h2>
 <p>A sundial exists to tell the time, and it can fail at that without looking wrong. Two things decide it:</p>
 <ul><li><strong>The gnomon&#x27;s style edge must be inclined to the plate at the latitude</strong>, and must meet the plate at the point the hour lines fan out from.</li><li><strong>Each hour line must lie at the bearing the horizontal-dial formula gives</strong>: <code>tan(φ) = sin(latitude) · tan(15° · hours from noon)</code>. Spaced evenly at 15° an hour, the lines look right in every picture and are wrong from 7 to 11 and 13 to 17.</li></ul>
@@ -382,15 +382,15 @@
 <p><code>--wrong-latitude</code> is the falsifier built for the first. It keeps the apex where it is and tilts the style edge to 38°, so the foot slides 41 mm south of the centre and the envelope does not move. Every other budget passes and the run exits 17. <code>--linear-hours</code> is built for the second: the lines go in at 15° an hour and the bearings are out by 9.84°.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; 4.5 and 5.1 were not run locally (see the cross-version note below).</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>2200–2700</td><td>2404</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2196</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Stone / bronze / ink faces</td><td>≥ 140 / 430 / 570</td><td>180 / 507 / 713</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0011, 0.0011)–(0.9989, 0.9989)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>0.600 × 0.600 × 1.010 m ± 0.020</td><td>0.6000 × 0.6000 × 1.0100</td></tr><tr><td>Collider triangles</td><td>≤ 480</td><td>444 (eight hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~208 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Parts</td><td>6 stone, 1 plate, 1 gnomon, 1 ring, 1 noon, 10 bars, 10 ticks</td><td>as stated</td></tr><tr><td>Style angle</td><td>45° ± 0.25°</td><td>45.0000°</td></tr><tr><td>Hour-line bearings</td><td>formula ± 0.10°, radial ± 1°</td><td>0.00001°, 0.0000°</td></tr><tr><td>Gnomon bite</td><td>2.0–5.0 mm below the plate&#x27;s top</td><td>3.50 mm</td></tr><tr><td>Style foot</td><td>within 0.5 mm of the dial centre at the plate&#x27;s top</td><td>0.00 mm</td></tr><tr><td>Ink seat</td><td>0.5–2.5 mm proud, 0.8–3.0 mm buried, every line</td><td>2.00 mm / 2.50 mm</td></tr><tr><td>Noon on the meridian</td><td>≤ 0.5 mm from the gnomon</td><td>0.00 mm</td></tr><tr><td>Plumb column</td><td>bottom ring vs top ring centroid ≤ 1.5 mm</td><td>0.00 mm</td></tr><tr><td>Real-world size</td><td>column 0.670 ± 0.020, plate Ø 0.400 ± 0.004, gnomon 0.130 ± 0.003 m</td><td>0.670, 0.400, 0.130</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>3600–4200</td><td>3924</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2196</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Stone / bronze / ink faces</td><td>≥ 240 / 430 / 1300</td><td>276 / 507 / 1489</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0011, 0.0011)–(0.9989, 0.9989)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>0.600 × 0.600 × 1.010 m ± 0.020</td><td>0.6000 × 0.6000 × 1.0100</td></tr><tr><td>Collider triangles</td><td>≤ 480</td><td>444 (eight hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~322 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Parts</td><td>6 stone, 2 beads, 1 plate, 1 gnomon, 2 rings, 1 noon, 10 bars, 10 ticks, 28 numeral strokes</td><td>as stated</td></tr><tr><td>Style angle</td><td>45° ± 0.25°</td><td>45.0000°</td></tr><tr><td>Hour-line bearings</td><td>formula ± 0.10°, radial ± 1°</td><td>0.00001°, 0.0000°</td></tr><tr><td>Gnomon bite</td><td>2.0–5.0 mm below the plate&#x27;s top</td><td>3.50 mm</td></tr><tr><td>Style foot</td><td>within 0.5 mm of the dial centre at the plate&#x27;s top</td><td>0.00 mm</td></tr><tr><td>Ink seat</td><td>0.5–2.5 mm proud, 0.8–3.0 mm buried, every line</td><td>2.00 mm / 2.50 mm</td></tr><tr><td>Noon on the meridian</td><td>≤ 0.5 mm from the gnomon</td><td>0.00 mm</td></tr><tr><td>Plumb column</td><td>bottom ring vs top ring centroid ≤ 1.5 mm</td><td>0.00 mm</td></tr><tr><td>Real-world size</td><td>column 0.670 ± 0.020, plate Ø 0.400 ± 0.004, gnomon 0.130 ± 0.003 m</td><td>0.670, 0.400, 0.130</td></tr></tbody></table></div>
 <p>Real-world size: a 1.01 m garden sundial. A 0.40 m dial at hip height (0.88 m), on a 0.67 m column, with a 0.13 m gnomon at 45°.</p>
 <h2 id="construction">Construction<a class="anchor" href="#construction" aria-label="Link to this section">#</a></h2>
-<ul><li><strong>Stone.</strong> Six frusta, each an n-gon with flats on the axes: two square steps, a flared octagonal foot, the tapered column, an inverted-frustum collar and the cap. Every upper part is tenoned into its host and its top is the fixed figure, so no two bodies land on one plane. The foot starts 5 mm into the step, the column 10 mm, so the two bottoms are not the same plane. Near-right-angle edges are chamfered with <code>bmesh.ops.bevel</code>, <code>material=</code> passed so the chamfer keeps the stone slot.</li><li><strong>Plate.</strong> One lathe about Z: a flat field, a bead rim, a bevelled outer edge and an underside that sits 4 mm into the cap. 64 segments; the high mesh is 128.</li><li><strong>Gnomon.</strong> A lofted (y, z) outline in the meridian plane, 8 mm thick. The style edge is <strong>one</strong> straight edge from foot to apex: stations on it are collinear, and the ear-clipped caps turned collinear triples into zero-area triangles. The back edge is a sine sag. The bottom is 3.5 mm below the plate&#x27;s top. <code>--wrong-latitude</code> holds the apex and changes the slope.</li><li><strong>Ink.</strong> Every line is a keeled hexagon swept along its bearing: a ridge 2.0 mm proud of the plate, a keel 2.5 mm buried. A ridge and a keel keep the tops and the bottoms of twenty lines from being one plane. The noon arrow is the exception: a flat-topped, chamfered prism.</li><li><strong>Collider.</strong> One hull per stone block, one for the gnomon, and one for the plate taken over every fourth segment. The ink is left out: it is a couple of millimetres of relief on a surface the plate hull covers.</li></ul>
+<ul><li><strong>Stone.</strong> Six frusta, each an n-gon with flats on the axes: two square steps, a flared octagonal foot, the tapered column, an inverted-frustum collar and the cap. Every upper part is tenoned into its host and its top is the fixed figure, so no two bodies land on one plane. The foot starts 5 mm into the step, the column 10 mm, so the two bottoms are not the same plane. Near-right-angle edges are chamfered with <code>bmesh.ops.bevel</code>, <code>material=</code> passed so the chamfer keeps the stone slot.</li><li><strong>Beads.</strong> Two octagonal astragals, a closed (width, height) profile swept round the shaft&#x27;s own octagon. The profile is offset from the column&#x27;s width at the bead&#x27;s height, so the inner wall grips 8 mm inside the taper, and the flat that would sit on the foot (or under the collar) is buried 3 mm into that block. A bead is told from the stone blocks as the only stone shell shallower than the cap; the part budget asserts there are two.</li><li><strong>Plate.</strong> One lathe about Z: a flat field, a bead rim, a bevelled outer edge and an underside that sits 4 mm into the cap. 64 segments; the high mesh is 128.</li><li><strong>Gnomon.</strong> A lofted (y, z) outline in the meridian plane, 8 mm thick. The style edge is <strong>one</strong> straight edge from foot to apex: stations on it are collinear, and the ear-clipped caps turned collinear triples into zero-area triangles. The back edge is a sine sag. The bottom is 3.5 mm below the plate&#x27;s top. <code>--wrong-latitude</code> holds the apex and changes the slope.</li><li><strong>Ink.</strong> Every line is a keeled hexagon swept along its bearing: a ridge 2.0 mm proud of the plate, a keel 2.5 mm buried. A ridge and a keel keep the tops and the bottoms of twenty lines from being one plane. The noon arrow is the exception: a flat-topped, chamfered prism. Hour lines run 60–127 mm out and end in an inner chapter ring at 128.5 mm; the numerals stand between it and the outer ring at 166.5 mm.</li><li><strong>Numerals.</strong> Each Roman numeral is a set of strokes in the same keeled section, laid out in glyph space (across, up) and mapped to the dial so a glyph point goes to bearing <code>φ + u / r_mid</code>. A constant angular offset keeps every I on its own radius, so the three strokes of a III are not parallel planes side by side, and their end caps are not one plane. The two strokes of a V cross just above the point instead of sharing a vertex, which would be a double. Glyph up is outward. The numerals move with the lines under <code>--linear-hours</code>. XII is left to the noon arrow. The part budget counts the strokes in the numeral band (131–161 mm by centroid) against the strokes the glyphs call for; numeral bearings are not separately asserted, since the hour lines they stand on are.</li><li><strong>Collider.</strong> One hull per stone block, one for the gnomon, and one for the plate taken over every fourth segment. The ink is left out: it is a couple of millimetres of relief on a surface the plate hull covers. So are the beads: 17 mm of moulding round a shaft the column hull covers.</li></ul>
 <h2 id="findings-the-budgets-forced">Findings the budgets forced<a class="anchor" href="#findings-the-budgets-forced" aria-label="Link to this section">#</a></h2>
-<ul><li><strong>Coplanar cross-shell.</strong> The first run reported one pair. The noon arrow&#x27;s 8 mm shaft shared its side plane with the 8 mm gnomon. The shaft is now 10 mm wide.</li><li><strong>Coplanar by construction.</strong> Ink bars with a flat top would put twenty top faces on one plane, and twenty bottoms on another. The keeled hexagon has neither.</li><li><strong>Collinear stations.</strong> Stations on the style edge, kept so a regression had points to fit, gave zero-area triangles at 38° but not at 45°. The angle is now measured from the style face&#x27;s normal, so the stations are gone.</li><li><strong>Collider.</strong> Hulls over chamfered stone are heavier than they look; the foot took the compound from 388 to 444 triangles.</li></ul>
+<ul><li><strong>Coplanar cross-shell.</strong> The first run reported one pair. The noon arrow&#x27;s 8 mm shaft shared its side plane with the 8 mm gnomon. The shaft is now 10 mm wide.</li><li><strong>Coplanar by construction.</strong> Ink bars with a flat top would put twenty top faces on one plane, and twenty bottoms on another. The keeled hexagon has neither.</li><li><strong>Collinear stations.</strong> Stations on the style edge, kept so a regression had points to fit, gave zero-area triangles at 38° but not at 45°. The angle is now measured from the style face&#x27;s normal, so the stations are gone.</li><li><strong>Collider.</strong> Hulls over chamfered stone are heavier than they look; the foot took the compound from 388 to 444 triangles.</li><li><strong>Coplanar by coincidence.</strong> Widening the numerals put one stroke of the IX&#x27;s X on the same plane as the end cap of the 10:30 tick, 44 mm away: three pairs, exit 15. The X is now 10.4 mm wide, not 11.</li><li><strong>A gnomon seen edge-on is a needle.</strong> The hero first turned the piece −28°, which put the camera 62° off the gnomon&#x27;s face, and the fin read as a stick. The still now turns it −58°.</li></ul>
 <h2 id="conventions-walked">Conventions walked<a class="anchor" href="#conventions-walked" aria-label="Link to this section">#</a></h2>
 <p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>column plumb and height, plate and gnomon size (<code>--lean-pedestal</code>); exit 19</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>each stone part into its host; the gnomon 3.5 mm into the plate (<code>--float-gnomon</code>)</td></tr><tr><td>Seat conformance (a band: minimum so it cannot float)</td><td>yes</td><td>the gnomon bite and every ink line&#x27;s proud and buried depth (<code>--float-gnomon</code>, <code>--float-lines</code>)</td></tr><tr><td>Mirrored assemblies</td><td>partly</td><td>the gnomon and noon arrow are centred on the meridian; asserted as one centroid offset (<code>--shift-noon</code>)</td></tr><tr><td>Material face floors</td><td>yes</td><td>stone 140, bronze 430, ink 570</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>granite, bronze, ink</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>stone and gnomon faceted (dressed stone, a bronze plate); the lathed plate and ring smooth, every edge over 35° hard</td></tr><tr><td>Edge treatment</td><td>partly</td><td>chamfered, but no separate budget: removing the chamfers moves the triangle band first</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>the bevel&#x27;s edge list is sorted by index</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>no falsifier moves the AABB; <code>--wrong-latitude</code> holds the apex</td></tr><tr><td>Named supports, wrappers, rope, roofs, vessels, scatter, fasteners</td><td>no</td><td>the piece has none of these</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>column plumb and height, plate and gnomon size (<code>--lean-pedestal</code>); exit 19</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>each stone part into its host; the gnomon 3.5 mm into the plate (<code>--float-gnomon</code>)</td></tr><tr><td>Seat conformance (a band: minimum so it cannot float)</td><td>yes</td><td>the gnomon bite and every ink line&#x27;s proud and buried depth (<code>--float-gnomon</code>, <code>--float-lines</code>)</td></tr><tr><td>Mirrored assemblies</td><td>partly</td><td>the gnomon and noon arrow are centred on the meridian; asserted as one centroid offset (<code>--shift-noon</code>)</td></tr><tr><td>Material face floors</td><td>yes</td><td>stone 240, bronze 430, ink 1300</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>granite, bronze, ink</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>stone, beads and gnomon faceted (dressed stone, a bronze plate); the lathed plate and both rings smooth, every edge over 35° hard</td></tr><tr><td>Edge treatment</td><td>partly</td><td>chamfered, but no separate budget: removing the chamfers moves the triangle band first</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>the bevel&#x27;s edge list is sorted by index</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>no falsifier moves the AABB; <code>--wrong-latitude</code> holds the apex</td></tr><tr><td>Named supports, wrappers, rope, roofs, vessels, scatter, fasteners</td><td>no</td><td>the piece has none of these</td></tr></tbody></table></div>
 <h2 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h2>
 <p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All nine were run on Blender 5.2.1 and exited the declared code.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the column</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--wrong-latitude</code></td><td>style angle</td><td>holds the apex and tilts the style edge to 38°</td><td>17</td></tr><tr><td><code>--linear-hours</code></td><td>hour-line bearings</td><td>puts every line at 15° an hour; 9.839° out</td><td>17</td></tr><tr><td><code>--float-gnomon</code></td><td>gnomon bite</td><td>lifts the gnomon 5 mm; the bite goes to −1.5 mm</td><td>18</td></tr><tr><td><code>--float-lines</code></td><td>ink seat</td><td>lifts every ink line 4 mm; 6.0 mm proud, buried −1.5 mm</td><td>18</td></tr><tr><td><code>--shift-noon</code></td><td>noon on the meridian</td><td>moves the noon arrow 3 mm east; 3.00 mm off</td><td>19</td></tr><tr><td><code>--lean-pedestal</code></td><td>plumb column</td><td>shears the column&#x27;s top ring 12 mm east; 11.93 mm</td><td>19</td></tr></tbody></table></div>
@@ -412,15 +412,15 @@ blender --background --python sundial.py -- --output sundial.webp</code></pre>
 <p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
 <h2 id="cross-version-measurements">Cross-version measurements<a class="anchor" href="#cross-version-measurements" aria-label="Link to this section">#</a></h2>
 <p>Measured on Blender 5.2.1 only. 4.5 and 5.1 were not run for this piece. Nothing here depends on a version-specific API beyond the EEVEE engine id, which the script branches on, and the DECIMATE triangle counts, which are a ratio band.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>2404</td></tr><tr><td>LOD1 / LOD2 tris</td><td>1202 / 528</td></tr><tr><td>Face counts (stone / bronze / ink)</td><td>180 / 507 / 713</td></tr><tr><td>Outer AABB</td><td>0.6000 × 0.6000 × 1.0100</td></tr><tr><td>Collider tris</td><td>444</td></tr><tr><td>Style angle</td><td>45.0000°</td></tr><tr><td>glTF bytes</td><td>208060</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>3924</td></tr><tr><td>LOD1 / LOD2 tris</td><td>1962 / 862</td></tr><tr><td>Face counts (stone / bronze / ink)</td><td>276 / 507 / 1489</td></tr><tr><td>Outer AABB</td><td>0.6000 × 0.6000 × 1.0100</td></tr><tr><td>Collider tris</td><td>444</td></tr><tr><td>Style angle</td><td>45.0000°</td></tr><tr><td>glTF bytes</td><td>321636</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/sundial/sundial.py</code>
-        <span>1258 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/sundial/sundial.py">View on GitHub &rarr;</a></span>
+        <span>1407 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/sundial/sundial.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1258">
+      <div class="code" data-lines="1407">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1678,7 +1678,156 @@ blender --background --python sundial.py -- --output sundial.webp</code></pre>
 1255
 1256
 1257
-1258</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready garden sundial — a showcase piece, not an example.
+1258
+1259
+1260
+1261
+1262
+1263
+1264
+1265
+1266
+1267
+1268
+1269
+1270
+1271
+1272
+1273
+1274
+1275
+1276
+1277
+1278
+1279
+1280
+1281
+1282
+1283
+1284
+1285
+1286
+1287
+1288
+1289
+1290
+1291
+1292
+1293
+1294
+1295
+1296
+1297
+1298
+1299
+1300
+1301
+1302
+1303
+1304
+1305
+1306
+1307
+1308
+1309
+1310
+1311
+1312
+1313
+1314
+1315
+1316
+1317
+1318
+1319
+1320
+1321
+1322
+1323
+1324
+1325
+1326
+1327
+1328
+1329
+1330
+1331
+1332
+1333
+1334
+1335
+1336
+1337
+1338
+1339
+1340
+1341
+1342
+1343
+1344
+1345
+1346
+1347
+1348
+1349
+1350
+1351
+1352
+1353
+1354
+1355
+1356
+1357
+1358
+1359
+1360
+1361
+1362
+1363
+1364
+1365
+1366
+1367
+1368
+1369
+1370
+1371
+1372
+1373
+1374
+1375
+1376
+1377
+1378
+1379
+1380
+1381
+1382
+1383
+1384
+1385
+1386
+1387
+1388
+1389
+1390
+1391
+1392
+1393
+1394
+1395
+1396
+1397
+1398
+1399
+1400
+1401
+1402
+1403
+1404
+1405
+1406
+1407</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready garden sundial — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural horizontal sundial: a stepped
 stone plinth, a tapered octagonal granite column with a flared collar and
@@ -1753,6 +1902,10 @@ FOOT_AF0, FOOT_AF1, FOOT_Z0, FOOT_TOP = <span class="n">0.350</span>, <span clas
 CAP_AF, CAP_TOP = <span class="n">0.460</span>, <span class="n">0.870</span>
 CAP_Z0 = COLLAR_TOP - SEAT
 LEAN = <span class="n">0.012</span>
+<span class="c"># Astragal beads round the column shaft: one bedded in the foot, one tucked</span>
+<span class="c"># up into the collar. Each grips the shaft by BEAD_GRIP and is buried in its</span>
+<span class="c"># host block by BEAD_BED, so neither lands on a face of either.</span>
+BEAD_GRIP, BEAD_BED, BEAD_H, BEAD_PROUD = <span class="n">0.008</span>, <span class="n">0.003</span>, <span class="n">0.026</span>, <span class="n">0.034</span>
 
 <span class="c"># Dial plate: bronze, a bead rim round a flat field.</span>
 PLATE_SEG = <span class="n">64</span>
@@ -1772,11 +1925,21 @@ GN_CHAMFER = <span class="n">0.0008</span>
 FLOAT_GNOMON = <span class="n">0.005</span>
 
 <span class="c"># Ink: raised lines on the plate, a keel in the bronze under a low ridge.</span>
-BAR_R0, BAR_R1 = <span class="n">0.070</span>, <span class="n">0.160</span>
-TICK_R0 = <span class="n">0.140</span>
+<span class="c"># Hour lines run in to an inner chapter ring; the numerals stand in the band</span>
+<span class="c"># between it and the outer ring, each stroke laid along its own radius.</span>
+BAR_R0, BAR_R1 = <span class="n">0.060</span>, <span class="n">0.127</span>
+TICK_R0 = <span class="n">0.108</span>
 BAR_HALF_W = <span class="n">0.0030</span>
 TICK_HALF_W = <span class="n">0.0020</span>
 RING_R = <span class="n">0.1665</span>
+INNER_RING_R = <span class="n">0.1285</span>
+NUM_R0, NUM_R1 = <span class="n">0.1345</span>, <span class="n">0.1595</span>
+NUM_HALF_W = <span class="n">0.0016</span>
+NUM_V_W, NUM_X_W, NUM_GAP = <span class="n">0.0110</span>, <span class="n">0.0104</span>, <span class="n">0.0030</span>
+NUMERALS = {<span class="n">7</span>: <span class="s">&quot;VII&quot;</span>, <span class="n">8</span>: <span class="s">&quot;VIII&quot;</span>, <span class="n">9</span>: <span class="s">&quot;IX&quot;</span>, <span class="n">10</span>: <span class="s">&quot;X&quot;</span>, <span class="n">11</span>: <span class="s">&quot;XI&quot;</span>,
+            <span class="n">13</span>: <span class="s">&quot;I&quot;</span>, <span class="n">14</span>: <span class="s">&quot;II&quot;</span>, <span class="n">15</span>: <span class="s">&quot;III&quot;</span>, <span class="n">16</span>: <span class="s">&quot;IV&quot;</span>, <span class="n">17</span>: <span class="s">&quot;V&quot;</span>}
+BAR_TICK_SPLIT_R = <span class="n">0.105</span>
+NUM_BAND = (<span class="n">0.131</span>, <span class="n">0.161</span>)
 NOON_Y0, NOON_Y1, NOON_TIP = <span class="n">0.138</span>, <span class="n">0.152</span>, <span class="n">0.170</span>
 INK_KEEL, INK_SHOULDER, INK_EDGE, INK_RIDGE = -<span class="n">0.0025</span>, -<span class="n">0.0010</span>, <span class="n">0.0010</span>, <span class="n">0.0020</span>
 FLOAT_LINES = <span class="n">0.004</span>
@@ -1785,8 +1948,8 @@ SHIFT_NOON = <span class="n">0.003</span>
 BBOX_TOL = <span class="n">0.020</span>
 OUTER_SIZE = (<span class="n">0.600</span>, <span class="n">0.600</span>, <span class="n">1.010</span>)
 
-BASE_TRIS_MIN = <span class="n">2200</span>
-BASE_TRIS_MAX = <span class="n">2700</span>
+BASE_TRIS_MIN = <span class="n">3600</span>
+BASE_TRIS_MAX = <span class="n">4200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -1794,7 +1957,7 @@ LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">3</span>
-FACE_FLOORS = {<span class="n">0</span>: <span class="n">140</span>, <span class="n">1</span>: <span class="n">430</span>, <span class="n">2</span>: <span class="n">570</span>}
+FACE_FLOORS = {<span class="n">0</span>: <span class="n">240</span>, <span class="n">1</span>: <span class="n">430</span>, <span class="n">2</span>: <span class="n">1300</span>}
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">480</span>
@@ -1956,6 +2119,98 @@ INK_IDX = <span class="n">2</span>
     chamfer(bm, faces, off, STONE_IDX)
 
 
+<span class="k">def</span> column_af(z):
+    <span class="s">&quot;&quot;&quot;Across-flats width of the (unleaned) column shaft at height ``z``.&quot;&quot;&quot;</span>
+    z0 = STEP_TOP - SEAT
+    <span class="k">return</span> COL_AF0 + (COL_AF1 - COL_AF0) * (z - z0) / (COL_TOP - z0)
+
+
+<span class="k">def</span> octo_ring(bm, profile):
+    <span class="s">&quot;&quot;&quot;Closed (af, z) profile swept round an octagon, flats on the axes.&quot;&quot;&quot;</span>
+    n = <span class="n">8</span>
+    rings = []
+    <span class="k">for</span> af, z <span class="k">in</span> profile:
+        radius = af * <span class="n">0.5</span> / math.cos(math.pi / n)
+        rings.append([bm.verts.new((radius * math.cos((k + <span class="n">0.5</span>) * <span class="n">2.0</span> * math.pi / n),
+                                    radius * math.sin((k + <span class="n">0.5</span>) * <span class="n">2.0</span> * math.pi / n), z))
+                      <span class="k">for</span> k <span class="k">in</span> range(n)])
+    faces = []
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:] + rings[:<span class="n">1</span>]):
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            faces.append(bm.faces.new((a[i], a[j], b[j], b[i])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = STONE_IDX
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+
+
+<span class="k">def</span> add_beads(bm):
+    <span class="s">&quot;&quot;&quot;Astragals: a half-round bead on the foot and another under the collar.
+
+    The profile is offset from the shaft&#x27;s own width at the bead&#x27;s height,
+    so the inner wall is BEAD_GRIP inside the taper, and the flat that
+    would sit on the host block is buried BEAD_BED into it instead.
+    &quot;&quot;&quot;</span>
+    g, h, p = <span class="n">2.0</span> * BEAD_GRIP, BEAD_H, BEAD_PROUD
+    zb = FOOT_TOP - BEAD_BED
+    af = column_af(zb + h * <span class="n">0.5</span>)
+    octo_ring(bm, [(af - g, zb), (af + <span class="n">0.010</span>, zb), (af + p, zb + <span class="n">0.009</span>),
+                   (af + p - <span class="n">0.006</span>, zb + <span class="n">0.019</span>), (af + <span class="n">0.006</span>, zb + h), (af - g, zb + h)])
+    zt = COLLAR_Z0 + BEAD_BED
+    af = column_af(zt - h * <span class="n">0.5</span>)
+    octo_ring(bm, [(af - g, zt - h), (af + <span class="n">0.010</span>, zt - h), (af + p, zt - <span class="n">0.015</span>),
+                   (af + p - <span class="n">0.006</span>, zt - <span class="n">0.007</span>), (af + <span class="n">0.006</span>, zt), (af - g, zt)])
+
+
+<span class="k">def</span> numeral_strokes(text):
+    <span class="s">&quot;&quot;&quot;Strokes of a Roman numeral as ((u0, v0), (u1, v1)) pairs, u across, v 0..1 up.
+
+    ``u`` is metres across the band, centred on the hour line; ``v`` runs
+    from the inner edge of the numeral band to the outer. The two strokes of
+    a V cross just above its point rather than sharing a vertex.
+    &quot;&quot;&quot;</span>
+    hw, e = NUM_HALF_W, <span class="n">0.0006</span>
+    widths = {<span class="s">&quot;I&quot;</span>: <span class="n">2.0</span> * hw, <span class="s">&quot;V&quot;</span>: NUM_V_W, <span class="s">&quot;X&quot;</span>: NUM_X_W}
+    total = sum(widths[c] <span class="k">for</span> c <span class="k">in</span> text) + NUM_GAP * (len(text) - <span class="n">1</span>)
+    u = -total * <span class="n">0.5</span>
+    out = []
+    <span class="k">for</span> c <span class="k">in</span> text:
+        w = widths[c]
+        <span class="k">if</span> c == <span class="s">&quot;I&quot;</span>:
+            out.append(((u + hw, <span class="n">0.0</span>), (u + hw, <span class="n">1.0</span>)))
+        <span class="k">elif</span> c == <span class="s">&quot;V&quot;</span>:
+            out.append(((u + hw, <span class="n">1.0</span>), (u + w * <span class="n">0.5</span> + e, <span class="n">0.0</span>)))
+            out.append(((u + w - hw, <span class="n">1.0</span>), (u + w * <span class="n">0.5</span> - e, <span class="n">0.0</span>)))
+        <span class="k">else</span>:
+            out.append(((u + hw, <span class="n">1.0</span>), (u + w - hw, <span class="n">0.0</span>)))
+            out.append(((u + w - hw, <span class="n">1.0</span>), (u + hw, <span class="n">0.0</span>)))
+        u += w + NUM_GAP
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> add_numerals(bm, linear_hours, lift):
+    <span class="s">&quot;&quot;&quot;Hour numerals in the chapter band, each stroke on its own radius.
+
+    A glyph point (u, v) goes to bearing ``phi + u / r_mid`` at radius
+    ``NUM_R0 + v * (NUM_R1 - NUM_R0)``. Constant angular offset keeps an I
+    radial, and two parallel-looking strokes are never on one plane. Glyph
+    up is outward, glyph right is clockwise seen from above.
+    &quot;&quot;&quot;</span>
+    r_mid = <span class="n">0.5</span> * (NUM_R0 + NUM_R1)
+    <span class="k">for</span> h, text <span class="k">in</span> NUMERALS.items():
+        phi = hour_bearing(h, linear_hours)
+        <span class="k">for</span> (ua, va), (ub, vb) <span class="k">in</span> numeral_strokes(text):
+            ends = []
+            <span class="k">for</span> u, v <span class="k">in</span> ((ua, va), (ub, vb)):
+                th, r = phi + u / r_mid, NUM_R0 + v * (NUM_R1 - NUM_R0)
+                ends.append(Vector((r * math.sin(th), r * math.cos(th), <span class="n">0.0</span>)))
+            straight_bar(bm, ends[<span class="n">0</span>], ends[<span class="n">1</span>], ink_section(NUM_HALF_W), PLATE_TOP + lift)
+
+
+<span class="k">def</span> numeral_stroke_count():
+    <span class="k">return</span> sum(len(numeral_strokes(t)) <span class="k">for</span> t <span class="k">in</span> NUMERALS.values())
+
+
 <span class="k">def</span> lathe_z(bm, profile, n, mat, closed=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about the Z axis; r == 0 entries are poles.&quot;&quot;&quot;</span>
     rings, poles, verts = [], [], []
@@ -2029,6 +2284,7 @@ INK_IDX = <span class="n">2</span>
         stone_frustum(bm, <span class="n">8</span>, FOOT_AF0, FOOT_AF1, FOOT_Z0, FOOT_TOP, <span class="n">0.004</span>)
         stone_frustum(bm, <span class="n">8</span>, COLLAR_AF0, COLLAR_AF1, COLLAR_Z0, COLLAR_TOP, <span class="n">0.004</span>)
         stone_frustum(bm, <span class="n">8</span>, CAP_AF, CAP_AF, CAP_Z0, CAP_TOP, <span class="n">0.006</span>)
+        add_beads(bm)
 
         smooth.update(lathe_z(bm, plate_profile(), n_plate, BRONZE_IDX))
 
@@ -2040,6 +2296,9 @@ INK_IDX = <span class="n">2</span>
 
         ring_profile = [(RING_R + u, PLATE_TOP + z + lift) <span class="k">for</span> u, z <span class="k">in</span> ink_section(<span class="n">0.003</span>)]
         smooth.update(lathe_z(bm, ring_profile, n_plate, INK_IDX, closed=<span class="k">True</span>))
+        inner_profile = [(INNER_RING_R + u, PLATE_TOP + z + lift) <span class="k">for</span> u, z <span class="k">in</span> ink_section(<span class="n">0.0025</span>)]
+        smooth.update(lathe_z(bm, inner_profile, n_plate, INK_IDX, closed=<span class="k">True</span>))
+        add_numerals(bm, linear_hours, lift)
         <span class="k">for</span> h <span class="k">in</span> HOURS:
             phi = hour_bearing(h, linear_hours)
             d = Vector((math.sin(phi), math.cos(phi), <span class="n">0.0</span>))
@@ -2140,7 +2399,7 @@ INK_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> stone_material(name):
-    <span class="s">&quot;&quot;&quot;Weathered granite: coarse tone, fine speckle, moss climbing from the plinth.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Weathered granite: coarse tone, fine speckle, grime and lichen in the joints.&quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
@@ -2181,30 +2440,58 @@ INK_IDX = <span class="n">2</span>
         nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], gaingrey.inputs[ch])
     base = _mix(nt, <span class="s">&quot;MULTIPLY&quot;</span>, base, gaingrey.outputs[<span class="s">&quot;Color&quot;</span>], <span class="n">1.0</span>)
 
+    <span class="c"># Weathering lives where water sits: a narrow band at the ground and at</span>
+    <span class="c"># each joint of the plinth and foot, broken up by noise. Grime darkens the</span>
+    <span class="c"># band; a grey-olive lichen takes part of it. Low contrast on purpose.</span>
     sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
     nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
-    height = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
-    height.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.02</span>
-    height.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.20</span>
-    height.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">1.0</span>
-    height.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
-    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], height.inputs[<span class="s">&quot;Value&quot;</span>])
+    joints = <span class="k">None</span>
+    <span class="k">for</span> jz, w <span class="k">in</span> ((<span class="n">0.0</span>, <span class="n">0.035</span>), (BASE_TOP, <span class="n">0.022</span>), (STEP_TOP, <span class="n">0.022</span>), (FOOT_TOP, <span class="n">0.016</span>)):
+        dz = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        dz.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+        nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], dz.inputs[<span class="n">0</span>])
+        dz.inputs[<span class="n">1</span>].default_value = jz
+        ab = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        ab.operation = <span class="s">&quot;ABSOLUTE&quot;</span>
+        nt.links.new(dz.outputs[<span class="s">&quot;Value&quot;</span>], ab.inputs[<span class="n">0</span>])
+        band = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        band.interpolation_type = <span class="s">&quot;SMOOTHSTEP&quot;</span>
+        band.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.0</span>
+        band.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = w
+        band.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">1.0</span>
+        band.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
+        nt.links.new(ab.outputs[<span class="s">&quot;Value&quot;</span>], band.inputs[<span class="s">&quot;Value&quot;</span>])
+        <span class="k">if</span> joints <span class="k">is</span> <span class="k">None</span>:
+            joints = band.outputs[<span class="s">&quot;Result&quot;</span>]
+        <span class="k">else</span>:
+            mx = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+            mx.operation = <span class="s">&quot;MAXIMUM&quot;</span>
+            nt.links.new(joints, mx.inputs[<span class="n">0</span>])
+            nt.links.new(band.outputs[<span class="s">&quot;Result&quot;</span>], mx.inputs[<span class="n">1</span>])
+            joints = mx.outputs[<span class="s">&quot;Value&quot;</span>]
     patch = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
-    patch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">11.0</span>
+    patch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">24.0</span>
     patch.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
     nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], patch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    patchmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    patchmap.interpolation_type = <span class="s">&quot;SMOOTHSTEP&quot;</span>
+    patchmap.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.42</span>
+    patchmap.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.66</span>
+    nt.links.new(patch.outputs[<span class="s">&quot;Fac&quot;</span>], patchmap.inputs[<span class="s">&quot;Value&quot;</span>])
     cover = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     cover.operation = <span class="s">&quot;MULTIPLY&quot;</span>
-    nt.links.new(height.outputs[<span class="s">&quot;Result&quot;</span>], cover.inputs[<span class="n">0</span>])
-    patchramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
-    patchramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.50</span>
-    patchramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.64</span>
-    nt.links.new(patch.outputs[<span class="s">&quot;Fac&quot;</span>], patchramp.inputs[<span class="s">&quot;Fac&quot;</span>])
-    <span class="c"># The ramp keeps its default black-to-white; its red channel is the patch mask.</span>
-    sep2 = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateColor&quot;</span>)
-    nt.links.new(patchramp.outputs[<span class="s">&quot;Color&quot;</span>], sep2.inputs[<span class="s">&quot;Color&quot;</span>])
-    nt.links.new(sep2.outputs[<span class="s">&quot;Red&quot;</span>], cover.inputs[<span class="n">1</span>])
-    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.05</span>, <span class="n">0.085</span>, <span class="n">0.03</span>), cover.outputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(joints, cover.inputs[<span class="n">0</span>])
+    nt.links.new(patchmap.outputs[<span class="s">&quot;Result&quot;</span>], cover.inputs[<span class="n">1</span>])
+    grime = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    grime.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    grime.inputs[<span class="n">1</span>].default_value = <span class="n">0.35</span>
+    nt.links.new(joints, grime.inputs[<span class="n">0</span>])
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.075</span>, <span class="n">0.07</span>, <span class="n">0.06</span>), grime.outputs[<span class="s">&quot;Value&quot;</span>])
+    lichen = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    lichen.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    lichen.inputs[<span class="n">1</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(cover.outputs[<span class="s">&quot;Value&quot;</span>], lichen.inputs[<span class="n">0</span>])
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.105</span>, <span class="n">0.115</span>, <span class="n">0.075</span>), lichen.outputs[<span class="s">&quot;Value&quot;</span>])
     nt.links.new(base, bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.88</span>
     <span class="c"># Bush-hammered pitting: a fine bump the baked normal map feeds into at render.</span>
@@ -2410,7 +2697,7 @@ INK_IDX = <span class="n">2</span>
     <span class="k">for</span> p <span class="k">in</span> me.polygons:
         <span class="k">for</span> i <span class="k">in</span> p.vertices:
             mats.setdefault(i, p.material_index)
-    out = {<span class="s">&quot;stone&quot;</span>: [], <span class="s">&quot;plate&quot;</span>: [], <span class="s">&quot;gnomon&quot;</span>: [], <span class="s">&quot;ink&quot;</span>: [], <span class="s">&quot;other&quot;</span>: []}
+    out = {<span class="s">&quot;stone&quot;</span>: [], <span class="s">&quot;bead&quot;</span>: [], <span class="s">&quot;plate&quot;</span>: [], <span class="s">&quot;gnomon&quot;</span>: [], <span class="s">&quot;ink&quot;</span>: [], <span class="s">&quot;other&quot;</span>: []}
     <span class="k">for</span> g <span class="k">in</span> shells(me):
         pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
         lo = Vector((min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts)))
@@ -2421,7 +2708,8 @@ INK_IDX = <span class="n">2</span>
         <span class="k">if</span> len(g) &lt; <span class="n">4</span>:
             out[<span class="s">&quot;other&quot;</span>].append(rec)
         <span class="k">elif</span> m == STONE_IDX:
-            out[<span class="s">&quot;stone&quot;</span>].append(rec)
+            <span class="c"># A bead is the only stone shell shallower than the 35 mm cap.</span>
+            out[<span class="s">&quot;bead&quot;</span> <span class="k">if</span> rec[<span class="s">&quot;ext&quot;</span>].z &lt; BEAD_H + <span class="n">0.002</span> <span class="k">else</span> <span class="s">&quot;stone&quot;</span>].append(rec)
         <span class="k">elif</span> m == BRONZE_IDX:
             out[<span class="s">&quot;plate&quot;</span> <span class="k">if</span> max(rec[<span class="s">&quot;ext&quot;</span>].x, rec[<span class="s">&quot;ext&quot;</span>].y) &gt; <span class="n">0.25</span> <span class="k">else</span> <span class="s">&quot;gnomon&quot;</span>].append(rec)
         <span class="k">elif</span> m == INK_IDX:
@@ -2490,9 +2778,12 @@ INK_IDX = <span class="n">2</span>
     north = [r <span class="k">for</span> r <span class="k">in</span> rest <span class="k">if</span> r[<span class="s">&quot;c&quot;</span>].y &gt; centre.y]
     noon = min(north, key=<span class="k">lambda</span> r: abs(r[<span class="s">&quot;c&quot;</span>].x - centre.x), default=<span class="k">None</span>)
     pieces = [r <span class="k">for</span> r <span class="k">in</span> rest <span class="k">if</span> r <span class="k">is</span> <span class="k">not</span> noon]
-    bars = [r <span class="k">for</span> r <span class="k">in</span> pieces <span class="k">if</span> math.hypot(r[<span class="s">&quot;c&quot;</span>].x - centre.x, r[<span class="s">&quot;c&quot;</span>].y - centre.y) &lt; <span class="n">0.130</span>]
-    ticks = [r <span class="k">for</span> r <span class="k">in</span> pieces <span class="k">if</span> r <span class="k">not</span> <span class="k">in</span> bars]
+    rad = {id(r): math.hypot(r[<span class="s">&quot;c&quot;</span>].x - centre.x, r[<span class="s">&quot;c&quot;</span>].y - centre.y) <span class="k">for</span> r <span class="k">in</span> pieces}
+    numerals = [r <span class="k">for</span> r <span class="k">in</span> pieces <span class="k">if</span> NUM_BAND[<span class="n">0</span>] &lt; rad[id(r)] &lt; NUM_BAND[<span class="n">1</span>]]
+    bars = [r <span class="k">for</span> r <span class="k">in</span> pieces <span class="k">if</span> rad[id(r)] &lt; BAR_TICK_SPLIT_R]
+    ticks = [r <span class="k">for</span> r <span class="k">in</span> pieces <span class="k">if</span> r <span class="k">not</span> <span class="k">in</span> bars <span class="k">and</span> r <span class="k">not</span> <span class="k">in</span> numerals]
     out[<span class="s">&quot;ring&quot;</span>], out[<span class="s">&quot;noon&quot;</span>], out[<span class="s">&quot;bars&quot;</span>], out[<span class="s">&quot;ticks&quot;</span>] = len(ring), <span class="n">1</span> <span class="k">if</span> noon <span class="k">else</span> <span class="n">0</span>, len(bars), len(ticks)
+    out[<span class="s">&quot;numeral_strokes&quot;</span>] = len(numerals)
     out[<span class="s">&quot;noon_off&quot;</span>] = abs(noon[<span class="s">&quot;c&quot;</span>].x - gnomon[<span class="s">&quot;c&quot;</span>].x) <span class="k">if</span> noon <span class="k">and</span> gnomon <span class="k">else</span> <span class="n">99.0</span>
 
     <span class="k">def</span> bearings(group):
@@ -2551,7 +2842,8 @@ INK_IDX = <span class="n">2</span>
     <span class="s">&quot;&quot;&quot;Compound collider: one hull per stone block, the plate and the gnomon.
 
     The ink is left out; it is a millimetre of relief on a surface the plate&#x27;s
-    hull already covers. The plate is hulled over every fourth segment.
+    hull already covers. So are the two column beads: 17 mm of moulding
+    round a shaft whose hull is already there. The plate is hulled over every fourth segment.
     &quot;&quot;&quot;</span>
     me = obj.data
     parts = classify(me)
@@ -2701,9 +2993,10 @@ INK_IDX = <span class="n">2</span>
     print(<span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>)
-    print(<span class="s">f&quot;</span><span class="s">measured parts stone=</span>{sa[<span class="s">&#x27;stone&#x27;</span>]}<span class="s"> plate=</span>{sa[<span class="s">&#x27;plate&#x27;</span>]}<span class="s"> gnomon=</span>{sa[<span class="s">&#x27;gnomon&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">ink=</span>{sa[<span class="s">&#x27;ink&#x27;</span>]}<span class="s"> other=</span>{sa[<span class="s">&#x27;other&#x27;</span>]}<span class="s"> ring=</span>{sa[<span class="s">&#x27;ring&#x27;</span>]}<span class="s"> noon=</span>{sa[<span class="s">&#x27;noon&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">bars=</span>{sa[<span class="s">&#x27;bars&#x27;</span>]}<span class="s"> ticks=</span>{sa[<span class="s">&#x27;ticks&#x27;</span>]}<span class="s"> style_faces=</span>{sa[<span class="s">&#x27;style_faces&#x27;</span>]}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured parts stone=</span>{sa[<span class="s">&#x27;stone&#x27;</span>]}<span class="s"> bead=</span>{sa[<span class="s">&#x27;bead&#x27;</span>]}<span class="s"> plate=</span>{sa[<span class="s">&#x27;plate&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">gnomon=</span>{sa[<span class="s">&#x27;gnomon&#x27;</span>]}<span class="s"> ink=</span>{sa[<span class="s">&#x27;ink&#x27;</span>]}<span class="s"> other=</span>{sa[<span class="s">&#x27;other&#x27;</span>]}<span class="s"> ring=</span>{sa[<span class="s">&#x27;ring&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">noon=</span>{sa[<span class="s">&#x27;noon&#x27;</span>]}<span class="s"> bars=</span>{sa[<span class="s">&#x27;bars&#x27;</span>]}<span class="s"> ticks=</span>{sa[<span class="s">&#x27;ticks&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">numeral_strokes=</span>{sa[<span class="s">&#x27;numeral_strokes&#x27;</span>]}<span class="s"> style_faces=</span>{sa[<span class="s">&#x27;style_faces&#x27;</span>]}<span class="s">&quot;</span>)
     print(<span class="s">f&quot;</span><span class="s">measured style=</span>{sa[<span class="s">&#x27;style_deg&#x27;</span>]:<span class="s">.4f</span>}<span class="s">deg foot_err=</span>{sa[<span class="s">&#x27;foot_err&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">bearing_err=</span>{sa[<span class="s">&#x27;bearing_err&#x27;</span>]:<span class="s">.5f</span>}<span class="s">deg radial_err=</span>{sa[<span class="s">&#x27;radial_err&#x27;</span>]:<span class="s">.4f</span>}<span class="s">deg</span><span class="s">&quot;</span>)
     print(<span class="s">f&quot;</span><span class="s">measured bite=</span>{sa[<span class="s">&#x27;gnomon_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> line_proud=(</span>{sa[<span class="s">&#x27;line_proud&#x27;</span>][<span class="n">0</span>]:<span class="s">.5f</span>}<span class="s">,</span><span class="s">&quot;</span>
@@ -2744,11 +3037,14 @@ INK_IDX = <span class="n">2</span>
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
         <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
                      <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
-    <span class="k">if</span> (sa[<span class="s">&quot;stone&quot;</span>] != <span class="n">6</span> <span class="k">or</span> sa[<span class="s">&quot;plate&quot;</span>] != <span class="n">1</span> <span class="k">or</span> sa[<span class="s">&quot;gnomon&quot;</span>] != <span class="n">1</span> <span class="k">or</span> sa[<span class="s">&quot;ring&quot;</span>] != <span class="n">1</span>
-            <span class="k">or</span> sa[<span class="s">&quot;noon&quot;</span>] != <span class="n">1</span> <span class="k">or</span> sa[<span class="s">&quot;bars&quot;</span>] != len(HOURS) <span class="k">or</span> sa[<span class="s">&quot;ticks&quot;</span>] != len(TICKS)):
-        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">parts: stone </span>{sa[<span class="s">&#x27;stone&#x27;</span>]}<span class="s">/6 plate </span>{sa[<span class="s">&#x27;plate&#x27;</span>]}<span class="s">/1 gnomon </span>{sa[<span class="s">&#x27;gnomon&#x27;</span>]}<span class="s">/1 </span><span class="s">&quot;</span>
-                     <span class="s">f&quot;</span><span class="s">ring </span>{sa[<span class="s">&#x27;ring&#x27;</span>]}<span class="s">/1 noon </span>{sa[<span class="s">&#x27;noon&#x27;</span>]}<span class="s">/1 bars </span>{sa[<span class="s">&#x27;bars&#x27;</span>]}<span class="s">/</span>{len(HOURS)}<span class="s"> </span><span class="s">&quot;</span>
-                     <span class="s">f&quot;</span><span class="s">ticks </span>{sa[<span class="s">&#x27;ticks&#x27;</span>]}<span class="s">/</span>{len(TICKS)}<span class="s">&quot;</span>, <span class="n">3</span>),) + nothing
+    n_num = numeral_stroke_count()
+    <span class="k">if</span> (sa[<span class="s">&quot;stone&quot;</span>] != <span class="n">6</span> <span class="k">or</span> sa[<span class="s">&quot;bead&quot;</span>] != <span class="n">2</span> <span class="k">or</span> sa[<span class="s">&quot;plate&quot;</span>] != <span class="n">1</span> <span class="k">or</span> sa[<span class="s">&quot;gnomon&quot;</span>] != <span class="n">1</span>
+            <span class="k">or</span> sa[<span class="s">&quot;ring&quot;</span>] != <span class="n">2</span> <span class="k">or</span> sa[<span class="s">&quot;noon&quot;</span>] != <span class="n">1</span> <span class="k">or</span> sa[<span class="s">&quot;bars&quot;</span>] != len(HOURS)
+            <span class="k">or</span> sa[<span class="s">&quot;ticks&quot;</span>] != len(TICKS) <span class="k">or</span> sa[<span class="s">&quot;numeral_strokes&quot;</span>] != n_num):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">parts: stone </span>{sa[<span class="s">&#x27;stone&#x27;</span>]}<span class="s">/6 bead </span>{sa[<span class="s">&#x27;bead&#x27;</span>]}<span class="s">/2 plate </span>{sa[<span class="s">&#x27;plate&#x27;</span>]}<span class="s">/1 </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">gnomon </span>{sa[<span class="s">&#x27;gnomon&#x27;</span>]}<span class="s">/1 ring </span>{sa[<span class="s">&#x27;ring&#x27;</span>]}<span class="s">/2 noon </span>{sa[<span class="s">&#x27;noon&#x27;</span>]}<span class="s">/1 </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">bars </span>{sa[<span class="s">&#x27;bars&#x27;</span>]}<span class="s">/</span>{len(HOURS)}<span class="s"> ticks </span>{sa[<span class="s">&#x27;ticks&#x27;</span>]}<span class="s">/</span>{len(TICKS)}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">numeral strokes </span>{sa[<span class="s">&#x27;numeral_strokes&#x27;</span>]}<span class="s">/</span>{n_num}<span class="s">&quot;</span>, <span class="n">3</span>),) + nothing
     <span class="k">if</span> abs(sa[<span class="s">&quot;style_deg&quot;</span>] - LATITUDE) &gt; STYLE_TOL_DEG:
         <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">style edge </span>{sa[<span class="s">&#x27;style_deg&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> deg off the plate, latitude is </span><span class="s">&quot;</span>
                      <span class="s">f&quot;</span>{LATITUDE}<span class="s"> deg (--wrong-latitude is the designed fail)</span><span class="s">&quot;</span>, <span class="n">17</span>),) + nothing
@@ -2798,8 +3094,10 @@ INK_IDX = <span class="n">2</span>
         <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
-    <span class="c"># Level on the floor: turned about Z only.</span>
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
+    <span class="c"># Level on the floor: turned about Z only. The gnomon lies in the</span>
+    <span class="c"># meridian plane, so the yaw turns its face toward the camera; at -28</span>
+    <span class="c"># degrees it was seen 62 degrees off its normal and read as a needle.</span>
+    low.rotation_euler.z = math.radians(-<span class="n">58.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -2975,7 +3273,7 @@ INK_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/sundial-hero.webp" alt="A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a round bronze dial plate with inked hour lines fanning from a tall, thin gnomon." />
+    <img src="../assets/sundial-hero.webp" alt="A garden sundial: a stepped stone plinth and tapered octagonal granite column under a cap, carrying a round bronze dial with Roman numerals, chapter rings and a triangular gnomon." />
   </dialog>
   <footer>
     <div class="statusbar">
