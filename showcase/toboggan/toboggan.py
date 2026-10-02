@@ -3,9 +3,9 @@
 Asserts budget conformance of a procedural Flexible-Flyer-style runner
 sled: two steel-shod wooden runners with upturned front horns, six posts
 carrying three cross bearers, a deck of seven lengthwise slats seated on
-the bearers, a painted steering bar through both runner horns with a
-hub block drilled for a pull rope, and a rope threaded through that hole
-and stopped with a knot behind it. Carried through UVs, five materials
+the bearers and screwed to them, one painted steering bar through both
+runner horns drilled at its centre for a pull rope, and a three-strand
+rope threaded through that hole and stopped with a knot behind it. Carried through UVs, five materials
 (slat pine, stained frame, steel, hemp rope, red paint), a high-to-low
 normal bake, an LOD chain, a compound convex collider, and a Unity glTF
 export.
@@ -13,8 +13,8 @@ export.
 The budgets that matter here are the ones a sled fails invisibly. A sled
 stands on its two shoes, not on its deck: an AABB that touches the floor
 says nothing about whether *each* shoe does. The deck rides on tenoned
-posts and seated slats, and the rope has to pass through the hub's hole
-rather than through the hub. The piece measures each off the finished
+posts and seated slats, and the rope has to pass through the bar's hole
+rather than through the bar. The piece measures each off the finished
 mesh.
 
 Budgets are declared below and recomputed from the generated result.
@@ -23,7 +23,7 @@ budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-shoe`` the named shoes,
 ``--short-post`` the post tenons, ``--short-bar`` the bar's protrusion,
 ``--float-slats`` the slat seat, ``--lift-runners`` the shoe seat,
-``--float-bolts`` the bolt seat, ``--miss-hole`` the rope in its hole,
+``--float-bolts`` the bolt seat, ``--float-screws`` the screw seat, ``--miss-hole`` the rope in its hole,
 ``--tall-posts`` the real-world deck height, ``--skew-runner`` the
 mirrored runners.
 
@@ -60,14 +60,15 @@ import gallery_framing  # noqa: E402
 # Runners: a chamfered timber on edge, swept along a curve that is flat
 # under the deck and rises into a front horn and a short rear tail. The
 # curve and its slope are closed-form, so the shoe and the body are
-# parallel offsets of one centreline.
+# parallel offsets of one centreline. The tail is a small kick-up only: a
+# runner sled's back is cut off nearly flat.
 RUN_Y = 0.150
 RUN_HALF = 0.600
 HORN_X0 = 0.280
-HORN_RISE = 0.170
-HORN_POW = 2.2
+HORN_RISE = 0.210
+HORN_POW = 2.5
 TAIL_X0 = -0.500
-TAIL_RISE = 0.025
+TAIL_RISE = 0.008
 TAIL_POW = 2.0
 RUN_STATIONS = 36
 RUN_HW = 0.014
@@ -107,21 +108,22 @@ BEAR_TOP = DECK_TOP - 2.0 * SLAT_HH + SLAT_SEAT
 BEAR_ZC = BEAR_TOP - BEAR_HZ
 BEAR_BOT = BEAR_ZC - BEAR_HZ
 
-# Steering bar: two painted arms through the runner horns, a drilled hub
-# between them, a rope through the hub's hole, a knot behind it.
+# Steering bar: one painted crossbar through both runner horns, proud of
+# each, drilled through at its centre for the pull rope; a knot behind it.
 BAR_X = 0.500
-BAR_HX = 0.014
-BAR_HZ = 0.016
-BAR_CH = 0.005
-BAR_PROT = 0.030
-BAR_IN = 0.015
-HUB_HY = 0.050
-HUB_HZ = 0.022
-HUB_HX = 0.020
-HUB_CH = 0.005
+BAR_HX = 0.016
+BAR_HZ = 0.018
+BAR_CH = 0.010
+BAR_PROT = 0.070
 HOLE_R = 0.011
+# Three-strand hemp: the section's radius swells along three helical
+# strands, so the lay reads in the silhouette, not only in the shading.
 ROPE_R = 0.006
-ROPE_SEG = 10
+ROPE_SEG = 12
+ROPE_STEP = 0.006
+LAY_AMP = 0.14
+LAY_PITCH = 0.036
+ROPE_RMAX = ROPE_R * (1.0 + LAY_AMP)
 KNOT_R = 0.0165
 KNOT_C = 0.010
 TOGGLE_HALF = 0.050
@@ -129,6 +131,13 @@ TOGGLE_H = 0.009
 DROP_X = 0.25
 CURL_R = 0.22
 CURL_A = math.radians(85.0)
+
+# A domed screw head through each slat into every bearer it crosses,
+# phase-turned per screw so no two heads share a facet plane.
+SCREW_PROFILE = ((0.0042, 0.0004), (0.0035, 0.0013))
+SCREW_TIP = 0.0018
+SCREW_BITE = 0.0006
+SCREW_SEG = 8
 
 # Carriage bolts through each runner at every post.
 BOLT_BITE = 0.0010
@@ -139,19 +148,20 @@ BOLT_TIP = 0.0054
 # Falsifier displacements. Each stays inside BBOX_TOL.
 FLOAT_SHOE = 0.006
 SHORT_POST = -0.004
-SHORT_BAR = -0.010
+SHORT_BAR = 0.019
 FLOAT_SLATS = 0.005
 LIFT_RUNNERS = 0.004
 FLOAT_BOLTS = 0.0035
+FLOAT_SCREWS = 0.003
 MISS_HOLE = 0.012
 TALL_POSTS = 0.040
 SKEW_RUNNER = 0.006
 
 BBOX_TOL = 0.020
-OUTER_SIZE = (1.629, 0.425, 0.211)
+OUTER_SIZE = (1.623, 0.468, 0.243)
 
-BASE_TRIS_MIN = 4400
-BASE_TRIS_MAX = 5000
+BASE_TRIS_MIN = 7050
+BASE_TRIS_MAX = 7650
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -159,7 +169,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 5
-FACE_FLOORS = {0: 150, 1: 770, 2: 940, 3: 390, 4: 85}
+FACE_FLOORS = {0: 230, 1: 770, 2: 1450, 3: 1300, 4: 44}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 720
@@ -178,8 +188,8 @@ POST_BITE_MAX = 0.016
 POST_TENON_MIN = 0.006
 POST_TENON_MAX = 0.018
 POST_CLEAR_MIN = 0.012
-BAR_PROT_MIN = 0.020
-BAR_PROT_MAX = 0.045
+BAR_PROT_MIN = 0.055
+BAR_PROT_MAX = 0.085
 SLAT_SEAT_MIN = 0.0015
 SLAT_SEAT_MAX = 0.0045
 SHOE_SEAT_MIN = 0.0005
@@ -188,6 +198,10 @@ BOLT_PROUD_MIN = 0.0030
 BOLT_PROUD_MAX = 0.0060
 BOLT_BITE_MIN = 0.0005
 BOLT_BITE_MAX = 0.0020
+SCREW_BITE_MIN = 0.0003
+SCREW_BITE_MAX = 0.0012
+SCREW_PROUD_MIN = 0.0008
+SCREW_PROUD_MAX = 0.0020
 ROPE_CLEAR_MIN = 0.0005
 ROPE_CLEAR_MAX = 0.0060
 RUNNER_LEN = (1.15, 1.25)
@@ -377,8 +391,10 @@ def wood_material(name, dark, light, rough=(0.72, 0.52)):
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
-    gain.inputs[1].default_value = 1.0
-    gain.inputs[2].default_value = 0.50
+    # PlankTone spans 0.35..0.65, so each piece lands 0.73..1.33 of the ramp:
+    # neighbouring slats read as different boards, not one sheet.
+    gain.inputs[1].default_value = 2.0
+    gain.inputs[2].default_value = 0.03
     nt.links.new(tone.outputs["Fac"], gain.inputs[0])
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
@@ -588,7 +604,18 @@ def section8(hw, hh, ch):
             (-(hw - ch), -hh), (-hw, -(hh - ch)), (-hw, hh - ch), (-(hw - ch), hh)]
 
 
-def member(bm, ctx, pts, side, hw, hh, ch, mat, grain, reach=0.0015):
+def section_round(hw, hh, r, steps=2):
+    """A rectangle with its four corners rounded: ``steps`` + 1 points per quarter arc."""
+    out = []
+    for cx, cy, a0 in ((hw - r, hh - r, 90.0), (hw - r, -(hh - r), 0.0),
+                       (-(hw - r), -(hh - r), -90.0), (-(hw - r), hh - r, -180.0)):
+        for k in range(steps + 1):
+            a = math.radians(a0 - 90.0 * k / steps)
+            out.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    return out
+
+
+def member(bm, ctx, pts, side, hw, hh, ch, mat, grain, reach=0.0015, sec=None):
     """Chamfered-rectangle section swept along ``pts``.
 
     ``side`` is the direction the section's width ``hw`` runs in; ``up`` is
@@ -598,7 +625,7 @@ def member(bm, ctx, pts, side, hw, hh, ch, mat, grain, reach=0.0015):
     """
     m = len(pts)
     tans = [(pts[min(i + 1, m - 1)] - pts[max(i - 1, 0)]).normalized() for i in range(m)]
-    sec = section8(hw, hh, ch)
+    sec = sec or section8(hw, hh, ch)
     rings = []
     for p, t in zip(pts, tans):
         s = (side - t * side.dot(t)).normalized()
@@ -608,18 +635,49 @@ def member(bm, ctx, pts, side, hw, hh, ch, mat, grain, reach=0.0015):
     tube(bm, rings, poles, mat, ctx, [grain] * m)
 
 
+def resample(pts, step):
+    """The polyline ``pts`` re-cut at an even arc-length ``step``, ends kept."""
+    acc = [0.0]
+    for a, b in zip(pts, pts[1:]):
+        acc.append(acc[-1] + (b - a).length)
+    n = max(2, round(acc[-1] / step))
+    out, j = [], 0
+    for k in range(n + 1):
+        s = acc[-1] * k / n
+        while j < len(pts) - 2 and acc[j + 1] < s:
+            j += 1
+        f = (s - acc[j]) / max(acc[j + 1] - acc[j], 1e-12)
+        out.append(pts[j].lerp(pts[j + 1], min(max(f, 0.0), 1.0)))
+    return out
+
+
 def rope_sweep(bm, ctx, pts, radius, seg, mat):
-    """Round section swept along a 3D path with a parallel-transport frame."""
+    """Three-strand rope swept along a 3D path with a parallel-transport frame.
+
+    The section radius swells along three helical strands; the ``Lay``
+    point attribute carries the same phase so the shader darkens the
+    grooves between strands.
+    """
+    lay = ctx["lay"]
     m = len(pts)
     tans = [(pts[min(i + 1, m - 1)] - pts[max(i - 1, 0)]).normalized() for i in range(m)]
     n = Vector((0.0, 0.0, 1.0))
     rings, grains = [], []
-    for p, t in zip(pts, tans):
+    s = 0.0
+    for i, (p, t) in enumerate(zip(pts, tans)):
+        if i:
+            s += (p - pts[i - 1]).length
         n = (n - t * n.dot(t)).normalized()
         b = t.cross(n)
-        rings.append([bm.verts.new(p + n * (radius * math.cos(2 * math.pi * k / seg))
-                                   + b * (radius * math.sin(2 * math.pi * k / seg)))
-                      for k in range(seg)])
+        ring = []
+        for k in range(seg):
+            th = 2 * math.pi * k / seg
+            c = math.cos(3.0 * th - 2.0 * math.pi * s / LAY_PITCH)
+            r = radius * (1.0 + LAY_AMP * c)
+            v = bm.verts.new(p + n * (r * math.cos(th)) + b * (r * math.sin(th)))
+            v[lay] = 0.5 + 0.5 * c
+            ring.append(v)
+        rings.append(ring)
         grains.append(tuple(t))
     poles = (bm.verts.new(pts[0] - tans[0] * (0.5 * radius)),
              bm.verts.new(pts[-1] + tans[-1] * (0.5 * radius)))
@@ -641,13 +699,15 @@ def add_knot(bm, ctx, centre, radius, mat, rows=7, seg=10):
     tube(bm, rings, poles, mat, ctx, [(0.0, 1.0, 0.0)] * len(rings))
 
 
-def add_hub(bm, ctx, centre, mat):
-    """A block drilled through along X: a rectangle ring around a 12-gon hole.
+def add_bar(bm, ctx, centre, hy, mat, short=0.0):
+    """One crossbar drilled through along X at its centre: a chamfered
+    rectangle ring of half-span ``hy`` around a 12-gon hole. ``short`` pulls
+    the -Y end in by that much and leaves the +Y end where it is.
 
     Four strips (front ring, back ring, outer wall, hole wall), each quad a
     cell of a UV row, so no two faces share UV area.
     """
-    hy, hz, c = HUB_HY, HUB_HZ, HUB_CH
+    hz, c = BAR_HZ, BAR_CH
     outer = [(hy, 0.0), (hy, hz - c), (hy - c, hz), (0.0, hz), (-(hy - c), hz), (-hy, hz - c),
              (-hy, 0.0), (-hy, -(hz - c)), (-(hy - c), -hz), (0.0, -hz), (hy - c, -hz),
              (hy, -(hz - c))]
@@ -656,10 +716,11 @@ def add_hub(bm, ctx, centre, mat):
              for k in range(n)]
 
     def ring(pts, dx):
-        return [bm.verts.new(centre + Vector((dx, a, b))) for a, b in pts]
+        return [bm.verts.new(centre + Vector((dx, a + (short if a < -HOLE_R else 0.0), b)))
+                for a, b in pts]
 
-    of, ob = ring(outer, HUB_HX), ring(outer, -HUB_HX)
-    inf, inb = ring(inner, HUB_HX), ring(inner, -HUB_HX)
+    of, ob = ring(outer, BAR_HX), ring(outer, -BAR_HX)
+    inf, inb = ring(inner, BAR_HX), ring(inner, -BAR_HX)
     island = new_island(ctx)
 
     def strip(row, quads):
@@ -691,6 +752,24 @@ def lathe_axis(bm, profile, n, mat, ctx, origin, sign):
     tube(bm, rings, poles, mat, ctx, [(0.0, 1.0, 0.0)] * len(rings))
 
 
+def lathe_z(bm, profile, n, mat, ctx, origin, phase):
+    """Revolve an (r, z) profile about +Z from ``origin``, turned by ``phase``."""
+    rings, poles = [], []
+    for p in profile:
+        if p.x <= 0.0:
+            poles.append(bm.verts.new(origin + Vector((0.0, 0.0, p.y))))
+        else:
+            rings.append([bm.verts.new(origin + Vector((
+                p.x * math.cos(phase + 2 * math.pi * k / n),
+                p.x * math.sin(phase + 2 * math.pi * k / n), p.y))) for k in range(n)])
+    tube(bm, rings, poles, mat, ctx, [(0.0, 0.0, 1.0)] * len(rings))
+
+
+def screw_profile():
+    return ([Vector((0.0, 0.0))] + [Vector(p) for p in SCREW_PROFILE]
+            + [Vector((0.0, SCREW_TIP))])
+
+
 def bolt_profile():
     return ([Vector((0.0, 0.0))] + [Vector(p) for p in BOLT_PROFILE]
             + [Vector((0.0, BOLT_TIP))])
@@ -698,9 +777,9 @@ def bolt_profile():
 
 def rope_path(hx, hz, lift):
     """Knot, through the hole, a sag to the floor, then a curl lying on it."""
-    kx = hx - HUB_HX - KNOT_C
+    kx = hx - BAR_HX - KNOT_C
     pts = [Vector((kx + 0.015 * k, 0.0, hz)) for k in range(4)]
-    x_s = hx + HUB_HX + 0.01
+    x_s = hx + BAR_HX + 0.01
     while pts[-1].x < x_s - 0.0075:
         pts.append(Vector((pts[-1].x + 0.015, 0.0, hz)))
     if x_s - pts[-1].x > 1e-4:
@@ -709,13 +788,13 @@ def rope_path(hx, hz, lift):
     for k in range(1, steps + 1):
         s = k / steps
         sm = s * s * (3.0 - 2.0 * s)
-        pts.append(Vector((x_s + DROP_X * s, 0.0, hz + (ROPE_R - hz) * sm)))
+        pts.append(Vector((x_s + DROP_X * s, 0.0, hz + (ROPE_RMAX - hz) * sm)))
     x_e = x_s + DROP_X
     arcs = 18
     for k in range(1, arcs + 1):
         th = CURL_A * k / arcs
-        pts.append(Vector((x_e + CURL_R * math.sin(th), -CURL_R * (1.0 - math.cos(th)), ROPE_R)))
-    return [p + Vector((0.0, 0.0, lift)) for p in pts], kx
+        pts.append(Vector((x_e + CURL_R * math.sin(th), -CURL_R * (1.0 - math.cos(th)), ROPE_RMAX)))
+    return [p + Vector((0.0, 0.0, lift)) for p in resample(pts, ROPE_STEP)], kx
 
 
 def build_sled_mesh(
@@ -728,6 +807,7 @@ def build_sled_mesh(
     lift_runners=False,
     miss_hole=False,
     float_bolts=False,
+    float_screws=False,
     tall_posts=False,
     skew_runner=False,
 ):
@@ -737,7 +817,8 @@ def build_sled_mesh(
                "isl": bm.faces.layers.int.new("UVIsland"),
                "gx": bm.faces.layers.float.new("gx"),
                "gy": bm.faces.layers.float.new("gy"),
-               "gz": bm.faces.layers.float.new("gz"), "next": 0}
+               "gz": bm.faces.layers.float.new("gz"),
+               "lay": bm.verts.layers.float.new("Lay"), "next": 0}
         xs = runner_stations()
         raise_by = TALL_POSTS if tall_posts else 0.0
         for side in (-1.0, 1.0):
@@ -770,19 +851,21 @@ def build_sled_mesh(
                    Vector((1.0, 0.0, 0.0)), BEAR_HX, BEAR_HZ, BEAR_CH, FRAME_IDX,
                    (0.0, 1.0, 0.0))
         slat_z = DECK_TOP - SLAT_HH + raise_by + (FLOAT_SLATS if float_slats else 0.0)
+        slat_sec = section_round(SLAT_HW, SLAT_HH, SLAT_CH)
+        screw_z = slat_z + SLAT_HH - SCREW_BITE + (FLOAT_SCREWS if float_screws else 0.0)
         for k in range(SLAT_N):
             y = (k - (SLAT_N - 1) / 2.0) * SLAT_PITCH
             member(bm, ctx, [Vector((SLAT_X0, y, slat_z)), Vector((SLAT_X1, y, slat_z))],
                    Vector((0.0, 1.0, 0.0)), SLAT_HW, SLAT_HH, SLAT_CH, SLAT_IDX,
-                   (1.0, 0.0, 0.0))
-        # Steering bar through both horns, hub between, rope through the hub.
+                   (1.0, 0.0, 0.0), sec=slat_sec)
+            for j, px in enumerate(POST_X):
+                lathe_z(bm, screw_profile(), SCREW_SEG, STEEL_IDX, ctx,
+                        Vector((px, y, screw_z)), 2.39996 * (k * len(POST_X) + j))
+        # One steering bar through both horns, drilled at its centre for the rope.
         bp = offset_pt(BAR_X, BODY_D)
         hx, hz = bp.x, bp.z
-        out = RUN_Y + RUN_HW + (SHORT_BAR if short_bar else BAR_PROT)
-        for side in (-1.0, 1.0):
-            member(bm, ctx, [Vector((hx, side * out, hz)), Vector((hx, side * (HUB_HY - BAR_IN), hz))],
-                   Vector((1.0, 0.0, 0.0)), BAR_HX, BAR_HZ, BAR_CH, PAINT_IDX, (0.0, 1.0, 0.0))
-        add_hub(bm, ctx, Vector((hx, 0.0, hz)), PAINT_IDX)
+        add_bar(bm, ctx, Vector((hx, 0.0, hz)), RUN_Y + RUN_HW + BAR_PROT, PAINT_IDX,
+                short=SHORT_BAR if short_bar else 0.0)
         pts, kx = rope_path(hx, hz, MISS_HOLE if miss_hole else 0.0)
         rope_sweep(bm, ctx, pts, ROPE_R, ROPE_SEG, ROPE_IDX)
         # A wooden toggle across the rope's end, lying on the floor.
@@ -897,7 +980,21 @@ def rope_material(name):
     ramp.color_ramp.elements[1].position = 0.78
     ramp.color_ramp.elements[1].color = (0.58, 0.45, 0.25, 1.0)
     nt.links.new(mixf.outputs["Value"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    # ``Lay`` is 1 on a strand's crown and 0 in the groove between strands.
+    lay = nt.nodes.new("ShaderNodeAttribute")
+    lay.attribute_name = "Lay"
+    shade = nt.nodes.new("ShaderNodeMath")
+    shade.operation = "MULTIPLY_ADD"
+    shade.inputs[1].default_value = 0.65
+    shade.inputs[2].default_value = 0.35
+    nt.links.new(lay.outputs["Fac"], shade.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(shade.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.92
     return mat
 
@@ -917,7 +1014,7 @@ def classify(me):
     for p in me.polygons:
         for i in p.vertices:
             mats.setdefault(i, p.material_index)
-    out = {k: [] for k in ("slat", "runner", "post", "bearer", "shoe", "bolt", "arm", "hub",
+    out = {k: [] for k in ("slat", "runner", "post", "bearer", "shoe", "bolt", "screw", "bar",
                            "rope", "knot", "toggle", "other")}
     for g in shells(me):
         pts = [me.vertices[i].co.copy() for i in g]
@@ -933,9 +1030,9 @@ def classify(me):
             out["toggle" if e.z < 0.03 else "runner" if e.x > 0.8 else "bearer" if e.y > 0.3
                 else "post"].append(rec)
         elif m == STEEL_IDX:
-            out["shoe" if e.x > 0.8 else "bolt"].append(rec)
+            out["shoe" if e.x > 0.8 else "screw" if e.z < 0.006 else "bolt"].append(rec)
         elif m == PAINT_IDX:
-            out["arm" if e.y > 0.12 else "hub"].append(rec)
+            out["bar"].append(rec)
         elif m == ROPE_IDX:
             out["rope" if e.x > 0.1 else "knot"].append(rec)
         else:
@@ -974,13 +1071,11 @@ def sled_audit(me):
     out["post_tenon"] = (min(tenons, default=-99.0), max(tenons, default=99.0))
     out["post_clear"] = min(clears, default=-99.0)
 
-    # Steering bar arms pass through the runner and stand proud of its outer face.
+    # The steering bar passes through both runners and stands proud of each outer face.
     prot = []
-    for arm in parts["arm"]:
-        run = runner_for(arm["c"].y)
-        if run is None:
-            continue
-        prot.append(arm["hi"].y - run["hi"].y if arm["c"].y > 0 else run["lo"].y - arm["lo"].y)
+    if parts["bar"] and len(runners) == 2:
+        bar = parts["bar"][0]
+        prot = [runners[0]["lo"].y - bar["lo"].y, bar["hi"].y - runners[1]["hi"].y]
     out["bar_prot"] = (min(prot, default=-99.0), max(prot, default=99.0))
 
     # Slats are rebated into every bearer they cross.
@@ -991,6 +1086,20 @@ def sled_audit(me):
                 seats.append(b["hi"].z - s["lo"].z)
     out["slat_joints"] = len(seats)
     out["slat_seat"] = (min(seats, default=-99.0), max(seats, default=99.0))
+
+    # A screw head at every slat-bearer joint: biting the slat, domed proud of it.
+    sbite, sproud = [], []
+    for sc in parts["screw"]:
+        slat = next((s for s in parts["slat"] if s["lo"].x < sc["c"].x < s["hi"].x
+                     and s["lo"].y < sc["c"].y < s["hi"].y), None)
+        bear = next((b for b in parts["bearer"] if b["lo"].x < sc["c"].x < b["hi"].x), None)
+        if slat is None or bear is None:
+            continue
+        sbite.append(slat["hi"].z - sc["lo"].z)
+        sproud.append(sc["hi"].z - slat["hi"].z)
+    out["screw_joints"] = len(sbite)
+    out["screw_bite"] = (min(sbite, default=-99.0), max(sbite, default=99.0))
+    out["screw_proud"] = (min(sproud, default=-99.0), max(sproud, default=99.0))
 
     # The steel shoe is seated up into its runner, measured on the flat run.
     sseat = []
@@ -1017,18 +1126,18 @@ def sled_audit(me):
     out["bolt_proud"] = (min(proud, default=-99.0), max(proud, default=99.0))
     out["bolt_bite"] = (min(bite, default=-99.0), max(bite, default=99.0))
 
-    # The rope passes through the hub's hole, with room to spare.
+    # The rope passes through the bar's centre hole, with room to spare.
     out["rope_clear"] = -99.0
     out["hole_r"] = 0.0
     out["rope_inside"] = 0
-    if parts["hub"] and parts["rope"]:
-        hub, rope = parts["hub"][0], parts["rope"][0]
-        cy, cz = (hub["lo"].y + hub["hi"].y) * 0.5, (hub["lo"].z + hub["hi"].z) * 0.5
-        lim = 0.75 * hub["ext"].z * 0.5
-        ring = [math.hypot(p.y - cy, p.z - cz) for p in hub["pts"]
+    if parts["bar"] and parts["rope"]:
+        bar, rope = parts["bar"][0], parts["rope"][0]
+        cy, cz = (bar["lo"].y + bar["hi"].y) * 0.5, (bar["lo"].z + bar["hi"].z) * 0.5
+        lim = 0.75 * bar["ext"].z * 0.5
+        ring = [math.hypot(p.y - cy, p.z - cz) for p in bar["pts"]
                 if math.hypot(p.y - cy, p.z - cz) < lim]
         inside = [math.hypot(p.y - cy, p.z - cz) for p in rope["pts"]
-                  if hub["lo"].x <= p.x <= hub["hi"].x]
+                  if bar["lo"].x <= p.x <= bar["hi"].x]
         out["rope_inside"] = len(inside)
         if ring and inside:
             out["hole_r"] = sum(ring) / len(ring)
@@ -1108,7 +1217,7 @@ def hull_collider(obj, name):
                           + ring_slice(me, shoe["g"], 8, a, b, a == 0, b == n - 1))
     deck = [p for rec in parts["slat"] + parts["bearer"] for p in rec["pts"]]
     groups.append(deck)
-    groups.append([p for rec in parts["arm"] + parts["hub"] for p in rec["pts"]])
+    groups.append([p for rec in parts["bar"] for p in rec["pts"]])
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -1257,16 +1366,17 @@ def check(skip_decimate, lift_z=False, **flags):
           f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
           f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}")
     print(f"measured parts slats={sa['slat']} runners={sa['runner']} posts={sa['post']} "
-          f"bearers={sa['bearer']} shoes={sa['shoe']} bolts={sa['bolt']} arms={sa['arm']} "
-          f"hub={sa['hub']} rope={sa['rope']} knot={sa['knot']} other={sa['other']} "
+          f"bearers={sa['bearer']} shoes={sa['shoe']} bolts={sa['bolt']} screws={sa['screw']} "
+          f"bar={sa['bar']} rope={sa['rope']} knot={sa['knot']} other={sa['other']} "
           f"shoe_z={sa['shoe_z']:.5f}")
     print(f"measured joints post_bite={rng(sa['post_bite'])} post_tenon={rng(sa['post_tenon'])} "
           f"post_clear={sa['post_clear']:.5f} bar_prot={rng(sa['bar_prot'])}")
     print(f"measured seats slat_joints={sa['slat_joints']} slat_seat={rng(sa['slat_seat'])} "
           f"shoe_seat={rng(sa['shoe_seat'])} bolt_proud={rng(sa['bolt_proud'])} "
-          f"bolt_bite={rng(sa['bolt_bite'])}")
+          f"bolt_bite={rng(sa['bolt_bite'])} screw_joints={sa['screw_joints']} "
+          f"screw_bite={rng(sa['screw_bite'])} screw_proud={rng(sa['screw_proud'])}")
     print(f"measured rope hole_r={sa['hole_r']:.5f} clear={sa['rope_clear']:.5f} "
-          f"rings_in_hub={sa['rope_inside']}")
+          f"rings_in_bar={sa['rope_inside']}")
     print(f"measured size runner_len={rng(sa['runner_len'])} deck_len={sa['deck_len']:.4f} "
           f"deck_w={sa['deck_w']:.4f} deck_h={sa['deck_h']:.4f} track={sa['track']:.4f} "
           f"mirror={sa['mirror']:.6f}")
@@ -1315,8 +1425,8 @@ def check(skip_decimate, lift_z=False, **flags):
         return (fail(f"post tenon into the bearer {sa['post_tenon']} outside "
                      f"[{POST_TENON_MIN}, {POST_TENON_MAX}], clear of the slats "
                      f"{sa['post_clear']:.5f} < {POST_CLEAR_MIN}", 17),) + nothing
-    if sa["arm"] != 2 or sa["bar_prot"][0] < BAR_PROT_MIN or sa["bar_prot"][1] > BAR_PROT_MAX:
-        return (fail(f"{sa['arm']} of 2 bar arms, protrusion past the runner {sa['bar_prot']} "
+    if sa["bar"] != 1 or sa["bar_prot"][0] < BAR_PROT_MIN or sa["bar_prot"][1] > BAR_PROT_MAX:
+        return (fail(f"{sa['bar']} of 1 steering bar, protrusion past the runner {sa['bar_prot']} "
                      f"outside [{BAR_PROT_MIN}, {BAR_PROT_MAX}] (--short-bar is the designed fail)",
                      17),) + nothing
     if (sa["slat"] != SLAT_N or sa["slat_joints"] != SLAT_N * len(POST_X)
@@ -1324,6 +1434,14 @@ def check(skip_decimate, lift_z=False, **flags):
         return (fail(f"{sa['slat']} of {SLAT_N} slats, {sa['slat_joints']} joints, seat "
                      f"{sa['slat_seat']} outside [{SLAT_SEAT_MIN}, {SLAT_SEAT_MAX}] "
                      "(--float-slats is the designed fail)", 18),) + nothing
+    njoint = SLAT_N * len(POST_X)
+    if (sa["screw"] != njoint or sa["screw_joints"] != njoint
+            or sa["screw_bite"][0] < SCREW_BITE_MIN or sa["screw_bite"][1] > SCREW_BITE_MAX
+            or sa["screw_proud"][0] < SCREW_PROUD_MIN or sa["screw_proud"][1] > SCREW_PROUD_MAX):
+        return (fail(f"{sa['screw']} screws at {sa['screw_joints']} of {njoint} joints, bite "
+                     f"{sa['screw_bite']} [{SCREW_BITE_MIN}, {SCREW_BITE_MAX}], proud "
+                     f"{sa['screw_proud']} [{SCREW_PROUD_MIN}, {SCREW_PROUD_MAX}] "
+                     "(--float-screws is the designed fail)", 18),) + nothing
     if sa["shoe_seat"][0] < SHOE_SEAT_MIN or sa["shoe_seat"][1] > SHOE_SEAT_MAX:
         return (fail(f"shoe seat {sa['shoe_seat']} outside [{SHOE_SEAT_MIN}, {SHOE_SEAT_MAX}] "
                      "(--lift-runners is the designed fail)", 18),) + nothing
@@ -1334,9 +1452,9 @@ def check(skip_decimate, lift_z=False, **flags):
                      f"[{BOLT_PROUD_MIN}, {BOLT_PROUD_MAX}], bite {sa['bolt_bite']} "
                      f"[{BOLT_BITE_MIN}, {BOLT_BITE_MAX}] (--float-bolts is the designed fail)",
                      18),) + nothing
-    if (sa["hub"] != 1 or sa["rope"] != 1 or sa["rope_inside"] < 2
+    if (sa["bar"] != 1 or sa["rope"] != 1 or sa["rope_inside"] < 2
             or not (ROPE_CLEAR_MIN <= sa["rope_clear"] <= ROPE_CLEAR_MAX)):
-        return (fail(f"rope through the hole: {sa['rope_inside']} rings in the hub, clearance "
+        return (fail(f"rope through the hole: {sa['rope_inside']} rings in the bar, clearance "
                      f"{sa['rope_clear']:.5f} outside [{ROPE_CLEAR_MIN}, {ROPE_CLEAR_MAX}] "
                      "(--miss-hole is the designed fail)", 18),) + nothing
     if (not (RUNNER_LEN[0] <= sa["runner_len"][0] and sa["runner_len"][1] <= RUNNER_LEN[1])
@@ -1473,6 +1591,7 @@ def main():
     p.add_argument("--float-slats", action="store_true")
     p.add_argument("--lift-runners", action="store_true")
     p.add_argument("--float-bolts", action="store_true")
+    p.add_argument("--float-screws", action="store_true")
     p.add_argument("--miss-hole", action="store_true")
     p.add_argument("--tall-posts", action="store_true")
     p.add_argument("--skew-runner", action="store_true")
@@ -1488,6 +1607,7 @@ def main():
         float_slats=args.float_slats,
         lift_runners=args.lift_runners,
         float_bolts=args.float_bolts,
+        float_screws=args.float_screws,
         miss_hole=args.miss_hole,
         tall_posts=args.tall_posts,
         skew_runner=args.skew_runner,
