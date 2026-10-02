@@ -18,6 +18,10 @@ from urllib.parse import urlparse
 from jinja2 import Environment, FileSystemLoader
 from markupsafe import Markup, escape
 
+# chrome.py sits beside this file; the gallery build imports the same module.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import chrome  # noqa: E402
+
 
 def load_json(path: Path) -> dict | list:
     with open(path, encoding="utf-8") as f:
@@ -283,6 +287,12 @@ def _hero_site(hero: str) -> str:
     return hero[len("docs/"):] if hero.startswith("docs/") else hero
 
 
+def _thumb_site(hero_site: str) -> str:
+    """``x-hero.webp`` → ``x-hero-640.webp``, the variant scripts/make_thumbs.py
+    writes and scripts/build_gallery.py requires."""
+    return re.sub(r"\.webp$", "-640.webp", hero_site)
+
+
 def load_gallery_items(repo_root: Path, relpath: str, key: str) -> list[dict]:
     """Read a gallery JSON file and attach ``heroSite`` on each entry."""
     gallery_path = repo_root / relpath
@@ -292,6 +302,7 @@ def load_gallery_items(repo_root: Path, relpath: str, key: str) -> list[dict]:
     items = data.get(key, []) if isinstance(data, dict) else []
     for item in items:
         item["heroSite"] = _hero_site(item.get("hero", ""))
+        item["thumbSite"] = _thumb_site(item["heroSite"])
     return items
 
 
@@ -509,6 +520,16 @@ def main():
         "blender": site.get("blender") or {},
         "build_date": datetime.date.today().isoformat(),
     }
+    repo = (site.get("links") or {}).get("github") or plugin.get("repository", "")
+    context.update(
+        chrome_css=chrome.CSS,
+        chrome_js=chrome.JS,
+        chrome_header=chrome.header(root="", repo=repo, title=plugin["displayName"]),
+        chrome_footer=chrome.footer(
+            root="", repo=repo, title=plugin["displayName"],
+            version=plugin.get("version", ""), license_=plugin.get("license", ""),
+            build_date=context["build_date"]),
+    )
 
     env = Environment(
         loader=FileSystemLoader(str(template_dir)),

@@ -28,6 +28,7 @@ Stdlib only (no Jinja2, no Pygments), so the Pages workflow can regenerate it
 without extra deps. Uses token replacement (not str.format) so CSS braces
 need no escaping.
 """
+import hashlib
 import html
 import io
 import json
@@ -44,6 +45,37 @@ DATA = REPO / "examples" / "gallery.json"
 SHOWCASE_DATA = REPO / "showcase" / "gallery.json"
 OUT_DIR = REPO / "docs" / "gallery"
 TOKENS_CSS = REPO / "scripts" / "site" / "tokens.css"
+
+# The shared header/footer (scripts/site/chrome.py), also used by the landing build.
+sys.path.insert(0, str(REPO / "scripts" / "site"))
+import chrome  # noqa: E402
+
+SITE_TITLE = "Blender Developer Tools"
+LICENSE = "CC-BY-NC-ND-4.0"
+
+# Slug words that a plain .capitalize() would mangle in a display title.
+TITLE_WORDS = {
+    "gn": "GN", "sdf": "SDF", "gltf": "glTF", "vse": "VSE", "uv": "UV", "lod": "LOD",
+    "png": "PNG", "exr": "EXR", "ao": "AO", "usd": "USD", "gp": "GP", "bmesh": "BMesh",
+}
+
+
+def display_title(entry: dict) -> str:
+    """``title`` from gallery.json when present, else the slug as words:
+    ``gn-sdf-remesh`` -> ``GN SDF Remesh``."""
+    if entry.get("title"):
+        return entry["title"]
+    return " ".join(TITLE_WORDS.get(w, w.capitalize()) for w in entry["name"].split("-"))
+
+
+def thumb_path(hero: str) -> str:
+    """``…-hero.webp`` -> ``…-hero-640.webp`` (written by scripts/make_thumbs.py)."""
+    return re.sub(r"\.webp$", "-640.webp", hero)
+
+
+# Card renders: srcset lets a compact card or a 1x screen take the 640 variant.
+CARD_SIZES = "(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw"
+MINI_SIZES = "(min-width: 560px) 340px, 100vw"
 
 # Social card for the gallery index, shared with the landing page (site.json).
 OG_CARD_SIZE = (1200, 630)
@@ -136,40 +168,53 @@ SHELL = """<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>__TITLE__</title>
   <meta name="description" content="__DESC__" />
-  <link rel="canonical" href="__CANONICAL__" />
-  <link rel="icon" href="__SITEROOT__assets/favicon.svg" type="image/svg+xml" />
+__CANONICALTAGS__  <link rel="icon" href="__SITEROOT__assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="__OGTYPE__" />
   <meta property="og:title" content="__TITLE__" />
   <meta property="og:description" content="__DESC__" />
-  <meta property="og:url" content="__CANONICAL__" />
-  <meta property="og:image" content="__OGIMAGE__" />
-  <meta property="og:image:width" content="__OGW__" />
-  <meta property="og:image:height" content="__OGH__" />
-  <meta property="og:image:alt" content="__OGALT__" />
-  <meta property="og:site_name" content="Blender Developer Tools" />
-  <meta name="twitter:card" content="summary_large_image" />
+__OGIMAGETAGS__  <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:title" content="__TITLE__" />
   <meta name="twitter:description" content="__DESC__" />
-  <meta name="twitter:image" content="__OGIMAGE__" />
-  <meta name="twitter:image:alt" content="__OGALT__" />
-  <style>
-    /* fonts are deployed by the landing build (docs/fonts/) */
+  <link rel="preload" href="__SITEROOT__fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="__GALLERYROOT__gallery.css?v=__CSSV__" />
+  <script>document.documentElement.classList.add('js');</script>__HEADJS__
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+__HEADER__
+__CONTENT__
+__FOOTER__
+  <p class="sr-only" id="srStatus" role="status" aria-live="polite"></p>
+  <script>
+__CHROMEJS__
+__PAGEJS__
+  </script>
+</body>
+</html>
+"""
+
+# One stylesheet for every gallery page, written to docs/gallery/gallery.css
+# (cached once instead of inlined into each page). __TOKENS__ and __CHROME__
+# are filled from scripts/site/tokens.css and scripts/site/chrome.py.
+GALLERY_CSS = """    /* fonts are deployed by the landing build (docs/fonts/); this file is
+       docs/gallery/gallery.css, so ../fonts/ is relative to it */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
-      src: url('__SITEROOT__fonts/barlow-condensed-600.woff2') format('woff2'); }
+      src: url('../fonts/barlow-condensed-600.woff2') format('woff2'); }
     @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
-      src: url('__SITEROOT__fonts/inter-regular.woff2') format('woff2'); }
+      src: url('../fonts/inter-regular.woff2') format('woff2'); }
     @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
-      src: url('__SITEROOT__fonts/inter-medium.woff2') format('woff2'); }
+      src: url('../fonts/inter-medium.woff2') format('woff2'); }
     @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
-      src: url('__SITEROOT__fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+      src: url('../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
 
     /* Palette and type: scripts/site/tokens.css, shared with the landing page. */
 __TOKENS__
+__CHROME__
     :root {
-      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
-      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+      --radius: 4px; --radius-lg: 6px; --maxw: var(--chrome-maxw);
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: var(--dim); --code-n: #79c0ff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -179,21 +224,20 @@ __TOKENS__
     a:hover { text-decoration: underline; }
     :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
     ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
-    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: var(--on-select);
       padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
     .skip:focus { left: 0.5rem; top: 0.5rem; }
     .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
       color: var(--text-dim); text-transform: uppercase; }
 
-    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
-      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
-    .topbar .back:hover { color: var(--select); text-decoration: none; }
-    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
-    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
-    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+    .crumbs { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.9rem; }
+    .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 0.2rem 0.5rem; }
+    .crumbs li + li::before { content: '/'; margin-right: 0.5rem; color: var(--border); }
+    .crumbs a { color: var(--text-dim); }
+    .crumbs a:hover { color: var(--select); text-decoration: none; }
+    .slug { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); }
+    header.hero .slug { margin-top: 0.35rem; font-size: 0.85rem; }
 
     header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
     header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
@@ -228,7 +272,7 @@ __TOKENS__
       text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
     .density-btn:hover { color: var(--select); }
-    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .density-btn.active { background: var(--select); color: var(--on-select); }
     /* Segmented groups clip overflow, so the ring has to sit inside. */
     .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
     .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
@@ -243,14 +287,24 @@ __TOKENS__
     .cats .density { flex: 0 0 auto; }
     .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
       text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
-    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
-    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+    /* Filters: inline on wide screens; on phones (with JS) they fold behind
+       one "Filters" button so the first card sits above the fold. */
+    .filters { display: flex; flex-direction: column; gap: 0.5rem; }
+    .filters-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0.34rem 0.75rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+      white-space: nowrap; }
+    .filters-toggle:hover, .filters-toggle.has-active { color: var(--select); border-color: var(--select); }
+    .cat-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; white-space: nowrap;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .cat-btn + .cat-btn { border-left: 1px solid var(--border); }
+    .cat-btn:hover { color: var(--select); }
+    .cat-btn.active { background: var(--select); color: var(--on-select); }
+    .cat-btn:focus-visible { outline-offset: -2px; }
 
     /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
-       strip on wide viewports and collapses behind the Tags toggle on narrow
-       ones, so the sticky bar never eats the mobile viewport. */
+       strip on wide viewports; inside the phone drawer it wraps again. */
     .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
       scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -261,19 +315,25 @@ __TOKENS__
       font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
-    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
-    @media (max-width: 559px) {
+    .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
+    @media (max-width: 639px) {
       .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
       .controls-row { gap: 0.4rem; }
-      .searchwrap { flex-basis: 100%; }
-      .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
-        clip: rect(0 0 0 0); white-space: nowrap; }
       .density-btn { padding: 0.36rem 0.5rem; }
+      html.js .controls-main { flex-wrap: nowrap; }
+      html.js .searchwrap { flex: 1 1 auto; min-width: 0; }
+      html.js .filters-toggle { display: inline-block; }
+      html.js .filters { display: none; max-height: calc(100vh - 140px); overflow-y: auto;
+        padding: 0.4rem 0 0.2rem; border-top: 1px solid var(--border); }
+      html.js .filters.open { display: flex; }
+      html.js .filters .chips { flex-wrap: wrap; overflow-x: visible; }
+      html.js .cats { flex-wrap: wrap; }
+      html.js .cats .density { flex-wrap: wrap; }
     }
-    @media (max-width: 719px) {
-      html.js .tags-toggle { display: inline-block; }
-      html.js .chips { display: none; }
-      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    @media (max-width: 420px) {
+      /* visually hidden, still the live region screen readers hear */
+      html.js .controls-main .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
     }
 
     /* Compact density: hero + name + one-line teaser. The description and
@@ -287,6 +347,7 @@ __TOKENS__
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
       padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-body .slug { display: none; }
     html.density-compact .card-link { display: none; }
     .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
     .noresults .chip { margin-left: 0.6rem; }
@@ -305,7 +366,12 @@ __TOKENS__
       overflow: hidden; display: flex; flex-direction: column;
       outline: 2px solid transparent; outline-offset: -1px;
       transition: outline-color 0.12s ease, border-color 0.12s ease; }
-    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card { position: relative; }
+    .card:hover, .card:focus-within { border-color: var(--select); outline-color: var(--select); }
+    /* One link per card: the title's ::after covers the whole card, so the
+       render and body are clickable without a second, duplicate link. */
+    .card .stretch::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+    .card .stretch:focus-visible { outline: none; }
     .card.hidden { display: none; }
     .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
     .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
@@ -314,23 +380,24 @@ __TOKENS__
     html.js .grid .card-media img { opacity: 0; }
     html.js .grid .card-media img.is-loaded { opacity: 1; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
-    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 { font-size: 1.02rem; font-weight: 500; line-height: 1.3; }
     .card-body h2 a { color: var(--text); }
-    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .card-body h2 a:hover, .card:hover .card-body h2 a { color: var(--select); text-decoration: none; }
+    .card-body .slug { margin: 0.1rem 0 0.5rem; }
     .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
     .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
     .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
       letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
       border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
-    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; color: var(--select); }
 
     /* ---- detail page ---- */
     .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
     .detail-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
-      white-space: nowrap; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+      clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
     .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
       border-left: 3px solid var(--select); border-radius: var(--radius);
       background: color-mix(in srgb, var(--select) 7%, var(--surface));
@@ -394,9 +461,9 @@ __TOKENS__
     .related-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
     @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
     .card.mini .card-body { padding: 0.65rem 0.9rem 0.75rem; }
-    .card.mini h3 { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.2rem; }
+    .card.mini h3 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
     .card.mini h3 a { color: var(--text); }
-    .card.mini h3 a:hover { color: var(--select); text-decoration: none; }
+    .card.mini h3 a:hover, .card.mini:hover h3 a { color: var(--select); text-decoration: none; }
     .card.mini p { color: var(--text-dim); font-size: 0.78rem; line-height: 1.45;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .md h1, .md h2, .md h3 { scroll-margin-top: 60px; }
@@ -428,7 +495,7 @@ __TOKENS__
     .src-expand:hover { color: var(--select); border-color: var(--select); }
 
     .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
-      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+      max-height: none; background: var(--scrim); cursor: zoom-out; }
     /* margin:auto (not align/justify-content) centers without clipping the
        top-left of a native-size image that overflows a small viewport. */
     .lightbox[open] { display: flex; overflow: auto; }
@@ -436,17 +503,11 @@ __TOKENS__
     .lightbox img { margin: auto; max-width: 100%; max-height: 100%; border-radius: var(--radius);
       cursor: zoom-in; }
     .lightbox.native img { max-width: none; max-height: none; cursor: zoom-out; }
-    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+    .lightbox-bar { position: absolute; top: 0.9rem; right: 0.9rem; display: flex; gap: 0.5rem; }
+    .lightbox-close { background: var(--surface-2);
       color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
       font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
     .lightbox-close:hover { border-color: var(--select); color: var(--select); }
-
-    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
-    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
-      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
-      text-transform: uppercase; color: var(--text-dim); }
-    footer .statusbar code { font-family: inherit; text-transform: none; }
 
     @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
     @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
@@ -458,34 +519,11 @@ __TOKENS__
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .card, .card-media img { transition: none; }
+      *, *::before, *::after { transition: none !important; }
       .card:hover .card-media img { transform: none; }
-      .to-top { transition: none; }
     }
-  </style>__HEADJS__
-</head>
-<body>
-  <a class="skip" href="#main">Skip to content</a>
-  <div class="topbar">
-    <a class="back" href="__BACKHREF__"><span aria-hidden="true">&larr;</span> __BACKLABEL__</a>
-    <div class="topbar-right">
-      <a class="ghlink" href="__REPO__">GitHub</a>
-    </div>
-  </div>
-__CONTENT__
-  <footer>
-    <div class="statusbar">
-      <span>generated from __SOURCE__</span>
-      <span>CC-BY-NC-ND-4.0</span>
-      <span style="color: var(--ok);">exit 0</span>
-    </div>
-  </footer>
-  <script>
-__PAGEJS__
-  </script>
-</body>
-</html>
 """
+
 
 # Index-only head script: runs before first paint so the persisted/default
 # density never flashes as a full-height detailed page first. Adds the `js`
@@ -515,7 +553,7 @@ INDEX_JS = """
       var grid = document.getElementById('grid');
       var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
       var chipsEl = document.getElementById('chips');
-      var chips = Array.prototype.slice.call(chipsEl.querySelectorAll('.chip'));
+      var chips = chipsEl ? Array.prototype.slice.call(chipsEl.querySelectorAll('.chip')) : [];
       var q = document.getElementById('q');
       var qClear = document.getElementById('qClear');
       var count = document.getElementById('count');
@@ -527,18 +565,22 @@ INDEX_JS = """
       var catBtns = Array.prototype.slice.call(document.querySelectorAll('[data-cat-filter]'));
       var CATS = catBtns.map(function (b) { return b.getAttribute('data-cat-filter'); });
       var sortSel = document.getElementById('sort');
-      var tagsToggle = document.getElementById('tagsToggle');
+      var filtersEl = document.getElementById('filters');
+      var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
       var COUNT_LABEL = '__COUNT_LABEL__';
       var LS_KEY = 'bdt-gallery-density';
+      // Read by detail pages: the Gallery crumb returns here, and the pager
+      // walks the reader's filtered order instead of the full gallery.
+      var SS_HASH = 'bdt-gallery-hash', SS_ORDER = 'bdt-gallery-order';
       var KINDS = ['', 'examples', 'showcase'];
       var SORTS = ['default', 'az'];
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Searchable text is the card's own DOM text: name, teaches, and the
-      // WITNESSES line (visually collapsed in compact mode, still in the DOM).
-      var haystacks = cards.map(function (c) { return c.textContent.toLowerCase(); });
+      // data-search holds title, slug, teaches, tags and category. Each
+      // query word must appear somewhere in it (AND), in any order.
+      var haystacks = cards.map(function (c) { return c.getAttribute('data-search') || ''; });
       var cardTags = cards.map(function (c) { return (c.getAttribute('data-tags') || '').split(' '); });
       var knownTags = chips.map(function (c) { return c.getAttribute('data-tag') || ''; })
         .filter(function (t) { return t; });
@@ -566,6 +608,27 @@ INDEX_JS = """
         return out;
       }
 
+      function filtered() {
+        return !!(state.q.trim() || state.tags.length || state.kind || state.cat || state.sort !== 'default');
+      }
+
+      function remember() {
+        try {
+          sessionStorage.setItem(SS_HASH, location.hash);
+          if (filtered()) {
+            var order = [];
+            Array.prototype.forEach.call(grid.children, function (c) {
+              if (c.classList.contains('card') && !c.classList.contains('hidden')) {
+                order.push(c.getAttribute('data-name'));
+              }
+            });
+            sessionStorage.setItem(SS_ORDER, JSON.stringify(order));
+          } else {
+            sessionStorage.removeItem(SS_ORDER);
+          }
+        } catch (e) {}
+      }
+
       function writeHash() {
         var parts = [];
         if (state.q) parts.push('q=' + encodeURIComponent(state.q));
@@ -575,6 +638,7 @@ INDEX_JS = """
         if (state.sort !== 'default') parts.push('s=' + state.sort);
         parts.push('d=' + state.density);
         history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
+        remember();
       }
       var hashTimer = 0;
       function writeHashSoon() {
@@ -589,10 +653,6 @@ INDEX_JS = """
           c.classList.toggle('active', on);
           c.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
-        tagsToggle.classList.toggle('has-active', state.tags.length > 0);
-        // The chip row is collapsed on narrow screens; name the active tags
-        // on the toggle so a shared #tag= link is visibly filtered.
-        tagsToggle.textContent = state.tags.length ? 'Tags: ' + state.tags.join(' + ') : 'Tags';
       }
 
       function syncSeg(btns, attr, value) {
@@ -601,6 +661,15 @@ INDEX_JS = """
           b.classList.toggle('active', on);
           b.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
+      }
+
+      // The phone drawer button names how many filters are on, so a shared
+      // filtered link never looks unfiltered with the drawer shut.
+      function syncFiltersToggle() {
+        var n = state.tags.length + (state.kind ? 1 : 0) + (state.cat ? 1 : 0) +
+          (state.sort !== 'default' ? 1 : 0);
+        filtersToggle.textContent = n ? 'Filters (' + n + ')' : 'Filters';
+        filtersToggle.classList.toggle('has-active', n > 0);
       }
 
       function applyDensity() {
@@ -619,10 +688,11 @@ INDEX_JS = """
         }
         order.forEach(function (c) { grid.appendChild(c); });
         sortSel.value = state.sort;
+        syncFiltersToggle();
       }
 
       function applyFilters() {
-        var query = state.q.trim().toLowerCase();
+        var words = state.q.trim().toLowerCase().split(/\\s+/).filter(function (w) { return w; });
         var shown = 0;
         // Categories only partition showcase pieces; the examples view has
         // none, so it hides the row and drops any category left selected.
@@ -632,16 +702,17 @@ INDEX_JS = """
           var kindOK = !state.kind || card.getAttribute('data-kind') === state.kind;
           var catOK = !state.cat || card.getAttribute('data-category') === state.cat;
           var tagOK = state.tags.every(function (t) { return cardTags[i].indexOf(t) !== -1; });
-          var qOK = !query || haystacks[i].indexOf(query) !== -1;
+          var qOK = words.every(function (w) { return haystacks[i].indexOf(w) !== -1; });
           var show = kindOK && catOK && tagOK && qOK;
           card.classList.toggle('hidden', !show);
           if (show) shown++;
         });
-        count.textContent = (query || state.tags.length || state.kind || state.cat) ? (shown + ' of ' + total) : COUNT_LABEL;
+        count.textContent = (words.length || state.tags.length || state.kind || state.cat) ? (shown + ' of ' + total) : COUNT_LABEL;
         noResults.hidden = shown !== 0;
         qClear.hidden = !state.q;
         syncSeg(kindBtns, 'data-kind-filter', state.kind);
         syncSeg(catBtns, 'data-cat-filter', state.cat);
+        syncFiltersToggle();
       }
 
       q.addEventListener('input', function () {
@@ -666,15 +737,43 @@ INDEX_JS = """
           syncChips(); applyFilters(); writeHash();
         });
       });
+      // The chip row is one toolbar tab stop; arrows, Home and End move
+      // within it (roving tabindex) instead of 35 separate Tab presses.
+      if (chips.length) {
+        var roving = 0;
+        function rove(i) {
+          chips[roving].tabIndex = -1;
+          roving = (i + chips.length) % chips.length;
+          chips[roving].tabIndex = 0;
+        }
+        chips.forEach(function (c, i) {
+          c.tabIndex = i === 0 ? 0 : -1;
+          c.addEventListener('focus', function () { rove(i); });
+        });
+        chipsEl.addEventListener('keydown', function (e) {
+          var i = chips.indexOf(document.activeElement);
+          if (i === -1) return;
+          var to = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 :
+            e.key === 'Home' ? 0 : e.key === 'End' ? chips.length - 1 : null;
+          if (to === null) return;
+          e.preventDefault();
+          rove(to);
+          chips[roving].focus();
+          chips[roving].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        });
+      }
       kindBtns.forEach(function (b) {
         b.addEventListener('click', function () {
           state.kind = b.getAttribute('data-kind-filter');
           applyFilters(); writeHash();
         });
       });
+      // A category only exists among showcase pieces, so picking one moves
+      // the kind control to Showcase instead of leaving "All" lit.
       catBtns.forEach(function (b) {
         b.addEventListener('click', function () {
           state.cat = b.getAttribute('data-cat-filter');
+          if (state.cat) state.kind = 'showcase';
           applyFilters(); writeHash();
         });
       });
@@ -689,12 +788,13 @@ INDEX_JS = """
         });
       });
       resetFilters.addEventListener('click', function () {
-        state.q = ''; state.tags = []; state.kind = ''; state.cat = ''; q.value = '';
-        syncChips(); applyFilters(); writeHash(); q.focus();
+        state.q = ''; state.tags = []; state.kind = ''; state.cat = ''; state.sort = 'default';
+        q.value = '';
+        syncChips(); applySort(); applyFilters(); writeHash(); q.focus();
       });
-      tagsToggle.addEventListener('click', function () {
-        var open = chipsEl.classList.toggle('open');
-        tagsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      filtersToggle.addEventListener('click', function () {
+        var open = filtersEl.classList.toggle('open');
+        filtersToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
 
       document.addEventListener('keydown', function (e) {
@@ -718,34 +818,42 @@ INDEX_JS = """
         window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
       });
 
-      // Restore state: URL hash wins; density falls back to localStorage.
-      var h = parseHash();
-      state.q = h.q || '';
-      state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
-      state.cat = h.c && CATS.indexOf(h.c) !== -1 ? h.c : '';
-      state.sort = SORTS.indexOf(h.s) !== -1 ? h.s : 'default';
-      // Tags arrive comma-separated. "showcase" is the kind filter now, not
-      // a chip, but older links (the landing page's among them) still say
-      // #tag=showcase. A tag no chip knows would silently show zero cards.
-      (h.tag || '').split(',').forEach(function (t) {
-        if (t === 'showcase') { state.kind = 'showcase'; }
-        else if (knownTags.indexOf(t) !== -1 && state.tags.indexOf(t) === -1) { state.tags.push(t); }
-      });
-      if (h.d === 'compact' || h.d === 'detailed') state.density = h.d;
-      else {
-        try {
-          var s = localStorage.getItem(LS_KEY);
-          if (s === 'compact' || s === 'detailed') state.density = s;
-        } catch (e) {}
+      // Restore state from the URL hash; density falls back to localStorage.
+      function restore() {
+        var h = parseHash();
+        state.q = h.q || '';
+        state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
+        state.cat = h.c && CATS.indexOf(h.c) !== -1 ? h.c : '';
+        state.sort = SORTS.indexOf(h.s) !== -1 ? h.s : 'default';
+        state.tags = [];
+        // Tags arrive comma-separated. "showcase" is the kind filter now, not
+        // a chip, but older links still say #tag=showcase. A tag no chip
+        // knows would silently show zero cards, so it is dropped.
+        (h.tag || '').split(',').forEach(function (t) {
+          if (t === 'showcase') { state.kind = 'showcase'; }
+          else if (knownTags.indexOf(t) !== -1 && state.tags.indexOf(t) === -1) { state.tags.push(t); }
+        });
+        if (state.cat) state.kind = 'showcase';
+        if (h.d === 'compact' || h.d === 'detailed') state.density = h.d;
+        else {
+          try {
+            var s = localStorage.getItem(LS_KEY);
+            if (s === 'compact' || s === 'detailed') state.density = s;
+          } catch (e) {}
+        }
+        q.value = state.q;
+        syncChips();
+        // A deep-linked tag may sit off-screen in the chip scroll strip.
+        var firstOn = chipsEl && chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
+        if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
+        applyDensity();
+        applySort();
+        applyFilters();
+        remember();
       }
-      q.value = state.q;
-      syncChips();
-      // A deep-linked tag may sit off-screen in the chip scroll strip.
-      var firstOn = chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
-      if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
-      applyDensity();
-      applySort();
-      applyFilters();
+      // The header's Examples / Showcase links only change the hash here.
+      window.addEventListener('hashchange', restore);
+      restore();
     })();
 """
 
@@ -758,11 +866,57 @@ DETAIL_JS = """
         // focus to the hero button on close. The dialog fills the viewport,
         // so a click whose target is the dialog itself is a backdrop click.
         var full = box.querySelector('img');
-        hero.addEventListener('click', function () { box.classList.remove('native'); box.showModal(); });
+        var nativeBtn = document.getElementById('lightboxNative');
+        function setNative(on) {
+          box.classList.toggle('native', on);
+          nativeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          nativeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+        }
+        hero.addEventListener('click', function () { setNative(false); box.showModal(); });
         box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
-        box.querySelector('.lightbox-close').addEventListener('click', function () { box.close(); });
-        full.addEventListener('click', function () { box.classList.toggle('native'); });
+        document.getElementById('lightboxClose').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+        nativeBtn.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
       }
+
+      var srStatus = document.getElementById('srStatus');
+      function announce(msg) {
+        srStatus.textContent = '';
+        setTimeout(function () { srStatus.textContent = msg; }, 50);
+      }
+
+      // Back to the gallery with the filters the reader left it with, and
+      // page through that filtered order when there is one (both written by
+      // the gallery index into sessionStorage; absent, the static links stay).
+      var here = location.pathname.replace(/[/]$/, '').split('/').pop();
+      try {
+        var savedHash = sessionStorage.getItem('bdt-gallery-hash');
+        var crumb = document.getElementById('crumbGallery');
+        if (crumb && savedHash) crumb.setAttribute('href', '../' + savedHash);
+        var order = JSON.parse(sessionStorage.getItem('bdt-gallery-order') || 'null');
+        var at = order ? order.indexOf(here) : -1;
+        if (at !== -1) {
+          Array.prototype.forEach.call(document.querySelectorAll('.pager'), function (nav) {
+            function slot(name, rel) {
+              if (!name) return document.createElement('span');
+              var a = document.createElement('a');
+              a.rel = rel; a.href = '../' + name + '/';
+              a.setAttribute('aria-label', (rel === 'prev' ? 'Previous' : 'Next') + ' in your filter: ' + name);
+              a.innerHTML = rel === 'prev'
+                ? '<span aria-hidden="true">&larr;</span> ' + name
+                : name + ' <span aria-hidden="true">&rarr;</span>';
+              return a;
+            }
+            var pos = nav.querySelector('.pager-pos');
+            var keys = pos.querySelector('.pager-keys');
+            nav.replaceChild(slot(order[at - 1], 'prev'), nav.firstElementChild);
+            nav.replaceChild(slot(order[at + 1], 'next'), nav.lastElementChild);
+            pos.textContent = (at + 1) + ' of ' + order.length + ' in your filter';
+            if (keys) pos.appendChild(keys);
+            nav.setAttribute('aria-label', 'Your filtered gallery');
+          });
+        }
+      } catch (e) {}
 
       // Clipboard API first; execCommand for non-secure origins (file://,
       // plain-http previews) where navigator.clipboard is undefined.
@@ -786,9 +940,9 @@ DETAIL_JS = """
       function wireCopy(btn, getText) {
         btn.addEventListener('click', function () {
           copyText(getText()).then(function () {
-            btn.textContent = 'Copied'; btn.classList.add('done');
+            btn.textContent = 'Copied'; btn.classList.add('done'); announce('Copied to clipboard');
           }, function () {
-            btn.textContent = 'Copy failed'; btn.classList.add('fail');
+            btn.textContent = 'Copy failed'; btn.classList.add('fail'); announce('Copy failed');
           }).then(function () {
             setTimeout(function () {
               btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
@@ -836,12 +990,16 @@ DETAIL_JS = """
         }
       }
 
-      // Left/right arrows page between entries of the same kind.
+      // Left/right arrows page between entries, but only when nothing has
+      // focus and nothing is selected: a focused control, a scrolled code
+      // block, or a text selection keeps its own arrow keys.
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
         var ae = document.activeElement;
-        if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+        if (ae && ae !== document.body && ae !== document.documentElement) return;
+        var sel = window.getSelection && window.getSelection();
+        if (sel && !sel.isCollapsed) return;
         var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
         if (!rel) return;
         var a = document.querySelector('.pager a[rel="' + rel + '"]');
@@ -850,25 +1008,26 @@ DETAIL_JS = """
     })();
 """
 
-CARD = """      <article class="card" data-tags="__TAGS__" data-kind="__KINDKEY__"__CATATTR__ data-name="__NAME__">
-        <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
-          <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="__LOADING__" decoding="async" />
-        </a>
+CARD = """      <article class="card" data-tags="__TAGS__" data-kind="__KINDKEY__"__CATATTR__ data-name="__NAME__" data-search="__SEARCH__">
+        <div class="card-media">
+          <img src="__THUMB__" srcset="__THUMB__ 640w, __HERO__ 1280w" sizes="__SIZES__" alt="__ALT__" width="1280" height="720" loading="__LOADING__" decoding="async" />
+        </div>
         <div class="card-body">
-          <h2><a href="__HREF__">__NAME__</a></h2>
+          <h2><a class="stretch" href="__HREF__">__TITLE__</a></h2>
+          <p class="slug">__NAME__</p>
           <p class="teaches">__TEACHES__</p>
           <p class="witnesses"><span class="tag">witnesses</span> __WITNESSES__</p>
-          <a class="card-link" href="__HREF__">View __KIND__<span class="sr-only"> __NAME__</span> <span aria-hidden="true">&rarr;</span></a>
+          <span class="card-link" aria-hidden="true">View __KIND__ &rarr;</span>
         </div>
       </article>"""
 
 # Compact card for a detail page's Related strip (same visual family as CARD).
 MINI_CARD = """        <article class="card mini">
-          <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
-            <img src="__HERO__" alt="__ALT__" width="1280" height="720" loading="lazy" decoding="async" />
-          </a>
+          <div class="card-media">
+            <img src="__THUMB__" srcset="__THUMB__ 640w, __HERO__ 1280w" sizes="__SIZES__" alt="__ALT__" width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
           <div class="card-body">
-            <h3><a href="__HREF__">__NAME__</a></h3>
+            <h3><a class="stretch" href="__HREF__">__TITLE__</a></h3>
             <p>__TEACHES__</p>
           </div>
         </article>"""
@@ -1123,7 +1282,7 @@ def make_resolver(repo_base: str, ex_dir: str):
 
 def tokens_css() -> str:
     """The shared palette, minus its header comment (the landing page's copy
-    carries it; 89 gallery pages don't need 89 copies)."""
+    carries it)."""
     text = TOKENS_CSS.read_text(encoding="utf-8")
     m = re.search(r"^[ \t]*:root\s*\{", text, re.M)
     if m is None:
@@ -1131,28 +1290,58 @@ def tokens_css() -> str:
     return text[m.start():].rstrip()
 
 
+def gallery_css() -> str:
+    """The full docs/gallery/gallery.css text: tokens + shared chrome + gallery."""
+    return (GALLERY_CSS
+            .replace("__TOKENS__", tokens_css())
+            .replace("__CHROME__", chrome.CSS.strip("\n")))
+
+
+def css_version(css: str) -> str:
+    """Short content hash for the stylesheet URL, so a deploy never pairs new
+    markup with a cached old stylesheet."""
+    return hashlib.sha256(css.encode("utf-8")).hexdigest()[:10]
+
+
 def shell(*, title: str, desc: str, canonical: str, og_image: str,
-          og_size: tuple[int, int], og_alt: str,
-          site_root: str, back_href: str, back_label: str, repo_url: str,
+          og_size: tuple[int, int], og_alt: str, og_type: str,
+          site_root: str, gallery_root: str, repo_url: str, css_v: str,
           content: str, page_js: str, head_js: str = "",
           sources: tuple[str, ...] = ("examples/gallery.json",)) -> str:
+    canon = ""
+    if canonical:
+        c = html.escape(canonical, quote=True)
+        canon = (f'  <link rel="canonical" href="{c}" />\n'
+                 f'  <meta property="og:url" content="{c}" />\n')
+    if og_image:
+        img, alt = html.escape(og_image, quote=True), html.escape(og_alt, quote=True)
+        og = (f'  <meta property="og:image" content="{img}" />\n'
+              f'  <meta property="og:image:width" content="{og_size[0]}" />\n'
+              f'  <meta property="og:image:height" content="{og_size[1]}" />\n'
+              f'  <meta property="og:image:alt" content="{alt}" />\n'
+              '  <meta name="twitter:card" content="summary_large_image" />\n'
+              f'  <meta name="twitter:image" content="{img}" />\n'
+              f'  <meta name="twitter:image:alt" content="{alt}" />\n')
+    else:
+        og = '  <meta name="twitter:card" content="summary" />\n'
+    source_html = " + ".join(f"<code>{html.escape(s)}</code>" for s in sources)
     return (SHELL
             .replace("__TITLE__", html.escape(title))
             .replace("__DESC__", html.escape(desc, quote=True))
-            .replace("__CANONICAL__", html.escape(canonical, quote=True))
-            .replace("__OGIMAGE__", html.escape(og_image, quote=True))
-            .replace("__OGW__", str(og_size[0]))
-            .replace("__OGH__", str(og_size[1]))
-            .replace("__OGALT__", html.escape(og_alt, quote=True))
+            .replace("__CANONICALTAGS__", canon)
+            .replace("__OGIMAGETAGS__", og)
+            .replace("__OGTYPE__", og_type)
             .replace("__SITEROOT__", site_root)
-            .replace("__BACKHREF__", back_href)
-            .replace("__BACKLABEL__", html.escape(back_label))
-            .replace("__REPO__", html.escape(repo_url, quote=True))
-            .replace("__SOURCE__", " + ".join(
-                f"<code>{html.escape(s)}</code>" for s in sources))
+            .replace("__GALLERYROOT__", gallery_root)
+            .replace("__CSSV__", css_v)
+            .replace("__HEADER__", chrome.header(
+                root=site_root, repo=repo_url, title=SITE_TITLE, home_anchors=False).rstrip("\n"))
+            .replace("__FOOTER__", chrome.footer(
+                root=site_root, repo=repo_url, title=SITE_TITLE, license_=LICENSE,
+                source_html=source_html).rstrip("\n"))
+            .replace("__CHROMEJS__", chrome.JS.strip("\n"))
             .replace("__PAGEJS__", page_js)
             .replace("__HEADJS__", head_js)
-            .replace("__TOKENS__", tokens_css())
             # Content last, so README and source text are never scanned for
             # the other placeholders.
             .replace("__CONTENT__", content))
@@ -1194,7 +1383,8 @@ def pager_html(prev: dict | None, nxt: dict | None, pos: int, total: int, noun: 
             f'{link(nxt, "next")}</nav>')
 
 
-def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site: str) -> str:
+def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site: str,
+                 css_v: str) -> str:
     noun = kind_noun(ex)
     kind_title = "Showcase" if noun == "showcase piece" else "Examples"
     name = ex["name"]
@@ -1208,8 +1398,15 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     nxt = peers[idx + 1] if idx + 1 < len(peers) else None
 
     parts: list[str] = []
+    kind_key = "showcase" if noun == "showcase piece" else "examples"
     parts.append('  <header class="hero">')
-    parts.append(f'    <h1>{html.escape(name)}</h1>')
+    # The Gallery crumb's href is upgraded by JS to the filters the reader left.
+    parts.append('    <nav class="crumbs" aria-label="Breadcrumb"><ol>'
+                 '<li><a href="../" id="crumbGallery">Gallery</a></li>'
+                 f'<li><a href="../#k={kind_key}">{kind_title}</a></li>'
+                 f'<li aria-current="page">{html.escape(name)}</li></ol></nav>')
+    parts.append(f'    <h1>{html.escape(display_title(ex))}</h1>')
+    parts.append(f'    <p class="slug">{html.escape(ex["dir"])}/</p>')
     parts.append(f'    <p>{html.escape(ex["teaches"])}</p>')
     parts.append("  </header>")
     parts.append('  <main id="main">')
@@ -1217,7 +1414,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     parts.append(f'    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: {html.escape(ex["alt"], quote=True)}">')
     parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" width="1280" height="720" fetchpriority="high" />')
     parts.append("    </button>")
-    parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself — click to zoom.</p>')
+    parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself. Select it to enlarge.</p>')
     parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
     cat = ex.get("category")
     if cat:
@@ -1271,9 +1468,11 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
             parts.append(
                 MINI_CARD
                 .replace("__HREF__", html.escape(f'../{r["name"]}/', quote=True))
+                .replace("__THUMB__", html.escape("../" + page_relative(thumb_path(r["hero"])), quote=True))
                 .replace("__HERO__", html.escape("../" + page_relative(r["hero"]), quote=True))
+                .replace("__SIZES__", MINI_SIZES)
                 .replace("__ALT__", html.escape(r["alt"], quote=True))
-                .replace("__NAME__", html.escape(r["name"]))
+                .replace("__TITLE__", html.escape(display_title(r)))
                 .replace("__TEACHES__", html.escape(r["teaches"])))
         parts.append("      </div>")
         parts.append("    </section>")
@@ -1281,20 +1480,23 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     parts.append(pager_html(prev, nxt, idx + 1, len(peers), noun, foot=True))
     parts.append("  </main>")
     parts.append('  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">')
-    parts.append('    <button class="lightbox-close" type="button" autofocus>Close</button>')
+    parts.append('    <div class="lightbox-bar">'
+                 '<button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button>'
+                 '<button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>')
     parts.append(f'    <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" />')
     parts.append("  </dialog>")
 
     return shell(
-        title=f"{name} — {kind_title} — Blender Developer Tools",
+        title=f"{display_title(ex)} ({name}) — {kind_title} — Blender Developer Tools",
         desc=ex["teaches"],
         canonical=f"{site}/gallery/{name}/" if site else "",
         og_image=f"{site}/gallery/assets/{hero_file}" if site else "",
         og_size=(1280, 720),
         og_alt=ex["alt"],
+        og_type="article",
         site_root="../../",
-        back_href="../",
-        back_label="Examples and Showcase",
+        gallery_root="../",
+        css_v=css_v,
         repo_url=repo_root_url,
         content="\n".join(parts),
         page_js=DETAIL_JS,
@@ -1303,7 +1505,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     )
 
 
-def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
+def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: str) -> str:
     examples = data["examples"]
     title = data.get("title", "Examples and Showcase")
     desc = data.get("description", "")
@@ -1338,9 +1540,9 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
             cat_counts[ex["category"]] = cat_counts.get(ex["category"], 0) + 1
     cats_html = ""
     if cat_counts:
-        btns = ['          <button class="density-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>']
+        btns = ['          <button class="cat-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>']
         btns += [
-            f'          <button class="density-btn" data-cat-filter="{key}" type="button" aria-pressed="false">'
+            f'          <button class="cat-btn" data-cat-filter="{key}" type="button" aria-pressed="false">'
             f'{html.escape(label)} <span aria-hidden="true">{cat_counts[key]}</span></button>'
             for key, label in CATEGORIES.items() if key in cat_counts
         ]
@@ -1355,13 +1557,17 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
     controls = (
         '  <div class="controls">\n'
         '    <div class="controls-inner">\n'
-        '      <div class="controls-row">\n'
+        '      <div class="controls-row controls-main">\n'
         '        <div class="searchwrap">\n'
         '          <input id="q" type="search" placeholder="Search the gallery (press /)"\n'
         '            autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />\n'
         '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
         '        </div>\n'
         f'        <span class="count" id="count" role="status" aria-live="polite">{html.escape(count_label)}</span>\n'
+        '        <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>\n'
+        '      </div>\n'
+        '      <div class="filters" id="filters">\n'
+        '      <div class="controls-row">\n'
         '        <div class="density" role="group" aria-label="Show">\n'
         '          <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>\n'
         '          <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>\n'
@@ -1377,10 +1583,10 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         '          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
         '          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
         '        </div>\n'
-        '        <button class="tags-toggle" id="tagsToggle" type="button" aria-expanded="false" aria-controls="chips">Tags</button>\n'
         '      </div>\n'
         + cats_html
         + chips_html +
+        '      </div>\n'
         '    </div>\n'
         '  </div>\n'
     )
@@ -1388,13 +1594,22 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
     cards = []
     for i, ex in enumerate(examples):
         alt = ex["alt"]
+        # Search covers what a reader would type: title, slug, the teaching
+        # line, tags and category. Not the WITNESSES prose or link labels.
+        search = " ".join([display_title(ex), ex["name"], ex["teaches"],
+                           " ".join(ex.get("tags", [])),
+                           CATEGORIES.get(ex.get("category") or "", "")]).lower()
         cards.append(
             CARD
             .replace("__LOADING__", "eager" if i < EAGER_CARDS else "lazy")
             .replace("__TAGS__", html.escape(" ".join(ex.get("tags", [])), quote=True))
+            .replace("__SEARCH__", html.escape(search, quote=True))
             .replace("__HREF__", html.escape(f'{ex["name"]}/', quote=True))
+            .replace("__THUMB__", html.escape(page_relative(thumb_path(ex["hero"])), quote=True))
             .replace("__HERO__", html.escape(page_relative(ex["hero"]), quote=True))
+            .replace("__SIZES__", CARD_SIZES)
             .replace("__ALT__", html.escape(alt, quote=True))
+            .replace("__TITLE__", html.escape(display_title(ex)))
             .replace("__NAME__", html.escape(ex["name"]))
             .replace("__KINDKEY__", "showcase" if kind_noun(ex) == "showcase piece" else "examples")
             .replace("__CATATTR__", f' data-category="{html.escape(ex["category"], quote=True)}"'
@@ -1406,6 +1621,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
     content = (
         '  <header class="hero">\n'
+        '    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../">Home</a></li>'
+        '<li aria-current="page">Gallery</li></ol></nav>\n'
         f"    <h1>{html.escape(title)}</h1>\n"
         f"    <p>{html.escape(desc)}</p>\n"
         "  </header>\n"
@@ -1428,9 +1645,10 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         og_image=f"{site}/assets/og-card.jpg" if site else "",
         og_size=OG_CARD_SIZE,
         og_alt=OG_CARD_ALT,
+        og_type="website",
         site_root="../",
-        back_href="../",
-        back_label="Blender Developer Tools",
+        gallery_root="",
+        css_v=css_v,
         repo_url=repo_root_url,
         content=content,
         page_js=INDEX_JS.replace("__COUNT_LABEL__", count_label),
@@ -1458,20 +1676,28 @@ def main() -> int:
         if find_script(REPO / ex["dir"]) is None:
             print(f"ERROR: no .py script in {ex['dir']}", file=sys.stderr)
             return 4
+        if not (REPO / thumb_path(ex["hero"])).is_file():
+            print(f"ERROR: 640px card variant missing: {thumb_path(ex['hero'])}; "
+                  "run python scripts/make_thumbs.py", file=sys.stderr)
+            return 5
 
     check_alts(examples)
     check_categories(examples)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    css = gallery_css()
+    css_v = css_version(css)
+    (OUT_DIR / "gallery.css").write_text(css, encoding="utf-8")
     (OUT_DIR / "index.html").write_text(
-        build_index(data, base=base, repo_root_url=repo_root_url, site=site),
+        build_index(data, base=base, repo_root_url=repo_root_url, site=site, css_v=css_v),
         encoding="utf-8",
     )
     for ex in examples:
         page_dir = OUT_DIR / ex["name"]
         page_dir.mkdir(parents=True, exist_ok=True)
         (page_dir / "index.html").write_text(
-            build_detail(ex, examples, base=base, repo_root_url=repo_root_url, site=site),
+            build_detail(ex, examples, base=base, repo_root_url=repo_root_url, site=site,
+                         css_v=css_v),
             encoding="utf-8",
         )
 

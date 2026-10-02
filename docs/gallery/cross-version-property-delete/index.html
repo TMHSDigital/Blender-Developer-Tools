@@ -3,358 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>cross-version-property-delete — Examples — Blender Developer Tools</title>
+  <title>Cross Version Property Delete (cross-version-property-delete) — Examples — Blender Developer Tools</title>
   <meta name="description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cross-version-property-delete/" />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cross-version-property-delete/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Cross Version Property Delete (cross-version-property-delete) — Examples — Blender Developer Tools" />
   <meta property="og:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
-  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cross-version-property-delete/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
   <meta property="og:image:alt" content="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
-  <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
   <meta name="twitter:image:alt" content="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
-  <style>
-    /* fonts are deployed by the landing build (docs/fonts/) */
-    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
-      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
-    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
-      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
-    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
-      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
-    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
-      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
-
-    /* Palette and type: scripts/site/tokens.css, shared with the landing page. */
-    :root {
-      color-scheme: dark;
-      --bg: #1a1b1e; --bg2: #131417; --panel: #222327; --panel-2: #2a2b30;
-      --border: #3a3b40; --text: #e8e9eb; --dim: #9698a0;
-      --select: #ff8c19; --ok: #6dc96d;
-      --ax-x: #ff3352; --ax-y: #8bdc00; --ax-z: #2890ff;
-      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      /* gallery vocabulary for the same values */
-      --surface: var(--panel); --surface-2: var(--panel-2); --text-dim: var(--dim);
-      --font-sans: var(--font-body);
-    }
-    :root {
-      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
-      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
-      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    a { color: var(--select); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
-    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
-    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
-      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
-    .skip:focus { left: 0.5rem; top: 0.5rem; }
-    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
-      color: var(--text-dim); text-transform: uppercase; }
-
-    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
-      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
-    .topbar .back:hover { color: var(--select); text-decoration: none; }
-    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
-    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
-    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
-
-    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
-    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
-      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
-    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
-
-    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
-    .controls { position: sticky; top: 46px; z-index: 4;
-      background: color-mix(in srgb, var(--bg) 94%, transparent);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); }
-    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
-      display: flex; flex-direction: column; gap: 0.5rem; }
-    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
-    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
-      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
-    .searchwrap input:focus { border-color: var(--select); outline: none; }
-    .searchwrap input::placeholder { color: var(--text-dim); }
-    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
-    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
-      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
-    .q-clear:hover { color: var(--select); }
-    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
-      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
-    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden; }
-    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
-      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
-    .density-btn + .density-btn { border-left: 1px solid var(--border); }
-    .density-btn:hover { color: var(--select); }
-    .density-btn.active { background: var(--select); color: #1a1b1e; }
-    /* Segmented groups clip overflow, so the ring has to sit inside. */
-    .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
-    .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-      border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
-    .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
-    /* Category row: one segmented group that scrolls sideways on narrow
-       screens rather than wrapping its bordered buttons. */
-    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent; }
-    .cats[hidden] { display: none; }
-    .cats .density { flex: 0 0 auto; }
-    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
-      text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
-    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
-    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
-
-    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
-       strip on wide viewports and collapses behind the Tags toggle on narrow
-       ones, so the sticky bar never eats the mobile viewport. */
-    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    html.js .chips::-webkit-scrollbar { height: 5px; }
-    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
-      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
-      transition: color 0.15s, border-color 0.15s; }
-    .chip:hover { color: var(--select); border-color: var(--select); }
-    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
-    @media (max-width: 559px) {
-      .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
-      .controls-row { gap: 0.4rem; }
-      .searchwrap { flex-basis: 100%; }
-      .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
-        clip: rect(0 0 0 0); white-space: nowrap; }
-      .density-btn { padding: 0.36rem 0.5rem; }
-    }
-    @media (max-width: 719px) {
-      html.js .tags-toggle { display: inline-block; }
-      html.js .chips { display: none; }
-      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
-    }
-
-    /* Compact density: hero + name + one-line teaser. The description and
-       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
-       present with JS disabled when the class is never applied) but are
-       visually collapsed. Applied only by JS via the density-compact class. */
-    html.density-compact .grid { gap: 1rem; }
-    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
-    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
-    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
-      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
-    html.density-compact .card-link { display: none; }
-    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
-    .noresults .chip { margin-left: 0.6rem; }
-    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
-      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-      border-radius: var(--radius); padding: 0.45rem 0.75rem;
-      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
-      text-transform: uppercase; opacity: 0; visibility: hidden;
-      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
-    .to-top.show { opacity: 1; visibility: visible; }
-    .to-top:hover { color: var(--select); border-color: var(--select); }
-
-    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-      overflow: hidden; display: flex; flex-direction: column;
-      outline: 2px solid transparent; outline-offset: -1px;
-      transition: outline-color 0.12s ease, border-color 0.12s ease; }
-    .card:hover { border-color: var(--select); outline-color: var(--select); }
-    .card.hidden { display: none; }
-    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
-    .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
-      transition: transform 0.35s ease, opacity 0.3s ease; }
-    .card:hover .card-media img { transform: scale(1.03); }
-    html.js .grid .card-media img { opacity: 0; }
-    html.js .grid .card-media img.is-loaded { opacity: 1; }
-    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
-    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
-    .card-body h2 a { color: var(--text); }
-    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
-    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
-    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
-    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
-      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
-    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
-
-    /* ---- detail page ---- */
-    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
-      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
-    .detail-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
-      white-space: nowrap; }
-    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
-      border-left: 3px solid var(--select); border-radius: var(--radius);
-      background: color-mix(in srgb, var(--select) 7%, var(--surface));
-      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
-    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
-    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
-      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
-    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
-      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
-    .copy-btn:hover { color: var(--select); border-color: var(--select); }
-    .detail-section { margin-top: 2.25rem; scroll-margin-top: 60px; }
-    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
-      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-
-    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
-    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
-    .md p { margin: 0.7rem 0; }
-    .md > p, .md > ul, .md > ol, .md > h2, .md > h3 { max-width: 75ch; }
-    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
-    .md li { margin: 0.3rem 0; }
-    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
-    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
-    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
-      border-bottom: 1px solid var(--border); }
-    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
-    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
-      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
-    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
-    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
-
-    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
-      font-size: 0.82rem; line-height: 1.55; }
-    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
-    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
-    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
-    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
-
-    /* ---- detail page: pager, tags, related, anchors, code blocks ---- */
-    .pager { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.75rem;
-      margin: 0 0 1.25rem; font-size: 0.85rem; }
-    .pager-foot { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--border); }
-    .pager a { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.8rem;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .pager a:hover { color: var(--select); text-decoration: none; }
-    .pager [rel="next"] { text-align: right; }
-    .pager-pos { text-align: center; }
-    @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
-    .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
-      border-radius: 3px; padding: 0 0.3rem; margin: 0 0.1rem; }
-    .taglist { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
-    .taglist a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px;
-      padding: 0.12rem 0.6rem; transition: color 0.15s, border-color 0.15s; }
-    .taglist a:hover { color: var(--select); border-color: var(--select); text-decoration: none; }
-    .related-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-    @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
-    .card.mini .card-body { padding: 0.65rem 0.9rem 0.75rem; }
-    .card.mini h3 { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.2rem; }
-    .card.mini h3 a { color: var(--text); }
-    .card.mini h3 a:hover { color: var(--select); text-decoration: none; }
-    .card.mini p { color: var(--text-dim); font-size: 0.78rem; line-height: 1.45;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .md h1, .md h2, .md h3 { scroll-margin-top: 60px; }
-    .anchor { color: var(--text-dim); margin-left: 0.4rem; font-weight: 400; opacity: 0;
-      transition: opacity 0.15s; }
-    .md h1:hover .anchor, .md h2:hover .anchor, .md h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
-    .anchor:hover { color: var(--select); text-decoration: none; }
-    .codewrap { position: relative; }
-    .codewrap > .copy-btn { position: absolute; top: 0.45rem; right: 0.45rem; padding: 0.2rem 0.55rem;
-      font-size: 0.72rem; opacity: 0; transition: opacity 0.15s, color 0.15s, border-color 0.15s; }
-    .codewrap:hover > .copy-btn, .codewrap > .copy-btn:focus-visible, .codewrap > .copy-btn.done { opacity: 1; }
-    @media (hover: none) { .codewrap > .copy-btn { opacity: 1; } }
-    .copy-btn.done { color: var(--ok); border-color: var(--ok); }
-    .copy-btn.fail { color: var(--code-k); border-color: var(--code-k); }
-    .src .code { display: grid; grid-template-columns: auto minmax(0, 1fr);
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden; }
-    .src .code pre { background: none; border: 0; border-radius: 0; }
-    .src .code .gutter { color: color-mix(in srgb, var(--text-dim) 60%, transparent); text-align: right;
-      user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border);
-      background: var(--bg2); overflow: hidden; }
-    .src .code.collapsed { max-height: 42rem; position: relative; }
-    .src .code.collapsed::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5rem;
-      background: linear-gradient(transparent, var(--surface-2)); pointer-events: none; }
-    .src-expand { display: block; margin: 0.6rem auto 0; background: var(--surface-2);
-      border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius);
-      padding: 0.4rem 0.9rem; cursor: pointer; font: 500 0.8rem var(--font-sans);
-      transition: color 0.15s, border-color 0.15s; }
-    .src-expand:hover { color: var(--select); border-color: var(--select); }
-
-    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
-      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
-    /* margin:auto (not align/justify-content) centers without clipping the
-       top-left of a native-size image that overflows a small viewport. */
-    .lightbox[open] { display: flex; overflow: auto; }
-    .lightbox::backdrop { background: transparent; }
-    .lightbox img { margin: auto; max-width: 100%; max-height: 100%; border-radius: var(--radius);
-      cursor: zoom-in; }
-    .lightbox.native img { max-width: none; max-height: none; cursor: zoom-out; }
-    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
-      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
-      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
-    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
-
-    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
-    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
-      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
-      text-transform: uppercase; color: var(--text-dim); }
-    footer .statusbar code { font-family: inherit; text-transform: none; }
-
-    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
-    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
-    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 1560px) {
-      html.density-compact .controls-inner,
-      html.density-compact main { max-width: 1400px; }
-      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .card, .card-media img { transition: none; }
-      .card:hover .card-media img { transform: none; }
-      .to-top { transition: none; }
-    }
-  </style>
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:title" content="Cross Version Property Delete (cross-version-property-delete) — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
+  <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="../gallery.css?v=27ce4298f2" />
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
-    <div class="topbar-right">
-      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="../../"><span class="site-brand-dot" aria-hidden="true"></span>Blender Developer Tools</a>
+      <button class="site-menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="site-menu-icon" aria-hidden="true"></span>Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <ul><li><a href="../../gallery/#k=examples">Examples</a></li><li><a href="../../gallery/#k=showcase">Showcase</a></li><li><a href="../../#new">What&#x27;s new</a></li><li><a href="../../#skills">Skills</a></li><li><a href="../../#rules">Rules</a></li><li><a href="../../#snippets">Snippets</a></li><li><a href="../../#install">Install</a></li><li class="gh"><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a></li></ul>
+      </nav>
     </div>
-  </div>
+  </header>
   <header class="hero">
-    <h1>cross-version-property-delete</h1>
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../" id="crumbGallery">Gallery</a></li><li><a href="../#k=examples">Examples</a></li><li aria-current="page">cross-version-property-delete</li></ol></nav>
+    <h1>Cross Version Property Delete</h1>
+    <p class="slug">examples/cross-version-property-delete/</p>
     <p>Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.</p>
   </header>
   <main id="main">
@@ -362,7 +49,7 @@
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark.">
       <img src="../assets/cross-version-property-delete-hero.webp" alt="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." width="1280" height="720" fetchpriority="high" />
     </button>
-    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
     <div class="callout"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=context">context</a> <a href="../#tag=properties">properties</a></p>
     <div class="runline">
@@ -1312,11 +999,11 @@ LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<s
       <h2 id="related-h">Related</h2>
       <div class="related-grid">
         <article class="card mini">
-          <a class="card-media" href="../temp-override-join/" tabindex="-1" aria-hidden="true">
-            <img src="../assets/temp-override-join-hero.webp" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
-          </a>
+          <div class="card-media">
+            <img src="../assets/temp-override-join-hero-640.webp" srcset="../assets/temp-override-join-hero-640.webp 640w, ../assets/temp-override-join-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
           <div class="card-body">
-            <h3><a href="../temp-override-join/">temp-override-join</a></h3>
+            <h3><a class="stretch" href="../temp-override-join/">Temp Override Join</a></h3>
             <p>Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
           </div>
         </article>
@@ -1325,17 +1012,40 @@ LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<s
     <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span> vertex-color-ao</a><span class="pager-pos hud">47 of 52 examples</span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode">usd-export-evaluation-mode <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
-    <button class="lightbox-close" type="button" autofocus>Close</button>
+    <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
     <img src="../assets/cross-version-property-delete-hero.webp" alt="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." />
   </dialog>
-  <footer>
-    <div class="statusbar">
-      <span>generated from <code>examples/gallery.json</code></span>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="../../">Blender Developer Tools</a>
       <span>CC-BY-NC-ND-4.0</span>
-      <span style="color: var(--ok);">exit 0</span>
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span class="ok">exit 0</span>
+      <span class="links"><a href="../../gallery/">Gallery</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases">Releases</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a><a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a></span>
     </div>
   </footer>
+  <p class="sr-only" id="srStatus" role="status" aria-live="polite"></p>
   <script>
+    (function () {
+      var hdr = document.querySelector('.site-header');
+      var btn = hdr && hdr.querySelector('.site-menu-btn');
+      if (!btn) return;
+      function set(open, refocus) {
+        hdr.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (!open && refocus) btn.focus();
+      }
+      btn.addEventListener('click', function () { set(!hdr.classList.contains('open'), false); });
+      hdr.querySelectorAll('.site-nav a').forEach(function (a) {
+        a.addEventListener('click', function () { set(false, false); });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && hdr.classList.contains('open')) set(false, true);
+      });
+      document.addEventListener('click', function (e) {
+        if (hdr.classList.contains('open') && !hdr.contains(e.target)) set(false, false);
+      });
+    })();
 
     (function () {
       var hero = document.getElementById('heroZoom');
@@ -1345,11 +1055,57 @@ LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<s
         // focus to the hero button on close. The dialog fills the viewport,
         // so a click whose target is the dialog itself is a backdrop click.
         var full = box.querySelector('img');
-        hero.addEventListener('click', function () { box.classList.remove('native'); box.showModal(); });
+        var nativeBtn = document.getElementById('lightboxNative');
+        function setNative(on) {
+          box.classList.toggle('native', on);
+          nativeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          nativeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+        }
+        hero.addEventListener('click', function () { setNative(false); box.showModal(); });
         box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
-        box.querySelector('.lightbox-close').addEventListener('click', function () { box.close(); });
-        full.addEventListener('click', function () { box.classList.toggle('native'); });
+        document.getElementById('lightboxClose').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+        nativeBtn.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
       }
+
+      var srStatus = document.getElementById('srStatus');
+      function announce(msg) {
+        srStatus.textContent = '';
+        setTimeout(function () { srStatus.textContent = msg; }, 50);
+      }
+
+      // Back to the gallery with the filters the reader left it with, and
+      // page through that filtered order when there is one (both written by
+      // the gallery index into sessionStorage; absent, the static links stay).
+      var here = location.pathname.replace(/[/]$/, '').split('/').pop();
+      try {
+        var savedHash = sessionStorage.getItem('bdt-gallery-hash');
+        var crumb = document.getElementById('crumbGallery');
+        if (crumb && savedHash) crumb.setAttribute('href', '../' + savedHash);
+        var order = JSON.parse(sessionStorage.getItem('bdt-gallery-order') || 'null');
+        var at = order ? order.indexOf(here) : -1;
+        if (at !== -1) {
+          Array.prototype.forEach.call(document.querySelectorAll('.pager'), function (nav) {
+            function slot(name, rel) {
+              if (!name) return document.createElement('span');
+              var a = document.createElement('a');
+              a.rel = rel; a.href = '../' + name + '/';
+              a.setAttribute('aria-label', (rel === 'prev' ? 'Previous' : 'Next') + ' in your filter: ' + name);
+              a.innerHTML = rel === 'prev'
+                ? '<span aria-hidden="true">&larr;</span> ' + name
+                : name + ' <span aria-hidden="true">&rarr;</span>';
+              return a;
+            }
+            var pos = nav.querySelector('.pager-pos');
+            var keys = pos.querySelector('.pager-keys');
+            nav.replaceChild(slot(order[at - 1], 'prev'), nav.firstElementChild);
+            nav.replaceChild(slot(order[at + 1], 'next'), nav.lastElementChild);
+            pos.textContent = (at + 1) + ' of ' + order.length + ' in your filter';
+            if (keys) pos.appendChild(keys);
+            nav.setAttribute('aria-label', 'Your filtered gallery');
+          });
+        }
+      } catch (e) {}
 
       // Clipboard API first; execCommand for non-secure origins (file://,
       // plain-http previews) where navigator.clipboard is undefined.
@@ -1373,9 +1129,9 @@ LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<s
       function wireCopy(btn, getText) {
         btn.addEventListener('click', function () {
           copyText(getText()).then(function () {
-            btn.textContent = 'Copied'; btn.classList.add('done');
+            btn.textContent = 'Copied'; btn.classList.add('done'); announce('Copied to clipboard');
           }, function () {
-            btn.textContent = 'Copy failed'; btn.classList.add('fail');
+            btn.textContent = 'Copy failed'; btn.classList.add('fail'); announce('Copy failed');
           }).then(function () {
             setTimeout(function () {
               btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
@@ -1423,12 +1179,16 @@ LAMP_PROFILE += [(<span class="n">0.30</span>, <span class="n">0.20</span>), (<s
         }
       }
 
-      // Left/right arrows page between entries of the same kind.
+      // Left/right arrows page between entries, but only when nothing has
+      // focus and nothing is selected: a focused control, a scrolled code
+      // block, or a text selection keeps its own arrow keys.
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
         var ae = document.activeElement;
-        if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+        if (ae && ae !== document.body && ae !== document.documentElement) return;
+        var sel = window.getSelection && window.getSelection();
+        if (sel && !sel.isCollapsed) return;
         var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
         if (!rel) return;
         var a = document.querySelector('.pager a[rel="' + rel + '"]');

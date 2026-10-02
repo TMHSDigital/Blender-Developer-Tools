@@ -10,7 +10,8 @@ committed, so CI builds it first):
 Walks docs/index.html, docs/404.html and docs/gallery/**/index.html. Each
 relative or site-absolute ``href``/``src`` must name a file under docs/ (a
 directory means its index.html), and each ``#fragment`` must match an ``id``
-on the target page. Fragments carrying ``=`` are gallery filter state
+on the target page; every ``srcset`` candidate counts as a reference too, and
+``og:image``/``twitter:image``/``og:url`` must be absolute URLs. Fragments carrying ``=`` are gallery filter state
 (``#tag=mesh``, ``#k=showcase``), not anchors, and are skipped. Every
 ``<img>`` must carry an ``alt`` attribute. Exits 1 listing every failure.
 """
@@ -33,6 +34,7 @@ class PageScan(HTMLParser):
         self.ids: set[str] = set()
         self.refs: list[tuple[int, str, str]] = []  # (line, attr, url)
         self.imgs_without_alt: list[int] = []
+        self.bad_meta: list[tuple[int, str]] = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -44,6 +46,16 @@ class PageScan(HTMLParser):
         for key in ("href", "src"):
             if a.get(key) and tag in ("a", "img", "link", "script"):
                 self.refs.append((line, key, a[key]))
+        # Each srcset candidate is "URL [descriptor]"; every URL must resolve.
+        if a.get("srcset") and tag in ("img", "source"):
+            for cand in a["srcset"].split(","):
+                if cand.strip():
+                    self.refs.append((line, "srcset", cand.split()[0]))
+        # Link-preview scrapers do not resolve relative og/twitter image URLs.
+        prop = a.get("property") or a.get("name") or ""
+        if tag == "meta" and prop in ("og:image", "twitter:image", "og:url"):
+            if not (a.get("content") or "").startswith(("https://", "http://")):
+                self.bad_meta.append((line, prop))
         if tag == "img" and "alt" not in a:
             self.imgs_without_alt.append(line)
 
@@ -99,6 +111,8 @@ def main() -> int:
         s = scan(page, cache)
         for line in s.imgs_without_alt:
             failures.append(f"{rel}:{line}: <img> without alt")
+        for line, prop in s.bad_meta:
+            failures.append(f"{rel}:{line}: {prop} is not an absolute URL")
         for line, key, url in s.refs:
             if url.startswith(("mailto:", "data:", "javascript:")):
                 continue

@@ -1,7 +1,7 @@
 /* tokens.css - the one Blender-viewport palette for every page this repo
-   publishes. Inlined, never linked, by:
+   publishes. Pulled in by:
    - scripts/site/template.html.j2 and 404.html.j2 (Jinja include), and
-   - scripts/build_gallery.py (read at build time into its page shell).
+   - scripts/build_gallery.py (concatenated into docs/gallery/gallery.css).
    Edit a color here and all three surfaces move together; a hand-copied
    :root block anywhere else is the drift this file exists to prevent.
 
@@ -14,6 +14,12 @@
       --border: #3a3b40; --text: #e8e9eb; --dim: #9698a0;
       --select: #ff8c19; --ok: #6dc96d;
       --ax-x: #ff3352; --ax-y: #8bdc00; --ax-z: #2890ff;
+      /* text on a --select fill; viewport gradient stops; lightbox scrim */
+      --on-select: #1a1b1e;
+      --vp-top: #212226; --vp-mid: #1c1d21; --vp-bot: #232428;
+      --scrim: rgb(0 0 0 / 0.85);
+      /* shared header/footer content width (scripts/site/chrome.py) */
+      --chrome-maxw: 1060px;
       --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
