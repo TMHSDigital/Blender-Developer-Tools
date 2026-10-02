@@ -1,14 +1,14 @@
 # cricket-wicket
 
-![A cricket wicket of three lacquered ash stumps with two stained bails lying in their grooves, driven through a slab of turf with a chalked bowling crease, a worn patch and a red leather ball resting on it](preview.webp)
+![A cricket wicket of three lacquered ash stumps, red-scuffed where the ball has struck, with two turned bails lying in their grooves, driven through a strip of turf worn bare along the chalked bowling crease, a red leather ball in front](preview.webp)
 
 A cricket wicket as Law 8 of the Laws of Cricket describes it: three
 turned ash stumps, 28 inches proud of the turf and 9 inches wide over
 their outer faces, each with a shoulder, a neck and a grooved domed crown;
-two stained bails whose spigots lie in the grooves and whose barrels hang
-across the gaps; a slab of turf with a worn bare patch, a chalked bowling
-crease and grass tufts; and a red leather ball with a raised seam resting
-on the patch. **A showcase piece, not an example** — it witnesses no API
+two turned bails whose spigots lie in the grooves and whose collared
+barrels hang across the gaps; a tight strip of turf worn bare along a
+chalked bowling crease, its grass thickening toward the edges; and a red
+leather ball with a raised seam resting in front of the stumps. **A showcase piece, not an example** — it witnesses no API
 contract. It asserts that generated geometry meets declared asset budgets,
 recomputed from the finished mesh.
 
@@ -18,7 +18,7 @@ recomputed from the finished mesh.
 | --- | --- |
 | `skills/mesh-editing-and-bmesh` | lathed stumps, bails and ball, a lofted turf slab, bipyramid grass blades, all in one `bmesh` |
 | `skills/custom-properties` | face attributes (`PlankTone`, `GrainDir`) read by the wood and grass shaders |
-| `skills/procedural-materials-and-shaders` | lacquered ash with turned bands, stained bail wood, turf, earth, chalk, grass, leather, thread |
+| `skills/procedural-materials-and-shaders` | lacquered ash with turned bands and red ball scuffs that knock off the lacquer, stained bail wood, turf, earth, chalk, grass, leather, thread |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, high onto low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -64,22 +64,22 @@ mesh. Measured values are from Blender 5.2.1.
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 5900–6600 | 6260 |
+| Base triangles | 6100–6800 | 6448 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
-| LOD2 ratio | 0.10–0.35 | 0.2198 |
+| LOD2 ratio | 0.10–0.35 | 0.2199 |
 | Material slots | exactly 8, distinct | 8 |
-| Face floors (ash / bail / turf / earth / chalk / blade / leather / seam) | ≥ 1300 / 450 / 170 / 150 / 6 / 1250 / 180 / 220 | 1344 / 480 / 192 / 176 / 6 / 1344 / 200 / 240 |
+| Face floors (ash / bail / turf / earth / chalk / blade / leather / seam) | ≥ 1300 / 630 / 100 / 135 / 6 / 1250 / 180 / 220 | 1344 / 672 / 112 / 152 / 6 / 1344 / 200 / 240 |
 | UV bounds | inside 0..1 | (0.0012, 0.0011)–(0.9988, 0.9944) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 1.006 × 0.606 × 0.7359 m ± 0.010 | 1.0060 × 0.6060 × 0.7359 |
-| Collider triangles | ≤ 360 | 308 (seven hulls) |
+| Outer AABB | 0.646 × 0.406 × 0.7359 m ± 0.010 | 0.6460 × 0.4060 × 0.7359 |
+| Collider triangles | ≤ 360 | 294 (seven hulls) |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~270 kB |
+| glTF export | file written, non-empty | ~278 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
 | Named stumps | 3 stumps, each foot z ≤ 1e-4 | 3 at 0.00000 |
 | Spigot tip on its neck | 4 tips, ≥ 0.5 mm inside the neck radius | 1.03 mm |
-| Barrel clear of stumps | ≥ 0.5 mm in x at the barrel's height | 5.92 mm |
+| Barrel clear of stumps | ≥ 0.5 mm in x at the barrel's height | 6.92 mm |
 | Bail pair | gap between the two short spigots ≥ 0.3 mm | 0.85 mm |
 | Spigot seat | 4 spigots, lowest point 0.5–2.0 mm below the groove floor | 0.92–1.00 mm |
 | Chalk line | 0.8–3.0 mm proud of the turf, ≥ 0.5 mm bitten in | 1.50 / 1.00 mm |
@@ -105,19 +105,29 @@ mesh. Measured values are from Blender 5.2.1.
   crown's highest vertex is found by evaluating the crown once, and the
   crown is placed so that vertex lands exactly 711.2 mm above the turf.
 - **Bails.** One lathe each along X: a 34.9 mm long spigot, a 54 mm
-  barrel with rounded ends, a 22.2 mm short spigot, 111.1 mm in all as
+  barrel turned with a crisp shoulder off each spigot and a full-width
+  collar set off from a slightly slimmer body by a V-cut bead line, a
+  22.2 mm short spigot, 111.1 mm in all as
   Law 8 gives. The long spigot lies on an outer stump, the short on the
   middle one. Each is shifted 1.6 mm outward so the two short spigots meet
   without touching. The right bail's facets are turned half a segment: two
   collinear cylinders share facet planes, and a coplanar cross-shell pair
   is exactly what the hygiene budget forbids.
-- **Turf.** A grid slab, 20 × 12 cells, whose outer ring rolls down 3 mm
-  and drops in a wall to a fan-filled floor. Faces inside the worn ellipse
-  take the earth slot. The chalk is a box sunk 1 mm into the turf and 1.5
+- **Turf.** A tight 0.64 × 0.40 m strip of pitch, a grid of 16 × 10
+  cells whose outer ring rolls down 3 mm and drops in a wall to a
+  fan-filled floor. The bowling crease runs through the stumps' line
+  (Law 7); the popping crease, 1.22 m in front, is off the strip. Faces
+  inside a worn ellipse centred on the crease take the earth slot. The
+  floor fan's centre sits off the stump line: on the slab's centre it
+  welds to the middle stump's spike point, a double at the origin. The
+  chalk stops at the last flat cell so it never rides the roll. The chalk is a box sunk 1 mm into the turf and 1.5
   mm proud, so it sits in the turf rather than on its plane.
 - **Grass.** Fifty-six tufts of three bipyramid blades, a fixed-seed
-  `random.Random(11)`. Each blade's base ring is turned by a random angle,
-  because blades in one tuft otherwise shared facet planes.
+  `random.Random(11)`, kept with a probability that rises toward the
+  slab's edges and stays off the worn crease. Tuft roots are at least
+  24 mm apart. A tuft's three blades are turned a third of a quarter-turn
+  apart, and each blade's root depth walks a golden-ratio sequence, so no
+  two blades share a buried facet plane.
 - **Ball.** A 72 mm lathe sphere on a tilted axis, lowered until its
   lowest vertex is 0.6 mm below the turf top, with a 40-segment torus seam
   on its great circle, seated so it stands 1 mm proud.
@@ -129,12 +139,16 @@ mesh. Measured values are from Blender 5.2.1.
   Turning one bail half a segment took it to 0.
 - **Coplanar grass.** The remaining 18 pairs were blades in one tuft with
   identical diamond base rings. A random ring phase per blade fixed them.
+  Crowding the tufts toward the edges in the quality pass brought 2 pairs
+  back, from blades in different tufts that happened to line up on one
+  tilted plane; a stratified phase per tuft and a golden-ratio root depth
+  per blade took them to 0.
 - **UV fan overlap.** The slab floor is a triangle fan, and a planar map
   of a fan overlaps the triangles' AABBs (2.28 in total). It is unrolled
   into one strip per triangle.
 - **Collider.** Hulls over every second vertex of every ring came to 802
   triangles. Hulls over the rings where the silhouette turns, every
-  fourth vertex, are 308.
+  fourth vertex, are 308 (294 on the tighter slab).
 - **A falsifier that missed its target (inspection-only at first).**
   `--fat-bails` at a 17.5 mm barrel stood the bails 12.2 mm proud, inside
   Law 8's 12.7 mm, and exited 0. At 19.0 mm it stands 13.7 mm proud and
@@ -161,7 +175,7 @@ Every convention in `showcase/README.md`, and whether it applies here.
 | Rope, masonry, roofs, vessels, scatter | n/a | grass tufts are decoration, not a scatter budget |
 | Shading is part of the model | yes | stumps, bails, ball smooth (turned); every edge over 40° hard (slab, groove walls, blades) |
 | One substance, one slot | yes | ash, bail wood, turf, earth, chalk, grass, leather, thread |
-| Edge treatment: no right angles | n/a | turned and lofted, no box edges; the asset-quality `edge90` is 0.088 |
+| Edge treatment: no right angles | n/a | turned and lofted, no box edges; the asset-quality `edge90` is 0.090 |
 | Material face floors | yes | all eight slots |
 | The bake cage is narrower than the nearest neighbour | yes | `CAGE_EXTRUSION` 4 mm, well under the 59 mm gaps |
 | Level on the stage; stage 60 m | yes | turned about Z only; 60 m floor and wall |
@@ -241,10 +255,10 @@ Blender 5.2.1 only; 4.5.11 and 5.1.2 were not available locally.
 
 | Value | 5.2.1 |
 | --- | --- |
-| Base triangles | 6260 |
-| LOD1 / LOD2 tris | 3130 / 1376 |
-| Face counts (ash / bail / turf / earth / chalk / blade / leather / seam) | 1344 / 480 / 192 / 176 / 6 / 1344 / 200 / 240 |
-| Outer AABB | 1.0060 × 0.6060 × 0.7359 |
-| Collider tris | 308 |
+| Base triangles | 6448 |
+| LOD1 / LOD2 tris | 3224 / 1418 |
+| Face counts (ash / bail / turf / earth / chalk / blade / leather / seam) | 1344 / 672 / 112 / 152 / 6 / 1344 / 200 / 240 |
+| Outer AABB | 0.6460 × 0.4060 × 0.7359 |
+| Collider tris | 294 |
 | Stump 711.2 mm, 36.5 mm, 228.6 mm, gaps 59.55 mm | exact |
 | Spigot seats | 0.92–1.00 mm |

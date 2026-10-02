@@ -99,19 +99,26 @@ LIFT_BAIL = 0.005
 BAIL_SEG = 16
 BAIL_SEG_HIGH = 24
 
-# Turf: a slab with a rolled edge, a worn patch, a chalked bowling crease.
-SLAB_X0, SLAB_X1 = -0.50, 0.50
-SLAB_Y0, SLAB_Y1 = -0.20, 0.40
-SLAB_NX, SLAB_NY = 20, 12
+# Turf: a tight strip of pitch with a rolled edge, worn bare along the
+# crease where the batters stand and the bowlers land, and a chalked bowling
+# crease through the line of the stumps (Law 7). The popping crease, 1.22 m
+# in front, is off this strip. The chalk stops at the last flat cell so it
+# never rides the roll.
+SLAB_X0, SLAB_X1 = -0.32, 0.32
+SLAB_Y0, SLAB_Y1 = -0.20, 0.20
+SLAB_NX, SLAB_NY = 16, 10
 SLAB_ROLL = 0.003
-WORN_C = (0.0, 0.10)
-WORN_RX, WORN_RY = 0.27, 0.14
+WORN_C = (0.0, -0.02)
+WORN_RX, WORN_RY = 0.23, 0.115
 CHALK_HALF_W = 0.025
-CHALK_HALF_L = 0.45
+CHALK_HALF_L = 0.28
 CHALK_BITE = 0.0010
 CHALK_PROUD = 0.0015
 SINK_CHALK = 0.0040
 TUFTS = 56
+TUFT_EDGE_BAND = 0.09
+TUFT_INNER_KEEP = 0.18
+TUFT_SPACING = 0.024
 BLADES_PER_TUFT = 3
 BLADE_R = 0.0018
 BLADE_H = (0.022, 0.046)
@@ -123,7 +130,7 @@ BALL_R = 0.0360
 SMALL_BALL_R = 0.0300
 BALL_SEG = 20
 BALL_LATS = (-72.0, -54.0, -36.0, -18.0, 0.0, 18.0, 36.0, 54.0, 72.0)
-BALL_AT = (0.19, 0.11)
+BALL_AT = (0.175, -0.135)
 BALL_TILT = 38.0
 BALL_YAW = 25.0
 BALL_BITE = 0.0006
@@ -134,10 +141,10 @@ SEAM_TUBE = 6
 SINK_SEAM = 0.0030
 
 BBOX_TOL = 0.010
-OUTER_SIZE = (1.006, 0.606, 0.7359)
+OUTER_SIZE = (0.646, 0.406, 0.7359)
 
-BASE_TRIS_MIN = 5900
-BASE_TRIS_MAX = 6600
+BASE_TRIS_MIN = 6100
+BASE_TRIS_MAX = 6800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -145,7 +152,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 8
-FACE_FLOORS = {0: 1300, 1: 450, 2: 170, 3: 150, 4: 6, 5: 1250, 6: 180, 7: 220}
+FACE_FLOORS = {0: 1300, 1: 630, 2: 100, 3: 135, 4: 6, 5: 1250, 6: 180, 7: 220}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 360
@@ -347,13 +354,19 @@ def add_stump(bm, ctx, cx, seg, zs, radius_scale, lift):
 
 def bail_profile(barrel_r):
     """(r, t) from the long tip, through the barrel, to the short tip."""
+    """A turned barrel: a crisp shoulder off each spigot, then a full-width collar
+    set off from the body by a V-cut bead line, as a bail is turned on the lathe."""
     ll, lb, ls = BAIL_LONG, BAIL_BARREL, BAIL_SHORT
+    r = barrel_r
     return [
         (0.0, 0.0, False), (0.0030, 0.0006, False), (SPIGOT_R, 0.0020, False),
         (SPIGOT_R, ll - 0.0010, False), (SPIGOT_R, ll, False),
-        (barrel_r * 0.80, ll + 0.0030, False), (barrel_r * 0.97, ll + 0.0100, False),
-        (barrel_r, ll + 0.0220, False), (barrel_r, ll + lb - 0.0220, False),
-        (barrel_r * 0.97, ll + lb - 0.0100, False), (barrel_r * 0.80, ll + lb - 0.0030, False),
+        (r * 0.72, ll + 0.0012, False), (r * 0.94, ll + 0.0040, False), (r, ll + 0.0075, False),
+        (r, ll + 0.0135, False), (r * 0.84, ll + 0.0152, False), (r * 0.97, ll + 0.0170, False),
+        (r * 0.97, ll + lb - 0.0170, False), (r * 0.84, ll + lb - 0.0152, False),
+        (r, ll + lb - 0.0135, False),
+        (r, ll + lb - 0.0075, False), (r * 0.94, ll + lb - 0.0040, False),
+        (r * 0.72, ll + lb - 0.0012, False),
         (SPIGOT_R, ll + lb, False), (SPIGOT_R, ll + lb + 0.0010, False),
         (SPIGOT_R, ll + lb + ls - 0.0020, False), (0.0030, ll + lb + ls - 0.0006, False),
         (0.0, ll + lb + ls, False),
@@ -423,7 +436,9 @@ def add_slab(bm, ctx):
         uv = {upper[a]: (arc[k], TURF_T), lower[a]: (arc[k], 0.0),
               lower[b]: (arc[k + 1], 0.0), upper[b]: (arc[k + 1], TURF_T)}
         stamp(ctx, f, island, uv, (1.0, 0.0, 0.0))
-    centre = bm.verts.new((0.0, 0.5 * (SLAB_Y0 + SLAB_Y1), 0.0))
+    # Off the stump line: on the slab's centre it would weld to the middle
+    # stump's spike point at the origin.
+    centre = bm.verts.new((0.0, SLAB_Y0 + 0.75 * (SLAB_Y1 - SLAB_Y0), 0.0))
     # A fan's triangles share a corner, so a planar map overlaps their AABBs;
     # unroll it into one strip per triangle instead.
     island = new_island(ctx)
@@ -457,29 +472,46 @@ def in_worn(x, y, scale=1.0):
 
 
 def add_tufts(bm, ctx, stump_xs):
+    """Grass thickens toward the slab's edges and thins out where it is walked."""
     rng = random.Random(11)
     placed = 0
+    centres = []
+    margin = (SLAB_X1 - SLAB_X0) / SLAB_NX  # stay off the rolled outer cells
     while placed < TUFTS:
-        x = rng.uniform(SLAB_X0 + 0.04, SLAB_X1 - 0.04)
-        y = rng.uniform(SLAB_Y0 + 0.04, SLAB_Y1 - 0.04)
-        if in_worn(x, y, 1.08) or abs(y) < CHALK_HALF_W + 0.025:
+        x = rng.uniform(SLAB_X0 + margin, SLAB_X1 - margin)
+        y = rng.uniform(SLAB_Y0 + margin, SLAB_Y1 - margin)
+        edge = min(x - SLAB_X0, SLAB_X1 - x, y - SLAB_Y0, SLAB_Y1 - y) - margin
+        keep = max(TUFT_INNER_KEEP, 1.0 - edge / TUFT_EDGE_BAND)
+        if rng.random() > keep:
+            continue
+        if in_worn(x, y, 1.12) or abs(y) < CHALK_HALF_W + 0.025:
             continue
         if any(math.hypot(x - sx, y) < 0.09 for sx in stump_xs):
             continue
         if math.hypot(x - BALL_AT[0], y - BALL_AT[1]) < 0.08:
             continue
+        # Crowding at the edges must not stack two tufts' roots in one spot.
+        if any(math.hypot(x - tx, y - ty) < TUFT_SPACING for tx, ty in centres):
+            continue
+        centres.append((x, y))
         placed += 1
-        for _ in range(BLADES_PER_TUFT):
+        turn = rng.uniform(0.0, 0.5 * math.pi)
+        for k in range(BLADES_PER_TUFT):
             bx, by = x + rng.uniform(-0.006, 0.006), y + rng.uniform(-0.006, 0.006)
             h = rng.uniform(*BLADE_H)
             lean = rng.uniform(0.003, 0.012)
             ang = rng.uniform(0.0, 2.0 * math.pi)
             tipc = Vector((bx + lean * math.cos(ang), by + lean * math.sin(ang), TURF_T + h))
             base_z = TURF_T + 0.0004
-            a0 = rng.uniform(0.0, 0.5 * math.pi)
+            # Each blade's square root is turned a third of a quarter-turn from
+            # its neighbour's, so no two in a tuft share a facet plane.
+            a0 = turn + k * (0.5 * math.pi / BLADES_PER_TUFT) + rng.uniform(-0.12, 0.12)
             ring = [bm.verts.new((bx + BLADE_R * math.cos(a0 + a), by + BLADE_R * math.sin(a0 + a), base_z))
                     for a in (0.0, 0.5 * math.pi, math.pi, 1.5 * math.pi)]
-            poles = (bm.verts.new((bx, by, TURF_T - 0.003)), bm.verts.new(tipc))
+            # Root depth walks a golden-ratio sequence, so two blades turned
+            # alike in different tufts still tilt their buried facets apart.
+            root = 0.0022 + 0.0016 * ((len(centres) * BLADES_PER_TUFT + k) * 0.6180339887 % 1.0)
+            poles = (bm.verts.new((bx, by, TURF_T - root)), bm.verts.new(tipc))
             tube(bm, [ring], poles, BLADE_IDX, ctx, [(0.0, 0.0, 1.0)])
 
 
@@ -653,11 +685,15 @@ def _sock(sockets, identifier):
 
 
 def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0.03, 0.012, 0.005),
-                  coat=0.0):
+                  coat=0.0, stretch=0.94, grain_scale=60.0, scuffs=(), scuff_color=(0.13, 0.095, 0.065),
+                  ramp=(0.30, 0.72)):
     """Timber whose grain runs along ``GrainDir`` and whose tone varies by piece.
 
     ``bands`` are (z, half-width) rings of ``band_color`` in object space (a maker's
-    turned bands); ``coat`` is a lacquer layer.
+    turned bands); ``coat`` is a lacquer layer. ``stretch`` is how far the noise is
+    drawn out along the grain (1.0 would be an endless streak). ``scuffs`` are
+    (x, z, rx, rz) ellipses on the -Y face, where the ball has dulled the
+    lacquer and left leather on the wood.
     """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
@@ -674,7 +710,7 @@ def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0
     nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
     squash = nt.nodes.new("ShaderNodeMath")
     squash.operation = "MULTIPLY"
-    squash.inputs[1].default_value = 0.94
+    squash.inputs[1].default_value = stretch
     nt.links.new(dot.outputs["Value"], squash.inputs[0])
     along = nt.nodes.new("ShaderNodeVectorMath")
     along.operation = "SCALE"
@@ -689,16 +725,16 @@ def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0
     nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
     nt.links.new(tone.outputs["Fac"], shift.inputs[1])
     noise = nt.nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 60.0
+    noise.inputs["Scale"].default_value = grain_scale
     noise.inputs["Detail"].default_value = 6.0
     noise.inputs["Roughness"].default_value = 0.62
     nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
-    ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.30
-    ramp.color_ramp.elements[0].color = (*dark, 1.0)
-    ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (*light, 1.0)
-    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    cramp = nt.nodes.new("ShaderNodeValToRGB")
+    cramp.color_ramp.elements[0].position = ramp[0]
+    cramp.color_ramp.elements[0].color = (*dark, 1.0)
+    cramp.color_ramp.elements[1].position = ramp[1]
+    cramp.color_ramp.elements[1].color = (*light, 1.0)
+    nt.links.new(noise.outputs["Fac"], cramp.inputs["Fac"])
     gain = nt.nodes.new("ShaderNodeMath")
     gain.operation = "MULTIPLY_ADD"
     gain.inputs[1].default_value = 1.0
@@ -708,7 +744,7 @@ def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0
     mix.data_type = "RGBA"
     mix.blend_type = "MULTIPLY"
     _sock(mix.inputs, "Factor_Float").default_value = 1.0
-    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(cramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
     nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
     colour = _sock(mix.outputs, "Result_Color")
     if bands:
@@ -742,6 +778,74 @@ def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0
         nt.links.new(acc, _sock(banded.inputs, "Factor_Float"))
         nt.links.new(colour, _sock(banded.inputs, "A_Color"))
         colour = _sock(banded.outputs, "Result_Color")
+    scuff = None
+    if scuffs:
+        sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+        # Only the face toward the bowler: 0 behind y = 0, 1 by a third of the radius.
+        front = nt.nodes.new("ShaderNodeMapRange")
+        front.inputs["From Min"].default_value = 0.0
+        front.inputs["From Max"].default_value = -STUMP_R * 0.35
+        nt.links.new(sep.outputs["Y"], front.inputs["Value"])
+        spot = None
+        for sx, sz, rx, rz in scuffs:
+            terms = []
+            for comp, centre, rad in (("X", sx, rx), ("Z", sz, rz)):
+                d = nt.nodes.new("ShaderNodeMath")
+                d.operation = "SUBTRACT"
+                d.inputs[1].default_value = centre
+                nt.links.new(sep.outputs[comp], d.inputs[0])
+                q = nt.nodes.new("ShaderNodeMath")
+                q.operation = "DIVIDE"
+                q.inputs[1].default_value = rad
+                nt.links.new(d.outputs["Value"], q.inputs[0])
+                sq = nt.nodes.new("ShaderNodeMath")
+                sq.operation = "POWER"
+                sq.inputs[1].default_value = 2.0
+                nt.links.new(q.outputs["Value"], sq.inputs[0])
+                terms.append(sq.outputs["Value"])
+            r2 = nt.nodes.new("ShaderNodeMath")
+            r2.operation = "ADD"
+            nt.links.new(terms[0], r2.inputs[0])
+            nt.links.new(terms[1], r2.inputs[1])
+            fall = nt.nodes.new("ShaderNodeMapRange")
+            fall.inputs["From Min"].default_value = 1.0
+            fall.inputs["From Max"].default_value = 0.25
+            nt.links.new(r2.outputs["Value"], fall.inputs["Value"])
+            if spot is None:
+                spot = fall.outputs["Result"]
+            else:
+                mx = nt.nodes.new("ShaderNodeMath")
+                mx.operation = "MAXIMUM"
+                nt.links.new(spot, mx.inputs[0])
+                nt.links.new(fall.outputs["Result"], mx.inputs[1])
+                spot = mx.outputs["Value"]
+        # Broken up by a noise so it reads as a smear, not a decal.
+        grit = nt.nodes.new("ShaderNodeTexNoise")
+        grit.inputs["Scale"].default_value = 180.0
+        grit.inputs["Detail"].default_value = 3.0
+        nt.links.new(coord.outputs["Object"], grit.inputs["Vector"])
+        gmap = nt.nodes.new("ShaderNodeMapRange")
+        gmap.inputs["From Min"].default_value = 0.25
+        gmap.inputs["From Max"].default_value = 0.75
+        gmap.inputs["To Min"].default_value = 0.40
+        gmap.inputs["To Max"].default_value = 0.95
+        nt.links.new(grit.outputs["Fac"], gmap.inputs["Value"])
+        m1 = nt.nodes.new("ShaderNodeMath")
+        m1.operation = "MULTIPLY"
+        nt.links.new(spot, m1.inputs[0])
+        nt.links.new(front.outputs["Result"], m1.inputs[1])
+        m2 = nt.nodes.new("ShaderNodeMath")
+        m2.operation = "MULTIPLY"
+        nt.links.new(m1.outputs["Value"], m2.inputs[0])
+        nt.links.new(gmap.outputs["Result"], m2.inputs[1])
+        scuff = m2.outputs["Value"]
+        bruised = nt.nodes.new("ShaderNodeMix")
+        bruised.data_type = "RGBA"
+        _sock(bruised.inputs, "B_Color").default_value = (*scuff_color, 1.0)
+        nt.links.new(scuff, _sock(bruised.inputs, "Factor_Float"))
+        nt.links.new(colour, _sock(bruised.inputs, "A_Color"))
+        colour = _sock(bruised.outputs, "Result_Color")
     nt.links.new(colour, bsdf.inputs["Base Color"])
     if coat:
         for key, val in (("Coat Weight", coat), ("Coat Roughness", 0.12)):
@@ -751,7 +855,22 @@ def wood_material(name, dark, light, rough=(0.72, 0.52), bands=(), band_color=(0
     rmap.inputs["To Min"].default_value = rough[0]
     rmap.inputs["To Max"].default_value = rough[1]
     nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
-    nt.links.new(rmap.outputs["Result"], bsdf.inputs["Roughness"])
+    rough_out = rmap.outputs["Result"]
+    if scuff is not None:
+        # The lacquer is knocked off where the ball hits: rougher, and no coat.
+        dull = nt.nodes.new("ShaderNodeMix")
+        dull.data_type = "FLOAT"
+        _sock(dull.inputs, "B_Float").default_value = 0.82
+        nt.links.new(scuff, _sock(dull.inputs, "Factor_Float"))
+        nt.links.new(rough_out, _sock(dull.inputs, "A_Float"))
+        rough_out = _sock(dull.outputs, "Result_Float")
+        if coat and "Coat Weight" in bsdf.inputs:
+            cw = nt.nodes.new("ShaderNodeMapRange")
+            cw.inputs["To Min"].default_value = coat
+            cw.inputs["To Max"].default_value = 0.0
+            nt.links.new(scuff, cw.inputs["Value"])
+            nt.links.new(cw.outputs["Result"], bsdf.inputs["Coat Weight"])
+    nt.links.new(rough_out, bsdf.inputs["Roughness"])
     return mat
 
 
@@ -814,10 +933,15 @@ def leather_material(name):
 
 def wicket_materials():
     return (
-        wood_material("StumpAsh", (0.20, 0.125, 0.060), (0.58, 0.42, 0.22), rough=(0.50, 0.34),
-                      bands=((0.625, 0.0030), (0.640, 0.0012)), coat=0.5),
-        wood_material("BailStained", (0.11, 0.040, 0.016), (0.34, 0.13, 0.05), rough=(0.45, 0.30),
-                      coat=0.5),
+        # Scuffs: red leather smeared on where the ball has struck, at the
+        # height a ball that hits the stumps passes them.
+        wood_material("StumpAsh", (0.21, 0.13, 0.060), (0.64, 0.47, 0.25), rough=(0.42, 0.26),
+                      bands=((0.625, 0.0030), (0.640, 0.0012)), coat=0.6, stretch=0.985,
+                      grain_scale=95.0,
+                      scuffs=((0.0, 0.24, 0.017, 0.050), (STUMP_SPACING, 0.16, 0.013, 0.032)),
+                      scuff_color=(0.40, 0.085, 0.05), ramp=(0.40, 0.64)),
+        wood_material("BailStained", (0.20, 0.085, 0.030), (0.52, 0.25, 0.095), rough=(0.40, 0.26),
+                      coat=0.6, stretch=0.97, grain_scale=80.0),
         noise_material("Turf", (0.030, 0.070, 0.012), (0.085, 0.160, 0.030), 70.0, 0.92),
         noise_material("EarthWorn", (0.095, 0.060, 0.034), (0.20, 0.135, 0.075), 45.0, 0.95),
         noise_material("CreaseChalk", (0.62, 0.60, 0.55), (0.88, 0.87, 0.83), 80.0, 0.88),
@@ -1359,7 +1483,9 @@ def render_still(low, mats, tex, path, engine):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
             ob.hide_viewport = True
-    low.rotation_euler.z = math.radians(-24.0)
+    # Nearly square to the wicket, so the bails lie across the frame as bars
+    # rather than foreshortening into the stump tops.
+    low.rotation_euler.z = math.radians(-12.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -1414,10 +1540,11 @@ def render_still(low, mats, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 65.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.42, -3.09, 0.78)
+    # 28 degrees off square, a hair above the crowns so the grooves show.
+    cam.location = (0.83, -2.88, 0.80)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.05, 0.32)
+    aim.location = (0.0, 0.0, 0.33)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
