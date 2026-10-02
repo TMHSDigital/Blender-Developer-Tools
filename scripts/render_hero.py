@@ -6,7 +6,8 @@ For each named entry in ``examples/gallery.json`` / ``showcase/gallery.json``:
 1. render the README's documented ``--output`` command to a lossless PNG,
    keeping every other documented flag (``--engine cycles`` ...);
 2. write the hero, ``docs/gallery/assets/<name>-hero.webp`` at 1280x720;
-3. write the preview at the entry's ``preview`` path, 1200x675 (Lanczos).
+3. write the preview at the entry's ``preview`` path, 1200x675 (Lanczos);
+4. write the 640x360 card variant beside the hero (``scripts/make_thumbs.py``).
 
 Both are webp quality 90, the setting every showcase script uses when it
 writes webp itself. Before this file the PNG -> webp step lived in uncommitted
@@ -32,6 +33,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from make_thumbs import write_thumb
 from measure_hero_drift import REPO, entries, render_args
 
 HERO_SIZE = (1280, 720)
@@ -88,7 +90,9 @@ def main(argv=None) -> int:
             hero, preview = REPO / e["hero"], REPO / e["preview"]
             im.save(hero, "WEBP", quality=QUALITY)
             im.resize(PREVIEW_SIZE, Image.LANCZOS).save(preview, "WEBP", quality=QUALITY)
-            print(f"{name}: wrote {e['hero']} ({hero.stat().st_size} B) and "
+            thumb = write_thumb(hero)
+            print(f"{name}: wrote {e['hero']} ({hero.stat().st_size} B), "
+                  f"{thumb.relative_to(REPO).as_posix()} ({thumb.stat().st_size} B) and "
                   f"{e['preview']} ({preview.stat().st_size} B)", flush=True)
 
     print(f"\n# {len(args.only) - len(failed)} regenerated, {len(failed)} failed")
