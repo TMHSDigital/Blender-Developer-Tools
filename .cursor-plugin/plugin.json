@@ -136,7 +136,9 @@
     "examples/vse-cut-list",
     "examples/vse-gamma-cross",
     "examples/vse-linear-modifiers",
-    "examples/wave-displace"
+    "examples/wave-displace",
+    "examples/ray-cast-space",
+    "examples/lattice-deform"
   ],
   "showcase": [
     "showcase/shipping-crate",

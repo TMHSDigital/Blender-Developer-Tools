@@ -45,7 +45,7 @@
     <p>Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 54 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon.">
       <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -1006,6 +1006,15 @@ EPS = <span class="n">1e-5</span>
       <div class="related-grid">
         <article class="card mini">
           <div class="card-media">
+            <img src="../assets/ray-cast-space-hero-640.webp" srcset="../assets/ray-cast-space-hero-640.webp 640w, ../assets/ray-cast-space-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../ray-cast-space/">Ray Cast Space</a></h3>
+            <p>Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
             <img src="../assets/light-link-studio-hero-640.webp" srcset="../assets/light-link-studio-hero-640.webp 640w, ../assets/light-link-studio-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two identical porcelain chess kings on dark plinths: the left, labelled LINKED, glows under an amber key; the right, labelled UNLINKED, stays cool grey." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
@@ -1022,18 +1031,9 @@ EPS = <span class="n">1e-5</span>
             <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent throws the elbow off its mount; MPI keeps it seated.</p>
           </div>
         </article>
-        <article class="card mini">
-          <div class="card-media">
-            <img src="../assets/socket-attach-points-hero-640.webp" srcset="../assets/socket-attach-points-hero-640.webp 640w, ../assets/socket-attach-points-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." width="1280" height="720" loading="lazy" decoding="async" />
-          </div>
-          <div class="card-body">
-            <h3><a class="stretch" href="../socket-attach-points/">Socket Attach Points</a></h3>
-            <p>A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads.</p>
-          </div>
-        </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 52 examples</span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 54 examples</span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>

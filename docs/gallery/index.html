@@ -67,7 +67,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">52 examples, 72 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">54 examples, 72 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
       </div>
       <div class="filters" id="filters">
@@ -763,6 +763,30 @@
           <p class="slug">gn-socket-rename</p>
           <p class="teaches">Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2</p>
           <p class="witnesses"><span class="tag">witnesses</span> A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts; the still draws the column graduations from gauge_h, so an unwired Random Value renders a blank column</p>
+          <span class="card-link" aria-hidden="true">View example &rarr;</span>
+        </div>
+      </article>
+      <article class="card" data-tags="objects transforms depsgraph" data-kind="examples" data-name="ray-cast-space" data-search="ray cast space ray-cast-space object.ray_cast is object-local while scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to object.ray_cast miss. objects transforms depsgraph ">
+        <div class="card-media">
+          <img src="assets/ray-cast-space-hero-640.webp" srcset="assets/ray-cast-space-hero-640.webp 640w, assets/ray-cast-space-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="A teal-checkered block turned and stretched on a walnut plinth, five orange rays from brass balls ending in orange rings on three faces, and one red ray striking it from elsewhere." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="ray-cast-space/">Ray Cast Space</a></h2>
+          <p class="slug">ray-cast-space</p>
+          <p class="teaches">Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Five closed-form rays on a translated, Z-rotated, non-uniformly scaled block: Scene.ray_cast hits each world point and normal exactly; Object.ray_cast fed matrix_world.inverted() coordinates hits the same polygons, and mapped back lands within 5e-7 m; world coords fed to Object.ray_cast land 0.287 m or more off. --world-to-object exits 4 (1.125 m error).</p>
+          <span class="card-link" aria-hidden="true">View example &rarr;</span>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh modifiers depsgraph" data-kind="examples" data-name="lattice-deform" data-search="lattice deform lattice-deform a 2x2x2 lattice modifier set to key_linear on all three axes, with two top control points moved through latticepoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear). mesh modifiers depsgraph ">
+        <div class="card-media">
+          <img src="assets/lattice-deform-hero-640.webp" srcset="assets/lattice-deform-hero-640.webp 640w, assets/lattice-deform-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="lattice-deform/">Lattice Deform</a></h2>
+          <p class="slug">lattice-deform</p>
+          <p class="teaches">A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Linear lattice deform is exact trilinear interpolation: all 602 evaluated verts land on the closed-form blend of the eight co_deform corners (max error 5.6e-7 through a translated, non-uniformly scaled lattice), the undeformed lattice is the identity, and --bspline (the default interpolation) misses by 0.2145 and exits 4.</p>
           <span class="card-link" aria-hidden="true">View example &rarr;</span>
         </div>
       </article>
@@ -1688,7 +1712,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '52 examples, 72 showcase pieces';
+      var COUNT_LABEL = '54 examples, 72 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.

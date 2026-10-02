@@ -45,7 +45,7 @@
     <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 52 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 54 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris.">
       <img src="../assets/lod-decimate-chain-hero.webp" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -1364,6 +1364,15 @@ RIVET_R, RIVET_BASE, RIVET_TOP = <span class="n">0.013</span>, HULL_R - <span cl
       <div class="related-grid">
         <article class="card mini">
           <div class="card-media">
+            <img src="../assets/lattice-deform-hero-640.webp" srcset="../assets/lattice-deform-hero-640.webp 640w, ../assets/lattice-deform-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../lattice-deform/">Lattice Deform</a></h3>
+            <p>A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
             <img src="../assets/depsgraph-export-hero-640.webp" srcset="../assets/depsgraph-export-hero-640.webp 640w, ../assets/depsgraph-export-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A game controller&#x27;s sparse control cage in orange wire and vertex beads beside the smooth subdivided cobalt controller with sticks and colored buttons, on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
@@ -1380,18 +1389,9 @@ RIVET_R, RIVET_BASE, RIVET_TOP = <span class="n">0.013</span>, HULL_R - <span cl
             <p>Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.</p>
           </div>
         </article>
-        <article class="card mini">
-          <div class="card-media">
-            <img src="../assets/bmesh-gear-hero-640.webp" srcset="../assets/bmesh-gear-hero-640.webp 640w, ../assets/bmesh-gear-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A brass fourteen-tooth gear meshing with a blued pinion and a spoked gunmetal wheel, each bolted through a hub to a dark steel backplate on a walnut plinth." width="1280" height="720" loading="lazy" decoding="async" />
-          </div>
-          <div class="card-body">
-            <h3><a class="stretch" href="../bmesh-gear/">BMesh Gear</a></h3>
-            <p>A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.</p>
-          </div>
-        </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 52 examples</span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 54 examples</span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>

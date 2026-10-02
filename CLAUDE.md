@@ -21,8 +21,8 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 16 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 27 total
-examples/<name>/               - Runnable smoke-gated examples, 60 total (+ gallery.json)
-showcase/<name>/               - Budget-conformance props, 67 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
+examples/<name>/               - Runnable smoke-gated examples, 62 total (+ gallery.json)
+showcase/<name>/               - Budget-conformance props, 72 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
 scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
 tests/check_site_links.py      - Internal link/anchor/alt gate over the built site (docs/)
@@ -105,12 +105,12 @@ v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namesp
 
 AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`, `setup_bake_target_image.py`, `bake_normal_high_to_low.py`, `save_baked_image.py`.
 
-## Examples (60)
+## Examples (62)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
 `--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
-**52 of the 60 ship a render in the site gallery** at `docs/gallery/`. The other
+**54 of the 62 ship a render in the site gallery** at `docs/gallery/`. The other
 eight are **check-only**: they carry no `--output` path, no gallery entry, and no
 hero asset. The criterion is whether the contract is expressible in pixels. An
 example is check-only when its witness is a data or state fact that no scene
