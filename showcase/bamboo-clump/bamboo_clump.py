@@ -4,18 +4,23 @@ Asserts budget conformance of a procedural bamboo clump after composing
 shipped pipeline pieces: bmesh construction, UVs, five materials,
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
-A low mound of dark earth holds one clump of seven bamboo culms, 3.0 to
-4.5 m tall and 3.5 to 6 cm across at the base, each rooted in a collar of
-heaped soil. A culm rises straight out of a flared foot, then leans away
-from the clump and arches, tapering to a fine tip. It is ringed with nodes
-at an uneven pitch: close together near the foot, long through the middle,
-close again toward the tip, each a raised ring with a pale bloom of wax
-and a dark scar line either side of it. From the upper nodes, one to a
-node and turning round the culm, leafy branches spring up and out: a
-slender branch that arches and droops, carrying five slim, pointed,
-drooping leaves along its last third. Three young shoots in overlapping
-sheaths push out of the earth beside the culms, and thirty-six dry leaves
-and five fallen culm sheaths lie in the litter.
+A mound of dark earth, heaved into a lobed hummock by the rhizome mass,
+holds one clump of seven bamboo culms, 2.7 to 4.5 m tall and 4.6 to 7.4 cm
+across at the first node, rising from a footprint about 0.6 m across, each
+rooted in a collar of heaped soil. Five jointed rhizome knuckles break the
+soil and run in to the outer culms' feet. A culm leaves the soil already
+leaning out from the clump's centre, then leans further and arches,
+tapering to a fine whip. It is ringed with nodes at an uneven pitch: close
+together near the foot, long through the middle, close again toward the
+tip, each a raised ridge darker than its culm with a pale scar on its crest,
+and on a fresh culm a band of white wax just below it. Tone runs from fresh
+green to an old culm gone yellow. The lowest three nodes keep their papery
+culm sheaths, ragged sleeves bitten into the culm. From the upper nodes leafy
+branches spring up and out, one at every node and often a second, more
+toward the crown, each carrying 4 to 12 slim, pointed, drooping leaves with
+its own droop; the top node's branch plumes the whip. Three young shoots in
+overlapping sheaths push out of the earth beside the clump, and thirty-six
+dry leaves and five fallen culm sheaths lie in the litter off the hummock.
 
 Budgets are declared below and recomputed from the generated result. They
 are not API-contract witnesses. Each falsifier violates one named budget:
@@ -25,7 +30,8 @@ ring proud of its culm, ``--stray-branches`` every branch springing from
 a node, ``--swell-culm`` a culm that only ever tapers, ``--bunch-nodes``
 the pitch of the nodes, ``--crowd-culms`` culms that stand clear of each
 other, ``--float-litter`` the litter resting in the soil, ``--lift-leaves``
-every leaf seated in its branch.
+every leaf seated in its branch, ``--loose-sheaths`` every culm sheath
+bitten into its culm.
 
 Seeded, not random: ``random.Random(SEED)`` draws the litter before
 anything is built, and everything on the culms comes from a closed-form
@@ -69,23 +75,45 @@ UP = Vector((0.0, 0.0, 1.0))
 # --- Ground ------------------------------------------------------------------
 DISC_A = (1.10, 0.98)     # soil disc semi-axes before its wobble, m
 DISC_N = {"low": 36, "high": 64}
-MOUND_Z = 0.085           # the heap at the clump's centre
+MOUND_Z = 0.060           # the litter heap, falling to the disc's rim
+RHIZ_Z = 0.120            # the rhizome mass heaving the soil under the clump
+RHIZ_R = 0.36             # its gaussian radius, m
 COLLAR_Z = 0.022          # soil heaped round every culm's foot
 COLLAR_R = 0.060
 
 # --- Culms -------------------------------------------------------------------
-# (x, y, length along the axis from the buried foot to the tip, radius at the
-#  foot before the flare, lean at the tip deg, bearing of the lean deg,
-#  sway deg, sway phase, tone)
-CULMS = (
-    (0.000, 0.020, 4.60, 0.0300, 12.0, 100.0, 18.0, 0.3, 0.55),
-    (0.115, -0.070, 4.20, 0.0285, 34.0, -25.0, 22.0, 1.2, 0.30),
-    (-0.120, -0.080, 4.00, 0.0265, 38.0, 212.0, 20.0, 2.0, 0.75),
-    (-0.100, 0.140, 3.60, 0.0235, 36.0, 128.0, 24.0, 0.9, 0.45),
-    (0.130, 0.130, 3.80, 0.0215, 36.0, 58.0, 18.0, 2.6, 0.20),
-    (0.020, -0.170, 3.20, 0.0190, 42.0, 268.0, 22.0, 1.7, 0.85),
-    (-0.200, 0.000, 3.00, 0.0175, 44.0, 178.0, 20.0, 0.4, 0.65),
+# A sympodial (clumping) bamboo after Bambusa textilis / B. tuldoides: culms
+# 3-4.6 m here, 4.8-7.7 cm across. Real culms run 100-200 diameters tall;
+# these run about 60-75, a deliberate thickening so a culm still reads as a
+# cane, not a wire, at gallery size. The culms rise from a rhizome mass about
+# 0.6 m across, each foot splayed outward from the clump's centre.
+# (distance of the foot from the clump's centre, length along the axis from
+#  the buried foot to the tip, radius at the foot before the flare, lean at
+#  the tip deg, bearing of the lean deg, sway deg, sway phase, tone: 0 a
+#  fresh, powdered culm, 1 an old one gone yellow)
+CULM_SPECS = (
+    (0.030, 4.60, 0.0385, 12.0, 100.0, 18.0, 0.3, 0.50),
+    (0.200, 4.20, 0.0365, 34.0, -25.0, 22.0, 1.2, 0.30),
+    (0.220, 4.00, 0.0340, 38.0, 212.0, 20.0, 2.0, 0.96),
+    (0.190, 3.60, 0.0310, 36.0, 128.0, 24.0, 0.9, 0.45),
+    (0.240, 3.80, 0.0285, 36.0, 58.0, 18.0, 2.6, 0.62),
+    (0.280, 3.20, 0.0260, 42.0, 268.0, 22.0, 1.7, 0.04),
+    (0.300, 3.00, 0.0240, 44.0, 178.0, 20.0, 0.4, 0.78),
 )
+
+
+def _foot_bearing(az0, sway, phase):
+    return math.radians(az0 + sway * math.sin(phase))
+
+
+# (x, y, length, r0, lean, bearing, sway, phase, tone): each foot set out
+# from the centre along the bearing its culm starts to lean on
+CULMS = tuple(
+    (rho * math.cos(_foot_bearing(az0, sw, ph)), rho * math.sin(_foot_bearing(az0, sw, ph)),
+     L_, r0, lean, az0, sw, ph, tone)
+    for rho, L_, r0, lean, az0, sw, ph, tone in CULM_SPECS
+)
+SPLAY = 7.0               # every outer culm leaves the soil this far off plumb, outward
 DS = 0.01                 # step of the dense axis polyline
 CULM_BED = 0.045          # the foot this far under the soil at its centre
 CULM_SIDES = {"low": 10, "high": 16}
@@ -93,6 +121,7 @@ TAPER = 0.45              # r(tip) = r0 * (1 - TAPER)
 FLARE = 0.30              # the foot's flare, and how far up it runs
 FLARE_LEN = 0.18
 TIP_LEN = 0.07            # the closed cone at the top
+WHIP = 0.60               # the radius lost over the last NODE_END of the culm
 NODE_FIRST = 0.14         # first node, along the axis from the buried foot
 NODE_END = 0.22           # no node nearer the tip than this
 NODE_BASE_L = 0.14        # internode length: base + mid * sin(pi u) ** 0.9
@@ -104,22 +133,45 @@ RING_SIDES = 10
 
 # --- Branches and leaves -------------------------------------------------------
 BR_FROM_U = 0.30          # branches from the nodes above this fraction of the length
-BR_TIP_CLEAR = 0.20       # and none this near the tip
+BR_TIP_CLEAR = 0.12       # and none this near the tip
 BR_R_MIN = 0.0105         # on a culm at least this thick
 BR_R0 = 0.0055
 BR_BITE = 0.007           # a branch's first ring centre this far inside the culm
 BR_SIDES = 6
-BR_L0 = 0.42
-BR_L1 = 0.40
-LEAF_AT = ((0.40, 1.0), (0.48, -1.0), (0.58, 1.0), (0.66, -1.0), (0.76, 1.0), (0.84, -1.0),
-           (0.92, 1.0), (1.00, 0.0), (0.96, -0.5))
+BR_L0 = 0.40
+BR_L1 = 0.42
+BR2_FROM_U = 0.42         # a second, shorter branch at the nodes above this
+BR2_P = 0.62              # at this share of them
+BR2_ALWAYS_U = 0.62       # and above this, at nearly all of them
+TOP_BR_SCALE = 0.55       # the top node's upright plume, against an ordinary first branch
+BR2_SCALE = 0.62          # its length against the first's
+BR2_R = 0.78              # its radius against the first's
+LEAVES_N = (6, 12)        # leaves on a first branch, low and high
+LEAVES2_N = (4, 7)        # on a second one
+LEAF_FROM_V = 0.34        # leaves along the branch's outer two thirds
 LEAF_U = (0.0, 0.25, 0.50, 0.75, 0.92)
 LEAF_TIP_INSET = 0.002
 
+# --- Culm sheaths, rhizome knuckles -------------------------------------------
+SHEATH_NODES = 3          # the lowest three nodes above the soil keep their sheath
+SHEATH_SIDES = 10
+SHEATH_T = 6              # stations up a sheath
+SHEATH_BITE = 0.0015      # its inner wall this far inside the culm
+SHEATH_PROUD0 = 0.0026    # its outer wall this far outside at its foot, under the ridge's crest...
+SHEATH_PROUD1 = 0.0016    # ...and this far at its ragged top
+SHEATH_CURL = 0.0020      # the top lip curls off the culm by this much more
+SHEATH_UP = (0.55, 0.85)  # how far up the internode the sheath's tall side reaches
+KNUCKLES = (1, 2, 4, 5, 6)  # culms whose rhizome knuckle breaks the soil
+KNUCKLE_LEN = 0.28        # from the inner end to the culm's axis, m
+KNUCKLE_R = 1.15          # its girth against the culm's foot radius
+KNUCKLE_SINK = 0.32       # its axis this many of its radii under the soil
+KNUCKLE_ST = 14
+KNUCKLE_SIDES = {"low": 8, "high": 12}
+
 # --- Shoots and litter ----------------------------------------------------------
 # (x, y, height, radius at the foot)
-SHOOTS = ((0.250, 0.030, 0.62, 0.021), (-0.030, 0.290, 0.40, 0.018), (0.100, -0.300, 0.27, 0.016))
-SHOOT_BED = 0.030
+SHOOTS = ((0.420, 0.120, 0.62, 0.026), (-0.090, 0.440, 0.40, 0.022), (0.250, -0.400, 0.27, 0.019))
+SHOOT_BED = 0.036
 SHOOT_SHEATHS = 7
 N_LITTER = 36
 N_SHEATH = 5
@@ -127,6 +179,7 @@ LITTER_BELLY = 0.0025     # a litter blade's belly this far under the soil, befo
 LITTER_HT = 0.0030        # half thickness: the flanks lean 11-15 degrees, steeper than any slope of the mound
 SHEATH_HT = 0.0110        # a sheath is wider, so thicker, or its flank lies in the soil's own plane
 LITTER_L0, LITTER_L1 = 0.12, 0.10
+LITTER_RAD0 = 0.44        # litter from this fraction of the disc out
 SHEATH_L0, SHEATH_L1 = 0.34, 0.14
 
 # --- Falsifier magnitudes ------------------------------------------------------------
@@ -138,8 +191,9 @@ SWELL_IDX = 2
 BUNCH_IDX = 0             # --bunch-nodes: culm 0's seventh node...
 BUNCH_NODE = 6
 BUNCH_GAP = 0.07          # ...slid up until it is this far under the next
-CROWD_IDX = 0             # --crowd-culms: this culm stood against its neighbour
-CROWD_SHIFT = (0.070, -0.060)
+CROWD_IDX = 3             # --crowd-culms: this culm's foot stood against culm 6's, re-bedded
+CROWD_SHIFT = (-0.106, -0.102)  # in the soil there; culm 3 sets no extreme of the envelope
+LOOSE_SHEATH = 0.0030     # --loose-sheaths: every sheath's inner wall this far outside the culm
 FLOAT_CULM_IDX = 5        # --float-culm: this culm raised off the soil
 FLOAT_CULM = 0.070
 FLOAT_LITTER = 0.025
@@ -148,9 +202,9 @@ LIFT_Z = 0.05
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from the vertices.
-OUTER_SIZE = (3.4296, 3.5679, 4.6432)
-BASE_TRIS_MIN = 51500
-BASE_TRIS_MAX = 53500
+OUTER_SIZE = (3.8168, 3.5512, 4.8254)
+BASE_TRIS_MIN = 72800
+BASE_TRIS_MAX = 74800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -160,11 +214,11 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 5
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 80
+COLLIDER_TRIS_MAX = 96
 BAKE_RES = 512
 CAGE_EXTRUSION = 0.01
 # soil, culm, leaf, shoot sheath, dry leaf
-FACE_FLOORS = (2680, 13040, 11670, 450, 740)
+FACE_FLOORS = (2680, 16600, 16770, 2920, 740)
 SOIL_IDX = 0
 CULM_IDX = 1
 LEAF_IDX = 2
@@ -188,7 +242,7 @@ NODE_SLACK = 0.010
 LEAF_SEAT_BAND = (0.0010, 0.0052)
 CULM_H_BAND = (2.6, 4.7)
 CULM_H_SPREAD_MIN = 1.0
-CULM_D_BAND = (0.030, 0.062)
+CULM_D_BAND = (0.042, 0.080)
 TAPER_EPS = 0.0004
 TAPER_RATIO_BAND = (0.54, 0.66)
 GAP_BAND = (0.12, 0.38)
@@ -197,18 +251,21 @@ LENGTHEN_MIN = 0.06
 NODES_MIN = 10
 CLUMP_GAP_MIN = 0.020
 REST_BAND = (0.0005, 0.006)
+SHEATH_BITE_BAND = (0.0008, 0.0030)   # a culm sheath's inner wall inside its culm
+SHEATH_PROUD_BAND = (0.0020, 0.0065)  # and its outer wall outside it
 HERO_YAW_DEG = 0.0
 WALL_Y = 4.0
-CAM_DIST = 13.8
-CAM_UP = 1.0
+CAM_DIST = 14.7
+CAM_UP = 1.8
 AIM_DZ = 0.0
 
 # part labels (a face attribute): they name a shell, they never measure it
 P_SOIL, P_CULM, P_NODE, P_BRANCH, P_LEAF, P_SHOOT, P_LITTER, P_SHEATH = 1, 2, 3, 4, 5, 6, 7, 8
-N_PARTS = 8
+P_CSHEATH, P_KNUCKLE = 9, 10
+N_PARTS = 10
 
 FLAG_NAMES = ("sunk_nodes", "stray_branches", "swell_culm", "bunch_nodes", "crowd_culms",
-              "float_culm", "float_litter", "lift_leaves")
+              "float_culm", "float_litter", "lift_leaves", "loose_sheaths")
 
 BUILT = {}
 
@@ -547,6 +604,10 @@ def band(nt, value, lo, hi):
 def soil_height(x, y):
     rr = disc_radius(x, y)
     z = MOUND_Z * (1.0 - smoothstep(rr, 0.20, 1.0))
+    # the rhizome mass: a lobed heave under the clump, highest toward the culms
+    th = math.atan2(y, x)
+    lobe = 1.0 + 0.22 * math.cos(3.0 * th - 0.6) + 0.12 * math.cos(5.0 * th + 1.4)
+    z += RHIZ_Z * math.exp(-(x * x + y * y) / (RHIZ_R * lobe) ** 2)
     z += 0.0045 * math.sin(x * 7.3 + 1.1) * math.sin(y * 6.1 + 0.4) * (1.0 - smoothstep(rr, 0.70, 1.0))
     for cx, cy, *_rest in CULMS:
         d2 = (x - cx) ** 2 + (y - cy) ** 2
@@ -657,15 +718,18 @@ class Culm:
         self.swell = swell
         x += dx
         y += dy
+        z0 = soil_height(x, y) - CULM_BED + dz
         lean = math.radians(lean)
         az0 = math.radians(az0)
         sway = math.radians(sway)
+        # the outer culms leave the rhizome already leaning out; the centre one stands
+        splay = math.radians(SPLAY) * smoothstep(math.hypot(spec[0], spec[1]), 0.05, 0.15)
         n = int(self.L / DS) + 3
-        p = Vector((x, y, soil_height(x, y) - CULM_BED + dz))
+        p = Vector((x, y, z0))
         self.p = [p.copy()]
         for i in range(n - 1):
             u = min((i + 0.5) * DS / self.L, 1.0)
-            th = lean * (0.35 * u + 0.65 * u * u)
+            th = splay + (lean - splay) * (0.35 * u + 0.65 * u * u)
             az = az0 + sway * math.sin(2.2 * u + phase)
             d = Vector((math.sin(th) * math.cos(az), math.sin(th) * math.sin(az), math.cos(th)))
             p = p + d * DS
@@ -683,6 +747,10 @@ class Culm:
         u = min(max(s / self.L, 0.0), 1.0)
         r = self.r0 * (1.0 - TAPER * u ** 1.2)
         r *= 1.0 + FLARE * max(0.0, 1.0 - s / FLARE_LEN) ** 2
+        # the whip: above the last node the culm thins fast to its tip, so it
+        # ends in a fine, leafy whip rather than a sharpened pencil. No node
+        # stands up here, so the taper measured at the rings does not see it.
+        r *= 1.0 - WHIP * smoothstep(s, self.L - NODE_END, self.L)
         if self.swell:
             r *= 1.0 + SWELL * math.exp(-(((u - 0.45) / 0.07) ** 2))
         return r
@@ -722,6 +790,8 @@ def culm_stations(L, nodes):
             out.add(round(a + 0.012, 5))
         if b in nodes:
             out.add(round(b - 0.012, 5))
+            if gap > 0.12:
+                out.add(round(b - 0.045, 5))   # the foot of the wax band under the node
         k = max(int(gap / 0.085), 1)
         for j in range(1, k):
             out.add(round(a + gap * j / k, 5))
@@ -733,7 +803,8 @@ def add_culm(bm, L, V, culm, nodes, detail):
     rows = []
     for s in culm_stations(culm.L, nodes):
         p, _t, e1, e2 = culm.at(s)
-        nd = min(abs(s - n) for n in nodes)
+        # signed: negative below the nearest node, where the wax band lies
+        nd = s - min(nodes, key=lambda n: abs(s - n))
         rows.append((p, e1, e2, culm.radius(s), s / culm.L, nd))
     tip = culm.at(culm.L)[0]
     add_rows(bm, rows, sides, CULM_IDX, L, V, culm.tone, 0.0, P_CULM, tip=tip)
@@ -745,14 +816,18 @@ def add_node_ring(bm, L, V, culm, s, proud, sides):
     profile = ((-RING_BITE, -RING_H), (0.0016, -RING_H), (proud, -0.55 * RING_H),
                (proud, 0.55 * RING_H), (0.0016, RING_H), (-RING_BITE, RING_H))
     t = culm.at(s)[1]
+    # Side marks the ridge: 1 on its crest, where the material lays a pale
+    # sheath-scar line along a darker collar
+    crest = (0.0, 0.3, 1.0, 1.0, 0.3, 0.0)
     rings = []
-    for dr, da in profile:
+    for (dr, da), cr in zip(profile, crest):
         ring = []
         for k in range(sides):
             a = TAU * k / sides
             v = bm.verts.new(p + t * da + (r + dr) * (e1 * math.cos(a) + e2 * math.sin(a)))
             v[V["along"]] = s / culm.L
             v[V["nd"]] = 0.0
+            v[V["side"]] = cr
             ring.append(v)
         rings.append(ring)
     for i in range(len(profile)):
@@ -769,53 +844,187 @@ def add_branches(bm, L, V, culm, nodes, stray, lift_leaves):
             continue
         if culm.radius(s_node) < BR_R_MIN:
             continue
-        s_b = s_node + (STRAY_SHIFT if stray and n_branch == 0 else 0.0)
-        pc, t, e1, e2 = culm.at(s_b)
-        r_c = culm.radius(s_b)
-        az = k * 2.39996 + 1.2 * hash01(culm.idx, k, 1)
-        radial = e1 * math.cos(az) + e2 * math.sin(az)
-        phi = math.radians(46.0 + 20.0 * hash01(culm.idx, k, 2))
-        d0 = t * math.cos(phi) + radial * math.sin(phi)
-        lb = BR_L0 + BR_L1 * hash01(culm.idx, k, 3)
-        p0 = pc + radial * (r_c - BR_BITE)
-        pts, radii, alongs = [], [], []
-        for j in range(7):
-            v = j / 6.0
-            pts.append(p0 + d0 * (lb * v) + radial * (0.10 * lb * v * v) + Vector((0.0, 0.0, -0.34 * lb * v * v)))
-            radii.append(BR_R0 * (1.0 - 0.45 * v))
-            alongs.append(v)
-        rows = path_rows(pts, radii, alongs)
-        add_rows(bm, rows, BR_SIDES, CULM_IDX, L, V, culm.tone, 2.0, P_BRANCH)
-        n_branch += 1
-        tans = [(pts[min(j + 1, 6)] - pts[max(j - 1, 0)]).normalized() for j in range(7)]
-        for li, (v, side) in enumerate(LEAF_AT):
-            j = v * 6.0
-            j0 = min(int(j), 5)
-            f = j - j0
-            base = pts[j0].lerp(pts[j0 + 1], f)
-            tb = tans[j0].lerp(tans[j0 + 1], f).normalized()
-            if v >= 1.0:
-                base = base - tb * LEAF_TIP_INSET
-            sp = tb.cross(UP)
-            sp = sp.normalized() if sp.length > 1e-6 else Vector((1.0, 0.0, 0.0))
-            if side == 0.0:
-                dl = (tb * 0.9 + UP * 0.1).normalized()
-            else:
-                dl = (tb * 0.5 + sp * (0.72 * side) + UP * 0.10).normalized()
-            h = hash01(culm.idx * 31 + k, li, 4)
-            ll = 0.21 + 0.12 * h
-            hw = 0.0165 + 0.005 * hash01(culm.idx * 31 + k, li, 5)
-            droop = 0.75 * (0.6 + 0.8 * hash01(culm.idx * 31 + k, li, 6))
-            if lift_leaves:
-                base = base + Vector((0.0, 0.0, LIFT_LEAVES))
-            lp = [base + dl * ll * u + Vector((0.0, 0.0, -droop * ll * u * u)) for u in LEAF_U + (1.0,)]
-            wd = dl.cross(UP)
-            wd = wd.normalized() if wd.length > 1e-6 else Vector((1.0, 0.0, 0.0))
-            add_blade(bm, lp, leaf_widths(hw), 0.0012, wd, LEAF_IDX, L, V,
-                      0.15 + 0.7 * hash01(culm.idx * 31 + k, li, 8), P_LEAF,
-                      lambda i: LEAF_U[i])
-            n_leaf += 1
+        u_node = s_node / culm.L
+        top = k == len(nodes) - 1
+        # 0 at the lowest branching node, 1 at the top: the crown fills upward
+        u_rel = (u_node - BR_FROM_U) / max(1.0 - BR_FROM_U, 1e-6)
+        # a first branch at every node; above BR2_FROM_U often a second,
+        # shorter and flatter, turned away from it, and in the upper crown
+        # nearly always
+        specs = [(0, 1.0, 1.0, 0.0)]
+        p2 = BR2_P if u_node < BR2_ALWAYS_U else 0.95
+        if u_node >= BR2_FROM_U and hash01(culm.idx, k, 11) < p2:
+            specs.append((1, BR2_SCALE, BR2_R, 1.0 + 0.9 * hash01(culm.idx, k, 12)))
+        for bi, scale, rscale, turn in specs:
+            s_b = s_node + (STRAY_SHIFT if stray and n_branch == 0 else 0.0)
+            pc, t, e1, e2 = culm.at(s_b)
+            r_c = culm.radius(s_b)
+            key = culm.idx * 31 + k + 17 * bi
+            az = k * 2.39996 + 1.2 * hash01(culm.idx, k, 1) + turn * (1.0 if k % 2 else -1.0)
+            radial = e1 * math.cos(az) + e2 * math.sin(az)
+            phi = math.radians(44.0 + 22.0 * hash01(key, k, 2) + 12.0 * bi)
+            if top and bi == 0:
+                # the top node's branch rises with the whip and plumes it
+                phi = math.radians(16.0 + 10.0 * hash01(key, k, 2))
+            d0 = t * math.cos(phi) + radial * math.sin(phi)
+            lb = (BR_L0 + BR_L1 * hash01(key, k, 3)) * scale
+            if top and bi == 0:
+                lb *= TOP_BR_SCALE
+            # how far the branch arches over under its leaves: some ride high, some hang
+            sag = 0.18 + 0.36 * hash01(key, k, 13)
+            p0 = pc + radial * (r_c - BR_BITE)
+            pts, radii, alongs = [], [], []
+            for j in range(7):
+                v = j / 6.0
+                pts.append(p0 + d0 * (lb * v) + radial * (0.10 * lb * v * v)
+                           + Vector((0.0, 0.0, -sag * lb * v * v)))
+                radii.append(BR_R0 * rscale * (1.0 - 0.45 * v))
+                alongs.append(v)
+            rows = path_rows(pts, radii, alongs)
+            add_rows(bm, rows, BR_SIDES, CULM_IDX, L, V, culm.tone, 2.0, P_BRANCH)
+            n_branch += 1
+            tans = [(pts[min(j + 1, 6)] - pts[max(j - 1, 0)]).normalized() for j in range(7)]
+            lo, hi = LEAVES2_N if bi else LEAVES_N
+            n = lo + int((hi - lo + 1) * (0.45 * hash01(key, k, 14) + 0.55 * u_rel) * 0.999)
+            if top and bi == 0:
+                n = hi
+            # this branch's leaves share a hang, so tufts differ from each other
+            # more than the leaves within one tuft do
+            droop_b = 0.35 + 0.80 * hash01(key, k, 15)
+            ll_b = 0.19 + 0.10 * hash01(key, k, 16)
+            for li in range(n):
+                if li == n - 1:
+                    v, side = 1.0, 0.0
+                else:
+                    v = LEAF_FROM_V + (0.97 - LEAF_FROM_V) * (li / max(n - 2, 1)) ** 0.8
+                    side = 1.0 if li % 2 == 0 else -1.0
+                j = v * 6.0
+                j0 = min(int(j), 5)
+                f = j - j0
+                base = pts[j0].lerp(pts[j0 + 1], f)
+                tb = tans[j0].lerp(tans[j0 + 1], f).normalized()
+                if v >= 1.0:
+                    base = base - tb * LEAF_TIP_INSET
+                sp = tb.cross(UP)
+                sp = sp.normalized() if sp.length > 1e-6 else Vector((1.0, 0.0, 0.0))
+                if side == 0.0:
+                    dl = (tb * 0.9 + UP * 0.1).normalized()
+                else:
+                    fan = 0.55 + 0.35 * hash01(key, li, 9)
+                    dl = (tb * 0.5 + sp * (fan * side) + UP * 0.10).normalized()
+                ll = ll_b + 0.10 * hash01(key, li, 4)
+                hw = 0.0155 + 0.006 * hash01(key, li, 5)
+                droop = droop_b * (0.7 + 0.6 * hash01(key, li, 6))
+                if lift_leaves:
+                    base = base + Vector((0.0, 0.0, LIFT_LEAVES))
+                lp = [base + dl * ll * u + Vector((0.0, 0.0, -droop * ll * u * u)) for u in LEAF_U + (1.0,)]
+                wd = dl.cross(UP)
+                wd = wd.normalized() if wd.length > 1e-6 else Vector((1.0, 0.0, 0.0))
+                add_blade(bm, lp, leaf_widths(hw), 0.0012, wd, LEAF_IDX, L, V,
+                          0.15 + 0.7 * hash01(key, li, 8), P_LEAF,
+                          lambda i: LEAF_U[i])
+                n_leaf += 1
     return n_branch, n_leaf
+
+
+def add_culm_sheaths(bm, L, V, culm, nodes, sides, loose):
+    """The papery sheaths the lowest nodes keep: a sleeve wrapped round the
+    culm from just above the node's ridge, its inner wall bitten into the
+    culm, its outer wall thinning to a ragged, diagonal top whose lip curls
+    off. Columns stand on the culm's own vertex bearings, so the inner wall
+    runs parallel to the culm's facets rather than cutting their chords."""
+    n = 0
+    soil_s = CULM_BED + 0.02
+    lows = [s for s in nodes if s > soil_s][:SHEATH_NODES]
+    for q, s_n in enumerate(lows):
+        if s_n / culm.L >= BR_FROM_U:
+            continue
+        nxt = nodes[nodes.index(s_n) + 1]
+        gap = nxt - s_n
+        s0 = s_n + RING_H + 0.0015
+        h = hash01(culm.idx, q, 21)
+        up = gap * (SHEATH_UP[0] + (SHEATH_UP[1] - SHEATH_UP[0]) * h)
+        a0 = TAU * hash01(culm.idx, q, 22)
+        rag = TAU * hash01(culm.idx, q, 23)
+        inner_off = LOOSE_SHEATH if loose else -SHEATH_BITE
+        tone = 0.25 + 0.6 * hash01(culm.idx, q, 24)
+        grids = ([], [])
+        for j in range(SHEATH_T):
+            t = j / (SHEATH_T - 1)
+            outer, inner = [], []
+            for k in range(sides):
+                a = TAU * k / sides
+                tall = 0.5 + 0.5 * math.cos(a - a0)
+                top = s0 + up * (0.58 + 0.42 * tall) + 0.010 * math.sin(5.0 * a + rag) * (1.0 - tall)
+                s = s0 + t * (top - s0)
+                p, _t, e1, e2 = culm.at(s)
+                rad = e1 * math.cos(a) + e2 * math.sin(a)
+                r = culm.radius(s)
+                proud = SHEATH_PROUD0 + (SHEATH_PROUD1 - SHEATH_PROUD0) * t + SHEATH_CURL * t ** 3
+                ro = r + inner_off + SHEATH_BITE + proud
+                ri = r + inner_off
+                for grid, rr in ((outer, ro), (inner, ri)):
+                    v = bm.verts.new(p + rad * rr)
+                    v[V["along"]] = 0.3
+                    v[V["nd"]] = 1.0
+                    grid.append(v)
+            grids[0].append(outer)
+            grids[1].append(inner)
+        outer, inner = grids
+        for j in range(SHEATH_T - 1):
+            for k in range(sides):
+                m = (k + 1) % sides
+                new_face(bm, (outer[j][k], outer[j][m], outer[j + 1][m], outer[j + 1][k]),
+                         SHOOT_IDX, L, tone, 0.0, P_CSHEATH)
+                new_face(bm, (inner[j][k], inner[j + 1][k], inner[j + 1][m], inner[j][m]),
+                         SHOOT_IDX, L, tone, 0.0, P_CSHEATH)
+        for k in range(sides):
+            m = (k + 1) % sides
+            new_face(bm, (inner[0][k], inner[0][m], outer[0][m], outer[0][k]), SHOOT_IDX, L, tone, 0.0, P_CSHEATH)
+            new_face(bm, (outer[-1][k], outer[-1][m], inner[-1][m], inner[-1][k]), SHOOT_IDX, L, tone, 0.0,
+                     P_CSHEATH)
+        n += 1
+    return n
+
+
+def knuckle_plan(i):
+    """Plan of culm ``i``'s exposed rhizome knuckle: its inner end and its
+    culm's foot, both in the build frame."""
+    x, y = CULMS[i][0], CULMS[i][1]
+    rho = math.hypot(x, y)
+    length = min(KNUCKLE_LEN, rho - 0.07)
+    turn = math.radians(28.0 if i % 2 else -28.0)
+    d_in = Vector((-x, -y, 0.0)).normalized()
+    d_in = rotate_about(d_in, UP, turn)
+    return Vector((x, y, 0.0)) + d_in * length, Vector((x, y, 0.0))
+
+
+def add_knuckle(bm, L, V, i, sides):
+    """A pachymorph rhizome segment breaking the soil: a short, fat, jointed
+    sausage running in to the culm's foot, its axis sunk KNUCKLE_SINK radii
+    under the soil the whole way, so it is bedded along its length."""
+    a, b = knuckle_plan(i)
+    rk0 = KNUCKLE_R * CULMS[i][3]
+    n = 16
+    joints = (4, 8, 12)
+    pts, radii, alongs = [], [], []
+    for j in range(n + 1):
+        t = j / n
+        xy = b.lerp(a, t)            # from the culm's foot outward to the free end
+        rk = rk0 * (0.80 + 0.20 * math.sin(math.pi * min(1.0, 0.25 + 0.9 * t)))
+        if j in joints:
+            rk *= 0.86
+        z = soil_height(xy.x, xy.y) - KNUCKLE_SINK * rk
+        pts.append((xy.x, xy.y, z))
+        radii.append(rk)
+        alongs.append(0.5)
+    rows = path_rows(pts, radii, alongs)
+    # Nd: signed distance (in stations) to the nearest joint, for the dark joint scars
+    rows = [(c, e1, e2, r, al, (j - min(joints, key=lambda q: abs(j - q))) * 0.004)
+            for j, (c, e1, e2, r, al, _nd) in enumerate(rows)]
+    d = (Vector(pts[-1]) - Vector(pts[-2])).normalized()
+    tip = Vector(pts[-1]) + d * radii[-1] * 0.85
+    add_rows(bm, rows, sides, CULM_IDX, L, V, CULMS[i][8], 3.0, P_KNUCKLE, tip=tip)
 
 
 # --------------------------------------------------------------------------
@@ -855,9 +1064,16 @@ def add_litter_blade(bm, L, V, tree, x, y, yaw, length, hw, ht, mat, part, tone,
 def plan_clump():
     rng = random.Random(SEED)
     keep = [(c[0], c[1], 0.06 + c[3]) for c in CULMS] + [(s[0], s[1], 0.06 + s[3]) for s in SHOOTS]
+    for i in KNUCKLES:
+        a, b = knuckle_plan(i)
+        for t in (0.0, 0.33, 0.66, 1.0):
+            p = b.lerp(a, t)
+            keep.append((p.x, p.y, 0.03 + KNUCKLE_R * CULMS[i][3]))
     litter, sheaths = [], []
     while len(litter) < N_LITTER or len(sheaths) < N_SHEATH:
-        rad = 0.20 + 0.72 * math.sqrt(rng.random())
+        # off the rhizome hummock, whose flanks tilt steeper than a lying
+        # blade's own flanks lean (LITTER_HT): only where the soil is gentle
+        rad = LITTER_RAD0 + (0.92 - LITTER_RAD0) * math.sqrt(rng.random())
         th = rng.random() * TAU
         x, y = DISC_A[0] * 0.92 * rad * math.cos(th), DISC_A[1] * 0.92 * rad * math.sin(th)
         draw = (x, y, rng.random() * TAU, rng.random(), rng.random())
@@ -875,7 +1091,7 @@ def plan_clump():
 
 def build_clump_mesh(name, plan, detail="low", sunk_nodes=False, stray_branches=False,
                      swell_culm=False, bunch_nodes=False, crowd_culms=False, float_culm=False,
-                     float_litter=False, lift_leaves=False):
+                     float_litter=False, lift_leaves=False, loose_sheaths=False):
     bm = bmesh.new()
     try:
         L = {"tone": bm.faces.layers.float.new("Tone"),
@@ -891,7 +1107,7 @@ def build_clump_mesh(name, plan, detail="low", sunk_nodes=False, stray_branches=
         bm.normal_update()
         tree = BVHTree.FromBMesh(bm)
 
-        n_ring = n_branch = n_leaf = 0
+        n_ring = n_branch = n_leaf = n_csheath = 0
         for i, spec in enumerate(CULMS):
             dx, dy = CROWD_SHIFT if (crowd_culms and i == CROWD_IDX) else (0.0, 0.0)
             dz = FLOAT_CULM if (float_culm and i == FLOAT_CULM_IDX) else 0.0
@@ -904,6 +1120,9 @@ def build_clump_mesh(name, plan, detail="low", sunk_nodes=False, stray_branches=
             nb, nl = add_branches(bm, L, V, culm, nodes, stray_branches and i == STRAY_IDX, lift_leaves)
             n_branch += nb
             n_leaf += nl
+            n_csheath += add_culm_sheaths(bm, L, V, culm, nodes, CULM_SIDES[detail], loose_sheaths)
+        for i in KNUCKLES:
+            add_knuckle(bm, L, V, i, KNUCKLE_SIDES[detail])
         for spec in SHOOTS:
             add_shoot(bm, L, V, tree, spec, detail)
         lift = FLOAT_LITTER if float_litter else 0.0
@@ -913,7 +1132,7 @@ def build_clump_mesh(name, plan, detail="low", sunk_nodes=False, stray_branches=
         for k, (x, y, yaw, a, b) in enumerate(plan["sheaths"]):
             add_litter_blade(bm, L, V, tree, x, y, yaw, SHEATH_L0 + SHEATH_L1 * a, 0.045 + 0.015 * b,
                              SHEATH_HT, SHOOT_IDX, P_SHEATH, 0.2 + 0.5 * b, lift, 0.0007 * (k % 3))
-        BUILT.update(rings=n_ring, branches=n_branch, leaves=n_leaf)
+        BUILT.update(rings=n_ring, branches=n_branch, leaves=n_leaf, csheaths=n_csheath)
 
         bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-5)
         bmesh.ops.dissolve_degenerate(bm, dist=1e-6)
@@ -1003,30 +1222,46 @@ def soil_material():
 
 
 def culm_material():
-    """Bamboo, one substance: zone 0 the culm, 1 a node ring, 2 a branch."""
+    """Bamboo, one substance: zone 0 the culm, 1 a node ring, 2 a branch,
+    3 a rhizome knuckle. Tone runs from a fresh culm (0), deep green and
+    heavily powdered under every node, to an old one (1) gone yellow."""
     mat, nt, bsdf, coord = surface("BambooCulm")
     tone = attr(nt, "Tone")
     zone = attr(nt, "Zone")
     along = attr(nt, "Along")
     nd = attr(nt, "Nd")
+    side = attr(nt, "Side")
+    and_ = math_node(nt, "ABSOLUTE", nd, 0.0)
     # fine vertical streaks: noise stretched along the culm
     streak = noise(nt, mapping(nt, coord, scale=(34.0, 34.0, 1.4)), 3.0, 4.0, 0.6)
-    base = ramp(nt, tone, ((0.0, (0.105, 0.165, 0.030)), (0.5, (0.160, 0.225, 0.045)),
-                           (1.0, (0.215, 0.270, 0.055))))
-    col = mix_color(nt, base, ramp(nt, streak, ((0.30, (0.060, 0.105, 0.016)), (0.85, (0.200, 0.260, 0.060)))), 0.40)
+    base = ramp(nt, tone, ((0.0, (0.060, 0.150, 0.026)), (0.35, (0.115, 0.200, 0.036)),
+                           (0.70, (0.200, 0.235, 0.050)), (0.92, (0.330, 0.280, 0.070)),
+                           (1.0, (0.390, 0.315, 0.090))))
+    col = mix_color(nt, base, ramp(nt, streak, ((0.30, (0.050, 0.090, 0.016)), (0.85, (0.230, 0.270, 0.075)))), 0.30)
     # older wood is yellower toward the foot, and dusted with earth
-    col = mix_color(nt, col, (0.300, 0.265, 0.060), remap(nt, along, 0.0, 0.40, 0.60, 0.0))
+    col = mix_color(nt, col, (0.300, 0.265, 0.060), remap(nt, along, 0.0, 0.18, 0.22, 0.0))
     col = mix_color(nt, col, (0.060, 0.045, 0.030), remap(nt, along, 0.04, 0.0, 0.0, 0.55))
-    # the wax bloom round every node, and the dark scar line at its crown
-    col = mix_color(nt, col, (0.420, 0.470, 0.290), remap(nt, nd, 0.0, 0.055, 0.50, 0.0))
-    col = mix_color(nt, col, (0.045, 0.036, 0.012), remap(nt, nd, 0.0, 0.008, 0.85, 0.0))
-    # node ring: a pale tan collar with a dark lip
-    ring = mix_color(nt, (0.300, 0.270, 0.105), (0.115, 0.095, 0.035), remap(nt, tone, 0.0, 1.0, 0.1, 0.6))
+    # the white wax band just below every node, heaviest on a fresh culm
+    powder = math_node(nt, "MULTIPLY", remap(nt, nd, -0.048, -0.012, 0.0, 1.0),
+                       remap(nt, nd, -0.004, 0.0, 1.0, 0.0))
+    powder = math_node(nt, "MULTIPLY", powder, remap(nt, tone, 0.05, 0.50, 0.80, 0.0))
+    col = mix_color(nt, col, (0.470, 0.510, 0.440), powder)
+    # and a dark scar line hard against the node
+    col = mix_color(nt, col, (0.045, 0.036, 0.012), remap(nt, and_, 0.0, 0.008, 0.70, 0.0))
+    # node ring: a collar darker than its culm, a pale sheath scar on its crest
+    collar = mix_color(nt, base, (0.070, 0.060, 0.020), 0.45)
+    ring = mix_color(nt, collar, (0.420, 0.400, 0.250), remap(nt, side, 0.6, 1.0, 0.0, 0.75))
     col = mix_color(nt, col, ring, band(nt, zone, 1.0, 1.0))
     # branches: thinner, darker olive
     col = mix_color(nt, col, (0.085, 0.115, 0.028), math_node(nt, "MULTIPLY", band(nt, zone, 2.0, 2.0), 0.85))
+    # rhizome knuckle: earthy tan, a dark root-scar ring at every joint
+    knuckle = mix_color(nt, (0.330, 0.265, 0.140), (0.070, 0.048, 0.024), remap(nt, and_, 0.0, 0.003, 0.80, 0.0))
+    knuckle = mix_color(nt, knuckle, (0.090, 0.068, 0.040), remap(nt, streak, 0.40, 0.75, 0.0, 0.5))
+    col = mix_color(nt, col, knuckle, band(nt, zone, 3.0, 3.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
+    # the waxy powder is matte; the rind between nodes polished
     bsdf.inputs["Roughness"].default_value = 0.42
+    nt.links.new(math_node(nt, "ADD", 0.38, math_node(nt, "MULTIPLY", powder, 0.40)), bsdf.inputs["Roughness"])
     bump(nt, bsdf, math_node(nt, "ADD", streak, math_node(nt, "MULTIPLY", band(nt, zone, 1.0, 1.0), 1.5)),
          0.35, 0.003)
     return mat
@@ -1056,8 +1291,8 @@ def shoot_material():
     mat, nt, bsdf, coord = surface("BambooSheath")
     tone = attr(nt, "Tone")
     along = attr(nt, "Along")
-    sheath = ramp(nt, tone, ((0.0, (0.250, 0.175, 0.075)), (0.5, (0.330, 0.245, 0.115)),
-                             (1.0, (0.410, 0.320, 0.170))))
+    sheath = ramp(nt, tone, ((0.0, (0.290, 0.215, 0.100)), (0.5, (0.400, 0.315, 0.165)),
+                             (1.0, (0.500, 0.410, 0.240))))
     fib = noise(nt, mapping(nt, coord, scale=(55.0, 55.0, 7.0)), 2.0, 4.0, 0.6)
     sheath = mix_color(nt, sheath, (0.060, 0.038, 0.018), remap(nt, fib, 0.35, 0.80, 0.0, 0.65))
     # a young shoot's tip greens
@@ -1563,6 +1798,23 @@ def leaf_audit(me, leaves, branches, along):
     return seats
 
 
+def sheath_audit(csheaths, culms):
+    """(bite, proud, inside share) per culm sheath, against the culm whose
+    body its centroid lies in: the deepest vertex inside the culm, the
+    proudest outside it, and the share of vertices inside (the inner wall
+    is half of them)."""
+    out = []
+    for sh in csheaths:
+        host, _d = host_of(culms, sh.centre)
+        if host is None:
+            out.append((-9.0, 9.0, 0.0))
+            continue
+        depths = [signed_depth(host.tree, p) for p in sh.pts]
+        inside_share = sum(1 for d in depths if d > 0.0) / len(depths)
+        out.append((max(depths), -min(depths), inside_share))
+    return out
+
+
 def rng_(vals):
     return f"[{min(vals):.4f},{max(vals):.4f}]" if vals else "[]"
 
@@ -1605,7 +1857,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     zrep = []
     zf = zfight_pairs(low.data, cls["groups"], zrep)
     want = {P_SOIL: 1, P_CULM: len(CULMS), P_NODE: counts["rings"], P_BRANCH: counts["branches"],
-            P_LEAF: counts["leaves"], P_SHOOT: len(SHOOTS), P_LITTER: N_LITTER, P_SHEATH: N_SHEATH}
+            P_LEAF: counts["leaves"], P_SHOOT: len(SHOOTS), P_LITTER: N_LITTER, P_SHEATH: N_SHEATH,
+            P_CSHEATH: counts["csheaths"], P_KNUCKLE: len(KNUCKLES)}
     got = {pid: len(cls[pid]) for pid in want}
     if got != want:
         return (fail(f"shell counts {got} != planned {want}", 3),) + none2
@@ -1613,7 +1866,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     culms = cls[P_CULM]
     along = point_attr(low.data, "Along")
 
-    beds = bed_audit(culms + cls[P_SHOOT], soil)
+    beds = bed_audit(culms + cls[P_SHOOT] + cls[P_KNUCKLE], soil)
+    sheaths = sheath_audit(cls[P_CSHEATH], culms)
+    sh_bite = [b for b, _p, _s in sheaths]
+    sh_proud = [p for _b, p, _s in sheaths]
+    sh_share = [s for _b, _p, s in sheaths]
     info = ring_audit(cls[P_NODE], culms)
     proud = [p for _h, _c, p, _b in info]
     bite = [b for _h, _c, _p, b in info]
@@ -1681,6 +1938,9 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
         "litter": len(rests) == N_LITTER + N_SHEATH and REST_BAND[0] <= min(rests) and max(rests) <= REST_BAND[1],
         "leaves": len(leaf_seats) == counts["leaves"] and LEAF_SEAT_BAND[0] <= min(leaf_seats)
         and max(leaf_seats) <= LEAF_SEAT_BAND[1],
+        "sheaths": len(sheaths) == counts["csheaths"] > 0 and SHEATH_BITE_BAND[0] <= min(sh_bite)
+        and max(sh_bite) <= SHEATH_BITE_BAND[1] and SHEATH_PROUD_BAND[0] <= min(sh_proud)
+        and max(sh_proud) <= SHEATH_PROUD_BAND[1] and min(sh_share) >= 0.45,
     }
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
@@ -1702,7 +1962,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     for key, (n, at) in sorted(zkinds.items()):
         print(f"measured zfight_pairs parts={key} n={n} e.g. at {at}")
     print(f"measured shells={len(cls['all'])} {got}")
-    print(f"measured bed culms+shoots={rng_(beds)} litter={rng_(rests)}")
+    print(f"measured bed culms+shoots+knuckles={rng_(beds)} litter={rng_(rests)}")
     print(f"measured nodes proud={rng_(proud)} bite={rng_(bite)}")
     print(f"measured culms heights={rng_(heights)} diameters={rng_(diams)} taper_ratio={rng_(ratios)} "
           f"worst_rise={worst_rise:.5f}")
@@ -1711,6 +1971,8 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     print(f"measured clump overlaps={clump_overlaps} gap={clump_gap:.4f}")
     print(f"measured branches bite={rng_(br_bites)} node_reach={rng_(br_reach)} "
           f"leaf_seat={rng_(leaf_seats)}")
+    print(f"measured culm_sheaths n={len(sheaths)} bite={rng_(sh_bite)} proud={rng_(sh_proud)} "
+          f"inside_share={rng_(sh_share)} leaves={counts['leaves']} branches={counts['branches']}")
     print(f"measured budget_fails={[k for k, ok in budgets.items() if not ok]}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1742,7 +2004,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
             or hyg["doubles"] or hyg["ngons"] or zf):
         return (fail(f"hygiene {hyg} zfight={zf}", 15),) + none2
     if not budgets["grounded"]:
-        return (fail(f"grounded: zmin={bb[2]:.5f}, culms and shoots bedded {rng_(beds)} m under the soil "
+        return (fail(f"grounded: zmin={bb[2]:.5f}, culms, shoots and knuckles bedded {rng_(beds)} m under the soil "
                      f"(band [{BED_MIN}, {BED_MAX}])", 16),) + none2
     if not budgets["nodes"]:
         return (fail(f"nodes: {len(info)}/{counts['rings']} rings, crest outside the culm {rng_(proud)} m "
@@ -1768,6 +2030,10 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     if not budgets["leaves"]:
         return (fail(f"leaves: {len(leaf_seats)}/{counts['leaves']}, base inside its branch "
                      f"{rng_(leaf_seats)} m (band {LEAF_SEAT_BAND})", 23),) + none2
+    if not budgets["sheaths"]:
+        return (fail(f"culm sheaths: {len(sheaths)}/{counts['csheaths']}, inner wall inside the culm "
+                     f"{rng_(sh_bite)} m (band {SHEATH_BITE_BAND}), outer wall proud {rng_(sh_proud)} m "
+                     f"(band {SHEATH_PROUD_BAND}), share of vertices inside {rng_(sh_share)} (min 0.45)", 25),) + none2
     return 0, low, soil_mat
 
 
@@ -1893,6 +2159,7 @@ def main():
     p.add_argument("--float-culm", action="store_true")
     p.add_argument("--float-litter", action="store_true")
     p.add_argument("--lift-leaves", action="store_true")
+    p.add_argument("--loose-sheaths", action="store_true")
     args = p.parse_args(argv)
 
     flags = {name: getattr(args, name) for name in FLAG_NAMES}
