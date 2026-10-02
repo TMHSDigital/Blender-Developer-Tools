@@ -1,11 +1,13 @@
 # sundial
 
-![A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a bronze dial plate with inked hour lines and a curved-backed gnomon](preview.webp)
+![A garden sundial: a stepped stone plinth under a tapered octagonal granite column and cap, carrying a bronze dial plate with Roman numerals and inked hour lines and a triangular gnomon](preview.webp)
 
 A horizontal garden sundial for 45° north: a stepped stone plinth, a
 tapered octagonal granite column with a flared foot and collar, a cap, a
-bronze dial plate with a bead rim, a curved-backed bronze gnomon, and
-twenty-two inked lines laid out by the dial formula. **A showcase piece,
+bronze dial plate with a bead rim, a curved-backed bronze gnomon,
+twenty inked hour and half-hour lines laid out by the dial formula, two
+chapter rings and Roman numerals VII–XI and I–V, each numeral on its own
+hour line. Astragal beads ring the column at its foot and under its collar. **A showcase piece,
 not an example** — it witnesses no API contract. It asserts that generated
 geometry meets declared asset budgets, recomputed from the finished mesh.
 
@@ -13,9 +15,9 @@ geometry meets declared asset budgets, recomputed from the finished mesh.
 
 | Shipped content | Used for |
 | --- | --- |
-| `skills/mesh-editing-and-bmesh` | frusta, lathed plate and ring, swept ink bars and a lofted gnomon, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
+| `skills/mesh-editing-and-bmesh` | frusta, octagonal astragal beads, lathed plate and rings, swept ink bars and numeral strokes and a lofted gnomon, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
 | `skills/custom-properties` | a face attribute (`StoneTone`) read by the granite shader |
-| `skills/procedural-materials-and-shaders` | speckled, mossy granite with a pitted bump; bronze going green in patches; satin ink |
+| `skills/procedural-materials-and-shaders` | speckled granite with grime and a low-contrast lichen held to the plinth joints, and a pitted bump; bronze going green in patches; satin ink |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, a 128-segment high onto the 64-segment low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -67,20 +69,20 @@ locally (see the cross-version note below).
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 2200–2700 | 2404 |
+| Base triangles | 3600–4200 | 3924 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
 | LOD2 ratio | 0.10–0.35 | 0.2196 |
 | Material slots | exactly 3, distinct | 3 |
-| Stone / bronze / ink faces | ≥ 140 / 430 / 570 | 180 / 507 / 713 |
+| Stone / bronze / ink faces | ≥ 240 / 430 / 1300 | 276 / 507 / 1489 |
 | UV bounds | inside 0..1 | (0.0011, 0.0011)–(0.9989, 0.9989) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
 | Outer AABB | 0.600 × 0.600 × 1.010 m ± 0.020 | 0.6000 × 0.6000 × 1.0100 |
 | Collider triangles | ≤ 480 | 444 (eight hulls) |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~208 kB |
+| glTF export | file written, non-empty | ~322 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
-| Parts | 6 stone, 1 plate, 1 gnomon, 1 ring, 1 noon, 10 bars, 10 ticks | as stated |
+| Parts | 6 stone, 2 beads, 1 plate, 1 gnomon, 2 rings, 1 noon, 10 bars, 10 ticks, 28 numeral strokes | as stated |
 | Style angle | 45° ± 0.25° | 45.0000° |
 | Hour-line bearings | formula ± 0.10°, radial ± 1° | 0.00001°, 0.0000° |
 | Gnomon bite | 2.0–5.0 mm below the plate's top | 3.50 mm |
@@ -102,6 +104,13 @@ Real-world size: a 1.01 m garden sundial. A 0.40 m dial at hip height
   foot starts 5 mm into the step, the column 10 mm, so the two bottoms
   are not the same plane. Near-right-angle edges are chamfered with
   `bmesh.ops.bevel`, `material=` passed so the chamfer keeps the stone slot.
+- **Beads.** Two octagonal astragals, a closed (width, height) profile
+  swept round the shaft's own octagon. The profile is offset from the
+  column's width at the bead's height, so the inner wall grips 8 mm
+  inside the taper, and the flat that would sit on the foot (or under the
+  collar) is buried 3 mm into that block. A bead is told from the stone
+  blocks as the only stone shell shallower than the cap; the part budget
+  asserts there are two.
 - **Plate.** One lathe about Z: a flat field, a bead rim, a bevelled
   outer edge and an underside that sits 4 mm into the cap. 64 segments;
   the high mesh is 128.
@@ -114,10 +123,24 @@ Real-world size: a 1.01 m garden sundial. A 0.40 m dial at hip height
 - **Ink.** Every line is a keeled hexagon swept along its bearing: a
   ridge 2.0 mm proud of the plate, a keel 2.5 mm buried. A ridge and a keel
   keep the tops and the bottoms of twenty lines from being one plane.
-  The noon arrow is the exception: a flat-topped, chamfered prism.
+  The noon arrow is the exception: a flat-topped, chamfered prism. Hour
+  lines run 60–127 mm out and end in an inner chapter ring at 128.5 mm;
+  the numerals stand between it and the outer ring at 166.5 mm.
+- **Numerals.** Each Roman numeral is a set of strokes in the same keeled
+  section, laid out in glyph space (across, up) and mapped to the dial so
+  a glyph point goes to bearing `φ + u / r_mid`. A constant angular offset
+  keeps every I on its own radius, so the three strokes of a III are not
+  parallel planes side by side, and their end caps are not one plane.
+  The two strokes of a V cross just above the point instead of sharing a
+  vertex, which would be a double. Glyph up is outward. The numerals move
+  with the lines under `--linear-hours`. XII is left to the noon arrow.
+  The part budget counts the strokes in the numeral band (131–161 mm by
+  centroid) against the strokes the glyphs call for; numeral bearings are
+  not separately asserted, since the hour lines they stand on are.
 - **Collider.** One hull per stone block, one for the gnomon, and one for
   the plate taken over every fourth segment. The ink is left out: it is a
-  couple of millimetres of relief on a surface the plate hull covers.
+  couple of millimetres of relief on a surface the plate hull covers. So
+  are the beads: 17 mm of moulding round a shaft the column hull covers.
 
 ## Findings the budgets forced
 
@@ -133,6 +156,12 @@ Real-world size: a 1.01 m garden sundial. A 0.40 m dial at hip height
   stations are gone.
 - **Collider.** Hulls over chamfered stone are heavier than they look; the
   foot took the compound from 388 to 444 triangles.
+- **Coplanar by coincidence.** Widening the numerals put one stroke of
+  the IX's X on the same plane as the end cap of the 10:30 tick, 44 mm
+  away: three pairs, exit 15. The X is now 10.4 mm wide, not 11.
+- **A gnomon seen edge-on is a needle.** The hero first turned the piece
+  −28°, which put the camera 62° off the gnomon's face, and the fin read
+  as a stick. The still now turns it −58°.
 
 ## Conventions walked
 
@@ -147,9 +176,9 @@ Every convention in `showcase/README.md`, and whether it applies here.
 | A member is tenoned into its seat | yes | each stone part into its host; the gnomon 3.5 mm into the plate (`--float-gnomon`) |
 | Seat conformance (a band: minimum so it cannot float) | yes | the gnomon bite and every ink line's proud and buried depth (`--float-gnomon`, `--float-lines`) |
 | Mirrored assemblies | partly | the gnomon and noon arrow are centred on the meridian; asserted as one centroid offset (`--shift-noon`) |
-| Material face floors | yes | stone 140, bronze 430, ink 570 |
+| Material face floors | yes | stone 240, bronze 430, ink 1300 |
 | One substance, one slot | yes | granite, bronze, ink |
-| Shading is part of the model | yes | stone and gnomon faceted (dressed stone, a bronze plate); the lathed plate and ring smooth, every edge over 35° hard |
+| Shading is part of the model | yes | stone, beads and gnomon faceted (dressed stone, a bronze plate); the lathed plate and both rings smooth, every edge over 35° hard |
 | Edge treatment | partly | chamfered, but no separate budget: removing the chamfers moves the triangle band first |
 | Sort bmesh operator inputs | yes | the bevel's edge list is sorted by index |
 | The bake cage is narrower than the nearest neighbour | yes | `CAGE_EXTRUSION` 0.01 m |
@@ -229,10 +258,10 @@ a ratio band.
 
 | Value | 5.2.1 |
 | --- | --- |
-| Base triangles | 2404 |
-| LOD1 / LOD2 tris | 1202 / 528 |
-| Face counts (stone / bronze / ink) | 180 / 507 / 713 |
+| Base triangles | 3924 |
+| LOD1 / LOD2 tris | 1962 / 862 |
+| Face counts (stone / bronze / ink) | 276 / 507 / 1489 |
 | Outer AABB | 0.6000 × 0.6000 × 1.0100 |
 | Collider tris | 444 |
 | Style angle | 45.0000° |
-| glTF bytes | 208060 |
+| glTF bytes | 321636 |

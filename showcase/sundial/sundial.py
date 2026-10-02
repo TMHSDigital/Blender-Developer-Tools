@@ -73,6 +73,10 @@ FOOT_AF0, FOOT_AF1, FOOT_Z0, FOOT_TOP = 0.350, 0.290, STEP_TOP - SEAT * 0.5, STE
 CAP_AF, CAP_TOP = 0.460, 0.870
 CAP_Z0 = COLLAR_TOP - SEAT
 LEAN = 0.012
+# Astragal beads round the column shaft: one bedded in the foot, one tucked
+# up into the collar. Each grips the shaft by BEAD_GRIP and is buried in its
+# host block by BEAD_BED, so neither lands on a face of either.
+BEAD_GRIP, BEAD_BED, BEAD_H, BEAD_PROUD = 0.008, 0.003, 0.026, 0.034
 
 # Dial plate: bronze, a bead rim round a flat field.
 PLATE_SEG = 64
@@ -92,11 +96,21 @@ GN_CHAMFER = 0.0008
 FLOAT_GNOMON = 0.005
 
 # Ink: raised lines on the plate, a keel in the bronze under a low ridge.
-BAR_R0, BAR_R1 = 0.070, 0.160
-TICK_R0 = 0.140
+# Hour lines run in to an inner chapter ring; the numerals stand in the band
+# between it and the outer ring, each stroke laid along its own radius.
+BAR_R0, BAR_R1 = 0.060, 0.127
+TICK_R0 = 0.108
 BAR_HALF_W = 0.0030
 TICK_HALF_W = 0.0020
 RING_R = 0.1665
+INNER_RING_R = 0.1285
+NUM_R0, NUM_R1 = 0.1345, 0.1595
+NUM_HALF_W = 0.0016
+NUM_V_W, NUM_X_W, NUM_GAP = 0.0110, 0.0104, 0.0030
+NUMERALS = {7: "VII", 8: "VIII", 9: "IX", 10: "X", 11: "XI",
+            13: "I", 14: "II", 15: "III", 16: "IV", 17: "V"}
+BAR_TICK_SPLIT_R = 0.105
+NUM_BAND = (0.131, 0.161)
 NOON_Y0, NOON_Y1, NOON_TIP = 0.138, 0.152, 0.170
 INK_KEEL, INK_SHOULDER, INK_EDGE, INK_RIDGE = -0.0025, -0.0010, 0.0010, 0.0020
 FLOAT_LINES = 0.004
@@ -105,8 +119,8 @@ SHIFT_NOON = 0.003
 BBOX_TOL = 0.020
 OUTER_SIZE = (0.600, 0.600, 1.010)
 
-BASE_TRIS_MIN = 2200
-BASE_TRIS_MAX = 2700
+BASE_TRIS_MIN = 3600
+BASE_TRIS_MAX = 4200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -114,7 +128,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
-FACE_FLOORS = {0: 140, 1: 430, 2: 570}
+FACE_FLOORS = {0: 240, 1: 430, 2: 1300}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 480
@@ -276,6 +290,98 @@ def stone_frustum(bm, n, af0, af1, z0, z1, off, lean=0.0):
     chamfer(bm, faces, off, STONE_IDX)
 
 
+def column_af(z):
+    """Across-flats width of the (unleaned) column shaft at height ``z``."""
+    z0 = STEP_TOP - SEAT
+    return COL_AF0 + (COL_AF1 - COL_AF0) * (z - z0) / (COL_TOP - z0)
+
+
+def octo_ring(bm, profile):
+    """Closed (af, z) profile swept round an octagon, flats on the axes."""
+    n = 8
+    rings = []
+    for af, z in profile:
+        radius = af * 0.5 / math.cos(math.pi / n)
+        rings.append([bm.verts.new((radius * math.cos((k + 0.5) * 2.0 * math.pi / n),
+                                    radius * math.sin((k + 0.5) * 2.0 * math.pi / n), z))
+                      for k in range(n)])
+    faces = []
+    for a, b in zip(rings, rings[1:] + rings[:1]):
+        for i in range(n):
+            j = (i + 1) % n
+            faces.append(bm.faces.new((a[i], a[j], b[j], b[i])))
+    for f in faces:
+        f.material_index = STONE_IDX
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+
+
+def add_beads(bm):
+    """Astragals: a half-round bead on the foot and another under the collar.
+
+    The profile is offset from the shaft's own width at the bead's height,
+    so the inner wall is BEAD_GRIP inside the taper, and the flat that
+    would sit on the host block is buried BEAD_BED into it instead.
+    """
+    g, h, p = 2.0 * BEAD_GRIP, BEAD_H, BEAD_PROUD
+    zb = FOOT_TOP - BEAD_BED
+    af = column_af(zb + h * 0.5)
+    octo_ring(bm, [(af - g, zb), (af + 0.010, zb), (af + p, zb + 0.009),
+                   (af + p - 0.006, zb + 0.019), (af + 0.006, zb + h), (af - g, zb + h)])
+    zt = COLLAR_Z0 + BEAD_BED
+    af = column_af(zt - h * 0.5)
+    octo_ring(bm, [(af - g, zt - h), (af + 0.010, zt - h), (af + p, zt - 0.015),
+                   (af + p - 0.006, zt - 0.007), (af + 0.006, zt), (af - g, zt)])
+
+
+def numeral_strokes(text):
+    """Strokes of a Roman numeral as ((u0, v0), (u1, v1)) pairs, u across, v 0..1 up.
+
+    ``u`` is metres across the band, centred on the hour line; ``v`` runs
+    from the inner edge of the numeral band to the outer. The two strokes of
+    a V cross just above its point rather than sharing a vertex.
+    """
+    hw, e = NUM_HALF_W, 0.0006
+    widths = {"I": 2.0 * hw, "V": NUM_V_W, "X": NUM_X_W}
+    total = sum(widths[c] for c in text) + NUM_GAP * (len(text) - 1)
+    u = -total * 0.5
+    out = []
+    for c in text:
+        w = widths[c]
+        if c == "I":
+            out.append(((u + hw, 0.0), (u + hw, 1.0)))
+        elif c == "V":
+            out.append(((u + hw, 1.0), (u + w * 0.5 + e, 0.0)))
+            out.append(((u + w - hw, 1.0), (u + w * 0.5 - e, 0.0)))
+        else:
+            out.append(((u + hw, 1.0), (u + w - hw, 0.0)))
+            out.append(((u + w - hw, 1.0), (u + hw, 0.0)))
+        u += w + NUM_GAP
+    return out
+
+
+def add_numerals(bm, linear_hours, lift):
+    """Hour numerals in the chapter band, each stroke on its own radius.
+
+    A glyph point (u, v) goes to bearing ``phi + u / r_mid`` at radius
+    ``NUM_R0 + v * (NUM_R1 - NUM_R0)``. Constant angular offset keeps an I
+    radial, and two parallel-looking strokes are never on one plane. Glyph
+    up is outward, glyph right is clockwise seen from above.
+    """
+    r_mid = 0.5 * (NUM_R0 + NUM_R1)
+    for h, text in NUMERALS.items():
+        phi = hour_bearing(h, linear_hours)
+        for (ua, va), (ub, vb) in numeral_strokes(text):
+            ends = []
+            for u, v in ((ua, va), (ub, vb)):
+                th, r = phi + u / r_mid, NUM_R0 + v * (NUM_R1 - NUM_R0)
+                ends.append(Vector((r * math.sin(th), r * math.cos(th), 0.0)))
+            straight_bar(bm, ends[0], ends[1], ink_section(NUM_HALF_W), PLATE_TOP + lift)
+
+
+def numeral_stroke_count():
+    return sum(len(numeral_strokes(t)) for t in NUMERALS.values())
+
+
 def lathe_z(bm, profile, n, mat, closed=False):
     """Revolve an (r, z) profile about the Z axis; r == 0 entries are poles."""
     rings, poles, verts = [], [], []
@@ -349,6 +455,7 @@ def build_sundial_mesh(
         stone_frustum(bm, 8, FOOT_AF0, FOOT_AF1, FOOT_Z0, FOOT_TOP, 0.004)
         stone_frustum(bm, 8, COLLAR_AF0, COLLAR_AF1, COLLAR_Z0, COLLAR_TOP, 0.004)
         stone_frustum(bm, 8, CAP_AF, CAP_AF, CAP_Z0, CAP_TOP, 0.006)
+        add_beads(bm)
 
         smooth.update(lathe_z(bm, plate_profile(), n_plate, BRONZE_IDX))
 
@@ -360,6 +467,9 @@ def build_sundial_mesh(
 
         ring_profile = [(RING_R + u, PLATE_TOP + z + lift) for u, z in ink_section(0.003)]
         smooth.update(lathe_z(bm, ring_profile, n_plate, INK_IDX, closed=True))
+        inner_profile = [(INNER_RING_R + u, PLATE_TOP + z + lift) for u, z in ink_section(0.0025)]
+        smooth.update(lathe_z(bm, inner_profile, n_plate, INK_IDX, closed=True))
+        add_numerals(bm, linear_hours, lift)
         for h in HOURS:
             phi = hour_bearing(h, linear_hours)
             d = Vector((math.sin(phi), math.cos(phi), 0.0))
@@ -460,7 +570,7 @@ def _mix(nt, blend, a, b, fac):
 
 
 def stone_material(name):
-    """Weathered granite: coarse tone, fine speckle, moss climbing from the plinth."""
+    """Weathered granite: coarse tone, fine speckle, grime and lichen in the joints."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -501,30 +611,58 @@ def stone_material(name):
         nt.links.new(gain.outputs["Value"], gaingrey.inputs[ch])
     base = _mix(nt, "MULTIPLY", base, gaingrey.outputs["Color"], 1.0)
 
+    # Weathering lives where water sits: a narrow band at the ground and at
+    # each joint of the plinth and foot, broken up by noise. Grime darkens the
+    # band; a grey-olive lichen takes part of it. Low contrast on purpose.
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
-    height = nt.nodes.new("ShaderNodeMapRange")
-    height.inputs["From Min"].default_value = 0.02
-    height.inputs["From Max"].default_value = 0.20
-    height.inputs["To Min"].default_value = 1.0
-    height.inputs["To Max"].default_value = 0.0
-    nt.links.new(sep.outputs["Z"], height.inputs["Value"])
+    joints = None
+    for jz, w in ((0.0, 0.035), (BASE_TOP, 0.022), (STEP_TOP, 0.022), (FOOT_TOP, 0.016)):
+        dz = nt.nodes.new("ShaderNodeMath")
+        dz.operation = "SUBTRACT"
+        nt.links.new(sep.outputs["Z"], dz.inputs[0])
+        dz.inputs[1].default_value = jz
+        ab = nt.nodes.new("ShaderNodeMath")
+        ab.operation = "ABSOLUTE"
+        nt.links.new(dz.outputs["Value"], ab.inputs[0])
+        band = nt.nodes.new("ShaderNodeMapRange")
+        band.interpolation_type = "SMOOTHSTEP"
+        band.inputs["From Min"].default_value = 0.0
+        band.inputs["From Max"].default_value = w
+        band.inputs["To Min"].default_value = 1.0
+        band.inputs["To Max"].default_value = 0.0
+        nt.links.new(ab.outputs["Value"], band.inputs["Value"])
+        if joints is None:
+            joints = band.outputs["Result"]
+        else:
+            mx = nt.nodes.new("ShaderNodeMath")
+            mx.operation = "MAXIMUM"
+            nt.links.new(joints, mx.inputs[0])
+            nt.links.new(band.outputs["Result"], mx.inputs[1])
+            joints = mx.outputs["Value"]
     patch = nt.nodes.new("ShaderNodeTexNoise")
-    patch.inputs["Scale"].default_value = 11.0
+    patch.inputs["Scale"].default_value = 24.0
     patch.inputs["Detail"].default_value = 6.0
     nt.links.new(coord.outputs["Object"], patch.inputs["Vector"])
+    patchmap = nt.nodes.new("ShaderNodeMapRange")
+    patchmap.interpolation_type = "SMOOTHSTEP"
+    patchmap.inputs["From Min"].default_value = 0.42
+    patchmap.inputs["From Max"].default_value = 0.66
+    nt.links.new(patch.outputs["Fac"], patchmap.inputs["Value"])
     cover = nt.nodes.new("ShaderNodeMath")
     cover.operation = "MULTIPLY"
-    nt.links.new(height.outputs["Result"], cover.inputs[0])
-    patchramp = nt.nodes.new("ShaderNodeValToRGB")
-    patchramp.color_ramp.elements[0].position = 0.50
-    patchramp.color_ramp.elements[1].position = 0.64
-    nt.links.new(patch.outputs["Fac"], patchramp.inputs["Fac"])
-    # The ramp keeps its default black-to-white; its red channel is the patch mask.
-    sep2 = nt.nodes.new("ShaderNodeSeparateColor")
-    nt.links.new(patchramp.outputs["Color"], sep2.inputs["Color"])
-    nt.links.new(sep2.outputs["Red"], cover.inputs[1])
-    base = _mix(nt, "MIX", base, (0.05, 0.085, 0.03), cover.outputs["Value"])
+    nt.links.new(joints, cover.inputs[0])
+    nt.links.new(patchmap.outputs["Result"], cover.inputs[1])
+    grime = nt.nodes.new("ShaderNodeMath")
+    grime.operation = "MULTIPLY"
+    grime.inputs[1].default_value = 0.35
+    nt.links.new(joints, grime.inputs[0])
+    base = _mix(nt, "MIX", base, (0.075, 0.07, 0.06), grime.outputs["Value"])
+    lichen = nt.nodes.new("ShaderNodeMath")
+    lichen.operation = "MULTIPLY"
+    lichen.inputs[1].default_value = 0.6
+    nt.links.new(cover.outputs["Value"], lichen.inputs[0])
+    base = _mix(nt, "MIX", base, (0.105, 0.115, 0.075), lichen.outputs["Value"])
     nt.links.new(base, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.88
     # Bush-hammered pitting: a fine bump the baked normal map feeds into at render.
@@ -730,7 +868,7 @@ def classify(me):
     for p in me.polygons:
         for i in p.vertices:
             mats.setdefault(i, p.material_index)
-    out = {"stone": [], "plate": [], "gnomon": [], "ink": [], "other": []}
+    out = {"stone": [], "bead": [], "plate": [], "gnomon": [], "ink": [], "other": []}
     for g in shells(me):
         pts = [me.vertices[i].co.copy() for i in g]
         lo = Vector((min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts)))
@@ -741,7 +879,8 @@ def classify(me):
         if len(g) < 4:
             out["other"].append(rec)
         elif m == STONE_IDX:
-            out["stone"].append(rec)
+            # A bead is the only stone shell shallower than the 35 mm cap.
+            out["bead" if rec["ext"].z < BEAD_H + 0.002 else "stone"].append(rec)
         elif m == BRONZE_IDX:
             out["plate" if max(rec["ext"].x, rec["ext"].y) > 0.25 else "gnomon"].append(rec)
         elif m == INK_IDX:
@@ -810,9 +949,12 @@ def sundial_audit(me):
     north = [r for r in rest if r["c"].y > centre.y]
     noon = min(north, key=lambda r: abs(r["c"].x - centre.x), default=None)
     pieces = [r for r in rest if r is not noon]
-    bars = [r for r in pieces if math.hypot(r["c"].x - centre.x, r["c"].y - centre.y) < 0.130]
-    ticks = [r for r in pieces if r not in bars]
+    rad = {id(r): math.hypot(r["c"].x - centre.x, r["c"].y - centre.y) for r in pieces}
+    numerals = [r for r in pieces if NUM_BAND[0] < rad[id(r)] < NUM_BAND[1]]
+    bars = [r for r in pieces if rad[id(r)] < BAR_TICK_SPLIT_R]
+    ticks = [r for r in pieces if r not in bars and r not in numerals]
     out["ring"], out["noon"], out["bars"], out["ticks"] = len(ring), 1 if noon else 0, len(bars), len(ticks)
+    out["numeral_strokes"] = len(numerals)
     out["noon_off"] = abs(noon["c"].x - gnomon["c"].x) if noon and gnomon else 99.0
 
     def bearings(group):
@@ -871,7 +1013,8 @@ def hull_collider(obj, name):
     """Compound collider: one hull per stone block, the plate and the gnomon.
 
     The ink is left out; it is a millimetre of relief on a surface the plate's
-    hull already covers. The plate is hulled over every fourth segment.
+    hull already covers. So are the two column beads: 17 mm of moulding
+    round a shaft whose hull is already there. The plate is hulled over every fourth segment.
     """
     me = obj.data
     parts = classify(me)
@@ -1021,9 +1164,10 @@ def check(skip_decimate, lift_z=False, **flags):
     print(f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
           f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
           f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}")
-    print(f"measured parts stone={sa['stone']} plate={sa['plate']} gnomon={sa['gnomon']} "
-          f"ink={sa['ink']} other={sa['other']} ring={sa['ring']} noon={sa['noon']} "
-          f"bars={sa['bars']} ticks={sa['ticks']} style_faces={sa['style_faces']}")
+    print(f"measured parts stone={sa['stone']} bead={sa['bead']} plate={sa['plate']} "
+          f"gnomon={sa['gnomon']} ink={sa['ink']} other={sa['other']} ring={sa['ring']} "
+          f"noon={sa['noon']} bars={sa['bars']} ticks={sa['ticks']} "
+          f"numeral_strokes={sa['numeral_strokes']} style_faces={sa['style_faces']}")
     print(f"measured style={sa['style_deg']:.4f}deg foot_err={sa['foot_err']:.5f} "
           f"bearing_err={sa['bearing_err']:.5f}deg radial_err={sa['radial_err']:.4f}deg")
     print(f"measured bite={sa['gnomon_bite']:.5f} line_proud=({sa['line_proud'][0]:.5f},"
@@ -1064,11 +1208,14 @@ def check(skip_decimate, lift_z=False, **flags):
     if abs(bb[2]) > ZMIN_EPS:
         return (fail(f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
                      "(--lift-z is the designed fail)", 16),) + nothing
-    if (sa["stone"] != 6 or sa["plate"] != 1 or sa["gnomon"] != 1 or sa["ring"] != 1
-            or sa["noon"] != 1 or sa["bars"] != len(HOURS) or sa["ticks"] != len(TICKS)):
-        return (fail(f"parts: stone {sa['stone']}/6 plate {sa['plate']}/1 gnomon {sa['gnomon']}/1 "
-                     f"ring {sa['ring']}/1 noon {sa['noon']}/1 bars {sa['bars']}/{len(HOURS)} "
-                     f"ticks {sa['ticks']}/{len(TICKS)}", 3),) + nothing
+    n_num = numeral_stroke_count()
+    if (sa["stone"] != 6 or sa["bead"] != 2 or sa["plate"] != 1 or sa["gnomon"] != 1
+            or sa["ring"] != 2 or sa["noon"] != 1 or sa["bars"] != len(HOURS)
+            or sa["ticks"] != len(TICKS) or sa["numeral_strokes"] != n_num):
+        return (fail(f"parts: stone {sa['stone']}/6 bead {sa['bead']}/2 plate {sa['plate']}/1 "
+                     f"gnomon {sa['gnomon']}/1 ring {sa['ring']}/2 noon {sa['noon']}/1 "
+                     f"bars {sa['bars']}/{len(HOURS)} ticks {sa['ticks']}/{len(TICKS)} "
+                     f"numeral strokes {sa['numeral_strokes']}/{n_num}", 3),) + nothing
     if abs(sa["style_deg"] - LATITUDE) > STYLE_TOL_DEG:
         return (fail(f"style edge {sa['style_deg']:.3f} deg off the plate, latitude is "
                      f"{LATITUDE} deg (--wrong-latitude is the designed fail)", 17),) + nothing
@@ -1118,8 +1265,10 @@ def render_still(low, mats, tex, path, engine):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
             ob.hide_viewport = True
-    # Level on the floor: turned about Z only.
-    low.rotation_euler.z = math.radians(-28.0)
+    # Level on the floor: turned about Z only. The gnomon lies in the
+    # meridian plane, so the yaw turns its face toward the camera; at -28
+    # degrees it was seen 62 degrees off its normal and read as a needle.
+    low.rotation_euler.z = math.radians(-58.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
