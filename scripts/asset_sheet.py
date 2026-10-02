@@ -131,6 +131,7 @@ SELECT = {
     "shape-key-blend": (r"^Vase$", None),
     "temp-override-join": (r"^Lantern$", None),
     "depsgraph-export": (r"^Gamepad\.", None),
+    "mine-cart": (r"^MineCartLow$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>62 examples</strong> &nbsp;&bull;&nbsp; <strong>72 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>62 examples</strong> &nbsp;&bull;&nbsp; <strong>73 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 62 examples, and 72 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 62 examples, and 73 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>72 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>73 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -181,6 +181,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/bamboo-clump/"><img src="showcase/bamboo-clump/preview.webp" width="24%" alt="Bamboo clump: seven splayed green and yellow culms with dark node collars and papery sheaths, under a full drooping leafy crown, rising from a soil hummock with exposed rhizome knuckles, on a dark studio floor" /></a>
   <a href="showcase/toboggan/"><img src="showcase/toboggan/preview.webp" width="24%" alt="Toboggan: a wooden runner sled with steel-shod runners curling into front horns, a screwed seven-slat deck on posts, a red crossbar, and a twisted hemp pull rope ending in a wooden toggle, on a dark studio floor" /></a>
   <a href="showcase/sundial/"><img src="showcase/sundial/preview.webp" width="24%" alt="Sundial: a garden sundial with a stepped stone plinth, a tapered octagonal granite column and cap, and a bronze dial plate with hour lines, a Roman-numeral chapter ring and a triangular gnomon, on a dark studio floor" /></a>
+  <a href="showcase/mine-cart/"><img src="showcase/mine-cart/preview.webp" width="24%" alt="Mine cart: a rust-streaked riveted red steel tub on oak sills, four flanged iron wheels resting on two polished rails spiked to sleepers in grey ballast, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -312,7 +313,10 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`fern-mossy-rock`](showcase/fern-mossy-rock/) — the ninth `nature` piece: procedural shaded woodland corner on a sloping soil bank (a gritstone boulder cut by deep cleavage planes into broad flat fracture faces meeting at crisp, weathered arrises, with stepped ledges, pitting, lichen, a moss stain and a damp band at its foot, split down its front by a deep crack and sunk into the bank all round; lobed moss cushions and satellite tufts laid on it as conforming shells, deepest in its hollows, feathering to nothing at the rim, tucked over the crack's lip, with bare patches where the stone shows through; a male fern's shuttlecock crown of eleven bipinnate fronds whose 434 alternate pinnae are cut into pinnules and taper to the tip, three fiddleheads unrolling as logarithmic spirals from a scaly rootstock bedded in the soil, a smaller fern growing out of the crack, and beech litter, pebbles, a twig and wood sorrel at the foot), whose cleaved stone, rooted fronds and rootstock, moss thickness and feathered rim, boulder sealed in the bank, moss facing up or into the shade, crack fern wedged in the cleft, pinna alternation and taper, true spirals and ground cover are recomputed from the mesh, through the same pipeline. `--smooth-rock` exits 27 on the stone's turning concentrated in crisp arrises, `--float-fronds` and `--lift-crown` 17 on every frond rooted in its crown and the crown sealed in the soil, `--float-moss` 18 on the moss cushion's thickness band on the stone, `--slab-moss` 28 on the cushion feathering out at its rim, `--perch-rock` 20 on the boulder sealed all round, `--sunny-moss` 21 on moss facing up or into the shade, `--perch-crack-fern` 22 on the crack fern rooted in the cleft, `--flat-taper` and `--opposite-pinnae` 23 on pinnae alternating and tapering along the rachis, `--open-crozier` 24 on every fiddlehead a real spiral, `--float-cover` 25 on the ground cover joined to the soil, while the envelope holds.
 
 [`sea-stack-arch`](showcase/sea-stack-arch/) — the tenth `nature` piece: procedural coastal diorama tile (a fragment of a bedded sandstone headland at the sea's edge as one eroded mass: eighteen level hard and soft beds running on from the legs into the roof and the stack, jointed faces leaning back, battered and flared at the foot, one weathering field read on the face through every bed, fallen-out blocks and open joints, soft beds undercut to a wave-cut notch; a natural arch of two legs curving in to meet at the crown under a roof that steps down seaward; a tapering stack standing in the sea; the sea filling the tile to its rim, foam at the shore and round the feet, a wave-cut platform with tide pools, a shingle cove, fallen blocks, boulders and pebbles, and a draped turf mat with sea grass and thrift cushions), whose beds biting each other and the roof biting both legs, stack over its footprint, feet sealed in the ground, clear aperture, level continuous bedding, undercut soft beds, sea level and ripple, contained water, seated foam, loose rock sealed and apart, rooted cover and ragged (not squared) rock are recomputed from the mesh, through the same pipeline. `--gap-lintel` exits 17 on every bed biting the one it lies on, `--lean-stack` 19 on the stack's mass over its footprint, `--cut-pillar` 20 on the feet sealed all round, `--close-arch` 21 on the clear aperture, `--tilt-beds` 22 on level, continuous bedding, `--flush-beds` 23 on the undercut, `--flat-sea` 24 on the water level and ripple, `--short-sea` 25 on the water contained, `--lift-foam` 26 on the foam at the waterline, `--perch-talus` 27 and `--pile-talus` 28 on the loose rock sealed and apart, `--float-cover` 29 on the cover rooted in the tops, `--tidy-rock` 31 on the rock ragged rather than squared, while the envelope holds.
+
 [`sundial`](showcase/sundial/) — procedural garden sundial whose gnomon is inclined at the latitude and whose hour lines follow tan(H) = sin(lat)·tan(15°h), measured off the finished mesh, through the same pipeline. Falsifiers `--wrong-latitude` and `--linear-hours` exit 17.
+
+[`mine-cart`](showcase/mine-cart/) — procedural narrow-gauge mine cart on a rail segment, riveted tub on flanged wheels over 30 lb rails, sleepers and ballast, through the same pipeline; every tread seated on its railhead and every flange clear of it. Falsifiers `--skip-decimate` exits 9, `--stray-vert` exits 15, `--lift-z` exits 16, `--float-wheel` exits 18, `--skew-axle` exits 19, `--wide-gauge` exits 20.
 
 </details>
 

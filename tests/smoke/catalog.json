@@ -148,5 +148,6 @@
   {"name": "cricket-wicket", "script": "showcase/cricket-wicket/cricket_wicket.py"},
   {"name": "bamboo-clump", "script": "showcase/bamboo-clump/bamboo_clump.py"},
   {"name": "toboggan", "script": "showcase/toboggan/toboggan.py"},
-  {"name": "sundial", "script": "showcase/sundial/sundial.py"}
+  {"name": "sundial", "script": "showcase/sundial/sundial.py"},
+  {"name": "mine-cart", "script": "showcase/mine-cart/mine_cart.py"}
 ]

@@ -1018,6 +1018,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "mine-cart",
+      "dir": "showcase/mine-cart",
+      "category": "village",
+      "teaches": "A procedural narrow-gauge mine cart on a rail segment — riveted steel tub with a rolled lip, timber frame, four flanged wheels on two axles, two 30 lb rails spiked to sleepers in ballast — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A rust-streaked red mine cart with a riveted steel tub and rolled lip on oak sills, its four flanged iron wheels resting on two polished rails spiked to dark sleepers in a bed of grey ballast.",
+      "witnessesFix": "Recomputed: 12334 tris, four materials (steel 816, iron 5104, timber 208, ballast 622 faces), UVs in 0..1 with zero overlap, a 2.400 × 1.500 × 1.048 m envelope, LOD1 0.4999 and LOD2 0.2118–0.2199, a 1532-tri compound collider, a FINISHED normal bake and a 990 kB Unity glTF, hygiene all zero with no coplanar cross-shell faces, and the cart actually on its track: every wheel's tread 0.50 mm into its railhead, every flange 20.5 mm below the rail top and 6.00 mm clear of the railhead's inner face, both axles 0.0000° off square, a 0.600 m wheelbase on 0.600 m gauge, 79 mm rail and 0.360 m wheels. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --float-wheel exits 18 with one tread 5.50 mm over the rail; --skew-axle exits 19 at 1.500°; --wide-gauge exits 20 with the flanges 6.00 mm inside the railheads.",
+      "hero": "docs/gallery/assets/mine-cart-hero.webp",
+      "preview": "showcase/mine-cart/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
