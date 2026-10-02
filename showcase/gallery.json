@@ -1032,6 +1032,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "garden-gate",
+      "dir": "showcase/garden-gate",
+      "category": "village",
+      "teaches": "A procedural ledged-and-braced garden gate on hook-and-band hinges through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets — every knuckle on its pin, both pins on one plumb axis, and the swing clearing the latch post — rather than an API contract.",
+      "alt": "A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face.",
+      "witnessesFix": "Recomputed: 3320 tris, three materials (timber 370 / iron 1534 / ground 156 faces), 344-tri four-hull collider, LOD ratios 0.50 / 0.22, 1.56 × 0.56 × 1.245 m grounded; both knuckles coaxial with their pins (0.000 mm, 0.600 mm running clearance) and seated −0.50 mm on their hooks, both pins plumb on one axis (0.000 mm), swing circle clearing the latch post and keeper by 14.87 mm. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-knuckle exits 17 on the knuckle on its pin; --lift-gate exits 18 on the knuckle seat; --tilt-pintle exits 19 on the plumb shared axis; --tight-post exits 20 on the swing clearance.",
+      "hero": "docs/gallery/assets/garden-gate-hero.webp",
+      "preview": "showcase/garden-gate/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

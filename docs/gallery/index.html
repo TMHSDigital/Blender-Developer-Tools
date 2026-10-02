@@ -67,7 +67,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">54 examples, 73 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">54 examples, 74 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
       </div>
       <div class="filters" id="filters">
@@ -92,7 +92,7 @@
         <span class="cats-label" id="catsLabel">Showcase category</span>
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="cat-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
-          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">38</span></button>
+          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">39</span></button>
           <button class="cat-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">7</span></button>
           <button class="cat-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">11</span></button>
           <button class="cat-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">7</span></button>
@@ -1666,6 +1666,18 @@
           <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="village" data-name="garden-gate" data-search="garden gate garden-gate a procedural ledged-and-braced garden gate on hook-and-band hinges through uvs, bake, lod, collider, and unity gltf, asserting recomputed budgets — every knuckle on its pin, both pins on one plumb axis, and the swing clearing the latch post — rather than an api contract. mesh export showcase village">
+        <div class="card-media">
+          <img src="assets/garden-gate-hero-640.webp" srcset="assets/garden-gate-hero-640.webp 640w, assets/garden-gate-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="garden-gate/">Garden Gate</a></h2>
+          <p class="slug">garden-gate</p>
+          <p class="teaches">A procedural ledged-and-braced garden gate on hook-and-band hinges through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets — every knuckle on its pin, both pins on one plumb axis, and the swing clearing the latch post — rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 3320 tris, three materials (timber 370 / iron 1534 / ground 156 faces), 344-tri four-hull collider, LOD ratios 0.50 / 0.22, 1.56 × 0.56 × 1.245 m grounded; both knuckles coaxial with their pins (0.000 mm, 0.600 mm running clearance) and seated −0.50 mm on their hooks, both pins plumb on one axis (0.000 mm), swing circle clearing the latch post and keeper by 14.87 mm. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-knuckle exits 17 on the knuckle on its pin; --lift-gate exits 18 on the knuckle seat; --tilt-pintle exits 19 on the plumb shared axis; --tight-post exits 20 on the swing clearance.</p>
+          <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1724,7 +1736,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '54 examples, 73 showcase pieces';
+      var COUNT_LABEL = '54 examples, 74 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.

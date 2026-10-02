@@ -132,6 +132,7 @@ SELECT = {
     "temp-override-join": (r"^Lantern$", None),
     "depsgraph-export": (r"^Gamepad\.", None),
     "mine-cart": (r"^MineCartLow$", None),
+    "garden-gate": (r"^GateLow$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
