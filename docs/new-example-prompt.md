@@ -126,7 +126,7 @@ failure you introduce.
 Treat visual quality as a shipping gate with the same rigor as the checks. Conform
 to `docs/VISUAL-STYLE.md` explicitly (Standard view transform, dark studio stage,
 AREA key/fill/rim/wedge, designed hero materials, framing, 1280×720 → hero/preview
-webp). Inspect the actual rendered pixels at full size and as the gallery
+webp, plus the 640×360 card variant from `scripts/make_thumbs.py`). Inspect the actual rendered pixels at full size and as the gallery
 thumbnail. Iterate—the first render is a draft, not a candidate. Revise until the
 subject and demonstrated API contract are immediately readable, the composition is
 intentional, important geometry is not clipped, highlights are not blown out,

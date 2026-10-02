@@ -753,7 +753,8 @@ showcase/
     preview.webp
 ```
 
-Hero stills live at `docs/gallery/assets/<name>-hero.webp` like examples.
+Hero stills live at `docs/gallery/assets/<name>-hero.webp` like examples, each with
+its 640×360 card variant `<name>-hero-640.webp` (`python scripts/make_thumbs.py`).
 `scripts/build_gallery.py` merges `showcase/gallery.json` into the same
 `docs/gallery/` site as examples, tagged `showcase`.
 
