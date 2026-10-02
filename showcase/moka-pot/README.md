@@ -1,19 +1,21 @@
 # moka-pot
 
-![A polished eight-sided aluminium moka pot: a tapered boiler under a collector that flares back out, a faceted lid with a black bakelite knob, a pinched spout, and a curved black bakelite handle on a riveted bracket, a brass safety valve on the boiler](preview.webp)
+![A polished eight-sided aluminium moka pot pinched to an hourglass waist with a proud grip band at the joint, a V-beak spout, a faceted lid with a black bakelite knob and a hinge knuckle, a black bakelite D handle on a fin, and a brass safety valve on the boiler](preview.webp)
 
-A three-cup stovetop moka pot: a tapered eight-flat boiler, a collector
-that flares back out from the waist, a faceted lid under a bakelite
-knob, a pinched pour spout, a bakelite handle on a riveted bracket, and a
-brass safety valve. **A showcase piece, not an example** — it witnesses
-no API contract. It asserts that generated geometry meets declared asset
-budgets, recomputed from the finished mesh.
+A three-cup Moka Express-pattern stovetop pot: an eight-flat boiler that
+flares out to its foot, a collector that flares out to its rim, both
+pinching to the screw joint where the collector's threaded skirt stands
+proud as a grip band, a V beak pinched from the rim, a faceted lid on a
+hinge knuckle under a bakelite knob, a bakelite D handle rooted in a
+riveted fin, and a brass safety valve. **A showcase piece, not an
+example** — it witnesses no API contract. It asserts that generated
+geometry meets declared asset budgets, recomputed from the finished mesh.
 
 ## What it composes
 
 | Shipped content | Used for |
 | --- | --- |
-| `skills/mesh-editing-and-bmesh` | eight-flat lathes, a swept handle, wedges and plates, all in one `bmesh`; bevel pinned to a material slot |
+| `skills/mesh-editing-and-bmesh` | eight-flat lathes, a swept handle, a prism beak and plates, all in one `bmesh`; bevel pinned to a material slot |
 | `skills/procedural-materials-and-shaders` | brushed aluminium, glossy bakelite, brass |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, high onto low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
@@ -52,7 +54,7 @@ off the generated vertices:
 `--odd-facet` pushes one flat of the collector's mid ring 2.5 mm out and
 exits 19 on the spread (1.97 mm measured, with the AABB unchanged).
 `--lean-pot` shears the pot 4 mm over its height and exits 19 on the
-plumb line (3.41 mm measured, spread untouched).
+plumb line (3.28 mm measured, spread untouched).
 
 ## Budgets
 
@@ -63,60 +65,74 @@ both).
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 950–1250 | 1092 |
+| Base triangles | 1200–1400 | 1300 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
-| LOD2 ratio | 0.10–0.35 | 0.2179 |
+| LOD2 ratio | 0.10–0.35 | 0.2185 |
 | Material slots | exactly 3, distinct | 3 |
-| Aluminium / bakelite / brass faces | ≥ 160 / 210 / 150 | 190 / 244 / 180 |
-| UV bounds | inside 0..1 | (0.0023, 0.0023)–(0.9977, 0.9977) |
+| Aluminium / bakelite / brass faces | ≥ 160 / 280 / 100 | 197 / 388 / 124 |
+| UV bounds | inside 0..1 | (0.0025, 0.0025)–(0.9975, 0.9975) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 0.1665 × 0.0928 × 0.1522 m ± 0.006 | 0.1665 × 0.0928 × 0.1522 |
-| Collider triangles | ≤ 200 | 170 (two hulls) |
+| Outer AABB | 0.1327 × 0.0832 × 0.1600 m ± 0.006 | 0.1327 × 0.0832 × 0.1600 |
+| Collider triangles | ≤ 200 | 154 (two hulls) |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~72 kB |
+| glTF export | file written, non-empty | ~78 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4, boiler zmin ≤ 1e-4 | 0.00000 |
-| Shells | exactly 11, none unclassified | 11 |
+| Shells | exactly 10, none unclassified | 10 |
 | Collector seat on the boiler | 2.5–4.5 mm | 3.50 mm |
-| Handle bite into the bracket | 1.0–3.0 mm, per root vertex | 1.71–1.80 mm |
-| Knob bite into the lid | 1.0–3.0 mm | 2.00 mm |
-| Lid seat on the collector | 1.0–3.0 mm | 1.50 mm |
-| Spout bite and reach | base 0.9–3.0 mm into the wall; tip 10–15 mm beyond it | 1.50 mm; 12.50 mm |
-| Bracket bite | 0.9–3.0 mm into the wall | 1.50 mm |
-| Hinge bite | 1.5–5.0 mm into the collector | 3.10 mm |
-| Fasteners (valve, two rivets) | bite 0.8–2.5 mm, proud ≥ 1.2 mm | valve 1.60 / 4.60; rivets 1.20 / 1.80 |
-| Real size: foot, collector, height | 92.8 / 91.2 / 152.2 mm ± 3 | 92.8 / 91.2 / 152.2 |
+| Handle bite into the fin | 1.0–3.0 mm, each of the two roots | 2.50 mm, both roots |
+| Knob bite into the lid | 1.0–3.0 mm | 1.80 mm |
+| Lid seat on the collector | 1.0–3.0 mm | 1.80 mm |
+| Spout bite and reach | base 0.9–3.0 mm into the wall; tip 10–15 mm beyond it | 1.50 mm; 12.41 mm |
+| Fin bite | 0.9–3.0 mm into the wall | 1.50 mm |
+| Hinge bite | 1.5–5.0 mm into the collector | 2.63 mm |
+| Fasteners (valve, one rivet) | bite 0.8–2.5 mm, proud ≥ 1.2 mm | valve 1.60 / 4.60; rivet 1.20 / 1.80 |
+| Real size: foot, collector, height | 83.2 / 80.2 / 160.0 mm ± 3 | 83.2 / 80.2 / 160.0 |
 | Plumb | ≤ 0.8 mm | 0.000 mm |
 | Eight-fold spread | ≤ 0.2 mm | 0.000 mm |
 
-Real-world size: 92.8 mm across the foot flats, 91.2 mm across the
-collector, 152.2 mm to the top of the knob, about 166 mm from the spout
-tip to the handle end. It is a three-cup Bialetti-pattern pot.
+Real-world size: a three-cup Moka Express is listed at 16.0 cm tall and
+9.0 cm across the base point to point, which is 83.2 mm across its
+flats. The collector rim is read off product photos at 0.96 of the foot,
+80.2 mm across its flats. The waist at the joint is 0.76 of the foot.
+Spout tip to handle is about 133 mm.
 
 ## Construction
 
 - **Body.** Boiler, collector and lid are eight-flat lathes from
   `(apothem, z)` profiles: the distance from the axis to the middle of a
   flat, which is what a ruler across the pot reads. Vertices every 45°
-  offset by 22.5° put a flat square on each axis, so the handle bracket
-  and spout each sit on a flat. Every edge over 30° is chamfered 0.7 mm,
-  which includes the 45° ridge between flats, so the ridges catch light.
+  offset by 22.5° put a flat square on each axis, so the fin and the
+  spout each sit on a flat. The boiler flares from a 63.6 mm neck to an
+  83.2 mm foot; the collector from a 65.2 mm waist to an 80.2 mm rim. Its
+  bottom 9 mm is a vertical skirt 67.6 mm across, 2.0 mm proud of the
+  boiler's neck and 1.2 mm proud of its own waist: the grip band. Every edge over 30°
+  is chamfered 0.7 mm, which includes the 45° ridge between flats, so the
+  ridges catch light.
 - **Joints are tenoned, not stood.** The collector's floor sits 3.5 mm
-  below the boiler's top plane (the boiler's neck runs up inside it); the
-  lid sits 1.5 mm below the collector's top plane; the knob is driven
-  2 mm into the lid. Nothing lands on a shared plane.
-- **Spout.** A wedge on the −x flat, 28 mm wide at the wall and 10 mm at
-  the tip, its base vertices computed per corner from the collector's own
-  wall function and driven 1.5 mm in.
-- **Bracket.** A plate on the +x flat built the same way, so it follows
-  the wall's 5.6° rake, with two brass rivets above and below the handle.
-  The handle's root is driven 2 mm into it.
-- **Handle.** A swept bakelite blade: ten rings of a twelve-point rounded
-  rectangle along a cubic Bézier in the XZ plane, thicker mid-span than
-  at either end, smooth-shaded with end caps hard and chamfered 1.2 mm.
-- **Fasteners.** Rivets and the valve are small turned heads aimed down
-  the host's normal (the bracket's rake, the boiler's taper). Their
-  seat is read back as height above the host's own nearest face.
+  below the boiler's top plane (the boiler's neck runs up inside the
+  skirt); the lid sits 1.8 mm below the collector's top plane; the knob
+  is driven 1.8 mm into the lid. Nothing lands on a shared plane.
+- **Spout.** A triangular prism on the −x flat: its base spans 30 mm of
+  the flat and is driven 1.5 mm into the wall per vertex from the
+  collector's own wall function; its apex is one vertical edge 12.4 mm
+  out. The underside sweeps 21 mm down the wall to the base, and the lip
+  rises 1.2 mm from the rim to the tip, so it reads as a V pinched out of
+  the rim rather than a block stuck to it.
+- **Fin.** A 22 mm plate on the +x flat built the same way, so it
+  follows the collector's 7° flare from the waist almost to the rim. One
+  brass rivet sits in the opening of the D.
+- **Handle.** A bakelite D in the XZ plane: twenty-two rings of a
+  twelve-point rounded rectangle along a superellipse half (exponent
+  0.55, 34 mm out from the fin, 41 mm between roots), slim at the roots
+  and fuller through the grip. Both roots leave the fin horizontally and
+  each root cap is cut parallel to the fin's raked face, 2.5 mm inside
+  it.
+- **Hinge.** An aluminium knuckle on top of the fin, through the
+  collector's rim and the lid's edge.
+- **Fasteners.** The rivet and the valve are small turned heads aimed
+  down the host's normal (the fin's rake, the boiler's taper). Their seat
+  is read back as height above the host's own nearest face.
 - **Shading.** Aluminium is flat-shaded, because the faceting is the
   object. Bakelite and brass are turned or swept and smooth-shaded with
   every edge over 35° hard.
@@ -128,14 +144,26 @@ tip to the handle end. It is a three-cup Bialetti-pattern pot.
   the failure was a sunk spout, not a floating one. It now lifts the base
   outward by 4 mm and leaves the tip where it was, so only the bite fails
   and the reach stays in its band.
-- **Handle bite measured the chamfer, not the root.** The root's rays
-  were cast from every vertex within 1.5 mm of the root plane, which
-  includes the chamfer ring 1.2 mm out; that ring is seated only 0.8 mm
-  and tripped the band on a correct model. The root cap ring alone is
-  now measured.
-- **Collider hit its ceiling by 6 triangles** when the spout was widened
-  for the silhouette; the hull's planar-dissolve angle went from 6° to 9°
-  rather than the ceiling being raised (206 → 170 triangles).
+- **The first pass was not a Moka Express.** It was 152 mm tall with a
+  100 mm foot, its waist pinched to only 0.81 of the foot, the handle a
+  horn curving up off a bracket, and the spout a blunt block. Every
+  budget passed. The quality pass took the size from retailer listings,
+  pinched the waist to 0.76, added the grip band, and replaced the horn
+  with a two-root D and the block with a V beak.
+- **Two rivets on one fin are a coplanar pair.** The D's opening leaves
+  room for rivets only 8.5 mm apart. On one raked plane with centres
+  closer than the 20 mm window, their caps counted as 200 cross-shell
+  coplanar pairs. The fin now carries one rivet, as the real one carries
+  one screw.
+- **The fin rakes further than it is thick.** Splitting the fin's
+  vertices into inner and outer by world x put the outer face's low
+  corners on the inner side, and its bite read −4.5 mm on a correct
+  model. The split is now by signed distance off the collector's own
+  surface.
+- **A D handle has two roots.** Measuring the vertices nearest the
+  pot in x saw only the lower root, because the wall flares out with
+  height. Each half of the D is now read on its own, from the handle
+  vertices inside the fin, and a root with none inside is a float.
 
 ## Conventions walked
 
@@ -147,14 +175,14 @@ Every convention in `showcase/README.md`, and whether it applies here.
 | Falsifier fails the budget it targets | yes | table below |
 | Hygiene incl. cross-shell coplanar | yes | exit 15; `--flush-joint` is the coplanar falsifier |
 | Named supports | no | one support (the boiler's foot) |
-| Joint-fit budgets | yes | shell count, collector seat, handle bite (exit 17) |
-| Fasteners aimed down the host normal | yes | rivets and valve (`--float-valve`, exit 18) |
-| Seat conformance | yes | knob, lid, spout, bracket, hinge, fasteners (exit 18) |
+| Joint-fit budgets | yes | shell count, collector seat, both handle roots (exit 17) |
+| Fasteners aimed down the host normal | yes | rivet and valve (`--float-valve`, exit 18) |
+| Seat conformance | yes | knob, lid, spout, fin, hinge, fasteners (exit 18) |
 | A member is tenoned into its seat, never stood on it | yes | collector, lid, knob, handle |
 | Plumb and real-world size | yes | exit 19; plumb, three sizes in metres |
-| Mirrored assemblies | no | the two rivets are not a paired budget |
+| Mirrored assemblies | no | nothing is paired |
 | Even shaping terms | n/a | no shaping function; profiles are piecewise linear |
-| Edge treatment: no right angles | yes | 0.7 mm chamfer on every aluminium edge over 30°; the asset-quality right-angle fraction is 0.059 |
+| Edge treatment: no right angles | yes | 0.7 mm chamfer on every aluminium edge over 30°; the asset-quality right-angle fraction is 0.044 |
 | One substance, one slot | yes | aluminium, bakelite, brass |
 | Shading is part of the model | yes | see Construction |
 | Chamfer n-gon caps, then triangulate | yes | every cap |
@@ -173,13 +201,13 @@ were not available locally and are unverified.
 | --- | --- | --- | --- |
 | `--skip-decimate` | LOD1 ratio | drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000 | 9 |
 | `--stray-vert` | mesh hygiene | adds one loose vertex on the axis | 15 |
-| `--flush-joint` | coplanar cross-shell pairs | drops the boiler's top plane onto the collector's floor plane; 9 pairs | 15 |
+| `--flush-joint` | coplanar cross-shell pairs | drops the boiler's top plane onto the collector's floor plane; 6 pairs | 15 |
 | `--lift-z` | grounded zmin | lifts the whole mesh 20 mm | 16 |
-| `--short-handle` | handle bite | starts the handle root 3 mm outside the bracket; −3.1 mm | 17 |
-| `--float-knob` | knob bite | lifts the knob 4 mm; −2.0 mm | 18 |
+| `--short-handle` | handle bite | stops both handle roots 3 mm outside the fin; no root vertex inside it | 17 |
+| `--float-knob` | knob bite | lifts the knob 4 mm; −2.2 mm | 18 |
 | `--float-spout` | spout bite | lifts the spout's base 4 mm off the wall, tip fixed; −2.5 mm | 18 |
 | `--float-valve` | fastener seat | lifts the valve 3 mm off its flat; −1.4 mm | 18 |
-| `--lean-pot` | plumb | shears the pot 4 mm over its height; 3.41 mm drift | 19 |
+| `--lean-pot` | plumb | shears the pot 4 mm over its height; 3.28 mm drift | 19 |
 | `--odd-facet` | eight-fold spread | pushes one mid-ring flat 2.5 mm out; 1.97 mm spread | 19 |
 
 ## Exit codes
@@ -209,7 +237,7 @@ collider ceiling), both on the render path only.
 | 15 | Mesh hygiene (`--stray-vert`, `--flush-joint`) |
 | 16 | Grounded zmin (`--lift-z`) |
 | 17 | Shell count, collector seat, or handle bite (`--short-handle`) |
-| 18 | Knob, lid, spout, bracket, hinge or fastener seat (`--float-knob`, `--float-spout`, `--float-valve`) |
+| 18 | Knob, lid, spout, fin, hinge or fastener seat (`--float-knob`, `--float-spout`, `--float-valve`) |
 | 19 | Real-world size, plumb, or eight-fold spread (`--lean-pot`, `--odd-facet`) |
 | 21 | Asset-quality gate (`examples/gallery_asset_quality.py`, render path only) |
 
@@ -237,9 +265,9 @@ Measured on 5.2.1 only. 4.5 and 5.1 are unverified locally.
 
 | Value | 5.2.1 |
 | --- | --- |
-| Base triangles | 1092 |
-| LOD1 / LOD2 tris | 546 / 238 |
-| Face counts (aluminium / bakelite / brass) | 190 / 244 / 180 |
-| Outer AABB | 0.1665 × 0.0928 × 0.1522 |
-| Collider tris | 170 |
-| glTF bytes | 72148 |
+| Base triangles | 1300 |
+| LOD1 / LOD2 tris | 650 / 284 |
+| Face counts (aluminium / bakelite / brass) | 197 / 388 / 124 |
+| Outer AABB | 0.1327 × 0.0832 × 0.1600 |
+| Collider tris | 154 |
+| glTF bytes | 77860 |

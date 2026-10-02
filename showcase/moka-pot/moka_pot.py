@@ -65,16 +65,22 @@ COS_HALF = math.cos(math.pi / SIDES)
 # Profiles are (apothem, z): the distance from the axis to the middle of a
 # flat, which is what a ruler across the pot reads. Both ends of each list
 # are the flat caps.
-BOILER = [(0.0425, 0.0000), (0.0460, 0.0030), (0.0464, 0.0050), (0.0374, 0.0640),
-          (0.0384, 0.0675), (0.0384, 0.0705)]
-UPPER = [(0.0394, 0.0670), (0.0396, 0.0685), (0.0452, 0.1255), (0.0456, 0.1275),
-         (0.0456, 0.1285), (0.0448, 0.1300), (0.0440, 0.1305)]
-LID = [(0.0425, 0.1290), (0.0430, 0.1297), (0.0430, 0.1330), (0.0422, 0.1342),
-       (0.0360, 0.1352), (0.0215, 0.1368), (0.0160, 0.1385)]
-# Knob: a turned bakelite ball on a neck; (radius, z), round not faceted.
-KNOB = [(0.0098, 0.1365), (0.0100, 0.1392), (0.0090, 0.1405), (0.0112, 0.1420),
-        (0.0128, 0.1445), (0.0130, 0.1470), (0.0118, 0.1495), (0.0085, 0.1515),
-        (0.0050, 0.1522)]
+# The Moka Express is an hourglass: the boiler flares out to its foot and
+# the collector flares out to its rim, both pinching to the screw joint,
+# where the collector's threaded skirt stands proud as a grip band. The
+# waist reads about three quarters of the foot (0.76 here).
+BOILER = [(0.0395, 0.0000), (0.0414, 0.0025), (0.0416, 0.0045), (0.0312, 0.0615),
+          (0.0318, 0.0630), (0.0318, 0.0660)]
+BOILER_TAPER = (2, 3)  # the rings bounding the boiler's flank
+UPPER = [(0.0330, 0.0625), (0.0338, 0.0638), (0.0338, 0.0700), (0.0326, 0.0714),
+         (0.0397, 0.1290), (0.0401, 0.1303), (0.0401, 0.1318), (0.0395, 0.1333)]
+UPPER_FLARE = (3, 4)  # the rings bounding the collector's flank
+LID = [(0.0380, 0.1315), (0.0384, 0.1322), (0.0384, 0.1350), (0.0376, 0.1360),
+       (0.0320, 0.1370), (0.0195, 0.1385), (0.0150, 0.1398)]
+# Knob: a turned bakelite finial on a neck; (radius, z), round not faceted.
+KNOB = [(0.0095, 0.1380), (0.0098, 0.1405), (0.0085, 0.1420), (0.0115, 0.1445),
+        (0.0135, 0.1485), (0.0136, 0.1520), (0.0124, 0.1555), (0.0090, 0.1585),
+        (0.0050, 0.1600)]
 KNOB_SIDES = 12
 CHAMFER = 0.0007
 CHAMFER_ANGLE = math.radians(30.0)
@@ -82,35 +88,46 @@ CAP_ANGLE = math.radians(60.0)
 CHAMFER_BAKE = 0.0012
 CHAMFER_BRASS = 0.0004
 
-# Spout: a wedge on the -x flat, wide at the wall and pinched to the tip,
-# its base driven into the collector wall.
+# Spout: a V beak pinched out of the -x flat at the rim. In plan a
+# triangle whose base spans the flat and whose apex is a sharp vertical
+# edge; its underside sweeps down the wall, its lip rises to the tip.
 SPOUT_BITE = 0.0015
 SPOUT_REACH = 0.0125
-SPOUT_TOP = 0.1280
-SPOUT_BASE_BOT = 0.1085
-SPOUT_TIP_BOT = 0.1235
-SPOUT_HALF_BASE = 0.0140
-SPOUT_HALF_TIP = 0.0050
+SPOUT_TOP = 0.1300
+SPOUT_LIP = 0.1312
+SPOUT_BASE_BOT = 0.1090
+SPOUT_TIP_BOT = 0.1272
+SPOUT_HALF_BASE = 0.0150
 FLOAT_SPOUT = 0.0040  # outward, off the wall
 
-# Bracket on the +x flat: a plate that follows the wall's rake, with two
-# brass rivets and the handle driven into it.
-BRACKET_Z = (0.0835, 0.1215)
-BRACKET_HALF = 0.0155
+# Bracket on the +x flat: a fin that follows the wall's flare, with two
+# brass rivets between the handle's two roots.
+BRACKET_Z = (0.0722, 0.1275)
+BRACKET_HALF = 0.0110
 BRACKET_BITE = 0.0015
-BRACKET_OUT = 0.0035
-RIVET_ZS = (0.0885, 0.1165)
+BRACKET_OUT = 0.0045
+# One rivet, centred in the D's opening. Two would have to share the fin's
+# plane 8.5 mm apart, a cross-shell coplanar pair by the hygiene metric.
+RIVET_ZS = (0.1020,)
 RIVET = [(0.0030, -0.0012), (0.0030, 0.0004), (0.0024, 0.0014), (0.0014, 0.0018)]
-HANDLE_BITE = 0.0020
+# Handle: a bakelite D loop in the xz plane, rooted in the fin at two
+# stations; each root cap is cut parallel to the fin's raked face.
+HANDLE_BITE = 0.0025
 SHORT_HANDLE = 0.0030
-HANDLE_PATH = ((0.0444, 0.1025), (0.0720, 0.1005), (0.0955, 0.1085), (0.0990, 0.1300))
-HANDLE_RINGS = 10
+# The D's centreline is a superellipse half: REACH out from the fin, HALF
+# up and down from HANDLE_ZC, squared off by HANDLE_POW < 1. Its roots
+# leave the fin horizontally at HANDLE_ZC +- HANDLE_HALF.
+HANDLE_ZC = 0.1000
+HANDLE_HALF = 0.0205
+HANDLE_REACH = 0.0340
+HANDLE_POW = 0.55
+HANDLE_RINGS = 22
 HANDLE_SIDES = 12
 
-# Hinge lug joining the lid's edge to the collector rim on the handle side.
-HINGE_X = (0.0420, 0.0505)
-HINGE_Z = (0.1245, 0.1325)
-HINGE_HALF = 0.0042
+# Hinge knuckle on top of the fin, joining the lid's edge to the rim.
+HINGE_X = (0.0368, 0.0478)
+HINGE_Z = (0.1268, 0.1356)
+HINGE_HALF = 0.0060
 
 # Safety valve on the boiler's 225-degree flat (front left of the hero).
 VALVE_Z = 0.034
@@ -125,10 +142,10 @@ FLOAT_KNOB = 0.0040
 LEAN = 0.0040
 ODD_FACET = 0.0025
 BBOX_TOL = 0.006
-OUTER_SIZE = (0.1665, 0.0928, 0.1522)
+OUTER_SIZE = (0.1327, 0.0832, 0.1600)
 
-BASE_TRIS_MIN = 950
-BASE_TRIS_MAX = 1250
+BASE_TRIS_MIN = 1200
+BASE_TRIS_MAX = 1400
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -136,7 +153,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
-FACE_FLOORS = {0: 160, 1: 210, 2: 150}
+FACE_FLOORS = {0: 160, 1: 280, 2: 100}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 200
@@ -149,7 +166,7 @@ COPLANAR_NORMAL_EPS = 1e-4
 COPLANAR_PLANE_EPS = 1e-4
 COPLANAR_CENTRE_MAX = 0.02
 LIFT_Z = 0.02
-SHELLS_EXPECTED = 11
+SHELLS_EXPECTED = 10
 UPPER_SEAT_MIN = 0.0025
 UPPER_SEAT_MAX = 0.0045
 LID_SEAT_MIN = 0.0010
@@ -169,11 +186,13 @@ HINGE_BITE_MAX = 0.0050
 FASTENER_BITE_MIN = 0.0008
 FASTENER_BITE_MAX = 0.0025
 FASTENER_PROUD_MIN = 0.0012
-# Real-world size of a three-cup pot, metres, from the dimensions printed
-# on the box: 9.3 cm across the foot, 9.1 cm across the collector, 15.2 cm.
-REAL_FOOT_FLATS = 0.0928
-REAL_COLLECTOR_FLATS = 0.0912
-REAL_TOTAL_H = 0.1522
+# Real-world size of a three-cup Moka Express, metres: 16.0 cm tall and
+# 9.0 cm across the foot point to point (retailer listings), which is
+# 8.32 cm across its flats. The collector rim is read off product photos
+# at 0.96 of the foot: 8.02 cm across its flats.
+REAL_FOOT_FLATS = 0.0832
+REAL_COLLECTOR_FLATS = 0.0802
+REAL_TOTAL_H = 0.1600
 REAL_TOL = 0.003
 PLUMB_MAX = 0.0008
 SYM_EPS = 2e-4
@@ -294,38 +313,28 @@ def add_round(bm, profile, ctx, mat_idx, verts_out, lift=0.0):
     return lathe_solid(bm, rings_pts, mat_idx, ctx, verts_out)
 
 
-def hexahedron(bm, bottom, top, mat_idx, verts_out):
-    """Six quads over four bottom and four top points, both wound CCW from above."""
-    lo = [bm.verts.new(p) for p in bottom]
-    hi = [bm.verts.new(p) for p in top]
-    faces = [bm.faces.new(tuple(reversed(lo))), bm.faces.new(tuple(hi))]
-    for i in range(4):
-        j = (i + 1) % 4
-        faces.append(bm.faces.new((lo[i], lo[j], hi[j], hi[i])))
-    for f in faces:
-        f.material_index = mat_idx
-    verts_out.extend(lo + hi)
-
-
 def add_spout(bm, upper_wall, float_spout, verts_out):
-    """A pinched wedge on the -x flat, base verts driven SPOUT_BITE into the wall."""
+    """A V beak on the -x flat: a triangular prism, base driven SPOUT_BITE into the wall."""
     # A floated spout lifts its base off the wall and leaves the tip where it
     # was, so only the bite moves and the reach stays in its band.
     shift = -FLOAT_SPOUT if float_spout else 0.0
-    zb, zt, zk = SPOUT_BASE_BOT, SPOUT_TOP, SPOUT_TIP_BOT
+    zb, zt, zk, zl = SPOUT_BASE_BOT, SPOUT_TOP, SPOUT_TIP_BOT, SPOUT_LIP
 
     def base_x(z):
         return -(wall_a(upper_wall, z) - SPOUT_BITE) + shift
 
     tip_x = -(wall_a(upper_wall, zt) + SPOUT_REACH)
-    hb, ht = SPOUT_HALF_BASE, SPOUT_HALF_TIP
-    bottom = [(base_x(zb), -hb, zb), (base_x(zb), hb, zb), (tip_x, ht, zk), (tip_x, -ht, zk)]
-    top = [(base_x(zt), -hb, zt), (base_x(zt), hb, zt), (tip_x, ht, zt), (tip_x, -ht, zt)]
-    # Bottom ring runs (-y base, +y base, +y tip, -y tip): CCW from above is
-    # the reverse of the x-descending walk, so wind it to match ``top``.
-    bottom = [bottom[0], bottom[3], bottom[2], bottom[1]]
-    top = [top[0], top[3], top[2], top[1]]
-    hexahedron(bm, bottom, top, ALU_IDX, verts_out)
+    hb = SPOUT_HALF_BASE
+    # Each triangle CCW from above: -y base, apex, +y base.
+    lo = [bm.verts.new(p) for p in ((base_x(zb), -hb, zb), (tip_x, 0.0, zk), (base_x(zb), hb, zb))]
+    hi = [bm.verts.new(p) for p in ((base_x(zt), -hb, zt), (tip_x, 0.0, zl), (base_x(zt), hb, zt))]
+    faces = [bm.faces.new(tuple(reversed(lo))), bm.faces.new(tuple(hi))]
+    for i in range(3):
+        j = (i + 1) % 3
+        faces.append(bm.faces.new((lo[i], lo[j], hi[j], hi[i])))
+    for f in faces:
+        f.material_index = ALU_IDX
+    verts_out.extend(lo + hi)
 
 
 def plate_x(z, out):
@@ -352,14 +361,6 @@ def add_bracket(bm, verts_out):
     verts_out.extend(lo + hi)
 
 
-def bezier(pts, s):
-    p0, p1, p2, p3 = (Vector(p) for p in pts)
-    u = 1.0 - s
-    pos = u ** 3 * p0 + 3 * u * u * s * p1 + 3 * u * s * s * p2 + s ** 3 * p3
-    tan = 3 * u * u * (p1 - p0) + 6 * u * s * (p2 - p1) + 3 * s * s * (p3 - p2)
-    return pos, tan.normalized()
-
-
 def section(t, w):
     """A rounded rectangle, ``t`` thick along the path normal and ``w`` wide in y."""
     pts = []
@@ -372,26 +373,39 @@ def section(t, w):
 
 
 def handle_rings(short):
-    path = [Vector(p) for p in HANDLE_PATH]
-    # The root cap sits HANDLE_BITE inside the bracket's outer face; a short
-    # handle starts SHORT_HANDLE outside it instead.
-    z0 = path[0].y
-    root_x = plate_x(z0, BRACKET_OUT) - HANDLE_BITE
-    if short:
-        root_x = plate_x(z0, BRACKET_OUT) + SHORT_HANDLE
-    path[0] = Vector((root_x, z0))
+    # Both root caps sit HANDLE_BITE inside the fin's outer face; a short
+    # handle stops SHORT_HANDLE outside it instead.
+    off = SHORT_HANDLE if short else -HANDLE_BITE
+
+    def centre(theta):
+        c, s = math.cos(theta), math.sin(theta)
+        z = HANDLE_ZC + HANDLE_HALF * math.copysign(abs(s) ** HANDLE_POW, s)
+        return Vector((plate_x(z, BRACKET_OUT) + off + HANDLE_REACH * abs(c) ** HANDLE_POW, z))
+
     rings = []
     for i in range(HANDLE_RINGS):
         s = i / (HANDLE_RINGS - 1)
-        pos, tan = bezier(path, s)
-        t = 0.0225 + 0.0035 * math.sin(math.pi * s) - 0.0035 * s * s
-        w = 0.0180 + 0.0070 * math.sin(math.pi * s) - 0.0020 * s * s
+        theta = math.pi * (0.5 - s)
+        pos = centre(theta)
+        # Tangent by central difference; at the roots the fin-ward step is
+        # replaced by the outward one so the cap faces straight into the fin.
+        h = 1e-4
+        tan = (centre(theta - h) - centre(theta + h)).normalized()
+        if i in (0, HANDLE_RINGS - 1):
+            tan = Vector((1.0 if i == 0 else -1.0, 0.0))
+        # Slim at the roots, fuller through the grip at the bottom of the D.
+        t = 0.0115 + 0.0030 * math.sin(math.pi * s) + 0.0010 * s
+        w = 0.0130 + 0.0030 * math.sin(math.pi * s)
         n = Vector((-tan.y, tan.x))
         pts = []
         for u, v in section(t, w):
             q = pos + n * u
-            pts.append((q.x, v, q.y))
-        rings.append(pts)
+            pts.append([q.x, v, q.y])
+        if i in (0, HANDLE_RINGS - 1):
+            # Cut the root cap parallel to the fin's raked outer face.
+            for p in pts:
+                p[0] = plate_x(p[2], BRACKET_OUT) + off
+        rings.append([tuple(p) for p in pts])
     return rings
 
 
@@ -452,7 +466,8 @@ def build_pot_mesh(
         boiler = list(BOILER)
         if flush_joint:
             # The boiler's top plane drops onto the collector's floor plane.
-            boiler[-2:] = [(boiler[-1][0], 0.0650), (boiler[-1][0], UPPER[0][1])]
+            mid = 0.5 * (boiler[-3][1] + UPPER[0][1])
+            boiler[-2:] = [(boiler[-1][0], mid), (boiler[-1][0], UPPER[0][1])]
         add_faceted(bm, boiler, ctx, alu)
         add_faceted(bm, UPPER, ctx, alu, odd=odd_facet)
         add_faceted(bm, LID, ctx, alu)
@@ -464,7 +479,8 @@ def build_pot_mesh(
         lathe_solid(bm, rings, BAKE_IDX, ctx, bake)
 
         # Rivets on the bracket's outer face, aimed down its normal.
-        slope = (UPPER[2][0] - UPPER[1][0]) / (UPPER[2][1] - UPPER[1][1])
+        (a0, z0), (a1, z1) = UPPER[UPPER_FLARE[0]], UPPER[UPPER_FLARE[1]]
+        slope = (a1 - a0) / (z1 - z0)
         rake = Vector((1.0, 0.0, -slope))
         for z in RIVET_ZS:
             org = Vector((plate_x(z, BRACKET_OUT), 0.0, z))
@@ -472,7 +488,8 @@ def build_pot_mesh(
         # Valve on the boiler's 225-degree flat, normal read off the taper.
         ang = math.radians(VALVE_DEG)
         nh = Vector((math.cos(ang), math.sin(ang), 0.0))
-        bslope = (BOILER[3][0] - BOILER[2][0]) / (BOILER[3][1] - BOILER[2][1])
+        (a0, z0), (a1, z1) = BOILER[BOILER_TAPER[0]], BOILER[BOILER_TAPER[1]]
+        bslope = (a1 - a0) / (z1 - z0)
         axis = nh + Vector((0.0, 0.0, -bslope))
         org = nh * wall_a(BOILER, VALVE_Z) + Vector((0.0, 0.0, VALVE_Z))
         if float_valve:
@@ -783,17 +800,17 @@ def classify(me):
         e = rec["ext"]
         m = mats.get(g[0], -1)
         if m == ALU_IDX:
-            if e.z > 0.05 and lo.z < 0.001:
+            if e.x > 0.06 and e.z > 0.05 and lo.z < 0.001:
                 key = "boiler"
-            elif e.z > 0.05:
+            elif e.x > 0.06 and e.z > 0.05:
                 key = "upper"
             elif e.x > 0.06 and lo.z > 0.1:
                 key = "lid"
-            elif c.x < -0.04:
+            elif c.x < -0.03:
                 key = "spout"
-            elif c.x > 0.04 and lo.z < 0.1:
+            elif c.x > 0.03 and lo.z < 0.1:
                 key = "bracket"
-            elif c.x > 0.04:
+            elif c.x > 0.03:
                 key = "hinge"
             else:
                 key = "other"
@@ -895,7 +912,14 @@ def pot_audit(me):
             out["spout_reach"] = upper["lo"].x - sp["lo"].x
         br = one["bracket"]
         if br:
-            inner = [p for p in br["pts"] if p.x < br["c"].x]
+            # The fin rakes further than it is thick, so split its faces by
+            # signed distance off the collector's surface, not by world x.
+            sd = []
+            for p in br["pts"]:
+                loc, nrm, _i, _d = ub.find_nearest(p)
+                sd.append((p - loc).dot(nrm) if loc is not None else 0.0)
+            cut = 0.5 * (min(sd) + max(sd))
+            inner = [p for p, s in zip(br["pts"], sd) if s < cut]
             out["bracket_bite"] = depth_band(ub, inner, pox)
         hg = one["hinge"]
         if hg:
@@ -903,9 +927,16 @@ def pot_audit(me):
             out["hinge_bite"] = depth_band(ub, inner, pox)
     br, hd = one["bracket"], one["handle"]
     if br and hd:
+        # Each of the D's two roots is read on its own: the handle verts
+        # inside the fin, split at the handle's mid height. A root with no
+        # vert inside the fin is a float.
         bb = shell_bvh(me, br)
-        root = [p for p in hd["pts"] if p.x < hd["lo"].x + 0.0004]
-        out["handle_bite"] = depth_band(bb, root, pox)
+        zmid = 0.5 * (hd["lo"].z + hd["hi"].z)
+        bands = []
+        for half in ([p for p in hd["pts"] if p.z >= zmid], [p for p in hd["pts"] if p.z < zmid]):
+            ds = [d for d in (depth_along(bb, p, pox) for p in half) if d > 0.0]
+            bands.append((min(ds), max(ds)) if ds else (-99.0, -99.0))
+        out["handle_bite"] = (min(b[0] for b in bands), max(b[1] for b in bands))
 
     # Fasteners: height of each head above its host's plane, read off the
     # host mesh at the head's own position.
@@ -962,7 +993,7 @@ def hull_collider(obj, name):
     body = [p for i, p in enumerate(body) if i % 2 == 0]
     groups = [body]
     if parts["handle"]:
-        groups.append(parts["handle"][0]["pts"])
+        groups.append(parts["handle"][0]["pts"][::2])
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -1278,7 +1309,7 @@ def render_still(low, mats, tex, path, engine):
     cam.location = (1.0 * SC, -2.25 * SC, 0.95 * SC)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.012, 0.0, 0.074)
+    aim.location = (0.016, 0.0, 0.080)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
