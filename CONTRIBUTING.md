@@ -322,7 +322,7 @@ This project uses CC-BY-NC-ND-4.0 as its outbound license, which forbids derivat
 
 ### Required grant
 
-By submitting a contribution to this repository, you certify that you have the right to do so under the Developer Certificate of Origin (DCO) 1.1, and you grant TMHSDigital a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute your contribution under the project's current license (CC-BY-NC-ND-4.0) or any successor license chosen by the project.
+By submitting a contribution to this repository, you certify that you have the right to do so under the Developer Certificate of Origin (DCO) 1.1, and you grant TMHSDigital a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute your contribution under the license that governs the part of the tree you contribute to (CC-BY-NC-ND-4.0 at the repository root, MIT for `snippets/` and `templates/`) or any successor license chosen by the project.
 
 ### DCO sign-off
 

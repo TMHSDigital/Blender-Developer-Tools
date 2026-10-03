@@ -1516,4 +1516,9 @@ look in [`docs/VISUAL-STYLE.md`](docs/VISUAL-STYLE.md).
 
 ## License
 
-Copyright (c) 2026 TM Hospitality Strategies. Licensed under [CC-BY-NC-ND-4.0](LICENSE).
+Copyright (c) 2026 TM Hospitality Strategies.
+
+- **Code you copy and adapt is MIT:** [`snippets/`](snippets/LICENSE) and [`templates/`](templates/LICENSE). Copy lines or whole files into your own projects, modify them, and ship the result commercially; keep the copyright notice with substantial copies.
+- **Everything else is [CC-BY-NC-ND-4.0](LICENSE):** skills, rules, examples, showcase pieces, docs and the site. Read and use them freely, but do not redistribute modified copies or use them commercially.
+
+A `LICENSE` file inside a directory governs that directory.

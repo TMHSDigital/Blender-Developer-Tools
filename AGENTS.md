@@ -49,7 +49,7 @@ Blender-Developer-Tools/
   AGENTS.md, CLAUDE.md, README.md, ROADMAP.md, CHANGELOG.md
   CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
   VERSION                        # source of truth for the repo version
-  LICENSE                        # CC-BY-NC-ND-4.0
+  LICENSE                        # CC-BY-NC-ND-4.0 (snippets/ and templates/ carry their own MIT LICENSE)
 ```
 
 ## Branching and commit model
@@ -209,4 +209,4 @@ property handling has invalidated a lot of community content.
 
 ## License
 
-CC-BY-NC-ND-4.0. See `LICENSE`.
+CC-BY-NC-ND-4.0 (see `LICENSE`), except `snippets/` and `templates/`, which are MIT (see the `LICENSE` file in each directory) so the documented copy-and-adapt use is lawful.
