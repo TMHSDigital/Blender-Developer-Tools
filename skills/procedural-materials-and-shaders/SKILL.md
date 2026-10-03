@@ -158,10 +158,10 @@ When the same subgraph appears across multiple materials, factor it into a `Shad
 
 ## Version correctness
 
-| Topic | 4.5 LTS | 5.1 stable | Notes |
+| Topic | 4.5 LTS | 5.1 / 5.2 LTS | Notes |
 | --- | --- | --- | --- |
-| Principled BSDF | `ShaderNodeBsdfPrincipled` | Same | Some inputs renamed in 5.0; `Specular` -> `Specular IOR Level`. Use string lookup with the 5.x name. |
-| Node group socket interface | `group.inputs.new` / `group.outputs.new` | `group.interface.new_socket` | Different APIs, see snippet `shader-node-group.py`. |
+| Principled BSDF | `ShaderNodeBsdfPrincipled` | Same | Inputs were renamed in 4.0 with the Principled v2 rewrite: `Specular` -> `Specular IOR Level` (see the 4.0 release notes, https://developer.blender.org/docs/release_notes/4.0/). Use string lookup with the 4.0+ name. |
+| Node group socket interface | `group.interface.new_socket` | `group.interface.new_socket` | Same API on every supported version. `group.inputs.new` / `outputs.new` were removed in 4.0; see snippet `shader-node-group.py`. |
 | EEVEE engine string | `'BLENDER_EEVEE_NEXT'` | `'BLENDER_EEVEE'` | Legacy EEVEE was removed in 4.2. EEVEE Next used the id `'BLENDER_EEVEE_NEXT'` on 4.2-4.5, then reclaimed the plain `'BLENDER_EEVEE'` id in 5.0. |
 | Layered Textures | Not present | Not present in 5.1 | Roadmap pushed to 2027. Do not generate code referencing it. |
 

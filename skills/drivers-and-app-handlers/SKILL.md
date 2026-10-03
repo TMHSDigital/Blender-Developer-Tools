@@ -269,7 +269,7 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 
 ## Version correctness
 
-| Topic | 4.5 LTS | 5.1 stable |
+| Topic | 4.5 LTS | 5.1 / 5.2 LTS |
 | --- | --- | --- |
 | `exit_pre` handler | Not available | New in 5.1; use `atexit` fallback for 4.x |
 | `save_pre` / `save_post` signature | `(filepath)` — a string | `(filepath)` — a string (unchanged) |
