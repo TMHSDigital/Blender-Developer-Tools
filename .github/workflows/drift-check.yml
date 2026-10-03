@@ -15,7 +15,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: TMHSDigital/Developer-Tools-Directory/.github/actions/drift-check@9be79799df00ed42a0c4cff39e74a383a493296c # v1.15
+      - uses: TMHSDigital/Developer-Tools-Directory/.github/actions/drift-check@7886cbe6ef93d57cc73c020b98268fa0dc0bdc98 # v1.19.2
         with:
           mode: self
           format: gh-summary
