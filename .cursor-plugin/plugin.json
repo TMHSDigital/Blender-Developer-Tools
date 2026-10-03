@@ -138,7 +138,9 @@
     "examples/vse-linear-modifiers",
     "examples/wave-displace",
     "examples/ray-cast-space",
-    "examples/lattice-deform"
+    "examples/lattice-deform",
+    "examples/solidify-even-thickness",
+    "examples/boolean-exact-volume"
   ],
   "showcase": [
     "showcase/shipping-crate",

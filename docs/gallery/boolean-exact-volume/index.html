@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Boolean Exact Volume (boolean-exact-volume) — Examples — Blender Developer Tools</title>
+  <meta name="description" content="The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/boolean-exact-volume/" />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/boolean-exact-volume/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Boolean Exact Volume (boolean-exact-volume) — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem." />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/boolean-exact-volume-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/boolean-exact-volume-hero.webp" />
+  <meta name="twitter:image:alt" content="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:title" content="Boolean Exact Volume (boolean-exact-volume) — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem." />
+  <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="../gallery.css?v=27ce4298f2" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="../../"><span class="site-brand-dot" aria-hidden="true"></span>Blender Developer Tools</a>
+      <button class="site-menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="site-menu-icon" aria-hidden="true"></span>Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <ul><li><a href="../../gallery/#k=examples">Examples</a></li><li><a href="../../gallery/#k=showcase">Showcase</a></li><li><a href="../../#new">What&#x27;s new</a></li><li><a href="../../#skills">Skills</a></li><li><a href="../../#rules">Rules</a></li><li><a href="../../#snippets">Snippets</a></li><li><a href="../../#install">Install</a></li><li class="gh"><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a></li></ul>
+      </nav>
+    </div>
+  </header>
+  <header class="hero">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../" id="crumbGallery">Gallery</a></li><li><a href="../#k=examples">Examples</a></li><li aria-current="page">boolean-exact-volume</li></ol></nav>
+    <h1>Boolean Exact Volume</h1>
+    <p class="slug">examples/boolean-exact-volume/</p>
+    <p>The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem.</p>
+  </header>
+  <main id="main">
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span> solidify-even-thickness</a><span class="pager-pos hud">56 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube.">
+      <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." width="1280" height="720" fetchpriority="high" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
+    <div class="callout"><span class="tag">witnesses</span> EXACT booleans are closed-form even on coplanar faces: through translated, 18°-turned operands the union, difference and intersection measure 9, 7 and 1 m³ (8.999999 / 6.999999 / 1.000000, float32) and are closed 2-manifolds with no loose geometry; the floating-point solver (&#x27;FAST&#x27; on 4.5, &#x27;FLOAT&#x27; on 5.x) gives a 7.708 m³ union and --float-solver exits 3.</div>
+    <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that cuts a 2 m cube with a 2 × 1 × 1 m slab using the <strong>Boolean modifier on the EXACT solver</strong>, in all three operations (UNION, DIFFERENCE, INTERSECT), then proves that each result has the <strong>closed-form volume</strong> and is a <strong>closed 2-manifold</strong>. The hard part is deliberate: the slab&#x27;s top face lies in the cube&#x27;s top plane, the coplanar case where floating-point booleans go wrong. The results are read through the depsgraph lifetime contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> (<code>evaluated_get</code> → <code>to_mesh</code> → <code>to_mesh_clear</code>), and the operands are built with bmesh and freed in <code>try</code>/<code>finally</code> as <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> requires.</p>
+<p><strong>What it witnesses:</strong> with A = [0,2]³ and B = [1,3] × [0.5,1.5] × [1,2], the overlap is A ∩ B = [1,2] × [0.5,1.5] × [1,2], so the closed forms are V(A ∪ B) = 8 + 2 − 1 = 9, V(A − B) = 8 − 1 = 7 and V(A ∩ B) = 1 cubic metre. Each operand pair sits in an object matrix that is translated and turned 18° about Z, so the modifier has to carry B into A&#x27;s space. For every result the check:</p>
+<ul><li>sums the signed volume over the evaluated mesh&#x27;s own triangles (divergence theorem, world space) and requires the closed form to 1e-6 relative (measured 8.999999, 6.999999 and 1.000000 — float32 coordinates through a rotation). A positive volume also means the normals point outward;</li><li>requires a closed 2-manifold: every edge borders exactly two faces, with no loose verts or edges;</li><li>requires that the result&#x27;s volume differs from V(A) by at least 0.5 m³, so the modifier really acted and the witness cannot pass vacuously.</li></ul>
+<p><strong>The trap it exposes:</strong> the floating-point solver is faster and is right in general position, but it mishandles coplanar faces. <code>--float-solver</code> runs the same three operations on it and gets a union of 7.708 m³ against the closed form 9, so check 3 fails with the measured error. That solver was <code>&#x27;FAST&#x27;</code> through 4.5 LTS and is <code>&#x27;FLOAT&#x27;</code> from 5.0, so a script that hard-codes either name breaks on the other series (<code>fast_solver_id()</code> branches on <code>bpy.app.version</code>). <code>&#x27;EXACT&#x27;</code> is the same identifier on 4.5, 5.1 and 5.2.</p>
+<p>The still shows the three operations side by side on a walnut plinth, each with its two operands drawn as thin outlines (the cube in steel, the coplanar slab in glowing orange): on the left the union in teal glaze with the slab&#x27;s free end grown out of the cube; in the middle the difference in brass with the slab&#x27;s notch cut down through the top face; on the right the intersection, the 1 m³ overlap cube, in orange. The outlines are render-only rods built after the check has run, and the cutter objects themselves never render.</p>
+<h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python boolean_exact_volume.py --
+
+# Falsifier: the floating-point solver (FLOAT / FAST) on the coplanar case. Must exit 3.
+blender --background --python boolean_exact_volume.py -- --float-solver
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python boolean_exact_volume.py -- --output boolean.png --engine cycles</code></pre>
+<h2 id="version-notes">Version notes<a class="anchor" href="#version-notes" aria-label="Link to this section">#</a></h2>
+<p><code>BooleanModifier.solver</code> lists <code>&#x27;FAST&#x27;</code>, <code>&#x27;EXACT&#x27;</code>, <code>&#x27;MANIFOLD&#x27;</code> on 4.5 LTS and <code>&#x27;FLOAT&#x27;</code>, <code>&#x27;EXACT&#x27;</code>, <code>&#x27;MANIFOLD&#x27;</code> on 5.1 and 5.2 LTS: the floating-point solver was renamed in 5.0. Measured identically on 4.5.11, 5.1.2 and 5.2.1: EXACT union 8.999999 (12 faces), difference 6.999999 (10 faces), intersection 1.000000 (6 faces), all closed 2-manifolds; <code>--float-solver</code> union 7.708379.</p>
+<h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>A result&#x27;s volume is off its closed form (<code>--float-solver</code> lands here)</td></tr><tr><td>4</td><td>A result is not a closed 2-manifold (an edge without exactly two faces, or loose geometry)</td></tr><tr><td>5</td><td>A result&#x27;s volume is within 0.5 m³ of operand A&#x27;s (the witness would pass vacuously)</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td><code>--output</code> framing violation (Layer 1 fill / margin gate, <code>gallery_framing</code>)</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--float-solver</code>.</p>
+    </section>
+    <section class="detail-section src" id="source">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/boolean-exact-volume/boolean_exact_volume.py</code>
+        <span>412 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/boolean-exact-volume/boolean_exact_volume.py">View on GitHub &rarr;</a></span>
+      </div>
+      <div class="code" data-lines="412">
+<pre class="gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;EXACT Boolean volumes are closed-form and manifold, even on coplanar faces — a runnable example.
+
+Witnesses the Boolean modifier contract with ``solver = &#x27;EXACT&#x27;``. Operand A
+is a 2 m cube and operand B a 2 x 1 x 1 m slab that overlaps A by a 1 m cube
+and whose top face lies in A&#x27;s top plane: the coplanar case. Both operands
+sit in object matrices that are translated and turned about Z, so the
+modifier has to bring B into A&#x27;s space. For each of UNION, DIFFERENCE and
+INTERSECT the evaluated mesh (``evaluated_get`` + ``to_mesh`` /
+``to_mesh_clear``) is measured in world space:
+
+- 3: its signed volume, by the divergence theorem over its own triangles,
+  matches the closed form (V(A) + V(B) - V(A n B) = 9, V(A) - V(A n B) = 7,
+  V(A n B) = 1 cubic metres) to 1e-6 relative; positive volume also means
+  the normals point outward;
+- 4: it is a closed 2-manifold: every edge borders exactly two faces, and
+  there are no loose verts or edges;
+- 5: it is not vacuous: each result&#x27;s volume differs from V(A) by at least
+  0.5 m^3, so the modifier really acted.
+
+``--float-solver`` runs the same three operations on the floating-point
+solver (``&#x27;FLOAT&#x27;`` on Blender 5.x, ``&#x27;FAST&#x27;`` on 4.5 LTS, the same solver
+under its older name). On the coplanar top face it returns a wrong union
+(7.708 m^3 against 9, measured identically on 4.5.11, 5.1.2 and 5.2.1), so
+check 3 fails with the measured error. That is the falsifier, and the documented failure case
+the EXACT solver exists to handle.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python boolean_exact_volume.py --                     # check only
+    blender --background --python boolean_exact_volume.py -- --float-solver      # must fail
+    blender --background --python boolean_exact_volume.py -- --output b.png      # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector, Matrix
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
+<span class="c"># Operands in their shared local frame (metres). B&#x27;s top face (z = 2) is</span>
+<span class="c"># coplanar with A&#x27;s top face; the overlap A n B is [1,2] x [0.5,1.5] x [1,2].</span>
+A_LO, A_HI = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">2.0</span>, <span class="n">2.0</span>, <span class="n">2.0</span>)
+B_LO, B_HI = (<span class="n">1.0</span>, <span class="n">0.5</span>, <span class="n">1.0</span>), (<span class="n">3.0</span>, <span class="n">1.5</span>, <span class="n">2.0</span>)
+OPS = (<span class="s">&#x27;UNION&#x27;</span>, <span class="s">&#x27;DIFFERENCE&#x27;</span>, <span class="s">&#x27;INTERSECT&#x27;</span>)
+SPACING = <span class="n">4.6</span>           <span class="c"># world X between the three operation sets</span>
+TURN = math.radians(-<span class="n">18.0</span>)  <span class="c"># every set&#x27;s frame turns about Z</span>
+
+
+<span class="k">def</span> box_volume(lo, hi):
+    <span class="k">return</span> (hi[<span class="n">0</span>] - lo[<span class="n">0</span>]) * (hi[<span class="n">1</span>] - lo[<span class="n">1</span>]) * (hi[<span class="n">2</span>] - lo[<span class="n">2</span>])
+
+
+<span class="k">def</span> overlap(lo1, hi1, lo2, hi2):
+    lo = tuple(max(lo1[k], lo2[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+    hi = tuple(min(hi1[k], hi2[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+    <span class="k">return</span> lo, hi
+
+
+V_A = box_volume(A_LO, A_HI)
+V_B = box_volume(B_LO, B_HI)
+V_AB = box_volume(*overlap(A_LO, A_HI, B_LO, B_HI))
+EXPECTED = {<span class="s">&#x27;UNION&#x27;</span>: V_A + V_B - V_AB, <span class="s">&#x27;DIFFERENCE&#x27;</span>: V_A - V_AB, <span class="s">&#x27;INTERSECT&#x27;</span>: V_AB}
+REL_TOL = <span class="n">1e-6</span>
+MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x27;s floor against V(A)</span>
+
+
+<span class="k">def</span> fast_solver_id():
+    <span class="s">&quot;&quot;&quot;The floating-point solver: &#x27;FAST&#x27; through 4.5 LTS, renamed &#x27;FLOAT&#x27; in 5.0.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&#x27;FLOAT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;FAST&#x27;</span>
+
+
+<span class="k">def</span> box_mesh(name, lo, hi):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> vert <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            vert.co = Vector(tuple(lo[k] + (vert.co[k] + <span class="n">0.5</span>) * (hi[k] - lo[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> frame(i):
+    <span class="s">&quot;&quot;&quot;World matrix of operation set i: translated along X, turned about Z,
+    with the operands&#x27; local frame centred on A&#x27;s footprint.&quot;&quot;&quot;</span>
+    centre = Matrix.Translation((-(A_HI[<span class="n">0</span>] - A_LO[<span class="n">0</span>]) / <span class="n">2</span> - <span class="n">0.5</span>, -(A_HI[<span class="n">1</span>] - A_LO[<span class="n">1</span>]) / <span class="n">2</span>, <span class="n">0.0</span>))
+    <span class="k">return</span> (Matrix.Translation(((i - <span class="n">1</span>) * SPACING, <span class="n">0.0</span>, <span class="n">0.0</span>))
+            @ Matrix.Rotation(TURN, <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>) @ centre)
+
+
+<span class="k">def</span> build_scene(float_solver=<span class="k">False</span>):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    scene = bpy.context.scene
+    solver = fast_solver_id() <span class="k">if</span> float_solver <span class="k">else</span> <span class="s">&#x27;EXACT&#x27;</span>
+    results = {}
+    cutters = {}
+    <span class="k">for</span> i, op <span class="k">in</span> enumerate(OPS):
+        a = bpy.data.objects.new(<span class="s">f&quot;</span>{op.title()}<span class="s">Result</span><span class="s">&quot;</span>, box_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">Result</span><span class="s">&quot;</span>, A_LO, A_HI))
+        b = bpy.data.objects.new(<span class="s">f&quot;</span>{op.title()}<span class="s">Cutter</span><span class="s">&quot;</span>, box_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">Cutter</span><span class="s">&quot;</span>, B_LO, B_HI))
+        a.matrix_world = frame(i)
+        b.matrix_world = frame(i)
+        b.hide_render = <span class="k">True</span>
+        b.display_type = <span class="s">&#x27;WIRE&#x27;</span>
+        scene.collection.objects.link(a)
+        scene.collection.objects.link(b)
+        mod = a.modifiers.new(<span class="s">&quot;Boolean&quot;</span>, <span class="s">&#x27;BOOLEAN&#x27;</span>)
+        mod.operation = op
+        mod.solver = solver
+        mod.object = b
+        results[op] = a
+        cutters[op] = b
+    <span class="k">return</span> results, cutters, solver
+
+
+<span class="k">def</span> measure(obj):
+    <span class="s">&quot;&quot;&quot;World-space signed volume (divergence theorem over fan triangles of
+    each polygon) plus manifold counts, from the evaluated mesh.&quot;&quot;&quot;</span>
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    me = ev.to_mesh()
+    <span class="k">try</span>:
+        mw = ev.matrix_world
+        co = [mw @ v.co <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        vol = <span class="n">0.0</span>
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            idx = list(p.vertices)
+            v0 = co[idx[<span class="n">0</span>]]
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">1</span>, len(idx) - <span class="n">1</span>):
+                vol += v0.dot(co[idx[j]].cross(co[idx[j + <span class="n">1</span>]])) / <span class="n">6.0</span>
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bm.from_mesh(me)
+            bad_edges = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
+            loose_verts = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> <span class="k">not</span> v.link_faces)
+            loose_edges = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.link_faces)
+        <span class="k">finally</span>:
+            bm.free()
+        <span class="k">return</span> vol, bad_edges, loose_verts, loose_edges, len(me.polygons)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="k">def</span> check(results, solver):
+    bpy.context.view_layer.update()
+    m = {op: measure(results[op]) <span class="k">for</span> op <span class="k">in</span> OPS}
+
+    <span class="c"># 3: volumes on the closed forms (positive =&gt; outward normals)</span>
+    <span class="k">for</span> op <span class="k">in</span> OPS:
+        vol, exp = m[op][<span class="n">0</span>], EXPECTED[op]
+        <span class="k">if</span> abs(vol - exp) &gt; REL_TOL * exp:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{op}<span class="s"> on solver </span>{solver!r}<span class="s">: volume </span>{vol:<span class="s">.6f</span>}<span class="s"> m^3, closed form </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{exp:<span class="s">.6f</span>}<span class="s"> (error </span>{vol - exp:<span class="s">+.6f</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+
+    <span class="c"># 4: closed 2-manifold, no loose geometry</span>
+    <span class="k">for</span> op <span class="k">in</span> OPS:
+        _, bad, lv, le, _ = m[op]
+        <span class="k">if</span> bad <span class="k">or</span> lv <span class="k">or</span> le:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{op}<span class="s"> on solver </span>{solver!r}<span class="s"> is not a closed manifold: </span>{bad}<span class="s"> edges </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">without exactly two faces, </span>{lv}<span class="s"> loose verts, </span>{le}<span class="s"> loose edges</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># 5: every result really differs from operand A</span>
+    <span class="k">for</span> op <span class="k">in</span> OPS:
+        <span class="k">if</span> abs(m[op][<span class="n">0</span>] - V_A) &lt; MIN_CHANGE:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{op}<span class="s"> volume </span>{m[op][<span class="n">0</span>]:<span class="s">.4f</span>}<span class="s"> within </span>{MIN_CHANGE}<span class="s"> of V(A) = </span>{V_A}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+
+    parts = <span class="s">&quot;, &quot;</span>.join(<span class="s">f&quot;</span>{op}<span class="s"> </span>{m[op][<span class="n">0</span>]:<span class="s">.6f</span>}<span class="s"> (closed form </span>{EXPECTED[op]:<span class="s">g</span>}<span class="s">, </span>{m[op][<span class="n">4</span>]}<span class="s"> faces)</span><span class="s">&quot;</span>
+                      <span class="k">for</span> op <span class="k">in</span> OPS)
+    print(<span class="s">f&quot;</span><span class="s">solver </span>{solver!r}<span class="s">, coplanar top face: </span>{parts}<span class="s">; all closed 2-manifold, </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">0 loose verts/edges</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render staging only (runs after the check; never part of it)</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, noise=<span class="k">None</span>, coat=<span class="n">0.0</span>, emit=<span class="k">None</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">if</span> coat:
+        b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = coat
+    <span class="k">if</span> emit:
+        b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (*emit[<span class="n">0</span>], <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = emit[<span class="n">1</span>]
+    <span class="k">if</span> noise:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = max(rough - <span class="n">0.08</span>, <span class="n">0.0</span>)
+        mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough + <span class="n">0.14</span>
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> tube_mesh(name, segments, radius, sides=<span class="n">10</span>):
+    <span class="s">&quot;&quot;&quot;Render-only rods along line segments (the operand outlines).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> a, b <span class="k">in</span> segments:
+            axis = b - a
+            res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=sides,
+                                        radius1=radius, radius2=radius, depth=axis.length)
+            rot = Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)).rotation_difference(axis.normalized()).to_matrix()
+            mid = (a + b) / <span class="n">2</span>
+            <span class="k">for</span> vert <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+                vert.co = rot @ vert.co + mid
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">True</span>
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> box_edges(lo, hi, mw):
+    c = {(i, j, k): mw @ Vector((hi[<span class="n">0</span>] <span class="k">if</span> i <span class="k">else</span> lo[<span class="n">0</span>], hi[<span class="n">1</span>] <span class="k">if</span> j <span class="k">else</span> lo[<span class="n">1</span>], hi[<span class="n">2</span>] <span class="k">if</span> k <span class="k">else</span> lo[<span class="n">2</span>]))
+         <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> j <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> k <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>)}
+    edges = []
+    <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+        <span class="k">for</span> j <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+            edges.append((c[(i, j, <span class="n">0</span>)], c[(i, j, <span class="n">1</span>)]))
+            edges.append((c[(i, <span class="n">0</span>, j)], c[(i, <span class="n">1</span>, j)]))
+            edges.append((c[(<span class="n">0</span>, i, j)], c[(<span class="n">1</span>, i, j)]))
+    <span class="k">return</span> edges
+
+
+<span class="k">def</span> render_still(results, cutters, path, engine):
+    scene = bpy.context.scene
+    glazes = {
+        <span class="s">&#x27;UNION&#x27;</span>: principled(<span class="s">&quot;UnionGlaze&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.30</span>, <span class="n">0.34</span>), <span class="n">0.28</span>, coat=<span class="n">0.5</span>),
+        <span class="s">&#x27;DIFFERENCE&#x27;</span>: principled(<span class="s">&quot;DifferenceBrass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.56</span>, <span class="n">0.26</span>), <span class="n">0.30</span>, metal=<span class="n">1.0</span>, noise=<span class="n">60.0</span>),
+        <span class="s">&#x27;INTERSECT&#x27;</span>: principled(<span class="s">&quot;IntersectOrange&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.36</span>, <span class="n">0.05</span>), <span class="n">0.32</span>, coat=<span class="n">0.4</span>),
+    }
+    steel = principled(<span class="s">&quot;OperandA&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.68</span>), <span class="n">0.25</span>, metal=<span class="n">1.0</span>)
+    cutter_mat = principled(<span class="s">&quot;OperandB&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.06</span>), <span class="n">0.35</span>,
+                            emit=((<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.06</span>), <span class="n">1.2</span>))
+    walnut = principled(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.055</span>, <span class="n">0.025</span>), <span class="n">0.45</span>, noise=<span class="n">40.0</span>, coat=<span class="n">0.4</span>)
+
+    parts = []
+
+    <span class="k">def</span> add(name, me, mat):
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        scene.collection.objects.link(ob)
+        parts.append(ob)
+        <span class="k">return</span> ob
+
+    <span class="k">for</span> i, op <span class="k">in</span> enumerate(OPS):
+        res = results[op]
+        res.data.materials.append(glazes[op])
+        mw = frame(i)
+        <span class="c"># thin outlines of both operands: A in steel, the coplanar cutter B in orange</span>
+        add(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineA</span><span class="s">&quot;</span>, tube_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineA</span><span class="s">&quot;</span>,
+                                               box_edges(A_LO, A_HI, mw), <span class="n">0.016</span>), steel)
+        add(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineB</span><span class="s">&quot;</span>, tube_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineB</span><span class="s">&quot;</span>,
+                                               box_edges(B_LO, B_HI, mw), <span class="n">0.020</span>), cutter_mat)
+
+    half_x = SPACING + <span class="n">2.2</span>
+    plinth = add(<span class="s">&quot;Plinth&quot;</span>, bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>), walnut)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        lo, hi = (-half_x, -<span class="n">2.3</span>, -<span class="n">0.16</span>), (half_x, <span class="n">2.3</span>, -<span class="n">0.004</span>)
+        <span class="k">for</span> vert <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+            vert.co = Vector(tuple(lo[k] + (vert.co[k] + <span class="n">0.5</span>) * (hi[k] - lo[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)))
+        bm.to_mesh(plinth.data)
+    <span class="k">finally</span>:
+        bm.free()
+    bev = plinth.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+    bev.width = <span class="n">0.03</span>
+    bev.segments = <span class="n">2</span>
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    floor.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.16</span>)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    centre = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+
+    <span class="k">def</span> light(name, loc, energy, size, col, aim):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.0</span>, -<span class="n">6.0</span>, <span class="n">7.5</span>), <span class="n">700.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), centre)
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">7.0</span>, -<span class="n">5.5</span>, <span class="n">3.0</span>), <span class="n">140.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), centre)
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">2.0</span>, <span class="n">5.0</span>, <span class="n">7.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), centre)
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">3.0</span>, <span class="n">5.0</span>, <span class="n">3.0</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">5.0</span>, <span class="n">8.0</span>, <span class="n">1.0</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">3.2</span>, -<span class="n">20.9</span>, <span class="n">11.0</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = centre + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.1</span>))
+    scene.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    tr.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">48</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the glazes and the orange cutter toward pastel (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact</span>
+    shown = list(results.values()) + parts
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=shown,
+        elements=shown,
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-solver&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;use the floating-point solver (FLOAT / FAST) on the coplanar case (must fail)&quot;</span>)
+    args = p.parse_args(argv)
+
+    results, cutters, solver = build_scene(float_solver=args.float_solver)
+    code = check(results, solver)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(results, cutters, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;boolean-exact-volume OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+      </div>
+    </section>
+    <section class="detail-section" id="related" aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <div class="related-grid">
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/lattice-deform-hero-640.webp" srcset="../assets/lattice-deform-hero-640.webp 640w, ../assets/lattice-deform-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../lattice-deform/">Lattice Deform</a></h3>
+            <p>A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/solidify-even-thickness-hero-640.webp" srcset="../assets/solidify-even-thickness-hero-640.webp 640w, ../assets/solidify-even-thickness-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../solidify-even-thickness/">Solidify Even Thickness</a></h3>
+            <p>Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/lod-decimate-chain-hero-640.webp" srcset="../assets/lod-decimate-chain-hero-640.webp 640w, ../assets/lod-decimate-chain-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../lod-decimate-chain/">LOD Decimate Chain</a></h3>
+            <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span> solidify-even-thickness</a><span class="pager-pos hud">56 of 56 examples</span><span></span></nav>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
+    <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+  </dialog>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="../../">Blender Developer Tools</a>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span class="ok">exit 0</span>
+      <span class="links"><a href="../../gallery/">Gallery</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases">Releases</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a><a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a></span>
+    </div>
+  </footer>
+  <p class="sr-only" id="srStatus" role="status" aria-live="polite"></p>
+  <script>
+    (function () {
+      var hdr = document.querySelector('.site-header');
+      var btn = hdr && hdr.querySelector('.site-menu-btn');
+      if (!btn) return;
+      function set(open, refocus) {
+        hdr.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (!open && refocus) btn.focus();
+      }
+      btn.addEventListener('click', function () { set(!hdr.classList.contains('open'), false); });
+      hdr.querySelectorAll('.site-nav a').forEach(function (a) {
+        a.addEventListener('click', function () { set(false, false); });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && hdr.classList.contains('open')) set(false, true);
+      });
+      document.addEventListener('click', function (e) {
+        if (hdr.classList.contains('open') && !hdr.contains(e.target)) set(false, false);
+      });
+    })();
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. The dialog fills the viewport,
+        // so a click whose target is the dialog itself is a backdrop click.
+        var full = box.querySelector('img');
+        var nativeBtn = document.getElementById('lightboxNative');
+        function setNative(on) {
+          box.classList.toggle('native', on);
+          nativeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          nativeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+        }
+        hero.addEventListener('click', function () { setNative(false); box.showModal(); });
+        box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+        document.getElementById('lightboxClose').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+        nativeBtn.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+      }
+
+      var srStatus = document.getElementById('srStatus');
+      function announce(msg) {
+        srStatus.textContent = '';
+        setTimeout(function () { srStatus.textContent = msg; }, 50);
+      }
+
+      // Back to the gallery with the filters the reader left it with, and
+      // page through that filtered order when there is one (both written by
+      // the gallery index into sessionStorage; absent, the static links stay).
+      var here = location.pathname.replace(/[/]$/, '').split('/').pop();
+      try {
+        var savedHash = sessionStorage.getItem('bdt-gallery-hash');
+        var crumb = document.getElementById('crumbGallery');
+        if (crumb && savedHash) crumb.setAttribute('href', '../' + savedHash);
+        var order = JSON.parse(sessionStorage.getItem('bdt-gallery-order') || 'null');
+        var at = order ? order.indexOf(here) : -1;
+        if (at !== -1) {
+          Array.prototype.forEach.call(document.querySelectorAll('.pager'), function (nav) {
+            function slot(name, rel) {
+              if (!name) return document.createElement('span');
+              var a = document.createElement('a');
+              a.rel = rel; a.href = '../' + name + '/';
+              a.setAttribute('aria-label', (rel === 'prev' ? 'Previous' : 'Next') + ' in your filter: ' + name);
+              a.innerHTML = rel === 'prev'
+                ? '<span aria-hidden="true">&larr;</span> ' + name
+                : name + ' <span aria-hidden="true">&rarr;</span>';
+              return a;
+            }
+            var pos = nav.querySelector('.pager-pos');
+            var keys = pos.querySelector('.pager-keys');
+            nav.replaceChild(slot(order[at - 1], 'prev'), nav.firstElementChild);
+            nav.replaceChild(slot(order[at + 1], 'next'), nav.lastElementChild);
+            pos.textContent = (at + 1) + ' of ' + order.length + ' in your filter';
+            if (keys) pos.appendChild(keys);
+            nav.setAttribute('aria-label', 'Your filtered gallery');
+          });
+        }
+      } catch (e) {}
+
+      // Clipboard API first; execCommand for non-secure origins (file://,
+      // plain-http previews) where navigator.clipboard is undefined.
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
+      function wireCopy(btn, getText) {
+        btn.addEventListener('click', function () {
+          copyText(getText()).then(function () {
+            btn.textContent = 'Copied'; btn.classList.add('done'); announce('Copied to clipboard');
+          }, function () {
+            btn.textContent = 'Copy failed'; btn.classList.add('fail'); announce('Copy failed');
+          }).then(function () {
+            setTimeout(function () {
+              btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
+            }, 1600);
+          });
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+        var wrap = block;
+        if (block.tagName === 'PRE') {
+          wrap = document.createElement('div');
+          block.parentNode.insertBefore(wrap, block);
+          wrap.appendChild(block);
+        }
+        wrap.classList.add('codewrap');
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'copy-btn'; btn.textContent = 'Copy';
+        var src = block.tagName === 'PRE' ? block : block.querySelector('.code-lines');
+        btn.setAttribute('aria-label', 'Copy code');
+        wireCopy(btn, function () { return src.textContent; });
+        wrap.appendChild(btn);
+      });
+
+      // Long listings start collapsed; with JS off they render in full.
+      var code = document.querySelector('.src .code');
+      if (code) {
+        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
+        if (lines > 120) {
+          code.classList.add('collapsed');
+          var more = document.createElement('button');
+          more.type = 'button'; more.className = 'src-expand';
+          more.setAttribute('aria-expanded', 'false');
+          more.textContent = 'Show all ' + lines + ' lines';
+          code.parentNode.insertBefore(more, code.nextSibling);
+          more.addEventListener('click', function () {
+            var open = code.classList.toggle('collapsed') === false;
+            more.setAttribute('aria-expanded', open ? 'true' : 'false');
+            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
+            if (!open) code.scrollIntoView({ block: 'start' });
+          });
+        }
+      }
+
+      // Left/right arrows page between entries, but only when nothing has
+      // focus and nothing is selected: a focused control, a scrolled code
+      // block, or a text selection keeps its own arrow keys.
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        if (box && box.open) return;
+        var ae = document.activeElement;
+        if (ae && ae !== document.body && ae !== document.documentElement) return;
+        var sel = window.getSelection && window.getSelection();
+        if (sel && !sel.isCollapsed) return;
+        var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
+        if (!rel) return;
+        var a = document.querySelector('.pager a[rel="' + rel + '"]');
+        if (a) { location.href = a.href; }
+      });
+    })();
+
+  </script>
+</body>
+</html>
