@@ -153,5 +153,6 @@
   {"name": "sundial", "script": "showcase/sundial/sundial.py"},
   {"name": "mine-cart", "script": "showcase/mine-cart/mine_cart.py"},
   {"name": "garden-gate", "script": "showcase/garden-gate/garden_gate.py"},
-  {"name": "ships-wheel", "script": "showcase/ships-wheel/ships_wheel.py"}
+  {"name": "ships-wheel", "script": "showcase/ships-wheel/ships_wheel.py"},
+  {"name": "sawhorse-plank", "script": "showcase/sawhorse-plank/sawhorse_plank.py"}
 ]

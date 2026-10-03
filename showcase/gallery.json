@@ -1061,6 +1061,21 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "sawhorse-plank",
+      "title": "Sawhorses and Plank",
+      "dir": "showcase/sawhorse-plank",
+      "category": "village",
+      "teaches": "A procedural pair of pine sawhorses carrying a fir plank, with a handsaw leaning against one — splayed legs housed into each beam, nailed end aprons, a toothed blade in a closed beech handle with brass split nuts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "Two pine sawhorses with splayed legs and nailed end aprons carry a long fir plank on a dark studio floor, a toothed handsaw with a beech handle leaning on the near one.",
+      "witnessesFix": "Recomputed: 3248 tris, five materials (pine 364, fir 26, steel 1190, beech 340, brass 120 faces), UVs in 0..1 with zero overlap, a 2.440 × 1.146 × 0.7575 m envelope, LOD1 0.5000 and LOD2 0.2198, a 164-tri three-hull collider, a FINISHED normal bake and a 270 kB Unity glTF, hygiene all zero with no coplanar cross-shell faces, and a real two-support span: the plank bearing −0.500 mm into both saddles, all eight feet on the floor (0.000 mm), every leg let 9.22 mm into its beam, every leg splayed 15.000° to the side and 10.000° to the end, a 1.600 m span under an 8 ft 2×10. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --loose-leg exits 17 with a leg −4.78 mm out of its housing; --short-leg exits 18 with a foot 8.00 mm off the floor; --uneven-splay exits 19 at 19° side splay; --low-horse exits 20 with the plank 5.50 mm above the second saddle.",
+      "hero": "docs/gallery/assets/sawhorse-plank-hero.webp",
+      "preview": "showcase/sawhorse-plank/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

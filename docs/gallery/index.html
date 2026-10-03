@@ -67,7 +67,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">56 examples, 75 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">56 examples, 76 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
       </div>
       <div class="filters" id="filters">
@@ -92,7 +92,7 @@
         <span class="cats-label" id="catsLabel">Showcase category</span>
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="cat-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
-          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">40</span></button>
+          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">41</span></button>
           <button class="cat-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">7</span></button>
           <button class="cat-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">11</span></button>
           <button class="cat-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">7</span></button>
@@ -1714,6 +1714,18 @@
           <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="village" data-name="sawhorse-plank" data-search="sawhorses and plank sawhorse-plank a procedural pair of pine sawhorses carrying a fir plank, with a handsaw leaning against one — splayed legs housed into each beam, nailed end aprons, a toothed blade in a closed beech handle with brass split nuts — through uvs, bake, lod, collider, and unity gltf, asserting recomputed budgets rather than an api contract. mesh export showcase village">
+        <div class="card-media">
+          <img src="assets/sawhorse-plank-hero-640.webp" srcset="assets/sawhorse-plank-hero-640.webp 640w, assets/sawhorse-plank-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Two pine sawhorses with splayed legs and nailed end aprons carry a long fir plank on a dark studio floor, a toothed handsaw with a beech handle leaning on the near one." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="sawhorse-plank/">Sawhorses and Plank</a></h2>
+          <p class="slug">sawhorse-plank</p>
+          <p class="teaches">A procedural pair of pine sawhorses carrying a fir plank, with a handsaw leaning against one — splayed legs housed into each beam, nailed end aprons, a toothed blade in a closed beech handle with brass split nuts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 3248 tris, five materials (pine 364, fir 26, steel 1190, beech 340, brass 120 faces), UVs in 0..1 with zero overlap, a 2.440 × 1.146 × 0.7575 m envelope, LOD1 0.5000 and LOD2 0.2198, a 164-tri three-hull collider, a FINISHED normal bake and a 270 kB Unity glTF, hygiene all zero with no coplanar cross-shell faces, and a real two-support span: the plank bearing −0.500 mm into both saddles, all eight feet on the floor (0.000 mm), every leg let 9.22 mm into its beam, every leg splayed 15.000° to the side and 10.000° to the end, a 1.600 m span under an 8 ft 2×10. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --loose-leg exits 17 with a leg −4.78 mm out of its housing; --short-leg exits 18 with a foot 8.00 mm off the floor; --uneven-splay exits 19 at 19° side splay; --low-horse exits 20 with the plank 5.50 mm above the second saddle.</p>
+          <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1772,7 +1784,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '56 examples, 75 showcase pieces';
+      var COUNT_LABEL = '56 examples, 76 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.
