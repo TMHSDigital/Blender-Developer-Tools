@@ -385,3 +385,8 @@ jobs:
 
       - name: Harness unit tests
         run: python3 tests/smoke/test_harness.py -v
+
+      - name: Hero-drift tool exit-code tests
+        run: |
+          pip install numpy==2.2.6 Pillow==11.2.1
+          python3 tests/test_measure_hero_drift.py -v
