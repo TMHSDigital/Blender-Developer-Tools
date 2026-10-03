@@ -63,6 +63,11 @@ SPAN = 1.600                # beam centreline to beam centreline
 H_TOP = 0.720               # beam top above the floor
 BEAM_W, BEAM_H, BEAM_L = 0.090, 0.070, 0.950
 LEG_T, LEG_W = 0.038, 0.089                 # leg section: across the beam, along it
+LEG_W_FOOT = 0.068          # legs taper along the beam from LEG_W at the top to this at the foot
+# Eased arrises: chamfer widths per member (low mesh, one flat segment) and
+# the rounded segment count the high mesh bakes onto them.
+ARRIS_BEAM, ARRIS_LEG, ARRIS_APRON, ARRIS_PLANK = 0.007, 0.0055, 0.0045, 0.0055
+ARRIS_SEGS = 3
 LEG_DROP = 0.012            # leg top this far under the beam top
 HOUSING = 0.010             # leg's inner face let this far into the beam's side
 LEG_TOP_X = BEAM_W * 0.5 - HOUSING + LEG_T * 0.5             # 0.054
@@ -87,7 +92,7 @@ LOW_HORSE = 0.006
 LIFT_Z = 0.05
 
 BBOX_TOL = 0.020
-OUTER_SIZE = (2.440, 1.146, 0.7575)
+OUTER_SIZE = (2.440, 1.135, 0.7575)
 
 BASE_TRIS_MIN = 3000
 BASE_TRIS_MAX = 3500
@@ -176,6 +181,11 @@ class Builder:
     def seg(self, n):
         return n * 2 if self.hi else n
 
+    @property
+    def arris(self):
+        """Chamfer segments: a flat one on the low mesh, rounded on the high."""
+        return ARRIS_SEGS if self.hi else 1
+
     def tag(self, part, mat, grain=G_Z, smooth=False):
         new = [f for f in self.bm.faces if f[self.part] == 0]
         for f in new:
@@ -201,8 +211,12 @@ def loft(bm, rings, cap=True):
     return faces
 
 
-def chamfer(bm, faces, offset, mat):
-    """One-segment chamfer on the shell's near-right-angle edges only.
+def chamfer(bm, faces, offset, mat, segments=1):
+    """Arris on the shell's near-right-angle edges only.
+
+    The low mesh takes one flat segment; the high mesh takes ARRIS_SEGS
+    rounded ones, and the bake carries that roundness onto the low's flat
+    chamfer, so the game mesh keeps its budget and still reads eased.
 
     ``recalc_face_normals`` comes first: the dihedral is read off face
     normals. The bevel's own faces take ``mat`` explicitly; left alone they
@@ -216,20 +230,20 @@ def chamfer(bm, faces, offset, mat):
             if len(e.link_faces) == 2 and all(lf in own for lf in e.link_faces)
             and math.radians(60.0) <= e.calc_face_angle(0.0) <= math.radians(120.0)]
     if pick and offset > 0.0:
-        bmesh.ops.bevel(bm, geom=pick, offset=offset, segments=1, profile=0.5,
+        bmesh.ops.bevel(bm, geom=pick, offset=offset, segments=segments, profile=0.5,
                         affect="EDGES", clamp_overlap=True, material=mat)
 
 
-def solid(bm, lower, upper, off, mat):
+def solid(bm, lower, upper, off, mat, segments=1):
     """A hexahedron from two four-vertex rings (lower and upper), chamfered."""
     rings = [[bm.verts.new(p) for p in lower], [bm.verts.new(p) for p in upper]]
     faces = loft(bm, rings)
-    chamfer(bm, faces, off, mat)
+    chamfer(bm, faces, off, mat, segments)
 
 
-def box(bm, x0, x1, y0, y1, z0, z1, off, mat):
+def box(bm, x0, x1, y0, y1, z0, z1, off, mat, segments=1):
     sq = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-    solid(bm, [(x, y, z0) for x, y in sq], [(x, y, z1) for x, y in sq], off, mat)
+    solid(bm, [(x, y, z0) for x, y in sq], [(x, y, z1) for x, y in sq], off, mat, segments)
 
 
 def revolve(bm, profile, n, origin, axis, closed=False, phase=0.0):
@@ -294,9 +308,14 @@ def build_horse(b, k, loose_leg=False, short_leg=False, uneven_splay=False, low_
     hx = (k - 0.5) * SPAN
     top = horse_top(k, low_horse)
     box(bm, hx - BEAM_W / 2, hx + BEAM_W / 2, -BEAM_L / 2, BEAM_L / 2, top - BEAM_H, top,
-        0.004, PINE_IDX)
+        ARRIS_BEAM, PINE_IDX, b.arris)
     b.tag(P_BEAM, PINE_IDX, grain=G_Y)
     ztop = top - LEG_DROP
+
+    def leg_w(z):
+        """Leg width along the beam: LEG_W at its top, LEG_W_FOOT at the floor."""
+        f = max(0.0, min(1.0, z / ztop))
+        return LEG_W_FOOT + (LEG_W - LEG_W_FOOT) * f
     # The leg that the per-leg falsifiers act on: the +X, +Y leg of horse 1.
     for sx in (-1.0, 1.0):
         for sy in (-1.0, 1.0):
@@ -307,10 +326,10 @@ def build_horse(b, k, loose_leg=False, short_leg=False, uneven_splay=False, low_
             rings = []
             for z in (zbot, ztop):
                 c = leg_centre(hx, sx, sy, ztop, z, side, dx)
-                hx_, hy_ = LEG_T / 2, LEG_W / 2
+                hx_, hy_ = LEG_T / 2, leg_w(z) / 2
                 rings.append([(c.x - hx_, c.y - hy_, z), (c.x + hx_, c.y - hy_, z),
                               (c.x + hx_, c.y + hy_, z), (c.x - hx_, c.y + hy_, z)])
-            solid(bm, rings[0], rings[1], 0.003, PINE_IDX)
+            solid(bm, rings[0], rings[1], ARRIS_LEG, PINE_IDX, b.arris)
             b.tag(P_LEG, PINE_IDX, grain=G_Z)
             # Two nails through the leg's outer face into the beam.
             n = Vector((sx, 0.0, math.tan(math.radians(side)))).normalized()
@@ -323,7 +342,8 @@ def build_horse(b, k, loose_leg=False, short_leg=False, uneven_splay=False, low_
     te, ts = math.tan(math.radians(END_SPLAY)), math.tan(math.radians(SIDE_SPLAY))
     for sy in (-1.0, 1.0):
         def yo(z):
-            return sy * (LEG_TOP_Y + LEG_W / 2 + (ztop - z) * te)
+            # The legs' end faces, which taper: the apron follows them.
+            return sy * (LEG_TOP_Y + leg_w(z) / 2 + (ztop - z) * te)
 
         def xo(z):
             return LEG_TOP_X + LEG_T / 2 + (ztop - z) * ts - APRON_INSET
@@ -333,7 +353,7 @@ def build_horse(b, k, loose_leg=False, short_leg=False, uneven_splay=False, low_
             yi, ye = yo(z) - sy * APRON_BITE, yo(z) + sy * APRON_T
             ring.extend([(hx - xo(z), yi, z), (hx + xo(z), yi, z),
                          (hx + xo(z), ye, z), (hx - xo(z), ye, z)])
-        solid(bm, lower, upper, 0.003, PINE_IDX)
+        solid(bm, lower, upper, ARRIS_APRON, PINE_IDX, b.arris)
         b.tag(P_APRON, PINE_IDX, grain=G_X)
         n = Vector((0.0, sy, te)).normalized()
         for sx in (-1.0, 1.0):
@@ -346,7 +366,7 @@ def build_horse(b, k, loose_leg=False, short_leg=False, uneven_splay=False, low_
 def build_plank(b):
     z0 = H_TOP - SEAT_BITE
     box(b.bm, -PLANK_L / 2, PLANK_L / 2, PLANK_Y - PLANK_W / 2, PLANK_Y + PLANK_W / 2,
-        z0, z0 + PLANK_T, 0.003, FIR_IDX)
+        z0, z0 + PLANK_T, ARRIS_PLANK, FIR_IDX, b.arris)
     b.tag(P_PLANK, FIR_IDX, grain=G_X)
 
 
@@ -685,19 +705,38 @@ def wood_material(name, ramp_cols, tone_gain, rough, knots=False, gloss=False):
         coarse = rings(axis, scale, 4.5, 7.0)
         fine = rings(axis, scale, 13.0, 3.0)
         return _fmix_const(nt, 0.32, coarse, fine)
+
+    def streaks(scale):
+        """Figure: long, thin streaks along the fibre (noise stretched along it)."""
+        mp = nt.nodes.new("ShaderNodeMapping")
+        mp.inputs["Scale"].default_value = scale
+        nt.links.new(vec, mp.inputs["Vector"])
+        n = nt.nodes.new("ShaderNodeTexNoise")
+        n.inputs["Scale"].default_value = 9.0
+        n.inputs["Detail"].default_value = 6.0
+        n.inputs["Roughness"].default_value = 0.62
+        nt.links.new(mp.outputs["Vector"], n.inputs["Vector"])
+        return n.outputs["Fac"]
     is_x = _math(nt, "COMPARE", gdir.outputs["Fac"], 1.0, 0.5)
     is_y = _math(nt, "COMPARE", gdir.outputs["Fac"], 2.0, 0.5)
     grain = _fmix(nt, is_y, _fmix(nt, is_x, fibres("Z", (6.0, 6.0, 0.35)),
                                   fibres("X", (0.35, 6.0, 6.0))),
                   fibres("Y", (6.0, 0.35, 6.0)))
+    streak = _fmix(nt, is_y, _fmix(nt, is_x, streaks((8.0, 8.0, 0.25)),
+                                   streaks((0.25, 8.0, 8.0))),
+                   streaks((8.0, 0.25, 8.0)))
 
+    # Earlywood is the broad pale ground; latewood is a thin dark line at the
+    # top of each saw-profile ring, so faces read as lines and cathedrals,
+    # not as soft stripes.
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.10
-    ramp.color_ramp.elements[0].color = (*ramp_cols[0], 1.0)
-    mid = ramp.color_ramp.elements.new(0.60)
-    mid.color = (*ramp_cols[1], 1.0)
-    ramp.color_ramp.elements[2].position = 1.0
-    ramp.color_ramp.elements[2].color = (*ramp_cols[2], 1.0)
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.0, (*ramp_cols[0], 1.0)
+    els[1].position, els[1].color = 0.66, (*ramp_cols[1], 1.0)
+    late = els.new(0.90)
+    late.color = (*ramp_cols[2], 1.0)
+    tail = els.new(0.985)
+    tail.color = (*ramp_cols[1], 1.0)
     nt.links.new(grain, ramp.inputs["Fac"])
     gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], tone_gain[0], tone_gain[1])
     grey = nt.nodes.new("ShaderNodeCombineColor")
@@ -717,6 +756,15 @@ def wood_material(name, ramp_cols, tone_gain, rough, knots=False, gloss=False):
     for ch in ("Red", "Green", "Blue"):
         nt.links.new(fl.outputs["Result"], flc.inputs[ch])
     base = _mix(nt, "MULTIPLY", base, flc.outputs["Color"], 1.0)
+    # Figure: the streaks shift the shade +-10% along the fibre.
+    fig = nt.nodes.new("ShaderNodeMapRange")
+    fig.inputs["To Min"].default_value = 0.86
+    fig.inputs["To Max"].default_value = 1.10
+    nt.links.new(streak, fig.inputs["Value"])
+    figc = nt.nodes.new("ShaderNodeCombineColor")
+    for ch in ("Red", "Green", "Blue"):
+        nt.links.new(fig.outputs["Result"], figc.inputs[ch])
+    base = _mix(nt, "MULTIPLY", base, figc.outputs["Color"], 1.0)
     if knots:
         vor = nt.nodes.new("ShaderNodeTexVoronoi")
         vor.inputs["Scale"].default_value = 2.6
@@ -739,8 +787,14 @@ def wood_material(name, ramp_cols, tone_gain, rough, knots=False, gloss=False):
     nt.links.new(blot.outputs["Fac"], dirt.inputs["Value"])
     base = _mix(nt, "MULTIPLY", base, (0.60, 0.55, 0.48), dirt.outputs["Result"])
     nt.links.new(base, bsdf.inputs["Base Color"])
-    r = _math(nt, "MULTIPLY_ADD", grain, -0.08, rough)
-    nt.links.new(r, bsdf.inputs["Roughness"])
+    # Latewood is denser and a touch glossier; handling polishes the figure.
+    r = _math(nt, "MULTIPLY_ADD", grain, -0.10, rough)
+    r = _math(nt, "MULTIPLY_ADD", streak, -0.12, r)
+    nt.links.new(_math(nt, "ADD", r, 0.06), bsdf.inputs["Roughness"])
+    try:
+        bsdf.inputs["Specular IOR Level"].default_value = 0.35
+    except KeyError:
+        pass
     if gloss:
         try:
             bsdf.inputs["Coat Weight"].default_value = 0.45
@@ -766,7 +820,9 @@ def _fmix_const(nt, fac, a, b):
 
 
 def steel_material(name):
-    """Saw steel and nails: even satin steel with a faint long brushing,
+    """Saw steel and nails: polished blade steel brushed along its length
+    (noise stretched along the saw, driving roughness, so highlights streak
+    the way they do on a real blade), a faint grey etch-tone variation, and
     rust only in rare small patches."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
@@ -780,13 +836,27 @@ def steel_material(name):
     rust = nt.nodes.new("ShaderNodeMapRange")
     rust.interpolation_type = "SMOOTHSTEP"
     rust.inputs["From Min"].default_value = 0.70
-    rust.inputs["From Max"].default_value = 0.78
+    rust.inputs["From Max"].default_value = 0.77
     nt.links.new(noise.outputs["Fac"], rust.inputs["Value"])
-    base = _mix(nt, "MIX", (0.50, 0.51, 0.53), (0.24, 0.10, 0.04), rust.outputs["Result"])
+    # Brushing: fine noise squashed across the blade, long along it. The saw
+    # stands near-vertical, so its length runs along object Z.
+    bmap = nt.nodes.new("ShaderNodeMapping")
+    bmap.inputs["Scale"].default_value = (260.0, 260.0, 4.0)
+    nt.links.new(tc.outputs["Object"], bmap.inputs["Vector"])
+    brush = nt.nodes.new("ShaderNodeTexNoise")
+    brush.inputs["Scale"].default_value = 3.0
+    brush.inputs["Detail"].default_value = 8.0
+    nt.links.new(bmap.outputs["Vector"], brush.inputs["Vector"])
+    tone = _math(nt, "MULTIPLY_ADD", brush.outputs["Fac"], 0.22, 0.88)
+    toned = nt.nodes.new("ShaderNodeCombineColor")
+    for ch, k in (("Red", 0.70), ("Green", 0.71), ("Blue", 0.73)):
+        nt.links.new(_math(nt, "MULTIPLY", tone, k), toned.inputs[ch])
+    base = _mix(nt, "MIX", toned.outputs["Color"], (0.22, 0.09, 0.035), rust.outputs["Result"])
     nt.links.new(base, bsdf.inputs["Base Color"])
-    metal = _math(nt, "MULTIPLY_ADD", rust.outputs["Result"], -0.70, 0.80)
+    metal = _math(nt, "MULTIPLY_ADD", rust.outputs["Result"], -0.85, 1.0)
     nt.links.new(metal, bsdf.inputs["Metallic"])
-    rough = _math(nt, "MULTIPLY_ADD", rust.outputs["Result"], 0.45, 0.36)
+    rough = _math(nt, "MULTIPLY_ADD", brush.outputs["Fac"], 0.18, 0.16)
+    rough = _math(nt, "MULTIPLY_ADD", rust.outputs["Result"], 0.55, rough)
     nt.links.new(rough, bsdf.inputs["Roughness"])
     return mat
 
@@ -802,22 +872,25 @@ def brass_material(name):
     noise.inputs["Scale"].default_value = 300.0
     nt.links.new(tc.outputs["Object"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].color = (0.36, 0.22, 0.07, 1.0)
-    ramp.color_ramp.elements[1].color = (0.62, 0.44, 0.16, 1.0)
+    ramp.color_ramp.elements[0].color = (0.52, 0.33, 0.10, 1.0)
+    ramp.color_ramp.elements[1].color = (0.86, 0.64, 0.26, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Metallic"].default_value = 1.0
-    bsdf.inputs["Roughness"].default_value = 0.32
+    bsdf.inputs["Roughness"].default_value = 0.22
     return mat
 
 
 def piece_materials():
-    pine = wood_material("HorsePine", ((0.215, 0.115, 0.050), (0.275, 0.150, 0.068),
-                                       (0.330, 0.190, 0.090)), (0.55, 0.70), 0.80)
-    fir = wood_material("PlankFir", ((0.240, 0.165, 0.092), (0.305, 0.215, 0.126),
-                                     (0.355, 0.260, 0.160)), (0.35, 0.80), 0.75, knots=True)
-    beech = wood_material("HandleBeech", ((0.190, 0.072, 0.030), (0.245, 0.098, 0.042),
-                                          (0.300, 0.130, 0.058)), (0.25, 0.85), 0.40, gloss=True)
+    # Ramp colours (linear): pale earlywood, its darker edge, the latewood line.
+    # Horses: honey-aged pine. Plank: fresh, paler fir. Handle: varnished apple,
+    # a fine diffuse-porous wood, so its latewood line is barely darker.
+    pine = wood_material("HorsePine", ((0.440, 0.262, 0.115), (0.385, 0.222, 0.094),
+                                       (0.165, 0.080, 0.030)), (0.55, 0.70), 0.72)
+    fir = wood_material("PlankFir", ((0.560, 0.390, 0.205), (0.500, 0.338, 0.172),
+                                     (0.250, 0.135, 0.055)), (0.35, 0.80), 0.66, knots=True)
+    beech = wood_material("HandleBeech", ((0.300, 0.112, 0.046), (0.262, 0.094, 0.038),
+                                          (0.205, 0.072, 0.029)), (0.25, 0.85), 0.34, gloss=True)
     return (pine, fir, steel_material("SawSteel"), beech, brass_material("NutBrass"))
 
 
@@ -1260,18 +1333,25 @@ def check(skip_decimate, lift_z=False, **flags):
     return 0, low, high, mats, tex, collider
 
 
-def wire_normal(mat, tex):
-    nt = mat.node_tree
-    nrm = nt.nodes.new("ShaderNodeNormalMap")
-    nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    bump = nt.nodes.get("WoodBump")
-    target = bump.inputs["Normal"] if bump else nt.nodes["Principled BSDF"].inputs["Normal"]
-    nt.links.new(nrm.outputs["Normal"], target)
+def wire_normal(mats, tex):
+    """The baked map into every slot: the whole low mesh shares one UV
+    layout, so the bake (rounded arrises, hand-hole edges) belongs to each
+    material, not only the one that held the bake target."""
+    for mat in mats:
+        nt = mat.node_tree
+        src = tex if tex.id_data == nt else nt.nodes.new("ShaderNodeTexImage")
+        if src is not tex:
+            src.image = tex.image
+        nrm = nt.nodes.new("ShaderNodeNormalMap")
+        nt.links.new(src.outputs["Color"], nrm.inputs["Color"])
+        bump = nt.nodes.get("WoodBump")
+        target = bump.inputs["Normal"] if bump else nt.nodes["Principled BSDF"].inputs["Normal"]
+        nt.links.new(nrm.outputs["Normal"], target)
 
 
 def render_still(low, mats, tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(mats[PINE_IDX], tex)
+    wire_normal(mats, tex)
     for ob in list(scene.objects):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
@@ -1318,9 +1398,15 @@ def render_still(low, mats, tex, path, engine):
         ob.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", "AREA", (-3.4, -4.6, 5.0), 420.0, 1.0, (1.0, 0.96, 0.90), spread=40.0)
+    light("Key", "AREA", (-3.4, -4.6, 5.0), 350.0, 1.0, (1.0, 0.96, 0.90), spread=40.0)
     light("Fill", "AREA", (4.0, -3.4, 2.0), 30.0, 4.0, (0.75, 0.85, 1.0))
     light("Rim", "AREA", (2.4, 2.6, 3.0), 220.0, 1.5, (0.60, 0.78, 1.0), (0.0, 0.0, 0.6), spread=50.0)
+    # Reflector card for the saw: a polished blade mirrors what it faces, and
+    # in a dark studio that is black. The blade's camera-side normal, after
+    # the piece's -48 deg turn and the saw's lean, mirrors the camera ray out
+    # low to the left, so the card stands there (out of frame), aimed at the
+    # saw. Wide and weak, it barely lifts the wood.
+    light("Card", "AREA", (-2.7, -1.6, 0.75), 16.0, 1.3, (0.92, 0.95, 1.0), (0.18, -0.91, 0.40))
     ld = bpy.data.lights.new("Wedge", "SPOT")
     ld.energy, ld.color = 420.0, (1.0, 0.70, 0.40)
     ld.spot_size, ld.spot_blend, ld.shadow_soft_size = math.radians(60.0), 1.0, 0.3
@@ -1331,12 +1417,12 @@ def render_still(low, mats, tex, path, engine):
     scene.collection.objects.link(wedge)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 58.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (-0.85, -4.75, 2.05)
+    cam.location = (-0.55, -3.70, 1.55)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.30)
+    aim.location = (0.05, 0.0, 0.24)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

@@ -16,7 +16,7 @@ finished mesh.
 | --- | --- |
 | `skills/mesh-editing-and-bmesh` | sheared-prism legs, aprons cut to the legs' splay, a toothed blade with hand-built caps, a handle prism with a hand-hole (caps from `mathutils.geometry.tessellate_polygon`), split-nut halves, revolved nail heads, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
 | `skills/custom-properties` | face attributes: `Part` (what each shell is), `GrainDir` (fibres along Z, X or Y) and `WoodTone` (one tone per member) |
-| `skills/procedural-materials-and-shaders` | pine and fir with growth rings round each member's long axis, sampled at a per-piece offset through a noise warp, a fine ring set and a fleck layer, low in contrast, knots in the plank; satin saw steel with rare rust; a coated beech handle; brass |
+| `skills/procedural-materials-and-shaders` | pine and fir with growth rings round each member's long axis, sampled at a per-piece offset through a noise warp: a broad pale earlywood ground and a thin dark latewood line, long fibre streaks for figure, roughness following both, knots in the plank; polished saw steel brushed along its length (stretched noise driving roughness) with rare rust; a coated apple handle; polished brass; the baked normal wired into every slot |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, a high with 12-segment nails, a 32-segment hand-hole and a three-round handle outline onto the low's 6, 16 and two rounds |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -52,7 +52,7 @@ leg is assigned to the nearer beam and to its quadrant.
   Measured 0.000 mm on all eight.
 - **Housing.** How far each leg's inner face is let into its beam's side,
   read on every leg vertex at or above the beam's underside: 6–14 mm.
-  Measured 9.22 mm on all eight.
+  Measured 8.58 mm on all eight.
 - **Splay.** Each leg's axis is the line through the centroids of its two
   end faces (both cut level, as a horse's legs are cut to stand flat).
   Side splay and end splay are read off that line: 15° and 10° ± 0.15°.
@@ -84,14 +84,14 @@ same on 4.5.11 and 5.1.2 (see the cross-version table).
 | Pine / fir / steel / beech / brass faces | ≥ 330 / 24 / 1070 / 300 / 108 | 364 / 26 / 1190 / 340 / 120 |
 | UV bounds | inside 0..1 | (0.0009, 0.0009)–(0.9991, 0.9991) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 2.440 × 1.146 × 0.7575 m ± 0.020 | 2.4400 × 1.1459 × 0.7575 |
+| Outer AABB | 2.440 × 1.135 × 0.7575 m ± 0.020 | 2.4400 × 1.1350 × 0.7575 |
 | Collider triangles | ≤ 200 | 164 (three hulls) |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
 | glTF export | file written, non-empty | ~270 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
 | Parts | 2 beams, 8 legs, 4 aprons, 1 plank, 32 nails, 1 blade, 1 handle, 6 split-nut halves | as stated |
-| Leg housing | 6–14 mm into the beam's side | 9.22 mm (all eight) |
+| Leg housing | 6–14 mm into the beam's side | 8.58 mm (all eight) |
 | Feet on the floor | each within 0.1 mm | 0.000 mm (all eight) |
 | Splay | 15° side, 10° end, ± 0.15° each leg | 15.0000°, 10.0000° (all eight) |
 | Plank seat | −1.0 to −0.2 mm on each saddle, spanning it | −0.500 mm, −0.500 mm |
@@ -99,27 +99,29 @@ same on 4.5.11 and 5.1.2 (see the cross-version table).
 
 Real-world size: a traditional sawhorse stands about 30 in to the top of
 its beam on a 40 in beam with a 21.5 in stance. Here the beam tops are at
-0.72 m on 0.95 m beams (90 × 70 mm), the legs are 38 × 89 mm splayed to a
+0.72 m on 0.95 m beams (90 × 70 mm), the legs are 38 mm stock tapering
+from 89 mm under the beam to 68 mm at the floor, splayed to a
 0.49 m stance, and the plank is a 2×10 (2.44 × 0.235 × 0.038 m) on a 1.6 m
 span. The handsaw is a 24 in (600 mm) blade tapering from 130 mm at the
 heel to 60 mm at the toe, on a closed beech handle about 185 × 200 mm.
 
 ## Construction
 
-- **Beams.** 90 × 70 × 950 mm boxes, every arris chamfered 4 mm.
-- **Legs.** Sheared prisms: a level 38 × 89 mm section at the floor and
-  at the top, the centreline running from 12 mm under the beam top out by
+- **Beams.** 90 × 70 × 950 mm boxes, every arris eased: a 7 mm chamfer
+  on the game mesh, rounded in three segments on the bake source.
+- **Legs.** Sheared, tapered prisms: a level 38 × 89 mm section at the
+  top narrowing to 38 × 68 mm at the floor (along the beam), the centreline running from 12 mm under the beam top out by
   15° to the side and 10° to the end. Their inner faces are let 10 mm
-  into the beam's sides at the top (9.2 mm once the chamfer is taken off),
+  into the beam's sides at the top (8.6 mm once the 5.5 mm chamfer is taken off),
   and two nails through each leg's outer face hold it.
 - **Aprons.** A 18 mm board across each end's leg pair, cut to the legs'
-  splay and set 1 mm into their end faces, inset 6 mm from the legs'
+  splay and taper and set 1 mm into their end faces, inset 6 mm from the legs'
   outer faces so no two faces share a plane, nailed into each leg twice.
 - **Nails.** Rose heads. The two nails in one face differ in sink
   (0.7 and 1.0 mm) and in phase (30°): at one depth their underside discs
   were one plane, at one phase their flats were.
 - **Plank.** 2440 × 235 × 38 mm, centred on the span, bearing 0.5 mm into
-  both beams.
+  both beams, its arrises eased 5.5 mm (legs 5.5 mm, aprons 4.5 mm).
 - **Handsaw.** A 0.9 mm blade tapering from a 130 mm heel to a 60 mm toe,
   60 teeth (10 mm pitch, 6 mm deep, raked) along one edge, so the edge
   silhouettes as serrated at hero distance. It is let into a closed beech
@@ -158,6 +160,17 @@ heel to 60 mm at the toe, on a closed beech handle about 185 × 200 mm.
 - **Coplanar nuts.** Two split nuts 45 mm apart (inside the 50 mm coplanar
   search) shared top planes; each nut now stands 0.3 mm higher than the
   last.
+- **Rough at gallery size (quality pass).** The first shipped still read
+  as CG boxes: 3–4 mm one-segment chamfers are one or two pixels at hero
+  distance, the baked normal fed only the pine slot, the legs were
+  untapered, the wood ramp was a soft orange band with no latewood line,
+  and the saw steel, polished, mirrored a black studio. The arrises are
+  now 4.5–7 mm and rounded in the bake, every slot takes the baked
+  normal, the legs taper, the grain has a thin latewood line and long
+  figure streaks, and a weak reflector card stands where the blade's
+  mirror direction points (low and to the left, out of frame), so the
+  steel shows a graded sheen. Budgets did not move: the low mesh keeps
+  one chamfer segment, so its triangle and face counts are unchanged.
 
 ## Conventions walked
 
@@ -175,7 +188,7 @@ Every convention in `showcase/README.md`, and whether it applies here.
 | Material face floors | yes | pine 330, fir 24, steel 1070, beech 300, brass 108 |
 | One substance, one slot | yes | pine, fir, steel, beech, brass |
 | Shading is part of the model | yes | timber, blade and nuts faceted; the handle smooth, every edge over 35° hard |
-| Edge treatment | yes | every timber member and the handle chamfered; no separate budget, removing the chamfers moves the triangle band first |
+| Edge treatment | yes | every timber member and the handle chamfered; one flat segment on the game mesh, three rounded on the bake source, the bake carrying the roundness onto the low; no separate budget, removing the chamfers moves the triangle band first |
 | Sort bmesh operator inputs | yes | the bevel's edge list is sorted by index |
 | The bake cage is narrower than the nearest neighbour | yes | `CAGE_EXTRUSION` 0.01 m |
 | Level on the stage; stage 60 m | yes | turned about Z only; 60 m floor and wall |
@@ -192,7 +205,7 @@ were run on Blender 4.5.11, 5.1.2 and 5.2.1 and exited the declared code.
 | `--skip-decimate` | LOD1 ratio | drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000 | 9 |
 | `--stray-vert` | mesh hygiene | adds one loose vertex inside the first beam | 15 |
 | `--lift-z` | grounded zmin | lifts the whole mesh 50 mm | 16 |
-| `--loose-leg` | leg housing | slides one leg 14 mm out of its beam; housing −4.78 mm | 17 |
+| `--loose-leg` | leg housing | slides one leg 14 mm out of its beam; housing −5.42 mm | 17 |
 | `--short-leg` | feet on the floor | stops one leg 8 mm short along its axis; foot 8.00 mm up | 18 |
 | `--uneven-splay` | splay | swings one leg's foot out to 19° side splay from the same top | 19 |
 | `--low-horse` | plank seat on both saddles | builds the second horse 6 mm lower; seat +5.50 mm | 20 |
@@ -258,5 +271,5 @@ included.
 | LOD1 / LOD2 triangles | 1624 / 714 | 1624 / 714 | 1624 / 714 |
 | Faces pine / fir / steel / beech / brass | 364 / 26 / 1190 / 340 / 120 | same | same |
 | Collider triangles | 164 | 164 | 164 |
-| Seat, housing, splay | −0.500 mm / 9.22 mm / 15° and 10° | same | same |
+| Seat, housing, splay | −0.500 mm / 8.58 mm / 15° and 10° | same | same |
 | Falsifier exits 9 / 15 / 16 / 17 / 18 / 19 / 20 | all as declared | all as declared | all as declared |
