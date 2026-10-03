@@ -1,14 +1,15 @@
 # ships-wheel
 
-![A varnished teak ship's wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a square teak pedestal with a stepped plinth](preview.webp)
+![A varnished teak ship's wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak helm stand with a moulded base, a brass band and a coved capital](preview.webp)
 
 A one-metre, eight-spoke ship's wheel on its pedestal: eight turned teak
 spokes running from a brass nave out to a laminated teak rim, eight
 turned handles carried on past the rim on the spokes' own axes, a 10 mm
 brass inlay round the rim's face, brass ferrules where the handles leave
 the rim and a second brass ring on the king spoke. It turns on an iron
-shaft in a flanged brass bearing collar bolted to a panelled teak column
-on a stepped plinth. **A showcase piece, not an example** — it witnesses
+shaft in a flanged brass bearing collar bolted to a panelled teak helm
+stand: a moulded plinth and base, a brass band, a coved capital and an
+overhanging cap. **A showcase piece, not an example** — it witnesses
 no API contract. It asserts that generated geometry meets declared asset
 budgets, recomputed from the finished mesh.
 
@@ -16,9 +17,9 @@ budgets, recomputed from the finished mesh.
 
 | Shipped content | Used for |
 | --- | --- |
-| `skills/mesh-editing-and-bmesh` | revolved spokes, handles, nave, rim, shaft, collar, nut, ferrules and bolt heads, chamfered boxes for the pedestal, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
+| `skills/mesh-editing-and-bmesh` | revolved spokes, handles, nave, rim, shaft, collar, nut, ferrules and bolt heads, a chamfered plinth block and pedestal mouldings lofted through square-ring profiles, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
 | `skills/custom-properties` | face attributes `Part` (what each shell is) and `WoodTone` (one tone per member), and a point attribute `GrainCo` (each vertex in its member's own grain frame) |
-| `skills/procedural-materials-and-shaders` | varnished teak whose figure runs along each member (up the column, along every spoke and handle, round the rim), with a tone and hue per member and hand wear; warm, slightly tarnished brass; black iron |
+| `skills/procedural-materials-and-shaders` | varnished teak whose figure runs along each member (up the column, along every spoke and handle, round the rim), with a tone and hue per member and hand wear, recess grime from an ambient-occlusion term and a light varnish coat; brass polished on its high points and tarnished in its recesses; black iron |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, a doubled-segment high onto the low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -77,20 +78,20 @@ cross-version table for 4.5.11 and 5.1.2.
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 8700–9700 | 9188 |
+| Base triangles | 10500–11600 | 11036 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
-| LOD2 ratio | 0.10–0.35 | 0.2192 |
+| LOD2 ratio | 0.10–0.35 | 0.2193 |
 | Material slots | exactly 3, distinct | 3 |
-| Teak / brass / iron faces | ≥ 2800 / 1450 / 190 | 3086 / 1596 / 208 |
-| UV bounds | inside 0..1 | (0.0006, 0.0006)–(0.9994, 0.9994) |
+| Teak / brass / iron faces | ≥ 3700 / 1500 / 190 | 3996 / 1628 / 208 |
+| UV bounds | inside 0..1 | (0.0005, 0.0005)–(0.9995, 0.9995) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 1.000 × 0.602 × 1.500 m ± 0.020 | 1.0000 × 0.6020 × 1.5000 |
-| Collider triangles | ≤ 560 | 514 (three hulls) |
+| Outer AABB | 1.000 × 0.622 × 1.500 m ± 0.020 | 1.0000 × 0.6220 × 1.5000 |
+| Collider triangles | ≤ 560 | 478 (three hulls) |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~697 kB |
+| glTF export | file written, non-empty | ~826 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
-| Parts | 2 plinth steps, column, cap, 3 panel fields in 12 moulding pieces, collar, 4 bolts, shaft, nut, nave, rim, inlay, 8 spokes, 8 handles, 8 ferrules, 1 king ring | as stated |
+| Parts | plinth block and ogee step, moulded base, column, brass band, capital, cap, 3 panel fields in 12 moulding pieces, collar, 4 bolts, shaft, nut, nave, rim, inlay, 8 spokes, 8 handles, 8 ferrules, 1 king ring | as stated |
 | Nave concentric, shaft coaxial | ≤ 0.3 mm each, bore clearance 0.3–1.0 mm | 0.0001 mm, 0.0004 mm, 0.599 mm |
 | Spoke seat in the rim | 1–6 mm into the inner face | 3.000 mm (all eight) |
 | Handle seat in the rim | 1–6 mm into the outer face | 4.000 mm (all eight) |
@@ -105,9 +106,9 @@ wheel's centre about a metre off the deck.
 
 ## Construction
 
-- **Rim.** One teak ring, 50 mm deep and 46 mm thick, rectangular in
-  section with 4 mm chamfers, and a 10 mm brass inlay let 0.8 mm into its
-  face.
+- **Rim.** One teak ring, 50 mm deep and 46 mm thick, its section a
+  rounded rectangle (8 mm radius on all four arrises, so each edge catches
+  a highlight), and a 10 mm brass inlay let 0.8 mm into its face.
 - **Spokes.** Turned: a collar and bead by the nave, a long swelling
   shank, a second bead before the rim. Each is tenoned 12 mm into the nave
   and 3 mm into the rim's inner face.
@@ -118,15 +119,20 @@ wheel's centre about a metre off the deck.
   helmsman finds by touch.
 - **Nave and shaft.** A turned brass drum with a front boss, bored 0.6 mm
   over a 40 mm iron shaft, and an acorn nut over the shaft's end.
-- **Pedestal.** A stepped plinth, a 200 mm square column and a cap, each
-  tenoned into the one below. On three faces of the column a raised field
+- **Pedestal.** A helm stand: a chamfered plinth block under an
+  ogee-moulded step, a moulded base, a 200 mm square column with
+  stop-chamfered arrises, a brass band below the collar, a coved capital
+  with a bead, and an overhanging cap with a rounded edge and a low hip.
+  Every moulded member is lofted through a profile of chamfered square
+  rings and let into the one below. On three faces of the column a raised field
   (6 mm proud, darker) sits in a moulded frame whose rails stand 12 mm
   proud and stiles 11 mm, so no two front faces are one plane; each piece
   is let into the column by a different depth so no two back faces are
   either. The
   shaft runs into the column through a flanged brass collar held by four
   iron bolts.
-- **Collider.** One hull over the plinth, one over the column, one over
+- **Collider.** One hull over the plinth, one over the column with its
+  base, capital, cap and fittings, one over
   the whole wheel: a turning wheel is a disc to anything that hits it.
 
 ## Findings the budgets forced
@@ -140,6 +146,17 @@ wheel's centre about a metre off the deck.
   carries its member's grain frame (`GrainCo`), the rings run about the
   fibre axis with noise pulling their spacing about, and the ramp is
   narrow, so the figure is a shift in shade along the member.
+- **Mouldings on the panel planes.** The quality pass's first base
+  moulding ended in a fillet 112 mm from the column's axis, the plane the
+  panel frames' rails stand proud to; the brass band's inner skin sat on
+  the rails' buried backs (97 mm). The cross-shell coplanar audit counted
+  six pairs; the fillet moved to 115 mm and the band's skin to 94.5 mm.
+- **Treads that mirror the wall.** With the camera low enough to make the
+  wheel the subject, the plinth's treads and the cap's top see the lit
+  wall at grazing incidence and greyed out (sampled 109, 97, 89 against
+  78, 56, 41 on a riser). A zero-specular test render brought them back to
+  brown, so the teak's specular level is 0.15 under a 0.05 coat, and the
+  still is denoised.
 - **Falsifiers on diagonal spokes.** Shortening or turning a horizontal
   or upright spoke moves the handle tip that sets an edge of the envelope,
   so the AABB would fail first. Both falsifiers act on diagonal spokes.
@@ -157,10 +174,10 @@ Every convention in `showcase/README.md`, and whether it applies here.
 | A member is tenoned into its seat | yes | spokes into the nave and the rim, handles into the rim, the column into the plinth, the collar into the column |
 | Seat conformance (a band: minimum so it cannot float) | yes | every spoke and handle in the rim (`--short-spoke`), exit 18 |
 | Mirrored assemblies | no | a wheel is radial, not mirrored; its symmetry is the spacing budget |
-| Material face floors | yes | teak 2800, brass 1450, iron 190 |
+| Material face floors | yes | teak 3700, brass 1500, iron 190 |
 | One substance, one slot | yes | teak, brass, iron |
 | Shading is part of the model | yes | turned parts smooth, every edge over 35° hard; pedestal faceted |
-| Edge treatment | yes | every box and the rim chamfered; no separate budget, removing the chamfers moves the triangle band first |
+| Edge treatment | yes | every box chamfered, every moulding profiled, the rim's section rounded; no separate budget, removing the chamfers moves the triangle band first |
 | Sort bmesh operator inputs | yes | the bevel's edge list is sorted by index |
 | The bake cage is narrower than the nearest neighbour | yes | `CAGE_EXTRUSION` 0.01 m |
 | Level on the stage; stage 60 m | yes | turned about Z only; 60 m floor and wall |
@@ -238,11 +255,11 @@ identical.
 
 | Value | 4.5.11 | 5.1.2 | 5.2.1 |
 | --- | --- | --- | --- |
-| Base triangles | 9188 | 9188 | 9188 |
-| LOD1 / LOD2 triangles | 4594 / 2020 | 4594 / 2020 | 4594 / 2014 |
-| LOD2 ratio | 0.2199 | 0.2199 | 0.2192 |
-| Faces teak / brass / iron | 3086 / 1596 / 208 | same | same |
-| Collider triangles | 514 | 514 | 514 |
+| Base triangles | 11036 | 11036 | 11036 |
+| LOD1 / LOD2 triangles | 5518 / 2426 | 5518 / 2426 | 5518 / 2420 |
+| LOD2 ratio | 0.2198 | 0.2198 | 0.2193 |
+| Faces teak / brass / iron | 3996 / 1628 / 208 | same | same |
+| Collider triangles | 478 | 478 | 478 |
 | Concentric, coaxial, bore | 0.0001 / 0.0004 / 0.599 mm | same | same |
 | Spoke / handle seat | 3.000 / 4.000 mm | same | same |
 | Falsifier exits 9 / 15 / 16 / 17 / 18 / 19 | all as declared | all as declared | all as declared |

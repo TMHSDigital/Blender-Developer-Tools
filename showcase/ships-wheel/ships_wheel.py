@@ -72,11 +72,16 @@ HANDLE_SEAT = 0.004         # handle foot this far into the rim's outer face
 HANDLE_TIP = 0.500
 BAND_IN, BAND_OUT = R_IN + 0.020, R_OUT - 0.020   # a 10 mm brass inlay
 
-# Pedestal: stepped plinth, square column, cap, brass collar on its face.
-PLINTH = (-0.280, 0.280, -0.060, 0.500, 0.000, 0.050)
-STEP = (-0.200, 0.200, 0.020, 0.420, 0.045, 0.090)
-COLUMN = (-0.100, 0.100, 0.120, 0.320, 0.085, ZC + 0.100)
-CAP = (-0.125, 0.125, 0.095, 0.345, ZC + 0.095, ZC + 0.140)
+# Pedestal, after a yacht's helm stand: a chamfered plinth block under an
+# ogee-moulded step, a moulded base, a stop-chamfered square column with
+# panelled faces, a brass band, a coved capital and a hipped cap. Every
+# moulded member is lofted from a profile of (inset, z) square rings about
+# the column's axis; each is let into the member below so no two shells
+# share a plane.
+PED_Y = 0.220                                   # column axis, Y
+PLINTH = (-0.300, 0.300, PED_Y - 0.300, PED_Y + 0.300, 0.000, 0.050)
+COLUMN = (-0.100, 0.100, 0.120, 0.320, 0.125, ZC + 0.100)
+COL_CORNER = 0.018                              # stop chamfer on the column's arrises
 COLLAR_Y0, COLLAR_Y1 = 0.084, 0.124
 BOLT_RING = 0.072
 
@@ -88,10 +93,10 @@ LIFT_Z = 0.05
 SHORT_K, SKEW_K = 3, 1      # diagonal spokes: the envelope does not move
 
 BBOX_TOL = 0.020
-OUTER_SIZE = (1.000, 0.602, 1.500)
+OUTER_SIZE = (1.000, 0.622, 1.500)
 
-BASE_TRIS_MIN = 8700
-BASE_TRIS_MAX = 9700
+BASE_TRIS_MIN = 10500
+BASE_TRIS_MAX = 11600
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -99,7 +104,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
-FACE_FLOORS = {0: 2800, 1: 1450, 2: 190}
+FACE_FLOORS = {0: 3700, 1: 1500, 2: 190}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 560
@@ -131,7 +136,8 @@ IRON_IDX = 2
 P_PLINTH, P_COLUMN, P_CAP, P_COLLAR, P_BOLT, P_SHAFT, P_NUT = 1, 2, 3, 4, 5, 6, 7
 P_HUB, P_SPOKE, P_RIM, P_BAND, P_HANDLE, P_FERRULE, P_KING = 8, 9, 10, 11, 12, 13, 14
 P_PANEL, P_MOULD = 15, 16
-NPARTS = 17
+P_BASE, P_CAPITAL, P_STRAP = 17, 18, 19
+NPARTS = 20
 MOULD_W = 0.016
 
 
@@ -227,6 +233,39 @@ def box(bm, x0, x1, y0, y1, z0, z1, off, mat):
     chamfer(bm, faces, off, mat)
 
 
+def square_ring(bm, h, c, z, cy=PED_Y):
+    """Eight verts: a square of half-width ``h`` about (0, cy) with its four
+    corners chamfered by ``c``, at height ``z``."""
+    pts = [(h - c, -h), (h, -h + c), (h, h - c), (h - c, h),
+           (-h + c, h), (-h, h - c), (-h, -h + c), (-h + c, -h)]
+    return [bm.verts.new((x, cy + y, z)) for x, y in pts]
+
+
+def ease(d0, d1, z0, z1, n, kind):
+    """``n`` (half-width, z) points after (d0, z0) along a moulding curve:
+    'ogee' an S, 'cove' a hollow that flares at the top, 'round' a bullnose."""
+    out = []
+    for i in range(1, n + 1):
+        t = i / n
+        if kind == "ogee":
+            f = (1.0 - math.cos(math.pi * t)) * 0.5
+        elif kind == "cove":
+            f = 1.0 - math.sqrt(max(0.0, 1.0 - t * t))
+        else:
+            f = math.sqrt(max(0.0, 1.0 - (1.0 - t) ** 2))
+        out.append((d0 + (d1 - d0) * f, z0 + (z1 - z0) * t))
+    return out
+
+
+def moulded(b, prof, c, part):
+    """A square moulding lofted through ``prof`` [(half-width, z), ...],
+    capped top and bottom."""
+    rings = [square_ring(b.bm, h, c, z) for h, z in prof]
+    faces = loft(b.bm, rings)
+    bmesh.ops.recalc_face_normals(b.bm, faces=faces)
+    b.tag(part, TIMBER_IDX)
+
+
 def revolve(bm, profile, n, origin, axis, closed=False, phase=0.0):
     """Revolve an (r, h) profile about ``axis`` through ``origin``.
 
@@ -269,18 +308,41 @@ CENTRE = Vector((0.0, 0.0, ZC))
 
 
 def build_pedestal(b):
-    """Stepped plinth, square column, cap; each member tenoned into the one
-    below. The collar and its bolts are brass and iron on the column's face."""
+    """Plinth block, ogee step, moulded base, stop-chamfered column with
+    panelled faces, brass band, coved capital and hipped cap; each member
+    let into the one below. The collar and its bolts are brass and iron on
+    the column's face."""
     bm = b.bm
+    n = b.seg(5)
     box(bm, *PLINTH, 0.010, TIMBER_IDX)
     b.tag(P_PLINTH, TIMBER_IDX)
-    box(bm, *STEP, 0.008, TIMBER_IDX)
-    b.tag(P_PLINTH, TIMBER_IDX)
-    box(bm, *COLUMN, 0.012, TIMBER_IDX)
+    # Ogee-moulded step, 6 mm down into the plinth block.
+    moulded(b, [(0.262, 0.044), (0.262, 0.066)] + ease(0.262, 0.226, 0.066, 0.106, n, "ogee")
+            + [(0.226, 0.116)], 0.012, P_PLINTH)
+    # Column base: a plain fillet, then an ogee in to just proud of the column.
+    moulded(b, [(0.150, 0.110), (0.150, 0.130)] + ease(0.150, 0.117, 0.130, 0.166, n, "ogee")
+            + [(0.115, 0.172), (0.115, 0.178)], 0.016, P_BASE)
+    x0, x1, y0, y1, z0, z1 = COLUMN
+    col = loft(bm, [square_ring(bm, 0.100, COL_CORNER, z0), square_ring(bm, 0.100, COL_CORNER, z1)])
+    chamfer(bm, col, 0.005, TIMBER_IDX)
     b.tag(P_COLUMN, TIMBER_IDX)
-    box(bm, *CAP, 0.010, TIMBER_IDX)
-    b.tag(P_CAP, TIMBER_IDX)
     build_panels(b)
+    # A brass band round the column below the collar: 4 mm proud, its inner
+    # skin 5.5 mm inside the column (clear of the panel frames' buried backs).
+    zb0, zb1 = ZC - 0.116, ZC - 0.100
+    rings = [square_ring(bm, 0.104, COL_CORNER, zb0), square_ring(bm, 0.104, COL_CORNER, zb1),
+             square_ring(bm, 0.0945, COL_CORNER, zb1), square_ring(bm, 0.0945, COL_CORNER, zb0)]
+    band = loft(bm, rings + [rings[0]], cap=False)
+    bmesh.ops.recalc_face_normals(bm, faces=band)
+    b.tag(P_STRAP, BRASS_IDX)
+    # Capital: a bead, then a cove flaring out under the cap; it clears the
+    # collar (top at ZC + 0.060) and swallows the column's top.
+    moulded(b, [(0.104, ZC + 0.064), (0.104, ZC + 0.070), (0.112, ZC + 0.074), (0.112, ZC + 0.080),
+                (0.104, ZC + 0.084)] + ease(0.104, 0.146, ZC + 0.084, ZC + 0.136, n + 1, "cove")
+            + [(0.146, ZC + 0.146)], 0.016, P_CAPITAL)
+    # Cap: overhangs the capital, its edge rounded, a low hip on top.
+    moulded(b, [(0.160, ZC + 0.140), (0.160, ZC + 0.156)] + ease(0.160, 0.150, ZC + 0.156, ZC + 0.168, n, "round")
+            + [(0.120, ZC + 0.184)], 0.020, P_CAP)
     # Bearing collar: a flanged brass ring round the shaft, its flange 4 mm
     # into the column's front face.
     bore = SHAFT_R + 0.0004
@@ -353,10 +415,17 @@ def build_rim(b):
     """One laminated teak ring, rectangular in section with chamfered arrises,
     and a brass band let into its face."""
     h = RIM_T * 0.5
-    prof = [(R_IN, -h), (R_OUT, -h), (R_OUT, h), (R_IN, h)]
-    faces = revolve(b.bm, prof, b.seg(64), (0.0, 0.0, ZC), (0, 1, 0), closed=True)
-    chamfer(b.bm, faces, 0.004, TIMBER_IDX)
-    b.tag(P_RIM, TIMBER_IDX)
+    # Rounded-rectangle section: 8 mm radii on all four arrises, so the rim
+    # reads as a hand-shaped laminate and catches a highlight on each edge.
+    rr, k = 0.008, 3
+    prof = []
+    for (cr, ch), a0 in (((R_OUT - rr, -h + rr), -90.0), ((R_OUT - rr, h - rr), 0.0),
+                         ((R_IN + rr, h - rr), 90.0), ((R_IN + rr, -h + rr), 180.0)):
+        for i in range(k + 1):
+            a = math.radians(a0 + 90.0 * i / k)
+            prof.append((cr + rr * math.cos(a), ch + rr * math.sin(a)))
+    revolve(b.bm, prof, b.seg(72), (0.0, 0.0, ZC), (0, 1, 0), closed=True)
+    b.tag(P_RIM, TIMBER_IDX, smooth=True)
     band = [(BAND_IN, -h + 0.0008), (BAND_OUT, -h + 0.0008), (BAND_OUT, -h - 0.0022),
             (BAND_IN, -h - 0.0022)]
     revolve(b.bm, band, b.seg(64), (0.0, 0.0, ZC), (0, 1, 0), closed=True)
@@ -420,7 +489,7 @@ def build_wheel_mesh(name, hi=False, stray_vert=False, offset_hub=False, short_s
         smooth_verts = {v for f in b.smooth if f.is_valid for v in f.verts}
         for f in bm.faces:
             f.smooth = f[b.part] in (P_COLLAR, P_BOLT, P_SHAFT, P_NUT, P_HUB, P_SPOKE, P_BAND,
-                                     P_HANDLE, P_FERRULE, P_KING) and all(
+                                     P_HANDLE, P_FERRULE, P_KING, P_RIM) and all(
                 v in smooth_verts for v in f.verts)
         for e in bm.edges:
             if len(e.link_faces) == 2 and e.calc_face_angle(0.0) > math.radians(35.0):
@@ -485,7 +554,7 @@ def paint_pieces(me):
         t = 0.5 + 0.6 * (golden - 0.5)
         fs = {fi for i in g for fi in vf[i]}
         part = pv[next(iter(fs))] if fs else 0
-        if part in (P_PLINTH, P_COLUMN, P_CAP):
+        if part in (P_PLINTH, P_COLUMN, P_CAP, P_BASE, P_CAPITAL):
             t = 0.25 + 0.08 * (k % 3)
         elif part == P_PANEL:
             t = 0.08
@@ -510,7 +579,7 @@ def paint_pieces(me):
                 r = Vector((q.x, q.z)) - centre
                 along = math.atan2(r.y, r.x) * 0.335
                 a1, a2 = r.length - 0.335, q.y
-            elif part == P_PLINTH:
+            elif part in (P_PLINTH, P_BASE, P_CAPITAL, P_CAP):
                 along, a1, a2 = q.x, q.y, q.z
             else:
                 along, a1, a2 = q.z, q.x, q.y
@@ -620,17 +689,17 @@ def teak_material(name):
 
     # A narrow ramp: the figure shows as a shift in shade, not as stripes.
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.15
-    ramp.color_ramp.elements[0].color = (0.128, 0.057, 0.022, 1.0)
-    mid = ramp.color_ramp.elements.new(0.55)
-    mid.color = (0.205, 0.098, 0.041, 1.0)
+    ramp.color_ramp.elements[0].position = 0.12
+    ramp.color_ramp.elements[0].color = (0.062, 0.026, 0.010, 1.0)
+    mid = ramp.color_ramp.elements.new(0.52)
+    mid.color = (0.132, 0.062, 0.024, 1.0)
     ramp.color_ramp.elements[2].position = 0.92
-    ramp.color_ramp.elements[2].color = (0.280, 0.142, 0.064, 1.0)
+    ramp.color_ramp.elements[2].color = (0.215, 0.110, 0.045, 1.0)
     nt.links.new(figure, ramp.inputs["Fac"])
 
     # Per member: brightness, and a hue between redder and more golden teak.
-    gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], 0.55)
-    gain.node.inputs[2].default_value = 0.74
+    gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], 0.40)
+    gain.node.inputs[2].default_value = 0.82
     grey = nt.nodes.new("ShaderNodeCombineColor")
     for ch in ("Red", "Green", "Blue"):
         nt.links.new(gain, grey.inputs[ch])
@@ -650,14 +719,35 @@ def teak_material(name):
     wear.inputs["To Max"].default_value = 0.30
     nt.links.new(blot.outputs["Fac"], wear.inputs["Value"])
     base = _mix(nt, "MIX", base, (0.150, 0.095, 0.058), wear.outputs["Result"])
+    # Grime in the recesses: mouldings, the panel fields and the spoke
+    # turnings darken where hands and rags never reach.
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.03
+    occl = nt.nodes.new("ShaderNodeMapRange")
+    occl.inputs["To Min"].default_value = 0.55
+    occl.inputs["To Max"].default_value = 1.0
+    nt.links.new(ao.outputs["AO"], occl.inputs["Value"])
+    grime = nt.nodes.new("ShaderNodeCombineColor")
+    for ch in ("Red", "Green", "Blue"):
+        nt.links.new(occl.outputs["Result"], grime.inputs[ch])
+    base = _mix(nt, "MULTIPLY", base, grime.outputs["Color"], 1.0)
     nt.links.new(base, bsdf.inputs["Base Color"])
-    rough = _math(nt, "MULTIPLY_ADD", wear.outputs["Result"], 0.75)
-    rough.node.inputs[2].default_value = 0.30
+    # Varnish: a thin clear coat over the satin wood.
+    # Oiled wood reflects less than the default dielectric: a lower
+    # specular level keeps the treads and the cap from greying out at
+    # grazing angles, and a light coat gives the varnish its sheen.
+    for name, val in (("Specular IOR Level", 0.15), ("Coat Weight", 0.05), ("Coat Roughness", 0.25)):
+        if name in bsdf.inputs:
+            bsdf.inputs[name].default_value = val
+    # Rubbed-satin wood under the coat: rough enough that the treads and
+    # the cap don't mirror the lit wall at grazing angles.
+    rough = _math(nt, "MULTIPLY_ADD", wear.outputs["Result"], 0.60)
+    rough.node.inputs[2].default_value = 0.50
     nt.links.new(rough, bsdf.inputs["Roughness"])
 
     bump = nt.nodes.new("ShaderNodeBump")
     bump.name = "TimberBump"
-    bump.inputs["Strength"].default_value = 0.12
+    bump.inputs["Strength"].default_value = 0.06
     bump.inputs["Distance"].default_value = 0.0008
     nt.links.new(fib.outputs["Fac"], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
@@ -681,15 +771,26 @@ def brass_material(name):
     ramp.color_ramp.elements[1].position = 0.70
     ramp.color_ramp.elements[1].color = (0.72, 0.52, 0.22, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    # Polished on the high points, tarnished brown-green in the recesses.
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.02
+    tarn = nt.nodes.new("ShaderNodeMapRange")
+    tarn.inputs["From Min"].default_value = 0.45
+    tarn.inputs["From Max"].default_value = 0.95
+    tarn.inputs["To Min"].default_value = 0.85
+    tarn.inputs["To Max"].default_value = 0.0
+    nt.links.new(ao.outputs["AO"], tarn.inputs["Value"])
+    col = _mix(nt, "MIX", ramp.outputs["Color"], (0.13, 0.11, 0.05), tarn.outputs["Result"])
+    nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Metallic"].default_value = 1.0
     rough = nt.nodes.new("ShaderNodeMapRange")
     rough.inputs["From Min"].default_value = 0.35
     rough.inputs["From Max"].default_value = 0.72
-    rough.inputs["To Min"].default_value = 0.42
-    rough.inputs["To Max"].default_value = 0.20
+    rough.inputs["To Min"].default_value = 0.34
+    rough.inputs["To Max"].default_value = 0.14
     nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
-    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    rmix = _math(nt, "ADD", rough.outputs["Result"], _math(nt, "MULTIPLY", tarn.outputs["Result"], 0.35))
+    nt.links.new(rmix, bsdf.inputs["Roughness"])
     return mat
 
 
@@ -955,7 +1056,8 @@ def hull_collider(obj, name):
     parts = classify(obj.data)
     groups = [
         [p for r in parts.get(P_PLINTH, []) for p in r["pts"]],
-        [p for k in (P_COLUMN, P_CAP, P_PANEL, P_MOULD, P_COLLAR, P_BOLT) for r in parts.get(k, []) for p in r["pts"]],
+        [p for k in (P_BASE, P_COLUMN, P_CAPITAL, P_CAP, P_PANEL, P_MOULD, P_STRAP, P_COLLAR, P_BOLT)
+         for r in parts.get(k, []) for p in r["pts"]],
         [p for k in (P_HUB, P_SHAFT, P_NUT, P_SPOKE, P_RIM, P_BAND, P_HANDLE, P_FERRULE, P_KING)
          for r in parts.get(k, []) for p in r["pts"]],
     ]
@@ -1028,7 +1130,7 @@ def export_unity(path, objects):
     )
 
 
-EXPECTED_PARTS = {P_PLINTH: 2, P_COLUMN: 1, P_CAP: 1, P_COLLAR: 1, P_BOLT: 4, P_SHAFT: 1,
+EXPECTED_PARTS = {P_PLINTH: 2, P_BASE: 1, P_COLUMN: 1, P_CAPITAL: 1, P_STRAP: 1, P_CAP: 1, P_COLLAR: 1, P_BOLT: 4, P_SHAFT: 1,
                   P_NUT: 1, P_HUB: 1, P_SPOKE: SPOKES, P_RIM: 1, P_BAND: 1,
                   P_HANDLE: SPOKES, P_FERRULE: SPOKES, P_KING: 1, P_PANEL: 3, P_MOULD: 12}
 
@@ -1196,7 +1298,7 @@ def render_still(low, mats, tex, path, engine):
             ob.hide_viewport = True
     # Level on the floor: turned about Z only, so the camera sees the wheel's
     # face, the spokes' turnings and the nave, with the pedestal behind.
-    yaw = math.radians(-28.0)
+    yaw = math.radians(-22.0)
     low.rotation_euler.z = yaw
     centre = Vector((0.0, 0.22, 0.0))
     low.location = -(Matrix.Rotation(yaw, 3, "Z") @ centre)
@@ -1239,20 +1341,22 @@ def render_still(low, mats, tex, path, engine):
         ob.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", "AREA", (-2.4, -3.6, 4.2), 250.0, 1.0, (1.0, 0.95, 0.88))
-    light("Fill", "AREA", (3.6, -2.8, 1.8), 35.0, 5.0, (0.74, 0.84, 1.0))
-    light("Rim", "AREA", (1.8, 3.2, 3.0), 160.0, 3.0, (0.62, 0.78, 1.0), (0.0, 0.0, 1.0))
-    # Warm wedge: on the wall behind the wheel, between it and the wall,
-    # so the wheel's silhouette reads against a warm gradient.
-    light("Wedge", "AREA", (0.2, 6.6, 0.3), 420.0, 2.0, (1.0, 0.70, 0.40), (-0.1, 8.5, 1.6))
+    light("Key", "AREA", (-2.6, -3.4, 3.8), 300.0, 1.6, (1.0, 0.95, 0.88))
+    light("Fill", "AREA", (3.4, -2.6, 1.6), 45.0, 5.0, (0.74, 0.84, 1.0))
+    light("Rim", "AREA", (1.6, 3.0, 2.8), 190.0, 2.5, (0.62, 0.78, 1.0), (0.0, 0.0, 1.0))
+    # Warm wedge: a broad, soft pool on the wall directly behind the wheel
+    # as the camera sees it (the camera's line through the wheel meets the
+    # wall near x = 2.6), so the silhouette reads against a warm gradient
+    # with no hard band at the frame's edge.
+    light("Wedge", "AREA", (1.6, 5.8, 1.9), 240.0, 4.0, (1.0, 0.70, 0.40), (2.6, 8.5, 2.0))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (-1.69, -4.55, 1.79)
+    cam.location = (-1.46, -4.28, 1.44)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.76)
+    aim.location = (0.0, 0.0, 0.75)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1262,8 +1366,10 @@ def render_still(low, mats, tex, path, engine):
 
     scene.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
         scene.cycles.device = "CPU"
+        # The bake above turns denoising off; the still wants it back on.
+        scene.cycles.use_denoising = True
     else:
         try:
             scene.eevee.taa_render_samples = 64
