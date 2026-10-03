@@ -16,10 +16,10 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/garden-gate-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face." />
+  <meta property="og:image:alt" content="A weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/garden-gate-hero.webp" />
-  <meta name="twitter:image:alt" content="A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face." />
+  <meta name="twitter:image:alt" content="A weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:title" content="Garden Gate (garden-gate) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural ledged-and-braced garden gate on hook-and-band hinges through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets — every knuckle on its pin, both pins on one plumb axis, and the swing clearing the latch post — rather than an API contract." />
@@ -46,11 +46,11 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../mine-cart/" aria-label="Previous showcase piece: mine-cart"><span aria-hidden="true">&larr;</span> mine-cart</a><span class="pager-pos hud">74 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../ships-wheel/" aria-label="Next showcase piece: ships-wheel">ships-wheel <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face.">
-      <img src="../assets/garden-gate-hero.webp" alt="A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt.">
+      <img src="../assets/garden-gate-hero.webp" alt="A weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself. Select it to enlarge.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3320 tris, three materials (timber 370 / iron 1534 / ground 156 faces), 344-tri four-hull collider, LOD ratios 0.50 / 0.22, 1.56 × 0.56 × 1.245 m grounded; both knuckles coaxial with their pins (0.000 mm, 0.600 mm running clearance) and seated −0.50 mm on their hooks, both pins plumb on one axis (0.000 mm), swing circle clearing the latch post and keeper by 14.87 mm. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-knuckle exits 17 on the knuckle on its pin; --lift-gate exits 18 on the knuckle seat; --tilt-pintle exits 19 on the plumb shared axis; --tight-post exits 20 on the swing clearance.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3936 tris, three materials (timber 434 / iron 1534 / ground 464 faces), 394-tri four-hull collider, LOD ratios 0.50 / 0.22, 1.556 × 0.876 × 1.245 m grounded; the hook-and-band straps lie along the ledges, both knuckles coaxial with their pins (0.000 mm, 0.600 mm running clearance) and seated −0.50 mm on their hooks, both pins plumb on one axis (0.000 mm), swing circle clearing the latch post and keeper by 12.96 mm, both braces rising from the hinge side (0.18 → 0.74 m and 0.22 → 0.70 m from the hinge axis). --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-knuckle exits 17 on the knuckle on its pin; --lift-gate exits 18 on the knuckle seat; --tilt-pintle exits 19 on the plumb shared axis; --tight-post exits 20 on the swing clearance; --reversed-braces exits 21 on the brace direction.</div>
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
@@ -58,32 +58,33 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A 900 mm ledged-and-braced garden gate: six vertical oak boards under a bow top, nailed to three back ledges with two diagonal braces between them, hung from a squared hinge post on two hook-and-band hinges and closing against a latch post. A barrel bolt sits on the back, a keeper staple on the latch post, a ring pull on the front, and both posts stand in sandstone flags. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<p>A 900 mm ledged-and-braced garden gate: six vertical oak boards under a bow top, nailed to three back ledges with two diagonal braces between them, hung from a squared hinge post on two hook-and-band hinges whose straps are bolted along the top and bottom ledges, and closing against a latch post. A barrel bolt sits on the middle ledge, a keeper staple on the latch post, a ring pull on the front, and both posts stand in sandstone flags. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
 <h2 id="what-it-composes">What it composes<a class="anchor" href="#what-it-composes" aria-label="Link to this section">#</a></h2>
-<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>prisms, revolved knuckles, pins, domes and nail heads, a torus ring, all in one <code>bmesh</code>, chamfered with <code>bmesh.ops.bevel</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>face attributes: <code>Part</code> (what each shell is), <code>GrainDir</code> (vertical or horizontal fibre) and <code>WoodTone</code> (one tone per board or flag)</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>weathered oak with grain along each member, a tone per board and grime toward the ground; black forged iron rusting in patches; sandstone flags</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, a 24-segment high onto the 12-segment low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>a hull per post, one over the gate&#x27;s timber, one over the paving</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>prisms, revolved knuckles, pins, domes and nail heads, a torus ring, all in one <code>bmesh</code>, chamfered with <code>bmesh.ops.bevel</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>face attributes <code>Part</code> (what each shell is) and <code>WoodTone</code> (one tone per board or flag); a point attribute <code>GrainCo</code> (each vertex in its member&#x27;s own along / across / through frame)</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>weathered oak with grain along each member, a tone per board and grime toward the ground; black forged iron rusting in patches; sandstone flags</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, a 24-segment high onto the 12-segment low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>a hull per post, one over the gate&#x27;s timber, one over the paving</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
 <h2 id="the-budget-that-matters">The budget that matters<a class="anchor" href="#the-budget-that-matters" aria-label="Link to this section">#</a></h2>
 <p>A hook-and-band hinge is a rolled eye (the knuckle) on the end of an iron strap, dropped over an upright pin on a hook driven into the post. It can fail without looking wrong:</p>
-<ul><li><strong>Each knuckle must be coaxial with its pin</strong>, with a running clearance between them. A millimetre off and the eye still sits on the hook in every picture, but the pin is not inside the bore.</li><li><strong>Both pins must stand plumb on one shared axis.</strong> Lean one and the two hinges no longer agree on an axis, so the gate binds instead of turning.</li><li><strong>Each knuckle must rest on its hook</strong>, a seat, not a float.</li><li><strong>The gate must clear the latch post as it swings.</strong> A closed gate shows nothing; only the swing circle does.</li></ul>
-<p>The piece measures all four off the finished mesh. Every shell carries a <code>Part</code> face attribute written at build time, so the audit finds the two knuckles, the two pins, the two hooks, every member that hangs on the hinges and the latch post with its keeper, without guessing from shape.</p>
-<ul><li><strong>Knuckle on pin.</strong> A knuckle&#x27;s axis is the plan centroid of its own vertices (a revolved tube is symmetric about its axis); its bore is the nearest of them to that axis. A pin&#x27;s axis is the line through the centroids of its end rings, read at the knuckle&#x27;s mid-height; its radius is the farthest bottom-ring vertex from that ring&#x27;s centroid. Coaxial within 0.3 mm; radial clearance (bore − pin − offset) in 0.3–1.0 mm. Measured 0.000 mm and 0.600 mm.</li><li><strong>Seat.</strong> The knuckle&#x27;s bottom against the hook&#x27;s top: −1.0 to −0.2 mm (it rests 0.5 mm into the hook&#x27;s shoulder, so no two faces are one plane). Measured −0.500 mm.</li><li><strong>Plumb, one axis.</strong> Each pin&#x27;s top-ring centroid within 0.2 mm of its bottom-ring centroid in plan, and the two pins&#x27; feet within 0.3 mm of each other. Measured 0.000 and 0.000 mm.</li><li><strong>Swing.</strong> The hinge axis is the mean of the two measured knuckle axes. Every vertex that hangs on the hinges (boards, ledges, braces, straps, knuckles, bolts, nails, the barrel bolt and the ring) gives the swing circle&#x27;s radius; every vertex of the latch post and its keeper gives the nearest obstacle. Clearance 8–30 mm; measured 14.87 mm (radius 0.9153 m, keeper at 0.9301 m).</li></ul>
-<p><code>--offset-knuckle</code> moves the upper knuckle 1.5 mm off its pin and leaves everything else where it was: exit 17. <code>--tilt-pintle</code> leans the upper pin about the knuckle&#x27;s mid-height, so its axis still passes through the knuckle and the coaxial budget holds; only plumb fails, exit 19. <code>--tight-post</code> sets the latch post 14 mm closer; the paving defines the envelope, so the AABB does not move, and the swing clearance drops to 0.89 mm: exit 20.</p>
+<ul><li><strong>Each knuckle must be coaxial with its pin</strong>, with a running clearance between them. A millimetre off and the eye still sits on the hook in every picture, but the pin is not inside the bore.</li><li><strong>Both pins must stand plumb on one shared axis.</strong> Lean one and the two hinges no longer agree on an axis, so the gate binds instead of turning.</li><li><strong>Each knuckle must rest on its hook</strong>, a seat, not a float.</li><li><strong>The gate must clear the latch post as it swings.</strong> A closed gate shows nothing; only the swing circle does.</li><li><strong>Each brace must rise from the hinge side.</strong> Its lower end sits next to the hinge stile and its upper end toward the latch, so it works in compression and carries the free edge&#x27;s weight back into the bottom hinge. Mirrored, the same timber hangs the free edge off a strut in tension and the gate sags; it looks just as plausible from a distance.</li></ul>
+<p>The piece measures all five off the finished mesh. Every shell carries a <code>Part</code> face attribute written at build time, so the audit finds the two knuckles, the two pins, the two hooks, every member that hangs on the hinges and the latch post with its keeper, without guessing from shape.</p>
+<ul><li><strong>Knuckle on pin.</strong> A knuckle&#x27;s axis is the plan centroid of its own vertices (a revolved tube is symmetric about its axis); its bore is the nearest of them to that axis. A pin&#x27;s axis is the line through the centroids of its end rings, read at the knuckle&#x27;s mid-height; its radius is the farthest bottom-ring vertex from that ring&#x27;s centroid. Coaxial within 0.3 mm; radial clearance (bore − pin − offset) in 0.3–1.0 mm. Measured 0.000 mm and 0.600 mm.</li><li><strong>Seat.</strong> The knuckle&#x27;s bottom against the hook&#x27;s top: −1.0 to −0.2 mm (it rests 0.5 mm into the hook&#x27;s shoulder, so no two faces are one plane). Measured −0.500 mm.</li><li><strong>Plumb, one axis.</strong> Each pin&#x27;s top-ring centroid within 0.2 mm of its bottom-ring centroid in plan, and the two pins&#x27; feet within 0.3 mm of each other. Measured 0.000 and 0.000 mm.</li><li><strong>Swing.</strong> The hinge axis is the mean of the two measured knuckle axes. Every vertex that hangs on the hinges (boards, ledges, braces, straps, knuckles, bolts, nails, the barrel bolt and the ring) gives the swing circle&#x27;s radius; every vertex of the latch post and its keeper gives the nearest obstacle. Clearance 8–30 mm; measured 12.96 mm (radius 0.9161 m, keeper at 0.9290 m).</li></ul>
+<ul><li><strong>Brace direction.</strong> Each brace&#x27;s lower end (its vertices within 5 mm of its lowest point) and upper end, as mean plan distance from the measured hinge axis: the upper end must be at least 0.30 m farther out. Measured 0.178 → 0.741 m and 0.215 → 0.703 m.</li></ul>
+<p><code>--offset-knuckle</code> moves the upper knuckle 1.5 mm off its pin and leaves everything else where it was: exit 17. <code>--tilt-pintle</code> leans the upper pin about the knuckle&#x27;s mid-height, so its axis still passes through the knuckle and the coaxial budget holds; only plumb fails, exit 19. <code>--tight-post</code> sets the latch post 14 mm closer; the paving defines the envelope, so the AABB does not move, and the swing clearance drops to −1.04 mm: exit 20. <code>--reversed-braces</code> mirrors both braces about the gate&#x27;s centre line, lower ends at the latch side, on the same ledges and in the same envelope: exit 21.</p>
 <h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
 <p>Declared in the script as named constants, recomputed from the generated mesh. Measured values below are from Blender 5.2.1; see the cross-version table for 4.5.11 and 5.1.2.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>3100–3550</td><td>3320</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2193</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Timber / iron / ground faces</td><td>≥ 330 / 1400 / 140</td><td>370 / 1534 / 156</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0009, 0.0009)–(0.9991, 0.9991)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>1.560 × 0.560 × 1.245 m ± 0.020</td><td>1.5600 × 0.5600 × 1.2450</td></tr><tr><td>Collider triangles</td><td>≤ 400</td><td>344 (four hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~281 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Parts</td><td>6 flags, 2 posts, 6 boards, 3 ledges, 2 braces, 2 straps, 2 knuckles, 2 pins, 2 hooks, 6 bolt heads, 26 nails, 5 bolt pieces, 1 keeper, 3 ring pieces</td><td>as stated</td></tr><tr><td>Knuckle on pin</td><td>coaxial ≤ 0.3 mm, clearance 0.3–1.0 mm</td><td>0.000 mm, 0.600 mm (both hinges)</td></tr><tr><td>Knuckle seat</td><td>−1.0 to −0.2 mm on the hook</td><td>−0.500 mm (both)</td></tr><tr><td>Plumb shared axis</td><td>each pin ≤ 0.2 mm, pins ≤ 0.3 mm apart</td><td>0.000 mm, 0.000 mm</td></tr><tr><td>Swing clearance</td><td>8–30 mm past the latch post and keeper</td><td>14.87 mm</td></tr><tr><td>Real-world size</td><td>gate 0.900 ± 0.003 × 0.960 ± 0.005, post 1.205 ± 0.005 above its flag, strap 0.400 ± 0.005, pin Ø 12 ± 0.5 mm</td><td>0.9000 × 0.9599, 1.2050, 0.3995, 12.000 mm</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>3700–4200</td><td>3936</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2185</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Timber / iron / ground faces</td><td>≥ 400 / 1400 / 400</td><td>434 / 1534 / 464</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0008, 0.0008)–(0.9992, 0.9992)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>1.560 × 0.880 × 1.245 m ± 0.020</td><td>1.5560 × 0.8759 × 1.2450</td></tr><tr><td>Collider triangles</td><td>≤ 400</td><td>394 (four hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~332 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Parts</td><td>8 flags, 2 posts, 6 boards, 3 ledges, 2 braces, 2 straps, 2 knuckles, 2 pins, 2 hooks, 6 bolt heads, 26 nails, 5 bolt pieces, 1 keeper, 3 ring pieces</td><td>as stated</td></tr><tr><td>Knuckle on pin</td><td>coaxial ≤ 0.3 mm, clearance 0.3–1.0 mm</td><td>0.000 mm, 0.600 mm (both hinges)</td></tr><tr><td>Knuckle seat</td><td>−1.0 to −0.2 mm on the hook</td><td>−0.500 mm (both)</td></tr><tr><td>Plumb shared axis</td><td>each pin ≤ 0.2 mm, pins ≤ 0.3 mm apart</td><td>0.000 mm, 0.000 mm</td></tr><tr><td>Swing clearance</td><td>8–30 mm past the latch post and keeper</td><td>12.96 mm</td></tr><tr><td>Brace direction</td><td>each brace&#x27;s upper end ≥ 0.30 m farther from the hinge axis than its lower end</td><td>0.178 → 0.741 m, 0.215 → 0.703 m</td></tr><tr><td>Real-world size</td><td>gate 0.900 ± 0.003 × 0.960 ± 0.005, post 1.205 ± 0.005 above its flag, strap 0.400 ± 0.005, pin Ø 12 ± 0.5 mm</td><td>0.9000 × 0.9599, 1.2050, 0.3995, 12.000 mm</td></tr></tbody></table></div>
 <p>Real-world size: hook-and-band hinges are usually sized at a third of the gate&#x27;s width, so a 900 mm gate takes 400 × 38 mm straps on 12 mm pins. The gate stands 100 mm clear of the paving, the bow top rising 60 mm from the stiles to the middle board, between 100 mm square posts 1.2 m above the flags.</p>
 <h2 id="construction">Construction<a class="anchor" href="#construction" aria-label="Link to this section">#</a></h2>
-<ul><li><strong>Boards.</strong> Six 145 × 22 mm prisms with 6 mm joints, each outline cut to the parabolic bow top, every near-right-angle edge chamfered 2.5 mm.</li><li><strong>Ledges and braces.</strong> Three 95 × 23 mm ledges on the back, 1 mm into the boards so their front is not the boards&#x27; back plane. The two braces rise from the hinge side to the latch side (the strut that carries the free edge&#x27;s weight back down into the bottom hinge); their ends are bitten 2 mm into the ledges and their faces sit off the ledges&#x27; planes.</li><li><strong>Hinges.</strong> The strap is a tapered prism 0.5 mm into the boards, with three domed carriage-bolt heads. The knuckle is a revolved tube 6.6 mm bore, 11.2 mm outside, 40 mm tall, 2 mm taller than the strap so their ends are not one plane. The hook is a 14 mm square shank driven 70 mm into the hinge post and a 12 mm pin rising through it, chamfered at the top.</li><li><strong>Nails.</strong> Rose-headed nails, two per board at every ledge, except where a strap&#x27;s bolts already hold the board. Each head is sunk 0.7 mm: at 0.5 mm they shared the strap&#x27;s back plane.</li><li><strong>Latch.</strong> A barrel bolt on the middle ledge (backplate, two guides, a rod drawn back inside the gate&#x27;s edge and its knob), a keeper staple bitten 6 mm into the latch post, and a ring pull on a round rose that hangs from its staple and leans out at the bottom.</li><li><strong>Posts and paving.</strong> Square posts with chamfered arrises and a pyramid weathering, sunk 20 mm into the flags. A pad flag under each post and four flags across the opening, 12 mm joints, the opening&#x27;s flags 4–6 mm proud or shy of the pads so no two flag tops are one plane.</li><li><strong>Collider.</strong> One hull per post, one over the gate&#x27;s timber, one over the paving. The ironwork is left out: millimetres of strap and bolt on faces the gate&#x27;s hull already covers.</li><li><strong>The still.</strong> The gate is swung 24° open about the measured hinge axis for the render only, so the knuckles are seen turning on their pins and the keeper shows on the latch post. Every budget is asserted on the closed gate.</li></ul>
+<ul><li><strong>Boards.</strong> Six 145 × 22 mm prisms with 6 mm joints, each outline cut to the parabolic bow top, every near-right-angle edge chamfered 2.5 mm.</li><li><strong>Ledges and braces.</strong> Three 95 × 23 mm ledges on the back, 1 mm into the boards so their front is not the boards&#x27; back plane. The two braces rise from the hinge side to the latch side (the strut that carries the free edge&#x27;s weight back down into the bottom hinge); their ends are bitten 2 mm into the ledges and their faces sit off the ledges&#x27; planes.</li><li><strong>Hinges.</strong> Hook-and-band straps go on the ledged side: each strap is a tapered prism lying along the top or bottom ledge, let 0.5 mm into it, with three domed carriage-bolt heads through the ledge, so the hinge axis sits behind the boards, in line with the ledges. The knuckle is a revolved tube 6.6 mm bore, 11.2 mm outside, 40 mm tall, 2 mm taller than the strap so their ends are not one plane. The hook is a 14 mm square shank driven 70 mm into the hinge post and a 12 mm pin rising through it, chamfered at the top.</li><li><strong>Nails.</strong> Rose-headed nails, two per board at every ledge, except where a strap&#x27;s bolts already hold the board. Each head is sunk 0.7 mm: at 0.5 mm they shared the strap&#x27;s back plane.</li><li><strong>Latch.</strong> A barrel bolt on the middle ledge (backplate, two guides, a rod drawn back inside the gate&#x27;s edge and its knob), a keeper staple bitten 6 mm into the latch post, and a ring pull on a round rose that hangs from its staple and leans out at the bottom.</li><li><strong>Posts and paving.</strong> Square posts with chamfered arrises, a V-groove necking each one 70 mm below a pyramid weathering, sunk 20 mm into the flags. A pad flag under each post, four flags across the opening and two more on the side the gate swings to, so the open leaf hangs over paving (a gateway is paved where the gate sweeps), 7 mm joints, each flag dressed with knocked-off corners and edges a few millimetres out of true, the opening&#x27;s flags 4–6 mm proud or shy of the pads so no two flag tops are one plane.</li><li><strong>Timber surface.</strong> <code>GrainCo</code> puts every vertex in its member&#x27;s own frame (along the grain, across the face, through the thickness), offset per shell, so fibres run up the boards and posts, along the ledges and down each brace&#x27;s diagonal, and no two members share a figure. The oak is a low-contrast silver-brown: mid-scale streaks, thin latewood lines spaced irregularly, sparse checking cracks, long weathering patches, a tone per member and grime toward the ground.</li><li><strong>Collider.</strong> One hull per post, one over the gate&#x27;s timber, one over the paving. The ironwork is left out: millimetres of strap and bolt on faces the gate&#x27;s hull already covers.</li><li><strong>The still.</strong> Seen from the braced side, so the ledges, the Z of braces, the straps and the barrel bolt all read; the gate is swung 32° toward the viewer about the measured hinge axis for the render only, so the knuckles are seen turning on their pins. Rendered in Cycles with denoising. Every budget is asserted on the closed gate.</li></ul>
 <h2 id="findings-the-budgets-forced">Findings the budgets forced<a class="anchor" href="#findings-the-budgets-forced" aria-label="Link to this section">#</a></h2>
-<ul><li><strong>Coplanar cross-shell.</strong> The first run reported eight pairs: the nail heads near each strap&#x27;s tip were sunk 0.5 mm, onto the strap&#x27;s own back plane. They are sunk 0.7 mm now.</li><li><strong>Pole in the ring.</strong> The pin&#x27;s radius was first read as the mean distance of its bottom ring from its centroid, and the pole vertex at that height pulled it 0.5 mm low. It is the farthest vertex now.</li><li><strong>A falsifier that would land early.</strong> A wider gate was the obvious way to break the swing, but it moves the gate&#x27;s width before the swing is read, so it would fail the real-world size first. <code>--tight-post</code> moves the latch post instead.</li><li><strong>The swing has a limit the other way.</strong> Swung inward the gate&#x27;s hinge-side back corner meets the hinge post at about 35°; the still uses 24°.</li></ul>
+<ul><li><strong>Coplanar cross-shell.</strong> The first run reported eight pairs: the nail heads near each strap&#x27;s tip were sunk 0.5 mm, onto the strap&#x27;s own back plane. They are sunk 0.7 mm now.</li><li><strong>Pole in the ring.</strong> The pin&#x27;s radius was first read as the mean distance of its bottom ring from its centroid, and the pole vertex at that height pulled it 0.5 mm low. It is the farthest vertex now.</li><li><strong>A falsifier that would land early.</strong> A wider gate was the obvious way to break the swing, but it moves the gate&#x27;s width before the swing is read, so it would fail the real-world size first. <code>--tight-post</code> moves the latch post instead.</li><li><strong>The swing has a limit the other way.</strong> Swung away from the straps the gate&#x27;s hinge-side corner meets the hinge post; the still swings it 32° toward the strap side, the way a gate hung on the ledged face opens.</li><li><strong>Quality pass findings.</strong> Moving the straps onto the ledges first reported four coplanar pairs: a ledge&#x27;s end chamfer and the strap&#x27;s end chamfer fell on one plane while the ledges stopped 4 mm from the board edge; they stop 6 mm in now. Dressing the flags turned each underside into an n-gon whose ear-clipped triangles sat within reach of the next flag&#x27;s (all undersides lie at z = 0), two more pairs; the undersides are fanned from their centres. The first still left the open leaf hanging past the paving&#x27;s back edge, and the bare floor under it read as a black hole; the paving now runs on under the swing.</li></ul>
 <h2 id="conventions-walked">Conventions walked<a class="anchor" href="#conventions-walked" aria-label="Link to this section">#</a></h2>
 <p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>both pins plumb on one axis (<code>--tilt-pintle</code>), gate, post, strap and pin sizes; exit 19</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>posts into the flags, ledges and straps into the boards, braces into the ledges, the keeper into the post, the hook into the post</td></tr><tr><td>Seat conformance (a band: minimum so it cannot float)</td><td>yes</td><td>each knuckle on its hook (<code>--lift-gate</code>), exit 18</td></tr><tr><td>Mirrored assemblies</td><td>no</td><td>a gate is handed; nothing is mirrored</td></tr><tr><td>Material face floors</td><td>yes</td><td>timber 330, iron 1400, ground 140</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>oak, forged iron, sandstone</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>timber and flags faceted; knuckles, pins, domes, rod and ring smooth, every edge over 35° hard</td></tr><tr><td>Edge treatment</td><td>yes</td><td>every prism chamfered; no separate budget, removing the chamfers moves the triangle band first</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>the bevel&#x27;s edge list is sorted by index</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>no falsifier moves the AABB; <code>--tight-post</code> moves a post inside the paving</td></tr><tr><td>Named supports, wrappers, rope, roofs, vessels, scatter, fasteners</td><td>partly</td><td>fasteners: nails and bolt heads are counted as parts</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>both pins plumb on one axis (<code>--tilt-pintle</code>), gate, post, strap and pin sizes; exit 19</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>posts into the flags, ledges and straps into the boards, braces into the ledges, the keeper into the post, the hook into the post</td></tr><tr><td>Seat conformance (a band: minimum so it cannot float)</td><td>yes</td><td>each knuckle on its hook (<code>--lift-gate</code>), exit 18</td></tr><tr><td>Mirrored assemblies</td><td>no</td><td>a gate is handed; nothing is mirrored</td></tr><tr><td>Material face floors</td><td>yes</td><td>timber 400, iron 1400, ground 400</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>oak, forged iron, sandstone</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>timber and flags faceted; knuckles, pins, domes, rod and ring smooth, every edge over 35° hard</td></tr><tr><td>Edge treatment</td><td>yes</td><td>every prism chamfered; no separate budget, removing the chamfers moves the triangle band first</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>the bevel&#x27;s edge list is sorted by index</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>no falsifier moves the AABB; <code>--tight-post</code> moves a post inside the paving</td></tr><tr><td>Named supports, wrappers, rope, roofs, vessels, scatter, fasteners</td><td>partly</td><td>fasteners: nails and bolt heads are counted as parts</td></tr></tbody></table></div>
 <h2 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h2>
 <p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All seven were run on Blender 4.5.11, 5.1.2 and 5.2.1 and exited the declared code.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the hinge post</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--offset-knuckle</code></td><td>knuckle on pin</td><td>moves the upper knuckle 1.5 mm along the gate; clearance −0.90 mm</td><td>17</td></tr><tr><td><code>--lift-gate</code></td><td>knuckle seat</td><td>lifts everything that hangs 3 mm off the hooks; seat +2.50 mm</td><td>18</td></tr><tr><td><code>--tilt-pintle</code></td><td>plumb shared axis</td><td>leans the upper pin 3.4° about the knuckle&#x27;s mid-height; top 3.96 mm off its foot</td><td>19</td></tr><tr><td><code>--tight-post</code></td><td>swing clearance</td><td>sets the latch post 14 mm closer; clearance 0.89 mm</td><td>20</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the hinge post</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--offset-knuckle</code></td><td>knuckle on pin</td><td>moves the upper knuckle 1.5 mm along the gate; clearance −0.90 mm</td><td>17</td></tr><tr><td><code>--lift-gate</code></td><td>knuckle seat</td><td>lifts everything that hangs 3 mm off the hooks; seat +2.50 mm</td><td>18</td></tr><tr><td><code>--tilt-pintle</code></td><td>plumb shared axis</td><td>leans the upper pin 3.4° about the knuckle&#x27;s mid-height; top 3.96 mm off its foot</td><td>19</td></tr><tr><td><code>--tight-post</code></td><td>swing clearance</td><td>sets the latch post 14 mm closer; clearance −1.04 mm</td><td>20</td></tr><tr><td><code>--reversed-braces</code></td><td>brace direction</td><td>mirrors both braces, lower ends at the latch side; brace 0 rises 0.741 → 0.178 m</td><td>21</td></tr></tbody></table></div>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, has no UV layer, or a part count is wrong</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Knuckle off its pin or bore clearance out of band (<code>--offset-knuckle</code>)</td></tr><tr><td>18</td><td>Knuckle seat on its hook (<code>--lift-gate</code>)</td></tr><tr><td>19</td><td>Pin plumb, shared hinge axis or real-world size (<code>--tilt-pintle</code>)</td></tr><tr><td>20</td><td>Swing clearance at the latch post (<code>--tight-post</code>)</td></tr><tr><td>24</td><td>Asset-quality floors (<code>examples/gallery_asset_quality.py</code>, render path only)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, has no UV layer, or a part count is wrong</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Knuckle off its pin or bore clearance out of band (<code>--offset-knuckle</code>)</td></tr><tr><td>18</td><td>Knuckle seat on its hook (<code>--lift-gate</code>)</td></tr><tr><td>19</td><td>Pin plumb, shared hinge axis or real-world size (<code>--tilt-pintle</code>)</td></tr><tr><td>20</td><td>Swing clearance at the latch post (<code>--tight-post</code>)</td></tr><tr><td>21</td><td>A brace does not rise from the hinge side (<code>--reversed-braces</code>)</td></tr><tr><td>24</td><td>Asset-quality floors (<code>examples/gallery_asset_quality.py</code>, render path only)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render. A few seconds warm.
 blender --background --python garden_gate.py --
@@ -91,23 +92,26 @@ blender --background --python garden_gate.py --
 # Falsifier: the latch post 14 mm closer. Must exit 20.
 blender --background --python garden_gate.py -- --tight-post
 
+# Falsifier: both braces mirrored, lower ends at the latch side. Must exit 21.
+blender --background --python garden_gate.py -- --reversed-braces
+
 # Falsifier: the upper knuckle 1.5 mm off its pin. Must exit 17.
 blender --background --python garden_gate.py -- --offset-knuckle
 
-# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
-blender --background --python garden_gate.py -- --output garden_gate.webp</code></pre>
+# Render the gallery still (Cycles, 64 samples, denoised).
+blender --background --python garden_gate.py -- --output garden_gate.png --engine cycles</code></pre>
 <p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
 <h2 id="cross-version-measurements">Cross-version measurements<a class="anchor" href="#cross-version-measurements" aria-label="Link to this section">#</a></h2>
 <p>Every default run and every falsifier was run on all three binaries (<code>.scratch/blender-&lt;ver&gt;-windows-x64/blender.exe</code>, reporting 4.5.11 LTS, 5.1.2 and 5.2.1 LTS). Only the DECIMATE counts differ, which is why the LOD gate is a ratio band; every hinge, swing and size value is identical.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>3320</td><td>3320</td><td>3320</td></tr><tr><td>LOD1 / LOD2 triangles</td><td>1660 / 730</td><td>1660 / 730</td><td>1660 / 728</td></tr><tr><td>LOD2 ratio</td><td>0.2199</td><td>0.2199</td><td>0.2193</td></tr><tr><td>Faces timber / iron / ground</td><td>370 / 1534 / 156</td><td>370 / 1534 / 156</td><td>370 / 1534 / 156</td></tr><tr><td>Collider triangles</td><td>344</td><td>344</td><td>344</td></tr><tr><td>Coaxial, clearance, seat</td><td>0.000 / 0.600 / −0.500 mm</td><td>same</td><td>same</td></tr><tr><td>Swing clearance</td><td>14.869 mm</td><td>14.869 mm</td><td>14.869 mm</td></tr><tr><td>Falsifier exits 9 / 15 / 16 / 17 / 18 / 19 / 20</td><td>all as declared</td><td>all as declared</td><td>all as declared</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>3936</td><td>3936</td><td>3936</td></tr><tr><td>LOD1 / LOD2 triangles</td><td>1968 / 864</td><td>1968 / 864</td><td>1968 / 860</td></tr><tr><td>LOD2 ratio</td><td>0.2195</td><td>0.2195</td><td>0.2185</td></tr><tr><td>Faces timber / iron / ground</td><td>434 / 1534 / 464</td><td>434 / 1534 / 464</td><td>434 / 1534 / 464</td></tr><tr><td>Collider triangles</td><td>394</td><td>394</td><td>394</td></tr><tr><td>Coaxial, clearance, seat</td><td>0.000 / 0.600 / −0.500 mm</td><td>same</td><td>same</td></tr><tr><td>Swing clearance</td><td>12.959 mm</td><td>12.959 mm</td><td>12.959 mm</td></tr><tr><td>Falsifier exits 9 / 15 / 16 / 17 / 18 / 19 / 20 / 21</td><td>all as declared</td><td>all as declared</td><td>all as declared</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/garden-gate/garden_gate.py</code>
-        <span>1472 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/garden-gate/garden_gate.py">View on GitHub &rarr;</a></span>
+        <span>1629 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/garden-gate/garden_gate.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1472">
+      <div class="code" data-lines="1629">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1579,7 +1583,164 @@ blender --background --python garden_gate.py -- --output garden_gate.webp</code>
 1469
 1470
 1471
-1472</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hinged garden gate — a showcase piece, not an example.
+1472
+1473
+1474
+1475
+1476
+1477
+1478
+1479
+1480
+1481
+1482
+1483
+1484
+1485
+1486
+1487
+1488
+1489
+1490
+1491
+1492
+1493
+1494
+1495
+1496
+1497
+1498
+1499
+1500
+1501
+1502
+1503
+1504
+1505
+1506
+1507
+1508
+1509
+1510
+1511
+1512
+1513
+1514
+1515
+1516
+1517
+1518
+1519
+1520
+1521
+1522
+1523
+1524
+1525
+1526
+1527
+1528
+1529
+1530
+1531
+1532
+1533
+1534
+1535
+1536
+1537
+1538
+1539
+1540
+1541
+1542
+1543
+1544
+1545
+1546
+1547
+1548
+1549
+1550
+1551
+1552
+1553
+1554
+1555
+1556
+1557
+1558
+1559
+1560
+1561
+1562
+1563
+1564
+1565
+1566
+1567
+1568
+1569
+1570
+1571
+1572
+1573
+1574
+1575
+1576
+1577
+1578
+1579
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600
+1601
+1602
+1603
+1604
+1605
+1606
+1607
+1608
+1609
+1610
+1611
+1612
+1613
+1614
+1615
+1616
+1617
+1618
+1619
+1620
+1621
+1622
+1623
+1624
+1625
+1626
+1627
+1628
+1629</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hinged garden gate — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural ledged-and-braced garden gate:
 six bow-topped vertical boards on three back ledges and two diagonal
@@ -1642,8 +1803,11 @@ sys.dont_write_bytecode = <span class="k">True</span>
 <span class="c"># pins), the usual rule for a timber garden gate of this weight.</span>
 
 SLAB_X0, SLAB_X1, SLAB_Y, SLAB_TOP = -<span class="n">0.25</span>, <span class="n">1.31</span>, <span class="n">0.28</span>, <span class="n">0.04</span>
-PAD_HALF, FLAG_JOINT = <span class="n">0.25</span>, <span class="n">0.012</span>
+PAD_HALF, FLAG_JOINT = <span class="n">0.25</span>, <span class="n">0.007</span>
 FLAG_TOPS = (<span class="n">0.036</span>, <span class="n">0.043</span>, <span class="n">0.041</span>, <span class="n">0.034</span>)
+<span class="c"># A third row on the side the gate swings to, so the open leaf hangs over</span>
+<span class="c"># paving rather than bare ground (a gateway is paved where the gate sweeps).</span>
+SLAB_Y_BACK, BACK_TOPS = <span class="n">0.60</span>, (<span class="n">0.038</span>, <span class="n">0.045</span>)
 POST_W = <span class="n">0.100</span>
 POST_BED = <span class="n">0.020</span>            <span class="c"># posts sunk this far into the slab</span>
 POST_TOP, POST_APEX = <span class="n">1.200</span>, <span class="n">1.245</span>
@@ -1654,15 +1818,20 @@ GATE_X1 = GATE_X0 + GATE_W                                    <span class="c"># 
 LATCH_POST_X = GATE_X1 + <span class="n">0.030</span> + POST_W * <span class="n">0.5</span>                 <span class="c"># 1.060</span>
 BOARD_T = <span class="n">0.022</span>
 BOARD_Z0, BOARD_SIDE, BOARD_MID = <span class="n">0.100</span>, <span class="n">1.000</span>, <span class="n">1.060</span>
-LEDGE_X0, LEDGE_X1, LEDGE_H, LEDGE_Y0, LEDGE_Y1 = <span class="n">0.100</span>, <span class="n">0.960</span>, <span class="n">0.095</span>, <span class="n">0.010</span>, <span class="n">0.033</span>
+LEDGE_X0, LEDGE_X1, LEDGE_H, LEDGE_Y0, LEDGE_Y1 = <span class="n">0.086</span>, <span class="n">0.960</span>, <span class="n">0.095</span>, <span class="n">0.010</span>, <span class="n">0.033</span>
 LEDGE_ZC = (<span class="n">0.220</span>, <span class="n">0.580</span>, <span class="n">0.880</span>)
 BRACE_W, BRACE_Y0, BRACE_Y1, BRACE_BITE = <span class="n">0.085</span>, <span class="n">0.0105</span>, <span class="n">0.030</span>, <span class="n">0.002</span>
 
 <span class="c"># Hinges. The knuckle (rolled eye) is a tube round the pin; the strap runs</span>
-<span class="c"># from it along the board fronts; the hook&#x27;s shank is driven into the post.</span>
+<span class="c"># from it along the back of the top and bottom ledges, bolted through them,</span>
+<span class="c"># the way hook-and-band hinges hang a ledged-and-braced gate; the hook&#x27;s</span>
+<span class="c"># shank is driven into the post. The strap&#x27;s inner face is let 0.5 mm into</span>
+<span class="c"># the ledge so the two are never one plane. The ledges stop 6 mm in from</span>
+<span class="c"># the hinge-side board edge: at 4 mm a ledge corner chamfer and the strap&#x27;s</span>
+<span class="c"># end chamfer fell on one plane.</span>
 AXIS_X = <span class="n">0.065</span>
-AXIS_Y = -<span class="n">0.0133</span>
-STRAP_L, STRAP_H, STRAP_Y0, STRAP_Y1 = <span class="n">0.400</span>, <span class="n">0.038</span>, -<span class="n">0.0160</span>, -<span class="n">0.0105</span>
+STRAP_L, STRAP_H, STRAP_Y0, STRAP_Y1 = <span class="n">0.400</span>, <span class="n">0.038</span>, LEDGE_Y1 - <span class="n">0.0005</span>, LEDGE_Y1 + <span class="n">0.0050</span>
+AXIS_Y = <span class="n">0.5</span> * (STRAP_Y0 + STRAP_Y1)
 STRAP_TAPER, STRAP_TIP_H = <span class="n">0.060</span>, <span class="n">0.020</span>
 KNUCKLE_RI, KNUCKLE_RO, KNUCKLE_HH = <span class="n">0.0066</span>, <span class="n">0.0112</span>, <span class="n">0.0200</span>
 PIN_R, PIN_ABOVE = <span class="n">0.0060</span>, <span class="n">0.008</span>
@@ -1684,13 +1853,14 @@ LIFT_GATE = <span class="n">0.003</span>
 TILT_PINTLE = <span class="n">0.06</span>          <span class="c"># shear dx/dz about the knuckle&#x27;s mid height</span>
 TIGHT_POST = <span class="n">0.014</span>
 LIFT_Z = <span class="n">0.05</span>
-RENDER_SWING_DEG = <span class="n">24.0</span>
+RENDER_SWING_DEG = <span class="n">32.0</span>
+RENDER_YAW_DEG = <span class="n">152.0</span>
 
 BBOX_TOL = <span class="n">0.020</span>
-OUTER_SIZE = (<span class="n">1.560</span>, <span class="n">0.560</span>, <span class="n">1.245</span>)
+OUTER_SIZE = (<span class="n">1.560</span>, <span class="n">0.880</span>, <span class="n">1.245</span>)
 
-BASE_TRIS_MIN = <span class="n">3100</span>
-BASE_TRIS_MAX = <span class="n">3550</span>
+BASE_TRIS_MIN = <span class="n">3700</span>
+BASE_TRIS_MAX = <span class="n">4200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -1698,7 +1868,7 @@ LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">3</span>
-FACE_FLOORS = {<span class="n">0</span>: <span class="n">330</span>, <span class="n">1</span>: <span class="n">1400</span>, <span class="n">2</span>: <span class="n">140</span>}
+FACE_FLOORS = {<span class="n">0</span>: <span class="n">400</span>, <span class="n">1</span>: <span class="n">1400</span>, <span class="n">2</span>: <span class="n">400</span>}
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">400</span>
@@ -1717,6 +1887,7 @@ SEAT_MIN, SEAT_MAX = -<span class="n">0.0010</span>, -<span class="n">0.0002</sp
 PLUMB_TOL = <span class="n">0.0002</span>          <span class="c"># pin top ring vs bottom ring, in plan</span>
 PAIR_TOL = <span class="n">0.0003</span>           <span class="c"># lower pin axis vs upper pin axis, in plan</span>
 SWING_MIN, SWING_MAX = <span class="n">0.008</span>, <span class="n">0.030</span>     <span class="c"># latch post outside the swing circle</span>
+BRACE_RISE_MIN = <span class="n">0.30</span>                   <span class="c"># upper end this much farther from the hinge axis</span>
 GATE_W_TOL, GATE_H, GATE_H_TOL = <span class="n">0.003</span>, BOARD_MID - BOARD_Z0, <span class="n">0.005</span>
 POST_H, POST_H_TOL = POST_APEX - SLAB_TOP, <span class="n">0.005</span>
 STRAP_L_TOL, PIN_D, PIN_D_TOL = <span class="n">0.005</span>, <span class="n">2</span> * PIN_R, <span class="n">0.0005</span>
@@ -1919,9 +2090,30 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
                                        ((-SLAB_Y, -j),) * <span class="n">2</span> + ((j, SLAB_Y),) * <span class="n">2</span>,
                                        FLAG_TOPS):
         flags.append((x0, x1, y0, y1, top))
-    <span class="k">for</span> x0, x1, y0, y1, top <span class="k">in</span> flags:
-        box(b.bm, x0, x1, y0, y1, <span class="n">0.0</span>, top, <span class="n">0.009</span>, GROUND_IDX)
+    xs = <span class="n">0.5</span> * (xa + SLAB_X1) - <span class="n">0.04</span>
+    <span class="k">for</span> (x0, x1), top <span class="k">in</span> zip(((xa + j, xs - j), (xs + j, SLAB_X1)), BACK_TOPS):
+        flags.append((x0, x1, SLAB_Y + j, SLAB_Y_BACK, top))
+    <span class="k">for</span> k, (x0, x1, y0, y1, top) <span class="k">in</span> enumerate(flags):
+        prism(b.bm, flag_outline(x0, x1, y0, y1, k), <span class="s">&quot;z&quot;</span>, <span class="n">0.0</span>, top, <span class="n">0.009</span>, GROUND_IDX)
+        <span class="c"># Fan the underside from its centre: every flag bottom lies at z=0,</span>
+        <span class="c"># and an ear-clipped n-gon puts triangle centres near the joint,</span>
+        <span class="c"># within reach of the next flag&#x27;s coplanar underside.</span>
+        under = [f <span class="k">for</span> f <span class="k">in</span> b.bm.faces <span class="k">if</span> f[b.part] == <span class="n">0</span> <span class="k">and</span> f.normal.z &lt; -<span class="n">0.99</span>]
+        bmesh.ops.poke(b.bm, faces=under)
         b.tag(P_SLAB, GROUND_IDX)
+
+
+<span class="k">def</span> flag_outline(x0, x1, y0, y1, k):
+    <span class="s">&quot;&quot;&quot;A dressed flag&#x27;s plan: corners knocked off, every edge a little out of
+    true. Points only ever move inward, so a joint never closes.&quot;&quot;&quot;</span>
+    c = <span class="n">0.020</span>
+    xm, ym = <span class="n">0.5</span> * (x0 + x1), <span class="n">0.5</span> * (y0 + y1)
+    j = [<span class="n">0.0015</span> + <span class="n">0.0035</span> * (((k * <span class="n">0.618</span> + i * <span class="n">0.381</span>) % <span class="n">1.0</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>)]
+    cut = [c * (<span class="n">0.6</span> + <span class="n">0.8</span> * (((k * <span class="n">0.414</span> + i * <span class="n">0.732</span>) % <span class="n">1.0</span>))) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
+    <span class="k">return</span> [(x0 + cut[<span class="n">0</span>], y0 + j[<span class="n">0</span>]), (xm, y0 + j[<span class="n">1</span>]), (x1 - cut[<span class="n">1</span>], y0 + j[<span class="n">2</span>]),
+            (x1 - j[<span class="n">3</span>], y0 + cut[<span class="n">1</span>]), (x1 - j[<span class="n">4</span>], ym), (x1 - j[<span class="n">5</span>], y1 - cut[<span class="n">2</span>]),
+            (x1 - cut[<span class="n">2</span>], y1 - j[<span class="n">6</span>]), (xm, y1 - j[<span class="n">7</span>]), (x0 + cut[<span class="n">3</span>], y1 - j[<span class="n">0</span>]),
+            (x0 + j[<span class="n">1</span>], y1 - cut[<span class="n">3</span>]), (x0 + j[<span class="n">2</span>], ym), (x0 + j[<span class="n">3</span>], y0 + cut[<span class="n">0</span>])]
 
 
 <span class="k">def</span> build_post(b, xc, part):
@@ -1929,10 +2121,18 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     z0 = SLAB_TOP - POST_BED
     sq = [(-h, -h), (h, -h), (h, h), (-h, h)]
     bm = b.bm
+    <span class="c"># A V-groove necks the post below its weathered top, cut on all four</span>
+    <span class="c"># faces the way a turned or scratch-stocked gate post is finished.</span>
+    g = <span class="n">0.006</span>
+    sq_in = [(x - g <span class="k">if</span> x &gt; <span class="n">0</span> <span class="k">else</span> x + g, y - g <span class="k">if</span> y &gt; <span class="n">0</span> <span class="k">else</span> y + g) <span class="k">for</span> x, y <span class="k">in</span> sq]
     r0 = [bm.verts.new((xc + x, y, z0)) <span class="k">for</span> x, y <span class="k">in</span> sq]
+    rings = [r0]
+    <span class="k">for</span> z, ring <span class="k">in</span> ((POST_TOP - <span class="n">0.080</span>, sq), (POST_TOP - <span class="n">0.073</span>, sq_in), (POST_TOP - <span class="n">0.066</span>, sq)):
+        rings.append([bm.verts.new((xc + x, y, z)) <span class="k">for</span> x, y <span class="k">in</span> ring])
     r1 = [bm.verts.new((xc + x, y, POST_TOP)) <span class="k">for</span> x, y <span class="k">in</span> sq]
+    rings.append(r1)
     apex = bm.verts.new((xc, <span class="n">0.0</span>, POST_APEX))
-    faces = loft(bm, [r0, r1], cap=<span class="k">False</span>)
+    faces = loft(bm, rings, cap=<span class="k">False</span>)
     faces.append(bm.faces.new(list(reversed(r0))))
     <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
         faces.append(bm.faces.new((r1[i], r1[(i + <span class="n">1</span>) % <span class="n">4</span>], apex)))
@@ -1951,7 +2151,7 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
         b.tag(P_BOARD, TIMBER_IDX, grain=<span class="n">0.0</span>)
 
 
-<span class="k">def</span> build_ledges_braces(b):
+<span class="k">def</span> build_ledges_braces(b, reversed_braces=<span class="k">False</span>):
     <span class="k">for</span> zc <span class="k">in</span> LEDGE_ZC:
         box(b.bm, LEDGE_X0, LEDGE_X1, LEDGE_Y0, LEDGE_Y1, zc - LEDGE_H / <span class="n">2</span>, zc + LEDGE_H / <span class="n">2</span>,
             <span class="n">0.003</span>, TIMBER_IDX)
@@ -1965,6 +2165,11 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
         theta = math.atan2(z1 - z0, xb - xa)
         dx = BRACE_W / math.sin(theta)
         outline = [(xa, z0), (xa + dx, z0), (xb, z1), (xb - dx, z1)]
+        <span class="k">if</span> reversed_braces:
+            <span class="c"># Mirrored about the gate&#x27;s centre line: the lower end at the</span>
+            <span class="c"># latch side, the brace hanging the free edge instead of carrying it.</span>
+            xm = xa + xb
+            outline = [(xm - x, z) <span class="k">for</span> x, z <span class="k">in</span> reversed(outline)]
         prism(b.bm, outline, <span class="s">&quot;y&quot;</span>, BRACE_Y0, BRACE_Y1, <span class="n">0.003</span>, TIMBER_IDX)
         b.tag(P_BRACE, TIMBER_IDX, grain=<span class="n">1.0</span>)
 
@@ -1989,8 +2194,8 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
         r, h = <span class="n">0.0085</span>, <span class="n">0.0045</span>
         dome = [(<span class="n">0.0</span>, -<span class="n">0.0006</span>), (r, -<span class="n">0.0006</span>), (r, <span class="n">0.0007</span>), (r * <span class="n">0.85</span>, h * <span class="n">0.6</span>),
                 (r * <span class="n">0.5</span>, h * <span class="n">0.92</span>), (<span class="n">0.0</span>, h)]
-        revolve(bm, dome, b.seg(<span class="n">8</span>), (xa + dx, STRAP_Y0, zcg + (<span class="n">0.004</span> <span class="k">if</span> k == <span class="n">1</span> <span class="k">else</span> <span class="n">0.0</span>)),
-                (<span class="n">0</span>, -<span class="n">1</span>, <span class="n">0</span>))
+        revolve(bm, dome, b.seg(<span class="n">8</span>), (xa + dx, STRAP_Y1, zcg + (<span class="n">0.004</span> <span class="k">if</span> k == <span class="n">1</span> <span class="k">else</span> <span class="n">0.0</span>)),
+                (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>))
         b.tag(P_BOLTHEAD, IRON_IDX, smooth=<span class="k">True</span>)
 
     <span class="c"># The hook, unlifted. Its top is where the knuckle should rest.</span>
@@ -2068,7 +2273,7 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
 
 
 <span class="k">def</span> build_gate_mesh(name, hi=<span class="k">False</span>, stray_vert=<span class="k">False</span>, offset_knuckle=<span class="k">False</span>, lift_gate=<span class="k">False</span>,
-                    tilt_pintle=<span class="k">False</span>, tight_post=<span class="k">False</span>):
+                    tilt_pintle=<span class="k">False</span>, tight_post=<span class="k">False</span>, reversed_braces=<span class="k">False</span>):
     b = Builder(hi)
     lift = LIFT_GATE <span class="k">if</span> lift_gate <span class="k">else</span> <span class="n">0.0</span>
     post_dx = TIGHT_POST <span class="k">if</span> tight_post <span class="k">else</span> <span class="n">0.0</span>
@@ -2080,7 +2285,7 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
         <span class="c"># together under --lift-gate; the hooks and posts stay put.</span>
         start = len(b.bm.verts)
         build_boards(b)
-        build_ledges_braces(b)
+        build_ledges_braces(b, reversed_braces)
         <span class="k">if</span> lift:
             <span class="k">for</span> v <span class="k">in</span> list(b.bm.verts)[start:]:
                 v.co.z += lift
@@ -2163,6 +2368,52 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
             tone[fi] = t
     a = me.attributes.new(<span class="s">&quot;WoodTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
     a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    write_grain(me, pv, vf)
+
+
+<span class="k">def</span> _principal_axis(pts):
+    <span class="s">&quot;&quot;&quot;Longest direction of a point cloud (power iteration on its covariance).&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    m = Matrix(((<span class="n">0.0</span>,) * <span class="n">3</span>,) * <span class="n">3</span>)
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                m[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">0.577</span>, <span class="n">0.577</span>, <span class="n">0.577</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">40</span>):
+        w = m @ v
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> c, v
+
+
+<span class="k">def</span> write_grain(me, pv, vf):
+    <span class="s">&quot;&quot;&quot;``GrainCo``: each vertex in its member&#x27;s own frame (along the grain,
+    across the face, through the thickness), offset per shell, so the timber
+    shader can run fibres along every board, ledge and brace whatever its
+    angle, and no two members share a figure.&quot;&quot;&quot;</span>
+    co = [<span class="n">0.0</span>] * (<span class="n">3</span> * len(me.vertices))
+    <span class="k">for</span> k, g <span class="k">in</span> enumerate(shells(me)):
+        fs = {fi <span class="k">for</span> i <span class="k">in</span> g <span class="k">for</span> fi <span class="k">in</span> vf[i]}
+        part = pv[next(iter(fs))] <span class="k">if</span> fs <span class="k">else</span> <span class="n">0</span>
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        <span class="k">if</span> part <span class="k">in</span> (P_POST_H, P_POST_L, P_BOARD):
+            c, along = sum(pts, Vector()) / len(pts), Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        <span class="k">elif</span> part == P_BRACE:
+            c, along = _principal_axis(pts)
+        <span class="k">else</span>:
+            c, along = sum(pts, Vector()) / len(pts), Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        ref = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>)) <span class="k">if</span> abs(along.y) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        across = along.cross(ref).normalized()
+        depth = along.cross(across)
+        off = Vector((((k * <span class="n">0.618</span>) % <span class="n">1.0</span>) * <span class="n">3.0</span>, ((k * <span class="n">0.414</span>) % <span class="n">1.0</span>) * <span class="n">0.5</span>, ((k * <span class="n">0.732</span>) % <span class="n">1.0</span>) * <span class="n">0.5</span>))
+        <span class="k">for</span> i <span class="k">in</span> g:
+            d = me.vertices[i].co - c
+            co[<span class="n">3</span> * i:<span class="n">3</span> * i + <span class="n">3</span>] = (d.dot(along) + off.x, d.dot(across) + off.y, d.dot(depth) + off.z)
+    a = me.attributes.new(<span class="s">&quot;GrainCo&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;vector&quot;</span>, co)
 
 
 <span class="c"># --- surface ----------------------------------------------------------------</span>
@@ -2203,8 +2454,14 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
 
 
 <span class="k">def</span> timber_material(name):
-    <span class="s">&quot;&quot;&quot;Weathered oak gone silver-brown: grain along each member, a tone per
-    board, darker end grain and grime toward the ground.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Weathered oak gone silver-brown.
+
+    Everything runs in each member&#x27;s own frame (the ``GrainCo`` attribute:
+    x along the grain, y across the face, z through the thickness): long
+    fibre streaks, a few gently wandering grain lines, sparse checking
+    cracks along the grain, a tone per board, grime toward the ground.
+    Contrast is kept low; weathered oak reads by its figure, not stripes.
+    &quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
@@ -2212,73 +2469,107 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
     tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
     tone.attribute_name = <span class="s">&quot;WoodTone&quot;</span>
-    grain_dir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
-    grain_dir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    gco = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gco.attribute_name = <span class="s">&quot;GrainCo&quot;</span>
 
-    <span class="c"># Stretch the object coordinates along the member: vertical members</span>
-    <span class="c"># squash Z, horizontal and diagonal ones squash X, so the noise reads as</span>
-    <span class="c"># long fibres either way.</span>
-    <span class="k">def</span> fibres(scale_vec):
+    <span class="k">def</span> scaled(sx, sy, sz):
         mp = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
-        mp.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale_vec
-        nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mp.inputs[<span class="s">&quot;Vector&quot;</span>])
-        wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
-        wave.wave_type = <span class="s">&quot;BANDS&quot;</span>
-        wave.bands_direction = <span class="s">&quot;X&quot;</span>
-        wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.2</span>
-        wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">11.0</span>
-        wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
-        wave.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">1.5</span>
-        nt.links.new(mp.outputs[<span class="s">&quot;Vector&quot;</span>], wave.inputs[<span class="s">&quot;Vector&quot;</span>])
-        <span class="k">return</span> wave.outputs[<span class="s">&quot;Fac&quot;</span>]
-    vert = fibres((<span class="n">22.0</span>, <span class="n">22.0</span>, <span class="n">1.2</span>))
-    mp_h = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
-    mp_h.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">1.2</span>, <span class="n">22.0</span>, <span class="n">22.0</span>)
-    mp_h.inputs[<span class="s">&quot;Rotation&quot;</span>].default_value = (<span class="n">0.0</span>, math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>)
-    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mp_h.inputs[<span class="s">&quot;Vector&quot;</span>])
-    wave_h = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
-    wave_h.wave_type = <span class="s">&quot;BANDS&quot;</span>
-    wave_h.bands_direction = <span class="s">&quot;X&quot;</span>
-    wave_h.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.2</span>
-    wave_h.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">11.0</span>
-    wave_h.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
-    wave_h.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">1.5</span>
-    nt.links.new(mp_h.outputs[<span class="s">&quot;Vector&quot;</span>], wave_h.inputs[<span class="s">&quot;Vector&quot;</span>])
-    gmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
-    gmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
-    nt.links.new(grain_dir.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(gmix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
-    nt.links.new(vert, _sock(gmix.inputs, <span class="s">&quot;A_Float&quot;</span>))
-    nt.links.new(wave_h.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(gmix.inputs, <span class="s">&quot;B_Float&quot;</span>))
-    grain = _sock(gmix.outputs, <span class="s">&quot;Result_Float&quot;</span>)
+        mp.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (sx, sy, sz)
+        nt.links.new(gco.outputs[<span class="s">&quot;Vector&quot;</span>], mp.inputs[<span class="s">&quot;Vector&quot;</span>])
+        <span class="k">return</span> mp.outputs[<span class="s">&quot;Vector&quot;</span>]
+
+    <span class="c"># Fibres: noise squashed hard along the grain, so it streaks.</span>
+    fib = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    fib.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    fib.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">9.0</span>
+    fib.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(scaled(<span class="n">3.0</span>, <span class="n">160.0</span>, <span class="n">160.0</span>), fib.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="c"># Streaks: mid-scale tone variation running along the member.</span>
+    streak = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    streak.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    streak.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    streak.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    nt.links.new(scaled(<span class="n">1.4</span>, <span class="n">34.0</span>, <span class="n">34.0</span>), streak.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="c"># Latewood lines: a distorted wave across the face, cut down to thin</span>
+    <span class="c"># dark lines that sit irregularly far apart, never an even stripe.</span>
+    lines = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    lines.wave_type = <span class="s">&quot;BANDS&quot;</span>
+    lines.bands_direction = <span class="s">&quot;Y&quot;</span>
+    lines.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    lines.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">4.5</span>
+    lines.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    lines.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">0.7</span>
+    nt.links.new(scaled(<span class="n">0.9</span>, <span class="n">11.0</span>, <span class="n">11.0</span>), lines.inputs[<span class="s">&quot;Vector&quot;</span>])
+    late = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    late.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.80</span>
+    late.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.98</span>
+    nt.links.new(lines.outputs[<span class="s">&quot;Fac&quot;</span>], late.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># Checking: thin cracks along the grain, only where a coarse noise says so.</span>
+    crack = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    crack.wave_type = <span class="s">&quot;BANDS&quot;</span>
+    crack.bands_direction = <span class="s">&quot;Y&quot;</span>
+    crack.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    crack.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">1.5</span>
+    crack.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(scaled(<span class="n">2.0</span>, <span class="n">60.0</span>, <span class="n">60.0</span>), crack.inputs[<span class="s">&quot;Vector&quot;</span>])
+    thin = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    thin.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.94</span>
+    thin.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(crack.outputs[<span class="s">&quot;Fac&quot;</span>], thin.inputs[<span class="s">&quot;Value&quot;</span>])
+    where = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    where.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    where.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(scaled(<span class="n">4.0</span>, <span class="n">12.0</span>, <span class="n">12.0</span>), where.inputs[<span class="s">&quot;Vector&quot;</span>])
+    gate = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    gate.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.56</span>
+    gate.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.68</span>
+    nt.links.new(where.outputs[<span class="s">&quot;Fac&quot;</span>], gate.inputs[<span class="s">&quot;Value&quot;</span>])
+    cracks = _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, thin.outputs[<span class="s">&quot;Result&quot;</span>], gate.outputs[<span class="s">&quot;Result&quot;</span>])
+
+    figure = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, streak.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.75</span>)
+    nt.links.new(_math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, fib.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.25</span>), figure.node.inputs[<span class="n">2</span>])
 
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
-    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.20</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.060</span>, <span class="n">0.044</span>, <span class="n">0.030</span>, <span class="n">1.0</span>)
-    mid = ramp.color_ramp.elements.new(<span class="n">0.55</span>)
-    mid.color = (<span class="n">0.150</span>, <span class="n">0.115</span>, <span class="n">0.080</span>, <span class="n">1.0</span>)
-    ramp.color_ramp.elements[<span class="n">2</span>].position = <span class="n">0.92</span>
-    ramp.color_ramp.elements[<span class="n">2</span>].color = (<span class="n">0.235</span>, <span class="n">0.200</span>, <span class="n">0.155</span>, <span class="n">1.0</span>)
-    nt.links.new(grain, ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.112</span>, <span class="n">0.080</span>, <span class="n">0.052</span>, <span class="n">1.0</span>)
+    mid = ramp.color_ramp.elements.new(<span class="n">0.52</span>)
+    mid.color = (<span class="n">0.222</span>, <span class="n">0.157</span>, <span class="n">0.096</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">2</span>].position = <span class="n">0.74</span>
+    ramp.color_ramp.elements[<span class="n">2</span>].color = (<span class="n">0.305</span>, <span class="n">0.233</span>, <span class="n">0.152</span>, <span class="n">1.0</span>)
+    nt.links.new(figure, ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    lined = _mix(nt, <span class="s">&quot;MIX&quot;</span>, ramp.outputs[<span class="s">&quot;Color&quot;</span>], (<span class="n">0.085</span>, <span class="n">0.058</span>, <span class="n">0.036</span>),
+                 _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, late.outputs[<span class="s">&quot;Result&quot;</span>], <span class="n">0.55</span>))
 
-    <span class="c"># Per-board tone: a warm-to-grey shift and a brightness spread.</span>
-    gain = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.80</span>)
-    gain.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.62</span>
-    gaingrey = nt.nodes.new(<span class="s">&quot;ShaderNodeCombineColor&quot;</span>)
+    <span class="c"># Per-member tone: brightness spread plus a drift from warm brown toward</span>
+    <span class="c"># silver as the member weathers.</span>
+    gain = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.58</span>)
+    gain.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.72</span>
+    grey = nt.nodes.new(<span class="s">&quot;ShaderNodeCombineColor&quot;</span>)
     <span class="k">for</span> ch <span class="k">in</span> (<span class="s">&quot;Red&quot;</span>, <span class="s">&quot;Green&quot;</span>, <span class="s">&quot;Blue&quot;</span>):
-        nt.links.new(gain, gaingrey.inputs[ch])
-    base = _mix(nt, <span class="s">&quot;MULTIPLY&quot;</span>, ramp.outputs[<span class="s">&quot;Color&quot;</span>], gaingrey.outputs[<span class="s">&quot;Color&quot;</span>], <span class="n">1.0</span>)
-    silver = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.205</span>, <span class="n">0.200</span>, <span class="n">0.190</span>), <span class="n">0.0</span>)
-    fac = _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.40</span>)
-    nt.links.new(fac, _sock(silver.node.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+        nt.links.new(gain, grey.inputs[ch])
+    base = _mix(nt, <span class="s">&quot;MULTIPLY&quot;</span>, lined, grey.outputs[<span class="s">&quot;Color&quot;</span>], <span class="n">1.0</span>)
+    <span class="c"># Weathering runs in long patches along each member: silvered where the</span>
+    <span class="c"># weather reaches, browner where it does not.</span>
+    patch = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    patch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    patch.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    nt.links.new(scaled(<span class="n">1.6</span>, <span class="n">9.0</span>, <span class="n">9.0</span>), patch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    weather = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, patch.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.55</span>)
+    nt.links.new(_math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.35</span>), weather.node.inputs[<span class="n">2</span>])
+    silver = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.200</span>, <span class="n">0.188</span>, <span class="n">0.168</span>), <span class="n">0.0</span>)
+    wfac = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, weather, <span class="n">0.45</span>)
+    wfac.node.inputs[<span class="n">2</span>].default_value = -<span class="n">0.23</span>
+    nt.links.new(wfac, _sock(silver.node.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, silver, (<span class="n">0.030</span>, <span class="n">0.025</span>, <span class="n">0.020</span>), cracks)
 
-    <span class="c"># Grime: wet wood near the ground, broken by noise.</span>
+    <span class="c"># Grime: wet wood near the ground, broken by noise (world height).</span>
     sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
     nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
     band = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
     band.interpolation_type = <span class="s">&quot;SMOOTHSTEP&quot;</span>
     band.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.05</span>
-    band.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.32</span>
-    band.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.65</span>
+    band.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.30</span>
+    band.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.55</span>
     band.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
     nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], band.inputs[<span class="s">&quot;Value&quot;</span>])
     blot = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
@@ -2286,17 +2577,20 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     blot.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">5.0</span>
     nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], blot.inputs[<span class="s">&quot;Vector&quot;</span>])
     grime = _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, band.outputs[<span class="s">&quot;Result&quot;</span>], blot.outputs[<span class="s">&quot;Fac&quot;</span>])
-    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, silver, (<span class="n">0.045</span>, <span class="n">0.040</span>, <span class="n">0.032</span>), grime)
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.050</span>, <span class="n">0.044</span>, <span class="n">0.035</span>), grime)
     nt.links.new(base, bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
-    rough = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, grain, -<span class="n">0.12</span>)
-    rough.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.86</span>
+
+    rough = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, fib.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.16</span>)
+    rough.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.74</span>
     nt.links.new(rough, bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
 
+    height = _math(nt, <span class="s">&quot;SUBTRACT&quot;</span>, _math(nt, <span class="s">&quot;SUBTRACT&quot;</span>, fib.outputs[<span class="s">&quot;Fac&quot;</span>],
+                                         _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, late.outputs[<span class="s">&quot;Result&quot;</span>], <span class="n">0.5</span>)), cracks)
     bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
     bump.name = <span class="s">&quot;TimberBump&quot;</span>
-    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.32</span>
-    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.0015</span>
-    nt.links.new(grain, bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.26</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.0008</span>
+    nt.links.new(height, bump.inputs[<span class="s">&quot;Height&quot;</span>])
     nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
 
@@ -2359,9 +2653,9 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
     ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
     ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
-    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.070</span>, <span class="n">0.060</span>, <span class="n">0.048</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.092</span>, <span class="n">0.070</span>, <span class="n">0.048</span>, <span class="n">1.0</span>)
     ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
-    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.150</span>, <span class="n">0.132</span>, <span class="n">0.105</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.190</span>, <span class="n">0.150</span>, <span class="n">0.105</span>, <span class="n">1.0</span>)
     nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
     vor = nt.nodes.new(<span class="s">&quot;ShaderNodeTexVoronoi&quot;</span>)
     vor.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">95.0</span>
@@ -2370,7 +2664,7 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     peb.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.10</span>
     peb.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.02</span>
     nt.links.new(vor.outputs[<span class="s">&quot;Distance&quot;</span>], peb.inputs[<span class="s">&quot;Value&quot;</span>])
-    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, ramp.outputs[<span class="s">&quot;Color&quot;</span>], (<span class="n">0.20</span>, <span class="n">0.188</span>, <span class="n">0.168</span>), peb.outputs[<span class="s">&quot;Result&quot;</span>])
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, ramp.outputs[<span class="s">&quot;Color&quot;</span>], (<span class="n">0.225</span>, <span class="n">0.192</span>, <span class="n">0.150</span>), peb.outputs[<span class="s">&quot;Result&quot;</span>])
     tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
     tone.attribute_name = <span class="s">&quot;WoodTone&quot;</span>
     gain = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.9</span>)
@@ -2595,6 +2889,19 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     d_min = min(((plan(p) - axis).length <span class="k">for</span> p <span class="k">in</span> obst), default=-<span class="n">99.0</span>)
     out[<span class="s">&quot;swing_r&quot;</span>], out[<span class="s">&quot;obst_d&quot;</span>], out[<span class="s">&quot;swing_clear&quot;</span>] = r_max, d_min, d_min - r_max
 
+    <span class="c"># Brace direction: each brace&#x27;s lower end (its vertices within 5 mm of</span>
+    <span class="c"># its lowest point) must sit nearer the hinge axis, in plan, than its</span>
+    <span class="c"># upper end, so the brace rises from the hinge side and works in</span>
+    <span class="c"># compression, carrying the free edge back down into the bottom hinge.</span>
+    braces = []
+    <span class="k">for</span> r <span class="k">in</span> sorted(parts.get(P_BRACE, []), key=<span class="k">lambda</span> r: r[<span class="s">&quot;c&quot;</span>].z):
+        lo = [p <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> p.z &lt;= r[<span class="s">&quot;lo&quot;</span>].z + <span class="n">0.005</span>]
+        hi = [p <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> p.z &gt;= r[<span class="s">&quot;hi&quot;</span>].z - <span class="n">0.005</span>]
+        d_lo = sum((plan(p) - axis).length <span class="k">for</span> p <span class="k">in</span> lo) / len(lo)
+        d_hi = sum((plan(p) - axis).length <span class="k">for</span> p <span class="k">in</span> hi) / len(hi)
+        braces.append((d_lo, d_hi))
+    out[<span class="s">&quot;braces&quot;</span>] = braces
+
     boards = parts.get(P_BOARD, [])
     out[<span class="s">&quot;gate_w&quot;</span>] = (max(r[<span class="s">&quot;hi&quot;</span>].x <span class="k">for</span> r <span class="k">in</span> boards) - min(r[<span class="s">&quot;lo&quot;</span>].x <span class="k">for</span> r <span class="k">in</span> boards)) <span class="k">if</span> boards <span class="k">else</span> -<span class="n">99.0</span>
     out[<span class="s">&quot;gate_h&quot;</span>] = (max(r[<span class="s">&quot;hi&quot;</span>].z <span class="k">for</span> r <span class="k">in</span> boards) - min(r[<span class="s">&quot;lo&quot;</span>].z <span class="k">for</span> r <span class="k">in</span> boards)) <span class="k">if</span> boards <span class="k">else</span> -<span class="n">99.0</span>
@@ -2703,7 +3010,7 @@ OBSTACLE_PARTS = {P_POST_L, P_KEEPER}
     )
 
 
-EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1</span>, P_POST_L: <span class="n">1</span>, P_BOARD: BOARDS, P_LEDGE: <span class="n">3</span>,
+EXPECTED_PARTS = {P_SLAB: <span class="n">8</span>, P_POST_H: <span class="n">1</span>, P_POST_L: <span class="n">1</span>, P_BOARD: BOARDS, P_LEDGE: <span class="n">3</span>,
                   P_BRACE: <span class="n">2</span>, P_STRAP: <span class="n">2</span>, P_KNUCKLE: <span class="n">2</span>, P_PIN: <span class="n">2</span>, P_SHANK: <span class="n">2</span>,
                   P_BOLTHEAD: <span class="n">6</span>, P_LATCH: <span class="n">5</span>, P_KEEPER: <span class="n">1</span>, P_RING: <span class="n">3</span>}
 
@@ -2795,6 +3102,7 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
               <span class="s">f&quot;</span><span class="s">seat=</span>{h[<span class="s">&#x27;seat&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm plumb=</span>{h[<span class="s">&#x27;plumb&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm</span><span class="s">&quot;</span>)
     print(<span class="s">f&quot;</span><span class="s">measured pin_pair=</span>{ga[<span class="s">&#x27;pair&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm swing_r=</span>{ga[<span class="s">&#x27;swing_r&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">obst_d=</span>{ga[<span class="s">&#x27;obst_d&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> swing_clear=</span>{ga[<span class="s">&#x27;swing_clear&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s">mm</span><span class="s">&quot;</span>)
+    print(<span class="s">&quot;measured braces &quot;</span> + <span class="s">&quot; &quot;</span>.join(<span class="s">f&quot;</span><span class="s">lower=</span>{lo:<span class="s">.4f</span>}<span class="s"> upper=</span>{hi:<span class="s">.4f</span>}<span class="s">&quot;</span> <span class="k">for</span> lo, hi <span class="k">in</span> ga[<span class="s">&quot;braces&quot;</span>]))
     print(<span class="s">f&quot;</span><span class="s">measured gate_w=</span>{ga[<span class="s">&#x27;gate_w&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> gate_h=</span>{ga[<span class="s">&#x27;gate_h&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> post_h=</span>{ga[<span class="s">&#x27;post_h&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">strap_l=</span>{ga[<span class="s">&#x27;strap_l&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> pin_d=</span>{ga[<span class="s">&#x27;pin_d&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s">mm</span><span class="s">&quot;</span>)
 
@@ -2864,6 +3172,11 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
                      <span class="s">f&quot;</span>{ga[<span class="s">&#x27;obst_d&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> m: clearance </span>{ga[<span class="s">&#x27;swing_clear&#x27;</span>] * <span class="n">1000</span>:<span class="s">.2f</span>}<span class="s"> mm outside </span><span class="s">&quot;</span>
                      <span class="s">f&quot;</span><span class="s">[</span>{SWING_MIN * <span class="n">1000</span>}<span class="s">, </span>{SWING_MAX * <span class="n">1000</span>}<span class="s">] mm </span><span class="s">&quot;</span>
                      <span class="s">&quot;(--tight-post is the designed fail)&quot;</span>, <span class="n">20</span>),) + nothing
+    <span class="k">for</span> i, (d_lo, d_hi) <span class="k">in</span> enumerate(ga[<span class="s">&quot;braces&quot;</span>]):
+        <span class="k">if</span> <span class="k">not</span> d_lo + BRACE_RISE_MIN &lt;= d_hi:
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">brace </span>{i}<span class="s">: lower end </span>{d_lo:<span class="s">.4f</span>}<span class="s"> m from the hinge axis, upper end </span>{d_hi:<span class="s">.4f</span>}<span class="s"> m; </span><span class="s">&quot;</span>
+                         <span class="s">f&quot;</span><span class="s">it must rise from the hinge side by at least </span>{BRACE_RISE_MIN}<span class="s"> m </span><span class="s">&quot;</span>
+                         <span class="s">&quot;(--reversed-braces is the designed fail)&quot;</span>, <span class="n">21</span>),) + nothing
     <span class="k">return</span> <span class="n">0</span>, low, high, mats, tex, collider
 
 
@@ -2901,9 +3214,10 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
         <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
-    <span class="c"># Level on the floor: turned about Z only, so the camera sees the gate&#x27;s</span>
-    <span class="c"># front and the hinge knuckles on their pins at the left.</span>
-    yaw = math.radians(-<span class="n">44.0</span>)
+    <span class="c"># Level on the floor, turned about Z only so the camera looks at the</span>
+    <span class="c"># gate&#x27;s braced back: ledges, braces, the straps bolted along the ledges</span>
+    <span class="c"># and the knuckles on their pins, with the gate swung toward the viewer.</span>
+    yaw = math.radians(RENDER_YAW_DEG)
     low.rotation_euler.z = yaw
     centre = Vector((<span class="n">0.5</span> * (SLAB_X0 + SLAB_X1), <span class="n">0.0</span>, <span class="n">0.0</span>))
     low.location = -(Matrix.Rotation(yaw, <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>) @ centre)
@@ -2962,7 +3276,7 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (-<span class="n">2.38</span>, -<span class="n">3.32</span>, <span class="n">1.59</span>)
+    cam.location = (-<span class="n">2.47</span>, -<span class="n">3.44</span>, <span class="n">1.66</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
@@ -2975,8 +3289,9 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
 
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
-        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.samples = <span class="n">64</span>
         scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        scene.cycles.use_denoising = <span class="k">True</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -3022,6 +3337,8 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
                    help=<span class="s">&quot;falsification: the top pin leaned 3.4 deg (exit 19)&quot;</span>)
     p.add_argument(<span class="s">&quot;--tight-post&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
                    help=<span class="s">&quot;falsification: the latch post set 14 mm closer (exit 20)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--reversed-braces&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: braces mirrored, lower end at the latch side (exit 21)&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, mats, tex, _col = check(
@@ -3032,6 +3349,7 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
         lift_gate=args.lift_gate,
         tilt_pintle=args.tilt_pintle,
         tight_post=args.tight_post,
+        reversed_braces=args.reversed_braces,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -3090,7 +3408,7 @@ EXPECTED_PARTS = {P_SLAB: <span class="n">6</span>, P_POST_H: <span class="n">1<
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
-    <img src="../assets/garden-gate-hero.webp" alt="A bow-topped garden gate of six weathered oak boards standing ajar on two black strap hinges between square oak posts on sandstone flags, a ring pull on its face." />
+    <img src="../assets/garden-gate-hero.webp" alt="A weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt." />
   </dialog>
   <footer class="site-footer">
     <div class="site-footer-inner">

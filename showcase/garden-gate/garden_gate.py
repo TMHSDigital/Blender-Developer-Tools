@@ -61,8 +61,11 @@ import gallery_asset_quality  # noqa: E402
 # pins), the usual rule for a timber garden gate of this weight.
 
 SLAB_X0, SLAB_X1, SLAB_Y, SLAB_TOP = -0.25, 1.31, 0.28, 0.04
-PAD_HALF, FLAG_JOINT = 0.25, 0.012
+PAD_HALF, FLAG_JOINT = 0.25, 0.007
 FLAG_TOPS = (0.036, 0.043, 0.041, 0.034)
+# A third row on the side the gate swings to, so the open leaf hangs over
+# paving rather than bare ground (a gateway is paved where the gate sweeps).
+SLAB_Y_BACK, BACK_TOPS = 0.60, (0.038, 0.045)
 POST_W = 0.100
 POST_BED = 0.020            # posts sunk this far into the slab
 POST_TOP, POST_APEX = 1.200, 1.245
@@ -73,15 +76,20 @@ GATE_X1 = GATE_X0 + GATE_W                                    # 0.980
 LATCH_POST_X = GATE_X1 + 0.030 + POST_W * 0.5                 # 1.060
 BOARD_T = 0.022
 BOARD_Z0, BOARD_SIDE, BOARD_MID = 0.100, 1.000, 1.060
-LEDGE_X0, LEDGE_X1, LEDGE_H, LEDGE_Y0, LEDGE_Y1 = 0.100, 0.960, 0.095, 0.010, 0.033
+LEDGE_X0, LEDGE_X1, LEDGE_H, LEDGE_Y0, LEDGE_Y1 = 0.086, 0.960, 0.095, 0.010, 0.033
 LEDGE_ZC = (0.220, 0.580, 0.880)
 BRACE_W, BRACE_Y0, BRACE_Y1, BRACE_BITE = 0.085, 0.0105, 0.030, 0.002
 
 # Hinges. The knuckle (rolled eye) is a tube round the pin; the strap runs
-# from it along the board fronts; the hook's shank is driven into the post.
+# from it along the back of the top and bottom ledges, bolted through them,
+# the way hook-and-band hinges hang a ledged-and-braced gate; the hook's
+# shank is driven into the post. The strap's inner face is let 0.5 mm into
+# the ledge so the two are never one plane. The ledges stop 6 mm in from
+# the hinge-side board edge: at 4 mm a ledge corner chamfer and the strap's
+# end chamfer fell on one plane.
 AXIS_X = 0.065
-AXIS_Y = -0.0133
-STRAP_L, STRAP_H, STRAP_Y0, STRAP_Y1 = 0.400, 0.038, -0.0160, -0.0105
+STRAP_L, STRAP_H, STRAP_Y0, STRAP_Y1 = 0.400, 0.038, LEDGE_Y1 - 0.0005, LEDGE_Y1 + 0.0050
+AXIS_Y = 0.5 * (STRAP_Y0 + STRAP_Y1)
 STRAP_TAPER, STRAP_TIP_H = 0.060, 0.020
 KNUCKLE_RI, KNUCKLE_RO, KNUCKLE_HH = 0.0066, 0.0112, 0.0200
 PIN_R, PIN_ABOVE = 0.0060, 0.008
@@ -103,13 +111,14 @@ LIFT_GATE = 0.003
 TILT_PINTLE = 0.06          # shear dx/dz about the knuckle's mid height
 TIGHT_POST = 0.014
 LIFT_Z = 0.05
-RENDER_SWING_DEG = 24.0
+RENDER_SWING_DEG = 32.0
+RENDER_YAW_DEG = 152.0
 
 BBOX_TOL = 0.020
-OUTER_SIZE = (1.560, 0.560, 1.245)
+OUTER_SIZE = (1.560, 0.880, 1.245)
 
-BASE_TRIS_MIN = 3100
-BASE_TRIS_MAX = 3550
+BASE_TRIS_MIN = 3700
+BASE_TRIS_MAX = 4200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -117,7 +126,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
-FACE_FLOORS = {0: 330, 1: 1400, 2: 140}
+FACE_FLOORS = {0: 400, 1: 1400, 2: 400}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 400
@@ -136,6 +145,7 @@ SEAT_MIN, SEAT_MAX = -0.0010, -0.0002   # knuckle bottom minus hook top
 PLUMB_TOL = 0.0002          # pin top ring vs bottom ring, in plan
 PAIR_TOL = 0.0003           # lower pin axis vs upper pin axis, in plan
 SWING_MIN, SWING_MAX = 0.008, 0.030     # latch post outside the swing circle
+BRACE_RISE_MIN = 0.30                   # upper end this much farther from the hinge axis
 GATE_W_TOL, GATE_H, GATE_H_TOL = 0.003, BOARD_MID - BOARD_Z0, 0.005
 POST_H, POST_H_TOL = POST_APEX - SLAB_TOP, 0.005
 STRAP_L_TOL, PIN_D, PIN_D_TOL = 0.005, 2 * PIN_R, 0.0005
@@ -338,9 +348,30 @@ def build_slab(b):
                                        ((-SLAB_Y, -j),) * 2 + ((j, SLAB_Y),) * 2,
                                        FLAG_TOPS):
         flags.append((x0, x1, y0, y1, top))
-    for x0, x1, y0, y1, top in flags:
-        box(b.bm, x0, x1, y0, y1, 0.0, top, 0.009, GROUND_IDX)
+    xs = 0.5 * (xa + SLAB_X1) - 0.04
+    for (x0, x1), top in zip(((xa + j, xs - j), (xs + j, SLAB_X1)), BACK_TOPS):
+        flags.append((x0, x1, SLAB_Y + j, SLAB_Y_BACK, top))
+    for k, (x0, x1, y0, y1, top) in enumerate(flags):
+        prism(b.bm, flag_outline(x0, x1, y0, y1, k), "z", 0.0, top, 0.009, GROUND_IDX)
+        # Fan the underside from its centre: every flag bottom lies at z=0,
+        # and an ear-clipped n-gon puts triangle centres near the joint,
+        # within reach of the next flag's coplanar underside.
+        under = [f for f in b.bm.faces if f[b.part] == 0 and f.normal.z < -0.99]
+        bmesh.ops.poke(b.bm, faces=under)
         b.tag(P_SLAB, GROUND_IDX)
+
+
+def flag_outline(x0, x1, y0, y1, k):
+    """A dressed flag's plan: corners knocked off, every edge a little out of
+    true. Points only ever move inward, so a joint never closes."""
+    c = 0.020
+    xm, ym = 0.5 * (x0 + x1), 0.5 * (y0 + y1)
+    j = [0.0015 + 0.0035 * (((k * 0.618 + i * 0.381) % 1.0)) for i in range(8)]
+    cut = [c * (0.6 + 0.8 * (((k * 0.414 + i * 0.732) % 1.0))) for i in range(4)]
+    return [(x0 + cut[0], y0 + j[0]), (xm, y0 + j[1]), (x1 - cut[1], y0 + j[2]),
+            (x1 - j[3], y0 + cut[1]), (x1 - j[4], ym), (x1 - j[5], y1 - cut[2]),
+            (x1 - cut[2], y1 - j[6]), (xm, y1 - j[7]), (x0 + cut[3], y1 - j[0]),
+            (x0 + j[1], y1 - cut[3]), (x0 + j[2], ym), (x0 + j[3], y0 + cut[0])]
 
 
 def build_post(b, xc, part):
@@ -348,10 +379,18 @@ def build_post(b, xc, part):
     z0 = SLAB_TOP - POST_BED
     sq = [(-h, -h), (h, -h), (h, h), (-h, h)]
     bm = b.bm
+    # A V-groove necks the post below its weathered top, cut on all four
+    # faces the way a turned or scratch-stocked gate post is finished.
+    g = 0.006
+    sq_in = [(x - g if x > 0 else x + g, y - g if y > 0 else y + g) for x, y in sq]
     r0 = [bm.verts.new((xc + x, y, z0)) for x, y in sq]
+    rings = [r0]
+    for z, ring in ((POST_TOP - 0.080, sq), (POST_TOP - 0.073, sq_in), (POST_TOP - 0.066, sq)):
+        rings.append([bm.verts.new((xc + x, y, z)) for x, y in ring])
     r1 = [bm.verts.new((xc + x, y, POST_TOP)) for x, y in sq]
+    rings.append(r1)
     apex = bm.verts.new((xc, 0.0, POST_APEX))
-    faces = loft(bm, [r0, r1], cap=False)
+    faces = loft(bm, rings, cap=False)
     faces.append(bm.faces.new(list(reversed(r0))))
     for i in range(4):
         faces.append(bm.faces.new((r1[i], r1[(i + 1) % 4], apex)))
@@ -370,7 +409,7 @@ def build_boards(b):
         b.tag(P_BOARD, TIMBER_IDX, grain=0.0)
 
 
-def build_ledges_braces(b):
+def build_ledges_braces(b, reversed_braces=False):
     for zc in LEDGE_ZC:
         box(b.bm, LEDGE_X0, LEDGE_X1, LEDGE_Y0, LEDGE_Y1, zc - LEDGE_H / 2, zc + LEDGE_H / 2,
             0.003, TIMBER_IDX)
@@ -384,6 +423,11 @@ def build_ledges_braces(b):
         theta = math.atan2(z1 - z0, xb - xa)
         dx = BRACE_W / math.sin(theta)
         outline = [(xa, z0), (xa + dx, z0), (xb, z1), (xb - dx, z1)]
+        if reversed_braces:
+            # Mirrored about the gate's centre line: the lower end at the
+            # latch side, the brace hanging the free edge instead of carrying it.
+            xm = xa + xb
+            outline = [(xm - x, z) for x, z in reversed(outline)]
         prism(b.bm, outline, "y", BRACE_Y0, BRACE_Y1, 0.003, TIMBER_IDX)
         b.tag(P_BRACE, TIMBER_IDX, grain=1.0)
 
@@ -408,8 +452,8 @@ def build_hinge(b, zc, knuckle_dx=0.0, lift=0.0, tilt=0.0):
         r, h = 0.0085, 0.0045
         dome = [(0.0, -0.0006), (r, -0.0006), (r, 0.0007), (r * 0.85, h * 0.6),
                 (r * 0.5, h * 0.92), (0.0, h)]
-        revolve(bm, dome, b.seg(8), (xa + dx, STRAP_Y0, zcg + (0.004 if k == 1 else 0.0)),
-                (0, -1, 0))
+        revolve(bm, dome, b.seg(8), (xa + dx, STRAP_Y1, zcg + (0.004 if k == 1 else 0.0)),
+                (0, 1, 0))
         b.tag(P_BOLTHEAD, IRON_IDX, smooth=True)
 
     # The hook, unlifted. Its top is where the knuckle should rest.
@@ -487,7 +531,7 @@ def build_latch(b, lift=0.0, post_dx=0.0):
 
 
 def build_gate_mesh(name, hi=False, stray_vert=False, offset_knuckle=False, lift_gate=False,
-                    tilt_pintle=False, tight_post=False):
+                    tilt_pintle=False, tight_post=False, reversed_braces=False):
     b = Builder(hi)
     lift = LIFT_GATE if lift_gate else 0.0
     post_dx = TIGHT_POST if tight_post else 0.0
@@ -499,7 +543,7 @@ def build_gate_mesh(name, hi=False, stray_vert=False, offset_knuckle=False, lift
         # together under --lift-gate; the hooks and posts stay put.
         start = len(b.bm.verts)
         build_boards(b)
-        build_ledges_braces(b)
+        build_ledges_braces(b, reversed_braces)
         if lift:
             for v in list(b.bm.verts)[start:]:
                 v.co.z += lift
@@ -582,6 +626,52 @@ def paint_pieces(me):
             tone[fi] = t
     a = me.attributes.new("WoodTone", "FLOAT", "FACE")
     a.data.foreach_set("value", tone)
+    write_grain(me, pv, vf)
+
+
+def _principal_axis(pts):
+    """Longest direction of a point cloud (power iteration on its covariance)."""
+    c = sum(pts, Vector()) / len(pts)
+    m = Matrix(((0.0,) * 3,) * 3)
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                m[i][j] += d[i] * d[j]
+    v = Vector((0.577, 0.577, 0.577))
+    for _ in range(40):
+        w = m @ v
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return c, v
+
+
+def write_grain(me, pv, vf):
+    """``GrainCo``: each vertex in its member's own frame (along the grain,
+    across the face, through the thickness), offset per shell, so the timber
+    shader can run fibres along every board, ledge and brace whatever its
+    angle, and no two members share a figure."""
+    co = [0.0] * (3 * len(me.vertices))
+    for k, g in enumerate(shells(me)):
+        fs = {fi for i in g for fi in vf[i]}
+        part = pv[next(iter(fs))] if fs else 0
+        pts = [me.vertices[i].co.copy() for i in g]
+        if part in (P_POST_H, P_POST_L, P_BOARD):
+            c, along = sum(pts, Vector()) / len(pts), Vector((0.0, 0.0, 1.0))
+        elif part == P_BRACE:
+            c, along = _principal_axis(pts)
+        else:
+            c, along = sum(pts, Vector()) / len(pts), Vector((1.0, 0.0, 0.0))
+        ref = Vector((0.0, 1.0, 0.0)) if abs(along.y) < 0.9 else Vector((1.0, 0.0, 0.0))
+        across = along.cross(ref).normalized()
+        depth = along.cross(across)
+        off = Vector((((k * 0.618) % 1.0) * 3.0, ((k * 0.414) % 1.0) * 0.5, ((k * 0.732) % 1.0) * 0.5))
+        for i in g:
+            d = me.vertices[i].co - c
+            co[3 * i:3 * i + 3] = (d.dot(along) + off.x, d.dot(across) + off.y, d.dot(depth) + off.z)
+    a = me.attributes.new("GrainCo", "FLOAT_VECTOR", "POINT")
+    a.data.foreach_set("vector", co)
 
 
 # --- surface ----------------------------------------------------------------
@@ -622,8 +712,14 @@ def _math(nt, op, a, b=None):
 
 
 def timber_material(name):
-    """Weathered oak gone silver-brown: grain along each member, a tone per
-    board, darker end grain and grime toward the ground."""
+    """Weathered oak gone silver-brown.
+
+    Everything runs in each member's own frame (the ``GrainCo`` attribute:
+    x along the grain, y across the face, z through the thickness): long
+    fibre streaks, a few gently wandering grain lines, sparse checking
+    cracks along the grain, a tone per board, grime toward the ground.
+    Contrast is kept low; weathered oak reads by its figure, not stripes.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -631,73 +727,107 @@ def timber_material(name):
     coord = nt.nodes.new("ShaderNodeTexCoord")
     tone = nt.nodes.new("ShaderNodeAttribute")
     tone.attribute_name = "WoodTone"
-    grain_dir = nt.nodes.new("ShaderNodeAttribute")
-    grain_dir.attribute_name = "GrainDir"
+    gco = nt.nodes.new("ShaderNodeAttribute")
+    gco.attribute_name = "GrainCo"
 
-    # Stretch the object coordinates along the member: vertical members
-    # squash Z, horizontal and diagonal ones squash X, so the noise reads as
-    # long fibres either way.
-    def fibres(scale_vec):
+    def scaled(sx, sy, sz):
         mp = nt.nodes.new("ShaderNodeMapping")
-        mp.inputs["Scale"].default_value = scale_vec
-        nt.links.new(coord.outputs["Object"], mp.inputs["Vector"])
-        wave = nt.nodes.new("ShaderNodeTexWave")
-        wave.wave_type = "BANDS"
-        wave.bands_direction = "X"
-        wave.inputs["Scale"].default_value = 2.2
-        wave.inputs["Distortion"].default_value = 11.0
-        wave.inputs["Detail"].default_value = 6.0
-        wave.inputs["Detail Scale"].default_value = 1.5
-        nt.links.new(mp.outputs["Vector"], wave.inputs["Vector"])
-        return wave.outputs["Fac"]
-    vert = fibres((22.0, 22.0, 1.2))
-    mp_h = nt.nodes.new("ShaderNodeMapping")
-    mp_h.inputs["Scale"].default_value = (1.2, 22.0, 22.0)
-    mp_h.inputs["Rotation"].default_value = (0.0, math.radians(90.0), 0.0)
-    nt.links.new(coord.outputs["Object"], mp_h.inputs["Vector"])
-    wave_h = nt.nodes.new("ShaderNodeTexWave")
-    wave_h.wave_type = "BANDS"
-    wave_h.bands_direction = "X"
-    wave_h.inputs["Scale"].default_value = 2.2
-    wave_h.inputs["Distortion"].default_value = 11.0
-    wave_h.inputs["Detail"].default_value = 6.0
-    wave_h.inputs["Detail Scale"].default_value = 1.5
-    nt.links.new(mp_h.outputs["Vector"], wave_h.inputs["Vector"])
-    gmix = nt.nodes.new("ShaderNodeMix")
-    gmix.data_type = "FLOAT"
-    nt.links.new(grain_dir.outputs["Fac"], _sock(gmix.inputs, "Factor_Float"))
-    nt.links.new(vert, _sock(gmix.inputs, "A_Float"))
-    nt.links.new(wave_h.outputs["Fac"], _sock(gmix.inputs, "B_Float"))
-    grain = _sock(gmix.outputs, "Result_Float")
+        mp.inputs["Scale"].default_value = (sx, sy, sz)
+        nt.links.new(gco.outputs["Vector"], mp.inputs["Vector"])
+        return mp.outputs["Vector"]
+
+    # Fibres: noise squashed hard along the grain, so it streaks.
+    fib = nt.nodes.new("ShaderNodeTexNoise")
+    fib.inputs["Scale"].default_value = 1.0
+    fib.inputs["Detail"].default_value = 9.0
+    fib.inputs["Roughness"].default_value = 0.62
+    nt.links.new(scaled(3.0, 160.0, 160.0), fib.inputs["Vector"])
+    # Streaks: mid-scale tone variation running along the member.
+    streak = nt.nodes.new("ShaderNodeTexNoise")
+    streak.inputs["Scale"].default_value = 1.0
+    streak.inputs["Detail"].default_value = 4.0
+    streak.inputs["Roughness"].default_value = 0.5
+    nt.links.new(scaled(1.4, 34.0, 34.0), streak.inputs["Vector"])
+    # Latewood lines: a distorted wave across the face, cut down to thin
+    # dark lines that sit irregularly far apart, never an even stripe.
+    lines = nt.nodes.new("ShaderNodeTexWave")
+    lines.wave_type = "BANDS"
+    lines.bands_direction = "Y"
+    lines.inputs["Scale"].default_value = 1.0
+    lines.inputs["Distortion"].default_value = 4.5
+    lines.inputs["Detail"].default_value = 3.0
+    lines.inputs["Detail Scale"].default_value = 0.7
+    nt.links.new(scaled(0.9, 11.0, 11.0), lines.inputs["Vector"])
+    late = nt.nodes.new("ShaderNodeMapRange")
+    late.inputs["From Min"].default_value = 0.80
+    late.inputs["From Max"].default_value = 0.98
+    nt.links.new(lines.outputs["Fac"], late.inputs["Value"])
+    # Checking: thin cracks along the grain, only where a coarse noise says so.
+    crack = nt.nodes.new("ShaderNodeTexWave")
+    crack.wave_type = "BANDS"
+    crack.bands_direction = "Y"
+    crack.inputs["Scale"].default_value = 1.0
+    crack.inputs["Distortion"].default_value = 1.5
+    crack.inputs["Detail"].default_value = 2.0
+    nt.links.new(scaled(2.0, 60.0, 60.0), crack.inputs["Vector"])
+    thin = nt.nodes.new("ShaderNodeMapRange")
+    thin.inputs["From Min"].default_value = 0.94
+    thin.inputs["From Max"].default_value = 1.0
+    nt.links.new(crack.outputs["Fac"], thin.inputs["Value"])
+    where = nt.nodes.new("ShaderNodeTexNoise")
+    where.inputs["Scale"].default_value = 1.0
+    where.inputs["Detail"].default_value = 2.0
+    nt.links.new(scaled(4.0, 12.0, 12.0), where.inputs["Vector"])
+    gate = nt.nodes.new("ShaderNodeMapRange")
+    gate.inputs["From Min"].default_value = 0.56
+    gate.inputs["From Max"].default_value = 0.68
+    nt.links.new(where.outputs["Fac"], gate.inputs["Value"])
+    cracks = _math(nt, "MULTIPLY", thin.outputs["Result"], gate.outputs["Result"])
+
+    figure = _math(nt, "MULTIPLY_ADD", streak.outputs["Fac"], 0.75)
+    nt.links.new(_math(nt, "MULTIPLY", fib.outputs["Fac"], 0.25), figure.node.inputs[2])
 
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.20
-    ramp.color_ramp.elements[0].color = (0.060, 0.044, 0.030, 1.0)
-    mid = ramp.color_ramp.elements.new(0.55)
-    mid.color = (0.150, 0.115, 0.080, 1.0)
-    ramp.color_ramp.elements[2].position = 0.92
-    ramp.color_ramp.elements[2].color = (0.235, 0.200, 0.155, 1.0)
-    nt.links.new(grain, ramp.inputs["Fac"])
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.112, 0.080, 0.052, 1.0)
+    mid = ramp.color_ramp.elements.new(0.52)
+    mid.color = (0.222, 0.157, 0.096, 1.0)
+    ramp.color_ramp.elements[2].position = 0.74
+    ramp.color_ramp.elements[2].color = (0.305, 0.233, 0.152, 1.0)
+    nt.links.new(figure, ramp.inputs["Fac"])
+    lined = _mix(nt, "MIX", ramp.outputs["Color"], (0.085, 0.058, 0.036),
+                 _math(nt, "MULTIPLY", late.outputs["Result"], 0.55))
 
-    # Per-board tone: a warm-to-grey shift and a brightness spread.
-    gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], 0.80)
-    gain.node.inputs[2].default_value = 0.62
-    gaingrey = nt.nodes.new("ShaderNodeCombineColor")
+    # Per-member tone: brightness spread plus a drift from warm brown toward
+    # silver as the member weathers.
+    gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], 0.58)
+    gain.node.inputs[2].default_value = 0.72
+    grey = nt.nodes.new("ShaderNodeCombineColor")
     for ch in ("Red", "Green", "Blue"):
-        nt.links.new(gain, gaingrey.inputs[ch])
-    base = _mix(nt, "MULTIPLY", ramp.outputs["Color"], gaingrey.outputs["Color"], 1.0)
-    silver = _mix(nt, "MIX", base, (0.205, 0.200, 0.190), 0.0)
-    fac = _math(nt, "MULTIPLY", tone.outputs["Fac"], 0.40)
-    nt.links.new(fac, _sock(silver.node.inputs, "Factor_Float"))
+        nt.links.new(gain, grey.inputs[ch])
+    base = _mix(nt, "MULTIPLY", lined, grey.outputs["Color"], 1.0)
+    # Weathering runs in long patches along each member: silvered where the
+    # weather reaches, browner where it does not.
+    patch = nt.nodes.new("ShaderNodeTexNoise")
+    patch.inputs["Scale"].default_value = 1.0
+    patch.inputs["Detail"].default_value = 3.0
+    nt.links.new(scaled(1.6, 9.0, 9.0), patch.inputs["Vector"])
+    weather = _math(nt, "MULTIPLY_ADD", patch.outputs["Fac"], 0.55)
+    nt.links.new(_math(nt, "MULTIPLY", tone.outputs["Fac"], 0.35), weather.node.inputs[2])
+    silver = _mix(nt, "MIX", base, (0.200, 0.188, 0.168), 0.0)
+    wfac = _math(nt, "MULTIPLY_ADD", weather, 0.45)
+    wfac.node.inputs[2].default_value = -0.23
+    nt.links.new(wfac, _sock(silver.node.inputs, "Factor_Float"))
+    base = _mix(nt, "MIX", silver, (0.030, 0.025, 0.020), cracks)
 
-    # Grime: wet wood near the ground, broken by noise.
+    # Grime: wet wood near the ground, broken by noise (world height).
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
     band = nt.nodes.new("ShaderNodeMapRange")
     band.interpolation_type = "SMOOTHSTEP"
     band.inputs["From Min"].default_value = 0.05
-    band.inputs["From Max"].default_value = 0.32
-    band.inputs["To Min"].default_value = 0.65
+    band.inputs["From Max"].default_value = 0.30
+    band.inputs["To Min"].default_value = 0.55
     band.inputs["To Max"].default_value = 0.0
     nt.links.new(sep.outputs["Z"], band.inputs["Value"])
     blot = nt.nodes.new("ShaderNodeTexNoise")
@@ -705,17 +835,20 @@ def timber_material(name):
     blot.inputs["Detail"].default_value = 5.0
     nt.links.new(coord.outputs["Object"], blot.inputs["Vector"])
     grime = _math(nt, "MULTIPLY", band.outputs["Result"], blot.outputs["Fac"])
-    base = _mix(nt, "MIX", silver, (0.045, 0.040, 0.032), grime)
+    base = _mix(nt, "MIX", base, (0.050, 0.044, 0.035), grime)
     nt.links.new(base, bsdf.inputs["Base Color"])
-    rough = _math(nt, "MULTIPLY_ADD", grain, -0.12)
-    rough.node.inputs[2].default_value = 0.86
+
+    rough = _math(nt, "MULTIPLY_ADD", fib.outputs["Fac"], 0.16)
+    rough.node.inputs[2].default_value = 0.74
     nt.links.new(rough, bsdf.inputs["Roughness"])
 
+    height = _math(nt, "SUBTRACT", _math(nt, "SUBTRACT", fib.outputs["Fac"],
+                                         _math(nt, "MULTIPLY", late.outputs["Result"], 0.5)), cracks)
     bump = nt.nodes.new("ShaderNodeBump")
     bump.name = "TimberBump"
-    bump.inputs["Strength"].default_value = 0.32
-    bump.inputs["Distance"].default_value = 0.0015
-    nt.links.new(grain, bump.inputs["Height"])
+    bump.inputs["Strength"].default_value = 0.26
+    bump.inputs["Distance"].default_value = 0.0008
+    nt.links.new(height, bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
@@ -778,9 +911,9 @@ def ground_material(name):
     nt.links.new(tc.outputs["Object"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.35
-    ramp.color_ramp.elements[0].color = (0.070, 0.060, 0.048, 1.0)
+    ramp.color_ramp.elements[0].color = (0.092, 0.070, 0.048, 1.0)
     ramp.color_ramp.elements[1].position = 0.72
-    ramp.color_ramp.elements[1].color = (0.150, 0.132, 0.105, 1.0)
+    ramp.color_ramp.elements[1].color = (0.190, 0.150, 0.105, 1.0)
     nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     vor = nt.nodes.new("ShaderNodeTexVoronoi")
     vor.inputs["Scale"].default_value = 95.0
@@ -789,7 +922,7 @@ def ground_material(name):
     peb.inputs["From Min"].default_value = 0.10
     peb.inputs["From Max"].default_value = 0.02
     nt.links.new(vor.outputs["Distance"], peb.inputs["Value"])
-    base = _mix(nt, "MIX", ramp.outputs["Color"], (0.20, 0.188, 0.168), peb.outputs["Result"])
+    base = _mix(nt, "MIX", ramp.outputs["Color"], (0.225, 0.192, 0.150), peb.outputs["Result"])
     tone = nt.nodes.new("ShaderNodeAttribute")
     tone.attribute_name = "WoodTone"
     gain = _math(nt, "MULTIPLY_ADD", tone.outputs["Fac"], 0.9)
@@ -1014,6 +1147,19 @@ def gate_audit(me):
     d_min = min(((plan(p) - axis).length for p in obst), default=-99.0)
     out["swing_r"], out["obst_d"], out["swing_clear"] = r_max, d_min, d_min - r_max
 
+    # Brace direction: each brace's lower end (its vertices within 5 mm of
+    # its lowest point) must sit nearer the hinge axis, in plan, than its
+    # upper end, so the brace rises from the hinge side and works in
+    # compression, carrying the free edge back down into the bottom hinge.
+    braces = []
+    for r in sorted(parts.get(P_BRACE, []), key=lambda r: r["c"].z):
+        lo = [p for p in r["pts"] if p.z <= r["lo"].z + 0.005]
+        hi = [p for p in r["pts"] if p.z >= r["hi"].z - 0.005]
+        d_lo = sum((plan(p) - axis).length for p in lo) / len(lo)
+        d_hi = sum((plan(p) - axis).length for p in hi) / len(hi)
+        braces.append((d_lo, d_hi))
+    out["braces"] = braces
+
     boards = parts.get(P_BOARD, [])
     out["gate_w"] = (max(r["hi"].x for r in boards) - min(r["lo"].x for r in boards)) if boards else -99.0
     out["gate_h"] = (max(r["hi"].z for r in boards) - min(r["lo"].z for r in boards)) if boards else -99.0
@@ -1122,7 +1268,7 @@ def export_unity(path, objects):
     )
 
 
-EXPECTED_PARTS = {P_SLAB: 6, P_POST_H: 1, P_POST_L: 1, P_BOARD: BOARDS, P_LEDGE: 3,
+EXPECTED_PARTS = {P_SLAB: 8, P_POST_H: 1, P_POST_L: 1, P_BOARD: BOARDS, P_LEDGE: 3,
                   P_BRACE: 2, P_STRAP: 2, P_KNUCKLE: 2, P_PIN: 2, P_SHANK: 2,
                   P_BOLTHEAD: 6, P_LATCH: 5, P_KEEPER: 1, P_RING: 3}
 
@@ -1214,6 +1360,7 @@ def check(skip_decimate, lift_z=False, **flags):
               f"seat={h['seat'] * 1000:.4f}mm plumb={h['plumb'] * 1000:.4f}mm")
     print(f"measured pin_pair={ga['pair'] * 1000:.4f}mm swing_r={ga['swing_r']:.5f} "
           f"obst_d={ga['obst_d']:.5f} swing_clear={ga['swing_clear'] * 1000:.3f}mm")
+    print("measured braces " + " ".join(f"lower={lo:.4f} upper={hi:.4f}" for lo, hi in ga["braces"]))
     print(f"measured gate_w={ga['gate_w']:.4f} gate_h={ga['gate_h']:.4f} post_h={ga['post_h']:.4f} "
           f"strap_l={ga['strap_l']:.4f} pin_d={ga['pin_d'] * 1000:.3f}mm")
 
@@ -1283,6 +1430,11 @@ def check(skip_decimate, lift_z=False, **flags):
                      f"{ga['obst_d']:.4f} m: clearance {ga['swing_clear'] * 1000:.2f} mm outside "
                      f"[{SWING_MIN * 1000}, {SWING_MAX * 1000}] mm "
                      "(--tight-post is the designed fail)", 20),) + nothing
+    for i, (d_lo, d_hi) in enumerate(ga["braces"]):
+        if not d_lo + BRACE_RISE_MIN <= d_hi:
+            return (fail(f"brace {i}: lower end {d_lo:.4f} m from the hinge axis, upper end {d_hi:.4f} m; "
+                         f"it must rise from the hinge side by at least {BRACE_RISE_MIN} m "
+                         "(--reversed-braces is the designed fail)", 21),) + nothing
     return 0, low, high, mats, tex, collider
 
 
@@ -1320,9 +1472,10 @@ def render_still(low, mats, tex, path, engine):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
             ob.hide_viewport = True
-    # Level on the floor: turned about Z only, so the camera sees the gate's
-    # front and the hinge knuckles on their pins at the left.
-    yaw = math.radians(-44.0)
+    # Level on the floor, turned about Z only so the camera looks at the
+    # gate's braced back: ledges, braces, the straps bolted along the ledges
+    # and the knuckles on their pins, with the gate swung toward the viewer.
+    yaw = math.radians(RENDER_YAW_DEG)
     low.rotation_euler.z = yaw
     centre = Vector((0.5 * (SLAB_X0 + SLAB_X1), 0.0, 0.0))
     low.location = -(Matrix.Rotation(yaw, 3, "Z") @ centre)
@@ -1381,7 +1534,7 @@ def render_still(low, mats, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (-2.38, -3.32, 1.59)
+    cam.location = (-2.47, -3.44, 1.66)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (0.0, 0.0, 0.55)
@@ -1394,8 +1547,9 @@ def render_still(low, mats, tex, path, engine):
 
     scene.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
         scene.cycles.device = "CPU"
+        scene.cycles.use_denoising = True
     else:
         try:
             scene.eevee.taa_render_samples = 64
@@ -1441,6 +1595,8 @@ def main():
                    help="falsification: the top pin leaned 3.4 deg (exit 19)")
     p.add_argument("--tight-post", action="store_true",
                    help="falsification: the latch post set 14 mm closer (exit 20)")
+    p.add_argument("--reversed-braces", action="store_true",
+                   help="falsification: braces mirrored, lower end at the latch side (exit 21)")
     args = p.parse_args(argv)
 
     code, low, _high, mats, tex, _col = check(
@@ -1451,6 +1607,7 @@ def main():
         lift_gate=args.lift_gate,
         tilt_pintle=args.tilt_pintle,
         tight_post=args.tight_post,
+        reversed_braces=args.reversed_braces,
     )
     if code:
         return code
