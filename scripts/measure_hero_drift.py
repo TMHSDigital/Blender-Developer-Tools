@@ -26,8 +26,9 @@ Usage:
     python scripts/measure_hero_drift.py --blender PATH [--only NAME ...]
         [--out DIR] [--json FILE]
 
-Exit codes: 0 measured (drift is reported, not judged), 2 usage, 3 a render
-failed for at least one entry.
+Exit codes: 0 measured (drift is reported, not judged), 2 usage (unknown
+--only name, nothing measured, unreadable Blender version), 3 a render failed or
+a fresh render's size differs from the committed hero (a size change is drift).
 """
 from __future__ import annotations
 
@@ -76,6 +77,8 @@ def render_args(entry: dict, png: Path) -> list[str] | None:
             continue
         args = shlex.split(m.group(1))
         i = args.index("--output")
+        if i + 1 >= len(args):
+            return None  # bare trailing --output: no path to retarget
         args[i + 1] = str(png)
         return args
     return None
@@ -124,17 +127,34 @@ def main(argv=None) -> int:
     p.add_argument("--json", default=None, help="also write the results as JSON here")
     args = p.parse_args(argv)
 
+    all_entries = entries()
+    unknown = sorted(set(args.only or []) - {e["name"] for e in all_entries})
+    if unknown:
+        print(f"error: --only names match no example or showcase piece: {', '.join(unknown)}",
+              file=sys.stderr)
+        return 2
+
     blender = str(Path(args.blender).resolve())
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    version = subprocess.run([blender, "--version"], capture_output=True, text=True,
-                             encoding="utf-8", errors="replace").stdout.splitlines()[0]
+    try:
+        probe = subprocess.run([blender, "--version"], capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
+    except OSError as exc:
+        print(f"error: cannot run Blender at {blender}: {exc}", file=sys.stderr)
+        return 2
+    lines = probe.stdout.splitlines()
+    if probe.returncode != 0 or not lines:
+        print(f"error: `{blender} --version` failed (exit {probe.returncode}) or printed nothing",
+              file=sys.stderr)
+        return 2
+    version = lines[0]
     print(f"# renderer: {blender}\n# version: {version}", flush=True)
     print(f"{'name':32} {'mean_abs':>9} {'gt2pct':>8} {'vs_q90':>8} {'luma c/f':>17} {'secs':>6}  verdict",
           flush=True)
 
     results, failed = [], []
-    for e in entries():
+    for e in all_entries:
         name = e["name"]
         if args.only and name not in args.only:
             continue
@@ -162,6 +182,7 @@ def main(argv=None) -> int:
         results.append(row)
         if "mean_abs" not in row:
             print(f"{name:32} size mismatch {row}", flush=True)
+            failed.append(name)
             continue
         verdict = "matches" if row["vs_q90"] <= DRIFT_THRESHOLD else "DRIFTED"
         row["verdict"] = verdict
@@ -175,6 +196,9 @@ def main(argv=None) -> int:
             encoding="utf-8")
     drifted = [r["name"] for r in results if r.get("verdict") == "DRIFTED"]
     print(f"\n# {len(results)} measured, {len(drifted)} drifted, {len(failed)} failed")
+    if not results and not failed:
+        print("error: no heroes were measured", file=sys.stderr)
+        return 2
     return 3 if failed else 0
 
 
