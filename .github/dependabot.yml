@@ -3,10 +3,22 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     target-branch: "main"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "pip"
     directory: "/scripts/site"
     schedule:
       interval: "weekly"
     target-branch: "main"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      site-build:
+        patterns:
+          - "*"
