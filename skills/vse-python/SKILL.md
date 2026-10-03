@@ -38,7 +38,7 @@ else:
 strip.color = (0.85, 0.10, 0.22)
 ```
 
-Branch on `bpy.app.version`, never on `bpy.app.version_string`. An empty `bpy_prop_collection` is falsy — `se.strips or se.sequences` silently falls through to the legacy accessor on an empty timeline. Always branch on `hasattr`.
+Branch on the `bpy.app.version` tuple for known API boundaries (such as the 5.2 COLOR strip `width`/`height` bake), never on `bpy.app.version_string`. Pick the `.strips` vs `.sequences` accessor with `hasattr`, not version: an empty `bpy_prop_collection` is falsy, so `se.strips or se.sequences` silently falls through to the legacy accessor on an empty timeline.
 
 ## Accessor: `.strips` vs `.sequences`
 
@@ -152,6 +152,7 @@ A lone COLOR strip **does** honor `transform.scale_*` on 5.2. The break is media
 ## References
 
 - `bpy.types.SequenceEditor`: https://docs.blender.org/api/current/bpy.types.SequenceEditor.html
-- `bpy.types.Sequence`: https://docs.blender.org/api/current/bpy.types.Sequence.html
+- `bpy.types.Strip` (5.x name of `Sequence`): https://docs.blender.org/api/current/bpy.types.Strip.html
+- 4.5 LTS `Sequence`: https://docs.blender.org/api/4.5/bpy.types.Sequence.html
 - 4.5 LTS `SequenceEditor`: https://docs.blender.org/api/4.5/bpy.types.SequenceEditor.html
 - 5.1 `SequenceEditor`: https://docs.blender.org/api/5.1/bpy.types.SequenceEditor.html

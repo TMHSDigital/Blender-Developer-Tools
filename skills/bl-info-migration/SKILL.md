@@ -20,7 +20,7 @@ Use this skill when the user:
 
 Yes, with caveats.
 
-- **In 5.1 stable**: `bl_info` is supported as a fallback for legacy add-ons. The Edit > Preferences > Add-ons panel still has "Install legacy Add-on" and recognizes `bl_info` dicts.
+- **In 5.2 LTS (current stable; 5.1 is prior stable)**: `bl_info` is supported as a fallback for legacy add-ons. The Edit > Preferences > Add-ons panel still has "Install legacy Add-on" and recognizes `bl_info` dicts.
 - **For the Extensions Platform** (extensions.blender.org and the new add-ons UI): you need a `blender_manifest.toml`. `bl_info` is ignored.
 - **Dual format** is officially recognized: ship a `blender_manifest.toml` and keep the `bl_info` dict. The platform reads the manifest; legacy installers read `bl_info`. Both code paths work without conditional logic.
 
@@ -220,9 +220,9 @@ This produces a `.zip` in `dist\` that the user installs via Edit > Preferences 
 
 ## Version correctness
 
-| Topic | 4.5 LTS | 5.1 stable |
+| Topic | 4.5 LTS | 5.1 / 5.2 LTS |
 | --- | --- | --- |
-| `bl_info` recognized | Yes (primary path) | Yes (legacy fallback only) |
+| `bl_info` recognized | Yes (legacy; Extensions is the primary path since 4.2) | Yes (legacy fallback only) |
 | `blender_manifest.toml` recognized | Yes (Extensions Platform was added in 4.2) | Yes |
 | Synthetic package name | `bl_ext.<repo>.<id>` | Same |
 | `extension build` command | Available | Available |

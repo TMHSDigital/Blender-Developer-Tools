@@ -69,7 +69,7 @@ for obj in bpy.context.selected_objects:
     sx, sy, sz = obj.scale
     if abs(sx - 1.0) > 1e-6 or abs(sy - 1.0) > 1e-6 or abs(sz - 1.0) > 1e-6:
         with bpy.context.temp_override(
-            object=obj, active_object=obj, selected_objects=[obj]
+            object=obj, active_object=obj, selected_editable_objects=[obj]
         ):
             bpy.ops.object.transform_apply(
                 location=False, rotation=True, scale=True

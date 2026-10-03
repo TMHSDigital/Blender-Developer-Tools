@@ -1,5 +1,5 @@
 ---
-description: Flag uses of `bpy.context.copy()` to override context for an operator call. The copy-and-pass pattern was deprecated in Blender 4.x and the override semantics were removed in 5.x. Use `bpy.context.temp_override(**overrides)` as a context manager instead.
+description: Flag uses of `bpy.context.copy()` to override context for an operator call. Passing a context dict to an operator was deprecated in Blender 3.2 and removed in 4.0, so it already fails on the 4.5 LTS fallback. Use `bpy.context.temp_override(**overrides)` as a context manager instead.
 alwaysApply: false
 globs:
   - "**/*.py"
@@ -9,15 +9,14 @@ standards-version: 1.10.0
 # Prefer `temp_override` over `context.copy()`
 
 `bpy.context.copy()` returns a dict snapshot of the current context. In
-Blender 4.x and earlier it was common to mutate that dict and pass it as
+Blender 3.x and earlier it was common to mutate that dict and pass it as
 the first positional argument to an operator (`bpy.ops.x.y(ctx, ...)`)
 to run the operator under a fabricated context. That mechanism was
-deprecated in 4.x and the operator override semantics were removed in
-5.x. The same code on 5.x either silently ignores the override or fails
-with a confusing argument-type error.
+deprecated in 3.2 and removed in 4.0. The same code on 4.0 and later,
+including 4.5 LTS, fails with a confusing argument-type error.
 
 The supported replacement is `bpy.context.temp_override(**overrides)`,
-which works as a context manager and applies cleanly on both 4.5 LTS and
+which works as a context manager and applies cleanly on 4.5 LTS and
 5.x.
 
 ## What this rule flags
@@ -49,8 +48,8 @@ bpy.ops.object.delete({
 })
 ```
 
-Both forms run on 4.x with deprecation warnings. On 5.x they either no-op
-the override silently or raise `TypeError: Calling operator "bpy.ops.object.delete"
+Both forms ran with deprecation warnings on 3.2 to 3.6. On 4.0 and later
+(4.5 LTS, 5.x) they raise `TypeError: Calling operator "bpy.ops.object.delete"
 error, expected a string enum, not a dict`.
 
 ## Right
@@ -58,14 +57,19 @@ error, expected a string enum, not a dict`.
 ```python
 import bpy
 
-with bpy.context.temp_override(active_object=my_obj, selected_objects=[my_obj]):
+with bpy.context.temp_override(active_object=my_obj, selected_editable_objects=[my_obj]):
     bpy.ops.object.delete()
 ```
 
 `temp_override` accepts the same keyword names as the keys you would
 have put in the dict. It restores the previous context on exit, even
-on exception. It is supported on 4.2+ and is the only override path
-on 5.x.
+on exception. It is supported on 3.2+ and is the only override path
+on 4.0+.
+
+Override the key the operator actually reads. `transform_apply` and
+similar operators act on `selected_editable_objects`, so
+`selected_objects=[obj]` alone does not narrow them to one object; use
+`selected_editable_objects=[obj]`.
 
 ## When you also need a window override
 
@@ -84,13 +88,12 @@ with bpy.context.temp_override(window=window, area=area, region=region):
 
 ## Why it matters
 
-The deprecated path silently drops the override on 5.x in many cases.
-Code that "worked" on 4.x produces wrong results on 5.x without an
-obvious failure. The user reports "my add-on broke after upgrade" and
-the cause is a context override that is now ignored.
+The dict-passing path was removed in 4.0, so code that "worked" on 3.x
+raises on 4.5 LTS and 5.x. The user reports "my add-on broke after
+upgrade" and the cause is a context override that no longer exists.
 
 `temp_override` is the canonical, supported, and forward-compatible
-replacement. There is no scenario in 5.x where the dict-passing form is
+replacement. There is no scenario on 4.0+ where the dict-passing form is
 preferable.
 
 ## Related
@@ -98,5 +101,5 @@ preferable.
 - Skill `operators`
 - Snippet `temp-override-context.py`
 - `bpy.types.Context.temp_override`: https://docs.blender.org/api/current/bpy.types.Context.html#bpy.types.Context.temp_override
-- Blender 4.0 release notes (deprecation): https://developer.blender.org/docs/release_notes/4.0/python_api/
-- Blender 5.0 release notes (removal): https://developer.blender.org/docs/release_notes/5.0/python_api/
+- Blender 3.2 release notes (deprecation): https://developer.blender.org/docs/release_notes/3.2/python_api/
+- Blender 4.0 release notes (removal): https://developer.blender.org/docs/release_notes/4.0/python_api/

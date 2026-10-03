@@ -18,7 +18,7 @@ Use this skill when the user:
 ## Required inputs
 
 - **Add-on name and short id** (snake_case for the manifest `id`, human-readable `name`)
-- **Target Blender versions** (defaults to `blender_version_min = "4.5.0"` so the add-on works on 4.5 LTS and 5.1)
+- **Target Blender versions** (defaults to `blender_version_min = "4.5.0"` so the add-on works on 4.5 LTS, 5.1 and 5.2 LTS)
 - **Maintainer string** (`Name <email@example.com>` form)
 - **License SPDX identifier** (`SPDX:MIT`, `SPDX:GPL-2.0-or-later`, etc.)
 
@@ -35,12 +35,12 @@ id = "my_addon"
 version = "0.1.0"
 name = "My Add-on"
 tagline = "Short description, max 64 chars, no trailing period"
-maintainer = "TMHSDigital <contact@example.com>"
+maintainer = "Your Name <you@your-domain.example>"
 type = "add-on"
 
 blender_version_min = "4.5.0"
 
-license = ["SPDX:MIT"]
+license = ["SPDX:GPL-3.0-or-later"]
 copyright = ["2026 TMHSDigital"]
 ```
 
@@ -199,7 +199,7 @@ def unregister():
 
 ## Compatibility paths
 
-For libraries you want to be installable on both 4.5 LTS and 5.1, also keep `bl_info` for 4.5 fallback even though new submissions to the extensions platform require the manifest. Blender prefers the manifest when both are present.
+For libraries you want to be installable on both 4.5 LTS and 5.2 LTS, also keep `bl_info` for 4.5 fallback even though new submissions to the extensions platform require the manifest. Blender prefers the manifest when both are present.
 
 ```python
 bl_info = {

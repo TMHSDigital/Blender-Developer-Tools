@@ -109,7 +109,7 @@ def scale_is_identity(obj, tol=1e-6):
 
 def apply_object_transform(obj):
     with bpy.context.temp_override(
-        object=obj, active_object=obj, selected_objects=[obj]
+        object=obj, active_object=obj, selected_editable_objects=[obj]
     ):
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 

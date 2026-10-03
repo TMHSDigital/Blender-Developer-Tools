@@ -9,6 +9,7 @@
 #     action.fcurves API is still present, so use it directly.
 #
 # Verified on Blender 4.5.10 LTS and 5.1.1. Import path (5.0+):
+#   from bpy_extras import anim_utils
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy_extras.anim_utils.html
