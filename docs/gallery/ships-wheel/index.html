@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ship&#x27;s Wheel (ships-wheel) — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/ships-wheel/" />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/ships-wheel/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Ship&#x27;s Wheel (ships-wheel) — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/ships-wheel-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/ships-wheel-hero.webp" />
+  <meta name="twitter:image:alt" content="A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:title" content="Ship&#x27;s Wheel (ships-wheel) — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="../gallery.css?v=27ce4298f2" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="../../"><span class="site-brand-dot" aria-hidden="true"></span>Blender Developer Tools</a>
+      <button class="site-menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="site-menu-icon" aria-hidden="true"></span>Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <ul><li><a href="../../gallery/#k=examples">Examples</a></li><li><a href="../../gallery/#k=showcase">Showcase</a></li><li><a href="../../#new">What&#x27;s new</a></li><li><a href="../../#skills">Skills</a></li><li><a href="../../#rules">Rules</a></li><li><a href="../../#snippets">Snippets</a></li><li><a href="../../#install">Install</a></li><li class="gh"><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a></li></ul>
+      </nav>
+    </div>
+  </header>
+  <header class="hero">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../" id="crumbGallery">Gallery</a></li><li><a href="../#k=showcase">Showcase</a></li><li aria-current="page">ships-wheel</li></ol></nav>
+    <h1>Ship&#x27;s Wheel</h1>
+    <p class="slug">showcase/ships-wheel/</p>
+    <p>A procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../garden-gate/" aria-label="Previous showcase piece: garden-gate"><span aria-hidden="true">&larr;</span> garden-gate</a><span class="pager-pos hud">75 of 75 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth.">
+      <img src="../assets/ships-wheel-hero.webp" alt="A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth." width="1280" height="720" fetchpriority="high" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself. Select it to enlarge.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 9188 tris, three materials (teak 3086, brass 1596, iron 208 faces), UVs in 0..1 with zero overlap, a 1.000 × 0.602 × 1.500 m envelope, LOD1 0.5000 and LOD2 0.2192–0.2199, a 514-tri three-hull collider, a FINISHED normal bake and a 697 kB Unity glTF, hygiene all zero with no coplanar cross-shell faces, and the wheel exactly radial: the nave 0.0001 mm off the rim&#x27;s centre, the shaft 0.0004 mm off the nave&#x27;s axis with 0.599 mm bore clearance, every spoke seated 3.000 mm into the rim&#x27;s inner face and every handle 4.000 mm into its outer face, consecutive spokes 45° apart within 0.00013°, every handle within 0.00007° of its spoke&#x27;s axis, 1.000 m over the handles on a 0.720 m rim at 1.000 m. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-hub exits 17 with the nave 2.000 mm off centre; --short-spoke exits 18 with a tip 7.000 mm clear of the rim; --skew-spoke exits 19 with the spacing 2.0000° off.</div>
+    <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
+    <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/ships-wheel/ships_wheel.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A one-metre, eight-spoke ship&#x27;s wheel on its pedestal: eight turned teak spokes running from a brass nave out to a laminated teak rim, eight turned handles carried on past the rim on the spokes&#x27; own axes, a 10 mm brass inlay round the rim&#x27;s face, brass ferrules where the handles leave the rim and a second brass ring on the king spoke. It turns on an iron shaft in a flanged brass bearing collar bolted to a panelled teak column on a stepped plinth. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2 id="what-it-composes">What it composes<a class="anchor" href="#what-it-composes" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>revolved spokes, handles, nave, rim, shaft, collar, nut, ferrules and bolt heads, chamfered boxes for the pedestal, all in one <code>bmesh</code>, chamfered with <code>bmesh.ops.bevel</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>face attributes <code>Part</code> (what each shell is) and <code>WoodTone</code> (one tone per member), and a point attribute <code>GrainCo</code> (each vertex in its member&#x27;s own grain frame)</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>varnished teak whose figure runs along each member (up the column, along every spoke and handle, round the rim), with a tone and hue per member and hand wear; warm, slightly tarnished brass; black iron</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, a doubled-segment high onto the low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>a hull over the plinth, one over the column, one over the whole wheel</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<h2 id="the-budget-that-matters">The budget that matters<a class="anchor" href="#the-budget-that-matters" aria-label="Link to this section">#</a></h2>
+<p>A ship&#x27;s wheel is exact radial repetition, and it can fail without looking wrong:</p>
+<ul><li><strong>The spokes must be evenly spread.</strong> Half a degree out and a picture still shows eight even spokes, but the rim is pulled out of round.</li><li><strong>Every spoke must seat in the rim</strong>, and every handle must seat in the rim&#x27;s outer face on the spoke&#x27;s own axis. A spoke a few millimetres short meets the rim in every face-on picture and carries nothing.</li><li><strong>The nave must be concentric with the rim and turn on the shaft.</strong> A nave two millimetres off the rim&#x27;s centre wobbles the wheel on every turn, and a shaft off the nave&#x27;s axis is not inside its bore.</li></ul>
+<p>The piece measures all of it off the finished mesh. Every shell carries a <code>Part</code> face attribute written at build time, so the audit finds the rim, the nave, the shaft, the eight spokes and the eight handles without guessing from shape.</p>
+<ul><li><strong>Concentric nave, shaft in the bore.</strong> The rim, the nave and the shaft are each revolved about the shaft&#x27;s axis, so the centroid of a shell&#x27;s vertices in the wheel&#x27;s plane is its axis. Nave to rim ≤ 0.3 mm; shaft to nave ≤ 0.3 mm; radial clearance (nave bore − shaft radius − offset) 0.3–1.0 mm. Measured 0.0001 mm, 0.0004 mm and 0.599 mm.</li><li><strong>Seats.</strong> The rim&#x27;s inner and outer faces are the nearest and farthest of its own vertices from its measured centre. A spoke&#x27;s axis is the direction from the rim&#x27;s centre to the spoke&#x27;s centroid; its tip is the farthest its vertices reach along that axis. Spoke tip into the rim&#x27;s inner face and handle foot into its outer face, each 1–6 mm. Measured 3.000 mm on every spoke and 4.000 mm on every handle.</li><li><strong>Spacing and coaxial handles.</strong> Consecutive spoke axes 45° apart within 0.05°; every handle&#x27;s axis within 0.05° of a spoke&#x27;s. Measured 0.00013° and 0.00007° at worst.</li></ul>
+<p><code>--offset-hub</code> moves the nave 2 mm across and leaves the shaft and every spoke where they were: concentric, coaxial and bore all fail, exit 17. <code>--short-spoke</code> shortens one diagonal spoke 10 mm, so its tip stands 7 mm clear of the rim: exit 18. <code>--skew-spoke</code> turns one diagonal spoke and its handle 2° about the shaft; its tip still seats, so only the spacing fails, exit 19. Both act on diagonal spokes, whose tips set no edge of the envelope.</p>
+<h2 id="budgets">Budgets<a class="anchor" href="#budgets" aria-label="Link to this section">#</a></h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values below are from Blender 5.2.1; see the cross-version table for 4.5.11 and 5.1.2.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>8700–9700</td><td>9188</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2192</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Teak / brass / iron faces</td><td>≥ 2800 / 1450 / 190</td><td>3086 / 1596 / 208</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0006, 0.0006)–(0.9994, 0.9994)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>1.000 × 0.602 × 1.500 m ± 0.020</td><td>1.0000 × 0.6020 × 1.5000</td></tr><tr><td>Collider triangles</td><td>≤ 560</td><td>514 (three hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~697 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Parts</td><td>2 plinth steps, column, cap, 3 panel fields in 12 moulding pieces, collar, 4 bolts, shaft, nut, nave, rim, inlay, 8 spokes, 8 handles, 8 ferrules, 1 king ring</td><td>as stated</td></tr><tr><td>Nave concentric, shaft coaxial</td><td>≤ 0.3 mm each, bore clearance 0.3–1.0 mm</td><td>0.0001 mm, 0.0004 mm, 0.599 mm</td></tr><tr><td>Spoke seat in the rim</td><td>1–6 mm into the inner face</td><td>3.000 mm (all eight)</td></tr><tr><td>Handle seat in the rim</td><td>1–6 mm into the outer face</td><td>4.000 mm (all eight)</td></tr><tr><td>Spoke spacing</td><td>45° ± 0.05°</td><td>worst 0.00013°</td></tr><tr><td>Handle on its spoke&#x27;s axis</td><td>≤ 0.05°</td><td>worst 0.00007°</td></tr><tr><td>Real-world size</td><td>1.000 ± 0.004 m over the handles, rim 0.720 ± 0.004 m, centre 1.000 ± 0.002 m above the deck</td><td>1.0000, 0.7200, 1.0000</td></tr></tbody></table></div>
+<p>Real-world size: a small vessel&#x27;s pedestal helm is about a metre over the handles with eight spokes, the rim a little under three quarters of that, the handles turned to a hand&#x27;s grip (about 40 mm at the bulb) and the wheel&#x27;s centre about a metre off the deck.</p>
+<h2 id="construction">Construction<a class="anchor" href="#construction" aria-label="Link to this section">#</a></h2>
+<ul><li><strong>Rim.</strong> One teak ring, 50 mm deep and 46 mm thick, rectangular in section with 4 mm chamfers, and a 10 mm brass inlay let 0.8 mm into its face.</li><li><strong>Spokes.</strong> Turned: a collar and bead by the nave, a long swelling shank, a second bead before the rim. Each is tenoned 12 mm into the nave and 3 mm into the rim&#x27;s inner face.</li><li><strong>Handles.</strong> Turned on the spoke&#x27;s own axis from 4 mm inside the rim&#x27;s outer face to 0.50 m from the centre: a neck, a long bulb for the grip, a knob at the tip. A brass ferrule where each leaves the rim; the king spoke (upright at rest) carries a second brass ring, the mark a helmsman finds by touch.</li><li><strong>Nave and shaft.</strong> A turned brass drum with a front boss, bored 0.6 mm over a 40 mm iron shaft, and an acorn nut over the shaft&#x27;s end.</li><li><strong>Pedestal.</strong> A stepped plinth, a 200 mm square column and a cap, each tenoned into the one below. On three faces of the column a raised field (6 mm proud, darker) sits in a moulded frame whose rails stand 12 mm proud and stiles 11 mm, so no two front faces are one plane; each piece is let into the column by a different depth so no two back faces are either. The shaft runs into the column through a flanged brass collar held by four iron bolts.</li><li><strong>Collider.</strong> One hull over the plinth, one over the column, one over the whole wheel: a turning wheel is a disc to anything that hits it.</li></ul>
+<h2 id="findings-the-budgets-forced">Findings the budgets forced<a class="anchor" href="#findings-the-budgets-forced" aria-label="Link to this section">#</a></h2>
+<ul><li><strong>Panels as thin as their chamfer.</strong> The column&#x27;s first panels were 8 mm deep; a 4 mm chamfer from both faces met in the middle and the hygiene audit reported 16 zero-area faces and 24 doubled vertices. Every panel and moulding piece takes a 2 mm chamfer.</li><li><strong>Grain that reads as stripes.</strong> Object-space bands drew the same even stripes across every member, whichever way it ran. Each vertex now carries its member&#x27;s grain frame (<code>GrainCo</code>), the rings run about the fibre axis with noise pulling their spacing about, and the ramp is narrow, so the figure is a shift in shade along the member.</li><li><strong>Falsifiers on diagonal spokes.</strong> Shortening or turning a horizontal or upright spoke moves the handle tip that sets an edge of the envelope, so the AABB would fail first. Both falsifiers act on diagonal spokes.</li></ul>
+<h2 id="conventions-walked">Conventions walked<a class="anchor" href="#conventions-walked" aria-label="Link to this section">#</a></h2>
+<p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>wheel diameter, rim diameter and centre height; exit 19</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>spokes into the nave and the rim, handles into the rim, the column into the plinth, the collar into the column</td></tr><tr><td>Seat conformance (a band: minimum so it cannot float)</td><td>yes</td><td>every spoke and handle in the rim (<code>--short-spoke</code>), exit 18</td></tr><tr><td>Mirrored assemblies</td><td>no</td><td>a wheel is radial, not mirrored; its symmetry is the spacing budget</td></tr><tr><td>Material face floors</td><td>yes</td><td>teak 2800, brass 1450, iron 190</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>teak, brass, iron</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>turned parts smooth, every edge over 35° hard; pedestal faceted</td></tr><tr><td>Edge treatment</td><td>yes</td><td>every box and the rim chamfered; no separate budget, removing the chamfers moves the triangle band first</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>the bevel&#x27;s edge list is sorted by index</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>no falsifier moves the AABB</td></tr><tr><td>Named supports, wrappers, rope, roofs, vessels, scatter, fasteners</td><td>partly</td><td>fasteners: the collar&#x27;s bolts are counted as parts</td></tr></tbody></table></div>
+<h2 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All six were run on Blender 4.5.11, 5.1.2 and 5.2.1 and exited the declared code.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex behind the wheel</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--offset-hub</code></td><td>concentric nave, shaft in its bore</td><td>moves the nave 2 mm across; 2.000 mm off centre, bore clearance −1.400 mm</td><td>17</td></tr><tr><td><code>--short-spoke</code></td><td>spoke seat in the rim</td><td>shortens one diagonal spoke 10 mm; tip −7.000 mm from the rim</td><td>18</td></tr><tr><td><code>--skew-spoke</code></td><td>equal angular spacing</td><td>turns one diagonal spoke and its handle 2°; spacing off by 2.0000°</td><td>19</td></tr></tbody></table></div>
+<h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
+<p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, has no UV layer, or a part count is wrong</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Nave off the rim&#x27;s centre, shaft off its axis, or bore clearance out of band (<code>--offset-hub</code>)</td></tr><tr><td>18</td><td>A spoke or handle not seated in the rim (<code>--short-spoke</code>)</td></tr><tr><td>19</td><td>Spoke spacing, a handle off its spoke&#x27;s axis, or real-world size (<code>--skew-spoke</code>)</td></tr><tr><td>21</td><td>Asset-quality floors (<code>examples/gallery_asset_quality.py</code>, render path only)</td></tr></tbody></table></div>
+<h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
+<pre><code># Budget check, no render. A few seconds warm.
+blender --background --python ships_wheel.py --
+
+# Falsifier: one spoke turned 2 degrees. Must exit 19.
+blender --background --python ships_wheel.py -- --skew-spoke
+
+# Falsifier: one spoke 10 mm short of the rim. Must exit 18.
+blender --background --python ships_wheel.py -- --short-spoke
+
+# Render the gallery still (Cycles; EEVEE is the default engine).
+blender --background --python ships_wheel.py -- --output ships_wheel.png --engine cycles</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<h2 id="cross-version-measurements">Cross-version measurements<a class="anchor" href="#cross-version-measurements" aria-label="Link to this section">#</a></h2>
+<p>Every default run and every falsifier was run on all three binaries (<code>.scratch/blender-&lt;ver&gt;-windows-x64/blender.exe</code>, reporting 4.5.11 LTS, 5.1.2 and 5.2.1 LTS). Only the DECIMATE counts differ, which is why the LOD gate is a ratio band; every concentric, seat, spacing and size value is identical.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>9188</td><td>9188</td><td>9188</td></tr><tr><td>LOD1 / LOD2 triangles</td><td>4594 / 2020</td><td>4594 / 2020</td><td>4594 / 2014</td></tr><tr><td>LOD2 ratio</td><td>0.2199</td><td>0.2199</td><td>0.2192</td></tr><tr><td>Faces teak / brass / iron</td><td>3086 / 1596 / 208</td><td>same</td><td>same</td></tr><tr><td>Collider triangles</td><td>514</td><td>514</td><td>514</td></tr><tr><td>Concentric, coaxial, bore</td><td>0.0001 / 0.0004 / 0.599 mm</td><td>same</td><td>same</td></tr><tr><td>Spoke / handle seat</td><td>3.000 / 4.000 mm</td><td>same</td><td>same</td></tr><tr><td>Falsifier exits 9 / 15 / 16 / 17 / 18 / 19</td><td>all as declared</td><td>all as declared</td><td>all as declared</td></tr></tbody></table></div>
+    </section>
+    <section class="detail-section src" id="source">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/ships-wheel/ships_wheel.py</code>
+        <span>1337 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/ships-wheel/ships_wheel.py">View on GitHub &rarr;</a></span>
+      </div>
+      <div class="code" data-lines="1337">
+<pre class="gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1010
+1011
+1012
+1013
+1014
+1015
+1016
+1017
+1018
+1019
+1020
+1021
+1022
+1023
+1024
+1025
+1026
+1027
+1028
+1029
+1030
+1031
+1032
+1033
+1034
+1035
+1036
+1037
+1038
+1039
+1040
+1041
+1042
+1043
+1044
+1045
+1046
+1047
+1048
+1049
+1050
+1051
+1052
+1053
+1054
+1055
+1056
+1057
+1058
+1059
+1060
+1061
+1062
+1063
+1064
+1065
+1066
+1067
+1068
+1069
+1070
+1071
+1072
+1073
+1074
+1075
+1076
+1077
+1078
+1079
+1080
+1081
+1082
+1083
+1084
+1085
+1086
+1087
+1088
+1089
+1090
+1091
+1092
+1093
+1094
+1095
+1096
+1097
+1098
+1099
+1100
+1101
+1102
+1103
+1104
+1105
+1106
+1107
+1108
+1109
+1110
+1111
+1112
+1113
+1114
+1115
+1116
+1117
+1118
+1119
+1120
+1121
+1122
+1123
+1124
+1125
+1126
+1127
+1128
+1129
+1130
+1131
+1132
+1133
+1134
+1135
+1136
+1137
+1138
+1139
+1140
+1141
+1142
+1143
+1144
+1145
+1146
+1147
+1148
+1149
+1150
+1151
+1152
+1153
+1154
+1155
+1156
+1157
+1158
+1159
+1160
+1161
+1162
+1163
+1164
+1165
+1166
+1167
+1168
+1169
+1170
+1171
+1172
+1173
+1174
+1175
+1176
+1177
+1178
+1179
+1180
+1181
+1182
+1183
+1184
+1185
+1186
+1187
+1188
+1189
+1190
+1191
+1192
+1193
+1194
+1195
+1196
+1197
+1198
+1199
+1200
+1201
+1202
+1203
+1204
+1205
+1206
+1207
+1208
+1209
+1210
+1211
+1212
+1213
+1214
+1215
+1216
+1217
+1218
+1219
+1220
+1221
+1222
+1223
+1224
+1225
+1226
+1227
+1228
+1229
+1230
+1231
+1232
+1233
+1234
+1235
+1236
+1237
+1238
+1239
+1240
+1241
+1242
+1243
+1244
+1245
+1246
+1247
+1248
+1249
+1250
+1251
+1252
+1253
+1254
+1255
+1256
+1257
+1258
+1259
+1260
+1261
+1262
+1263
+1264
+1265
+1266
+1267
+1268
+1269
+1270
+1271
+1272
+1273
+1274
+1275
+1276
+1277
+1278
+1279
+1280
+1281
+1282
+1283
+1284
+1285
+1286
+1287
+1288
+1289
+1290
+1291
+1292
+1293
+1294
+1295
+1296
+1297
+1298
+1299
+1300
+1301
+1302
+1303
+1304
+1305
+1306
+1307
+1308
+1309
+1310
+1311
+1312
+1313
+1314
+1315
+1316
+1317
+1318
+1319
+1320
+1321
+1322
+1323
+1324
+1325
+1326
+1327
+1328
+1329
+1330
+1331
+1332
+1333
+1334
+1335
+1336
+1337</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready ship&#x27;s wheel on its pedestal — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural ship&#x27;s wheel (a helm): eight
+turned spokes running from a brass nave out to a laminated teak rim, eight
+turned handles carried on past the rim on the spokes&#x27; own axes, a brass
+band on the rim&#x27;s face, brass ferrules where the handles leave the rim and
+a second ring on the king spoke, all turning on an iron shaft held in a
+brass bearing collar on a teak pedestal standing on a stepped plinth.
+Carried through UVs, three materials (teak, brass, iron), a high-to-low
+normal bake, an LOD chain, a compound convex collider, and a Unity glTF
+export.
+
+The budget that matters is the one a wheel fails invisibly: exact radial
+repetition. Eight spokes that look evenly spread can be half a degree out
+and the rim binds on the one that is long; a spoke a few millimetres short
+still meets the rim in every picture taken face-on, but carries nothing;
+a nave a couple of millimetres off the rim&#x27;s centre wobbles the wheel on
+every turn. The piece measures every spoke&#x27;s and handle&#x27;s axis off its own
+vertices, every seat against the rim&#x27;s measured inner and outer faces, the
+rim&#x27;s centre against the nave&#x27;s, and the shaft inside the nave&#x27;s bore.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--offset-hub`` the nave concentric
+with the rim and coaxial on the shaft, ``--short-spoke`` a spoke seated in
+the rim, ``--skew-spoke`` equal angular spacing.
+
+No randomness. DECIMATE COLLAPSE triangle counts are not byte-identical
+across Blender versions — the LOD gate is a ratio band.
+
+    blender --background --python ships_wheel.py --
+    blender --background --python ships_wheel.py -- --skew-spoke
+    blender --background --python ships_wheel.py -- --output ships_wheel.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
+
+<span class="c"># --- dimensions, metres. X across the wheel, Y along the shaft (the wheel&#x27;s</span>
+<span class="c"># face looks toward -Y, the pedestal stands behind it at +Y), Z up.</span>
+<span class="c"># A one-metre, eight-spoke wheel: 0.72 m over the rim, 0.50 m from the</span>
+<span class="c"># centre to each handle&#x27;s tip, a 160 mm brass nave on a 40 mm iron shaft,</span>
+<span class="c"># its centre a metre above the deck — the proportions of a small vessel&#x27;s</span>
+<span class="c"># pedestal-mounted helm.</span>
+
+ZC = <span class="n">1.000</span>                  <span class="c"># wheel centre height</span>
+SPOKES = <span class="n">8</span>
+KING_ANGLE = <span class="n">90.0</span>           <span class="c"># the king spoke stands upright at rest</span>
+R_IN, R_OUT, RIM_T = <span class="n">0.310</span>, <span class="n">0.360</span>, <span class="n">0.046</span>
+HUB_R, HUB_Y0, HUB_L = <span class="n">0.080</span>, -<span class="n">0.065</span>, <span class="n">0.120</span>
+SHAFT_R, SHAFT_Y0, SHAFT_Y1 = <span class="n">0.020</span>, -<span class="n">0.080</span>, <span class="n">0.250</span>
+HUB_BORE = SHAFT_R + <span class="n">0.0006</span>
+SPOKE_SEAT = <span class="n">0.003</span>          <span class="c"># spoke tip this far into the rim&#x27;s inner face</span>
+HANDLE_SEAT = <span class="n">0.004</span>         <span class="c"># handle foot this far into the rim&#x27;s outer face</span>
+HANDLE_TIP = <span class="n">0.500</span>
+BAND_IN, BAND_OUT = R_IN + <span class="n">0.020</span>, R_OUT - <span class="n">0.020</span>   <span class="c"># a 10 mm brass inlay</span>
+
+<span class="c"># Pedestal: stepped plinth, square column, cap, brass collar on its face.</span>
+PLINTH = (-<span class="n">0.280</span>, <span class="n">0.280</span>, -<span class="n">0.060</span>, <span class="n">0.500</span>, <span class="n">0.000</span>, <span class="n">0.050</span>)
+STEP = (-<span class="n">0.200</span>, <span class="n">0.200</span>, <span class="n">0.020</span>, <span class="n">0.420</span>, <span class="n">0.045</span>, <span class="n">0.090</span>)
+COLUMN = (-<span class="n">0.100</span>, <span class="n">0.100</span>, <span class="n">0.120</span>, <span class="n">0.320</span>, <span class="n">0.085</span>, ZC + <span class="n">0.100</span>)
+CAP = (-<span class="n">0.125</span>, <span class="n">0.125</span>, <span class="n">0.095</span>, <span class="n">0.345</span>, ZC + <span class="n">0.095</span>, ZC + <span class="n">0.140</span>)
+COLLAR_Y0, COLLAR_Y1 = <span class="n">0.084</span>, <span class="n">0.124</span>
+BOLT_RING = <span class="n">0.072</span>
+
+<span class="c"># Falsifier magnitudes.</span>
+OFFSET_HUB = <span class="n">0.002</span>
+SHORT_SPOKE = <span class="n">0.010</span>
+SKEW_SPOKE_DEG = <span class="n">2.0</span>
+LIFT_Z = <span class="n">0.05</span>
+SHORT_K, SKEW_K = <span class="n">3</span>, <span class="n">1</span>      <span class="c"># diagonal spokes: the envelope does not move</span>
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">1.000</span>, <span class="n">0.602</span>, <span class="n">1.500</span>)
+
+BASE_TRIS_MIN = <span class="n">8700</span>
+BASE_TRIS_MAX = <span class="n">9700</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">3</span>
+FACE_FLOORS = {<span class="n">0</span>: <span class="n">2800</span>, <span class="n">1</span>: <span class="n">1450</span>, <span class="n">2</span>: <span class="n">190</span>}
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">560</span>
+BAKE_RES = <span class="n">512</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+
+CONC_TOL = <span class="n">0.0003</span>           <span class="c"># nave centre to rim centre, in the wheel&#x27;s plane</span>
+COAX_TOL = <span class="n">0.0003</span>           <span class="c"># shaft axis to nave axis</span>
+BORE_MIN, BORE_MAX = <span class="n">0.0003</span>, <span class="n">0.0010</span>     <span class="c"># radial clearance, shaft in nave</span>
+SEAT_MIN, SEAT_MAX = <span class="n">0.001</span>, <span class="n">0.006</span>       <span class="c"># spoke tip / handle foot depth into the rim</span>
+SPACING_TOL = <span class="n">0.05</span>          <span class="c"># degrees, consecutive spoke axes vs 360 / N</span>
+COAX_DEG = <span class="n">0.05</span>             <span class="c"># handle axis vs its spoke&#x27;s axis, degrees</span>
+WHEEL_D, WHEEL_D_TOL = <span class="n">2</span> * HANDLE_TIP, <span class="n">0.004</span>
+RIM_D, RIM_D_TOL = <span class="n">2</span> * R_OUT, <span class="n">0.004</span>
+ZC_TOL = <span class="n">0.002</span>
+
+TIMBER_IDX = <span class="n">0</span>
+BRASS_IDX = <span class="n">1</span>
+IRON_IDX = <span class="n">2</span>
+
+<span class="c"># Part ids, a face attribute written at build time; shells take their</span>
+<span class="c"># part from their faces. 0 is &quot;not yet tagged&quot;.</span>
+P_PLINTH, P_COLUMN, P_CAP, P_COLLAR, P_BOLT, P_SHAFT, P_NUT = <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>
+P_HUB, P_SPOKE, P_RIM, P_BAND, P_HANDLE, P_FERRULE, P_KING = <span class="n">8</span>, <span class="n">9</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">12</span>, <span class="n">13</span>, <span class="n">14</span>
+P_PANEL, P_MOULD = <span class="n">15</span>, <span class="n">16</span>
+NPARTS = <span class="n">17</span>
+MOULD_W = <span class="n">0.016</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="c"># --- construction -----------------------------------------------------------</span>
+
+
+<span class="k">class</span> Builder:
+    <span class="s">&quot;&quot;&quot;One bmesh; every part is built, chamfered, then tagged with its part
+    id and material (faces still at part 0 are the new ones).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self, hi):
+        self.bm = bmesh.new()
+        self.hi = hi
+        self.part = self.bm.faces.layers.int.new(<span class="s">&quot;Part&quot;</span>)
+        self.smooth = set()
+
+    <span class="k">def</span> seg(self, n):
+        <span class="k">return</span> n * <span class="n">2</span> <span class="k">if</span> self.hi <span class="k">else</span> n
+
+    <span class="k">def</span> tag(self, part, mat, smooth=<span class="k">False</span>):
+        new = [f <span class="k">for</span> f <span class="k">in</span> self.bm.faces <span class="k">if</span> f[self.part] == <span class="n">0</span>]
+        <span class="k">for</span> f <span class="k">in</span> new:
+            f[self.part] = part
+            f.material_index = mat
+            <span class="k">if</span> smooth:
+                self.smooth.add(f)
+        <span class="k">return</span> new
+
+
+<span class="k">def</span> loft(bm, rings, cap=<span class="k">True</span>):
+    <span class="s">&quot;&quot;&quot;Quads between consecutive rings (closed loops); n-gon caps at both ends.&quot;&quot;&quot;</span>
+    faces = []
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        n = len(a)
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            faces.append(bm.faces.new((a[i], a[j], b[j], b[i])))
+    <span class="k">if</span> cap:
+        faces.append(bm.faces.new(rings[<span class="n">0</span>]))
+        faces.append(bm.faces.new(list(reversed(rings[-<span class="n">1</span>]))))
+    <span class="k">return</span> faces
+
+
+<span class="k">def</span> chamfer(bm, faces, offset, mat):
+    <span class="s">&quot;&quot;&quot;One-segment chamfer on the shell&#x27;s near-right-angle edges only.
+
+    ``recalc_face_normals`` comes first: the dihedral is read off face
+    normals. The bevel&#x27;s own faces take ``mat`` explicitly; left alone they
+    take slot 0. Edges are sorted by index so the operator input is stable.
+    &quot;&quot;&quot;</span>
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    own = set(faces)
+    bm.edges.index_update()
+    edges = sorted({e <span class="k">for</span> f <span class="k">in</span> faces <span class="k">for</span> e <span class="k">in</span> f.edges}, key=<span class="k">lambda</span> e: e.index)
+    pick = [e <span class="k">for</span> e <span class="k">in</span> edges
+            <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> all(lf <span class="k">in</span> own <span class="k">for</span> lf <span class="k">in</span> e.link_faces)
+            <span class="k">and</span> math.radians(<span class="n">60.0</span>) &lt;= e.calc_face_angle(<span class="n">0.0</span>) &lt;= math.radians(<span class="n">120.0</span>)]
+    <span class="k">if</span> pick <span class="k">and</span> offset &gt; <span class="n">0.0</span>:
+        bmesh.ops.bevel(bm, geom=pick, offset=offset, segments=<span class="n">1</span>, profile=<span class="n">0.5</span>,
+                        affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=mat)
+
+
+<span class="k">def</span> box(bm, x0, x1, y0, y1, z0, z1, off, mat):
+    sq = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+    rings = [[bm.verts.new((x, y, z)) <span class="k">for</span> x, y <span class="k">in</span> sq] <span class="k">for</span> z <span class="k">in</span> (z0, z1)]
+    faces = loft(bm, rings)
+    chamfer(bm, faces, off, mat)
+
+
+<span class="k">def</span> revolve(bm, profile, n, origin, axis, closed=<span class="k">False</span>, phase=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, h) profile about ``axis`` through ``origin``.
+
+    r == 0 entries at either end are poles. ``closed`` joins the last ring
+    back to the first (a tube or ring section).
+    &quot;&quot;&quot;</span>
+    a = Vector(axis).normalized()
+    u = (Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)) <span class="k">if</span> abs(a.z) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))).cross(a).normalized()
+    v = a.cross(u)
+    o = Vector(origin)
+    rings, poles = [], []
+    <span class="k">for</span> r, h <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt;= <span class="n">1e-9</span>:
+            poles.append((len(rings), bm.verts.new(o + a * h)))
+        <span class="k">else</span>:
+            rings.append([bm.verts.new(o + a * h + (u * math.cos(phase + <span class="n">2.0</span> * math.pi * k / n)
+                                                    + v * math.sin(phase + <span class="n">2.0</span> * math.pi * k / n)) * r)
+                          <span class="k">for</span> k <span class="k">in</span> range(n)])
+    faces = []
+    pairs = list(zip(rings, rings[<span class="n">1</span>:])) + ([(rings[-<span class="n">1</span>], rings[<span class="n">0</span>])] <span class="k">if</span> closed <span class="k">else</span> [])
+    <span class="k">for</span> ra, rb <span class="k">in</span> pairs:
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            faces.append(bm.faces.new((ra[i], ra[j], rb[j], rb[i])))
+    <span class="k">for</span> at, pole <span class="k">in</span> poles:
+        ring = rings[<span class="n">0</span>] <span class="k">if</span> at == <span class="n">0</span> <span class="k">else</span> rings[-<span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            faces.append(bm.faces.new((pole, ring[i], ring[j])))
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    <span class="k">return</span> faces
+
+
+<span class="k">def</span> spoke_dir(k, skew=<span class="n">0.0</span>):
+    a = math.radians(KING_ANGLE + <span class="n">360.0</span> * k / SPOKES + skew)
+    <span class="k">return</span> Vector((math.cos(a), <span class="n">0.0</span>, math.sin(a)))
+
+
+CENTRE = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, ZC))
+
+
+<span class="k">def</span> build_pedestal(b):
+    <span class="s">&quot;&quot;&quot;Stepped plinth, square column, cap; each member tenoned into the one
+    below. The collar and its bolts are brass and iron on the column&#x27;s face.&quot;&quot;&quot;</span>
+    bm = b.bm
+    box(bm, *PLINTH, <span class="n">0.010</span>, TIMBER_IDX)
+    b.tag(P_PLINTH, TIMBER_IDX)
+    box(bm, *STEP, <span class="n">0.008</span>, TIMBER_IDX)
+    b.tag(P_PLINTH, TIMBER_IDX)
+    box(bm, *COLUMN, <span class="n">0.012</span>, TIMBER_IDX)
+    b.tag(P_COLUMN, TIMBER_IDX)
+    box(bm, *CAP, <span class="n">0.010</span>, TIMBER_IDX)
+    b.tag(P_CAP, TIMBER_IDX)
+    build_panels(b)
+    <span class="c"># Bearing collar: a flanged brass ring round the shaft, its flange 4 mm</span>
+    <span class="c"># into the column&#x27;s front face.</span>
+    bore = SHAFT_R + <span class="n">0.0004</span>
+    prof = [(bore, <span class="n">0.0</span>), (<span class="n">0.040</span>, <span class="n">0.0</span>), (<span class="n">0.044</span>, <span class="n">0.004</span>), (<span class="n">0.044</span>, <span class="n">0.026</span>), (<span class="n">0.058</span>, <span class="n">0.028</span>),
+            (<span class="n">0.060</span>, <span class="n">0.032</span>), (<span class="n">0.060</span>, COLLAR_Y1 - COLLAR_Y0), (bore, COLLAR_Y1 - COLLAR_Y0)]
+    revolve(bm, prof, b.seg(<span class="n">24</span>), (<span class="n">0.0</span>, COLLAR_Y0, ZC), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), closed=<span class="k">True</span>)
+    b.tag(P_COLLAR, BRASS_IDX, smooth=<span class="k">True</span>)
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+        a = math.radians(<span class="n">45.0</span> + <span class="n">90.0</span> * k)
+        x, z = BOLT_RING * math.cos(a), ZC + BOLT_RING * math.sin(a)
+        dome = [(<span class="n">0.0</span>, -<span class="n">0.0008</span>), (<span class="n">0.0075</span>, -<span class="n">0.0008</span>), (<span class="n">0.0075</span>, <span class="n">0.0010</span>), (<span class="n">0.0060</span>, <span class="n">0.0030</span>),
+                (<span class="n">0.0035</span>, <span class="n">0.0042</span>), (<span class="n">0.0</span>, <span class="n">0.0046</span>)]
+        revolve(bm, dome, b.seg(<span class="n">8</span>), (x, COLUMN[<span class="n">2</span>], z), (<span class="n">0</span>, -<span class="n">1</span>, <span class="n">0</span>))
+        b.tag(P_BOLT, IRON_IDX, smooth=<span class="k">True</span>)
+
+
+<span class="k">def</span> build_panels(b):
+    <span class="s">&quot;&quot;&quot;A moulded frame round a raised field on the column&#x27;s front and both
+    sides. The frame&#x27;s rails stand 12 mm proud, its stiles 11 mm (so no two
+    front faces are one plane), the field 6 mm; each is let into the column
+    by a different depth so no two back faces are one plane either.&quot;&quot;&quot;</span>
+    x0, x1, y0, y1, z0, z1 = COLUMN
+    pz0, pz1 = z0 + <span class="n">0.090</span>, ZC - <span class="n">0.140</span>
+    W = MOULD_W
+
+    <span class="k">def</span> faces():
+        <span class="c"># (point(u, d, z), u0, u1): d is how far proud of that face.</span>
+        <span class="k">yield</span> (<span class="k">lambda</span> u, d, z: (u, y0 - d, z)), x0 + <span class="n">0.026</span>, x1 - <span class="n">0.026</span>
+        <span class="k">yield</span> (<span class="k">lambda</span> u, d, z: (x0 - d, u, z)), y0 + <span class="n">0.026</span>, y1 - <span class="n">0.026</span>
+        <span class="k">yield</span> (<span class="k">lambda</span> u, d, z: (x1 + d, u, z)), y0 + <span class="n">0.026</span>, y1 - <span class="n">0.026</span>
+
+    <span class="k">def</span> slab(pt, ua, ub, za, zb, proud, bite, part):
+        c = [pt(u, d, z) <span class="k">for</span> u <span class="k">in</span> (ua, ub) <span class="k">for</span> d <span class="k">in</span> (-bite, proud) <span class="k">for</span> z <span class="k">in</span> (za, zb)]
+        box(b.bm, min(q[<span class="n">0</span>] <span class="k">for</span> q <span class="k">in</span> c), max(q[<span class="n">0</span>] <span class="k">for</span> q <span class="k">in</span> c), min(q[<span class="n">1</span>] <span class="k">for</span> q <span class="k">in</span> c),
+            max(q[<span class="n">1</span>] <span class="k">for</span> q <span class="k">in</span> c), min(q[<span class="n">2</span>] <span class="k">for</span> q <span class="k">in</span> c), max(q[<span class="n">2</span>] <span class="k">for</span> q <span class="k">in</span> c), <span class="n">0.002</span>, TIMBER_IDX)
+        b.tag(part, TIMBER_IDX)
+
+    <span class="k">for</span> pt, u0, u1 <span class="k">in</span> faces():
+        <span class="k">for</span> za, zb <span class="k">in</span> ((pz0, pz0 + W), (pz1 - W, pz1)):
+            slab(pt, u0 - <span class="n">0.002</span>, u1 + <span class="n">0.002</span>, za, zb, <span class="n">0.012</span>, <span class="n">0.003</span>, P_MOULD)
+        <span class="k">for</span> ua, ub <span class="k">in</span> ((u0, u0 + W), (u1 - W, u1)):
+            slab(pt, ua, ub, pz0 + W - <span class="n">0.003</span>, pz1 - W + <span class="n">0.003</span>, <span class="n">0.011</span>, <span class="n">0.004</span>, P_MOULD)
+        slab(pt, u0 + W - <span class="n">0.002</span>, u1 - W + <span class="n">0.002</span>, pz0 + W - <span class="n">0.002</span>, pz1 - W + <span class="n">0.002</span>, <span class="n">0.006</span>, <span class="n">0.002</span>,
+             P_PANEL)
+
+
+<span class="k">def</span> build_shaft(b):
+    bm = b.bm
+    L = SHAFT_Y1 - SHAFT_Y0
+    prof = [(<span class="n">0.0</span>, <span class="n">0.0</span>), (SHAFT_R, <span class="n">0.0</span>), (SHAFT_R, L), (<span class="n">0.0</span>, L)]
+    revolve(bm, prof, b.seg(<span class="n">16</span>), (<span class="n">0.0</span>, SHAFT_Y0, ZC), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>))
+    b.tag(P_SHAFT, IRON_IDX, smooth=<span class="k">True</span>)
+    <span class="c"># Acorn cap nut over the shaft&#x27;s end, 2 mm into the nave&#x27;s front.</span>
+    nut = [(<span class="n">0.0</span>, -<span class="n">0.002</span>), (<span class="n">0.034</span>, -<span class="n">0.002</span>), (<span class="n">0.034</span>, <span class="n">0.012</span>), (<span class="n">0.030</span>, <span class="n">0.016</span>), (<span class="n">0.024</span>, <span class="n">0.016</span>),
+           (<span class="n">0.024</span>, <span class="n">0.022</span>), (<span class="n">0.020</span>, <span class="n">0.030</span>), (<span class="n">0.012</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, <span class="n">0.037</span>)]
+    revolve(bm, nut, b.seg(<span class="n">12</span>), (<span class="n">0.0</span>, HUB_Y0, ZC), (<span class="n">0</span>, -<span class="n">1</span>, <span class="n">0</span>), phase=math.radians(<span class="n">15.0</span>))
+    b.tag(P_NUT, BRASS_IDX, smooth=<span class="k">True</span>)
+
+
+<span class="k">def</span> build_hub(b, dx=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;The nave: a turned brass drum with a front boss, bored for the shaft.&quot;&quot;&quot;</span>
+    prof = [(HUB_BORE, <span class="n">0.0</span>), (<span class="n">0.040</span>, <span class="n">0.0</span>), (<span class="n">0.050</span>, <span class="n">0.006</span>), (<span class="n">0.058</span>, <span class="n">0.012</span>), (<span class="n">0.060</span>, <span class="n">0.020</span>),
+            (<span class="n">0.074</span>, <span class="n">0.024</span>), (HUB_R, <span class="n">0.030</span>), (HUB_R, <span class="n">0.090</span>), (<span class="n">0.074</span>, <span class="n">0.096</span>), (<span class="n">0.062</span>, <span class="n">0.102</span>),
+            (<span class="n">0.060</span>, <span class="n">0.110</span>), (<span class="n">0.054</span>, HUB_L), (HUB_BORE, HUB_L)]
+    revolve(b.bm, prof, b.seg(<span class="n">32</span>), (dx, HUB_Y0, ZC), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), closed=<span class="k">True</span>)
+    b.tag(P_HUB, BRASS_IDX, smooth=<span class="k">True</span>)
+
+
+<span class="k">def</span> build_rim(b):
+    <span class="s">&quot;&quot;&quot;One laminated teak ring, rectangular in section with chamfered arrises,
+    and a brass band let into its face.&quot;&quot;&quot;</span>
+    h = RIM_T * <span class="n">0.5</span>
+    prof = [(R_IN, -h), (R_OUT, -h), (R_OUT, h), (R_IN, h)]
+    faces = revolve(b.bm, prof, b.seg(<span class="n">64</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, ZC), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), closed=<span class="k">True</span>)
+    chamfer(b.bm, faces, <span class="n">0.004</span>, TIMBER_IDX)
+    b.tag(P_RIM, TIMBER_IDX)
+    band = [(BAND_IN, -h + <span class="n">0.0008</span>), (BAND_OUT, -h + <span class="n">0.0008</span>), (BAND_OUT, -h - <span class="n">0.0022</span>),
+            (BAND_IN, -h - <span class="n">0.0022</span>)]
+    revolve(b.bm, band, b.seg(<span class="n">64</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, ZC), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), closed=<span class="k">True</span>)
+    b.tag(P_BAND, BRASS_IDX, smooth=<span class="k">True</span>)
+
+
+<span class="k">def</span> spoke_profile(short=<span class="n">0.0</span>):
+    tip = R_IN + SPOKE_SEAT - short
+    <span class="k">return</span> [(<span class="n">0.0</span>, <span class="n">0.068</span>), (<span class="n">0.0160</span>, <span class="n">0.068</span>), (<span class="n">0.0175</span>, <span class="n">0.086</span>), (<span class="n">0.0215</span>, <span class="n">0.091</span>), (<span class="n">0.0215</span>, <span class="n">0.097</span>),
+            (<span class="n">0.0172</span>, <span class="n">0.103</span>), (<span class="n">0.0192</span>, <span class="n">0.150</span>), (<span class="n">0.0186</span>, <span class="n">0.215</span>), (<span class="n">0.0160</span>, <span class="n">0.268</span>), (<span class="n">0.0186</span>, <span class="n">0.278</span>),
+            (<span class="n">0.0186</span>, <span class="n">0.284</span>), (<span class="n">0.0156</span>, <span class="n">0.292</span>), (<span class="n">0.0150</span>, tip - <span class="n">0.004</span>), (<span class="n">0.0140</span>, tip), (<span class="n">0.0</span>, tip)]
+
+
+<span class="k">def</span> handle_profile():
+    foot = R_OUT - HANDLE_SEAT
+    <span class="k">return</span> [(<span class="n">0.0</span>, foot), (<span class="n">0.0172</span>, foot), (<span class="n">0.0172</span>, <span class="n">0.374</span>), (<span class="n">0.0148</span>, <span class="n">0.384</span>), (<span class="n">0.0186</span>, <span class="n">0.402</span>),
+            (<span class="n">0.0206</span>, <span class="n">0.426</span>), (<span class="n">0.0186</span>, <span class="n">0.450</span>), (<span class="n">0.0128</span>, <span class="n">0.468</span>), (<span class="n">0.0150</span>, <span class="n">0.477</span>), (<span class="n">0.0166</span>, <span class="n">0.487</span>),
+            (<span class="n">0.0138</span>, <span class="n">0.495</span>), (<span class="n">0.0078</span>, <span class="n">0.4993</span>), (<span class="n">0.0</span>, HANDLE_TIP)]
+
+
+<span class="k">def</span> build_spokes(b, short_spoke=<span class="k">False</span>, skew_spoke=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Eight turned spokes, each tenoned into the nave and into the rim&#x27;s inner
+    face, with a handle on the same axis seated into the rim&#x27;s outer face.&quot;&quot;&quot;</span>
+    bm = b.bm
+    <span class="k">for</span> k <span class="k">in</span> range(SPOKES):
+        skew = SKEW_SPOKE_DEG <span class="k">if</span> (skew_spoke <span class="k">and</span> k == SKEW_K) <span class="k">else</span> <span class="n">0.0</span>
+        d = spoke_dir(k, skew)
+        short = SHORT_SPOKE <span class="k">if</span> (short_spoke <span class="k">and</span> k == SHORT_K) <span class="k">else</span> <span class="n">0.0</span>
+        revolve(bm, spoke_profile(short), b.seg(<span class="n">10</span>), CENTRE, d)
+        b.tag(P_SPOKE, TIMBER_IDX, smooth=<span class="k">True</span>)
+        revolve(bm, handle_profile(), b.seg(<span class="n">10</span>), CENTRE, d)
+        b.tag(P_HANDLE, TIMBER_IDX, smooth=<span class="k">True</span>)
+        ferrule = [(<span class="n">0.0164</span>, R_OUT + <span class="n">0.001</span>), (<span class="n">0.0205</span>, R_OUT + <span class="n">0.001</span>), (<span class="n">0.0215</span>, R_OUT + <span class="n">0.004</span>),
+                   (<span class="n">0.0215</span>, R_OUT + <span class="n">0.010</span>), (<span class="n">0.0205</span>, R_OUT + <span class="n">0.013</span>), (<span class="n">0.0164</span>, R_OUT + <span class="n">0.013</span>)]
+        revolve(bm, ferrule, b.seg(<span class="n">12</span>), CENTRE, d, closed=<span class="k">True</span>)
+        b.tag(P_FERRULE, BRASS_IDX, smooth=<span class="k">True</span>)
+        <span class="k">if</span> k == <span class="n">0</span>:
+            <span class="c"># The king spoke: a brass ring round its handle marks the wheel&#x27;s</span>
+            <span class="c"># midships position by touch in the dark.</span>
+            king = [(<span class="n">0.0180</span>, <span class="n">0.418</span>), (<span class="n">0.0222</span>, <span class="n">0.420</span>), (<span class="n">0.0228</span>, <span class="n">0.426</span>), (<span class="n">0.0222</span>, <span class="n">0.432</span>),
+                    (<span class="n">0.0180</span>, <span class="n">0.434</span>)]
+            revolve(bm, king, b.seg(<span class="n">12</span>), CENTRE, d, closed=<span class="k">True</span>)
+            b.tag(P_KING, BRASS_IDX, smooth=<span class="k">True</span>)
+
+
+<span class="k">def</span> build_wheel_mesh(name, hi=<span class="k">False</span>, stray_vert=<span class="k">False</span>, offset_hub=<span class="k">False</span>, short_spoke=<span class="k">False</span>,
+                     skew_spoke=<span class="k">False</span>):
+    b = Builder(hi)
+    <span class="k">try</span>:
+        build_pedestal(b)
+        build_shaft(b)
+        build_hub(b, OFFSET_HUB <span class="k">if</span> offset_hub <span class="k">else</span> <span class="n">0.0</span>)
+        build_rim(b)
+        build_spokes(b, short_spoke, skew_spoke)
+
+        bm = b.bm
+        <span class="k">if</span> stray_vert:
+            bm.verts.new((<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">0.5</span>))
+        big = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
+        bmesh.ops.triangulate(bm, faces=big, quad_method=<span class="s">&quot;BEAUTY&quot;</span>, ngon_method=<span class="s">&quot;EAR_CLIP&quot;</span>)
+        smooth_verts = {v <span class="k">for</span> f <span class="k">in</span> b.smooth <span class="k">if</span> f.is_valid <span class="k">for</span> v <span class="k">in</span> f.verts}
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = f[b.part] <span class="k">in</span> (P_COLLAR, P_BOLT, P_SHAFT, P_NUT, P_HUB, P_SPOKE, P_BAND,
+                                     P_HANDLE, P_FERRULE, P_KING) <span class="k">and</span> all(
+                v <span class="k">in</span> smooth_verts <span class="k">for</span> v <span class="k">in</span> f.verts)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">35.0</span>):
+                e.smooth = <span class="k">False</span>
+        pack_uvs(bm)
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        b.bm.free()
+    paint_pieces(me)
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
+    <span class="s">&quot;&quot;&quot;One grid cell per face, box-projected on the face&#x27;s dominant axis.&quot;&quot;&quot;</span>
+    uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+    faces = list(bm.faces)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(len(faces))))
+    rows = max(<span class="n">1</span>, math.ceil(len(faces) / cols))
+    cw, ch = <span class="n">1.0</span> / cols, <span class="n">1.0</span> / rows
+    pu, pv = margin * cw * <span class="n">0.5</span>, margin * ch * <span class="n">0.5</span>
+    <span class="k">for</span> i, face <span class="k">in</span> enumerate(faces):
+        ax, ay, az = abs(face.normal.x), abs(face.normal.y), abs(face.normal.z)
+        coords = []
+        <span class="k">for</span> loop <span class="k">in</span> face.loops:
+            co = loop.vert.co
+            <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                coords.append((co.x, co.y))
+            <span class="k">elif</span> ax &gt;= ay:
+                coords.append((co.y, co.z))
+            <span class="k">else</span>:
+                coords.append((co.x, co.z))
+        minx, maxx = min(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> coords), max(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> coords)
+        miny, maxy = min(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> coords), max(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> coords)
+        dx, dy = max(maxx - minx, <span class="n">1e-8</span>), max(maxy - miny, <span class="n">1e-8</span>)
+        ou, ov = (i % cols) * cw + pu, (i // cols) * ch + pv
+        <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, coords):
+            loop[uv].uv = (ou + (x - minx) / dx * (cw - <span class="n">2</span> * pu),
+                           ov + (y - miny) / dy * (ch - <span class="n">2</span> * pv))
+
+
+<span class="k">def</span> paint_pieces(me):
+    <span class="s">&quot;&quot;&quot;Per shell: ``WoodTone`` (one tone per member, the panel fields darker
+    than their frames) and ``GrainCo``, a point attribute giving each vertex
+    in its member&#x27;s own grain frame — x along the fibres, y and z across
+    them, offset per member — so the shader runs the grain along every
+    spoke and handle, round the rim and up the column.&quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [<span class="n">0.0</span>] * (<span class="n">3</span> * len(me.vertices))
+    vf = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> poly.vertices:
+            vf[i].append(poly.index)
+    pv = [<span class="n">0</span>] * len(me.polygons)
+    me.attributes[<span class="s">&quot;Part&quot;</span>].data.foreach_get(<span class="s">&quot;value&quot;</span>, pv)
+    centre = Vector((<span class="n">0.0</span>, ZC))
+    <span class="k">for</span> k, g <span class="k">in</span> enumerate(shells(me)):
+        golden = (k * <span class="n">0.6180339887</span> + <span class="n">0.3</span>) % <span class="n">1.0</span>
+        t = <span class="n">0.5</span> + <span class="n">0.6</span> * (golden - <span class="n">0.5</span>)
+        fs = {fi <span class="k">for</span> i <span class="k">in</span> g <span class="k">for</span> fi <span class="k">in</span> vf[i]}
+        part = pv[next(iter(fs))] <span class="k">if</span> fs <span class="k">else</span> <span class="n">0</span>
+        <span class="k">if</span> part <span class="k">in</span> (P_PLINTH, P_COLUMN, P_CAP):
+            t = <span class="n">0.25</span> + <span class="n">0.08</span> * (k % <span class="n">3</span>)
+        <span class="k">elif</span> part == P_PANEL:
+            t = <span class="n">0.08</span>
+        <span class="k">elif</span> part == P_MOULD:
+            t = <span class="n">0.55</span>
+        <span class="k">elif</span> part == P_RIM:
+            t = <span class="n">0.62</span>
+        <span class="k">for</span> fi <span class="k">in</span> fs:
+            tone[fi] = t
+        <span class="c"># Flat-sawn figure: the ring centre sits well off the member, so the</span>
+        <span class="c"># rings cut it as near-parallel, uneven lines along its length.</span>
+        o1, o2 = <span class="n">0.18</span> + <span class="n">0.30</span> * golden, <span class="n">0.11</span> + <span class="n">0.23</span> * ((golden * <span class="n">7.31</span>) % <span class="n">1.0</span>)
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        c = sum((Vector((q.x, q.z)) <span class="k">for</span> q <span class="k">in</span> pts), Vector((<span class="n">0.0</span>, <span class="n">0.0</span>))) / len(pts) - centre
+        <span class="k">for</span> i <span class="k">in</span> g:
+            q = me.vertices[i].co
+            <span class="k">if</span> part <span class="k">in</span> (P_SPOKE, P_HANDLE) <span class="k">and</span> c.length &gt; <span class="n">1e-6</span>:
+                d = c.normalized()
+                r = Vector((q.x, q.z)) - centre
+                along, a1, a2 = r.dot(d), r.dot(Vector((-d.y, d.x))), q.y
+            <span class="k">elif</span> part == P_RIM:
+                r = Vector((q.x, q.z)) - centre
+                along = math.atan2(r.y, r.x) * <span class="n">0.335</span>
+                a1, a2 = r.length - <span class="n">0.335</span>, q.y
+            <span class="k">elif</span> part == P_PLINTH:
+                along, a1, a2 = q.x, q.y, q.z
+            <span class="k">else</span>:
+                along, a1, a2 = q.z, q.x, q.y
+            grain[<span class="n">3</span> * i:<span class="n">3</span> * i + <span class="n">3</span>] = (along + <span class="n">3.7</span> * golden, a1 + o1, a2 + o2)
+    a = me.attributes.new(<span class="s">&quot;WoodTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    gco = me.attributes.new(<span class="s">&quot;GrainCo&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+    gco.data.foreach_set(<span class="s">&quot;vector&quot;</span>, grain)
+
+
+<span class="c"># --- surface ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> _mix(nt, blend, a, b, fac):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    node.data_type = <span class="s">&quot;RGBA&quot;</span>
+    node.blend_type = blend
+    fsock = _sock(node.inputs, <span class="s">&quot;Factor_Float&quot;</span>)
+    <span class="k">if</span> isinstance(fac, (int, float)):
+        fsock.default_value = fac
+    <span class="k">else</span>:
+        nt.links.new(fac, fsock)
+    <span class="k">for</span> ident, src <span class="k">in</span> ((<span class="s">&quot;A_Color&quot;</span>, a), (<span class="s">&quot;B_Color&quot;</span>, b)):
+        <span class="k">if</span> isinstance(src, tuple):
+            _sock(node.inputs, ident).default_value = (*src, <span class="n">1.0</span>)
+        <span class="k">else</span>:
+            nt.links.new(src, _sock(node.inputs, ident))
+    <span class="k">return</span> _sock(node.outputs, <span class="s">&quot;Result_Color&quot;</span>)
+
+
+<span class="k">def</span> _math(nt, op, a, b=<span class="k">None</span>):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    node.operation = op
+    <span class="k">for</span> i, src <span class="k">in</span> enumerate((a, b)):
+        <span class="k">if</span> src <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        <span class="k">if</span> isinstance(src, (int, float)):
+            node.inputs[i].default_value = src
+        <span class="k">else</span>:
+            nt.links.new(src, node.inputs[i])
+    <span class="k">return</span> node.outputs[<span class="s">&quot;Value&quot;</span>]
+
+
+<span class="k">def</span> teak_material(name):
+    <span class="s">&quot;&quot;&quot;Varnished teak: flat-sawn figure running along each member (read from
+    the ``GrainCo`` frame), rings of uneven width broken by noise, a fine
+    fibre layer, a tone and a slight hue per member, and a satin varnish
+    that wears matt where hands grip.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;WoodTone&quot;</span>
+    gco = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gco.attribute_type = <span class="s">&quot;GEOMETRY&quot;</span>
+    gco.attribute_name = <span class="s">&quot;GrainCo&quot;</span>
+
+    <span class="c"># Rings about the fibre axis (x of the grain frame), their spacing pulled</span>
+    <span class="c"># around by low-frequency noise added to the coordinate, so bands vary in</span>
+    <span class="c"># width and wander instead of repeating.</span>
+    warp = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    warp.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.2</span>
+    warp.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(gco.outputs[<span class="s">&quot;Vector&quot;</span>], warp.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wsub = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    wsub.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    wsub.inputs[<span class="n">1</span>].default_value = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class="n">0.5</span>)
+    nt.links.new(warp.outputs[<span class="s">&quot;Color&quot;</span>], wsub.inputs[<span class="n">0</span>])
+    wscale = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    wscale.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    wscale.inputs[<span class="n">1</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.035</span>, <span class="n">0.035</span>)
+    nt.links.new(wsub.outputs[<span class="s">&quot;Vector&quot;</span>], wscale.inputs[<span class="n">0</span>])
+    wadd = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    wadd.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(gco.outputs[<span class="s">&quot;Vector&quot;</span>], wadd.inputs[<span class="n">0</span>])
+    nt.links.new(wscale.outputs[<span class="s">&quot;Vector&quot;</span>], wadd.inputs[<span class="n">1</span>])
+    rings = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    rings.wave_type = <span class="s">&quot;RINGS&quot;</span>
+    rings.rings_direction = <span class="s">&quot;X&quot;</span>
+    rings.wave_profile = <span class="s">&quot;SAW&quot;</span>
+    rings.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">4.8</span>
+    rings.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">2.0</span>
+    rings.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.5</span>
+    rings.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">0.8</span>
+    nt.links.new(wadd.outputs[<span class="s">&quot;Vector&quot;</span>], rings.inputs[<span class="s">&quot;Vector&quot;</span>])
+    soft = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    soft.interpolation_type = <span class="s">&quot;SMOOTHSTEP&quot;</span>
+    soft.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.15</span>
+    soft.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], soft.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># Fine fibres: noise stretched hard along the grain.</span>
+    fmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    fmap.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">6.0</span>, <span class="n">260.0</span>, <span class="n">260.0</span>)
+    nt.links.new(gco.outputs[<span class="s">&quot;Vector&quot;</span>], fmap.inputs[<span class="s">&quot;Vector&quot;</span>])
+    fib = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    fib.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.0</span>
+    fib.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(fmap.outputs[<span class="s">&quot;Vector&quot;</span>], fib.inputs[<span class="s">&quot;Vector&quot;</span>])
+    figure = _math(nt, <span class="s">&quot;ADD&quot;</span>, _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, soft.outputs[<span class="s">&quot;Result&quot;</span>], <span class="n">0.70</span>),
+                   _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, fib.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.30</span>))
+
+    <span class="c"># A narrow ramp: the figure shows as a shift in shade, not as stripes.</span>
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.15</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.128</span>, <span class="n">0.057</span>, <span class="n">0.022</span>, <span class="n">1.0</span>)
+    mid = ramp.color_ramp.elements.new(<span class="n">0.55</span>)
+    mid.color = (<span class="n">0.205</span>, <span class="n">0.098</span>, <span class="n">0.041</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">2</span>].position = <span class="n">0.92</span>
+    ramp.color_ramp.elements[<span class="n">2</span>].color = (<span class="n">0.280</span>, <span class="n">0.142</span>, <span class="n">0.064</span>, <span class="n">1.0</span>)
+    nt.links.new(figure, ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+
+    <span class="c"># Per member: brightness, and a hue between redder and more golden teak.</span>
+    gain = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.55</span>)
+    gain.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.74</span>
+    grey = nt.nodes.new(<span class="s">&quot;ShaderNodeCombineColor&quot;</span>)
+    <span class="k">for</span> ch <span class="k">in</span> (<span class="s">&quot;Red&quot;</span>, <span class="s">&quot;Green&quot;</span>, <span class="s">&quot;Blue&quot;</span>):
+        nt.links.new(gain, grey.inputs[ch])
+    base = _mix(nt, <span class="s">&quot;MULTIPLY&quot;</span>, ramp.outputs[<span class="s">&quot;Color&quot;</span>], grey.outputs[<span class="s">&quot;Color&quot;</span>], <span class="n">1.0</span>)
+    hue = _math(nt, <span class="s">&quot;FRACT&quot;</span>, _math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, tone.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">3.7</span>))
+    tint = _mix(nt, <span class="s">&quot;MIX&quot;</span>, (<span class="n">1.06</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">0.96</span>, <span class="n">1.00</span>, <span class="n">1.04</span>), hue)
+    base = _mix(nt, <span class="s">&quot;MULTIPLY&quot;</span>, base, tint, <span class="n">1.0</span>)
+    <span class="c"># Hand-worn: broad blotches where the varnish has gone matt.</span>
+    blot = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    blot.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">14.0</span>
+    blot.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], blot.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wear = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    wear.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.56</span>
+    wear.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.70</span>
+    wear.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.0</span>
+    wear.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.30</span>
+    nt.links.new(blot.outputs[<span class="s">&quot;Fac&quot;</span>], wear.inputs[<span class="s">&quot;Value&quot;</span>])
+    base = _mix(nt, <span class="s">&quot;MIX&quot;</span>, base, (<span class="n">0.150</span>, <span class="n">0.095</span>, <span class="n">0.058</span>), wear.outputs[<span class="s">&quot;Result&quot;</span>])
+    nt.links.new(base, bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = _math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, wear.outputs[<span class="s">&quot;Result&quot;</span>], <span class="n">0.75</span>)
+    rough.node.inputs[<span class="n">2</span>].default_value = <span class="n">0.30</span>
+    nt.links.new(rough, bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.name = <span class="s">&quot;TimberBump&quot;</span>
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.12</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.0008</span>
+    nt.links.new(fib.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> brass_material(name):
+    <span class="s">&quot;&quot;&quot;Brass gone warm and slightly tarnished, rubbed bright in patches.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">38.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">7.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.38</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.30</span>, <span class="n">0.20</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.72</span>, <span class="n">0.52</span>, <span class="n">0.22</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.35</span>
+    rough.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.42</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.20</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> iron_material(name):
+    <span class="s">&quot;&quot;&quot;Black iron, oily and dark, a little rust at the edges.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">70.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.50</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.030</span>, <span class="n">0.029</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.80</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.17</span>, <span class="n">0.075</span>, <span class="n">0.032</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.6</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> wheel_materials():
+    <span class="k">return</span> (teak_material(<span class="s">&quot;WheelTeak&quot;</span>), brass_material(<span class="s">&quot;WheelBrass&quot;</span>), iron_material(<span class="s">&quot;WheelIron&quot;</span>))
+
+
+<span class="k">def</span> assign_slots(obj, mats):
+    slots = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate(mats):
+        <span class="k">if</span> i &lt; len(slots):
+            slots[i] = mat
+        <span class="k">else</span>:
+            slots.append(mat)
+
+
+<span class="c"># --- measurement ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs, ys, zs = [c.x <span class="k">for</span> c <span class="k">in</span> corners], [c.y <span class="k">for</span> c <span class="k">in</span> corners], [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    span = max(<span class="n">1e-6</span>, max(a[<span class="n">2</span>] - a[<span class="n">0</span>] <span class="k">for</span> a <span class="k">in</span> aabbs), max(a[<span class="n">3</span>] - a[<span class="n">1</span>] <span class="k">for</span> a <span class="k">in</span> aabbs))
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        <span class="k">for</span> c <span class="k">in</span> range(int(a[<span class="n">0</span>] // span), int(a[<span class="n">2</span>] // span) + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(int(a[<span class="n">1</span>] // span), int(a[<span class="n">3</span>] // span) + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                overlap += max(<span class="n">0.0</span>, min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - max(a[<span class="n">0</span>], b[<span class="n">0</span>])) * max(
+                    <span class="n">0.0</span>, min(a[<span class="n">3</span>], b[<span class="n">3</span>]) - max(a[<span class="n">1</span>], b[<span class="n">1</span>]))
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        area += (me.vertices[idxs[i]].co - v0).cross(me.vertices[idxs[i + <span class="n">1</span>]].co - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {<span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e,
+            <span class="s">&quot;nonman&quot;</span>: nonman, <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles}
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            group.append(cur)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[cur]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* (copied from showcase/grindstone).&quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> classify(me):
+    <span class="s">&quot;&quot;&quot;Shells grouped by the ``Part`` face attribute their faces carry.&quot;&quot;&quot;</span>
+    part_attr = me.attributes.get(<span class="s">&quot;Part&quot;</span>)
+    pv = [<span class="n">0</span>] * len(me.polygons)
+    <span class="k">if</span> part_attr <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        part_attr.data.foreach_get(<span class="s">&quot;value&quot;</span>, pv)
+    vpart = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            vpart.setdefault(i, pv[p.index])
+    out = {}
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        lo = Vector((min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts)))
+        hi = Vector((max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts)))
+        rec = {<span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;pts&quot;</span>: pts, <span class="s">&quot;lo&quot;</span>: lo, <span class="s">&quot;hi&quot;</span>: hi, <span class="s">&quot;ext&quot;</span>: hi - lo,
+               <span class="s">&quot;c&quot;</span>: sum(pts, Vector()) / len(pts)}
+        out.setdefault(vpart.get(g[<span class="n">0</span>], <span class="n">0</span>) <span class="k">if</span> len(g) &gt;= <span class="n">4</span> <span class="k">else</span> <span class="n">0</span>, []).append(rec)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> face_plane(p):
+    <span class="s">&quot;&quot;&quot;A point in the wheel&#x27;s own plane (X, Z), the shaft axis being Y.&quot;&quot;&quot;</span>
+    <span class="k">return</span> Vector((p.x, p.z))
+
+
+<span class="k">def</span> axis_record(rec, centre):
+    <span class="s">&quot;&quot;&quot;A revolved member&#x27;s axis off its own vertices: the direction from the
+    wheel centre to the shell&#x27;s centroid (a revolved shell&#x27;s centroid lies on
+    its axis), and how far along that axis its ends reach.&quot;&quot;&quot;</span>
+    c = face_plane(rec[<span class="s">&quot;c&quot;</span>]) - centre
+    ang = math.degrees(math.atan2(c.y, c.x)) % <span class="n">360.0</span>
+    d = c.normalized()
+    hs = [(face_plane(p) - centre).dot(d) <span class="k">for</span> p <span class="k">in</span> rec[<span class="s">&quot;pts&quot;</span>]]
+    <span class="k">return</span> {<span class="s">&quot;ang&quot;</span>: ang, <span class="s">&quot;near&quot;</span>: min(hs), <span class="s">&quot;far&quot;</span>: max(hs), <span class="s">&quot;dir&quot;</span>: d}
+
+
+<span class="k">def</span> wheel_audit(me):
+    parts = classify(me)
+    out = {k: len(parts.get(k, [])) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">0</span>, NPARTS)}
+    rim = parts.get(P_RIM, [])
+    hub = parts.get(P_HUB, [])
+    shaft = parts.get(P_SHAFT, [])
+    <span class="k">if</span> <span class="k">not</span> (rim <span class="k">and</span> hub <span class="k">and</span> shaft):
+        out[<span class="s">&quot;ok&quot;</span>] = <span class="k">False</span>
+        <span class="k">return</span> out
+    rim, hub, shaft = rim[<span class="n">0</span>], hub[<span class="n">0</span>], shaft[<span class="n">0</span>]
+    <span class="c"># The rim, the nave and the shaft are each revolved about Y: the plan</span>
+    <span class="c"># centroid of a shell&#x27;s vertices is its axis in the wheel&#x27;s plane.</span>
+    rc = face_plane(rim[<span class="s">&quot;c&quot;</span>])
+    hc = face_plane(hub[<span class="s">&quot;c&quot;</span>])
+    sc = face_plane(shaft[<span class="s">&quot;c&quot;</span>])
+    out[<span class="s">&quot;rim_in&quot;</span>] = min((face_plane(p) - rc).length <span class="k">for</span> p <span class="k">in</span> rim[<span class="s">&quot;pts&quot;</span>])
+    out[<span class="s">&quot;rim_out&quot;</span>] = max((face_plane(p) - rc).length <span class="k">for</span> p <span class="k">in</span> rim[<span class="s">&quot;pts&quot;</span>])
+    out[<span class="s">&quot;rim_zc&quot;</span>] = rim[<span class="s">&quot;c&quot;</span>].z
+    out[<span class="s">&quot;conc&quot;</span>] = (hc - rc).length
+    bore = min((face_plane(p) - hc).length <span class="k">for</span> p <span class="k">in</span> hub[<span class="s">&quot;pts&quot;</span>])
+    r_shaft = max((face_plane(p) - sc).length <span class="k">for</span> p <span class="k">in</span> shaft[<span class="s">&quot;pts&quot;</span>])
+    out[<span class="s">&quot;coax&quot;</span>] = (sc - hc).length
+    out[<span class="s">&quot;bore&quot;</span>] = bore - r_shaft - out[<span class="s">&quot;coax&quot;</span>]
+    out[<span class="s">&quot;r_bore&quot;</span>], out[<span class="s">&quot;r_shaft&quot;</span>] = bore, r_shaft
+
+    spokes = sorted((axis_record(r, rc) <span class="k">for</span> r <span class="k">in</span> parts.get(P_SPOKE, [])), key=<span class="k">lambda</span> a: a[<span class="s">&quot;ang&quot;</span>])
+    handles = [axis_record(r, rc) <span class="k">for</span> r <span class="k">in</span> parts.get(P_HANDLE, [])]
+    out[<span class="s">&quot;spokes&quot;</span>], out[<span class="s">&quot;handles&quot;</span>] = spokes, handles
+    <span class="c"># Spoke tips against the rim&#x27;s measured inner face; handle feet against</span>
+    <span class="c"># its measured outer face. Both are depths into the rim.</span>
+    out[<span class="s">&quot;spoke_seat&quot;</span>] = [s[<span class="s">&quot;far&quot;</span>] - out[<span class="s">&quot;rim_in&quot;</span>] <span class="k">for</span> s <span class="k">in</span> spokes]
+    out[<span class="s">&quot;handle_seat&quot;</span>] = [out[<span class="s">&quot;rim_out&quot;</span>] - h[<span class="s">&quot;near&quot;</span>] <span class="k">for</span> h <span class="k">in</span> handles]
+    n = len(spokes)
+    step = <span class="n">360.0</span> / SPOKES
+    out[<span class="s">&quot;spacing&quot;</span>] = [((spokes[(i + <span class="n">1</span>) % n][<span class="s">&quot;ang&quot;</span>] - spokes[i][<span class="s">&quot;ang&quot;</span>]) % <span class="n">360.0</span>) - step
+                      <span class="k">for</span> i <span class="k">in</span> range(n)] <span class="k">if</span> n <span class="k">else</span> [<span class="n">99.0</span>]
+    coax = []
+    <span class="k">for</span> h <span class="k">in</span> handles:
+        dev = min(abs(((h[<span class="s">&quot;ang&quot;</span>] - s[<span class="s">&quot;ang&quot;</span>]) + <span class="n">180.0</span>) % <span class="n">360.0</span> - <span class="n">180.0</span>) <span class="k">for</span> s <span class="k">in</span> spokes) <span class="k">if</span> spokes <span class="k">else</span> <span class="n">99.0</span>
+        coax.append(dev)
+    out[<span class="s">&quot;handle_coax&quot;</span>] = coax
+    out[<span class="s">&quot;wheel_d&quot;</span>] = <span class="n">2.0</span> * max((h[<span class="s">&quot;far&quot;</span>] <span class="k">for</span> h <span class="k">in</span> handles), default=<span class="n">0.0</span>)
+    out[<span class="s">&quot;ok&quot;</span>] = <span class="k">True</span>
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> hull_collider(obj, name):
+    <span class="s">&quot;&quot;&quot;Compound collider: one hull over the plinth, one over the column and
+    its cap, one over the whole wheel (rim, spokes, handles, nave, shaft).
+
+    A turning wheel is a disc to anything that hits it; the gaps between the
+    spokes are not worth hulls of their own.&quot;&quot;&quot;</span>
+    parts = classify(obj.data)
+    groups = [
+        [p <span class="k">for</span> r <span class="k">in</span> parts.get(P_PLINTH, []) <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]],
+        [p <span class="k">for</span> k <span class="k">in</span> (P_COLUMN, P_CAP, P_PANEL, P_MOULD, P_COLLAR, P_BOLT) <span class="k">for</span> r <span class="k">in</span> parts.get(k, []) <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]],
+        [p <span class="k">for</span> k <span class="k">in</span> (P_HUB, P_SHAFT, P_NUT, P_SPOKE, P_RIM, P_BAND, P_HANDLE, P_FERRULE, P_KING)
+         <span class="k">for</span> r <span class="k">in</span> parts.get(k, []) <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]],
+    ]
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> pts <span class="k">in</span> groups:
+            <span class="k">if</span> len(pts) &lt; <span class="n">4</span>:
+                <span class="k">continue</span>
+            tmp = bmesh.new()
+            <span class="k">try</span>:
+                vs = [tmp.verts.new(p) <span class="k">for</span> p <span class="k">in</span> pts]
+                bmesh.ops.convex_hull(tmp, input=vs)
+                remap = {}
+                <span class="k">for</span> f <span class="k">in</span> tmp.faces:
+                    <span class="k">for</span> v <span class="k">in</span> f.verts:
+                        <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> remap:
+                            remap[v] = bm.verts.new(v.co)
+                    bm.faces.new([remap[v] <span class="k">for</span> v <span class="k">in</span> f.verts])
+            <span class="k">finally</span>:
+                tmp.free()
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    col = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(col)
+    <span class="k">return</span> col
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size):
+    img = bpy.data.images.new(<span class="s">&quot;WheelNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = TIMBER_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>, use_selected_to_active=<span class="k">True</span>, cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>, normal_space=<span class="s">&quot;TANGENT&quot;</span>, margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>, use_clear=<span class="k">True</span>, target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path, use_selection=<span class="k">True</span>, export_yup=<span class="k">True</span>, export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>, export_animations=<span class="k">False</span>,
+    )
+
+
+EXPECTED_PARTS = {P_PLINTH: <span class="n">2</span>, P_COLUMN: <span class="n">1</span>, P_CAP: <span class="n">1</span>, P_COLLAR: <span class="n">1</span>, P_BOLT: <span class="n">4</span>, P_SHAFT: <span class="n">1</span>,
+                  P_NUT: <span class="n">1</span>, P_HUB: <span class="n">1</span>, P_SPOKE: SPOKES, P_RIM: <span class="n">1</span>, P_BAND: <span class="n">1</span>,
+                  P_HANDLE: SPOKES, P_FERRULE: SPOKES, P_KING: <span class="n">1</span>, P_PANEL: <span class="n">3</span>, P_MOULD: <span class="n">12</span>}
+
+
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, **flags):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    low = build_wheel_mesh(<span class="s">&quot;WheelLow&quot;</span>, **flags)
+    hi_flags = {k: v <span class="k">for</span> k, v <span class="k">in</span> flags.items() <span class="k">if</span> k != <span class="s">&quot;stray_vert&quot;</span>}
+    high = build_wheel_mesh(<span class="s">&quot;WheelHigh&quot;</span>, hi=<span class="k">True</span>, **hi_flags)
+    mats = wheel_materials()
+    assign_slots(low, mats)
+    assign_slots(high, mats)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+    <span class="k">if</span> len(low.data.polygons) &lt; <span class="n">6</span> <span class="k">or</span> <span class="k">not</span> low.data.uv_layers:
+        <span class="k">return</span> (fail(<span class="s">&quot;wheel mesh did not build, or has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    slots = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat, distinct = len(slots), len({id(s) <span class="k">for</span> s <span class="k">in</span> slots})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, mats[TIMBER_IDX], BAKE_RES)
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;WheelLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;WheelLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = hull_collider(low, <span class="s">&quot;WheelCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_ships_wheel_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>)
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    wa = wheel_audit(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{dict(sorted(idx_counts.items()))}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;measured parts &quot;</span> + <span class="s">&quot; &quot;</span>.join(<span class="s">f&quot;</span>{k}<span class="s">=</span>{wa[k]}<span class="s">&quot;</span> <span class="k">for</span> k <span class="k">in</span> range(<span class="n">0</span>, NPARTS)))
+    <span class="k">if</span> wa.get(<span class="s">&quot;ok&quot;</span>):
+        print(<span class="s">f&quot;</span><span class="s">measured rim_in=</span>{wa[<span class="s">&#x27;rim_in&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> rim_out=</span>{wa[<span class="s">&#x27;rim_out&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">rim_zc=</span>{wa[<span class="s">&#x27;rim_zc&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> conc=</span>{wa[<span class="s">&#x27;conc&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">coax=</span>{wa[<span class="s">&#x27;coax&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm bore=</span>{wa[<span class="s">&#x27;bore&#x27;</span>] * <span class="n">1000</span>:<span class="s">.4f</span>}<span class="s">mm </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(r_bore=</span>{wa[<span class="s">&#x27;r_bore&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> r_shaft=</span>{wa[<span class="s">&#x27;r_shaft&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s">)</span><span class="s">&quot;</span>)
+        print(<span class="s">&quot;measured spoke_ang=&quot;</span> + <span class="s">&quot;,&quot;</span>.join(<span class="s">f&quot;</span>{s[<span class="s">&#x27;ang&#x27;</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span> <span class="k">for</span> s <span class="k">in</span> wa[<span class="s">&quot;spokes&quot;</span>]))
+        print(<span class="s">&quot;measured spacing_dev=&quot;</span> + <span class="s">&quot;,&quot;</span>.join(<span class="s">f&quot;</span>{d:<span class="s">.5f</span>}<span class="s">&quot;</span> <span class="k">for</span> d <span class="k">in</span> wa[<span class="s">&quot;spacing&quot;</span>]))
+        print(<span class="s">&quot;measured spoke_seat_mm=&quot;</span> + <span class="s">&quot;,&quot;</span>.join(<span class="s">f&quot;</span>{s * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s">&quot;</span> <span class="k">for</span> s <span class="k">in</span> wa[<span class="s">&quot;spoke_seat&quot;</span>]))
+        print(<span class="s">&quot;measured handle_seat_mm=&quot;</span> + <span class="s">&quot;,&quot;</span>.join(<span class="s">f&quot;</span>{s * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s">&quot;</span> <span class="k">for</span> s <span class="k">in</span> wa[<span class="s">&quot;handle_seat&quot;</span>]))
+        print(<span class="s">&quot;measured handle_coax_deg=&quot;</span> + <span class="s">&quot;,&quot;</span>.join(<span class="s">f&quot;</span>{d:<span class="s">.5f</span>}<span class="s">&quot;</span> <span class="k">for</span> d <span class="k">in</span> wa[<span class="s">&quot;handle_coax&quot;</span>]))
+        print(<span class="s">f&quot;</span><span class="s">measured wheel_d=</span>{wa[<span class="s">&#x27;wheel_d&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> rim_d=</span>{<span class="n">2</span> * wa[<span class="s">&#x27;rim_out&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">for</span> idx, floor <span class="k">in</span> FACE_FLOORS.items():
+        <span class="k">if</span> idx_counts.get(idx, <span class="n">0</span>) &lt; floor:
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material </span>{idx}<span class="s"> faces </span>{idx_counts.get(idx, <span class="n">0</span>)}<span class="s"> &lt; </span>{floor}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+            <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+            <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">hygiene </span>{hyg}<span class="s"> zfight=</span>{zf}<span class="s"> (--stray-vert is the designed fail)</span><span class="s">&quot;</span>, <span class="n">15</span>),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    bad = {k: (wa[k], n) <span class="k">for</span> k, n <span class="k">in</span> EXPECTED_PARTS.items() <span class="k">if</span> wa[k] != n}
+    <span class="k">if</span> bad <span class="k">or</span> wa[<span class="n">0</span>] <span class="k">or</span> <span class="k">not</span> wa.get(<span class="s">&quot;ok&quot;</span>):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">part counts (got, want) </span>{bad}<span class="s"> untagged shells </span>{wa[<span class="n">0</span>]}<span class="s">&quot;</span>, <span class="n">3</span>),) + nothing
+    <span class="k">if</span> wa[<span class="s">&quot;conc&quot;</span>] &gt; CONC_TOL <span class="k">or</span> wa[<span class="s">&quot;coax&quot;</span>] &gt; COAX_TOL <span class="k">or</span> <span class="k">not</span> (BORE_MIN &lt;= wa[<span class="s">&quot;bore&quot;</span>] &lt;= BORE_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">nave </span>{wa[<span class="s">&#x27;conc&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> mm off the rim&#x27;s centre (&lt;= </span>{CONC_TOL * <span class="n">1000</span>}<span class="s"> mm), </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">shaft </span>{wa[<span class="s">&#x27;coax&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> mm off the nave&#x27;s axis (&lt;= </span>{COAX_TOL * <span class="n">1000</span>}<span class="s"> mm), </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">bore clearance </span>{wa[<span class="s">&#x27;bore&#x27;</span>] * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> mm outside </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">[</span>{BORE_MIN * <span class="n">1000</span>}<span class="s">, </span>{BORE_MAX * <span class="n">1000</span>}<span class="s">] mm </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--offset-hub is the designed fail)&quot;</span>, <span class="n">17</span>),) + nothing
+    <span class="k">for</span> i, s <span class="k">in</span> enumerate(wa[<span class="s">&quot;spoke_seat&quot;</span>]):
+        <span class="k">if</span> <span class="k">not</span> (SEAT_MIN &lt;= s &lt;= SEAT_MAX):
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">spoke </span>{i}<span class="s"> (</span>{wa[<span class="s">&#x27;spokes&#x27;</span>][i][<span class="s">&#x27;ang&#x27;</span>]:<span class="s">.2f</span>}<span class="s"> deg): tip </span>{s * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> mm into the </span><span class="s">&quot;</span>
+                         <span class="s">f&quot;</span><span class="s">rim&#x27;s inner face, band [</span>{SEAT_MIN * <span class="n">1000</span>}<span class="s">, </span>{SEAT_MAX * <span class="n">1000</span>}<span class="s">] mm </span><span class="s">&quot;</span>
+                         <span class="s">&quot;(--short-spoke is the designed fail)&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">for</span> i, s <span class="k">in</span> enumerate(wa[<span class="s">&quot;handle_seat&quot;</span>]):
+        <span class="k">if</span> <span class="k">not</span> (SEAT_MIN &lt;= s &lt;= SEAT_MAX):
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">handle </span>{i}<span class="s">: foot </span>{s * <span class="n">1000</span>:<span class="s">.3f</span>}<span class="s"> mm into the rim&#x27;s outer face, band </span><span class="s">&quot;</span>
+                         <span class="s">f&quot;</span><span class="s">[</span>{SEAT_MIN * <span class="n">1000</span>}<span class="s">, </span>{SEAT_MAX * <span class="n">1000</span>}<span class="s">] mm</span><span class="s">&quot;</span>, <span class="n">18</span>),) + nothing
+    worst = max(abs(d) <span class="k">for</span> d <span class="k">in</span> wa[<span class="s">&quot;spacing&quot;</span>])
+    <span class="k">if</span> len(wa[<span class="s">&quot;spacing&quot;</span>]) != SPOKES <span class="k">or</span> worst &gt; SPACING_TOL:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">spoke spacing off 360/</span>{SPOKES}<span class="s"> by up to </span>{worst:<span class="s">.4f</span>}<span class="s"> deg (&gt; </span>{SPACING_TOL}<span class="s"> deg) </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--skew-spoke is the designed fail)&quot;</span>, <span class="n">19</span>),) + nothing
+    worst = max(wa[<span class="s">&quot;handle_coax&quot;</span>], default=<span class="n">99.0</span>)
+    <span class="k">if</span> worst &gt; COAX_DEG:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">a handle is </span>{worst:<span class="s">.4f</span>}<span class="s"> deg off its spoke&#x27;s axis (&gt; </span>{COAX_DEG}<span class="s"> deg)</span><span class="s">&quot;</span>, <span class="n">19</span>),) + nothing
+    <span class="k">if</span> (abs(wa[<span class="s">&quot;wheel_d&quot;</span>] - WHEEL_D) &gt; WHEEL_D_TOL <span class="k">or</span> abs(<span class="n">2</span> * wa[<span class="s">&quot;rim_out&quot;</span>] - RIM_D) &gt; RIM_D_TOL
+            <span class="k">or</span> abs(wa[<span class="s">&quot;rim_zc&quot;</span>] - ZC) &gt; ZC_TOL):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">real-world size: wheel </span>{wa[<span class="s">&#x27;wheel_d&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> m over the handles (want </span>{WHEEL_D}<span class="s">), </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">rim </span>{<span class="n">2</span> * wa[<span class="s">&#x27;rim_out&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> m (want </span>{RIM_D}<span class="s">), centre </span>{wa[<span class="s">&#x27;rim_zc&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> m </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">above the deck (want </span>{ZC}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">19</span>),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, mats, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    nt = mat.node_tree
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    bump = nt.nodes.get(<span class="s">&quot;TimberBump&quot;</span>)
+    target = bump.inputs[<span class="s">&quot;Normal&quot;</span>] <span class="k">if</span> bump <span class="k">else</span> nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>].inputs[<span class="s">&quot;Normal&quot;</span>]
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], target)
+
+
+<span class="k">def</span> render_still(low, mats, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(mats[TIMBER_IDX], tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+    <span class="c"># Level on the floor: turned about Z only, so the camera sees the wheel&#x27;s</span>
+    <span class="c"># face, the spokes&#x27; turnings and the nave, with the pedestal behind.</span>
+    yaw = math.radians(-<span class="n">28.0</span>)
+    low.rotation_euler.z = yaw
+    centre = Vector((<span class="n">0.0</span>, <span class="n">0.22</span>, <span class="n">0.0</span>))
+    low.location = -(Matrix.Rotation(yaw, <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>) @ centre)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, kind, loc, energy, size, col, target=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.9</span>)):
+        ld = bpy.data.lights.new(name, kind)
+        ld.energy = energy
+        <span class="k">if</span> kind == <span class="s">&quot;AREA&quot;</span>:
+            ld.size = size
+        <span class="k">else</span>:
+            ld.shadow_soft_size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat(<span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">2.4</span>, -<span class="n">3.6</span>, <span class="n">4.2</span>), <span class="n">250.0</span>, <span class="n">1.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">3.6</span>, -<span class="n">2.8</span>, <span class="n">1.8</span>), <span class="n">35.0</span>, <span class="n">5.0</span>, (<span class="n">0.74</span>, <span class="n">0.84</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">1.8</span>, <span class="n">3.2</span>, <span class="n">3.0</span>), <span class="n">160.0</span>, <span class="n">3.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    <span class="c"># Warm wedge: on the wall behind the wheel, between it and the wall,</span>
+    <span class="c"># so the wheel&#x27;s silhouette reads against a warm gradient.</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">0.2</span>, <span class="n">6.6</span>, <span class="n">0.3</span>), <span class="n">420.0</span>, <span class="n">2.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">0.1</span>, <span class="n">8.5</span>, <span class="n">1.6</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (-<span class="n">1.69</span>, -<span class="n">4.55</span>, <span class="n">1.79</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.76</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    <span class="c"># Standard, not Filmic/AgX: the gallery look is graded by eye under</span>
+    <span class="c"># Standard, and the lights are set so nothing clips to white.</span>
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">21</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: no DECIMATE on the LODs (exit 9)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: one loose vertex (exit 15)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: the whole piece 50 mm off the floor (exit 16)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--offset-hub&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: the nave 2 mm off the rim&#x27;s centre (exit 17)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-spoke&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: one spoke 10 mm short of the rim (exit 18)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--skew-spoke&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: one spoke and its handle turned 2 deg (exit 19)&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, mats, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        offset_hub=args.offset_hub,
+        short_spoke=args.short_spoke,
+        skew_spoke=args.skew_spoke,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, mats, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;ships wheel OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+      </div>
+    </section>
+    <section class="detail-section" id="related" aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <div class="related-grid">
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/shipping-crate-hero-640.webp" srcset="../assets/shipping-crate-hero-640.webp 640w, ../assets/shipping-crate-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A grained wooden shipping crate in three-quarter view, PORT ROYAL and NO 17 stencilled along its side slats, with nailed iron corner straps and a bail handle on one end." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../shipping-crate/">Shipping Crate</a></h3>
+            <p>A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/stone-well-hero-640.webp" srcset="../assets/stone-well-hero-640.webp 640w, ../assets/stone-well-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../stone-well/">Stone Well</a></h3>
+            <p>A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/wooden-barrel-hero-640.webp" srcset="../assets/wooden-barrel-hero-640.webp 640w, ../assets/wooden-barrel-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A wooden stave barrel bound by four iron hoops, its head made of boards." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../wooden-barrel/">Wooden Barrel</a></h3>
+            <p>A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../garden-gate/" aria-label="Previous showcase piece: garden-gate"><span aria-hidden="true">&larr;</span> garden-gate</a><span class="pager-pos hud">75 of 75 showcase pieces</span><span></span></nav>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
+    <img src="../assets/ships-wheel-hero.webp" alt="A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth." />
+  </dialog>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="../../">Blender Developer Tools</a>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span>generated from <code>showcase/gallery.json</code></span>
+      <span class="ok">exit 0</span>
+      <span class="links"><a href="../../gallery/">Gallery</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases">Releases</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a><a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a></span>
+    </div>
+  </footer>
+  <p class="sr-only" id="srStatus" role="status" aria-live="polite"></p>
+  <script>
+    (function () {
+      var hdr = document.querySelector('.site-header');
+      var btn = hdr && hdr.querySelector('.site-menu-btn');
+      if (!btn) return;
+      function set(open, refocus) {
+        hdr.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (!open && refocus) btn.focus();
+      }
+      btn.addEventListener('click', function () { set(!hdr.classList.contains('open'), false); });
+      hdr.querySelectorAll('.site-nav a').forEach(function (a) {
+        a.addEventListener('click', function () { set(false, false); });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && hdr.classList.contains('open')) set(false, true);
+      });
+      document.addEventListener('click', function (e) {
+        if (hdr.classList.contains('open') && !hdr.contains(e.target)) set(false, false);
+      });
+    })();
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. The dialog fills the viewport,
+        // so a click whose target is the dialog itself is a backdrop click.
+        var full = box.querySelector('img');
+        var nativeBtn = document.getElementById('lightboxNative');
+        function setNative(on) {
+          box.classList.toggle('native', on);
+          nativeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          nativeBtn.textContent = on ? 'Fit to screen' : 'Actual size';
+        }
+        hero.addEventListener('click', function () { setNative(false); box.showModal(); });
+        box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+        document.getElementById('lightboxClose').addEventListener('click', function () { box.close(); });
+        full.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+        nativeBtn.addEventListener('click', function () { setNative(!box.classList.contains('native')); });
+      }
+
+      var srStatus = document.getElementById('srStatus');
+      function announce(msg) {
+        srStatus.textContent = '';
+        setTimeout(function () { srStatus.textContent = msg; }, 50);
+      }
+
+      // Back to the gallery with the filters the reader left it with, and
+      // page through that filtered order when there is one (both written by
+      // the gallery index into sessionStorage; absent, the static links stay).
+      var here = location.pathname.replace(/[/]$/, '').split('/').pop();
+      try {
+        var savedHash = sessionStorage.getItem('bdt-gallery-hash');
+        var crumb = document.getElementById('crumbGallery');
+        if (crumb && savedHash) crumb.setAttribute('href', '../' + savedHash);
+        var order = JSON.parse(sessionStorage.getItem('bdt-gallery-order') || 'null');
+        var at = order ? order.indexOf(here) : -1;
+        if (at !== -1) {
+          Array.prototype.forEach.call(document.querySelectorAll('.pager'), function (nav) {
+            function slot(name, rel) {
+              if (!name) return document.createElement('span');
+              var a = document.createElement('a');
+              a.rel = rel; a.href = '../' + name + '/';
+              a.setAttribute('aria-label', (rel === 'prev' ? 'Previous' : 'Next') + ' in your filter: ' + name);
+              a.innerHTML = rel === 'prev'
+                ? '<span aria-hidden="true">&larr;</span> ' + name
+                : name + ' <span aria-hidden="true">&rarr;</span>';
+              return a;
+            }
+            var pos = nav.querySelector('.pager-pos');
+            var keys = pos.querySelector('.pager-keys');
+            nav.replaceChild(slot(order[at - 1], 'prev'), nav.firstElementChild);
+            nav.replaceChild(slot(order[at + 1], 'next'), nav.lastElementChild);
+            pos.textContent = (at + 1) + ' of ' + order.length + ' in your filter';
+            if (keys) pos.appendChild(keys);
+            nav.setAttribute('aria-label', 'Your filtered gallery');
+          });
+        }
+      } catch (e) {}
+
+      // Clipboard API first; execCommand for non-secure origins (file://,
+      // plain-http previews) where navigator.clipboard is undefined.
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) { resolve(); } else { reject(); }
+        });
+      }
+      function wireCopy(btn, getText) {
+        btn.addEventListener('click', function () {
+          copyText(getText()).then(function () {
+            btn.textContent = 'Copied'; btn.classList.add('done'); announce('Copied to clipboard');
+          }, function () {
+            btn.textContent = 'Copy failed'; btn.classList.add('fail'); announce('Copy failed');
+          }).then(function () {
+            setTimeout(function () {
+              btn.textContent = 'Copy'; btn.classList.remove('done', 'fail');
+            }, 1600);
+          });
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+        var wrap = block;
+        if (block.tagName === 'PRE') {
+          wrap = document.createElement('div');
+          block.parentNode.insertBefore(wrap, block);
+          wrap.appendChild(block);
+        }
+        wrap.classList.add('codewrap');
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'copy-btn'; btn.textContent = 'Copy';
+        var src = block.tagName === 'PRE' ? block : block.querySelector('.code-lines');
+        btn.setAttribute('aria-label', 'Copy code');
+        wireCopy(btn, function () { return src.textContent; });
+        wrap.appendChild(btn);
+      });
+
+      // Long listings start collapsed; with JS off they render in full.
+      var code = document.querySelector('.src .code');
+      if (code) {
+        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
+        if (lines > 120) {
+          code.classList.add('collapsed');
+          var more = document.createElement('button');
+          more.type = 'button'; more.className = 'src-expand';
+          more.setAttribute('aria-expanded', 'false');
+          more.textContent = 'Show all ' + lines + ' lines';
+          code.parentNode.insertBefore(more, code.nextSibling);
+          more.addEventListener('click', function () {
+            var open = code.classList.toggle('collapsed') === false;
+            more.setAttribute('aria-expanded', open ? 'true' : 'false');
+            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
+            if (!open) code.scrollIntoView({ block: 'start' });
+          });
+        }
+      }
+
+      // Left/right arrows page between entries, but only when nothing has
+      // focus and nothing is selected: a focused control, a scrolled code
+      // block, or a text selection keeps its own arrow keys.
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        if (box && box.open) return;
+        var ae = document.activeElement;
+        if (ae && ae !== document.body && ae !== document.documentElement) return;
+        var sel = window.getSelection && window.getSelection();
+        if (sel && !sel.isCollapsed) return;
+        var rel = e.key === 'ArrowLeft' ? 'prev' : e.key === 'ArrowRight' ? 'next' : '';
+        if (!rel) return;
+        var a = document.querySelector('.pager a[rel="' + rel + '"]');
+        if (a) { location.href = a.href; }
+      });
+    })();
+
+  </script>
+</body>
+</html>

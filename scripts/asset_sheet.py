@@ -133,6 +133,7 @@ SELECT = {
     "depsgraph-export": (r"^Gamepad\.", None),
     "mine-cart": (r"^MineCartLow$", None),
     "garden-gate": (r"^GateLow$", None),
+    "ships-wheel": (r"^WheelLow$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)

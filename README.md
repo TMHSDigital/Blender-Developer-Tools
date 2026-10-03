@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>64 examples</strong> &nbsp;&bull;&nbsp; <strong>74 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>64 examples</strong> &nbsp;&bull;&nbsp; <strong>75 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 74 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 75 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>74 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>75 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate stencilled PORT ROYAL and NO 17, with iron corner brackets and an end handle, on a dark studio floor, warm wedge on the back wall" /></a>
@@ -183,6 +183,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/sundial/"><img src="showcase/sundial/preview.webp" width="24%" alt="Sundial: a garden sundial with a stepped stone plinth, a tapered octagonal granite column and cap, and a bronze dial plate with hour lines, a Roman-numeral chapter ring and a triangular gnomon, on a dark studio floor" /></a>
   <a href="showcase/mine-cart/"><img src="showcase/mine-cart/preview.webp" width="24%" alt="Mine cart: a rust-streaked riveted red steel tub on oak sills, four flanged iron wheels resting on two polished rails spiked to sleepers in grey ballast, on a dark studio floor" /></a>
   <a href="showcase/garden-gate/"><img src="showcase/garden-gate/preview.webp" width="24%" alt="Garden gate: a bow-topped gate of weathered oak boards standing ajar on black strap hinges between square posts on sandstone flags, on a dark studio floor" /></a>
+  <a href="showcase/ships-wheel/"><img src="showcase/ships-wheel/preview.webp" width="24%" alt="Ship's wheel: a varnished teak eight-spoke wheel with turned handles, a brass nave and a brass rim inlay, on a panelled teak pedestal with a stepped plinth, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -320,6 +321,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`mine-cart`](showcase/mine-cart/) — procedural narrow-gauge mine cart on a rail segment, riveted tub on flanged wheels over 30 lb rails, sleepers and ballast, through the same pipeline; every tread seated on its railhead and every flange clear of it. Falsifiers `--skip-decimate` exits 9, `--stray-vert` exits 15, `--lift-z` exits 16, `--float-wheel` exits 18, `--skew-axle` exits 19, `--wide-gauge` exits 20.
 
 [`garden-gate`](showcase/garden-gate/) — procedural ledged-and-braced garden gate on hook-and-band hinges through the same pipeline; every knuckle measured coaxial on its pin, both pins on one plumb axis, and the swing circle clearing the latch post. Falsifiers `--skip-decimate` exits 9, `--offset-knuckle` exits 17, `--lift-gate` exits 18, `--tilt-pintle` exits 19, `--tight-post` exits 20.
+
+[`ships-wheel`](showcase/ships-wheel/) — procedural eight-spoke ship's wheel on its pedestal, turned teak spokes and handles on a brass nave, through the same pipeline; nave concentric with the rim, every spoke and handle seated in the rim, spokes 45° apart. Falsifiers `--skip-decimate` exits 9, `--stray-vert` exits 15, `--lift-z` exits 16, `--offset-hub` exits 17, `--short-spoke` exits 18, `--skew-spoke` exits 19.
 
 </details>
 

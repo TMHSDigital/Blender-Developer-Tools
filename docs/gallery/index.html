@@ -67,7 +67,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">56 examples, 74 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">56 examples, 75 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
       </div>
       <div class="filters" id="filters">
@@ -92,7 +92,7 @@
         <span class="cats-label" id="catsLabel">Showcase category</span>
         <div class="density" role="group" aria-labelledby="catsLabel">
           <button class="cat-btn" data-cat-filter="" type="button" aria-pressed="true">All</button>
-          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">39</span></button>
+          <button class="cat-btn" data-cat-filter="village" type="button" aria-pressed="false">Village <span aria-hidden="true">40</span></button>
           <button class="cat-btn" data-cat-filter="sports" type="button" aria-pressed="false">Sports <span aria-hidden="true">7</span></button>
           <button class="cat-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">11</span></button>
           <button class="cat-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">7</span></button>
@@ -1702,6 +1702,18 @@
           <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="village" data-name="ships-wheel" data-search="ship&#x27;s wheel ships-wheel a procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through uvs, bake, lod, collider, and unity gltf, asserting recomputed budgets rather than an api contract. mesh export showcase village">
+        <div class="card-media">
+          <img src="assets/ships-wheel-hero-640.webp" srcset="assets/ships-wheel-hero-640.webp 640w, assets/ships-wheel-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="A varnished teak ship&#x27;s wheel with eight turned spokes and handles, a brass nave and a brass inlay round its rim, standing on a panelled teak pedestal with a stepped plinth." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="ships-wheel/">Ship&#x27;s Wheel</a></h2>
+          <p class="slug">ships-wheel</p>
+          <p class="teaches">A procedural eight-spoke ship&#x27;s wheel on its pedestal — turned teak spokes and handles, a laminated rim with a brass inlay, a brass nave on an iron shaft in a bolted bearing collar, a column with moulded panels on a stepped plinth — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 9188 tris, three materials (teak 3086, brass 1596, iron 208 faces), UVs in 0..1 with zero overlap, a 1.000 × 0.602 × 1.500 m envelope, LOD1 0.5000 and LOD2 0.2192–0.2199, a 514-tri three-hull collider, a FINISHED normal bake and a 697 kB Unity glTF, hygiene all zero with no coplanar cross-shell faces, and the wheel exactly radial: the nave 0.0001 mm off the rim&#x27;s centre, the shaft 0.0004 mm off the nave&#x27;s axis with 0.599 mm bore clearance, every spoke seated 3.000 mm into the rim&#x27;s inner face and every handle 4.000 mm into its outer face, consecutive spokes 45° apart within 0.00013°, every handle within 0.00007° of its spoke&#x27;s axis, 1.000 m over the handles on a 0.720 m rim at 1.000 m. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z exits 16 on grounded zmin; --offset-hub exits 17 with the nave 2.000 mm off centre; --short-spoke exits 18 with a tip 7.000 mm clear of the rim; --skew-spoke exits 19 with the spacing 2.0000° off.</p>
+          <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1760,7 +1772,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '56 examples, 74 showcase pieces';
+      var COUNT_LABEL = '56 examples, 75 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.
