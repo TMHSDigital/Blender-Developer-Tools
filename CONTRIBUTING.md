@@ -48,7 +48,7 @@ showcase/
 
 - **`skills/`** - one directory per skill, each containing `SKILL.md` with YAML frontmatter (`name`, `description`, `standards-version`).
 - **`rules/`** - Cursor-style rules as `.mdc` files with YAML frontmatter (`description`, `alwaysApply`, `globs`, `standards-version`).
-- **`snippets/`** - small standalone `.py` files (5 to 50 lines) demonstrating a single canonical pattern.
+- **`snippets/`** - small standalone `.py` files (5 to 75 lines) demonstrating a single canonical pattern.
 - **`templates/`** - copy-paste starting points; one directory per template.
 - **`showcase/`** - budget-conformance props, sibling of `examples/`. Not API
   contracts. Conventions: [`showcase/README.md`](showcase/README.md).
@@ -97,7 +97,7 @@ showcase/
 ## Adding a Snippet
 
 1. Add a `.py` file under `snippets/`, e.g. `snippets/depsgraph-evaluated-mesh.py`.
-2. Keep it 5 to 50 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
+2. Keep it 5 to 75 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
 3. Snippets are validated for Python syntax in CI.
 
 ## Adding a Template
@@ -307,7 +307,7 @@ The drift-check workflow enforces these on every push and PR.
 
 ## Aggregate Counts
 
-`README.md` declares aggregate counts (e.g. "16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 26 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
+`README.md` declares aggregate counts (e.g. "16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 76 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
 
 ## Pull Request Process
 

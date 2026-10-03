@@ -142,6 +142,17 @@ jobs:
               flags=re.M,
           )
           open(path, 'w').write(text)
+
+          # Claude Code manifests: same version, rewritten via JSON.
+          import json
+          for path in ('.claude-plugin/plugin.json', '.claude-plugin/marketplace.json'):
+              data = json.load(open(path, encoding='utf-8'))
+              if 'version' in data:
+                  data['version'] = os.environ['NEW_VERSION']
+              for entry in data.get('plugins', []):
+                  entry['version'] = os.environ['NEW_VERSION']
+              with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+                  fh.write(json.dumps(data, indent=2) + '\n')
           PYEOF
 
       - name: Commit version bump

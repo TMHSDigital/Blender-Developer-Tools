@@ -1,0 +1,20 @@
+{
+  "name": "blender-developer-tools",
+  "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
+  "version": "0.131.2",
+  "author": {
+    "name": "TMHSDigital",
+    "url": "https://github.com/TMHSDigital"
+  },
+  "homepage": "https://github.com/TMHSDigital/Blender-Developer-Tools",
+  "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
+  "license": "CC-BY-NC-ND-4.0",
+  "keywords": [
+    "claude-code",
+    "blender",
+    "bpy",
+    "blender-addon",
+    "blender-python",
+    "developer-tools"
+  ]
+}

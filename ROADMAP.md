@@ -266,7 +266,7 @@ that comparison is ever needed.
 ## Asset-quality survey worklist (measured 2026-07-24, `gallery_asset_quality` floors)
 
 Full-gallery floor survey after the gate landed (`feat/asset-quality-gate`).
-26 of 42 examples pass all floors. The 14 below-floor entries, with
+26 of the 42 examples that existed on 2026-07-24 passed all floors (historical; the gallery has grown since). The 14 below-floor entries, with
 measured numbers — every one is a **contract-vehicle or display subject**
 (testcard TV, VSE monitors, text bars, swatch/display rigs, single honest
 primitives), not a game asset meant for reuse, so none is a remodeling

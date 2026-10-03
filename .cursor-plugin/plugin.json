@@ -4,14 +4,17 @@
   "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
   "version": "0.131.2",
   "author": {
-    "name": "TMHSDigital",
-    "email": "contact@users.noreply.github.com"
+    "name": "TMHSDigital"
   },
   "license": "CC-BY-NC-ND-4.0",
   "keywords": [
     "cursor-plugin",
+    "claude-code",
     "developer-tools",
-    "blender"
+    "blender",
+    "bpy",
+    "blender-addon",
+    "blender-python"
   ],
   "skills": [
     "skills/addon-scaffolding/SKILL.md",

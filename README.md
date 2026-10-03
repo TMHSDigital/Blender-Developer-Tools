@@ -56,8 +56,15 @@ The content is consumed by AI coding agents reading these files directly from a 
 git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 ```
 
-- **Cursor** — point Cursor at the checkout (or symlink `rules/` into your project). The `.mdc` rules apply automatically by glob scope; skills are referenced by name in chat.
-- **Claude Code** — copy `skills/` and `rules/` into your project workspace, or keep this repo as a checkout that Claude Code references directly.
+- **Cursor** — open your project with this checkout available and copy (or symlink) `rules/*.mdc` into your project's `.cursor/rules/`. The rules apply automatically by glob scope; skills are referenced by name in chat.
+- **Claude Code** — install as a plugin, then run `/skills` to see all 16 skills:
+
+  ```text
+  /plugin marketplace add TMHSDigital/Blender-Developer-Tools
+  /plugin install blender-developer-tools@blender-developer-tools
+  ```
+
+  Claude Code does not read Cursor `.mdc` rules. For the rules, add one line to your project's `CLAUDE.md` that imports the generated summary from a checkout: `@/path/to/Blender-Developer-Tools/claude/blender-rules.md`. Without the plugin, copy `skills/*` into your project's `.claude/skills/` instead.
 - **Get Blender** — download **5.2 LTS** (primary target) or **4.5 LTS** (supported fallback) from [blender.org/download/lts](https://www.blender.org/download/lts/); current stable lives at [blender.org/download](https://www.blender.org/download/). The `blender` command below is that binary — on macOS it is inside the app bundle at `/Applications/Blender.app/Contents/MacOS/Blender`.
 - **Run an example** — every example is a self-checking headless script (exit non-zero on failure, no GPU needed for the check):
 
@@ -1451,7 +1458,7 @@ the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
 skills/<name>/SKILL.md   - 16 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 9 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
-snippets/<name>.py       - 27 standalone Python snippets, 5 to 50 lines each
+snippets/<name>.py       - 27 standalone Python snippets, 5 to 75 lines each
 ```
 
 ## Using rules in Cursor
@@ -1462,13 +1469,13 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
 - `target-extensions-platform-format`: flags add-ons missing `blender_manifest.toml`
 - `type-annotate-props-and-defend-context`: flags `bpy.props` assignment form and unguarded `context.active_object`
-- `prefer-temp-override-over-context-copy`: flags `bpy.context.copy()` passed to operators (deprecated 4.x, removed 5.x)
+- `prefer-temp-override-over-context-copy`: flags `bpy.context.copy()` passed to operators (deprecated 3.2, removed 4.0)
 - `use-foreach-set-for-bulk-data`: flags Python loops over `mesh.vertices` setting `co`, normals, or other per-element bulk data
 - `validate-imported-mesh-scale`: flags glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 - `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
 
-Symlink or clone this repo, then point Cursor at it as a skills/rules source.
+Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see Install) and import `claude/blender-rules.md` from your `CLAUDE.md`.
 
 ## Using the templates
 
