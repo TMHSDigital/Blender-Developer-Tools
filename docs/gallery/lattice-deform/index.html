@@ -45,7 +45,7 @@
     <p>A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 54 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness">solidify-even-thickness <span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out.">
       <img src="../assets/lattice-deform-hero.webp" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -1010,6 +1010,24 @@ TWIN_GAP = <span class="n">2.9</span>           <span class="c"># render only: t
       <div class="related-grid">
         <article class="card mini">
           <div class="card-media">
+            <img src="../assets/solidify-even-thickness-hero-640.webp" srcset="../assets/solidify-even-thickness-hero-640.webp 640w, ../assets/solidify-even-thickness-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../solidify-even-thickness/">Solidify Even Thickness</a></h3>
+            <p>Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
+            <img src="../assets/boolean-exact-volume-hero-640.webp" srcset="../assets/boolean-exact-volume-hero-640.webp 640w, ../assets/boolean-exact-volume-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." width="1280" height="720" loading="lazy" decoding="async" />
+          </div>
+          <div class="card-body">
+            <h3><a class="stretch" href="../boolean-exact-volume/">Boolean Exact Volume</a></h3>
+            <p>The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem.</p>
+          </div>
+        </article>
+        <article class="card mini">
+          <div class="card-media">
             <img src="../assets/lod-decimate-chain-hero-640.webp" srcset="../assets/lod-decimate-chain-hero-640.webp 640w, ../assets/lod-decimate-chain-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
@@ -1017,27 +1035,9 @@ TWIN_GAP = <span class="n">2.9</span>           <span class="c"># render only: t
             <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
           </div>
         </article>
-        <article class="card mini">
-          <div class="card-media">
-            <img src="../assets/car-mirror-symmetry-hero-640.webp" srcset="../assets/car-mirror-symmetry-hero-640.webp 640w, ../assets/car-mirror-symmetry-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." width="1280" height="720" loading="lazy" decoding="async" />
-          </div>
-          <div class="card-body">
-            <h3><a class="stretch" href="../car-mirror-symmetry/">Car Mirror Symmetry</a></h3>
-            <p>A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it.</p>
-          </div>
-        </article>
-        <article class="card mini">
-          <div class="card-media">
-            <img src="../assets/depsgraph-export-hero-640.webp" srcset="../assets/depsgraph-export-hero-640.webp 640w, ../assets/depsgraph-export-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="A game controller&#x27;s sparse control cage in orange wire and vertex beads beside the smooth subdivided cobalt controller with sticks and colored buttons, on a dark studio floor." width="1280" height="720" loading="lazy" decoding="async" />
-          </div>
-          <div class="card-body">
-            <h3><a class="stretch" href="../depsgraph-export/">Depsgraph Export</a></h3>
-            <p>The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
-          </div>
-        </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 54 examples</span><span></span></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 56 examples</span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness">solidify-even-thickness <span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>

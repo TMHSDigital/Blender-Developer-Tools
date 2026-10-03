@@ -67,7 +67,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">54 examples, 74 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">56 examples, 74 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
       </div>
       <div class="filters" id="filters">
@@ -787,6 +787,30 @@
           <p class="slug">lattice-deform</p>
           <p class="teaches">A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
           <p class="witnesses"><span class="tag">witnesses</span> Linear lattice deform is exact trilinear interpolation: all 602 evaluated verts land on the closed-form blend of the eight co_deform corners (max error 5.6e-7 through a translated, non-uniformly scaled lattice), the undeformed lattice is the identity, and --bspline (the default interpolation) misses by 0.2145 and exits 4.</p>
+          <span class="card-link" aria-hidden="true">View example &rarr;</span>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh modifiers depsgraph" data-kind="examples" data-name="solidify-even-thickness" data-search="solidify even thickness solidify-even-thickness solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds. mesh modifiers depsgraph ">
+        <div class="card-media">
+          <img src="assets/solidify-even-thickness-hero-640.webp" srcset="assets/solidify-even-thickness-hero-640.webp 640w, assets/solidify-even-thickness-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="solidify-even-thickness/">Solidify Even Thickness</a></h2>
+          <p class="slug">solidify-even-thickness</p>
+          <p class="teaches">Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Simple-mode Solidify (offset -1, t = 0.16) on a strip folded at 60, 90 and 120 degrees: the even shell is exactly t thick at every fold, its copies t/cos(phi/2) along the bisector; the plain shell is t*cos(phi/2) thick: 0.1386, 0.1131, 0.0800 (max error 3.7e-8). --no-even exits 4 at 0.0800 vs 0.1600.</p>
+          <span class="card-link" aria-hidden="true">View example &rarr;</span>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh modifiers depsgraph" data-kind="examples" data-name="boolean-exact-volume" data-search="boolean exact volume boolean-exact-volume the boolean modifier on the exact solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem. mesh modifiers depsgraph ">
+        <div class="card-media">
+          <img src="assets/boolean-exact-volume-hero-640.webp" srcset="assets/boolean-exact-volume-hero-640.webp 640w, assets/boolean-exact-volume-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="boolean-exact-volume/">Boolean Exact Volume</a></h2>
+          <p class="slug">boolean-exact-volume</p>
+          <p class="teaches">The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> EXACT booleans are closed-form even on coplanar faces: through translated, 18°-turned operands the union, difference and intersection measure 9, 7 and 1 m³ (8.999999 / 6.999999 / 1.000000, float32) and are closed 2-manifolds with no loose geometry; the floating-point solver (&#x27;FAST&#x27; on 4.5, &#x27;FLOAT&#x27; on 5.x) gives a 7.708 m³ union and --float-solver exits 3.</p>
           <span class="card-link" aria-hidden="true">View example &rarr;</span>
         </div>
       </article>
@@ -1736,7 +1760,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '54 examples, 74 showcase pieces';
+      var COUNT_LABEL = '56 examples, 74 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>62 examples</strong> &nbsp;&bull;&nbsp; <strong>74 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>64 examples</strong> &nbsp;&bull;&nbsp; <strong>74 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 62 examples, and 74 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 74 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -75,7 +75,7 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 
 ## Falsifiers
 
-Every one of the 62 examples carries a **falsifier**: a flag that changes the
+Every one of the 64 examples carries a **falsifier**: a flag that changes the
 input so a real assertion fails. It never disables the assertion, skips the
 check, or short-circuits to an error — it feeds the script something the
 contract says must not pass, and the same check that guards the happy path
@@ -458,7 +458,7 @@ Gallery still is a sky-lit obelisk diptych (8° dusk | 55° midday) so the contr
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 15 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 17 examples</summary>
 
 <table>
 <tr>
@@ -685,6 +685,36 @@ A 2×2×2 Lattice modifier set to `'KEY_LINEAR'`, with two corners moved through
 `LatticePoint.co_deform`. Witnesses that every evaluated vert lands on the trilinear
 blend of the eight deformed corners, and that the default `'KEY_BSPLINE'` misses it
 (`--bspline` exits 4).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/solidify-even-thickness/"><img src="examples/solidify-even-thickness/preview.webp" alt="Solidify even thickness: two folded zigzag shells on a walnut plinth, their cut ends in orange, the left band pinching thin at every fold and the right staying one width, above brass plaques reading use_even_offset = False and use_even_offset = True" /></a>
+</td>
+<td valign="middle">
+
+### [solidify-even-thickness](examples/solidify-even-thickness/)
+
+Solidify on a strip folded at 60°, 90° and 120°. Without `use_even_offset`, each fold vertex
+moves *t* along the bisector and the wall thins to *t*·cos(φ/2), half at 120°. With it, the
+vertex moves *t*/cos(φ/2) and the wall stays exactly *t*. Both closed forms are measured off
+the evaluated mesh to 1e-5 (`--no-even` exits 4).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/boolean-exact-volume/"><img src="examples/boolean-exact-volume/preview.webp" alt="Boolean exact volume: three results on a walnut plinth, each inside thin steel and glowing orange outlines of its two operands - a teal union with a slab grown out of a cube, a brass cube with a notch cut down through its top, and the orange one-metre overlap cube, on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [boolean-exact-volume](examples/boolean-exact-volume/)
+
+The Boolean modifier on `solver='EXACT'`, cutting a cube with a slab whose top face is
+coplanar with the cube's. Union, difference and intersection measure their closed-form
+9, 7 and 1 m³ by the divergence theorem and are closed 2-manifolds. The floating-point
+solver, renamed `'FAST'` → `'FLOAT'` in 5.0, gets the union wrong (`--float-solver` exits 3).
 
 </td>
 </tr>
