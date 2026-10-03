@@ -129,12 +129,18 @@ RIB_XS = (-0.40, 0.0, 0.40)
 RIB_YS = (-0.20, 0.20)
 RIB_HW = 0.0225
 RIVET_R = 0.008
+# The load: heaped ore, its edge 50 mm below the rim, crowning above it.
+ORE_RIM_Z = TUB_Z1 - 0.050
+ORE_BASE_Z = TUB_Z1 - 0.130
+ORE_PEAK = 0.150
+ORE_LUMP = 0.016
+ORE_RINGS, ORE_RINGS_HI = 6, 9
 
 # --- budgets -------------------------------------------------------------------
 BBOX_TOL = 0.020
-OUTER_SIZE = (2.400, 1.500, 1.048)
-BASE_TRIS_MIN = 11500
-BASE_TRIS_MAX = 13200
+OUTER_SIZE = (2.400, 1.500, 1.152)
+BASE_TRIS_MIN = 12600
+BASE_TRIS_MAX = 14200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -142,7 +148,7 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 4
-FACE_FLOORS = {0: 700, 1: 4400, 2: 180, 3: 550}
+FACE_FLOORS = {0: 700, 1: 4400, 2: 180, 3: 1150}
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 1700
@@ -174,10 +180,11 @@ BALLAST_IDX = 3
 # Face tags (the "Part" face attribute). Every id is >= 1; 0 means untagged.
 P_BED, P_SLEEPER, P_PLATE, P_SPIKE = 1, 2, 3, 4
 P_TUB, P_RIVET, P_HANDLE, P_FRAME, P_COUPLING = 5, 6, 7, 8, 9
+P_ORE = 14
 P_WHEEL0 = 10                      # 10..13: axle * 2 + side (0 = -y, 1 = +y)
 P_RAIL0 = 20                       # 20 = -y rail, 21 = +y rail
 P_AXLE0 = 30                       # 30, 31
-SMOOTH_PARTS = {P_RIVET, P_HANDLE, P_COUPLING, 10, 11, 12, 13, 30, 31}
+SMOOTH_PARTS = {P_RIVET, P_HANDLE, P_COUPLING, P_ORE, 10, 11, 12, 13, 30, 31}
 
 Z = Vector((0.0, 0.0, 1.0))
 
@@ -224,6 +231,11 @@ class Builder:
         self.part = self.bm.faces.layers.int.new("Part")
         self.wood = self.bm.faces.layers.float.new("WoodTone")
         self.grime = self.bm.faces.layers.float.new("Grime")
+        self.ore = self.bm.faces.layers.float.new("Ore")
+        # Grain space for timber: (across, across, along) in metres, each
+        # member offset so its pith sits off the piece and no two match.
+        self.grain = self.bm.verts.layers.float_vector.new("GrainCo")
+        self.members = 0
 
     def tag(self, part, wood=0.0):
         for f in self.bm.faces:
@@ -266,11 +278,16 @@ class Builder:
             bmesh.ops.bevel(bm, geom=pick, offset=offset, segments=1, profile=0.5,
                             affect="EDGES", clamp_overlap=True, material=mat)
 
-    def box(self, c, half, mat, axes=None, cham=0.0):
-        """Oriented box: centre ``c``, half extents along ``axes`` (default XYZ)."""
+    def box(self, c, half, mat, axes=None, cham=0.0, grain=False):
+        """Oriented box: centre ``c``, half extents along ``axes`` (default XYZ).
+
+        ``grain`` stamps ``GrainCo`` on the box's verts (chamfer verts too):
+        the longest axis is the grain direction, the other two are across it.
+        """
         ex, ey, ez = axes or (Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1)))
         hx, hy, hz = half
         c = Vector(c)
+        before = len(self.bm.verts)
         bottom = [self.bm.verts.new(c + ex * sx * hx + ey * sy * hy - ez * hz)
                   for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
         top = [self.bm.verts.new(c + ex * sx * hx + ey * sy * hy + ez * hz)
@@ -280,7 +297,23 @@ class Builder:
         faces.append(self.cap(top, mat))
         if cham > 0.0:
             self.chamfer(faces, cham, mat)
+        if grain:
+            self.stamp_grain(c, (ex, ey, ez), half, before)
         return faces
+
+    def stamp_grain(self, c, axes, half, first_vert):
+        """Member-local grain coordinates on every vert added since ``first_vert``."""
+        order = sorted(range(3), key=lambda k: -half[k])
+        along, a1, a2 = (axes[k] for k in order)
+        k = self.members
+        self.members += 1
+        # The pith 0.12-0.30 m off the member: flat-sawn arches, not targets.
+        off = Vector((0.12 + 0.09 * (1 + jitter(k, 3)), 0.05 * jitter(k, 7), 1.7 * k))
+        self.bm.verts.ensure_lookup_table()
+        for i in range(first_vert, len(self.bm.verts)):
+            v = self.bm.verts[i]
+            d = v.co - c
+            v[self.grain] = Vector((d.dot(a1), d.dot(a2), d.dot(along))) + off
 
     def lathe(self, profile, centre, axis, u, v, seg, mat, phase=0.0, closed=True):
         """Revolve (radius, height) ``profile`` about ``axis`` through ``centre``.
@@ -398,7 +431,7 @@ def build_track(b):
     for xs in SLEEPER_XS:
         zc = (SLEEPER_Z[0] + SLEEPER_Z[1]) / 2
         b.box((xs, 0.0, zc), (SLEEPER_HX, SLEEPER_HY, (SLEEPER_Z[1] - SLEEPER_Z[0]) / 2),
-              TIMBER_IDX, cham=0.008)
+              TIMBER_IDX, cham=0.008, grain=True)
         b.tag(P_SLEEPER, wood=0.0)
     for side in (-1, 1):
         for xs in SLEEPER_XS:
@@ -476,11 +509,11 @@ def build_frame(b):
     for sy in (-1, 1):
         zc = (SILL_Z[0] + SILL_Z[1]) / 2
         b.box((0.0, sy * SILL_Y, zc), (SILL_HX, SILL_HW, (SILL_Z[1] - SILL_Z[0]) / 2),
-              TIMBER_IDX, cham=0.008)
+              TIMBER_IDX, cham=0.008, grain=True)
     for sx in (-1, 1):
         zc = (BEAM_Z[0] + BEAM_Z[1]) / 2
         b.box((sx * BEAM_X, 0.0, zc), (BEAM_HX, BEAM_HY, (BEAM_Z[1] - BEAM_Z[0]) / 2),
-              TIMBER_IDX, cham=0.010)
+              TIMBER_IDX, cham=0.010, grain=True)
     b.tag(P_FRAME, wood=1.0)
     for ax in AXLE_XS:
         for sy in (-1, 1):
@@ -629,6 +662,56 @@ def build_handles(b, hi):
     b.tag(P_HANDLE)
 
 
+def resample(path, step):
+    """A closed path with extra points so no segment is longer than ``step``."""
+    out = []
+    for i, p in enumerate(path):
+        q = path[(i + 1) % len(path)]
+        n = max(1, math.ceil((q - p).length / step))
+        out.extend(p.lerp(q, s / n) for s in range(n))
+    return out
+
+
+def build_ore(b, hi):
+    """A heaped load of ore: concentric rings inside the rim, rising to a
+    lumpy crown above it, closed underneath where the walls hide it. Its own
+    shell (the walls are never touched: a 6 mm gap to the inner skin)."""
+    gap = TUB_T + 0.006
+    rim_t = (ORE_RIM_Z - TUB_Z0) / (TUB_Z1 - TUB_Z0)
+    length = TUB_BOT[0] + (TUB_TOP[0] - TUB_BOT[0]) * rim_t - 2 * gap
+    width = TUB_BOT[1] + (TUB_TOP[1] - TUB_BOT[1]) * rim_t - 2 * gap
+    rc = TUB_BOT[2] + (TUB_TOP[2] - TUB_BOT[2]) * rim_t - gap
+    outline = resample(rrect(length, width, rc, 4), 0.035 if hi else 0.06)
+    nr = ORE_RINGS_HI if hi else ORE_RINGS
+    rings = []
+    for r in range(nr):
+        s = 1.0 - r / nr                       # 1 at the rim, toward 0 at the crown
+        crown = (1.0 - s * s)                  # a soft dome
+        ring = []
+        for i, p in enumerate(outline):
+            lump = 0.0 if r == 0 else ORE_LUMP * jitter(i * 7 + r, r * 13 + 5)
+            z = ORE_RIM_Z + ORE_PEAK * crown + lump
+            ring.append(b.bm.verts.new(Vector((p.x * s, p.y * s, z))))
+        rings.append(ring)
+    # The walls lean out, so lower down the skirt has to draw in with them.
+    base_t = (ORE_BASE_Z - TUB_Z0) / (TUB_Z1 - TUB_Z0)
+    kx = (TUB_BOT[0] + (TUB_TOP[0] - TUB_BOT[0]) * base_t - 2 * gap) / length
+    ky = (TUB_BOT[1] + (TUB_TOP[1] - TUB_BOT[1]) * base_t - 2 * gap) / width
+    skirt = [b.bm.verts.new(Vector((v.co.x * kx, v.co.y * ky, ORE_BASE_Z))) for v in rings[0]]
+    faces = b.quad_strip([skirt] + rings, BALLAST_IDX)
+    b.cap(skirt[::-1], BALLAST_IDX)
+    apex = b.bm.verts.new(Vector((0.0, 0.0, ORE_RIM_Z + ORE_PEAK + ORE_LUMP * 0.5)))
+    inner = rings[-1]
+    for i in range(len(inner)):
+        f = b.bm.faces.new((inner[i], inner[(i + 1) % len(inner)], apex))
+        f.material_index = BALLAST_IDX
+        faces.append(f)
+    for f in b.bm.faces:
+        if f[b.part] == 0:
+            f[b.ore] = 1.0
+    b.tag(P_ORE)
+
+
 def build_mine_cart_mesh(name, hi=False, stray_vert=False, float_wheel=False,
                          wide_gauge=False, skew_axle=False):
     b = Builder()
@@ -639,6 +722,7 @@ def build_mine_cart_mesh(name, hi=False, stray_vert=False, float_wheel=False,
         ribs, spath, snorm = build_tub(b, hi)
         build_rivets(b, ribs, spath, snorm, hi)
         build_handles(b, hi)
+        build_ore(b, hi)
         build_running_gear(b, hi, float_wheel, wide_gauge, skew_axle)
         bm = b.bm
         if stray_vert:
@@ -765,6 +849,10 @@ def steel_material(name):
     grime.attribute_name = "Grime"
     tone = _noise(nt, co, 7.0, 6.0)
     paint = _mix(nt, "MIX", (0.135, 0.030, 0.020), (0.205, 0.050, 0.030), tone)
+    # Sun-faded toward the top: the oxide red chalks and lightens.
+    fade = _range(nt, sep.outputs["Z"], TUB_Z0 + 0.10, TUB_Z1, 0.0, 0.55)
+    fade = _math(nt, "MULTIPLY", fade, _range(nt, _noise(nt, co, 2.5, 3.0), 0.3, 0.7, 0.4, 1.0))
+    paint = _mix(nt, "MIX", paint, (0.235, 0.098, 0.072), fade)
     streak = _range(nt, _noise(nt, co, 3.0, 5.0, stretch=(26.0, 26.0, 1.0)), 0.47, 0.64)
     foot = _range(nt, sep.outputs["Z"], TUB_Z0 + 0.26, TUB_Z0 + 0.02)
     rim = _range(nt, sep.outputs["Z"], TUB_Z1 - 0.07, TUB_Z1 - 0.005)
@@ -774,6 +862,12 @@ def steel_material(name):
     rust_col = _mix(nt, "MIX", (0.075, 0.032, 0.014), (0.20, 0.085, 0.030),
                     _noise(nt, co, 35.0, 5.0))
     base = _mix(nt, "MIX", paint, rust_col, rust_f)
+    # Chipped paint: small flakes down to dark bare steel, thickest where
+    # shovels and knocks land, at the rim and the foot.
+    flake_n = _noise(nt, co, 30.0, 10.0)
+    wear_zone = _math(nt, "ADD", 0.08, _math(nt, "MAXIMUM", foot, rim))
+    chip = _math(nt, "MULTIPLY", _range(nt, flake_n, 0.60, 0.64), _math(nt, "MINIMUM", wear_zone, 1.0))
+    base = _mix(nt, "MIX", base, (0.040, 0.034, 0.030), chip)
     dust = _mix(nt, "MIX", (0.050, 0.036, 0.026), (0.095, 0.060, 0.035),
                 _noise(nt, co, 22.0, 6.0))
     base = _mix(nt, "MIX", base, dust, _math(nt, "MULTIPLY", grime.outputs["Fac"], 0.9))
@@ -784,13 +878,20 @@ def steel_material(name):
     bump = nt.nodes.new("ShaderNodeBump")
     bump.inputs["Strength"].default_value = 0.35
     bump.inputs["Distance"].default_value = 0.002
-    nt.links.new(_math(nt, "MULTIPLY", wear, _noise(nt, co, 80.0, 4.0)), bump.inputs["Height"])
+    # Pitting where it has rusted, a step down at every chip, and a few
+    # broad, shallow dents from tipping loads.
+    height = _math(nt, "MULTIPLY", wear, _noise(nt, co, 80.0, 4.0))
+    height = _math(nt, "SUBTRACT", height, _math(nt, "MULTIPLY", chip, 0.6))
+    height = _math(nt, "ADD", height, _math(nt, "MULTIPLY", _noise(nt, co, 3.2, 2.0), 1.4))
+    nt.links.new(height, bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
 
 def iron_material(name):
-    """Dark mill-scaled iron with rust bloom; railheads and treads polished."""
+    """Weathered iron: an even dull rust with fine mottling, darker toward
+    the ground; the railheads' running band and the wheels' treads and
+    flange tips worn bright where they run."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -798,49 +899,106 @@ def iron_material(name):
     co = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(co, sep.inputs["Vector"])
-    rust = _range(nt, _noise(nt, co, 5.0, 8.0), 0.50, 0.74)
-    rust = _math(nt, "MULTIPLY", rust, _range(nt, _noise(nt, co, 60.0, 3.0), 0.3, 0.7, 0.55, 1.0))
-    base = _mix(nt, "MIX", (0.042, 0.040, 0.039), (0.105, 0.055, 0.030), rust)
-    # The running band: the top of the railheads and the wheel treads on them.
-    dz = _math(nt, "ABSOLUTE", _math(nt, "SUBTRACT", sep.outputs["Z"], RAIL_TOP - 0.003), 0.0)
-    shine = _range(nt, dz, 0.0045, 0.0015)
-    base = _mix(nt, "MIX", base, (0.62, 0.62, 0.63), shine)
+    x, y, z = sep.outputs["X"], sep.outputs["Y"], sep.outputs["Z"]
+    # Rust everywhere, mottled at small scales and low contrast (large
+    # high-contrast patches read as camouflage), with a little mill scale
+    # showing through in specks.
+    mottle = _noise(nt, co, 45.0, 8.0)
+    fleck = _noise(nt, co, 140.0, 4.0)
+    rust = _mix(nt, "MIX", (0.058, 0.034, 0.021), (0.076, 0.043, 0.025), mottle)
+    rust = _mix(nt, "MIX", rust, (0.048, 0.030, 0.020), _range(nt, fleck, 0.45, 0.65))
+    scale_spot = _range(nt, _noise(nt, co, 70.0, 6.0), 0.64, 0.70)
+    base = _mix(nt, "MIX", rust, (0.040, 0.038, 0.037), _math(nt, "MULTIPLY", scale_spot, 0.6))
+    # Darker toward the foot, where damp and dirt sit against the sleepers.
+    low = _range(nt, z, SLEEPER_Z[1] + 0.06, SLEEPER_Z[1], 0.0, 0.45)
+    base = _mix(nt, "MULTIPLY", base, (0.55, 0.52, 0.50), low)
+
+    # The rails' running band: a continuous polished strip over the head.
+    dz = _math(nt, "ABSOLUTE", _math(nt, "SUBTRACT", z, RAIL_TOP - 0.002), 0.0)
+    rail_band = _range(nt, dz, 0.0042, 0.0022)
+    # The wheels' treads and flange tips: radius off the nearer axle,
+    # above the rail top (below it is flange face against the head).
+    dx = _math(nt, "SUBTRACT", _math(nt, "ABSOLUTE", x, 0.0), AXLE_XS[1])
+    rz = _math(nt, "SUBTRACT", z, WHEEL_CZ)
+    radius = _math(nt, "POWER", _math(nt, "ADD", _math(nt, "MULTIPLY", dx, dx),
+                                      _math(nt, "MULTIPLY", rz, rz)), 0.5)
+    rim = _range(nt, radius, WHEEL_R - 0.006, WHEEL_R - 0.002)
+    on_wheel = _range(nt, _math(nt, "ABSOLUTE", y, 0.0), GAUGE / 2 - 0.03, GAUGE / 2 - 0.02)
+    on_wheel = _math(nt, "MULTIPLY", on_wheel,
+                     _range(nt, _math(nt, "ABSOLUTE", y, 0.0), 0.372, 0.366))
+    above = _range(nt, z, RAIL_TOP + 0.002, RAIL_TOP + 0.010)
+    tread = _math(nt, "MULTIPLY", _math(nt, "MULTIPLY", rim, on_wheel), above)
+    shine = _math(nt, "MAXIMUM", rail_band, tread)
+    base = _mix(nt, "MIX", base, (0.56, 0.56, 0.57), shine)
     nt.links.new(base, bsdf.inputs["Base Color"])
-    metal = _math(nt, "MAXIMUM", _range(nt, rust, 0.0, 1.0, 0.75, 0.2, smooth=False), shine)
+    metal = _range(nt, shine, 0.0, 1.0, 0.25, 1.0, smooth=False)
     nt.links.new(metal, bsdf.inputs["Metallic"])
-    rough = _range(nt, _math(nt, "SUBTRACT", rust, shine), -1.0, 1.0, 0.18, 0.86, smooth=False)
+    rough = _range(nt, shine, 0.0, 1.0, 0.82, 0.22, smooth=False)
+    rough = _math(nt, "ADD", rough, _math(nt, "MULTIPLY", _math(nt, "SUBTRACT", fleck, 0.5), 0.08))
     nt.links.new(rough, bsdf.inputs["Roughness"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.25
+    bump.inputs["Distance"].default_value = 0.001
+    nt.links.new(_math(nt, "MULTIPLY", _math(nt, "SUBTRACT", 1.0, shine), fleck), bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
 
 def timber_material(name):
-    """Creosoted sleepers (tone 0) and weathered oak frame (tone 1), with grain."""
+    """Creosoted sleepers (tone 0) and weathered oak frame (tone 1).
+
+    Everything reads the ``GrainCo`` vertex attribute: member-local
+    (across, across, along) coordinates. Growth rings wrap the along axis
+    (so the long faces show flat-sawn arches and the ends show ring arcs),
+    fibre streaks are noise squeezed along it, and sparse drying checks run
+    with it; a slow noise shifts each member's tone.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
-    co = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
-    attr = nt.nodes.new("ShaderNodeAttribute")
-    attr.attribute_name = "WoodTone"
-    wave = nt.nodes.new("ShaderNodeTexWave")
-    wave.inputs["Scale"].default_value = 14.0
-    wave.inputs["Distortion"].default_value = 6.0
-    wave.inputs["Detail"].default_value = 4.0
-    m = nt.nodes.new("ShaderNodeMapping")
-    m.inputs["Scale"].default_value = (1.0, 1.0, 9.0)
-    nt.links.new(co, m.inputs["Vector"])
-    nt.links.new(m.outputs["Vector"], wave.inputs["Vector"])
-    grain = _range(nt, wave.outputs["Fac"], 0.2, 0.9)
-    dark = _mix(nt, "MIX", (0.026, 0.019, 0.014), (0.048, 0.034, 0.023), grain)
-    oak = _mix(nt, "MIX", (0.060, 0.042, 0.028), (0.098, 0.072, 0.048), grain)
-    oak = _mix(nt, "MULTIPLY", oak, (0.72, 0.70, 0.68), _noise(nt, co, 6.0, 6.0))
-    base = _mix(nt, "MIX", dark, oak, attr.outputs["Fac"])
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "WoodTone"
+    gattr = nt.nodes.new("ShaderNodeAttribute")
+    gattr.attribute_name = "GrainCo"
+    g = gattr.outputs["Vector"]
+
+    rings = nt.nodes.new("ShaderNodeTexWave")
+    rings.wave_type = "RINGS"
+    rings.rings_direction = "Z"
+    rings.inputs["Scale"].default_value = 22.0
+    rings.inputs["Distortion"].default_value = 3.0
+    rings.inputs["Detail"].default_value = 3.0
+    rings.inputs["Detail Scale"].default_value = 1.2
+    nt.links.new(g, rings.inputs["Vector"])
+    late = _range(nt, rings.outputs["Fac"], 0.55, 0.95)
+
+    fibre = _range(nt, _noise(nt, g, 55.0, 6.0, stretch=(1.0, 1.0, 0.03)), 0.38, 0.62)
+    check_n = _noise(nt, g, 22.0, 2.0, stretch=(1.0, 1.0, 0.012))
+    crack = _range(nt, _math(nt, "ABSOLUTE", _math(nt, "SUBTRACT", check_n, 0.5), 0.0),
+                   0.010, 0.0)
+    crack = _math(nt, "MULTIPLY", crack, _range(nt, _noise(nt, g, 3.0, 2.0), 0.52, 0.62))
+    member = _noise(nt, g, 0.35, 1.0)
+
+    creo = _mix(nt, "MIX", (0.046, 0.032, 0.022), (0.017, 0.012, 0.009), late)
+    oak = _mix(nt, "MIX", (0.098, 0.072, 0.050), (0.052, 0.037, 0.025), late)
+    oak = _mix(nt, "MULTIPLY", oak, (0.78, 0.80, 0.84), _range(nt, member, 0.35, 0.65))
+    base = _mix(nt, "MIX", creo, oak, tone.outputs["Fac"])
+    base = _mix(nt, "MULTIPLY", base, (0.86, 0.85, 0.84), fibre)
+    base = _mix(nt, "MIX", base, (0.008, 0.006, 0.005), _math(nt, "MULTIPLY", crack, 0.85))
     nt.links.new(base, bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.82
+
+    # Tar sheen on the creosote; dry, open-grained oak.
+    rough = _range(nt, tone.outputs["Fac"], 0.0, 1.0, 0.58, 0.80, smooth=False)
+    rough = _math(nt, "ADD", rough, _math(nt, "MULTIPLY", fibre, 0.10))
+    nt.links.new(rough, bsdf.inputs["Roughness"])
+    height = _math(nt, "ADD", _math(nt, "MULTIPLY", late, 0.35),
+                   _math(nt, "MULTIPLY", fibre, 0.30))
+    height = _math(nt, "SUBTRACT", height, crack)
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.3
-    bump.inputs["Distance"].default_value = 0.002
-    nt.links.new(wave.outputs["Fac"], bump.inputs["Height"])
+    bump.inputs["Strength"].default_value = 0.35
+    bump.inputs["Distance"].default_value = 0.003
+    nt.links.new(height, bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
@@ -884,13 +1042,43 @@ def ballast_material(name):
     base = _mix(nt, "MULTIPLY", base, (0.15, 0.15, 0.15), _range(nt, voids, 0.18, 0.0))
     rust_dust = _range(nt, _noise(nt, co, 3.0, 4.0), 0.55, 0.75, 0.0, 0.35)
     base = _mix(nt, "MIX", base, (0.11, 0.065, 0.035), rust_dust)
+    # The load (``Ore`` face attribute): the same chips, but dark iron ore
+    # with hematite-red lumps and the odd glinting crystal face.
+    ore = nt.nodes.new("ShaderNodeAttribute")
+    ore.attribute_name = "Ore"
+    ore_f = ore.outputs["Fac"]
+    ore_ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ore_ramp.color_ramp.elements[0].color = (0.022, 0.020, 0.019, 1.0)
+    ore_ramp.color_ramp.elements[1].position = 0.75
+    ore_ramp.color_ramp.elements[1].color = (0.060, 0.050, 0.045, 1.0)
+    red = ore_ramp.color_ramp.elements.new(0.9)
+    red.color = (0.150, 0.048, 0.026, 1.0)
+    lump = nt.nodes.new("ShaderNodeTexVoronoi")
+    lump.inputs["Scale"].default_value = 13.0
+    lump.inputs["Randomness"].default_value = 1.0
+    nt.links.new(co, lump.inputs["Vector"])
+    lump_e = nt.nodes.new("ShaderNodeTexVoronoi")
+    lump_e.feature = "DISTANCE_TO_EDGE"
+    lump_e.inputs["Scale"].default_value = 13.0
+    lump_e.inputs["Randomness"].default_value = 1.0
+    nt.links.new(co, lump_e.inputs["Vector"])
+    lump_h = _range(nt, lump_e.outputs["Distance"], 0.0, 0.22)
+    nt.links.new(lump.outputs["Color"], ore_ramp.inputs["Fac"])
+    ore_col = _mix(nt, "MULTIPLY", ore_ramp.outputs["Color"], (0.15, 0.15, 0.15),
+                   _range(nt, lump_h, 0.20, 0.0))
+    ore_col = _mix(nt, "MULTIPLY", ore_col, (0.7, 0.7, 0.7), _range(nt, heights[1], 0.5, 0.0))
+    base = _mix(nt, "MIX", base, ore_col, ore_f)
     nt.links.new(base, bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.93
+    glint = _math(nt, "MULTIPLY", ore_f, _range(nt, _noise(nt, co, 160.0, 2.0), 0.70, 0.74))
+    nt.links.new(_math(nt, "MULTIPLY", glint, 0.9), bsdf.inputs["Metallic"])
+    nt.links.new(_range(nt, _math(nt, "MAXIMUM", glint, _math(nt, "MULTIPLY", ore_f, 0.25)),
+                        0.0, 1.0, 0.93, 0.35, smooth=False), bsdf.inputs["Roughness"])
     bump = nt.nodes.new("ShaderNodeBump")
     bump.inputs["Strength"].default_value = 0.9
     bump.inputs["Distance"].default_value = 0.02
-    nt.links.new(_math(nt, "ADD", heights[0], _math(nt, "MULTIPLY", heights[1], 0.5)),
-                 bump.inputs["Height"])
+    stone_h = _math(nt, "ADD", heights[0], _math(nt, "MULTIPLY", heights[1], 0.5))
+    ore_h = _math(nt, "ADD", _math(nt, "MULTIPLY", lump_h, 2.2), _math(nt, "MULTIPLY", heights[1], 0.4))
+    nt.links.new(_mix(nt, "MIX", stone_h, ore_h, ore_f), bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
@@ -1118,7 +1306,9 @@ def hull_collider(obj, name):
     groups = []
     # The ballast's hull is its shoulders: the jittered top only adds faces.
     groups.append([p for p in pts.get(P_BED, []) if p.z <= BED_Z + 1e-6])
-    for tag in (P_TUB, P_FRAME, 20, 21, 10, 11, 12, 13):
+    # The tub's hull takes the ore's crown with it: one hull for the load.
+    groups.append(pts.get(P_TUB, []) + pts.get(P_ORE, []))
+    for tag in (P_FRAME, 20, 21, 10, 11, 12, 13):
         if tag in pts:
             groups.append(pts[tag])
     sleeper_pts = pts.get(P_SLEEPER, [])

@@ -1,11 +1,11 @@
 # mine-cart
 
-![A narrow-gauge mine cart: a riveted red-oxide steel tub with a rolled lip on timber sills, four flanged iron wheels resting on two polished railheads, spiked to four sleepers in a bed of grey ballast](preview.webp)
+![A narrow-gauge mine cart: a riveted red-oxide steel tub heaped with dark ore, with a rolled lip, on timber sills, four flanged iron wheels resting on two polished railheads, spiked to four sleepers in a bed of grey ballast](preview.webp)
 
 A narrow-gauge mine cart on a rail segment: a riveted steel tub with a
 rolled lip, a base strap, ten stiffener ribs and an iron grab bar on each
-end, carried on two timber sills and two buffer beams with a coupling ring
-at each end; four flanged wheels on two axles running in four iron axle
+end, heaped with a load of iron ore, carried on two timber sills and two
+buffer beams with a coupling ring at each end; four flanged wheels on two axles running in four iron axle
 boxes; and the track it stands on, two 30 lb rails on tie plates, held by
 dog spikes to four sleepers bedded in ballast. **A showcase piece, not an
 example** — it witnesses no API contract. It asserts that generated
@@ -16,8 +16,8 @@ geometry meets declared asset budgets, recomputed from the finished mesh.
 | Shipped content | Used for |
 | --- | --- |
 | `skills/mesh-editing-and-bmesh` | lathed wheels and rivets, swept rail sections, rolled lip, base strap, grab bars and coupling rings, chamfered boxes, all in one `bmesh`, chamfered with `bmesh.ops.bevel` |
-| `skills/custom-properties` | face attributes read back by the audits (`Part`) and the shaders (`WoodTone`, `Grime`) |
-| `skills/procedural-materials-and-shaders` | red-oxide paint with run-off rust and a dusty inside; mill-scaled iron with the railheads and treads polished where they run; creosoted sleepers and weathered oak; two sizes of crushed-stone ballast |
+| `skills/custom-properties` | face attributes read back by the audits (`Part`) and the shaders (`WoodTone`, `Grime`, `Ore`); a per-vertex `GrainCo` vector that gives each timber member its own grain space |
+| `skills/procedural-materials-and-shaders` | red-oxide paint, sun-faded toward the rim, chipped to bare steel at the rim and foot, with run-off rust and shallow dents; mill-scaled iron with crisp rust scabs and the railheads and treads polished where they run; creosoted sleepers and weathered oak whose growth rings, fibre and drying checks follow each member's long axis; two sizes of crushed-stone ballast, and fist-sized ore lumps with hematite-red faces and the odd glint |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, the 48-segment wheels onto the 24-segment low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -59,17 +59,17 @@ mesh.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 11500–13200 | 12334 / 12334 / 12334 |
-| LOD1 ratio | 0.32–0.62 | 0.4999 / 0.4999 / 0.4999 |
-| LOD2 ratio | 0.10–0.35 | 0.2199 / 0.2199 / 0.2118 |
+| Base triangles | 12600–14200 | 13396 / 13396 / 13396 |
+| LOD1 ratio | 0.32–0.62 | 0.5000 / 0.5000 / 0.5000 |
+| LOD2 ratio | 0.10–0.35 | 0.2199 / 0.2199 / 0.2125 |
 | Material slots | exactly 4, distinct | 4 / 4 / 4 |
-| Steel / iron / timber / ballast faces | ≥ 700 / 4400 / 180 / 550 | 816 / 5104 / 208 / 622 on all three |
+| Steel / iron / timber / ballast faces | ≥ 700 / 4400 / 180 / 1150 | 816 / 5104 / 208 / 1228 on all three |
 | UV bounds | inside 0..1 | (0.0005, 0.0005)–(0.9995, 0.9995) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 2.400 × 1.500 × 1.048 m ± 0.020 | 2.4000 × 1.5000 × 1.0481 on all three |
-| Collider triangles | ≤ 1700 | 1532 (13 hulls) on all three |
+| Outer AABB | 2.400 × 1.500 × 1.152 m ± 0.020 | 2.4000 × 1.5000 × 1.1516 on all three |
+| Collider triangles | ≤ 1700 | 1570 (13 hulls) on all three |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | 990544 bytes on all three |
+| glTF export | file written, non-empty | 1073556 bytes on all three |
 
 ### Hygiene
 
@@ -104,7 +104,8 @@ mesh.
 
 Real-world size: a 600 mm (24 in) gauge tub on 30 lb rail, the common
 narrow-gauge mining track. The tub is 1.30 × 0.85 m at the lip and its top
-stands 1.05 m above the ground, 0.84 m above the rail, inside the range
+stands 1.05 m above the ground, 0.84 m above the rail (the heaped ore
+crowns at 1.15 m), inside the range
 IS 8066 gives for 600 mm gauge mine cars; 0.36 m wheels on a 0.60 m
 wheelbase.
 
@@ -132,9 +133,21 @@ wheelbase.
   to the outside; the base strap a chamfered band round the foot of the
   walls. Ten ribs follow the leaning walls, 3 mm into them, four rivets
   each; more rivets run along the strap. Each end carries a round grab bar.
+- **Load.** A heap of ore: six concentric rings inside the rim, its edge
+  50 mm below the lip and 6 mm clear of the inner skin, rising to a
+  lumpy crown 0.15 m above that (each ring jittered ±16 mm by the fixed
+  hash), closed underneath by a skirt that draws in with the leaning walls
+  so it never touches them. Its own shell, in the ballast slot, marked by
+  the `Ore` face attribute.
+- **Surfaces.** Every timber member stamps `GrainCo`, its own (across,
+  across, along) coordinates with the pith set 0.12–0.30 m off the piece,
+  so growth rings show as flat-sawn arches on the long faces and as arcs
+  on the ends, and fibre and drying checks run with the member, never
+  across it. The first pass read the grain in object space, squeezed along
+  Z: horizontal members showed it as a woven crosshatch.
 - **Collider.** A hull per wheel, rail and sleeper, the ballast's
-  shoulders (its jittered top only adds faces), the tub with its lip and
-  ribs, and the frame. Plates, spikes, rivets and rings are left out:
+  shoulders (its jittered top only adds faces), the tub with its lip, ribs
+  and the ore's crown, and the frame. Plates, spikes, rivets and rings are left out:
   millimetres of relief on surfaces a hull already covers.
 
 ## Findings the budgets forced
@@ -160,10 +173,10 @@ wheelbase.
 | A member is tenoned into its seat | yes | rails into plates into sleepers into ballast, spikes into sleepers, boxes into sills, tub into sills, axles into hubs, ribs into walls |
 | Seat conformance (a band: minimum so it cannot float) | yes | every wheel's tread on its railhead (`--float-wheel`) |
 | Mirrored assemblies | yes | wheel sets measured pairwise: squareness and clearance per wheel |
-| Material face floors | yes | steel 700, iron 4400, timber 180, ballast 550 |
+| Material face floors | yes | steel 700, iron 4400, timber 180, ballast 1150 |
 | One substance, one slot | yes | painted steel, iron, timber, ballast |
 | Shading is part of the model | yes | wheels, axles, rivets, grab bars and rings smooth, every edge over 35° hard; boxes faceted |
-| Edge treatment | yes | sleepers, plates, spike heads, sills, beams, boxes, ribs chamfered; the right-angle edge fraction is 0.083 |
+| Edge treatment | yes | sleepers, plates, spike heads, sills, beams, boxes, ribs chamfered; the right-angle edge fraction is 0.077 |
 | Sort bmesh operator inputs | yes | the bevel's edge list is sorted by index |
 | The bake cage is narrower than the nearest neighbour | yes | `CAGE_EXTRUSION` 0.01 m |
 | Level on the stage; stage 60 m | yes | turned about Z only; 60 m floor and wall |
