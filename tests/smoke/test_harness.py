@@ -171,5 +171,56 @@ class CatalogWiring(unittest.TestCase):
         self.assertEqual(row["sidecar_contains"], "exit_pre-ok")
 
 
+class RunCatalog(unittest.TestCase):
+    """run_catalog runs every row and reports all failures; empty is red."""
+
+    def _run(self, rows, codes, extra=()):
+        import contextlib
+        import io
+        from unittest import mock
+
+        import run_catalog
+
+        seen = []
+
+        def fake_call(cmd):
+            name = cmd[cmd.index("--name") + 1]
+            seen.append(name)
+            return codes.get(name, 0)
+
+        with tempfile.TemporaryDirectory() as td:
+            cat = os.path.join(td, "catalog.json")
+            with open(cat, "w", encoding="utf-8") as fh:
+                json.dump(rows, fh)
+            err = io.StringIO()
+            with mock.patch.object(run_catalog.subprocess, "call", fake_call),                     contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                code = run_catalog.main(
+                    ["--blender", "x", "--series", "5.2", "--out", td, "--catalog", cat, *extra]
+                )
+        return code, seen, err.getvalue()
+
+    def test_two_broken_examples_are_both_reported(self):
+        rows = [{"name": n, "script": f"{n}.py"} for n in ("a", "b", "c", "d")]
+        code, seen, err = self._run(rows, {"b": 1, "d": 3})
+        self.assertEqual(code, 1)
+        self.assertEqual(seen, ["a", "b", "c", "d"])
+        self.assertIn("b (exit 1)", err)
+        self.assertIn("d (exit 3)", err)
+
+    def test_fail_fast_is_opt_in(self):
+        rows = [{"name": n, "script": f"{n}.py"} for n in ("a", "b", "c")]
+        code, seen, _ = self._run(rows, {"a": 1}, extra=("--fail-fast",))
+        self.assertEqual((code, seen), (1, ["a"]))
+
+    def test_all_pass_is_green(self):
+        rows = [{"name": "a", "script": "a.py"}]
+        self.assertEqual(self._run(rows, {})[0], 0)
+
+    def test_empty_catalog_is_red(self):
+        code, seen, err = self._run([], {})
+        self.assertEqual((code, seen), (1, []))
+        self.assertIn("catalog is empty", err)
+
+
 if __name__ == "__main__":
     unittest.main()

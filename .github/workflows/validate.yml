@@ -36,82 +36,10 @@ jobs:
           fi
           echo "VERSION valid: $version"
 
-      - name: Validate skill frontmatter
+      - name: Validate skill and rule frontmatter (parsed YAML, first block only)
         run: |
-          echo "Checking skill YAML frontmatter..."
-          errors=0
-          for skill in skills/*/SKILL.md; do
-            if [ ! -f "$skill" ]; then continue; fi
-            if ! head -1 "$skill" | grep -q "^---$"; then
-              echo "ERROR: $skill missing YAML frontmatter opening ---"
-              errors=$((errors + 1))
-              continue
-            fi
-            frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill" | sed '1d;$d')
-            if ! echo "$frontmatter" | grep -q "^name:"; then
-              echo "ERROR: $skill missing 'name' in frontmatter"
-              errors=$((errors + 1))
-            fi
-            if ! echo "$frontmatter" | grep -q "^description:"; then
-              echo "ERROR: $skill missing 'description' in frontmatter"
-              errors=$((errors + 1))
-            fi
-            if ! echo "$frontmatter" | grep -q "^standards-version:"; then
-              echo "ERROR: $skill missing 'standards-version' in frontmatter"
-              errors=$((errors + 1))
-            fi
-          done
-          if [ "$errors" -gt 0 ]; then
-            echo "$errors frontmatter error(s) found."
-            exit 1
-          fi
-          echo "All skill frontmatter valid."
-
-      - name: Check skill name matches directory
-        run: |
-          echo "Checking skill names match directory names..."
-          errors=0
-          for skill in skills/*/SKILL.md; do
-            if [ ! -f "$skill" ]; then continue; fi
-            dir_name=$(echo "$skill" | sed 's|skills/\(.*\)/SKILL.md|\1|')
-            fm_name=$(sed -n '/^---$/,/^---$/p' "$skill" | sed '1d;$d' | grep "^name:" | sed 's/^name: *//')
-            if [ "$dir_name" != "$fm_name" ]; then
-              echo "ERROR: $skill has name '$fm_name' but directory is '$dir_name'"
-              errors=$((errors + 1))
-            fi
-          done
-          if [ "$errors" -gt 0 ]; then
-            echo "$errors name mismatch(es) found."
-            exit 1
-          fi
-          echo "All skill names match their directories."
-
-      - name: Validate rule frontmatter
-        run: |
-          echo "Checking rule YAML frontmatter..."
-          errors=0
-          for rule in rules/*.mdc; do
-            if [ ! -f "$rule" ]; then continue; fi
-            if ! head -1 "$rule" | grep -q "^---$"; then
-              echo "ERROR: $rule missing YAML frontmatter opening ---"
-              errors=$((errors + 1))
-              continue
-            fi
-            frontmatter=$(sed -n '/^---$/,/^---$/p' "$rule" | sed '1d;$d')
-            if ! echo "$frontmatter" | grep -q "^description:"; then
-              echo "ERROR: $rule missing 'description' in frontmatter"
-              errors=$((errors + 1))
-            fi
-            if ! echo "$frontmatter" | grep -q "^standards-version:"; then
-              echo "ERROR: $rule missing 'standards-version' in frontmatter"
-              errors=$((errors + 1))
-            fi
-          done
-          if [ "$errors" -gt 0 ]; then
-            echo "$errors frontmatter error(s) found."
-            exit 1
-          fi
-          echo "All rule frontmatter valid."
+          pip install PyYAML==6.0.2
+          python3 tests/check_frontmatter.py
 
       - name: Validate snippet Python syntax
         run: |
@@ -132,6 +60,9 @@ jobs:
 
       - name: Check import-scale and unevaluated-export anti-patterns
         run: python3 tests/check_import_export_rules.py
+
+      - name: Check the smoke catalog covers every example and showcase piece
+        run: python3 tests/check_smoke_catalog.py
 
       - name: Check product exit codes are in README tables
         run: python3 tests/check_exit_code_readme.py

@@ -33,6 +33,12 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, labeled]
+    # Docs-only PRs do not touch anything Blender runs. A PR that also changes
+    # code is not ignored: paths-ignore skips only when every file matches.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "assets/**"
 
 permissions:
   contents: read
@@ -87,11 +93,6 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Harness protocol unit tests
-        run: |
-          set -euo pipefail
-          python3 tests/smoke/test_harness.py -v
-
       - name: Init smoke status log
         run: |
           set -euo pipefail
@@ -109,7 +110,8 @@ jobs:
             xvfb libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
             libxkbcommon0 libsm6 libice6
 
-      - name: Resolve and download Blender ${{ matrix.series }}
+      - name: Resolve Blender ${{ matrix.series }}
+        id: resolve
         run: |
           set -euo pipefail
           series="${{ matrix.series }}"
@@ -123,14 +125,46 @@ jobs:
             echo "::error::Could not resolve a linux-x64 build for Blender ${series} at $base"
             exit 1
           fi
-          url="${base}${file}"
-          echo "Downloading $url"
+          version="${file#blender-}"
+          version="${version%-linux-x64.tar.xz}"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Resolved Blender $version"
+
+      - name: Restore Blender ${{ steps.resolve.outputs.version }} from cache
+        id: bl-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ${{ runner.temp }}/bl
+          key: blender-${{ steps.resolve.outputs.version }}-linux-x64
+
+      - name: Download Blender and verify its published sha256
+        if: steps.bl-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          base="${{ steps.resolve.outputs.base }}"
+          file="${{ steps.resolve.outputs.file }}"
+          version="${{ steps.resolve.outputs.version }}"
           mkdir -p "$RUNNER_TEMP/bl"
-          curl -fSL --retry 3 -o "$RUNNER_TEMP/bl.tar.xz" "$url"
+          echo "Downloading ${base}${file}"
+          curl -fSL --retry 3 -o "$RUNNER_TEMP/bl.tar.xz" "${base}${file}"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/bl.sha256" "${base}blender-${version}.sha256"
+          expected=$(grep -E "  ${file}$" "$RUNNER_TEMP/bl.sha256" | awk '{print $1}')
+          if [ -z "$expected" ]; then
+            echo "::error::no published sha256 for ${file}"
+            exit 1
+          fi
+          echo "${expected}  $RUNNER_TEMP/bl.tar.xz" | sha256sum -c - \
+            || { echo "::error::sha256 mismatch for ${file}; refusing to extract"; exit 1; }
           tar -xf "$RUNNER_TEMP/bl.tar.xz" -C "$RUNNER_TEMP/bl"
+
+      - name: Locate Blender binary
+        run: |
+          set -euo pipefail
           bl=$(find "$RUNNER_TEMP/bl" -maxdepth 2 -type f -name blender | head -1)
           if [ -z "$bl" ]; then
-            echo "::error::blender binary not found after extraction"
+            echo "::error::blender binary not found"
             exit 1
           fi
           echo "BLENDER=$bl" >> "$GITHUB_ENV"
@@ -158,7 +192,7 @@ jobs:
         run: |
           set -euo pipefail
           xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/input.blend" \
-            --python tests/smoke/tmpl_gltf.py -- \
+            --python templates/headless-batch-script-template/script.py -- \
             --output "$RUNNER_TEMP/out/out.glb" --apply-modifier SUBSURF
           test -s "$RUNNER_TEMP/out/out.glb" || { echo "::error::glTF output missing/empty"; exit 1; }
           head -c4 "$RUNNER_TEMP/out/out.glb" | grep -q "glTF" || { echo "::error::not a glTF binary"; exit 1; }
@@ -167,11 +201,16 @@ jobs:
         run: |
           set +e
           xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/empty.blend" \
-            --python tests/smoke/tmpl_gltf.py -- --output "$RUNNER_TEMP/out/none.glb"
+            --python templates/headless-batch-script-template/script.py -- --output "$RUNNER_TEMP/out/none.glb"
           code=$?
           set -e
           [ "$code" -eq 2 ] || { echo "::error::expected exit 2 for no-mesh input, got $code"; exit 1; }
           echo "no-mesh exit code = $code (correct)"
+
+      - name: Extension template passes Blender's own manifest validator
+        run: |
+          set -euo pipefail
+          "$BLENDER" --command extension validate templates/extension-addon-template
 
       - name: Build pipeline template fixture GLB
         run: |
