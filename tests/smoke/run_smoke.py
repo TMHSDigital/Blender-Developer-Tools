@@ -6,6 +6,7 @@ Executes the snippets' / skills' headline examples and asserts CONTENT, not just
 "no exception". Exits non-zero on the FIRST failed assertion, naming the example.
 Self-contained: example code is copied here, NOT imported from skills/ or snippets/,
 so the test catches drift in the shipped content rather than masking it.
+The shipped templates are NOT copied: blender-smoke.yml runs them in place.
 """
 import bpy, sys, os, tempfile
 

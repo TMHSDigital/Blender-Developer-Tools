@@ -79,6 +79,7 @@
   {"name": "lattice-deform", "script": "examples/lattice-deform/lattice_deform.py"},
   {"name": "solidify-even-thickness", "script": "examples/solidify-even-thickness/solidify_even_thickness.py"},
   {"name": "boolean-exact-volume", "script": "examples/boolean-exact-volume/boolean_exact_volume.py"},
+  {"name": "extension-template-lifecycle", "script": "tests/smoke/check_extension_template.py"},
   {"name": "shipping-crate", "script": "showcase/shipping-crate/shipping_crate.py"},
   {"name": "stone-well", "script": "showcase/stone-well/stone_well.py"},
   {"name": "wooden-barrel", "script": "showcase/wooden-barrel/wooden_barrel.py"},

@@ -1,6 +1,8 @@
 """Run every shipped example through run_example.classify via run_example.py.
 
-Stops on the first FAIL (same fail-fast as the previous per-step YAML).
+Runs every row and exits non-zero at the end listing all failures, so one PR
+shows every broken example in one CI round-trip. ``--fail-fast`` restores
+stop-at-first-failure. An empty catalog is a failure, not a pass.
 """
 from __future__ import annotations
 
@@ -21,14 +23,19 @@ def main(argv=None):
     p.add_argument("--status", default=os.environ.get("BDT_SMOKE_STATUS"))
     p.add_argument("--out", required=True, help="scratch dir for --output renders")
     p.add_argument("--xvfb", action="store_true")
+    p.add_argument("--fail-fast", action="store_true", help="stop at the first failure")
     args = p.parse_args(argv)
 
     with open(args.catalog, encoding="utf-8") as fh:
         catalog = json.load(fh)
+    if not catalog:
+        print("ERROR: catalog is empty; nothing would be smoke-tested", file=sys.stderr)
+        return 1
 
     os.makedirs(args.out, exist_ok=True)
     runner = os.path.join(HERE, "run_example.py")
     n = 0
+    failures = []
     for item in catalog:
         n += 1
         name = item["name"]
@@ -67,15 +74,25 @@ def main(argv=None):
         code = subprocess.call(cmd)
         print("::endgroup::", flush=True)
         if code != 0:
-            print(f"catalog abort at {name} (exit {code})", file=sys.stderr)
-            return code
+            print(f"catalog FAIL {name} (exit {code})", file=sys.stderr)
+            failures.append(f"{name} (exit {code})")
+            if args.fail_fast:
+                break
+            continue
         expect = item.get("expect_file")
         if expect:
             expect = expect.replace("$OUT", args.out)
             if not os.path.isfile(expect) or os.path.getsize(expect) == 0:
                 print(f"ERROR: expected output missing {expect}", file=sys.stderr)
-                return 1
-    print(f"catalog finished {n} entries", flush=True)
+                failures.append(f"{name} (missing {expect})")
+                if args.fail_fast:
+                    break
+    print(f"catalog finished {n} of {len(catalog)} entries", flush=True)
+    if failures:
+        print(f"{len(failures)} catalog failure(s):", file=sys.stderr)
+        for f in failures:
+            print(f"  - {f}", file=sys.stderr)
+        return 1
     return 0
 
 
