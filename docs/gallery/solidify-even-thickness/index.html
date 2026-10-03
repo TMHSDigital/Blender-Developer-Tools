@@ -16,10 +16,10 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/solidify-even-thickness-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." />
+  <meta property="og:image:alt" content="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/solidify-even-thickness-hero.webp" />
-  <meta name="twitter:image:alt" content="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." />
+  <meta name="twitter:image:alt" content="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:title" content="Solidify Even Thickness (solidify-even-thickness) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds." />
@@ -46,8 +46,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../lattice-deform/" aria-label="Previous example: lattice-deform"><span aria-hidden="true">&larr;</span> lattice-deform</a><span class="pager-pos hud">55 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../boolean-exact-volume/" aria-label="Next example: boolean-exact-volume">boolean-exact-volume <span aria-hidden="true">&rarr;</span></a></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True.">
-      <img src="../assets/solidify-even-thickness-hero.webp" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width.">
+      <img src="../assets/solidify-even-thickness-hero.webp" alt="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
     <div class="callout"><span class="tag">witnesses</span> Simple-mode Solidify (offset -1, t = 0.16) on a strip folded at 60, 90 and 120 degrees: the even shell is exactly t thick at every fold, its copies t/cos(phi/2) along the bisector; the plain shell is t*cos(phi/2) thick: 0.1386, 0.1131, 0.0800 (max error 3.7e-8). --no-even exits 4 at 0.0800 vs 0.1600.</div>
@@ -62,7 +62,7 @@
 <ul><li><strong>without</strong> <code>use_even_offset</code> the copy moves <em>t</em> along the bisector, and the shell&#x27;s perpendicular thickness at the fold is <strong>t · cos(φ/2)</strong>, which is t · sin(θ/2) for the interior angle θ = 180° − φ. With t = 0.16 that is 0.1386 at 60°, 0.1131 at 90° and 0.0800 at 120°: half the thickness you asked for;</li><li><strong>with</strong> <code>use_even_offset</code> the copy moves <strong>t / cos(φ/2)</strong> along the bisector, and the thickness is exactly <em>t</em> at every fold.</li></ul>
 <p>The check builds both closed forms from the profile itself, taking the face planes from the segment directions and never from Blender&#x27;s normals. It measures each shell&#x27;s perpendicular thickness at every fold and free edge and requires agreement to 1e-5 (measured: 3.7e-8). It also asserts the topology the measurement relies on: 2N evaluated vertices, the first N being the untouched original surface, and copy <em>i</em> at vertex N + <em>i</em>. Finally it checks that the thinning is real, so the witness cannot pass vacuously.</p>
 <p><strong>The trap it exposes:</strong> <code>use_even_offset</code> is off by default. A script that solidifies a bent panel, a folded bracket or a box with <code>thickness = t</code> gets a wall that is noticeably thinner at every corner, down to half at a 120° bend, and nothing errors. <code>--no-even</code> leaves the flag off on the shell that the check expects to be even, and check 4 fails with the measured thickness.</p>
-<p>The still shows both shells side by side on a walnut plinth, viewed end-on. The cut section, Solidify&#x27;s rim, is drawn in selection orange through <code>material_offset_rim</code>, so the band&#x27;s width is the shell&#x27;s thickness. On the left, with <code>use_even_offset = False</code>, the band pinches at every fold, and to half at the sharp V. On the right, with <code>use_even_offset = True</code>, it stays one width all the way round. Brass plaques name each setting, and brass dowels hold the raised folds off the plinth.</p>
+<p>The still shows both shells in teal glaze side by side on a walnut plinth, viewed nearly end-on. The cut section, Solidify&#x27;s rim, is drawn in selection-orange enamel through <code>material_offset_rim</code>, so the band&#x27;s width is the shell&#x27;s thickness. On the left, with <code>use_even_offset = False</code>, the band pinches at every fold, and to half at the sharp V. A red line on that cut face traces where a <em>t</em>-thick shell&#x27;s inner face would run: it is the even shell&#x27;s own evaluated copy positions, placed through the plain shell&#x27;s transform, so the gap between the orange band and the red line is the thickness lost at each fold, drawn at true size. On the right, with <code>use_even_offset = True</code>, the band stays one width all the way round. Engraved brass plaques name each setting, and brass dowels hold the raised folds off the plinth.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python solidify_even_thickness.py --
@@ -82,9 +82,9 @@ blender --background --python solidify_even_thickness.py -- --output solidify.pn
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/solidify-even-thickness/solidify_even_thickness.py</code>
-        <span>440 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/solidify-even-thickness/solidify_even_thickness.py">View on GitHub &rarr;</a></span>
+        <span>549 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/solidify-even-thickness/solidify_even_thickness.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="440">
+      <div class="code" data-lines="549">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -524,7 +524,116 @@ blender --background --python solidify_even_thickness.py -- --output solidify.pn
 437
 438
 439
-440</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Solidify Even Thickness keeps a folded shell&#x27;s thickness constant — a runnable example.
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Solidify Even Thickness keeps a folded shell&#x27;s thickness constant — a runnable example.
 
 Witnesses the Solidify modifier&#x27;s ``use_even_offset`` contract on an open,
 folded strip (a zigzag profile extruded along Y, folded at bend angles of
@@ -743,6 +852,87 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
     <span class="k">return</span> mat
 
 
+<span class="k">def</span> glaze(name, dark, light):
+    <span class="s">&quot;&quot;&quot;Glazed ceramic: colour pooling between two tones on low-frequency noise,
+    a clear coat, and a faint roughness ripple so highlights break up.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
+    b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.8</span>
+    b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+    tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">3.5</span>
+    tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (*dark, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.7</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (*light, <span class="n">1.0</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> walnut_mat(name):
+    <span class="s">&quot;&quot;&quot;Oiled walnut: banded grain from a distorted wave texture along X,
+    two-tone ramp, satin roughness (not a mirror).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.15</span>
+    b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    <span class="c"># Object-space coordinates turned 45 degrees about X, so the bands vary</span>
+    <span class="c"># across both the top and the front face while running along X (the</span>
+    <span class="c"># plinth&#x27;s length), the way long-grain stock looks.</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Rotation&quot;</span>].default_value = (math.radians(<span class="n">45.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    wave.wave_type = <span class="s">&#x27;BANDS&#x27;</span>
+    wave.bands_direction = <span class="s">&#x27;Y&#x27;</span>
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">7.0</span>
+    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">3.5</span>
+    wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    wave.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.045</span>, <span class="n">0.019</span>, <span class="n">0.009</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.15</span>, <span class="n">0.072</span>, <span class="n">0.034</span>, <span class="n">1.0</span>)
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.42</span>
+    mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.58</span>
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> bar_mesh(name, a, b, half_w, half_d, normal):
+    <span class="s">&quot;&quot;&quot;A slim box from point a to point b, half_w wide across the bar in the
+    plane, half_d thick along *normal*.&quot;&quot;&quot;</span>
+    axis = (b - a)
+    side = axis.cross(normal).normalized() * half_w
+    nrm = normal.normalized() * half_d
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        vs = [bm.verts.new(p + s * side + d * nrm)
+              <span class="k">for</span> p <span class="k">in</span> (a, b) <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> d <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+        <span class="k">for</span> f <span class="k">in</span> ((<span class="n">0</span>, <span class="n">1</span>, <span class="n">3</span>, <span class="n">2</span>), (<span class="n">4</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">5</span>), (<span class="n">0</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">1</span>), (<span class="n">2</span>, <span class="n">3</span>, <span class="n">7</span>, <span class="n">6</span>), (<span class="n">0</span>, <span class="n">2</span>, <span class="n">6</span>, <span class="n">4</span>), (<span class="n">1</span>, <span class="n">5</span>, <span class="n">7</span>, <span class="n">3</span>)):
+            bm.faces.new([vs[i] <span class="k">for</span> i <span class="k">in</span> f])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
 <span class="k">def</span> box_mesh(name, lo, hi):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
@@ -759,12 +949,12 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
 <span class="k">def</span> render_still(even_obj, plain_obj, path, engine):
     scene = bpy.context.scene
 
-    <span class="c"># Sheet faces in a pale enamel, the cut section (Solidify&#x27;s rim) in</span>
-    <span class="c"># selection orange via material_offset_rim, so the end of each shell</span>
-    <span class="c"># reads as a band whose width is the thickness.</span>
-    sheet = principled(<span class="s">&quot;SheetEnamel&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.56</span>, <span class="n">0.62</span>), <span class="n">0.38</span>, metal=<span class="n">0.15</span>, coat=<span class="n">0.3</span>)
-    section = principled(<span class="s">&quot;CutSection&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.04</span>), <span class="n">0.35</span>,
-                         emit=((<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.06</span>), <span class="n">0.6</span>))
+    <span class="c"># Sheet faces in a deep teal glaze, the cut section (Solidify&#x27;s rim) in</span>
+    <span class="c"># selection-orange enamel via material_offset_rim, so the end of each</span>
+    <span class="c"># shell reads as a bright band whose width is the thickness.</span>
+    sheet = glaze(<span class="s">&quot;TealGlaze&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.16</span>, <span class="n">0.19</span>), (<span class="n">0.05</span>, <span class="n">0.25</span>, <span class="n">0.28</span>))
+    section = principled(<span class="s">&quot;CutSection&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.40</span>, <span class="n">0.03</span>), <span class="n">0.3</span>, coat=<span class="n">0.5</span>,
+                         emit=((<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.05</span>), <span class="n">0.35</span>))
     <span class="k">for</span> obj <span class="k">in</span> (even_obj, plain_obj):
         obj.data.materials.append(sheet)
         obj.data.materials.append(section)
@@ -773,17 +963,24 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
         mod.material_offset_rim = <span class="n">1</span>
 
     <span class="c"># Stand each shell on the plinth: lowest evaluated point at the plinth top</span>
-    plinth_top = <span class="n">0.24</span>
+    plinth_top = <span class="n">0.30</span>
     plain_obj.location = (-SHELL_GAP, <span class="n">0.0</span>, <span class="n">0.0</span>)
     bpy.context.view_layer.update()
+    even_local = evaluated_local_coords(even_obj)
     <span class="k">for</span> obj <span class="k">in</span> (even_obj, plain_obj):
         lo = min((obj.matrix_world @ c).z <span class="k">for</span> c <span class="k">in</span> evaluated_local_coords(obj))
+        <span class="k">if</span> obj <span class="k">is</span> plain_obj:
+            <span class="c"># the red nominal-thickness line drawn on this shell reaches the</span>
+            <span class="c"># even shell&#x27;s deeper copies; keep it above the plinth too</span>
+            lo = min(lo, min((obj.matrix_world @ c).z <span class="k">for</span> c <span class="k">in</span> even_local))
         obj.location.z += plinth_top - lo
     bpy.context.view_layer.update()
 
-    walnut = principled(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.055</span>, <span class="n">0.025</span>), <span class="n">0.45</span>, noise=<span class="n">40.0</span>, coat=<span class="n">0.4</span>)
-    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.58</span>, <span class="n">0.26</span>), <span class="n">0.3</span>, metal=<span class="n">1.0</span>)
+    walnut = walnut_mat(<span class="s">&quot;Walnut&quot;</span>)
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.62</span>, <span class="n">0.27</span>), <span class="n">0.2</span>, metal=<span class="n">1.0</span>, noise=<span class="n">60.0</span>)
     ink = principled(<span class="s">&quot;Engraving&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.010</span>, <span class="n">0.008</span>), <span class="n">0.7</span>)
+    deficit = principled(<span class="s">&quot;Deficit&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.04</span>, <span class="n">0.05</span>), <span class="n">0.3</span>, coat=<span class="n">0.5</span>,
+                         emit=((<span class="n">0.95</span>, <span class="n">0.05</span>, <span class="n">0.05</span>), <span class="n">0.5</span>))
     parts = []
     pts = profile_points()
 
@@ -809,7 +1006,7 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
                 <span class="k">try</span>:
                     h = under.z - plinth_top
                     res = bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">16</span>,
-                                                radius1=<span class="n">0.022</span>, radius2=<span class="n">0.022</span>, depth=h)
+                                                radius1=<span class="n">0.03</span>, radius2=<span class="n">0.03</span>, depth=h)
                     <span class="k">for</span> vert <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
                         vert.co += Vector((under.x, y, plinth_top + h / <span class="n">2</span>))
                     bm.to_mesh(rod)
@@ -827,28 +1024,46 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
     plinth.data.materials.append(walnut)
     scene.collection.objects.link(plinth)
     bev = plinth.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
-    bev.width = <span class="n">0.03</span>
-    bev.segments = <span class="n">2</span>
+    bev.width = <span class="n">0.035</span>
+    bev.segments = <span class="n">3</span>
     parts.append(plinth)
+
+    <span class="c"># On the plain shell&#x27;s cut face, a red line traces where a t-thick shell&#x27;s</span>
+    <span class="c"># inner face would run: the even shell&#x27;s own evaluated front-row copies,</span>
+    <span class="c"># placed through the plain shell&#x27;s transform (both shells share one local</span>
+    <span class="c"># profile). Where the orange band stops short of the red line, that gap</span>
+    <span class="c"># is the thickness use_even_offset = False loses at each fold.</span>
+    n = len(even_obj.data.vertices)
+    target = evaluated_local_coords(even_obj)[n:n + len(pts)]
+    lift = Vector((<span class="n">0.0</span>, -<span class="n">0.02</span>, <span class="n">0.0</span>))
+    line = [plain_obj.matrix_world @ c + lift <span class="k">for</span> c <span class="k">in</span> target]
+    <span class="k">for</span> a, b <span class="k">in</span> zip(line, line[<span class="n">1</span>:]):
+        ob = bpy.data.objects.new(<span class="s">&quot;NominalLine&quot;</span>, bar_mesh(<span class="s">&quot;NominalLine&quot;</span>, a, b, <span class="n">0.012</span>, <span class="n">0.008</span>, Y_AXIS))
+        ob.data.materials.append(deficit)
+        scene.collection.objects.link(ob)
+        parts.append(ob)
 
     <span class="c"># Brass plaques on the plinth&#x27;s front edge naming each shell&#x27;s setting</span>
     front = -DEPTH / <span class="n">2</span> - <span class="n">0.35</span>
     <span class="k">for</span> obj, label <span class="k">in</span> ((plain_obj, <span class="s">&quot;use_even_offset = False&quot;</span>), (even_obj, <span class="s">&quot;use_even_offset = True&quot;</span>)):
         cx = obj.location.x + span / <span class="n">2</span>
         plate = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, box_mesh(
-            <span class="s">&quot;Plaque&quot;</span>, (cx - <span class="n">0.95</span>, front - <span class="n">0.012</span>, <span class="n">0.03</span>), (cx + <span class="n">0.95</span>, front + <span class="n">0.01</span>, plinth_top - <span class="n">0.03</span>)))
+            <span class="s">&quot;Plaque&quot;</span>, (cx - <span class="n">1.05</span>, front - <span class="n">0.016</span>, <span class="n">0.035</span>), (cx + <span class="n">1.05</span>, front + <span class="n">0.01</span>, plinth_top - <span class="n">0.035</span>)))
         plate.data.materials.append(brass)
         scene.collection.objects.link(plate)
+        pbev = plate.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+        pbev.width = <span class="n">0.008</span>
+        pbev.segments = <span class="n">2</span>
         parts.append(plate)
         cu = bpy.data.curves.new(<span class="s">&quot;PlaqueText&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
         cu.body = label
-        cu.size = <span class="n">0.13</span>
+        cu.size = <span class="n">0.15</span>
         cu.extrude = <span class="n">0.004</span>
         cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
         cu.align_y = <span class="s">&#x27;CENTER&#x27;</span>
         cu.materials.append(ink)
         txt = bpy.data.objects.new(<span class="s">&quot;PlaqueText&quot;</span>, cu)
-        txt.location = (cx, front - <span class="n">0.014</span>, plinth_top / <span class="n">2</span>)
+        txt.location = (cx, front - <span class="n">0.018</span>, plinth_top / <span class="n">2</span>)
         txt.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
         scene.collection.objects.link(txt)
 
@@ -895,10 +1110,13 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (centre.x - <span class="n">1.3</span>, -<span class="n">8.5</span>, <span class="n">1.75</span>)
+    <span class="c"># Low and nearly square-on to the cut ends, so the section bands and the</span>
+    <span class="c"># gauges across them are the subject; a little height keeps the glazed</span>
+    <span class="c"># sheet surfaces readable behind them.</span>
+    cam.location = (centre.x - <span class="n">0.9</span>, -<span class="n">8.6</span>, <span class="n">1.35</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = centre + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.2</span>))
+    aim.location = centre + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.08</span>))
     scene.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     tr.target = aim
@@ -981,7 +1199,7 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
         </article>
         <article class="card mini">
           <div class="card-media">
-            <img src="../assets/boolean-exact-volume-hero-640.webp" srcset="../assets/boolean-exact-volume-hero-640.webp 640w, ../assets/boolean-exact-volume-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/boolean-exact-volume-hero-640.webp" srcset="../assets/boolean-exact-volume-hero-640.webp 640w, ../assets/boolean-exact-volume-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
             <h3><a class="stretch" href="../boolean-exact-volume/">Boolean Exact Volume</a></h3>
@@ -1003,7 +1221,7 @@ Y_AXIS = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span c
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
-    <img src="../assets/solidify-even-thickness-hero.webp" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." />
+    <img src="../assets/solidify-even-thickness-hero.webp" alt="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." />
   </dialog>
   <footer class="site-footer">
     <div class="site-footer-inner">

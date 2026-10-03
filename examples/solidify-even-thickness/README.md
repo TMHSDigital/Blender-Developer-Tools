@@ -34,12 +34,16 @@ thinner at every corner, down to half at a 120° bend, and nothing errors. `--no
 leaves the flag off on the shell that the check expects to be even, and check 4 fails
 with the measured thickness.
 
-The still shows both shells side by side on a walnut plinth, viewed end-on. The cut
-section, Solidify's rim, is drawn in selection orange through `material_offset_rim`, so
-the band's width is the shell's thickness. On the left, with `use_even_offset = False`,
-the band pinches at every fold, and to half at the sharp V. On the right, with
-`use_even_offset = True`, it stays one width all the way round. Brass plaques name each
-setting, and brass dowels hold the raised folds off the plinth.
+The still shows both shells in teal glaze side by side on a walnut plinth, viewed nearly
+end-on. The cut section, Solidify's rim, is drawn in selection-orange enamel through
+`material_offset_rim`, so the band's width is the shell's thickness. On the left, with
+`use_even_offset = False`, the band pinches at every fold, and to half at the sharp V. A
+red line on that cut face traces where a *t*-thick shell's inner face would run: it is
+the even shell's own evaluated copy positions, placed through the plain shell's
+transform, so the gap between the orange band and the red line is the thickness lost at
+each fold, drawn at true size. On the right, with `use_even_offset = True`, the band stays
+one width all the way round. Engraved brass plaques name each setting, and brass dowels
+hold the raised folds off the plinth.
 
 ## Run
 

@@ -217,6 +217,87 @@ def principled(name, base, rough, metal=0.0, noise=None, coat=0.0, emit=None):
     return mat
 
 
+def glaze(name, dark, light):
+    """Glazed ceramic: colour pooling between two tones on low-frequency noise,
+    a clear coat, and a faint roughness ripple so highlights break up."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = 0.22
+    b.inputs["Coat Weight"].default_value = 0.8
+    b.inputs["Coat Roughness"].default_value = 0.06
+    tex = nt.nodes.new("ShaderNodeTexNoise")
+    tex.inputs["Scale"].default_value = 3.5
+    tex.inputs["Detail"].default_value = 4.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.35
+    ramp.color_ramp.elements[0].color = (*dark, 1.0)
+    ramp.color_ramp.elements[1].position = 0.7
+    ramp.color_ramp.elements[1].color = (*light, 1.0)
+    nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
+def walnut_mat(name):
+    """Oiled walnut: banded grain from a distorted wave texture along X,
+    two-tone ramp, satin roughness (not a mirror)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Coat Weight"].default_value = 0.15
+    b.inputs["Coat Roughness"].default_value = 0.3
+    # Object-space coordinates turned 45 degrees about X, so the bands vary
+    # across both the top and the front face while running along X (the
+    # plinth's length), the way long-grain stock looks.
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Rotation"].default_value = (math.radians(45.0), 0.0, 0.0)
+    mapping.inputs["Scale"].default_value = (0.35, 1.0, 1.0)
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = 'BANDS'
+    wave.bands_direction = 'Y'
+    wave.inputs["Scale"].default_value = 7.0
+    wave.inputs["Distortion"].default_value = 3.5
+    wave.inputs["Detail"].default_value = 4.0
+    wave.inputs["Detail Scale"].default_value = 2.0
+    nt.links.new(mapping.outputs["Vector"], wave.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.045, 0.019, 0.009, 1.0)
+    ramp.color_ramp.elements[1].color = (0.15, 0.072, 0.034, 1.0)
+    nt.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value = 0.42
+    mr.inputs["To Max"].default_value = 0.58
+    nt.links.new(wave.outputs["Fac"], mr.inputs["Value"])
+    nt.links.new(mr.outputs["Result"], b.inputs["Roughness"])
+    return mat
+
+
+def bar_mesh(name, a, b, half_w, half_d, normal):
+    """A slim box from point a to point b, half_w wide across the bar in the
+    plane, half_d thick along *normal*."""
+    axis = (b - a)
+    side = axis.cross(normal).normalized() * half_w
+    nrm = normal.normalized() * half_d
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        vs = [bm.verts.new(p + s * side + d * nrm)
+              for p in (a, b) for s in (-1, 1) for d in (-1, 1)]
+        for f in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+            bm.faces.new([vs[i] for i in f])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
 def box_mesh(name, lo, hi):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
@@ -233,12 +314,12 @@ def box_mesh(name, lo, hi):
 def render_still(even_obj, plain_obj, path, engine):
     scene = bpy.context.scene
 
-    # Sheet faces in a pale enamel, the cut section (Solidify's rim) in
-    # selection orange via material_offset_rim, so the end of each shell
-    # reads as a band whose width is the thickness.
-    sheet = principled("SheetEnamel", (0.50, 0.56, 0.62), 0.38, metal=0.15, coat=0.3)
-    section = principled("CutSection", (1.0, 0.42, 0.04), 0.35,
-                         emit=((1.0, 0.45, 0.06), 0.6))
+    # Sheet faces in a deep teal glaze, the cut section (Solidify's rim) in
+    # selection-orange enamel via material_offset_rim, so the end of each
+    # shell reads as a bright band whose width is the thickness.
+    sheet = glaze("TealGlaze", (0.025, 0.16, 0.19), (0.05, 0.25, 0.28))
+    section = principled("CutSection", (1.0, 0.40, 0.03), 0.3, coat=0.5,
+                         emit=((1.0, 0.42, 0.05), 0.35))
     for obj in (even_obj, plain_obj):
         obj.data.materials.append(sheet)
         obj.data.materials.append(section)
@@ -247,17 +328,24 @@ def render_still(even_obj, plain_obj, path, engine):
         mod.material_offset_rim = 1
 
     # Stand each shell on the plinth: lowest evaluated point at the plinth top
-    plinth_top = 0.24
+    plinth_top = 0.30
     plain_obj.location = (-SHELL_GAP, 0.0, 0.0)
     bpy.context.view_layer.update()
+    even_local = evaluated_local_coords(even_obj)
     for obj in (even_obj, plain_obj):
         lo = min((obj.matrix_world @ c).z for c in evaluated_local_coords(obj))
+        if obj is plain_obj:
+            # the red nominal-thickness line drawn on this shell reaches the
+            # even shell's deeper copies; keep it above the plinth too
+            lo = min(lo, min((obj.matrix_world @ c).z for c in even_local))
         obj.location.z += plinth_top - lo
     bpy.context.view_layer.update()
 
-    walnut = principled("Walnut", (0.13, 0.055, 0.025), 0.45, noise=40.0, coat=0.4)
-    brass = principled("Brass", (0.80, 0.58, 0.26), 0.3, metal=1.0)
+    walnut = walnut_mat("Walnut")
+    brass = principled("Brass", (0.86, 0.62, 0.27), 0.2, metal=1.0, noise=60.0)
     ink = principled("Engraving", (0.012, 0.010, 0.008), 0.7)
+    deficit = principled("Deficit", (0.85, 0.04, 0.05), 0.3, coat=0.5,
+                         emit=((0.95, 0.05, 0.05), 0.5))
     parts = []
     pts = profile_points()
 
@@ -283,7 +371,7 @@ def render_still(even_obj, plain_obj, path, engine):
                 try:
                     h = under.z - plinth_top
                     res = bmesh.ops.create_cone(bm, cap_ends=True, segments=16,
-                                                radius1=0.022, radius2=0.022, depth=h)
+                                                radius1=0.03, radius2=0.03, depth=h)
                     for vert in res["verts"]:
                         vert.co += Vector((under.x, y, plinth_top + h / 2))
                     bm.to_mesh(rod)
@@ -301,28 +389,46 @@ def render_still(even_obj, plain_obj, path, engine):
     plinth.data.materials.append(walnut)
     scene.collection.objects.link(plinth)
     bev = plinth.modifiers.new("Chamfer", 'BEVEL')
-    bev.width = 0.03
-    bev.segments = 2
+    bev.width = 0.035
+    bev.segments = 3
     parts.append(plinth)
+
+    # On the plain shell's cut face, a red line traces where a t-thick shell's
+    # inner face would run: the even shell's own evaluated front-row copies,
+    # placed through the plain shell's transform (both shells share one local
+    # profile). Where the orange band stops short of the red line, that gap
+    # is the thickness use_even_offset = False loses at each fold.
+    n = len(even_obj.data.vertices)
+    target = evaluated_local_coords(even_obj)[n:n + len(pts)]
+    lift = Vector((0.0, -0.02, 0.0))
+    line = [plain_obj.matrix_world @ c + lift for c in target]
+    for a, b in zip(line, line[1:]):
+        ob = bpy.data.objects.new("NominalLine", bar_mesh("NominalLine", a, b, 0.012, 0.008, Y_AXIS))
+        ob.data.materials.append(deficit)
+        scene.collection.objects.link(ob)
+        parts.append(ob)
 
     # Brass plaques on the plinth's front edge naming each shell's setting
     front = -DEPTH / 2 - 0.35
     for obj, label in ((plain_obj, "use_even_offset = False"), (even_obj, "use_even_offset = True")):
         cx = obj.location.x + span / 2
         plate = bpy.data.objects.new("Plaque", box_mesh(
-            "Plaque", (cx - 0.95, front - 0.012, 0.03), (cx + 0.95, front + 0.01, plinth_top - 0.03)))
+            "Plaque", (cx - 1.05, front - 0.016, 0.035), (cx + 1.05, front + 0.01, plinth_top - 0.035)))
         plate.data.materials.append(brass)
         scene.collection.objects.link(plate)
+        pbev = plate.modifiers.new("Chamfer", 'BEVEL')
+        pbev.width = 0.008
+        pbev.segments = 2
         parts.append(plate)
         cu = bpy.data.curves.new("PlaqueText", 'FONT')
         cu.body = label
-        cu.size = 0.13
+        cu.size = 0.15
         cu.extrude = 0.004
         cu.align_x = 'CENTER'
         cu.align_y = 'CENTER'
         cu.materials.append(ink)
         txt = bpy.data.objects.new("PlaqueText", cu)
-        txt.location = (cx, front - 0.014, plinth_top / 2)
+        txt.location = (cx, front - 0.018, plinth_top / 2)
         txt.rotation_euler = (math.radians(90), 0.0, 0.0)
         scene.collection.objects.link(txt)
 
@@ -369,10 +475,13 @@ def render_still(even_obj, plain_obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (centre.x - 1.3, -8.5, 1.75)
+    # Low and nearly square-on to the cut ends, so the section bands and the
+    # gauges across them are the subject; a little height keeps the glazed
+    # sheet surfaces readable behind them.
+    cam.location = (centre.x - 0.9, -8.6, 1.35)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = centre + Vector((0.0, 0.0, -0.2))
+    aim.location = centre + Vector((0.0, 0.0, -0.08))
     scene.collection.objects.link(aim)
     tr = cam.constraints.new('TRACK_TO')
     tr.target = aim
