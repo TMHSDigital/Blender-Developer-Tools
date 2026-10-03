@@ -14,7 +14,7 @@ jobs:
     name: Validate structure and frontmatter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Check referenced paths exist
         run: |
@@ -192,9 +192,9 @@ jobs:
     # so a template error or a dead link otherwise surfaces in production.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
           cache: pip
@@ -212,7 +212,7 @@ jobs:
     name: Validate plugin manifest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Check plugin.json matches filesystem and VERSION
         run: |
@@ -281,7 +281,7 @@ jobs:
     name: Validate Claude Code packaging
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Check .claude-plugin manifests match VERSION and the skills on disk
         run: |
@@ -323,6 +323,16 @@ jobs:
           print('Claude Code packaging verified')
           PYEOF
 
+      - name: Check every workflow action is pinned to a full commit SHA
+        run: |
+          bad=$(grep -rnE '^\s*(-\s+)?uses:\s+[^./ ]' .github/workflows \
+            | grep -vE 'uses:\s+\S+@[0-9a-f]{40}(\s|$)' || true)
+          if [ -n "$bad" ]; then
+            echo "$bad"
+            echo "::error::pin these actions to a full commit SHA with a trailing '# vX.Y' comment (#306)"
+            exit 1
+          fi
+
       - name: Check CLAUDE.md carries no personal plugin routing block
         run: |
           if grep -nE 'context-mode|MANDATORY routing rules|ctx_(execute|batch_execute|search|fetch_and_index)' CLAUDE.md; then
@@ -337,7 +347,7 @@ jobs:
     name: Validate content counts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Check content counts match README
         env:
@@ -440,7 +450,7 @@ jobs:
     name: Validate smoke harness protocol
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Harness unit tests
         run: python3 tests/smoke/test_harness.py -v

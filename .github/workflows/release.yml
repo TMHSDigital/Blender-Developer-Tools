@@ -6,20 +6,45 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 jobs:
-  version-and-release:
-    name: Bump version, tag, and release
+  gate:
+    name: Gate on CI evidence
+    # A push to main must not publish unless Validate passed on this exact SHA and,
+    # when it was merged from a PR, every check on that PR passed (Blender Smoke
+    # runs on PRs only). Direct pushes have no PR; Validate alone gates them.
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+      pull-requests: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github/scripts
+      - name: Require green Validate and PR checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: bash .github/scripts/release-gate.sh
+
+  version-and-release:
+    name: Bump version, tag, and release
+    needs: gate
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +142,7 @@ jobs:
 
       - name: Sync release docs
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
-        uses: TMHSDigital/Developer-Tools-Directory/.github/actions/release-doc-sync@v1
+        uses: TMHSDigital/Developer-Tools-Directory/.github/actions/release-doc-sync@7886cbe6ef93d57cc73c020b98268fa0dc0bdc98 # v1
         with:
           plugin-version: ${{ steps.new.outputs.version }}
           previous-version: ${{ steps.current.outputs.version }}
@@ -156,20 +181,43 @@ jobs:
           PYEOF
 
       - name: Commit version bump
+        id: commit
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+
+          # Another PR may have merged after this run checked out (#226). The
+          # queued run for the newer SHA scans the whole range since the last
+          # tag and releases everything, so stand down cleanly instead of
+          # failing with a non-fast-forward push.
+          git fetch -q origin main
+          if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD)" ]; then
+            echo "::notice::origin/main moved past $GITHUB_SHA; the newer release run will publish this range"
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Explicit paths only: the files this workflow owns, never `git add -A`.
+          git add -- VERSION CHANGELOG.md CLAUDE.md ROADMAP.md \
+            .cursor-plugin/plugin.json .claude-plugin/plugin.json .claude-plugin/marketplace.json
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::warning::files changed that the release commit does not own:"
+            git status --porcelain
+          fi
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             git commit -s -m "chore: bump version to ${{ steps.new.outputs.version }} [skip ci]"
-            git push origin main
+            if ! git push origin main; then
+              echo "::notice::push rejected (main moved); the newer release run will publish this range"
+              echo "stale=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
           fi
 
       - name: Create and push tag
-        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
         run: |
           new_version="${{ steps.new.outputs.version }}"
           IFS='.' read -r major minor _patch <<< "$new_version"
@@ -183,7 +231,7 @@ jobs:
           git push origin "v$major.$minor" --force
 
       - name: Create GitHub Release
-        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -192,7 +240,7 @@ jobs:
             --generate-notes
 
       - name: Dispatch Pages
-        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run pages.yml --ref main
