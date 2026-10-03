@@ -181,10 +181,10 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/bamboo-clump/"><img src="showcase/bamboo-clump/preview.webp" width="24%" alt="Bamboo clump: seven splayed green and yellow culms with dark node collars and papery sheaths, under a full drooping leafy crown, rising from a soil hummock with exposed rhizome knuckles, on a dark studio floor" /></a>
   <a href="showcase/toboggan/"><img src="showcase/toboggan/preview.webp" width="24%" alt="Toboggan: a wooden runner sled with steel-shod runners curling into front horns, a screwed seven-slat deck on posts, a red crossbar, and a twisted hemp pull rope ending in a wooden toggle, on a dark studio floor" /></a>
   <a href="showcase/sundial/"><img src="showcase/sundial/preview.webp" width="24%" alt="Sundial: a garden sundial with a stepped stone plinth, a tapered octagonal granite column and cap, and a bronze dial plate with hour lines, a Roman-numeral chapter ring and a triangular gnomon, on a dark studio floor" /></a>
-  <a href="showcase/mine-cart/"><img src="showcase/mine-cart/preview.webp" width="24%" alt="Mine cart: a rust-streaked riveted red steel tub on oak sills, four flanged iron wheels resting on two polished rails spiked to sleepers in grey ballast, on a dark studio floor" /></a>
-  <a href="showcase/garden-gate/"><img src="showcase/garden-gate/preview.webp" width="24%" alt="Garden gate: a bow-topped gate of weathered oak boards standing ajar on black strap hinges between square posts on sandstone flags, on a dark studio floor" /></a>
-  <a href="showcase/ships-wheel/"><img src="showcase/ships-wheel/preview.webp" width="24%" alt="Ship's wheel: a varnished teak eight-spoke wheel with turned handles, a brass nave and a brass rim inlay, on a panelled teak pedestal with a stepped plinth, on a dark studio floor" /></a>
-  <a href="showcase/sawhorse-plank/"><img src="showcase/sawhorse-plank/preview.webp" width="24%" alt="Sawhorse plank: two pine sawhorses with splayed legs and nailed end aprons carrying a long fir plank, a toothed handsaw with a beech handle leaning on the near horse, on a dark studio floor" /></a>
+  <a href="showcase/mine-cart/"><img src="showcase/mine-cart/preview.webp" width="24%" alt="Mine cart: a rust-streaked red mine cart heaped with dark ore, its riveted steel tub on oak sills and four flanged iron wheels on two polished rails spiked to sleepers in grey ballast, on a dark studio floor" /></a>
+  <a href="showcase/garden-gate/"><img src="showcase/garden-gate/preview.webp" width="24%" alt="Garden gate: a weathered oak garden gate swung ajar between square posts on sandstone flags, seen from its braced side: ledges, a Z of braces, black strap hinges on the ledges and a barrel bolt, on a dark studio floor" /></a>
+  <a href="showcase/ships-wheel/"><img src="showcase/ships-wheel/preview.webp" width="24%" alt="Ship's wheel: a varnished teak ship's wheel with eight turned spokes and handles and a brass nave, on a panelled teak helm stand with a moulded base, a brass band and a coved capital, on a dark studio floor" /></a>
+  <a href="showcase/sawhorse-plank/"><img src="showcase/sawhorse-plank/preview.webp" width="24%" alt="Sawhorses and plank: two pine sawhorses with tapered, splayed legs and nailed end aprons carry a long fir plank on a dark studio floor, a polished handsaw with an apple handle leaning on the near one, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -321,7 +321,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`mine-cart`](showcase/mine-cart/) — procedural narrow-gauge mine cart on a rail segment, riveted tub on flanged wheels over 30 lb rails, sleepers and ballast, through the same pipeline; every tread seated on its railhead and every flange clear of it. Falsifiers `--skip-decimate` exits 9, `--stray-vert` exits 15, `--lift-z` exits 16, `--float-wheel` exits 18, `--skew-axle` exits 19, `--wide-gauge` exits 20.
 
-[`garden-gate`](showcase/garden-gate/) — procedural ledged-and-braced garden gate on hook-and-band hinges through the same pipeline; every knuckle measured coaxial on its pin, both pins on one plumb axis, and the swing circle clearing the latch post. Falsifiers `--skip-decimate` exits 9, `--offset-knuckle` exits 17, `--lift-gate` exits 18, `--tilt-pintle` exits 19, `--tight-post` exits 20.
+[`garden-gate`](showcase/garden-gate/) — procedural ledged-and-braced garden gate on hook-and-band hinges through the same pipeline; every knuckle measured coaxial on its pin, both pins on one plumb axis, and the swing circle clearing the latch post. Falsifiers `--skip-decimate` exits 9, `--offset-knuckle` exits 17, `--lift-gate` exits 18, `--tilt-pintle` exits 19, `--tight-post` exits 20, `--reversed-braces` exits 21.
 
 [`ships-wheel`](showcase/ships-wheel/) — procedural eight-spoke ship's wheel on its pedestal, turned teak spokes and handles on a brass nave, through the same pipeline; nave concentric with the rim, every spoke and handle seated in the rim, spokes 45° apart. Falsifiers `--skip-decimate` exits 9, `--stray-vert` exits 15, `--lift-z` exits 16, `--offset-hub` exits 17, `--short-spoke` exits 18, `--skew-spoke` exits 19.
 
@@ -696,7 +696,7 @@ blend of the eight deformed corners, and that the default `'KEY_BSPLINE'` misses
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/solidify-even-thickness/"><img src="examples/solidify-even-thickness/preview.webp" alt="Solidify even thickness: two folded zigzag shells on a walnut plinth, their cut ends in orange, the left band pinching thin at every fold and the right staying one width, above brass plaques reading use_even_offset = False and use_even_offset = True" /></a>
+<a href="examples/solidify-even-thickness/"><img src="examples/solidify-even-thickness/preview.webp" alt="Solidify even thickness: two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width, on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
@@ -711,7 +711,7 @@ the evaluated mesh to 1e-5 (`--no-even` exits 4).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/boolean-exact-volume/"><img src="examples/boolean-exact-volume/preview.webp" alt="Boolean exact volume: three results on a walnut plinth, each inside thin steel and glowing orange outlines of its two operands - a teal union with a slab grown out of a cube, a brass cube with a notch cut down through its top, and the orange one-metre overlap cube, on a dark studio floor" /></a>
+<a href="examples/boolean-exact-volume/"><img src="examples/boolean-exact-volume/preview.webp" alt="Boolean exact volume: three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques - a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass - on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
