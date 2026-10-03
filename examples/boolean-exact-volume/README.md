@@ -34,13 +34,18 @@ from 5.0, so a script that hard-codes either name breaks on the other series
 (`fast_solver_id()` branches on `bpy.app.version`). `'EXACT'` is the same identifier on
 4.5, 5.1 and 5.2.
 
-The still shows the three operations side by side on a walnut plinth, each with its
-two operands drawn as thin outlines (the cube in steel, the coplanar slab in glowing
-orange): on the left the union in teal glaze with the slab's free end grown out of the
-cube; in the middle the difference in brass with the slab's notch cut down through the
-top face; on the right the intersection, the 1 m³ overlap cube, in orange. The outlines
-are render-only rods built after the check has run, and the cutter objects themselves
-never render.
+The still shows the three operations side by side on a walnut plinth, each named by a
+brass plaque in front of it. On the left, the union in teal glaze, with the slab's free
+end grown out of the cube. In the middle, the difference in machined bronze, with the
+notch cut down through the top face and the removed slab drawn as frosted amber glass.
+On the right, the intersection: the 1 m³ overlap cube in orange glaze, inside frosted
+ghosts of both operands. Thin rods trace the operands' edges (steel for the cube, amber
+for the coplanar slab).
+
+Everything shown is render-only and is built after the check has run. The results on
+display are frozen copies of the checked meshes with a 12 mm chamfer; the measured
+modifier objects and the cutter objects never render. The ghosts are grown 2 mm and
+4 mm so none of their faces is coplanar with a result or with each other.
 
 ## Run
 

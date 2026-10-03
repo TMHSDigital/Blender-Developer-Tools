@@ -16,10 +16,10 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/boolean-exact-volume-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+  <meta property="og:image:alt" content="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/boolean-exact-volume-hero.webp" />
-  <meta name="twitter:image:alt" content="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+  <meta name="twitter:image:alt" content="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:title" content="Boolean Exact Volume (boolean-exact-volume) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem." />
@@ -46,8 +46,8 @@
   </header>
   <main id="main">
     <nav class="pager" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span> solidify-even-thickness</a><span class="pager-pos hud">56 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube.">
-      <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." width="1280" height="720" fetchpriority="high" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass.">
+      <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." width="1280" height="720" fetchpriority="high" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
     <div class="callout"><span class="tag">witnesses</span> EXACT booleans are closed-form even on coplanar faces: through translated, 18°-turned operands the union, difference and intersection measure 9, 7 and 1 m³ (8.999999 / 6.999999 / 1.000000, float32) and are closed 2-manifolds with no loose geometry; the floating-point solver (&#x27;FAST&#x27; on 4.5, &#x27;FLOAT&#x27; on 5.x) gives a 7.708 m³ union and --float-solver exits 3.</div>
@@ -61,7 +61,8 @@
 <p><strong>What it witnesses:</strong> with A = [0,2]³ and B = [1,3] × [0.5,1.5] × [1,2], the overlap is A ∩ B = [1,2] × [0.5,1.5] × [1,2], so the closed forms are V(A ∪ B) = 8 + 2 − 1 = 9, V(A − B) = 8 − 1 = 7 and V(A ∩ B) = 1 cubic metre. Each operand pair sits in an object matrix that is translated and turned 18° about Z, so the modifier has to carry B into A&#x27;s space. For every result the check:</p>
 <ul><li>sums the signed volume over the evaluated mesh&#x27;s own triangles (divergence theorem, world space) and requires the closed form to 1e-6 relative (measured 8.999999, 6.999999 and 1.000000 — float32 coordinates through a rotation). A positive volume also means the normals point outward;</li><li>requires a closed 2-manifold: every edge borders exactly two faces, with no loose verts or edges;</li><li>requires that the result&#x27;s volume differs from V(A) by at least 0.5 m³, so the modifier really acted and the witness cannot pass vacuously.</li></ul>
 <p><strong>The trap it exposes:</strong> the floating-point solver is faster and is right in general position, but it mishandles coplanar faces. <code>--float-solver</code> runs the same three operations on it and gets a union of 7.708 m³ against the closed form 9, so check 3 fails with the measured error. That solver was <code>&#x27;FAST&#x27;</code> through 4.5 LTS and is <code>&#x27;FLOAT&#x27;</code> from 5.0, so a script that hard-codes either name breaks on the other series (<code>fast_solver_id()</code> branches on <code>bpy.app.version</code>). <code>&#x27;EXACT&#x27;</code> is the same identifier on 4.5, 5.1 and 5.2.</p>
-<p>The still shows the three operations side by side on a walnut plinth, each with its two operands drawn as thin outlines (the cube in steel, the coplanar slab in glowing orange): on the left the union in teal glaze with the slab&#x27;s free end grown out of the cube; in the middle the difference in brass with the slab&#x27;s notch cut down through the top face; on the right the intersection, the 1 m³ overlap cube, in orange. The outlines are render-only rods built after the check has run, and the cutter objects themselves never render.</p>
+<p>The still shows the three operations side by side on a walnut plinth, each named by a brass plaque in front of it. On the left, the union in teal glaze, with the slab&#x27;s free end grown out of the cube. In the middle, the difference in machined bronze, with the notch cut down through the top face and the removed slab drawn as frosted amber glass. On the right, the intersection: the 1 m³ overlap cube in orange glaze, inside frosted ghosts of both operands. Thin rods trace the operands&#x27; edges (steel for the cube, amber for the coplanar slab).</p>
+<p>Everything shown is render-only and is built after the check has run. The results on display are frozen copies of the checked meshes with a 12 mm chamfer; the measured modifier objects and the cutter objects never render. The ghosts are grown 2 mm and 4 mm so none of their faces is coplanar with a result or with each other.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python boolean_exact_volume.py --
@@ -81,9 +82,9 @@ blender --background --python boolean_exact_volume.py -- --output boolean.png --
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/boolean-exact-volume/boolean_exact_volume.py</code>
-        <span>412 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/boolean-exact-volume/boolean_exact_volume.py">View on GitHub &rarr;</a></span>
+        <span>537 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/boolean-exact-volume/boolean_exact_volume.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="412">
+      <div class="code" data-lines="537">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -495,7 +496,132 @@ blender --background --python boolean_exact_volume.py -- --output boolean.png --
 409
 410
 411
-412</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;EXACT Boolean volumes are closed-form and manifold, even on coplanar faces — a runnable example.
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;EXACT Boolean volumes are closed-form and manifold, even on coplanar faces — a runnable example.
 
 Witnesses the Boolean modifier contract with ``solver = &#x27;EXACT&#x27;``. Operand A
 is a 2 m cube and operand B a 2 x 1 x 1 m slab that overlaps A by a 1 m cube
@@ -684,7 +810,9 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
 <span class="c"># Render staging only (runs after the check; never part of it)</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
-<span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, noise=<span class="k">None</span>, coat=<span class="n">0.0</span>, emit=<span class="k">None</span>):
+<span class="k">def</span> principled(name, base, rough, metal=<span class="n">0.0</span>, coat=<span class="n">0.0</span>, coat_rough=<span class="n">0.1</span>, rough_var=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;A designed Principled material. *rough_var* adds a low-frequency
+    roughness drift (no fine noise: on metal that reads as glitter).&quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
@@ -694,18 +822,75 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
     b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
     <span class="k">if</span> coat:
         b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = coat
-    <span class="k">if</span> emit:
-        b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (*emit[<span class="n">0</span>], <span class="n">1.0</span>)
-        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = emit[<span class="n">1</span>]
-    <span class="k">if</span> noise:
+        b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = coat_rough
+    <span class="k">if</span> rough_var:
         tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
-        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise
-        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">3.0</span>
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
         mr = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
-        mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = max(rough - <span class="n">0.08</span>, <span class="n">0.0</span>)
-        mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough + <span class="n">0.14</span>
+        mr.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = max(rough - rough_var, <span class="n">0.0</span>)
+        mr.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rough + rough_var
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], mr.inputs[<span class="s">&quot;Value&quot;</span>])
         nt.links.new(mr.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> ghost_glass(name, tint):
+    <span class="s">&quot;&quot;&quot;Frosted, faintly tinted glass for an operand volume the result lost.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*tint, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
+    b.inputs[<span class="s">&quot;IOR&quot;</span>].default_value = <span class="n">1.45</span>
+    b.inputs[<span class="s">&quot;Transmission Weight&quot;</span>].default_value = <span class="n">1.0</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> walnut_material():
+    <span class="s">&quot;&quot;&quot;Walnut with grain running along the plinth (world X): distorted wave
+    bands mixed between two walnut tones, a soft blotch layer, a light bump,
+    and a satin coat that does not mirror the scene.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;Walnut&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mapn = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapn.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">2.4</span>, <span class="n">1.0</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapn.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    wave.wave_type = <span class="s">&#x27;BANDS&#x27;</span>
+    wave.bands_direction = <span class="s">&#x27;Y&#x27;</span>
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.2</span>
+    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">7.0</span>
+    wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    wave.inputs[<span class="s">&quot;Detail Scale&quot;</span>].default_value = <span class="n">1.4</span>
+    nt.links.new(mapn.outputs[<span class="s">&quot;Vector&quot;</span>], wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.25</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.085</span>, <span class="n">0.040</span>, <span class="n">0.020</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.85</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.19</span>, <span class="n">0.095</span>, <span class="n">0.045</span>, <span class="n">1.0</span>)
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    blot = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    blot.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">1.6</span>
+    blot.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], blot.inputs[<span class="s">&quot;Vector&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    mix.blend_type = <span class="s">&#x27;MULTIPLY&#x27;</span>
+    mix.inputs[<span class="s">&quot;Factor&quot;</span>].default_value = <span class="n">0.35</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], mix.inputs[<span class="s">&quot;A&quot;</span>])
+    nt.links.new(blot.outputs[<span class="s">&quot;Color&quot;</span>], mix.inputs[<span class="s">&quot;B&quot;</span>])
+    nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.04</span>
+    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], b.inputs[<span class="s">&quot;Normal&quot;</span>])
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.48</span>
+    b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.2</span>
+    b.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.32</span>
     <span class="k">return</span> mat
 
 
@@ -743,51 +928,114 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
     <span class="k">return</span> edges
 
 
+<span class="k">def</span> grown(lo, hi, pad):
+    <span class="k">return</span> tuple(v - pad <span class="k">for</span> v <span class="k">in</span> lo), tuple(v + pad <span class="k">for</span> v <span class="k">in</span> hi)
+
+
+<span class="c"># Which operand volumes each result no longer contains: those are drawn as</span>
+<span class="c"># frosted ghosts so the eye can see what the solver removed.</span>
+GHOSTS = {<span class="s">&#x27;UNION&#x27;</span>: (), <span class="s">&#x27;DIFFERENCE&#x27;</span>: (<span class="s">&#x27;B&#x27;</span>,), <span class="s">&#x27;INTERSECT&#x27;</span>: (<span class="s">&#x27;A&#x27;</span>, <span class="s">&#x27;B&#x27;</span>)}
+<span class="c"># Outline rods: B everywhere (the coplanar cutter); A only where A is a ghost.</span>
+OUTLINES = {<span class="s">&#x27;UNION&#x27;</span>: (<span class="s">&#x27;B&#x27;</span>,), <span class="s">&#x27;DIFFERENCE&#x27;</span>: (<span class="s">&#x27;B&#x27;</span>,), <span class="s">&#x27;INTERSECT&#x27;</span>: (<span class="s">&#x27;A&#x27;</span>, <span class="s">&#x27;B&#x27;</span>)}
+LABELS = {<span class="s">&#x27;UNION&#x27;</span>: <span class="s">&quot;UNION&quot;</span>, <span class="s">&#x27;DIFFERENCE&#x27;</span>: <span class="s">&quot;DIFFERENCE&quot;</span>, <span class="s">&#x27;INTERSECT&#x27;</span>: <span class="s">&quot;INTERSECT&quot;</span>}
+
+
 <span class="k">def</span> render_still(results, cutters, path, engine):
     scene = bpy.context.scene
-    glazes = {
-        <span class="s">&#x27;UNION&#x27;</span>: principled(<span class="s">&quot;UnionGlaze&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.30</span>, <span class="n">0.34</span>), <span class="n">0.28</span>, coat=<span class="n">0.5</span>),
-        <span class="s">&#x27;DIFFERENCE&#x27;</span>: principled(<span class="s">&quot;DifferenceBrass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.56</span>, <span class="n">0.26</span>), <span class="n">0.30</span>, metal=<span class="n">1.0</span>, noise=<span class="n">60.0</span>),
-        <span class="s">&#x27;INTERSECT&#x27;</span>: principled(<span class="s">&quot;IntersectOrange&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.36</span>, <span class="n">0.05</span>), <span class="n">0.32</span>, coat=<span class="n">0.4</span>),
+    finishes = {
+        <span class="c"># glazed ceramic, machined bronze, glazed ceramic: three readable hues</span>
+        <span class="s">&#x27;UNION&#x27;</span>: principled(<span class="s">&quot;UnionGlaze&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.29</span>, <span class="n">0.32</span>), <span class="n">0.32</span>, coat=<span class="n">0.6</span>, coat_rough=<span class="n">0.08</span>,
+                            rough_var=<span class="n">0.06</span>),
+        <span class="s">&#x27;DIFFERENCE&#x27;</span>: principled(<span class="s">&quot;DifferenceBronze&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.52</span>, <span class="n">0.27</span>), <span class="n">0.30</span>, metal=<span class="n">1.0</span>,
+                                 rough_var=<span class="n">0.07</span>),
+        <span class="s">&#x27;INTERSECT&#x27;</span>: principled(<span class="s">&quot;IntersectGlaze&quot;</span>, (<span class="n">0.90</span>, <span class="n">0.31</span>, <span class="n">0.05</span>), <span class="n">0.32</span>, coat=<span class="n">0.6</span>,
+                                coat_rough=<span class="n">0.08</span>, rough_var=<span class="n">0.06</span>),
     }
-    steel = principled(<span class="s">&quot;OperandA&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.68</span>), <span class="n">0.25</span>, metal=<span class="n">1.0</span>)
-    cutter_mat = principled(<span class="s">&quot;OperandB&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.06</span>), <span class="n">0.35</span>,
-                            emit=((<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.06</span>), <span class="n">1.2</span>))
-    walnut = principled(<span class="s">&quot;Walnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.055</span>, <span class="n">0.025</span>), <span class="n">0.45</span>, noise=<span class="n">40.0</span>, coat=<span class="n">0.4</span>)
+    steel = principled(<span class="s">&quot;OperandASteel&quot;</span>, (<span class="n">0.70</span>, <span class="n">0.72</span>, <span class="n">0.75</span>), <span class="n">0.24</span>, metal=<span class="n">1.0</span>)
+    amber = principled(<span class="s">&quot;OperandBAmber&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.47</span>, <span class="n">0.10</span>), <span class="n">0.30</span>, metal=<span class="n">0.6</span>)
+    ghost = {<span class="s">&#x27;A&#x27;</span>: ghost_glass(<span class="s">&quot;GhostA&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.90</span>, <span class="n">0.95</span>)),
+             <span class="s">&#x27;B&#x27;</span>: ghost_glass(<span class="s">&quot;GhostB&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.80</span>, <span class="n">0.55</span>))}
+    brass = principled(<span class="s">&quot;PlaqueBrass&quot;</span>, (<span class="n">0.84</span>, <span class="n">0.62</span>, <span class="n">0.32</span>), <span class="n">0.40</span>, metal=<span class="n">1.0</span>, rough_var=<span class="n">0.05</span>)
+    ink = principled(<span class="s">&quot;PlaqueInk&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.010</span>, <span class="n">0.008</span>), <span class="n">0.6</span>)
+    walnut = walnut_material()
 
     parts = []
 
-    <span class="k">def</span> add(name, me, mat):
+    <span class="k">def</span> add(name, me, mat, mw=<span class="k">None</span>):
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
+        <span class="k">if</span> mw <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            ob.matrix_world = mw
         scene.collection.objects.link(ob)
         parts.append(ob)
         <span class="k">return</span> ob
 
+    <span class="c"># Display copies: the checked results, frozen, with a 12 mm machined</span>
+    <span class="c"># chamfer. The modifier objects themselves (already measured) are hidden</span>
+    <span class="c"># from the render, so the chamfer never touches the volume check.</span>
+    deps = bpy.context.evaluated_depsgraph_get()
     <span class="k">for</span> i, op <span class="k">in</span> enumerate(OPS):
         res = results[op]
-        res.data.materials.append(glazes[op])
+        shown = bpy.data.meshes.new_from_object(res.evaluated_get(deps))
+        <span class="c"># the boolean output carries the operands&#x27; (empty) material slots;</span>
+        <span class="c"># start clean so every face takes the finish below</span>
+        shown.materials.clear()
+        <span class="k">for</span> poly <span class="k">in</span> shown.polygons:
+            poly.material_index = <span class="n">0</span>
+        ob = add(<span class="s">f&quot;</span>{op.title()}<span class="s">Shown</span><span class="s">&quot;</span>, shown, finishes[op], res.matrix_world.copy())
+        bev = ob.modifiers.new(<span class="s">&quot;MachinedChamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+        bev.width = <span class="n">0.012</span>
+        bev.segments = <span class="n">3</span>
+        bev.limit_method = <span class="s">&#x27;ANGLE&#x27;</span>
+        bev.harden_normals = <span class="k">True</span>
+        res.hide_render = <span class="k">True</span>
         mw = frame(i)
-        <span class="c"># thin outlines of both operands: A in steel, the coplanar cutter B in orange</span>
-        add(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineA</span><span class="s">&quot;</span>, tube_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineA</span><span class="s">&quot;</span>,
-                                               box_edges(A_LO, A_HI, mw), <span class="n">0.016</span>), steel)
-        add(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineB</span><span class="s">&quot;</span>, tube_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">OutlineB</span><span class="s">&quot;</span>,
-                                               box_edges(B_LO, B_HI, mw), <span class="n">0.020</span>), cutter_mat)
+        boxes = {<span class="s">&#x27;A&#x27;</span>: (A_LO, A_HI), <span class="s">&#x27;B&#x27;</span>: (B_LO, B_HI)}
+        <span class="k">for</span> key <span class="k">in</span> GHOSTS[op]:
+            <span class="c"># grown 2 / 4 mm so no ghost face is coplanar with the result or</span>
+            <span class="c"># with the other ghost (their top faces share z = 2)</span>
+            lo, hi = grown(*boxes[key], <span class="n">0.002</span> <span class="k">if</span> key == <span class="s">&#x27;A&#x27;</span> <span class="k">else</span> <span class="n">0.004</span>)
+            add(<span class="s">f&quot;</span>{op.title()}<span class="s">Ghost</span>{key}<span class="s">&quot;</span>, box_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">Ghost</span>{key}<span class="s">&quot;</span>, lo, hi),
+                ghost[key], mw)
+        <span class="k">for</span> key <span class="k">in</span> OUTLINES[op]:
+            lo, hi = grown(*boxes[key], <span class="n">0.006</span> <span class="k">if</span> key == <span class="s">&#x27;A&#x27;</span> <span class="k">else</span> <span class="n">0.010</span>)
+            add(<span class="s">f&quot;</span>{op.title()}<span class="s">Outline</span>{key}<span class="s">&quot;</span>,
+                tube_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">Outline</span>{key}<span class="s">&quot;</span>, box_edges(lo, hi, mw),
+                          <span class="n">0.009</span> <span class="k">if</span> key == <span class="s">&#x27;A&#x27;</span> <span class="k">else</span> <span class="n">0.011</span>),
+                steel <span class="k">if</span> key == <span class="s">&#x27;A&#x27;</span> <span class="k">else</span> amber)
 
-    half_x = SPACING + <span class="n">2.2</span>
-    plinth = add(<span class="s">&quot;Plinth&quot;</span>, bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>), walnut)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-        lo, hi = (-half_x, -<span class="n">2.3</span>, -<span class="n">0.16</span>), (half_x, <span class="n">2.3</span>, -<span class="n">0.004</span>)
-        <span class="k">for</span> vert <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
-            vert.co = Vector(tuple(lo[k] + (vert.co[k] + <span class="n">0.5</span>) * (hi[k] - lo[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)))
-        bm.to_mesh(plinth.data)
-    <span class="k">finally</span>:
-        bm.free()
+    half_x, half_y, top, depth = SPACING + <span class="n">2.0</span>, <span class="n">2.75</span>, -<span class="n">0.004</span>, <span class="n">0.22</span>
+    plinth = add(<span class="s">&quot;Plinth&quot;</span>, box_mesh(<span class="s">&quot;Plinth&quot;</span>, (-half_x, -half_y, top - depth),
+                                    (half_x, half_y, top)), walnut)
     bev = plinth.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
-    bev.width = <span class="n">0.03</span>
-    bev.segments = <span class="n">2</span>
+    bev.width = <span class="n">0.035</span>
+    bev.segments = <span class="n">3</span>
+
+    <span class="c"># Brass name plaques lying on the plinth in front of each set, tilted</span>
+    <span class="c"># back 32 degrees so they face the camera; raised dark lettering.</span>
+    tilt = math.radians(<span class="n">32.0</span>)
+    plate_w, plate_d, plate_t = <span class="n">2.1</span>, <span class="n">0.46</span>, <span class="n">0.028</span>
+    <span class="k">for</span> i, op <span class="k">in</span> enumerate(OPS):
+        base = Matrix.Translation(((i - <span class="n">1</span>) * SPACING, -half_y + <span class="n">0.16</span>, top)) \
+            @ Matrix.Rotation(tilt, <span class="n">4</span>, <span class="s">&#x27;X&#x27;</span>)
+        plate = add(<span class="s">f&quot;</span>{op.title()}<span class="s">Plaque</span><span class="s">&quot;</span>, box_mesh(<span class="s">f&quot;</span>{op.title()}<span class="s">Plaque</span><span class="s">&quot;</span>,
+                                                    (-plate_w / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                                                    (plate_w / <span class="n">2</span>, plate_d, plate_t)), brass, base)
+        pb = plate.modifiers.new(<span class="s">&quot;Chamfer&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+        pb.width = <span class="n">0.006</span>
+        pb.segments = <span class="n">2</span>
+        cu = bpy.data.curves.new(<span class="s">f&quot;</span>{op.title()}<span class="s">Label</span><span class="s">&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+        cu.body = LABELS[op]
+        cu.size = <span class="n">0.25</span>
+        cu.space_character = <span class="n">1.12</span>
+        cu.extrude = <span class="n">0.005</span>
+        cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+        cu.align_y = <span class="s">&#x27;CENTER&#x27;</span>
+        cu.materials.append(ink)
+        txt = bpy.data.objects.new(<span class="s">f&quot;</span>{op.title()}<span class="s">Label</span><span class="s">&quot;</span>, cu)
+        txt.matrix_world = base @ Matrix.Translation((<span class="n">0.0</span>, plate_d / <span class="n">2</span>, plate_t + <span class="n">0.0055</span>))
+        scene.collection.objects.link(txt)
+        parts.append(txt)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -803,7 +1051,7 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
     fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
-    floor.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.16</span>)
+    floor.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, top - depth)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
     wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
@@ -815,7 +1063,7 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    centre = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    centre = Vector((<span class="n">0.0</span>, -<span class="n">0.4</span>, <span class="n">0.9</span>))
 
     <span class="k">def</span> light(name, loc, energy, size, col, aim):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
@@ -825,18 +1073,21 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
         ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.0</span>, -<span class="n">6.0</span>, <span class="n">7.5</span>), <span class="n">700.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), centre)
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">7.0</span>, -<span class="n">5.5</span>, <span class="n">3.0</span>), <span class="n">140.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), centre)
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.0</span>, -<span class="n">6.5</span>, <span class="n">7.5</span>), <span class="n">760.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), centre)
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">7.0</span>, -<span class="n">5.5</span>, <span class="n">3.0</span>), <span class="n">260.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), centre)
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">2.0</span>, <span class="n">5.0</span>, <span class="n">7.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), centre)
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">3.0</span>, <span class="n">5.0</span>, <span class="n">3.0</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">5.0</span>, <span class="n">8.0</span>, <span class="n">1.0</span>))
+    <span class="c"># low softbox in front so the tilted brass plaques read (they mirror the</span>
+    <span class="c"># dark studio otherwise)</span>
+    light(<span class="s">&quot;PlaqueSoft&quot;</span>, (<span class="n">1.0</span>, -<span class="n">10.0</span>, <span class="n">3.2</span>), <span class="n">260.0</span>, <span class="n">12.0</span>, (<span class="n">1.0</span>, <span class="n">0.97</span>, <span class="n">0.92</span>), (<span class="n">0.0</span>, -<span class="n">2.4</span>, <span class="n">0.0</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.2</span>, -<span class="n">20.9</span>, <span class="n">11.0</span>)
+    cam.location = (<span class="n">3.0</span>, -<span class="n">21.3</span>, <span class="n">10.8</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = centre + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.1</span>))
+    aim.location = centre
     scene.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     tr.target = aim
@@ -846,7 +1097,8 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.samples = <span class="n">64</span>
+        scene.cycles.transmission_bounces = <span class="n">8</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -856,16 +1108,15 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the glazes and the orange cutter toward pastel (docs/VISUAL-STYLE.md)</span>
+    <span class="c"># AgX would wash the glazes and the amber cutter toward pastel (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.context.view_layer.update()
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact</span>
-    shown = list(results.values()) + parts
     fcode = gallery_framing.check_framing(
         scene, cam,
-        hero=shown,
-        elements=shown,
+        hero=parts,
+        elements=parts,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -924,7 +1175,7 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
         </article>
         <article class="card mini">
           <div class="card-media">
-            <img src="../assets/solidify-even-thickness-hero-640.webp" srcset="../assets/solidify-even-thickness-hero-640.webp 640w, ../assets/solidify-even-thickness-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two folded zigzag shells on a walnut plinth with orange cut ends: the left band pinching thin at each fold, the right one even width, above brass plaques reading use_even_offset False and True." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/solidify-even-thickness-hero-640.webp" srcset="../assets/solidify-even-thickness-hero-640.webp 640w, ../assets/solidify-even-thickness-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
             <h3><a class="stretch" href="../solidify-even-thickness/">Solidify Even Thickness</a></h3>
@@ -946,7 +1197,7 @@ MIN_CHANGE = <span class="n">0.5</span>        <span class="c"># m^3; check 5&#x
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
-    <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth, each inside steel and orange operand outlines: a teal union with a slab grown out of a cube, a brass cube notched through its top, and an orange overlap cube." />
+    <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." />
   </dialog>
   <footer class="site-footer">
     <div class="site-footer-inner">

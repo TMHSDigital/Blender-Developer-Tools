@@ -187,7 +187,9 @@ def eevee_engine_id():
 # Render staging only (runs after the check; never part of it)
 # ---------------------------------------------------------------------------
 
-def principled(name, base, rough, metal=0.0, noise=None, coat=0.0, emit=None):
+def principled(name, base, rough, metal=0.0, coat=0.0, coat_rough=0.1, rough_var=0.0):
+    """A designed Principled material. *rough_var* adds a low-frequency
+    roughness drift (no fine noise: on metal that reads as glitter)."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -197,18 +199,75 @@ def principled(name, base, rough, metal=0.0, noise=None, coat=0.0, emit=None):
     b.inputs["Metallic"].default_value = metal
     if coat:
         b.inputs["Coat Weight"].default_value = coat
-    if emit:
-        b.inputs["Emission Color"].default_value = (*emit[0], 1.0)
-        b.inputs["Emission Strength"].default_value = emit[1]
-    if noise:
+        b.inputs["Coat Roughness"].default_value = coat_rough
+    if rough_var:
         tex = nt.nodes.new("ShaderNodeTexNoise")
-        tex.inputs["Scale"].default_value = noise
-        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Scale"].default_value = 3.0
+        tex.inputs["Detail"].default_value = 2.0
         mr = nt.nodes.new("ShaderNodeMapRange")
-        mr.inputs["To Min"].default_value = max(rough - 0.08, 0.0)
-        mr.inputs["To Max"].default_value = rough + 0.14
+        mr.inputs["To Min"].default_value = max(rough - rough_var, 0.0)
+        mr.inputs["To Max"].default_value = rough + rough_var
         nt.links.new(tex.outputs["Fac"], mr.inputs["Value"])
         nt.links.new(mr.outputs["Result"], b.inputs["Roughness"])
+    return mat
+
+
+def ghost_glass(name, tint):
+    """Frosted, faintly tinted glass for an operand volume the result lost."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    b = mat.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*tint, 1.0)
+    b.inputs["Roughness"].default_value = 0.22
+    b.inputs["IOR"].default_value = 1.45
+    b.inputs["Transmission Weight"].default_value = 1.0
+    return mat
+
+
+def walnut_material():
+    """Walnut with grain running along the plinth (world X): distorted wave
+    bands mixed between two walnut tones, a soft blotch layer, a light bump,
+    and a satin coat that does not mirror the scene."""
+    mat = bpy.data.materials.new("Walnut")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mapn = nt.nodes.new("ShaderNodeMapping")
+    mapn.inputs["Scale"].default_value = (0.35, 2.4, 1.0)
+    nt.links.new(coord.outputs["Object"], mapn.inputs["Vector"])
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = 'BANDS'
+    wave.bands_direction = 'Y'
+    wave.inputs["Scale"].default_value = 2.2
+    wave.inputs["Distortion"].default_value = 7.0
+    wave.inputs["Detail"].default_value = 3.0
+    wave.inputs["Detail Scale"].default_value = 1.4
+    nt.links.new(mapn.outputs["Vector"], wave.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.25
+    ramp.color_ramp.elements[0].color = (0.085, 0.040, 0.020, 1.0)
+    ramp.color_ramp.elements[1].position = 0.85
+    ramp.color_ramp.elements[1].color = (0.19, 0.095, 0.045, 1.0)
+    nt.links.new(wave.outputs["Fac"], ramp.inputs["Fac"])
+    blot = nt.nodes.new("ShaderNodeTexNoise")
+    blot.inputs["Scale"].default_value = 1.6
+    blot.inputs["Detail"].default_value = 3.0
+    nt.links.new(coord.outputs["Object"], blot.inputs["Vector"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = 'RGBA'
+    mix.blend_type = 'MULTIPLY'
+    mix.inputs["Factor"].default_value = 0.35
+    nt.links.new(ramp.outputs["Color"], mix.inputs["A"])
+    nt.links.new(blot.outputs["Color"], mix.inputs["B"])
+    nt.links.new(mix.outputs["Result"], b.inputs["Base Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.04
+    nt.links.new(wave.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    b.inputs["Roughness"].default_value = 0.48
+    b.inputs["Coat Weight"].default_value = 0.2
+    b.inputs["Coat Roughness"].default_value = 0.32
     return mat
 
 
@@ -246,51 +305,114 @@ def box_edges(lo, hi, mw):
     return edges
 
 
+def grown(lo, hi, pad):
+    return tuple(v - pad for v in lo), tuple(v + pad for v in hi)
+
+
+# Which operand volumes each result no longer contains: those are drawn as
+# frosted ghosts so the eye can see what the solver removed.
+GHOSTS = {'UNION': (), 'DIFFERENCE': ('B',), 'INTERSECT': ('A', 'B')}
+# Outline rods: B everywhere (the coplanar cutter); A only where A is a ghost.
+OUTLINES = {'UNION': ('B',), 'DIFFERENCE': ('B',), 'INTERSECT': ('A', 'B')}
+LABELS = {'UNION': "UNION", 'DIFFERENCE': "DIFFERENCE", 'INTERSECT': "INTERSECT"}
+
+
 def render_still(results, cutters, path, engine):
     scene = bpy.context.scene
-    glazes = {
-        'UNION': principled("UnionGlaze", (0.07, 0.30, 0.34), 0.28, coat=0.5),
-        'DIFFERENCE': principled("DifferenceBrass", (0.86, 0.56, 0.26), 0.30, metal=1.0, noise=60.0),
-        'INTERSECT': principled("IntersectOrange", (0.95, 0.36, 0.05), 0.32, coat=0.4),
+    finishes = {
+        # glazed ceramic, machined bronze, glazed ceramic: three readable hues
+        'UNION': principled("UnionGlaze", (0.05, 0.29, 0.32), 0.32, coat=0.6, coat_rough=0.08,
+                            rough_var=0.06),
+        'DIFFERENCE': principled("DifferenceBronze", (0.78, 0.52, 0.27), 0.30, metal=1.0,
+                                 rough_var=0.07),
+        'INTERSECT': principled("IntersectGlaze", (0.90, 0.31, 0.05), 0.32, coat=0.6,
+                                coat_rough=0.08, rough_var=0.06),
     }
-    steel = principled("OperandA", (0.62, 0.64, 0.68), 0.25, metal=1.0)
-    cutter_mat = principled("OperandB", (1.0, 0.45, 0.06), 0.35,
-                            emit=((1.0, 0.45, 0.06), 1.2))
-    walnut = principled("Walnut", (0.13, 0.055, 0.025), 0.45, noise=40.0, coat=0.4)
+    steel = principled("OperandASteel", (0.70, 0.72, 0.75), 0.24, metal=1.0)
+    amber = principled("OperandBAmber", (0.95, 0.47, 0.10), 0.30, metal=0.6)
+    ghost = {'A': ghost_glass("GhostA", (0.86, 0.90, 0.95)),
+             'B': ghost_glass("GhostB", (1.0, 0.80, 0.55))}
+    brass = principled("PlaqueBrass", (0.84, 0.62, 0.32), 0.40, metal=1.0, rough_var=0.05)
+    ink = principled("PlaqueInk", (0.012, 0.010, 0.008), 0.6)
+    walnut = walnut_material()
 
     parts = []
 
-    def add(name, me, mat):
+    def add(name, me, mat, mw=None):
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
+        if mw is not None:
+            ob.matrix_world = mw
         scene.collection.objects.link(ob)
         parts.append(ob)
         return ob
 
+    # Display copies: the checked results, frozen, with a 12 mm machined
+    # chamfer. The modifier objects themselves (already measured) are hidden
+    # from the render, so the chamfer never touches the volume check.
+    deps = bpy.context.evaluated_depsgraph_get()
     for i, op in enumerate(OPS):
         res = results[op]
-        res.data.materials.append(glazes[op])
+        shown = bpy.data.meshes.new_from_object(res.evaluated_get(deps))
+        # the boolean output carries the operands' (empty) material slots;
+        # start clean so every face takes the finish below
+        shown.materials.clear()
+        for poly in shown.polygons:
+            poly.material_index = 0
+        ob = add(f"{op.title()}Shown", shown, finishes[op], res.matrix_world.copy())
+        bev = ob.modifiers.new("MachinedChamfer", 'BEVEL')
+        bev.width = 0.012
+        bev.segments = 3
+        bev.limit_method = 'ANGLE'
+        bev.harden_normals = True
+        res.hide_render = True
         mw = frame(i)
-        # thin outlines of both operands: A in steel, the coplanar cutter B in orange
-        add(f"{op.title()}OutlineA", tube_mesh(f"{op.title()}OutlineA",
-                                               box_edges(A_LO, A_HI, mw), 0.016), steel)
-        add(f"{op.title()}OutlineB", tube_mesh(f"{op.title()}OutlineB",
-                                               box_edges(B_LO, B_HI, mw), 0.020), cutter_mat)
+        boxes = {'A': (A_LO, A_HI), 'B': (B_LO, B_HI)}
+        for key in GHOSTS[op]:
+            # grown 2 / 4 mm so no ghost face is coplanar with the result or
+            # with the other ghost (their top faces share z = 2)
+            lo, hi = grown(*boxes[key], 0.002 if key == 'A' else 0.004)
+            add(f"{op.title()}Ghost{key}", box_mesh(f"{op.title()}Ghost{key}", lo, hi),
+                ghost[key], mw)
+        for key in OUTLINES[op]:
+            lo, hi = grown(*boxes[key], 0.006 if key == 'A' else 0.010)
+            add(f"{op.title()}Outline{key}",
+                tube_mesh(f"{op.title()}Outline{key}", box_edges(lo, hi, mw),
+                          0.009 if key == 'A' else 0.011),
+                steel if key == 'A' else amber)
 
-    half_x = SPACING + 2.2
-    plinth = add("Plinth", bpy.data.meshes.new("Plinth"), walnut)
-    bm = bmesh.new()
-    try:
-        res = bmesh.ops.create_cube(bm, size=1.0)
-        lo, hi = (-half_x, -2.3, -0.16), (half_x, 2.3, -0.004)
-        for vert in res["verts"]:
-            vert.co = Vector(tuple(lo[k] + (vert.co[k] + 0.5) * (hi[k] - lo[k]) for k in range(3)))
-        bm.to_mesh(plinth.data)
-    finally:
-        bm.free()
+    half_x, half_y, top, depth = SPACING + 2.0, 2.75, -0.004, 0.22
+    plinth = add("Plinth", box_mesh("Plinth", (-half_x, -half_y, top - depth),
+                                    (half_x, half_y, top)), walnut)
     bev = plinth.modifiers.new("Chamfer", 'BEVEL')
-    bev.width = 0.03
-    bev.segments = 2
+    bev.width = 0.035
+    bev.segments = 3
+
+    # Brass name plaques lying on the plinth in front of each set, tilted
+    # back 32 degrees so they face the camera; raised dark lettering.
+    tilt = math.radians(32.0)
+    plate_w, plate_d, plate_t = 2.1, 0.46, 0.028
+    for i, op in enumerate(OPS):
+        base = Matrix.Translation(((i - 1) * SPACING, -half_y + 0.16, top)) \
+            @ Matrix.Rotation(tilt, 4, 'X')
+        plate = add(f"{op.title()}Plaque", box_mesh(f"{op.title()}Plaque",
+                                                    (-plate_w / 2, 0.0, 0.0),
+                                                    (plate_w / 2, plate_d, plate_t)), brass, base)
+        pb = plate.modifiers.new("Chamfer", 'BEVEL')
+        pb.width = 0.006
+        pb.segments = 2
+        cu = bpy.data.curves.new(f"{op.title()}Label", 'FONT')
+        cu.body = LABELS[op]
+        cu.size = 0.25
+        cu.space_character = 1.12
+        cu.extrude = 0.005
+        cu.align_x = 'CENTER'
+        cu.align_y = 'CENTER'
+        cu.materials.append(ink)
+        txt = bpy.data.objects.new(f"{op.title()}Label", cu)
+        txt.matrix_world = base @ Matrix.Translation((0.0, plate_d / 2, plate_t + 0.0055))
+        scene.collection.objects.link(txt)
+        parts.append(txt)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -306,7 +428,7 @@ def render_still(results, cutters, path, engine):
     fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
-    floor.location = (0.0, 0.0, -0.16)
+    floor.location = (0.0, 0.0, top - depth)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
     wall.location = (0.0, 8.0, 0.0)
@@ -318,7 +440,7 @@ def render_still(results, cutters, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    centre = Vector((0.0, 0.0, 1.0))
+    centre = Vector((0.0, -0.4, 0.9))
 
     def light(name, loc, energy, size, col, aim):
         ld = bpy.data.lights.new(name, 'AREA')
@@ -328,18 +450,21 @@ def render_still(results, cutters, path, engine):
         ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", (-5.0, -6.0, 7.5), 700.0, 5.0, (1.0, 0.96, 0.9), centre)
-    light("Fill", (7.0, -5.5, 3.0), 140.0, 8.0, (0.75, 0.85, 1.0), centre)
+    light("Key", (-5.0, -6.5, 7.5), 760.0, 5.0, (1.0, 0.96, 0.9), centre)
+    light("Fill", (7.0, -5.5, 3.0), 260.0, 8.0, (0.75, 0.85, 1.0), centre)
     light("Rim", (2.0, 5.0, 7.0), 420.0, 4.0, (0.6, 0.78, 1.0), centre)
     light("Wedge", (3.0, 5.0, 3.0), 480.0, 6.0, (1.0, 0.76, 0.5), (5.0, 8.0, 1.0))
+    # low softbox in front so the tilted brass plaques read (they mirror the
+    # dark studio otherwise)
+    light("PlaqueSoft", (1.0, -10.0, 3.2), 260.0, 12.0, (1.0, 0.97, 0.92), (0.0, -2.4, 0.0))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.2, -20.9, 11.0)
+    cam.location = (3.0, -21.3, 10.8)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = centre + Vector((0.0, 0.0, -0.1))
+    aim.location = centre
     scene.collection.objects.link(aim)
     tr = cam.constraints.new('TRACK_TO')
     tr.target = aim
@@ -349,7 +474,8 @@ def render_still(results, cutters, path, engine):
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
+        scene.cycles.transmission_bounces = 8
     else:
         try:
             scene.eevee.taa_render_samples = 64
@@ -359,16 +485,15 @@ def render_still(results, cutters, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
-    # AgX would wash the glazes and the orange cutter toward pastel (docs/VISUAL-STYLE.md)
+    # AgX would wash the glazes and the amber cutter toward pastel (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
     bpy.context.view_layer.update()
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact
-    shown = list(results.values()) + parts
     fcode = gallery_framing.check_framing(
         scene, cam,
-        hero=shown,
-        elements=shown,
+        hero=parts,
+        elements=parts,
         stage=[floor, wall],
     )
     if fcode:
