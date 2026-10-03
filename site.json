@@ -18,8 +18,8 @@
   },
   "installSteps": [
     "Clone the repo: <code>git clone https://github.com/TMHSDigital/Blender-Developer-Tools</code>",
-    "<strong>Cursor:</strong> copy <code>rules/</code> into your project's <code>.cursor/rules/</code> — they auto-apply via scope globs; reference skills by name in chat",
-    "<strong>Claude Code:</strong> copy <code>skills/</code> and <code>rules/</code> into your project workspace, or point Claude Code at the checkout",
+    "<strong>Cursor:</strong> copy <code>rules/*.mdc</code> into your project's <code>.cursor/rules/</code> — they auto-apply via scope globs; reference skills by name in chat",
+    "<strong>Claude Code:</strong> run <code>/plugin marketplace add TMHSDigital/Blender-Developer-Tools</code> then <code>/plugin install blender-developer-tools@blender-developer-tools</code>; import <code>claude/blender-rules.md</code> from your <code>CLAUDE.md</code> for the rules",
     "Grab <code>snippets/</code> and <code>templates/</code> as starting points for add-ons and headless batch jobs"
   ]
 }

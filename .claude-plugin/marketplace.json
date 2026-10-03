@@ -1,0 +1,15 @@
+{
+  "name": "blender-developer-tools",
+  "owner": {
+    "name": "TMHSDigital",
+    "url": "https://github.com/TMHSDigital"
+  },
+  "plugins": [
+    {
+      "name": "blender-developer-tools",
+      "source": "./",
+      "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
+      "version": "0.131.1"
+    }
+  ]
+}

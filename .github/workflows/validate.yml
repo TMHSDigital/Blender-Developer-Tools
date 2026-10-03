@@ -197,6 +197,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/site/requirements.txt
 
       - run: pip install -r scripts/site/requirements.txt
 
@@ -275,6 +277,62 @@ jobs:
           print(f'Manifest verified at v{version}: {counts}')
           PYEOF
 
+  validate-claude-packaging:
+    name: Validate Claude Code packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check .claude-plugin manifests match VERSION and the skills on disk
+        run: |
+          python3 << 'PYEOF'
+          import glob
+          import json
+          import os
+          import sys
+
+          errors = []
+          version = open('VERSION').read().strip()
+          plugin = json.load(open('.claude-plugin/plugin.json', encoding='utf-8'))
+          market = json.load(open('.claude-plugin/marketplace.json', encoding='utf-8'))
+
+          if plugin.get('version') != version:
+              errors.append(f"claude plugin.json version {plugin.get('version')!r} != VERSION {version!r}")
+          if plugin.get('name') != 'blender-developer-tools':
+              errors.append('claude plugin.json name must be blender-developer-tools')
+          entries = market.get('plugins', [])
+          if len(entries) != 1 or entries[0].get('name') != plugin.get('name'):
+              errors.append('marketplace.json must list exactly the one plugin from plugin.json')
+          elif entries[0].get('version') != version:
+              errors.append(f"marketplace.json plugin version {entries[0].get('version')!r} != VERSION {version!r}")
+          elif not os.path.isdir(os.path.join(entries[0].get('source', ''), 'skills')):
+              errors.append('marketplace.json source must point at a directory containing skills/')
+
+          # Claude Code discovers skills/<name>/SKILL.md; each needs name + description.
+          for path in sorted(glob.glob('skills/*/SKILL.md')):
+              parts = open(path, encoding='utf-8').read().replace('\r\n', '\n').split('---')
+              front = parts[1] if len(parts) > 2 else ''
+              for key in ('name:', 'description:'):
+                  if key not in front:
+                      errors.append(f'{path}: frontmatter missing {key}')
+
+          if errors:
+              for e in errors:
+                  print(f'::error::{e}', file=sys.stderr)
+              sys.exit(1)
+          print('Claude Code packaging verified')
+          PYEOF
+
+      - name: Check CLAUDE.md carries no personal plugin routing block
+        run: |
+          if grep -nE 'context-mode|MANDATORY routing rules|ctx_(execute|batch_execute|search|fetch_and_index)' CLAUDE.md; then
+            echo "::error::CLAUDE.md contains a personal plugin routing block (see #288)"
+            exit 1
+          fi
+
+      - name: Check claude/blender-rules.md is regenerated from rules/*.mdc
+        run: python3 scripts/build_claude_rules.py --check
+
   validate-counts:
     name: Validate content counts
     runs-on: ubuntu-latest
@@ -282,6 +340,8 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Check content counts match README
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python3 << 'PYEOF'
           import os
@@ -337,6 +397,36 @@ jobs:
               errors.append(
                   f'README showcase count mismatch (expected "{showcase_needle}" substring)'
               )
+
+          # Documented snippet length cap (README, CLAUDE.md, CONTRIBUTING.md).
+          for f in sorted(os.listdir('snippets')):
+              if f.endswith('.py'):
+                  n = len(open(os.path.join('snippets', f), encoding='utf-8').read().splitlines())
+                  if not 5 <= n <= 75:
+                      errors.append(f'snippets/{f} is {n} lines (documented range is 5 to 75)')
+
+          # Secondary docs must not carry stale aggregate counts.
+          import re
+          for doc in ('AGENTS.md', 'CONTRIBUTING.md'):
+              text = open(doc, encoding='utf-8').read()
+              for kind, actual in (('examples', example_count), ('showcase pieces', showcase_count)):
+                  for m in re.finditer(r'(\d+) ' + kind, text):
+                      if int(m.group(1)) != actual:
+                          errors.append(f'{doc} says "{m.group(0)}" but the repo has {actual}')
+
+          # The GitHub About text drifts silently otherwise. Warn only: it is
+          # repo metadata edited by hand and must not block content PRs.
+          import subprocess
+          try:
+              about = subprocess.run(
+                  ['gh', 'repo', 'view', '--json', 'description', '--jq', '.description'],
+                  capture_output=True, text=True, timeout=60, check=True,
+              ).stdout
+              for needle in (f'{example_count} examples', f'{showcase_count} showcase'):
+                  if needle not in about:
+                      print(f'::warning::GitHub repo description is stale (missing "{needle}"): {about.strip()}')
+          except (subprocess.SubprocessError, OSError) as exc:
+              print(f'::warning::could not read the GitHub repo description: {exc}')
 
           if errors:
               for e in errors:
