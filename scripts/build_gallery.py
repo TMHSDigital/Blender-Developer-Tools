@@ -1341,7 +1341,8 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
           og_size: tuple[int, int], og_alt: str, og_type: str,
           site_root: str, gallery_root: str, repo_url: str, css_v: str,
           content: str, page_js: str, head_js: str = "",
-          sources: tuple[str, ...] = ("examples/gallery.json",)) -> str:
+          sources: tuple[str, ...] = ("examples/gallery.json",),
+          twitter_image: str = "", twitter_alt: str = "") -> str:
     canon = ""
     if canonical:
         c = html.escape(canonical, quote=True)
@@ -1349,13 +1350,17 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
                  f'  <meta property="og:url" content="{c}" />\n')
     if og_image:
         img, alt = html.escape(og_image, quote=True), html.escape(og_alt, quote=True)
+        # og:image stays a JPEG/PNG (several scrapers skip webp); X renders
+        # webp, so a page may give twitter:image its own hero instead.
+        timg = html.escape(twitter_image or og_image, quote=True)
+        talt = html.escape(twitter_alt or og_alt, quote=True)
         og = (f'  <meta property="og:image" content="{img}" />\n'
               f'  <meta property="og:image:width" content="{og_size[0]}" />\n'
               f'  <meta property="og:image:height" content="{og_size[1]}" />\n'
               f'  <meta property="og:image:alt" content="{alt}" />\n'
               '  <meta name="twitter:card" content="summary_large_image" />\n'
-              f'  <meta name="twitter:image" content="{img}" />\n'
-              f'  <meta name="twitter:image:alt" content="{alt}" />\n')
+              f'  <meta name="twitter:image" content="{timg}" />\n'
+              f'  <meta name="twitter:image:alt" content="{talt}" />\n')
     else:
         og = '  <meta name="twitter:card" content="summary" />\n'
     source_html = " + ".join(f"<code>{html.escape(s)}</code>" for s in sources)
@@ -1535,9 +1540,11 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
         title=f"{display_title(ex)} ({name}) — {kind_title} — Blender Developer Tools",
         desc=ex["teaches"],
         canonical=f"{site}/gallery/{name}/" if site else "",
-        og_image=f"{site}/gallery/assets/{hero_file}" if site else "",
-        og_size=(1280, 720),
-        og_alt=ex["alt"],
+        og_image=f"{site}/assets/og-card.jpg" if site else "",
+        og_size=OG_CARD_SIZE,
+        og_alt=OG_CARD_ALT,
+        twitter_image=f"{site}/gallery/assets/{hero_file}" if site else "",
+        twitter_alt=ex["alt"],
         og_type="article",
         site_root="../../",
         gallery_root="../",

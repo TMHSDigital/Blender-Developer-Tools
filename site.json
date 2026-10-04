@@ -1,4 +1,5 @@
 {
+  "description": "Skills, rules, snippets and templates that keep AI coding agents (Claude Code, Cursor) writing correct Blender Python for 5.2 LTS and 4.5 LTS, backed by runnable examples that are smoke-tested on both versions.",
   "canonical": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
   "favicon": "assets/favicon.svg",
   "ogImage": "https://tmhsdigital.github.io/Blender-Developer-Tools/assets/og-card.jpg",

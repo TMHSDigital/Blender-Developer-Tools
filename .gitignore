@@ -51,3 +51,4 @@ build/
 
 # Staged Pages tree (scripts/site/stage_public.py)
 _site/
+docs/sitemap.xml

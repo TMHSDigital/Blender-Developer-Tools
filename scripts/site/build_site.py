@@ -395,7 +395,12 @@ def load_plugin_meta(repo_root: Path, site: dict) -> dict:
     synthesized manifest."""
     plugin_path = repo_root / ".cursor-plugin" / "plugin.json"
     if plugin_path.is_file():
-        return load_json(plugin_path)
+        meta = load_json(plugin_path)
+        # The manifest description is written for a plugin listing; site.json
+        # may carry a page-specific one for the meta/og description.
+        if site.get("description"):
+            meta = {**meta, "description": site["description"]}
+        return meta
 
     pkg_path = repo_root / "package.json"
     pkg = load_json(pkg_path) if pkg_path.is_file() else {}
@@ -438,6 +443,31 @@ def group_by_category(items: list[dict]) -> dict[str, list[dict]]:
         cat = item.get("category", "General") or "General"
         groups.setdefault(cat, []).append(item)
     return dict(sorted(groups.items()))
+
+
+def write_sitemap(repo_root: Path, out_dir: Path, canonical: str) -> None:
+    """sitemap.xml: landing, gallery index, every gallery detail page. Gallery
+    pages come from the two gallery.json files build_gallery.py renders, so the
+    list cannot drift from the site. No robots.txt: this is a project page under
+    /Blender-Developer-Tools/, and crawlers only read robots.txt at the host
+    root, so submit the sitemap URL in search consoles instead."""
+    if not canonical:
+        return
+    root = canonical.rstrip("/") + "/"
+    urls = [root, root + "gallery/"]
+    for rel, key in (("examples/gallery.json", "examples"), ("showcase/gallery.json", "pieces")):
+        path = repo_root / rel
+        if not path.is_file():
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entries = data[key] if isinstance(data, dict) else data
+        urls += [f"{root}gallery/{e['name']}/" for e in entries]
+    body = "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls)
+    (out_dir / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{body}</urlset>\n", encoding="utf-8")
+    print(f"Wrote {out_dir / 'sitemap.xml'} ({len(urls)} URLs)")
 
 
 def main():
@@ -552,6 +582,8 @@ def main():
     not_found = env.get_template("404.html.j2").render(site=site, plugin=plugin, base=base)
     (out_dir / "404.html").write_text(not_found, encoding="utf-8")
     print(f"Wrote {out_dir / '404.html'}")
+
+    write_sitemap(repo_root, out_dir, site.get("canonical", ""))
 
     fonts_src = template_dir / "fonts"
     fonts_dst = out_dir / "fonts"
