@@ -43,7 +43,7 @@ Create a new file `blender_manifest.toml` next to `__init__.py`. Translate the `
 | `"description"` | `tagline = "..."` | Renamed |
 | `"category"` | `tags = ["..."]` | Now a list of allowed tags |
 | `"location"`, `"warning"` | (no equivalent) | Drop |
-| (none) | `id = "..."` | New required field; reverse-DNS or short slug |
+| (none) | `id = "..."` | New required field; a Python identifier such as `my_tool` (no dots, so not reverse-DNS; no `__`; no leading or trailing `_`) |
 | (none) | `schema_version = "1.0.0"` | Required |
 | (none) | `type = "add-on"` | Required |
 | (none) | `license = ["SPDX:..."]` | Required SPDX expression |

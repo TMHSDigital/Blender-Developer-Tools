@@ -19,8 +19,10 @@ compatibility, but new code should treat the manifest as the source of
 truth. Add-ons that ship only `bl_info`:
 
 - Cannot be submitted to the official extensions platform.
-- Cannot declare `permissions` (network, files, clipboard, camera) and
-  therefore are sandboxed by default with no way to request access.
+- Cannot declare `permissions` (files, network, clipboard, camera,
+  microphone). Permissions are declarations shown to users, not a sandbox:
+  Blender does not restrict add-on Python either way, so a `bl_info`-only
+  add-on simply cannot tell users what it accesses.
 - Cannot declare `tags` for discovery.
 - Lose access to manifest-only fields like `tagline`, `website`,
   `copyright`, structured `license`.

@@ -47,7 +47,7 @@ copyright = ["2026 TMHSDigital"]
 Field rules that AIs commonly get wrong:
 
 - `tagline` is hard-capped at 64 characters and **must not end with a period**. Blender's manifest validator rejects both.
-- `id` must be a valid Python identifier (`[A-Za-z_][A-Za-z0-9_]*`). The directory name does not need to match the `id` but conventionally does.
+- `id` must be a valid Python identifier with no double underscore and no leading or trailing underscore: `my_tool` passes; `com.acme.tool`, `_tool`, `tool_` and `my__tool` fail `blender --command extension validate` (`pkg_idname_is_valid_or_error` in the bundled `blender_ext.py`, same rules on 4.5 and 5.2). The directory name does not need to match the `id` but conventionally does.
 - `license` and `copyright` are **arrays of strings**, not bare strings.
 - `blender_version_min` is the floor. Setting it to `"4.5.0"` lets the same code run on 4.5 LTS and any 5.x. Setting it to `"5.0.0"` cuts off LTS users with no warning.
 - `schema_version` is `"1.0.0"` for the current manifest schema. Do not bump it.
@@ -60,7 +60,7 @@ tags = ["Mesh", "Geometry Nodes"]
 permissions = { network = "Optional, only used to fetch updates" }
 ```
 
-`tags` must come from Blender's known tag list. `permissions` is a dict of granted-permission to human-readable reason; if omitted, the extension is sandboxed against network, files, clipboard, and camera.
+`tags` must come from Blender's known tag list. `permissions` maps each capability the add-on uses to a human-readable reason; the valid keys are `files`, `network`, `clipboard`, `camera` and `microphone`. It is a **declaration** shown to users and reviewers on the extensions platform, not a sandbox: Blender does not restrict what add-on Python can do, with or without it. Declare everything the code actually uses. For network access, also honor `bpy.app.online_access` (the user's "Allow Online Access" preference) and do nothing online when it is `False`.
 
 ## File layout
 
