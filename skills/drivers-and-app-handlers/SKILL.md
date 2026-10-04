@@ -210,21 +210,24 @@ from bpy.app.handlers import persistent
 
 @persistent
 def increment_save_count(filepath):
-    # save_post passes the saved file path (a string) as its only argument.
-    # Store the running count on the current scene.
+    # save_pre runs before the write, so the new count lands in the file being
+    # saved (a save_post write would only reach the next save). It receives the
+    # target path. ID-property keys are limited to 63 characters, so key by the
+    # file name, never the full path, which raises KeyError when longer.
     scene = bpy.context.scene
+    key = bpy.path.basename(filepath)[:63] or "untitled"
     counts = scene.get('save_counts', {})
-    counts[filepath] = counts.get(filepath, 0) + 1
+    counts[key] = counts.get(key, 0) + 1
     scene['save_counts'] = counts
 
 
 def register():
-    bpy.app.handlers.save_post.append(increment_save_count)
+    bpy.app.handlers.save_pre.append(increment_save_count)
 
 
 def unregister():
-    if increment_save_count in bpy.app.handlers.save_post:
-        bpy.app.handlers.save_post.remove(increment_save_count)
+    if increment_save_count in bpy.app.handlers.save_pre:
+        bpy.app.handlers.save_pre.remove(increment_save_count)
 ```
 
 ### Worked example: cleanup on exit (5.1+)

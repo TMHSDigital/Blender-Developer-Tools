@@ -31,6 +31,7 @@ def export_preset_unity(filepath, selected_only=True, draco=False):
     apply_selected_mesh_transforms()
     bpy.ops.export_scene.gltf(
         filepath=filepath,
+        export_format="GLB",
         use_selection=selected_only,
         export_yup=True,
         export_apply=True,

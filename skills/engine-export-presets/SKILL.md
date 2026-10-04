@@ -51,6 +51,7 @@ def apply_selected_mesh_transforms():
 ```python
 bpy.ops.export_scene.gltf(
     filepath=path,
+    export_format="GLB",
     use_selection=True,
     export_yup=True,
     export_apply=True,
@@ -68,6 +69,7 @@ Snippet: [`snippets/export_preset_unity.py`](https://github.com/TMHSDigital/Blen
 ```python
 bpy.ops.export_scene.gltf(
     filepath=path,
+    export_format="GLB",
     use_selection=True,
     export_yup=False,
     export_apply=True,
@@ -115,7 +117,7 @@ Snippet: [`snippets/export_preset_unreal.py`](https://github.com/TMHSDigital/Ble
 
 Probed on 4.5 LTS, 5.1, and 5.2: `export_yup` on glTF and `axis_forward` / `axis_up` / `global_scale` on FBX are present on all three. No version branch for the axis kwargs. Guard by requiring those names in operator RNA so a future rename fails loudly, as [`examples/gltf-export-roundtrip/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip) does.
 
-`export_format` defaults differ by call site; pass the filepath suffix (`.glb` / `.gltf` / `.fbx`) and let the operator infer, or set `export_format` explicitly on glTF.
+Always pass `export_format` on glTF and make the filepath suffix match it. The operator does **not** infer the format from the suffix: `export_scene.gltf(filepath="x.gltf")` with no `export_format` writes a binary `x.glb`, so the requested path never exists (measured on 4.5.11 and 5.2.1). Use `export_format="GLB"` with `.glb`, or `"GLTF_SEPARATE"` with `.gltf`.
 
 ## Related
 

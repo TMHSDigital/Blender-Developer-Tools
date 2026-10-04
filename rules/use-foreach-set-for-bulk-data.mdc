@@ -66,8 +66,12 @@ Same 100,000 vertices: under a millisecond.
 
 The signature is `foreach_set(attribute, sequence)` where:
 
-- `attribute` is the name of the per-element attribute as a string
-  (`"co"`, `"normal"`, `"index"`, `"use_smooth"`, etc.).
+- `attribute` is the name of a **writable** per-element attribute as a
+  string (`"co"`, `"use_smooth"`, `"material_index"`, etc.). Read-only
+  attributes such as vertex `"normal"` and `"index"` accept `foreach_set`
+  without error and change nothing (measured on 5.2.1 LTS): vertex normals
+  are derived, so read them with `foreach_get` (or `mesh.vertex_normals`)
+  and write custom normals with `mesh.normals_split_custom_set(...)`.
 - `sequence` is a flat 1D iterable of `len(elements) * components`
   values. For vector attributes (3 floats per vertex), the buffer is
   3x as long as the element count.
@@ -85,8 +89,6 @@ import numpy as np
 
 n = len(mesh.vertices)
 coords = np.empty(n * 3, dtype=np.float32)
-mesh.vertices.foreach_get("co", coords)
-
 mesh.vertices.foreach_get("co", coords)
 xs = coords[0::3]
 ys = coords[1::3]

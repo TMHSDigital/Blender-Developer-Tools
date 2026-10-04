@@ -260,6 +260,7 @@ def export_preset(filepath, preset, draco):
     if preset == "unity":
         bpy.ops.export_scene.gltf(
             filepath=filepath,
+            export_format="GLB",
             use_selection=True,
             export_yup=True,
             export_apply=True,
@@ -270,6 +271,7 @@ def export_preset(filepath, preset, draco):
     if preset == "godot":
         bpy.ops.export_scene.gltf(
             filepath=filepath,
+            export_format="GLB",
             use_selection=True,
             export_yup=False,
             export_apply=True,
@@ -296,6 +298,7 @@ def export_preset(filepath, preset, draco):
     apply_selected_mesh_transforms()
     bpy.ops.export_scene.gltf(
         filepath=filepath,
+        export_format="GLB",
         use_selection=True,
         export_yup=True,
         export_apply=True,
