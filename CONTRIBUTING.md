@@ -148,10 +148,11 @@ Default PR smoke is Blender 5.2 and 4.5 (`.github/workflows/blender-smoke.yml`).
   pick the branch and the `series` input.
 - Monday 07:00 UTC cron still runs 5.2, 5.1, and 4.5. Do not treat cron as
   PR evidence.
-- **There is deliberately no `push` trigger on `blender-smoke.yml`.**
-  Squash-merging a green PR makes `main` identical to the content already
-  smoke-tested, so a push job would re-prove the same tree at double the
-  CI cost. Absence of post-merge smoke is not a coverage gap.
+- **`blender-smoke.yml` also runs on `push` to `main`**, with the same
+  `paths-ignore` as pull requests. It exists so a direct push to `main` is
+  smoke-tested before `release.yml` releases it: the release gate waits for
+  that run. For a merged PR the gate reads the PR's own checks, so the PR-head
+  5.2 and 4.5 jobs remain the merge evidence.
 - **`pages.yml` is path-filtered.** A workflow-or-docs-only merge does not
   deploy Pages. Observed on `13ea521` (`ci:` #137): Validate, drift-check,
   and Release ran; Pages did not. Intentional, not a failed job.
