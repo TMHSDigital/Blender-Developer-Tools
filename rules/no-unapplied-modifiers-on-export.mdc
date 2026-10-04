@@ -13,19 +13,31 @@ live in the depsgraph. An export that does not ask for evaluated geometry
 writes the cage: the LOD modifier is dropped, the engine gets the dense
 mesh, and the script still exits 0.
 
-glTF: `export_apply=True` applies modifiers excluding armatures.
-USD: `evaluation_mode='RENDER'` or `'VIEWPORT'`.
-FBX: `use_mesh_modifiers=True`.
+Each exporter has its own switch (defaults measured on 4.5 LTS and 5.2 LTS):
+
+- glTF: `export_apply` defaults to `False`. Pass `export_apply=True`
+  (applies modifiers excluding armatures).
+- FBX: `use_mesh_modifiers` defaults to `True`. Only an explicit `False`
+  drops them.
+- USD: modifiers are evaluated by default (`evaluation_mode` defaults to
+  `'RENDER'`), so DECIMATE ships with no extra argument. **Subdivision is the
+  exception:** under the default `export_subdivision='BEST_MATCH'` a SUBSURF
+  modifier is written as the cage plus a `subdivisionScheme`, whatever
+  `evaluation_mode` says. Pass `export_subdivision='TESSELLATE'` to ship the
+  subdivided mesh.
 
 `export_apply` is not "apply object transforms". Apply object scale first.
 See rule `validate-imported-mesh-scale`.
 
 ## What this rule flags
 
-A `bpy.ops.export_scene.gltf`, `bpy.ops.export_scene.fbx`, or
-`bpy.ops.wm.usd_export` call in a file that adds modifiers (`modifiers.new`)
-and never requests evaluated geometry (`export_apply=True` or
-`evaluation_mode=`), and never applies those modifiers before export.
+In a file that adds modifiers (`modifiers.new`) and never applies them
+(`modifier_apply`):
+
+- a `bpy.ops.export_scene.gltf` call without `export_apply=True`;
+- a `bpy.ops.export_scene.fbx` call with `use_mesh_modifiers=False`;
+- a `bpy.ops.wm.usd_export` call without `export_subdivision='TESSELLATE'`
+  when one of the modifiers is SUBSURF.
 
 ```python
 # WRONG: DECIMATE on the object, glTF without export_apply
@@ -36,9 +48,10 @@ bpy.ops.export_scene.gltf(filepath=path, use_selection=True)
 ```
 
 ```python
-# WRONG: USD viewport/render mode omitted; default BEST_MATCH writes the cage
+# WRONG: evaluation_mode does not help here; default BEST_MATCH writes the
+# 8-point cube cage plus subdivisionScheme, not the subdivided mesh
 obj.modifiers.new("ss", "SUBSURF").levels = 2
-bpy.ops.wm.usd_export(filepath=path)
+bpy.ops.wm.usd_export(filepath=path, evaluation_mode="RENDER")
 ```
 
 ## The required pattern
@@ -58,7 +71,9 @@ bpy.ops.export_scene.gltf(
 )
 ```
 
-USD:
+USD with subdivision (`evaluation_mode` picks render vs viewport levels:
+a cube at levels 1 / render_levels 2 ships 26 points with `'VIEWPORT'`, 98
+with the default `'RENDER'`):
 
 ```python
 bpy.ops.wm.usd_export(

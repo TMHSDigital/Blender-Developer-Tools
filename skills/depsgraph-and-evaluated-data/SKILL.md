@@ -146,12 +146,20 @@ Read raw `obj.data` directly when:
 
 For most read paths, prefer the depsgraph route. The cost is one indirection; the safety is enormous.
 
-## `evaluation_mode` for exporters
+## Evaluation mode for exporters
 
-The USD, Alembic, and OBJ exporters accept an `evaluation_mode` parameter that controls how Blender evaluates the scene before exporting:
+The USD and Alembic exporters take `evaluation_mode`; the OBJ exporter's equivalent is `export_eval_mode` with different values. Passing `evaluation_mode=` to `wm.obj_export` raises `TypeError`.
 
-- `'RENDER'`: include render-only modifiers (subsurf at render levels, etc.). Use for final exports.
-- `'VIEWPORT'`: use viewport modifier levels. Use for fast preview exports.
+| Exporter | Parameter | Values | Default |
+| --- | --- | --- | --- |
+| `wm.usd_export` | `evaluation_mode` | `'RENDER'`, `'VIEWPORT'` | `'RENDER'` |
+| `wm.alembic_export` | `evaluation_mode` | `'RENDER'`, `'VIEWPORT'` | `'RENDER'` |
+| `wm.obj_export` | `export_eval_mode` | `'DAG_EVAL_RENDER'`, `'DAG_EVAL_VIEWPORT'` | `'DAG_EVAL_VIEWPORT'` |
+
+- Render: modifiers at render levels (subsurf `render_levels`, render-only modifiers). Use for final exports.
+- Viewport: modifiers at viewport levels. Use for fast preview exports.
+
+Note the OBJ default is the opposite of USD's.
 
 Default `export_subdivision='BEST_MATCH'` writes the **cage** plus
 `subdivisionScheme = catmullClark`. VIEWPORT and RENDER files are then
