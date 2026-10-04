@@ -1,7 +1,9 @@
 name: Blender Smoke Test
 
 # Executes the snippets' and skills' headline examples inside REAL Blender, headless,
-# on the current stable (5.2.x LTS) and the fallback LTS (4.5.x) on every PR,
+# on the current stable (5.2.x LTS) and the fallback LTS (4.5.x) on every PR and
+# every push to main (direct pushes are released, and release-gate.sh waits for
+# this run on the pushed SHA),
 # plus 5.1.x on the weekly cron, the opt-in `needs-5.1` PR label, or a
 # workflow_dispatch series input, and fails on any error or
 # empty-output assertion. Shipped examples go through tests/smoke/run_example.py
@@ -30,6 +32,14 @@ on:
         default: "5.2"
   schedule:
     - cron: "0 7 * * 1"   # weekly, Monday 07:00 UTC
+  push:
+    branches: [main]
+    # Same filter as pull_request below. release-gate.sh mirrors these globs to
+    # decide whether a push has a smoke run to wait for; keep them in step.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "assets/**"
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, labeled]
@@ -46,8 +56,9 @@ permissions:
 concurrency:
   # Isolate labeled runs so auto-label (`ci`, `documentation`, ...) does not
   # cancel the default 4.5/5.2 jobs. synchronize still cancels the previous
-  # synchronize on the same PR.
-  group: blender-smoke-${{ github.event.pull_request.number || github.ref }}${{ github.event.action == 'labeled' && format('-label-{0}', github.event.label.name) || '' }}
+  # synchronize on the same PR. Pushes to main group per SHA so a later push
+  # never cancels the run an earlier push's release gate is waiting on.
+  group: blender-smoke-${{ github.event.pull_request.number || (github.event_name == 'push' && github.sha) || github.ref }}${{ github.event.action == 'labeled' && format('-label-{0}', github.event.label.name) || '' }}
   cancel-in-progress: true
 
 jobs:

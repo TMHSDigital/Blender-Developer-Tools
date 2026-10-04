@@ -3,41 +3,75 @@
 #
 #   1. Validate (push event) finished and succeeded on exactly this SHA.
 #   2. If the SHA was merged from a PR, every check on that PR passed or was
-#      skipped. Blender Smoke runs on PRs only, so this is its evidence.
+#      skipped (that includes the PR's Blender Smoke run).
+#   3. If it was a direct push, Blender Smoke (push event) finished and
+#      succeeded on this SHA -- unless every file the push changed matches the
+#      workflow's paths-ignore, in which case no smoke run exists to wait for.
 #
-# Env: GH_TOKEN, SHA, GITHUB_REPOSITORY. Optional: GATE_EVENT (default push),
-# GATE_TIMEOUT seconds (default 1500), GATE_POLL seconds (default 20).
+# Env: GH_TOKEN, SHA, GITHUB_REPOSITORY. Optional: BEFORE (the push's previous
+# head, to diff the whole push), GATE_EVENT (default push), GATE_TIMEOUT seconds
+# for Validate (default 1500), SMOKE_TIMEOUT seconds (default 3600), GATE_POLL
+# seconds (default 20).
 set -euo pipefail
 
 repo="${GITHUB_REPOSITORY:?}"
 sha="${SHA:?}"
 event="${GATE_EVENT:-push}"
-deadline=$((SECONDS + ${GATE_TIMEOUT:-1500}))
 
-while :; do
-  read -r status conclusion < <(
-    gh run list --repo "$repo" --workflow validate.yml --commit "$sha" \
-      --event "$event" --limit 1 --json status,conclusion \
-      --jq '.[0] // {} | "\(.status // "none") \(.conclusion // "none")"'
-  )
-  [ "$status" = "completed" ] && break
-  if [ "$SECONDS" -ge "$deadline" ]; then
-    echo "::error::Validate did not finish for $sha (last status: $status)"
+# wait_green WORKFLOW_FILE LABEL TIMEOUT: poll until the newest run of the
+# workflow on $sha completes, then require success.
+wait_green() {
+  local wf="$1" label="$2" deadline=$((SECONDS + $3)) status conclusion
+  while :; do
+    read -r status conclusion < <(
+      gh run list --repo "$repo" --workflow "$wf" --commit "$sha" \
+        --event "$event" --limit 1 --json status,conclusion \
+        --jq '.[0] // {} | "\(.status // "none") \(.conclusion // "none")"'
+    )
+    [ "$status" = "completed" ] && break
+    if [ "$SECONDS" -ge "$deadline" ]; then
+      echo "::error::$label did not finish for $sha (last status: $status)"
+      exit 1
+    fi
+    echo "$label status for $sha: $status; waiting"
+    sleep "${GATE_POLL:-20}"
+  done
+  if [ "$conclusion" != "success" ]; then
+    echo "::error::$label concluded '$conclusion' for $sha; not releasing"
     exit 1
   fi
-  echo "Validate status for $sha: $status; waiting"
-  sleep "${GATE_POLL:-20}"
-done
+  echo "$label: success"
+}
 
-if [ "$conclusion" != "success" ]; then
-  echo "::error::Validate concluded '$conclusion' for $sha; not releasing"
-  exit 1
-fi
-echo "Validate: success"
+# smoke_applies: 0 when some changed file falls outside blender-smoke.yml's
+# paths-ignore ("**.md", "docs/**", "assets/**"). Unreadable file lists count
+# as "applies" so the gate fails toward waiting, not toward skipping.
+smoke_applies() {
+  local files
+  if [ -n "${BEFORE:-}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+    files=$(gh api "repos/$repo/compare/$BEFORE...$sha" --jq '.files[].filename' 2>/dev/null) || return 0
+  else
+    files=$(gh api "repos/$repo/commits/$sha" --jq '.files[].filename' 2>/dev/null) || return 0
+  fi
+  [ -n "$files" ] || return 0
+  while IFS= read -r f; do
+    case "$f" in
+      *.md|docs/*|assets/*) ;;
+      *) return 0 ;;
+    esac
+  done <<< "$files"
+  return 1
+}
+
+wait_green validate.yml Validate "${GATE_TIMEOUT:-1500}"
 
 pr=$(gh api "repos/$repo/commits/$sha/pulls" --jq '.[0].number // empty')
 if [ -z "$pr" ]; then
-  echo "No PR is associated with $sha (direct push); Validate alone gates this release"
+  if smoke_applies; then
+    wait_green blender-smoke.yml "Blender Smoke" "${SMOKE_TIMEOUT:-3600}"
+  else
+    echo "Direct push changed only smoke-ignored paths; Validate alone gates this release"
+  fi
   exit 0
 fi
 

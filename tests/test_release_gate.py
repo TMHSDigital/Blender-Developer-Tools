@@ -18,13 +18,20 @@ GATE = REPO / ".github" / "scripts" / "release-gate.sh"
 BASH = shutil.which("bash")
 
 # Fake gh: behaviour comes from env vars so each test sets one scenario.
-#   FAKE_RUN     "<status> <conclusion>" for `gh run list`
+#   FAKE_RUN     "<status> <conclusion>" for `gh run list --workflow validate.yml`
+#   FAKE_SMOKE   the same for `--workflow blender-smoke.yml`
 #   FAKE_PR      PR number for `gh api .../pulls` (empty = direct push)
+#   FAKE_FILES   changed files for `gh api .../commits/SHA` or `.../compare/...`
 #   FAKE_CHECKS  stdout for `gh pr checks`; FAKE_CHECKS_RC its exit code
 FAKE_GH = r"""#!/usr/bin/env bash
 case "$1 $2" in
-  "run list") echo "${FAKE_RUN:-completed success}" ;;
-  "api "*) echo "${FAKE_PR:-}" ;;
+  "run list")
+    case " $* " in
+      *" blender-smoke.yml "*) echo "${FAKE_SMOKE:-completed success}" ;;
+      *) echo "${FAKE_RUN:-completed success}" ;;
+    esac ;;
+  "api "*/pulls) echo "${FAKE_PR:-}" ;;
+  "api "*) printf '%b\n' "${FAKE_FILES:-examples/a/a.py}" ;;
   "pr checks") printf '%s' "${FAKE_CHECKS:-}"; exit "${FAKE_CHECKS_RC:-0}" ;;
   *) echo "unexpected gh $*" >&2; exit 99 ;;
 esac
@@ -57,8 +64,27 @@ class ReleaseGate(unittest.TestCase):
         )
         return proc.returncode, proc.stdout + proc.stderr
 
-    def test_direct_push_with_green_validate_passes(self):
-        self.assertEqual(self.gate(FAKE_PR="")[0], 0)
+    def test_direct_push_with_green_validate_and_smoke_passes(self):
+        code, out = self.gate(FAKE_PR="")
+        self.assertEqual(code, 0, out)
+        self.assertIn("Blender Smoke: success", out)
+
+    def test_direct_push_with_red_smoke_blocks(self):
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="completed failure")
+        self.assertEqual(code, 1)
+        self.assertIn("Blender Smoke concluded 'failure'", out)
+
+    def test_direct_push_with_no_smoke_run_times_out(self):
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", SMOKE_TIMEOUT="0")
+        self.assertEqual(code, 1)
+        self.assertIn("Blender Smoke did not finish", out)
+
+    def test_docs_only_direct_push_skips_smoke(self):
+        code, out = self.gate(
+            FAKE_PR="", FAKE_SMOKE="none none", FAKE_FILES=r"README.md\ndocs/gallery/x.html"
+        )
+        self.assertEqual(code, 0, out)
+        self.assertIn("only smoke-ignored paths", out)
 
     def test_red_validate_blocks(self):
         code, out = self.gate(FAKE_RUN="completed failure")

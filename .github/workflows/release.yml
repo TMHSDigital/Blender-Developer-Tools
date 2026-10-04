@@ -16,8 +16,9 @@ jobs:
   gate:
     name: Gate on CI evidence
     # A push to main must not publish unless Validate passed on this exact SHA and,
-    # when it was merged from a PR, every check on that PR passed (Blender Smoke
-    # runs on PRs only). Direct pushes have no PR; Validate alone gates them.
+    # when it was merged from a PR, every check on that PR passed. A direct push
+    # also waits for its own Blender Smoke push run, unless it changed only
+    # smoke-ignored paths (see release-gate.sh).
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     permissions:
@@ -33,6 +34,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.sha }}
+          BEFORE: ${{ github.event.before }}
         run: bash .github/scripts/release-gate.sh
 
   version-and-release:
