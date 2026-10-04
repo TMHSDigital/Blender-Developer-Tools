@@ -311,9 +311,31 @@ def load_examples(repo_root: Path) -> list[dict]:
     return load_gallery_items(repo_root, "examples/gallery.json", "examples")
 
 
+# Every showcase `teaches` reads "A procedural <piece> ... through UVs, bake,
+# LOD, collider, and Unity glTF, asserting recomputed budgets ...". The tail is
+# the same for all pieces and the section lede already says it, so a card that
+# shows the sentence from the start spends its line on boilerplate.
+_SHOWCASE_TEACHES = re.compile(
+    r"^A procedural (.+?)[\s,:;—–-]*\b(?:carried |taken |run |all |then |and )?"
+    r"through UVs, bake\b", re.S)
+
+
+def showcase_caption(teaches: str) -> str:
+    """The piece-specific clause of a showcase ``teaches``, or the whole
+    sentence when it does not follow the template."""
+    m = _SHOWCASE_TEACHES.match(teaches)
+    if not m:
+        return teaches
+    cap = m.group(1).strip()
+    return cap[:1].upper() + cap[1:]
+
+
 def load_showcase(repo_root: Path) -> list[dict]:
     """Read showcase/gallery.json. Empty or absent is fine — not an error."""
-    return load_gallery_items(repo_root, "showcase/gallery.json", "pieces")
+    pieces = load_gallery_items(repo_root, "showcase/gallery.json", "pieces")
+    for piece in pieces:
+        piece["caption"] = showcase_caption(piece.get("teaches", ""))
+    return pieces
 
 
 def pick_featured(examples: list[dict]) -> list[dict]:

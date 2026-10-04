@@ -161,8 +161,8 @@
     .render-card img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
     .render-meta { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.6rem 0.9rem; }
     .render-meta .name { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text); white-space: nowrap; }
-    .render-meta .teach { color: var(--dim); font-size: var(--fs-sm); white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; }
+    .render-meta .teach { color: var(--dim); font-size: var(--fs-sm); overflow: hidden;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
     .panel-cta { display: inline-block; margin-top: 1.25rem; font-weight: 500; font-size: var(--fs-md); color: var(--select); }
     .panel-cta:hover { text-decoration: underline; }
     /* featured subset: gallery link is the section's primary call to action */
@@ -253,7 +253,6 @@
     @media (max-width: 820px) {
       .skill-grid, .render-grid { grid-template-columns: 1fr; }
       .recent-grid { grid-template-columns: 1fr 1fr; }
-      .render-meta .teach { white-space: normal; }
     }
     @media (max-width: 640px) {
       /* The gizmo would sit on the version label; the mode label goes. */
@@ -354,7 +353,7 @@
           <img src="{{ ex.heroSite }}" srcset="{{ ex.thumbSite }} 640w, {{ ex.heroSite }} 1280w" sizes="(min-width: 821px) 500px, calc(100vw - 4.5rem)" alt="{{ ex.alt | default(ex.name ~ ' render', true) }}" loading="lazy" decoding="async" width="1280" height="720" />
           <div class="render-meta">
             <span class="name">{{ ex.name }}</span>
-            <span class="teach">{{ ex.teaches }}</span>
+            <span class="teach">{{ ex.caption or ex.teaches }}</span>
           </div>
         </a>
         {% endfor %}
@@ -399,7 +398,7 @@
           <img src="{{ ex.heroSite }}" srcset="{{ ex.thumbSite }} 640w, {{ ex.heroSite }} 1280w" sizes="(min-width: 821px) 500px, calc(100vw - 4.5rem)" alt="{{ ex.alt | default(ex.name ~ ' render', true) }}" loading="lazy" decoding="async" width="1280" height="720" />
           <div class="render-meta">
             <span class="name">{{ ex.name }}</span>
-            <span class="teach">{{ ex.teaches }}</span>
+            <span class="teach">{{ ex.caption or ex.teaches }}</span>
           </div>
         </a>
         {% endfor %}
