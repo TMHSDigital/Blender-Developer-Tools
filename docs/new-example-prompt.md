@@ -97,7 +97,8 @@ shape from neighboring examples and repository configuration, including the exam
 directory, README, gallery metadata and assets, plugin manifest, smoke catalog
 (`tests/smoke/catalog.json`, whose row must list the falsifier under
 `falsifiers` with its exact `expect_exit` so CI re-proves it on every run),
-top-level README, and generated gallery pages. A
+the top-level README's aggregate counts (it no longer carries a per-example
+row; the gallery is the catalog), and generated gallery pages. A
 check-only example skips the gallery metadata, assets, and generated pages — it wires
 the plugin manifest, the smoke catalog row, and its README, and nothing else. After regenerating the gallery with
 `python scripts/build_gallery.py`, read the **generated** output character by

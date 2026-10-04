@@ -38,9 +38,6 @@ NOT_COUNTS = {
     "404 templates",  # CLAUDE.md: "the landing and 404 templates"
 }
 
-# README per-category <details> summaries ("— 7 examples") count a category,
-# not the whole set.
-CATEGORY_SUMMARY = re.compile(r"^<summary><strong>[^<]+</strong> — \d+ examples?</summary>$")
 
 PROSE = re.compile(
     r"\b(\d+) (skills?|rules?|templates?|snippets?|examples?|showcase pieces?)\b"
@@ -96,8 +93,6 @@ def check(root: Path) -> list[str]:
         if not path.exists():
             continue
         for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-            if CATEGORY_SUMMARY.match(line.strip()):
-                continue
             for m in PROSE.finditer(line):
                 if m.group(0) in NOT_COUNTS:
                     continue

@@ -124,7 +124,7 @@ example still carries a `tests/smoke/catalog.json` row and a falsifier.
 gallery's source of truth. When authoring a new gallery example, copy the anatomy of
 `examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and
 wire all of: gallery.json entry (with an `alt` sentence describing the still; the build fails without one), `.cursor-plugin/plugin.json` examples array (CI-gated),
-a `tests/smoke/catalog.json` row, a README gallery row, hero webp (1280×720) in
+a `tests/smoke/catalog.json` row, hero webp (1280×720) in
 `docs/gallery/assets/` + its 640×360 card variant `<name>-hero-640.webp` (`python scripts/make_thumbs.py`; the gallery build exits 5 without it) + preview webp (1200×675), then run `python scripts/build_gallery.py`.
 A check-only example wires only the `.cursor-plugin/plugin.json` entry, the
 `tests/smoke/catalog.json` row, and its README — it is deliberately absent from
