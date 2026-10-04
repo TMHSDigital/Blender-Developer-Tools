@@ -73,6 +73,9 @@ jobs:
       - name: Every gallery still is gated by gallery_framing
         run: python3 tests/check_render_gates.py
 
+      - name: Showcase helper drift (warn-only report)
+        run: python3 tests/check_helper_drift.py
+
       - name: Check falsifiers declare the budget they target
         run: python3 tests/check_falsifier_targets.py
 

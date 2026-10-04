@@ -1262,10 +1262,9 @@ def export_unity(path, objects):
     for ob in objects:
         ob.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
-    bpy.ops.export_scene.gltf(
-        filepath=path, use_selection=True, export_yup=True, export_apply=True,
-        export_draco_mesh_compression_enable=False, export_animations=False,
-    )
+    bpy.ops.export_scene.gltf(filepath=path, use_selection=True, export_yup=True,
+                              export_apply=True, export_draco_mesh_compression_enable=False,
+                              export_animations=False)
 
 
 EXPECTED_PARTS = {P_SLAB: 8, P_POST_H: 1, P_POST_L: 1, P_BOARD: BOARDS, P_LEDGE: 3,

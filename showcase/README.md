@@ -743,6 +743,18 @@ entry in `showcase/gallery.json`, and a rendered still.
   piece composes. Duplicated helpers stay inlined or copied; showcase
   scripts do not import snippets as a package.
 
+- **Canonical helpers.** Copy a pipeline helper from a piece that carries
+  the canonical body, not from whichever piece is nearest.
+  `tests/check_helper_drift.py` (Validate, warn-only) hashes each copy and
+  lists outliers; its `CANONICAL` table is the record of how many variants
+  each helper may have and why. `convex_hull_collider` has one guarded
+  body (filter `geom_interior` / `geom_unused` on `is_valid` before each
+  delete; the hull can list an element twice) plus three justified
+  variants: dissolve + triangulate for round props, hull from bare
+  vertices (`farm-tractor`), per-group hulls (`sea-stack-arch`).
+  `export_unity` has exactly one body. Fix a helper bug in every copy, then
+  rerun the report: `python tests/check_helper_drift.py --show NAME`.
+
 ## Layout
 
 ```text

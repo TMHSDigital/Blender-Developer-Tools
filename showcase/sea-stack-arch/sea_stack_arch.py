@@ -3250,20 +3250,14 @@ def bake_normal(high, low):
 
 
 def export_unity(path, objects):
-    # Duplicated from snippets/export_preset_unity.py (not a package).
     for ob in bpy.context.view_layer.objects:
         ob.select_set(False)
     for ob in objects:
         ob.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
-    bpy.ops.export_scene.gltf(
-        filepath=path,
-        use_selection=True,
-        export_yup=True,
-        export_apply=True,
-        export_draco_mesh_compression_enable=False,
-        export_animations=False,
-    )
+    bpy.ops.export_scene.gltf(filepath=path, use_selection=True, export_yup=True,
+                              export_apply=True, export_draco_mesh_compression_enable=False,
+                              export_animations=False)
 
 
 def check(skip_decimate, lift_z=False, stray_vert=False, **flags):

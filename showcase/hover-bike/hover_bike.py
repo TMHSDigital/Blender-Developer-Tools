@@ -2286,16 +2286,18 @@ def make_lod(obj, name, ratio, skip_decimate):
 
 
 def convex_hull_collider(obj, name):
-    # Duplicated from snippets/convex_hull_collider.py (not a package).
+    # bmesh.ops.convex_hull can list the same element in geom_interior and
+    # geom_unused; once deleted it is invalid and a second delete raises
+    # ReferenceError. Filter on is_valid before each delete.
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
         bm.from_mesh(obj.data)
         result = bmesh.ops.convex_hull(bm, input=list(bm.verts))
-        interior = result.get("geom_interior") or []
-        unused = result.get("geom_unused") or []
+        interior = [g for g in result.get("geom_interior") or [] if g.is_valid]
         if interior:
             bmesh.ops.delete(bm, geom=interior, context="VERTS")
+        unused = [g for g in result.get("geom_unused") or [] if g.is_valid]
         if unused:
             bmesh.ops.delete(bm, geom=unused, context="VERTS")
         bm.to_mesh(mesh)
@@ -2349,20 +2351,14 @@ def bake_normal(high, low):
 
 
 def export_unity(path, objects):
-    # Duplicated from snippets/export_preset_unity.py (not a package).
     for ob in bpy.context.view_layer.objects:
         ob.select_set(False)
     for ob in objects:
         ob.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
-    bpy.ops.export_scene.gltf(
-        filepath=path,
-        use_selection=True,
-        export_yup=True,
-        export_apply=True,
-        export_draco_mesh_compression_enable=False,
-        export_animations=False,
-    )
+    bpy.ops.export_scene.gltf(filepath=path, use_selection=True, export_yup=True,
+                              export_apply=True, export_draco_mesh_compression_enable=False,
+                              export_animations=False)
 
 
 def check(skip_decimate, lift_z=False, stray_vert=False, float_skid=False, offset_hub=False,
