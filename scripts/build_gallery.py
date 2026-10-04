@@ -609,7 +609,7 @@ INDEX_JS = """
       // walks the reader's filtered order instead of the full gallery.
       var SS_HASH = 'bdt-gallery-hash', SS_ORDER = 'bdt-gallery-order';
       var KINDS = ['', 'examples', 'showcase'];
-      var SORTS = ['default', 'az'];
+      var SORTS = ['default', 'az', 'kind', 'cat'];
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // data-search holds title, slug, teaches, tags and category. Each
@@ -663,7 +663,9 @@ INDEX_JS = """
         } catch (e) {}
       }
 
-      function writeHash() {
+      // Discrete changes (chips, pills, kind, category, sort, reset) push a
+      // history entry so Back undoes them; typing and density replace it.
+      function writeHash(push) {
         var parts = [];
         if (state.q) parts.push('q=' + encodeURIComponent(state.q));
         if (state.tags.length) parts.push('tag=' + state.tags.map(encodeURIComponent).join(','));
@@ -671,7 +673,9 @@ INDEX_JS = """
         if (state.cat) parts.push('c=' + state.cat);
         if (state.sort !== 'default') parts.push('s=' + state.sort);
         parts.push('d=' + state.density);
-        history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
+        var url = location.pathname + location.search + '#' + parts.join('&');
+        if (push && url !== location.pathname + location.search + location.hash) history.pushState(null, '', url);
+        else history.replaceState(null, '', url);
         remember();
       }
       var hashTimer = 0;
@@ -720,7 +724,7 @@ INDEX_JS = """
           b.textContent = it.label + ' \\u00d7';
           b.setAttribute('aria-label', 'Remove filter: ' + it.label);
           b.addEventListener('click', function () {
-            it.drop(); syncChips(); applyFilters(); writeHash();
+            it.drop(); syncChips(); applyFilters(); writeHash(true);
           });
           pillsEl.appendChild(b);
         });
@@ -746,6 +750,15 @@ INDEX_JS = """
             var x = a.getAttribute('data-name'), y = b.getAttribute('data-name');
             return x < y ? -1 : x > y ? 1 : 0;
           });
+        } else if (state.sort === 'kind' || state.sort === 'cat') {
+          // Stable by gallery order within each group. Examples have no
+          // category and sort first; showcase pieces follow CATEGORIES order.
+          var rank = function (c) {
+            if (c.getAttribute('data-kind') !== 'showcase') return -1;
+            return state.sort === 'cat' ? CATS.indexOf(c.getAttribute('data-category')) : 0;
+          };
+          var pos = new Map(cards.map(function (c, i) { return [c, i]; }));
+          order.sort(function (a, b) { return (rank(a) - rank(b)) || (pos.get(a) - pos.get(b)); });
         }
         order.forEach(function (c) { grid.appendChild(c); });
         sortSel.value = state.sort;
@@ -796,7 +809,7 @@ INDEX_JS = """
             var at = state.tags.indexOf(t);
             if (at === -1) state.tags.push(t); else state.tags.splice(at, 1);
           }
-          syncChips(); applyFilters(); writeHash();
+          syncChips(); applyFilters(); writeHash(true);
         });
       });
       // The chip row is one toolbar tab stop; arrows, Home and End move
@@ -827,7 +840,7 @@ INDEX_JS = """
       kindBtns.forEach(function (b) {
         b.addEventListener('click', function () {
           state.kind = b.getAttribute('data-kind-filter');
-          applyFilters(); writeHash();
+          applyFilters(); writeHash(true);
         });
       });
       // A category only exists among showcase pieces, so picking one moves
@@ -836,12 +849,12 @@ INDEX_JS = """
         b.addEventListener('click', function () {
           state.cat = b.getAttribute('data-cat-filter');
           if (state.cat) state.kind = 'showcase';
-          applyFilters(); writeHash();
+          applyFilters(); writeHash(true);
         });
       });
       sortSel.addEventListener('change', function () {
         state.sort = SORTS.indexOf(sortSel.value) !== -1 ? sortSel.value : 'default';
-        applySort(); writeHash();
+        applySort(); writeHash(true);
       });
       densityBtns.forEach(function (b) {
         b.addEventListener('click', function () {
@@ -852,7 +865,7 @@ INDEX_JS = """
       resetFilters.addEventListener('click', function () {
         state.q = ''; state.tags = []; state.kind = ''; state.cat = ''; state.sort = 'default';
         q.value = '';
-        syncChips(); applySort(); applyFilters(); writeHash(); q.focus();
+        syncChips(); applySort(); applyFilters(); writeHash(true); q.focus();
       });
       filtersToggle.addEventListener('click', function () {
         var open = filtersEl.classList.toggle('open');
@@ -1657,6 +1670,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
         '          <select id="sort">\n'
         '            <option value="default">Gallery order</option>\n'
         '            <option value="az">Name A&ndash;Z</option>\n'
+        '            <option value="kind">Examples first</option>\n'
+        '            <option value="cat">By category</option>\n'
         '          </select>\n'
         '        </label>\n'
         '        <div class="density" role="group" aria-label="Card density">\n'
