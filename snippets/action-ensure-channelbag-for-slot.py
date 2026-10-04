@@ -5,10 +5,14 @@
 # in Blender 4.4. Two version paths, branched on bpy.app.version below:
 #   - 5.0+: legacy action.fcurves was removed; use the new
 #     bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot).
-#   - 4.4 / 4.5 LTS: that ensure-helper does NOT exist (no shim). The legacy
-#     action.fcurves API is still present, so use it directly.
+#   - 4.4 / 4.5 LTS: that ensure-helper does NOT exist (no shim). Build the
+#     layer / strip / channelbag path explicitly with strip.channelbag(...).
 #
-# Verified on Blender 4.5.10 LTS and 5.1.1. Import path (5.0+):
+# Bind the slot on BOTH versions. On 4.5, legacy action.fcurves.new() on a
+# slotless Action creates a "Legacy Slot" but never assigns it, so the keys
+# exist and the object never animates (action_slot stays None).
+#
+# Verified on Blender 4.5.11 LTS and 5.2.1 LTS. Import path (5.0+):
 #   from bpy_extras import anim_utils
 #
 # Reference:
@@ -28,19 +32,21 @@ def add_z_keyframe(obj, frame=1, value=0.0):
         action = bpy.data.actions.new(name=f"{obj.name}_Action")
         obj.animation_data.action = action
 
+    slot = obj.animation_data.action_slot
+    if slot is None:
+        slot = action.slots.new(id_type='OBJECT', name=obj.name)
+        obj.animation_data.action_slot = slot
+
     if bpy.app.version >= (5, 0, 0):
-        slot = obj.animation_data.action_slot
-        if slot is None:
-            slot = action.slots.new(id_type='OBJECT', name=obj.name)
-            obj.animation_data.action_slot = slot
         channelbag = anim_utils.action_ensure_channelbag_for_slot(action, slot)
-        fcurve = channelbag.fcurves.find(data_path="location", index=2)
-        if fcurve is None:
-            fcurve = channelbag.fcurves.new(data_path="location", index=2)
     else:
-        fcurve = action.fcurves.find(data_path="location", index=2)
-        if fcurve is None:
-            fcurve = action.fcurves.new(data_path="location", index=2)
+        layer = action.layers[0] if action.layers else action.layers.new("Layer")
+        strip = layer.strips[0] if layer.strips else layer.strips.new(type='KEYFRAME')
+        channelbag = strip.channelbag(slot, ensure=True)
+
+    fcurve = channelbag.fcurves.find(data_path="location", index=2)
+    if fcurve is None:
+        fcurve = channelbag.fcurves.new(data_path="location", index=2)
 
     fcurve.keyframe_points.insert(frame, value)
     fcurve.update()
