@@ -115,7 +115,7 @@ if not scene_units_are_meters(scene):
 apply_transforms([o for o in imported_meshes() if not scale_is_identity(o)])
 ```
 
-`export_apply=True` on glTF applies **modifiers**, not object scale. Unapplied object scale lands on the glTF node. Witness: `examples/unapplied-scale-gltf/`.
+`export_apply=True` on glTF applies **modifiers**, not object scale. Unapplied object scale lands on the glTF node. Witness: [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
 
 ### 3. Apply transforms
 
@@ -123,7 +123,7 @@ apply_transforms([o for o in imported_meshes() if not scale_is_identity(o)])
 
 ### 4. Set origin
 
-Origin at the lowest Z of the mesh (sit-on-ground) via `foreach_get` / `foreach_set`, not a Python loop on `mesh.vertices`. See `examples/prop-origin-transform/` for origin-to-base plus `matrix_parent_inverse`.
+Origin at the lowest Z of the mesh (sit-on-ground) via `foreach_get` / `foreach_set`, not a Python loop on `mesh.vertices`. See [`examples/prop-origin-transform/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform) for origin-to-base plus `matrix_parent_inverse`.
 
 ### 5. Recalculate normals
 
@@ -149,19 +149,19 @@ Always pair `to_mesh()` with `to_mesh_clear()`.
 
 ### 7. Decimate to budget
 
-Add `DECIMATE` with `decimate_type='COLLAPSE'` and `ratio = min(1.0, target_tris / current)`. Return `None` when already under budget. The modifier is non-destructive; `obj.data` keeps the dense mesh. Witness: `examples/lod-decimate-chain/`.
+Add `DECIMATE` with `decimate_type='COLLAPSE'` and `ratio = min(1.0, target_tris / current)`. Return `None` when already under budget. The modifier is non-destructive; `obj.data` keeps the dense mesh. Witness: [`examples/lod-decimate-chain/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain).
 
-Snippet: `snippets/decimate_to_budget.py`. LOD set from successive budgets: `snippets/lod_chain.py` (helper duplicated; snippets are not a package).
+Snippet: [`snippets/decimate_to_budget.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/decimate_to_budget.py). LOD set from successive budgets: [`snippets/lod_chain.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/lod_chain.py) (helper duplicated; snippets are not a package).
 
 ### 8. Generate collider
 
-Convex hull via `bmesh.ops.convex_hull`, then delete `geom_interior` and `geom_unused`. Copy `matrix_world` onto the collider. Hull a coarse cage when the render mesh would blow a per-piece face budget. Witness: `examples/collision-hull-proxy/`.
+Convex hull via `bmesh.ops.convex_hull`, then delete `geom_interior` and `geom_unused`. Copy `matrix_world` onto the collider. Hull a coarse cage when the render mesh would blow a per-piece face budget. Witness: [`examples/collision-hull-proxy/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy).
 
-Snippet: `snippets/convex_hull_collider.py`.
+Snippet: [`snippets/convex_hull_collider.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/convex_hull_collider.py).
 
 ### Export (when shipping)
 
-Draco, selected-only, explicit `export_yup`, and `export_apply=True` so the decimate modifier ships. Snippet: `snippets/gltf_draco_export.py`. glTF RNA has `export_yup`, not FBX `axis_forward` / `axis_up`.
+Draco, selected-only, explicit `export_yup`, and `export_apply=True` so the decimate modifier ships. Snippet: [`snippets/gltf_draco_export.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gltf_draco_export.py). glTF RNA has `export_yup`, not FBX `axis_forward` / `axis_up`.
 
 ## Common AI mistakes
 
@@ -192,10 +192,10 @@ Branch on `bpy.app.version` only when an API actually diverges. Do not use `hasa
 - Rule `validate-imported-mesh-scale`
 - Rule `no-unapplied-modifiers-on-export`
 - Rule `always-free-bmesh`
-- Snippet `snippets/decimate_to_budget.py`
-- Snippet `snippets/convex_hull_collider.py`
-- Snippet `snippets/lod_chain.py`
-- Snippet `snippets/gltf_draco_export.py`
+- Snippet [`snippets/decimate_to_budget.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/decimate_to_budget.py)
+- Snippet [`snippets/convex_hull_collider.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/convex_hull_collider.py)
+- Snippet [`snippets/lod_chain.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/lod_chain.py)
+- Snippet [`snippets/gltf_draco_export.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gltf_draco_export.py)
 - Example `unapplied-scale-gltf` for object scale vs `export_apply`
 - Example `lod-decimate-chain` for COLLAPSE ratio vs evaluated tris
 - Example `collision-hull-proxy` for hull-from-cage vs hull-from-render

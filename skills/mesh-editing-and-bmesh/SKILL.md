@@ -266,9 +266,9 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 
 7. **Wrong dtype in `foreach_set`** (`float64` instead of `float32`). Silently writes garbage on some platforms.
 
-8. **Trusting glTF as an n-gon witness.** The exporter always triangulates. A cube and a hexagon-from-dissolved-edge both ship 12 tris. Hygiene (`len(poly.vertices) <= 4`) and `Mesh.calc_tangents` (aborts on n-gons) must run on the Blender mesh. Witness: `examples/ngon-triangulate/`.
+8. **Trusting glTF as an n-gon witness.** The exporter always triangulates. A cube and a hexagon-from-dissolved-edge both ship 12 tris. Hygiene (`len(poly.vertices) <= 4`) and `Mesh.calc_tangents` (aborts on n-gons) must run on the Blender mesh. Witness: [`examples/ngon-triangulate/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate).
 
-9. **Treating coincident duplicate shells as non-manifold.** Two cubes occupying the same space are still valence-2. They ship as extra glTF triangles until `bmesh.ops.remove_doubles`. Witness: `examples/coincident-vert-weld/`.
+9. **Treating coincident duplicate shells as non-manifold.** Two cubes occupying the same space are still valence-2. They ship as extra glTF triangles until `bmesh.ops.remove_doubles`. Witness: [`examples/coincident-vert-weld/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/coincident-vert-weld).
 
 ## Related
 

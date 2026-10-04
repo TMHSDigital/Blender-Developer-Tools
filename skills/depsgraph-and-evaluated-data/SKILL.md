@@ -187,7 +187,7 @@ When you build your own exporter on top of `evaluated_depsgraph_get()`, the deps
 - **Using the raw object's `matrix_world` after evaluating**. `obj.matrix_world` and `obj_eval.matrix_world` may differ (parent constraints evaluate during depsgraph). Use `obj_eval.matrix_world` for world-space positions.
 - **Calling `to_mesh()` inside a tight loop without clearing**. Each iteration leaks a temp mesh. Even with the right intent, this exhausts memory fast.
 - **USD `evaluation_mode` without `export_subdivision='TESSELLATE'`**. Default `BEST_MATCH` writes the cage plus `subdivisionScheme = catmullClark`, so RENDER and VIEWPORT files match and the mode looks like a no-op.
-- **`export_apply=True` as "apply object transforms".** RNA is "Apply modifiers (excluding Armatures) to mesh objects". Unapplied non-uniform object scale lands on the glTF node, Y-up permuted `(sx, sz, sy)`; POSITION stays local. Witness: `examples/unapplied-scale-gltf/`.
+- **`export_apply=True` as "apply object transforms".** RNA is "Apply modifiers (excluding Armatures) to mesh objects". Unapplied non-uniform object scale lands on the glTF node, Y-up permuted `(sx, sz, sy)`; POSITION stays local. Witness: [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
 
 ## Version correctness
 

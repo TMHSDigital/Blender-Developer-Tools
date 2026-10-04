@@ -59,9 +59,9 @@ bpy.ops.export_scene.gltf(
 )
 ```
 
-`export_yup=True` bakes `(x, y, z) -> (x, z, -y)` into POSITION with no node rotation. Witness: `examples/gltf-export-roundtrip/` and `examples/export-preset-axis/`.
+`export_yup=True` bakes `(x, y, z) -> (x, z, -y)` into POSITION with no node rotation. Witness: [`examples/gltf-export-roundtrip/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip) and [`examples/export-preset-axis/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis).
 
-Snippet: `snippets/export_preset_unity.py`.
+Snippet: [`snippets/export_preset_unity.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unity.py).
 
 ## Godot (Z-up glTF, meters)
 
@@ -78,7 +78,7 @@ bpy.ops.export_scene.gltf(
 
 `export_yup=False` writes Blender Z-up POSITION. This preset is the Z-up interop path. It is not the Unity kwargs; if both used `export_yup=True` the files would match and the axis contract would be untestable.
 
-Snippet: `snippets/export_preset_godot.py`.
+Snippet: [`snippets/export_preset_godot.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_godot.py).
 
 ## Unreal (centimeters)
 
@@ -101,19 +101,19 @@ bpy.ops.export_scene.fbx(
 
 Do not pass `export_yup` to FBX. Do not pass `axis_forward` to glTF.
 
-Snippet: `snippets/export_preset_unreal.py`.
+Snippet: [`snippets/export_preset_unreal.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unreal.py).
 
 ## Common AI mistakes
 
 1. **`export_scene.gltf(..., axis_forward="-Z", axis_up="Y")`.** Those names are FBX. Rule `use-correct-axis-rna-per-exporter`.
 2. **`export_scene.fbx(..., export_yup=True)`.** Same rule, other direction.
-3. **Skipping `transform_apply`.** `export_apply` is modifiers, not object scale. `examples/unapplied-scale-gltf/`.
-4. **Unity and Godot as the same kwargs.** They differ on `export_yup`. `examples/export-preset-axis/` asserts the re-imported orientations diverge.
+3. **Skipping `transform_apply`.** `export_apply` is modifiers, not object scale. [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
+4. **Unity and Godot as the same kwargs.** They differ on `export_yup`. [`examples/export-preset-axis/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis) asserts the re-imported orientations diverge.
 5. **Unreal glTF without the 100x bake.** glTF has no `global_scale`.
 
 ## Version correctness
 
-Probed on 4.5 LTS, 5.1, and 5.2: `export_yup` on glTF and `axis_forward` / `axis_up` / `global_scale` on FBX are present on all three. No version branch for the axis kwargs. Guard by requiring those names in operator RNA so a future rename fails loudly, as `examples/gltf-export-roundtrip/` does.
+Probed on 4.5 LTS, 5.1, and 5.2: `export_yup` on glTF and `axis_forward` / `axis_up` / `global_scale` on FBX are present on all three. No version branch for the axis kwargs. Guard by requiring those names in operator RNA so a future rename fails loudly, as [`examples/gltf-export-roundtrip/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip) does.
 
 `export_format` defaults differ by call site; pass the filepath suffix (`.glb` / `.gltf` / `.fbx`) and let the operator infer, or set `export_format` explicitly on glTF.
 
@@ -124,10 +124,10 @@ Probed on 4.5 LTS, 5.1, and 5.2: `export_yup` on glTF and `axis_forward` / `axis
 - Rule `use-correct-axis-rna-per-exporter`
 - Rule `no-unapplied-modifiers-on-export`
 - Rule `validate-imported-mesh-scale`
-- Snippet `snippets/export_preset_unity.py`
-- Snippet `snippets/export_preset_godot.py`
-- Snippet `snippets/export_preset_unreal.py`
-- Snippet `snippets/gltf_draco_export.py`
+- Snippet [`snippets/export_preset_unity.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unity.py)
+- Snippet [`snippets/export_preset_godot.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_godot.py)
+- Snippet [`snippets/export_preset_unreal.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unreal.py)
+- Snippet [`snippets/gltf_draco_export.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gltf_draco_export.py)
 - Example `export-preset-axis`
 - Example `gltf-export-roundtrip`
 - Example `unapplied-scale-gltf`

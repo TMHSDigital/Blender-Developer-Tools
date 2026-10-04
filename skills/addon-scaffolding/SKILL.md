@@ -212,7 +212,7 @@ bl_info = {
 
 ## Related
 
-- See the `extension-addon-template` template under `templates/` for a ready-to-copy version of this layout.
+- See the `extension-addon-template` template under [`templates/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/templates) for a ready-to-copy version of this layout.
 - See the `operators`, `ui-panels`, and `custom-properties` skills for the contents of each submodule.
 - See rules `target-extensions-platform-format` and `type-annotate-props-and-defend-context`.
 

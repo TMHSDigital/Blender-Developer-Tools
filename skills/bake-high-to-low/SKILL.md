@@ -15,7 +15,7 @@ Use this skill when the user:
 - Has an LOD from `DECIMATE COLLAPSE` (or a retopo) and needs the missing surface detail in a map
 - Is about to call bake from EEVEE, on GPU in CI, or with `bake_type=`
 
-This skill is the bake step. It composes `ai-mesh-cleanup` (identity scale, applied transforms, a UV layer that already exists) and the LOD contract in `examples/lod-decimate-chain/` / `snippets/decimate_to_budget.py` (collapse onto a budget; UVs survive well enough to bake). It does not unwrap, transfer UVs, or pack an atlas — those are a later phase. It does not generate meshes.
+This skill is the bake step. It composes `ai-mesh-cleanup` (identity scale, applied transforms, a UV layer that already exists) and the LOD contract in [`examples/lod-decimate-chain/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain) / [`snippets/decimate_to_budget.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/decimate_to_budget.py) (collapse onto a budget; UVs survive well enough to bake). It does not unwrap, transfer UVs, or pack an atlas — those are a later phase. It does not generate meshes.
 
 ## The core misunderstanding
 
@@ -78,7 +78,7 @@ else:
 
 The Image Texture does **not** need to be linked into Principled for the bake to land. It must be `nodes.active`. After the bake, wire `ShaderNodeNormalMap` for display or export; do not plug Image Texture Color into Principled Normal.
 
-Snippet: `snippets/setup_bake_target_image.py`.
+Snippet: [`snippets/setup_bake_target_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/setup_bake_target_image.py).
 
 ### 3. Selection: high selected, low active
 
@@ -110,11 +110,11 @@ result = bpy.ops.object.bake(
 
 `margin_type` is `ADJACENT_FACES` or `EXTEND`. Prefer `ADJACENT_FACES` at UV seams.
 
-Snippet: `snippets/bake_normal_high_to_low.py`.
+Snippet: [`snippets/bake_normal_high_to_low.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/bake_normal_high_to_low.py).
 
 ### 5. Save the datablock
 
-The bake writes the image **in memory**. `Image.save()` on a `GENERATED` image flips `source` to `'FILE'` and drops the buffer — the trap `examples/image-pixels-testcard/` witnesses. Use `save_render()`.
+The bake writes the image **in memory**. `Image.save()` on a `GENERATED` image flips `source` to `'FILE'` and drops the buffer — the trap [`examples/image-pixels-testcard/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard) witnesses. Use `save_render()`.
 
 `save_render()` writes in the format of the **scene's** `render.image_settings`, not `img.file_format`: setting `img.file_format = "OPEN_EXR"` and calling `save_render` still writes a PNG on a default scene. Set the scene's format for the call and restore it:
 
@@ -128,7 +128,7 @@ finally:
     settings.file_format = previous
 ```
 
-Snippet: `snippets/save_baked_image.py`. Folded save is the wrong size: the trap is its own contract.
+Snippet: [`snippets/save_baked_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/save_baked_image.py). Folded save is the wrong size: the trap is its own contract.
 
 ## Common mistakes
 
@@ -147,4 +147,4 @@ Snippet: `snippets/save_baked_image.py`. Folded save is the wrong size: the trap
 
 Bake operator RNA is identical on 4.5 LTS, 5.1, and 5.2 LTS. Branch on `bpy.app.version` only for unrelated neighbors (EEVEE engine id for a gallery still, NodesModifier inputs). Do not invent a bake shim.
 
-Witness: `examples/bake-normal-high-to-low/`. `--flat-source` feeds an undisplaced high into the same detail assertion and must exit non-zero.
+Witness: [`examples/bake-normal-high-to-low/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bake-normal-high-to-low). `--flat-source` feeds an undisplaced high into the same detail assertion and must exit non-zero.

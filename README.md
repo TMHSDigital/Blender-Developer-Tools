@@ -61,14 +61,14 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 ```
 
 - **Cursor** — open your project with this checkout available and copy (or symlink) `rules/*.mdc` into your project's `.cursor/rules/`. The rules apply automatically by glob scope; skills are referenced by name in chat.
-- **Claude Code** — install as a plugin, then run `/skills` to see all 16 skills:
+- **Claude Code** — install as a plugin, then run `/skills` to see all 16 skills plus `blender-rules`:
 
   ```text
   /plugin marketplace add TMHSDigital/Blender-Developer-Tools
   /plugin install blender-developer-tools@blender-developer-tools
   ```
 
-  Claude Code does not read Cursor `.mdc` rules. For the rules, add one line to your project's `CLAUDE.md` that imports the generated summary from a checkout: `@/path/to/Blender-Developer-Tools/claude/blender-rules.md`. Without the plugin, copy `skills/*` into your project's `.claude/skills/` instead.
+  Claude Code does not read Cursor `.mdc` rules, so the plugin ships them as the `blender-rules` skill (generated from `rules/`), which Claude loads when it writes or reviews bpy code. No second clone is needed. To keep the rules in context all the time instead, add `@/path/to/Blender-Developer-Tools/claude/blender-rules.md` to your project's `CLAUDE.md` from a checkout. Without the plugin, copy `skills/*` and `claude/skills/*` into your project's `.claude/skills/`.
 - **Get Blender** — download **5.2 LTS** (primary target) or **4.5 LTS** (supported fallback) from [blender.org/download/lts](https://www.blender.org/download/lts/); current stable lives at [blender.org/download](https://www.blender.org/download/). The `blender` command below is that binary — on macOS it is inside the app bundle at `/Applications/Blender.app/Contents/MacOS/Blender`.
 - **Run an example** — every example is a self-checking headless script (exit non-zero on failure, no GPU needed for the check):
 
@@ -81,7 +81,7 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 
 - **Claude Code plugin** — `/plugin marketplace update blender-developer-tools` refreshes the marketplace and its plugins (from a shell: `claude plugin update blender-developer-tools@blender-developer-tools`). Remove it with `/plugin uninstall blender-developer-tools`, then `/plugin marketplace remove blender-developer-tools`.
-- **Checkout** (Cursor rules, the Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
+- **Checkout** (Cursor rules, the optional always-on Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
 
 ## Supported Blender versions
 
@@ -1486,7 +1486,7 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 - `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
 
-Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see [Quick start](#quick-start)) and import `claude/blender-rules.md` from your `CLAUDE.md`.
+Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see [Quick start](#quick-start)); it ships the rules as the `blender-rules` skill.
 
 ## Using the templates
 

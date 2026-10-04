@@ -245,8 +245,19 @@ jobs:
           elif not os.path.isdir(os.path.join(entries[0].get('source', ''), 'skills')):
               errors.append('marketplace.json source must point at a directory containing skills/')
 
-          # Claude Code discovers skills/<name>/SKILL.md; each needs name + description.
-          for path in sorted(glob.glob('skills/*/SKILL.md')):
+          # Claude Code discovers skills/<name>/SKILL.md plus every extra
+          # directory in plugin.json "skills" (the generated blender-rules
+          # skill); each SKILL.md needs name + description.
+          extra = plugin.get('skills', [])
+          skill_dirs = ['skills']
+          for d in extra:
+              if not (isinstance(d, str) and d.startswith('./') and os.path.isdir(d)):
+                  errors.append(f'plugin.json skills entry {d!r} must be an existing ./ directory')
+              else:
+                  skill_dirs.append(d)
+          if './claude/skills/' not in extra:
+              errors.append('plugin.json skills must include ./claude/skills/ (the rules skill)')
+          for path in sorted(p for d in skill_dirs for p in glob.glob(os.path.join(d, '*', 'SKILL.md'))):
               parts = open(path, encoding='utf-8').read().replace('\r\n', '\n').split('---')
               front = parts[1] if len(parts) > 2 else ''
               for key in ('name:', 'description:'):
@@ -277,8 +288,11 @@ jobs:
             exit 1
           fi
 
-      - name: Check claude/blender-rules.md is regenerated from rules/*.mdc
+      - name: Check claude/blender-rules.md and the rules skill are regenerated from rules/*.mdc
         run: python3 scripts/build_claude_rules.py --check
+
+      - name: Check skill file references resolve outside a checkout
+        run: python3 tests/check_skill_refs.py
 
   validate-counts:
     name: Validate content counts

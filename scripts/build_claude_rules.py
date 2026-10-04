@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Generate claude/blender-rules.md from rules/*.mdc.
+"""Generate the Claude Code copies of rules/*.mdc.
 
-Claude Code does not read Cursor .mdc rules. This writes a plain-markdown
-summary (one section per rule: description, load scope, link to the full rule)
-that a Claude Code user imports from their own CLAUDE.md with
-``@path/to/Blender-Developer-Tools/claude/blender-rules.md``.
+Claude Code does not read Cursor .mdc rules. This writes the same plain-markdown
+summary (one section per rule: description, load scope, link to the full rule
+with its Wrong/Right examples) to two places:
+
+- claude/skills/blender-rules/SKILL.md: a skill the plugin ships
+  (.claude-plugin/plugin.json "skills"), so plugin users get the rules with no
+  second clone; Claude loads it when writing or reviewing bpy code.
+- claude/blender-rules.md: for always-on use, imported from a project's
+  CLAUDE.md with ``@path/to/Blender-Developer-Tools/claude/blender-rules.md``.
+
+Links are absolute GitHub URLs so they open from an installed plugin, a
+checkout, or a CLAUDE.md import alike.
 
     python scripts/build_claude_rules.py          # rewrite the file
     python scripts/build_claude_rules.py --check  # exit 1 if it is stale (CI)
@@ -18,6 +26,14 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "claude" / "blender-rules.md"
+SKILL_OUT = REPO / "claude" / "skills" / "blender-rules" / "SKILL.md"
+RULE_URL = "https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/"
+SKILL_FRONT = """---
+name: blender-rules
+description: Blender Python anti-pattern rules (bmesh leaks, bpy.ops in loops, deprecated context-copy overrides, bulk mesh writes, prop annotations and context guards, Extensions manifest, import scale, export modifiers, glTF/FBX axis RNA). Use when writing, reviewing or fixing any bpy / Blender add-on or script code.
+---
+
+"""
 
 
 def parse(path: Path) -> tuple[str, list[str]]:
@@ -50,24 +66,34 @@ def render() -> str:
             "",
             desc,
             "",
-            f"Applies to: {', '.join(f'`{g}`' for g in globs) or 'n/a'}. Full rule: `rules/{path.name}`.",
+            f"Applies to: {', '.join(f'`{g}`' for g in globs) or 'n/a'}. Full rule: [`rules/{path.name}`]({RULE_URL}{path.name}).",
             "",
         ]
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
+def outputs() -> dict[Path, str]:
+    body = render()
+    return {OUT: body, SKILL_OUT: SKILL_FRONT + body}
+
+
 def main() -> int:
-    new = render()
     if "--check" in sys.argv:
-        old = OUT.read_text(encoding="utf-8").replace("\r\n", "\n") if OUT.exists() else ""
-        if old != new:
-            print("claude/blender-rules.md is stale; run python scripts/build_claude_rules.py", file=sys.stderr)
+        stale = []
+        for path, new in outputs().items():
+            old = path.read_text(encoding="utf-8").replace("\r\n", "\n") if path.exists() else ""
+            if old != new:
+                stale.append(path.relative_to(REPO).as_posix())
+        if stale:
+            print(f"{', '.join(stale)} stale; run python scripts/build_claude_rules.py",
+                  file=sys.stderr)
             return 1
-        print("claude/blender-rules.md is up to date")
+        print("claude/blender-rules.md and claude/skills/blender-rules/SKILL.md are up to date")
         return 0
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(new, encoding="utf-8", newline="\n")
-    print(f"wrote {OUT.relative_to(REPO)}")
+    for path, new in outputs().items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(new, encoding="utf-8", newline="\n")
+        print(f"wrote {path.relative_to(REPO)}")
     return 0
 
 

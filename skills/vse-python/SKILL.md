@@ -83,7 +83,7 @@ The `TRANSFORM` effect type is removed on 5.x. Place strips with per-strip `stri
 
 5.2 and later bake readonly `width` / `height` from **scene render resolution at `new_effect` time**. Scale and offset are then in that **media** space, not a later output size. Set scene resolution **before** building strips.
 
-This split is **not** in the 5.2 `python_api` release notes. Witnessed by `examples/vse-cut-list/` `--check-pixels`.
+This split is **not** in the 5.2 `python_api` release notes. Witnessed by [`examples/vse-cut-list/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list) `--check-pixels`.
 
 ```python
 width, height = 96, 54
@@ -145,8 +145,8 @@ A lone COLOR strip **does** honor `transform.scale_*` on 5.2. The break is media
 
 ## See also
 
-- Example `examples/vse-cut-list/` — accessor rename, `new_effect` kwargs, save/reload, and the 5.2 COLOR size bake (`--check-pixels` asserts `A.width, A.height == render size` on 5.2+).
-- Example `examples/vse-gamma-cross/` — `GAMMA_CROSS` blend curve.
+- Example [`examples/vse-cut-list/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list) — accessor rename, `new_effect` kwargs, save/reload, and the 5.2 COLOR size bake (`--check-pixels` asserts `A.width, A.height == render size` on 5.2+).
+- Example [`examples/vse-gamma-cross/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-gamma-cross) — `GAMMA_CROSS` blend curve.
 - Audit log: `docs/technical-audit.md` § Findings the release notes did not list.
 
 ## References
