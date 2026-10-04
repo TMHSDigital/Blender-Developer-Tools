@@ -28,6 +28,7 @@
 #   docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.fbx
 
 import argparse
+import collections
 import os
 import sys
 
@@ -183,13 +184,15 @@ def convex_hull_collider(obj, name=None):
     bm = bmesh.new()
     try:
         bm.from_mesh(obj.data)
-        result = bmesh.ops.convex_hull(bm, input=bm.verts)
-        interior = result.get("geom_interior") or []
-        unused = result.get("geom_unused") or []
-        if interior:
-            bmesh.ops.delete(bm, geom=interior, context="VERTS")
-        if unused:
-            bmesh.ops.delete(bm, geom=unused, context="VERTS")
+        # Hull the points, not the surface: convex_hull keeps any source
+        # edge or face whose verts lie on the hull, leaving duplicate,
+        # non-manifold faces. edges.remove() drops faces but keeps verts.
+        for edge in bm.edges[:]:
+            bm.edges.remove(edge)
+        bmesh.ops.convex_hull(bm, input=bm.verts[:])
+        loose = [v for v in bm.verts if not v.link_faces]
+        if loose:
+            bmesh.ops.delete(bm, geom=loose, context="VERTS")
         bm.to_mesh(mesh)
         mesh.update()
     finally:
@@ -198,6 +201,14 @@ def convex_hull_collider(obj, name=None):
     bpy.context.scene.collection.objects.link(collider)
     collider.matrix_world = obj.matrix_world.copy()
     return collider
+
+
+def is_closed_hull(mesh):
+    """True when every edge borders exactly two faces (a closed surface)."""
+    if not mesh.polygons:
+        return False
+    counts = collections.Counter(k for p in mesh.polygons for k in p.edge_keys)
+    return all(counts[e.key] == 2 for e in mesh.edges)
 
 
 def box_collider(obj, name=None):
@@ -374,6 +385,12 @@ def main():
     if args.collider == "convex":
         collider = convex_hull_collider(hero)
         print(f"collider={collider.name} verts={len(collider.data.vertices)}")
+        if not is_closed_hull(collider.data):
+            print(
+                f"ERROR: convex collider {collider.name} is not a closed hull",
+                file=sys.stderr,
+            )
+            return 7
     elif args.collider == "box":
         collider = box_collider(hero)
         print(f"collider={collider.name} verts={len(collider.data.vertices)}")

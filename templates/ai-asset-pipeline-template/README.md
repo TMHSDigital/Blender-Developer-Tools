@@ -68,6 +68,7 @@ as `export-preset-axis` number their own checks independently.
 | 4 | `--lod-budgets` missing, non-positive, or not strictly decreasing |
 | 5 | Import produced no mesh |
 | 6 | `outdir` is not a directory, or glTF export failed / wrote no file |
+| 7 | `--collider convex` produced a hull that is not closed (an edge without exactly two faces), e.g. a flat input |
 
 ## Expected environment
 
