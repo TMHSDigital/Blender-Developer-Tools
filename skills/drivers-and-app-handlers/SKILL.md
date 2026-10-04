@@ -114,16 +114,38 @@ var.targets[0].data_path = 'frame_current'
 fcurve.driver.expression = 'smooth_step((t - 1.0) / 100.0) * 5.0'
 ```
 
-The function name in `driver_namespace` must match the call in the expression. Register the function on add-on `register()` and remove it on `unregister()`:
+The function name in `driver_namespace` must match the call in the expression.
+
+`driver_namespace` is **reset on every file load**. Registering only in `register()` works until the user opens a file: the drivers then evaluate with the function missing, raise `NameError: name 'smooth_step' is not defined`, and are disabled (`driver.is_valid = False`). They stay disabled even after the function is added back. Re-register from a `@persistent` `load_post` handler and re-enable the drivers there:
 
 ```python
+import bpy
+from bpy.app.handlers import persistent
+
+
+@persistent
+def restore_driver_functions(_filepath=None):
+    bpy.app.driver_namespace['smooth_step'] = smooth_step
+    # Drivers that failed during load stay off until re-enabled.
+    for ids in (bpy.data.objects, bpy.data.shape_keys, bpy.data.materials):
+        for id_data in ids:
+            anim = id_data.animation_data
+            for fcurve in (anim.drivers if anim else ()):
+                fcurve.driver.is_valid = True
+
+
 def register():
     bpy.app.driver_namespace['smooth_step'] = smooth_step
+    bpy.app.handlers.load_post.append(restore_driver_functions)
 
 
 def unregister():
+    if restore_driver_functions in bpy.app.handlers.load_post:
+        bpy.app.handlers.load_post.remove(restore_driver_functions)
     bpy.app.driver_namespace.pop('smooth_step', None)
 ```
+
+Extend the ID collections to wherever your add-on puts drivers (node groups, scenes, cameras). Measured on 4.5.11 and 5.2.1: without the handler, a saved and reopened file leaves the driver dead; with it, the driver evaluates again.
 
 ### Removing drivers
 
@@ -260,6 +282,7 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 ## Common AI mistakes
 
 - **Calling Python functions in a driver expression without registering them.** Hits the security block. Either rewrite as math, or register via `bpy.app.driver_namespace`.
+- **Registering a driver function only in `register()`.** `driver_namespace` is reset on file load, so the driver dies with `NameError` on the first file the user opens and stays disabled. Re-register and reset `driver.is_valid` from a `@persistent` `load_post` handler.
 - **Forgetting `@persistent` on handlers.** The handler vanishes on the next file load and the user thinks the add-on broke.
 - **Doing real work inside `depsgraph_update_post`.** This handler fires on every depsgraph evaluation, which is many times per second during playback or interaction. Anything more than O(1) bookkeeping causes user-visible slowdown.
 - **Recursively modifying the scene from a depsgraph handler.** The modification triggers another depsgraph evaluation, which calls the handler, which modifies the scene. Infinite loop, often manifesting as a hang.
@@ -273,7 +296,7 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 | --- | --- | --- |
 | `exit_pre` handler | Not available | New in 5.1; use `atexit` fallback for 4.x |
 | `save_pre` / `save_post` signature | `(filepath)` — a string | `(filepath)` — a string (unchanged) |
-| `driver_namespace` | Available | Same |
+| `driver_namespace` | Available; reset on file load | Same (re-register from `load_post`) |
 | Driver security | Already restrictive | Same |
 
 ## See also
