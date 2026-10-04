@@ -17,7 +17,8 @@ def setup_bake_target_image(obj, name="BakeNrm", size=128):
     img = bpy.data.images.new(name, size, size, alpha=True, float_buffer=False)
     img.colorspace_settings.name = "Non-Color"
     mat = bpy.data.materials.new(name + "Mat")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True  # 4.5 LTS only; the tree exists and use_nodes is deprecated on 5.x
     nodes = mat.node_tree.nodes
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = img

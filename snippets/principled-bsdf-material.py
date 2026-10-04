@@ -7,7 +7,8 @@ import bpy
 
 def make_principled_material(name, base_color=(0.8, 0.8, 0.8, 1.0), metallic=0.0, roughness=0.5):
     mat = bpy.data.materials.new(name=name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True  # 4.5 LTS only; the tree exists and use_nodes is deprecated on 5.x
 
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links

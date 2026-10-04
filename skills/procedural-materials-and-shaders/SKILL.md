@@ -27,7 +27,7 @@ Use this skill when the user:
 Every Python-built material follows the same four steps:
 
 1. Create the material datablock with `bpy.data.materials.new(name=...)`.
-2. Enable nodes with `mat.use_nodes = True`. This populates `mat.node_tree` with a default Principled BSDF and Material Output. You can keep them or wipe them.
+2. Make sure the node tree exists. On 5.x, `materials.new()` already creates `mat.node_tree` with a default Principled BSDF and Material Output, and `Material.use_nodes` is deprecated (setting it warns; removal is planned for 6.0). On 4.5 LTS the tree is `None` until you set `mat.use_nodes = True`. Gate it: `if bpy.app.version < (5, 0, 0): mat.use_nodes = True`. You can keep the default nodes or wipe them.
 3. Add nodes to `mat.node_tree.nodes` and configure their `inputs[...].default_value`.
 4. Wire `mat.node_tree.links` between sockets.
 
@@ -38,7 +38,8 @@ import bpy
 def make_principled_material(name, base_color=(0.8, 0.8, 0.8, 1.0), metallic=0.0, roughness=0.5):
     """Create a material with a single Principled BSDF wired to Material Output."""
     mat = bpy.data.materials.new(name=name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True  # 4.5 LTS: no node tree until enabled; deprecated on 5.x
 
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
@@ -91,7 +92,8 @@ import bpy
 def make_metal(name, base_color=(0.8, 0.8, 0.85, 1.0), roughness=0.2):
     """Procedural metal with adjustable color and surface roughness."""
     mat = bpy.data.materials.new(name=name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True  # 4.5 LTS: no node tree until enabled; deprecated on 5.x
 
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
@@ -125,7 +127,8 @@ for name, color in [
 ```python
 def make_emissive(name, color=(1.0, 0.4, 0.1, 1.0), strength=5.0):
     mat = bpy.data.materials.new(name=name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True  # 4.5 LTS: no node tree until enabled; deprecated on 5.x
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
     nodes.clear()
@@ -144,17 +147,17 @@ def make_emissive(name, color=(1.0, 0.4, 0.1, 1.0), strength=5.0):
 
 ## Reusing graphs via node groups
 
-When the same subgraph appears across multiple materials, factor it into a `ShaderNodeTree` group. Create the group once with `bpy.data.node_groups.new(name='MyGroup', type='ShaderNodeTree')`, build its internal nodes and `interface` (5.x) or `inputs`/`outputs` (4.5 LTS) sockets, then instantiate it inside any material's tree as a `ShaderNodeGroup` with `node.node_tree = my_group`. See snippet `shader-node-group.py`.
+When the same subgraph appears across multiple materials, factor it into a `ShaderNodeTree` group. Create the group once with `bpy.data.node_groups.new(name='MyGroup', type='ShaderNodeTree')`, build its internal nodes and its sockets with `group.interface.new_socket(...)` (the same API on 4.5 LTS and 5.x; `group.inputs.new` was removed in 4.0), then instantiate it inside any material's tree as a `ShaderNodeGroup` with `node.node_tree = my_group`. See snippet `shader-node-group.py`.
 
 ## Common AI mistakes
 
-- **Forgetting `mat.use_nodes = True`**. Without nodes enabled, `mat.node_tree` is `None` and any node access raises `AttributeError`.
+- **Forgetting `mat.use_nodes = True` on 4.5 LTS**. There, a new material's `mat.node_tree` is `None` until nodes are enabled, and any node access raises `AttributeError`. On 5.x the tree exists from `materials.new()` and setting `use_nodes` only emits a `DeprecationWarning`, so gate the line on `bpy.app.version < (5, 0, 0)`.
 - **Using indices for sockets**. `bsdf.inputs[0]` is fragile. The Principled BSDF input order has shifted across Blender releases. Always use string keys.
 - **Setting RGB without alpha**. Color sockets expect 4-tuples. `(0.5, 0.5, 0.5)` raises a length error.
 - **Targeting Layered Textures**. The Layered Textures roadmap is deferred to 2027. Do not generate code that imports from `bpy.types.LayeredTextureNode` or similar; these do not exist in 5.1 stable. Stick with classic `ShaderNodeTex*` (ShaderNodeTexImage, ShaderNodeTexNoise, etc.) for 5.1.
 - **Calling `bpy.ops.material.new()`** to create a material when `bpy.data.materials.new()` works headlessly and is faster.
 - **Trying to wire sockets across material boundaries**. Each material has its own `node_tree`. To share logic, use a shader node group.
-- **Forgetting to clear default nodes**. After `mat.use_nodes = True`, Blender adds a Principled BSDF and an Output. If you also add your own and link, you end up with two BSDFs feeding the output and the visible behavior is undefined. Either reuse the defaults or `nodes.clear()` first.
+- **Forgetting to clear default nodes**. A new material's tree (5.x, or 4.5 after `use_nodes = True`) holds a Principled BSDF and an Output. If you also add your own and link, you end up with two BSDFs feeding the output and the visible behavior is undefined. Either reuse the defaults or `nodes.clear()` first.
 
 ## Version correctness
 
@@ -173,7 +176,11 @@ When writing code that must run on both 4.5 LTS and 5.x, look up sockets defensi
 
 ```python
 def set_specular(bsdf, value):
-    """Specular socket renamed to 'Specular IOR Level' in Blender 5.0."""
+    """Specular socket renamed to 'Specular IOR Level' in Blender 4.0.
+
+    Every supported version (4.5 LTS, 5.x) has the new name; the fallback
+    branch only matters for files that must also run on 3.x.
+    """
     if 'Specular IOR Level' in bsdf.inputs:
         bsdf.inputs['Specular IOR Level'].default_value = value
     elif 'Specular' in bsdf.inputs:
@@ -198,5 +205,5 @@ Almost everything you want to do with materials has a `bpy.data` path. The two n
 - `bpy.types.Material`: https://docs.blender.org/api/current/bpy.types.Material.html
 - `bpy.types.ShaderNodeBsdfPrincipled`: https://docs.blender.org/api/current/bpy.types.ShaderNodeBsdfPrincipled.html
 - `bpy.types.ShaderNodeTree`: https://docs.blender.org/api/current/bpy.types.ShaderNodeTree.html
-- Blender 5.0 release notes (Specular rename): https://developer.blender.org/docs/release_notes/5.0/python_api/
+- Blender 4.0 release notes (Principled v2, Specular rename): https://developer.blender.org/docs/release_notes/4.0/
 - Blender 5.1 EEVEE Next: https://developer.blender.org/docs/release_notes/5.1/eevee/
