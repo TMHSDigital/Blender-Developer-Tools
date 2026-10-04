@@ -168,6 +168,7 @@ def footer(*, root: str, repo: str, title: str, license_: str, version: str = ""
         f'<a href="{_e(repo)}/releases">Releases</a>'
         f'<a href="{_e(repo)}/blob/main/CHANGELOG.md">Changelog</a>'
         f'<a href="{_e(repo)}">GitHub</a>'
+        '<a href="https://github.com/sponsors/TMHSDigital">Sponsor</a>'
         f'<a href="{_e(ALL_TOOLS_URL)}">All tools</a></span>\n'
         '    </div>\n'
         '  </footer>\n'
