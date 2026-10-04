@@ -43,7 +43,7 @@
 
 This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 76 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
+The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code installs the skills as a plugin and reads the rules through a generated summary (see [Quick start](#quick-start)), since it does not read Cursor `.mdc` files. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
@@ -75,6 +75,13 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 ```bash
 blender --background --python examples/bmesh-gear/bmesh_gear.py --
 ```
+
+### Updating and uninstalling
+
+Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
+
+- **Claude Code plugin** — `/plugin marketplace update blender-developer-tools` refreshes the marketplace and its plugins (from a shell: `claude plugin update blender-developer-tools@blender-developer-tools`). Remove it with `/plugin uninstall blender-developer-tools`, then `/plugin marketplace remove blender-developer-tools`.
+- **Checkout** (Cursor rules, the Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
 
 ## Supported Blender versions
 
@@ -1479,7 +1486,7 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 - `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
 
-Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see Install) and import `claude/blender-rules.md` from your `CLAUDE.md`.
+Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see [Quick start](#quick-start)) and import `claude/blender-rules.md` from your `CLAUDE.md`.
 
 ## Using the templates
 

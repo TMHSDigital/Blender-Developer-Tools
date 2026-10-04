@@ -215,7 +215,7 @@ touching `examples/`; the landing page builds from `scripts/site/` at deploy tim
 The AI consumes content via:
 
 - **Cursor**: rules under `rules/` apply when scope globs match. Skills are referenced by name in chat.
-- **Claude Code**: copy `skills/` and `rules/` into the project workspace, or use this repo as a checkout that Claude Code references directly.
+- **Claude Code**: install the plugin (`.claude-plugin/`, README Quick start) for the skills. Claude Code does not read `.mdc` rules; it gets them through `claude/blender-rules.md`, generated from `rules/` by `scripts/build_claude_rules.py`.
 
 ## Key Conventions
 
