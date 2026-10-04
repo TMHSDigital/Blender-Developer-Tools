@@ -45,3 +45,6 @@ dist/
 build/
 *.zip
 *.log
+
+# Playwright MCP session captures (screenshots, console logs)
+.playwright-mcp/
