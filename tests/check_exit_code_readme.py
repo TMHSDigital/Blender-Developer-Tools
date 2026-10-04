@@ -6,7 +6,15 @@ Product codes live in `return N` and literal `sys.exit(N)`, not in
 Detection (AST only):
 
 - Integer literals on `return` in the file's own functions, plus literal
-  `sys.exit(N)`.
+  `sys.exit(N)` and `raise SystemExit(N)`.
+- Named codes resolve too: a module-level `NAME = <int>` constant
+  (`return EXIT_CLIPPED`), a shared-helper constant
+  (`gallery_framing.EXIT_FRAMING`), a shared-helper check call
+  (`return gallery_framing.check_framing(...)` is 10), and a local name
+  assigned from one (`fcode = gallery_framing.check_framing(...)`;
+  `return fcode`). Helper codes are read from examples/gallery_*.py, not
+  hardcoded. A `return name` that resolves to none of these is a pass-through
+  of another function's result; that function's own returns are scanned.
 - `sys.exit(main())` and `sys.exit(name)` where `name` is assigned from a
   local function call (both headless templates: `exit_code = main()`) are
   harness pass-through, not unanalyzable.
@@ -81,6 +89,51 @@ def module_function_names(tree):
     return names
 
 
+def module_int_constants(tree):
+    """Module-level `NAME = <int literal>` bindings."""
+    consts = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1                 and isinstance(node.targets[0], ast.Name):
+            code = int_literal(node.value)
+            if code is not None:
+                consts[node.targets[0].id] = code
+    return consts
+
+
+def load_helper_codes():
+    """Exit codes of the shared render-gate helpers (examples/gallery_*.py).
+
+    Returns ({(module, CONST): code}, {(module, func): code}) where func is a
+    helper function whose non-zero return is a module constant.
+    """
+    consts, funcs = {}, {}
+    base = os.path.join(ROOT, "examples")
+    for name in sorted(os.listdir(base)):
+        if not (name.startswith("gallery_") and name.endswith(".py")):
+            continue
+        mod = name[:-3]
+        tree = ast.parse(open(os.path.join(base, name), encoding="utf-8").read())
+        mconsts = module_int_constants(tree)
+        for k, v in mconsts.items():
+            consts[(mod, k)] = v
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef):
+                for r in ast.walk(node):
+                    if isinstance(r, ast.Return) and isinstance(r.value, ast.Name)                             and mconsts.get(r.value.id):
+                        funcs[(mod, node.name)] = mconsts[r.value.id]
+    return consts, funcs
+
+
+HELPER_CONSTS, HELPER_FUNCS = load_helper_codes()
+
+
+def _dotted(node):
+    """('mod', 'attr') for `mod.attr`, else None."""
+    if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+        return (node.value.id, node.attr)
+    return None
+
+
 def is_passthrough_call(node, func_names):
     """sys.exit(main()) — Call of a function defined in this module."""
     return (
@@ -91,18 +144,39 @@ def is_passthrough_call(node, func_names):
 
 
 class ExitVisitor(ast.NodeVisitor):
-    def __init__(self, func_names):
+    def __init__(self, func_names, consts=None):
         self.func_names = func_names
+        self.consts = consts or {}
         self.stack = []
         self.scope_binds = [{}]
+        self.code_binds = [{}]  # name -> code, per function scope
         self.literals = []  # (code, lineno)
         self.unanalyzable = []  # (lineno, snippet)
 
     def _push_scope(self):
         self.scope_binds.append({})
+        self.code_binds.append({})
 
     def _pop_scope(self):
         self.scope_binds.pop()
+        self.code_binds.pop()
+
+    def resolve_code(self, node):
+        """Exit code a returned/exited expression names, or None if not static."""
+        code = int_literal(node)
+        if code is not None:
+            return code
+        if isinstance(node, ast.Name):
+            for binds in reversed(self.code_binds):
+                if node.id in binds:
+                    return binds[node.id]
+            return self.consts.get(node.id)
+        dotted = _dotted(node)
+        if dotted in HELPER_CONSTS:
+            return HELPER_CONSTS[dotted]
+        if isinstance(node, ast.Call):
+            return HELPER_FUNCS.get(_dotted(node.func))
+        return None
 
     def _bind(self, name, from_func):
         self.scope_binds[-1][name] = from_func
@@ -129,6 +203,11 @@ class ExitVisitor(ast.NodeVisitor):
     visit_AsyncFunctionDef = visit_FunctionDef
 
     def visit_Assign(self, node):
+        if isinstance(node.value, ast.Call) and _dotted(node.value.func) in HELPER_FUNCS:
+            code = HELPER_FUNCS[_dotted(node.value.func)]
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self.code_binds[-1][target.id] = code
         if is_passthrough_call(node.value, self.func_names):
             func_id = node.value.func.id
             for target in node.targets:
@@ -144,9 +223,20 @@ class ExitVisitor(ast.NodeVisitor):
 
     def visit_Return(self, node):
         if node.value is not None:
-            code = int_literal(node.value)
+            code = self.resolve_code(node.value)
             if code is not None:
                 self.literals.append((code, node.lineno))
+        self.generic_visit(node)
+
+    def visit_Raise(self, node):
+        exc = node.exc
+        if isinstance(exc, ast.Call) and isinstance(exc.func, ast.Name)                 and exc.func.id == "SystemExit":
+            if len(exc.args) == 1 and not exc.keywords:
+                code = self.resolve_code(exc.args[0])
+                if code is not None:
+                    self.literals.append((code, node.lineno))
+                elif not is_passthrough_call(exc.args[0], self.func_names):
+                    self.unanalyzable.append((node.lineno, ast.unparse(node)))
         self.generic_visit(node)
 
     def visit_Call(self, node):
@@ -167,7 +257,7 @@ class ExitVisitor(ast.NodeVisitor):
             return
 
         arg = node.args[0]
-        code = int_literal(arg)
+        code = self.resolve_code(arg)
         if code is not None:
             if code == 1 and self._in_except():
                 self.generic_visit(node)
@@ -234,7 +324,7 @@ def check_file(path):
         errors.append(f"{rel}: cannot parse: {exc}")
         return errors
 
-    visitor = ExitVisitor(module_function_names(tree))
+    visitor = ExitVisitor(module_function_names(tree), module_int_constants(tree))
     visitor.visit(tree)
 
     for lineno, snippet in visitor.unanalyzable:

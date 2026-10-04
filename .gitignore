@@ -48,3 +48,6 @@ build/
 
 # Playwright MCP session captures (screenshots, console logs)
 .playwright-mcp/
+
+# Staged Pages tree (scripts/site/stage_public.py)
+_site/

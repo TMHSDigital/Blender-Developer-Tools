@@ -5,9 +5,14 @@ Run after both builds have written into docs/ (the landing build is not
 committed, so CI builds it first):
 
     python scripts/site/build_site.py --repo-root . --out docs
-    python tests/check_site_links.py
+    python scripts/site/stage_public.py --src docs --out _site
+    python tests/check_site_links.py --root _site
 
-Walks docs/index.html, docs/404.html and docs/gallery/**/index.html. Each
+Check the staged tree, not docs/: staging strips internal files, and a link to
+one of them must fail here rather than 404 in production. --root defaults to
+docs/ for a quick local pass.
+
+Walks ROOT/index.html, ROOT/404.html and ROOT/gallery/**/index.html. Each
 relative or site-absolute ``href``/``src`` must name a file under docs/ (a
 directory means its index.html), and each ``#fragment`` must match an ``id``
 on the target page; every ``srcset`` candidate counts as a reference too, and
@@ -18,6 +23,7 @@ on the target page; every ``srcset`` candidate counts as a reference too, and
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from html.parser import HTMLParser
@@ -94,9 +100,14 @@ def resolve(page: Path, url: str, base: str) -> Path | None:
     return target.resolve()
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    global DOCS
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--root", type=Path, default=DOCS,
+                    help="site tree to check (default: docs/; CI checks the staged _site/)")
+    DOCS = ap.parse_args(argv).root.resolve()
     if not (DOCS / "index.html").is_file():
-        print("ERROR: docs/index.html missing; run scripts/site/build_site.py first",
+        print(f"ERROR: {DOCS / 'index.html'} missing; run scripts/site/build_site.py first",
               file=sys.stderr)
         return 2
     pages = [DOCS / "index.html", DOCS / "404.html",

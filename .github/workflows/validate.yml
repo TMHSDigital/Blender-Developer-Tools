@@ -136,8 +136,11 @@ jobs:
       - name: Build landing page into docs/
         run: python scripts/site/build_site.py --repo-root . --out docs
 
-      - name: Check every internal link, anchor and image alt
-        run: python tests/check_site_links.py
+      - name: Stage the public site exactly as pages.yml does
+        run: python scripts/site/stage_public.py --src docs --out _site
+
+      - name: Check every internal link, anchor and image alt (on the staged tree)
+        run: python tests/check_site_links.py --root _site
 
   validate-manifest:
     name: Validate plugin manifest

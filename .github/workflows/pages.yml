@@ -92,19 +92,14 @@ jobs:
         # drift from gallery.json. The committed docs/gallery/assets/*.webp are untouched.
         run: python scripts/build_gallery.py
 
-      - name: Check every internal link, anchor and image alt
-        run: python tests/check_site_links.py
+      - name: Stage the public site (leave out internal docs and unlinked sheets)
+        run: python scripts/site/stage_public.py --src docs --out _site
+
+      - name: Check every internal link, anchor and image alt (on the staged tree)
+        # Checked after staging so a link to a stripped file fails here, not in production.
+        run: python tests/check_site_links.py --root _site
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-
-      - name: Stage the public site (leave out internal docs and unlinked sheets)
-        # Everything stays in the repo; only the Pages artifact shrinks. No
-        # published page links to any of these (tests/check_site_links.py).
-        run: |
-          mkdir -p _site
-          cp -r docs/. _site/
-          rm -rf _site/gallery/contact-sheets _site/gallery/asset-sheets _site/gallery/DESIGN_NOTES.md
-          rm -f _site/*.md
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
