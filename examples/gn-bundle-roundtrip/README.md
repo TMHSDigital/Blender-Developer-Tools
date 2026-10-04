@@ -53,7 +53,8 @@ not read at thumbnail.
 **What failure each check would catch:**
 
 - exit 77 — Blender &lt; 5.0 and not `--force-run`
-- exit 2 — `GeometryNodeCombineBundle` on 5.x (`--legacy-rna`)
+- exit 7 — `GeometryNodeCombineBundle` on 5.x (`--legacy-rna`); exit 8 if
+  that legacy identifier is ever accepted again
 - exit 3 — item names do not pair, so Separate yields no geometry
   (`--mismatch` renames the geometry item → 0/0)
 - exit 4 — count matches but the unpacked Scale/Offset did not arrive
@@ -78,10 +79,13 @@ against it. `77` is the smoke skip protocol, not a product check.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper); `--force-run` on 4.5 lands here |
-| 2 | argparse / usage; carrier mesh rewritten; `--legacy-rna` on 5.x |
+| 2 | argparse / usage |
 | 3 | Evaluated vert/face count off closed form (`--mismatch`) |
 | 4 | Unpacked Scale/Offset x-extent off (`--bypass`, `--pack-scale 1`) |
 | 5 | `bundle_mark` missing or off closed form (`--mismatch-mark`) |
+| 6 | Carrier mesh rewritten |
+| 7 | `--legacy-rna`: 5.x RNA rejects `GeometryNodeCombineBundle` (the catalog falsifier) |
+| 8 | `--legacy-rna`: `GeometryNodeCombineBundle` was accepted (the rejection contract broke) |
 | 77 | `SMOKE_SKIP:` Bundles require Blender 5.0+ |
 
 Measured on 4.5.11 / 5.0.1 / 5.1.2 / 5.2.1:
@@ -91,12 +95,12 @@ Measured on 4.5.11 / 5.0.1 / 5.1.2 / 5.2.1:
 | (none) | 77 | 0 | 0 | 0 |
 | `--force-run` | 1 | 0 | 0 | 0 |
 | `--bypass` | 77 | 4 | 4 | 4 |
-| `--legacy-rna` | 77 | 2 | 2 | 2 |
+| `--legacy-rna` | 77 | 7 | 7 | 7 |
 | `--mismatch` | 77 | 3 | 3 | 3 |
 | `--mismatch-mark` | 77 | 5 | 5 | 5 |
 | `--pack-scale 1` | 77 | 4 | 4 | 4 |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the
 weekly cron, the `needs-5.1` PR label, or manual dispatch) and skips on 4.5
-LTS. Smoke does not pass `--bypass`, `--legacy-rna`, `--mismatch`,
-`--mismatch-mark`, or `--force-run`.
+LTS. Its catalog falsifier is `--legacy-rna` (expects exit 7). Smoke does
+not pass `--bypass`, `--mismatch`, `--mismatch-mark`, or `--force-run`.

@@ -9,7 +9,7 @@ An empty catalog fails. Rows for harness code (tests/smoke/...) are allowed.
 Schema: only the known row keys are accepted (a typo such as "falsifer" would
 otherwise be ignored and the falsifier silently never run), and every row
 carries at least one falsifier: {"args": [...], "expect_exit": N} with N not
-0, 1 or 77, or {"args": [...], "expect_sidecar_fail": true} on a row that
+0, 1, 2 (argparse usage) or 77, or {"args": [...], "expect_sidecar_fail": true} on a row that
 declares expect_sidecar.
 
     python tests/check_smoke_catalog.py [--root PATH]
@@ -31,7 +31,9 @@ EXCLUDED: set[str] = set()
 ROW_KEYS = {"name", "script", "args", "min_version", "expect_file",
             "expect_sidecar", "sidecar_contains", "falsifiers"}
 FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "min_version"}
-FORBIDDEN_EXITS = {0, 1, 77}
+# 2 is argparse's usage-error exit: an unknown or deleted flag also exits 2,
+# so a falsifier expecting 2 passes even when its flag no longer exists.
+FORBIDDEN_EXITS = {0, 1, 2, 77}
 
 
 def check_schema(row: dict) -> list[str]:
@@ -60,7 +62,7 @@ def check_schema(row: dict) -> list[str]:
         elif has_exit:
             code = f["expect_exit"]
             if not isinstance(code, int) or isinstance(code, bool) or code in FORBIDDEN_EXITS:
-                errors.append(f"{where}: expect_exit {code!r} must be an int other than 0, 1, 77")
+                errors.append(f"{where}: expect_exit {code!r} must be an int other than 0, 1, 2, 77")
         elif not row.get("expect_sidecar"):
             errors.append(f"{where}: expect_sidecar_fail on a row with no expect_sidecar")
         mv = f.get("min_version")

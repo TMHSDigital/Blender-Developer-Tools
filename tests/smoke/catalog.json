@@ -65,7 +65,7 @@
     "name": "gn-bundle-roundtrip",
     "script": "examples/gn-bundle-roundtrip/gn_bundle_roundtrip.py",
     "min_version": "5.0",
-    "falsifiers": [{"args": ["--legacy-rna"], "expect_exit": 2}]
+    "falsifiers": [{"args": ["--legacy-rna"], "expect_exit": 7}]
   },
   {
     "name": "exit-pre-sidecar",
