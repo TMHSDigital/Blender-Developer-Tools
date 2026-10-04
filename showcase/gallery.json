@@ -83,7 +83,7 @@
       "category": "village",
       "teaches": "A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A cast-iron street lamp: fluted post with brass collars and a ladder bar, a braced arm with wrought scrolls, and a banded brass lantern lit amber from inside.",
-      "witnessesFix": "Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.",
+      "witnessesFix": "Recomputed: 4726 tris, three materials with 2162 metal, 24 glass and 341 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 108 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.",
       "hero": "docs/gallery/assets/street-lantern-hero.webp",
       "preview": "showcase/street-lantern/preview.webp",
       "tags": [
@@ -97,7 +97,7 @@
       "category": "village",
       "teaches": "A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "An open grained wooden treasure chest with iron bands following its barrel-vaulted lid.",
-      "witnessesFix": "Recomputed: 3852 tris, two materials with 1608 wood and 318 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.764×0.542×0.691 m, LOD ratios in band, convex collider 176 tris, non-empty glTF. Hygiene all zero, four feet at zmin 0, lid-knuckle to hinge barrel 7 mm, band-wall gap 0. --float-hinge exits 17 on the hinge join; --narrow-bands exits 18 on the band seat.",
+      "witnessesFix": "Recomputed: 3816 tris, two materials with 1608 wood and 300 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.764×0.524×0.696 m, LOD ratios in band, convex collider 180 tris, non-empty glTF. Hygiene all zero, four feet at zmin 0, lid-knuckle to hinge barrel 7 mm, band-wall gap 0. --float-hinge exits 17 on the hinge join; --narrow-bands exits 18 on the band seat.",
       "hero": "docs/gallery/assets/treasure-chest-hero.webp",
       "preview": "showcase/treasure-chest/preview.webp",
       "tags": [
@@ -211,7 +211,7 @@
       "category": "village",
       "teaches": "A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A staved wooden water trough on pegged trestle legs, iron straps bolted and clipped over its rim, half full of rippled dark water, a bung in one end.",
-      "witnessesFix": "Recomputed: 3316 tris, three materials with 1482 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093x0.552x0.5055 m, zmin 0, four shoes planted, each end three lapped boards, end rim span 21 mm, strap BVH gap 0, water-hull gap 2.6 mm, water contained on 66 of 66 rays, hull 1.045x0.466 m, LOD ratios in band, convex collider 68 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap/--open-ends 18; --narrow-hull 19; --slab-ends 20.",
+      "witnessesFix": "Recomputed: 4792 tris, three materials with 1656 wood, 420 metal and 476 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.111x0.552x0.512 m, zmin 0, four shoes planted, each end three lapped boards, end rim span 21 mm, strap BVH gap 0, water-hull gap 2.5 mm, water contained on 120 of 120 rays, hull 1.045x0.466 m, LOD ratios in band, convex collider 76 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap/--open-ends 18; --narrow-hull 19; --slab-ends 20.",
       "hero": "docs/gallery/assets/water-trough-hero.webp",
       "preview": "showcase/water-trough/preview.webp",
       "tags": [
@@ -225,7 +225,7 @@
       "category": "village",
       "teaches": "A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes, a face-nailed horseshoe) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A tall wooden hitching post with a pointed cap, a cross-rail on two knee braces with iron end caps and two hung rings, iron bands, and a horseshoe nailed to its face.",
-      "witnessesFix": "Recomputed: 1852 tris, two materials with 114 wood and 828 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, horseshoe biting 1.5 mm and 7.5 mm proud, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring, --sunk-bands and --float-horseshoe exit 18; --short-post exits 19.",
+      "witnessesFix": "Recomputed: 2156 tris, two materials with 222 wood and 880 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.506×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, horseshoe biting 1.5 mm and 7.5 mm proud, LOD ratios in band, convex collider 72 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring, --sunk-bands and --float-horseshoe exit 18; --short-post exits 19.",
       "hero": "docs/gallery/assets/hitching-post-hero.webp",
       "preview": "showcase/hitching-post/preview.webp",
       "tags": [
@@ -253,7 +253,7 @@
       "category": "village",
       "teaches": "A procedural village hand pump whose gooseneck is a 6-gon tube from the lower-column radius, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A green-enamelled cast-iron village pump with a fluted barrel, ball finial and counterweighted handle on a wooden plinth, a hooped bucket under its spout.",
-      "witnessesFix": "Recomputed: 1064 tris, two materials with 564 metal and 144 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.382×1.052 m, grounded zmin, spout-to-column gap 2.7 mm, flange-to-plinth gap 6.0 mm, column radius 62 mm, LOD ratios in band, convex collider 114 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-spout 17; --float-flange 18; --skinny-col 19.",
+      "witnessesFix": "Recomputed: 2412 tris, two materials with 1134 metal and 332 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.521×1.055 m, grounded zmin, spout-to-column gap 2.4 mm, flange-to-plinth gap 6.0 mm, column radius 68 mm, LOD ratios in band, convex collider 205 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-spout 17; --float-flange 18; --skinny-col 19.",
       "hero": "docs/gallery/assets/hand-pump-hero.webp",
       "preview": "showcase/hand-pump/preview.webp",
       "tags": [
@@ -338,7 +338,7 @@
       "category": "village",
       "teaches": "A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A rust-blotched cast-iron cauldron with a raised belly band, hanging by its bail and a short chain from a forged iron head atop a tripod of wooden poles.",
-      "witnessesFix": "Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.053 m, pot base radius 0.075 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, bail threads both ear rings, mesh hygiene all zero, LOD ratios in band, convex collider 246 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook/--edge-on-ears 17; --pipe-ferrule 18; --pointed-pot 19.",
+      "witnessesFix": "Recomputed: 4180 tris, two materials with 144 wood and 2116 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.053 m, pot base radius 0.075 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0 under a five-link chain, bail threads both ear rings, mesh hygiene all zero, LOD ratios in band, convex collider 252 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook/--edge-on-ears 17; --pipe-ferrule 18; --pointed-pot 19.",
       "hero": "docs/gallery/assets/iron-cauldron-hero.webp",
       "preview": "showcase/iron-cauldron/preview.webp",
       "tags": [
@@ -352,7 +352,7 @@
       "category": "village",
       "teaches": "A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "An oak ladder with six pale turned hickory rungs through-tenoned into its rails, iron tie-rods under the end rungs, leaning on a board wall with a rope coil on a rung.",
-      "witnessesFix": "Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.",
+      "witnessesFix": "Recomputed: 3000 tris, two materials with 684 wood and 976 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 92 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.",
       "hero": "docs/gallery/assets/wooden-ladder-hero.webp",
       "preview": "showcase/wooden-ladder/preview.webp",
       "tags": [
@@ -380,7 +380,7 @@
       "category": "village",
       "teaches": "A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "Three grained wooden shipping crates stacked, each turned slightly differently, with nailed iron corner straps.",
-      "witnessesFix": "Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
+      "witnessesFix": "Recomputed: 6060 tris, two materials with 1344 iron and 2418 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.588×0.428 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 230 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
       "hero": "docs/gallery/assets/crate-stack-hero.webp",
       "preview": "showcase/crate-stack/preview.webp",
       "tags": [
@@ -394,7 +394,7 @@
       "category": "village",
       "teaches": "A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
       "alt": "A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints.",
-      "witnessesFix": "Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.",
+      "witnessesFix": "Recomputed: 1140 tris, three materials with 182 dressed, 364 ashlar and 108 mortar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.",
       "hero": "docs/gallery/assets/stone-archway-hero.webp",
       "preview": "showcase/stone-archway/preview.webp",
       "tags": [

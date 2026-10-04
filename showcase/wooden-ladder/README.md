@@ -45,7 +45,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Base triangles | 1800–3100 | 3000 / 3000 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 |
-| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 684 wood, 832 metal |
+| Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 684 wood, 976 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.490, 0.376, 1.487) m ± 0.01 | (0.4903, 0.3760, 1.4870) |
 | Grounded | `abs(zmin)` ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m | zmin 0, sole 0, rail 0.02037 |

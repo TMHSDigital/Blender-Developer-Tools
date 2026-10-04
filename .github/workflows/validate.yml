@@ -73,6 +73,9 @@ jobs:
       - name: Every gallery still is gated by gallery_framing
         run: python3 tests/check_render_gates.py
 
+      - name: Showcase witness callouts match the README budgets
+        run: python3 tests/check_witnesses.py
+
       - name: Showcase helper drift (warn-only report)
         run: python3 tests/check_helper_drift.py
 
