@@ -316,6 +316,18 @@ __CHROME__
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
+    /* Wide screens: only the search row stays pinned. The filter rows scroll
+       away with the page (they were ~190px of a 900px viewport), and "/" or
+       scrolling back up brings them back. */
+    @media (min-width: 640px) {
+      .controls, .controls-inner { display: contents; }
+      .controls-main { position: sticky; top: 46px; z-index: 4;
+        padding: 0.55rem max(1.25rem, calc((100% - var(--maxw)) / 2 + 1.25rem));
+        background: color-mix(in srgb, var(--bg) 94%, transparent);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border); }
+      .filters { max-width: var(--maxw); margin: 0 auto; padding: 0.6rem 1.25rem 0.75rem; }
+    }
     @media (max-width: 639px) {
       .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
       .controls-row { gap: 0.4rem; }
