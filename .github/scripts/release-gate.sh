@@ -42,16 +42,21 @@ if [ -z "$pr" ]; then
 fi
 
 # gh exits non-zero while checks are pending or failing even with --json, so
-# judge the JSON itself (gh's built-in --jq, no jq binary needed) and treat
-# unreadable output as a failed gate.
-count=$(gh pr checks "$pr" --repo "$repo" --json name --jq 'length' 2>/dev/null) || true
+# judge the output, not the exit status. One call yields "<count>:<bad>", where
+# <bad> lists every check that did not pass or skip. Anything else means gh
+# could not read the checks (rate limit, 5xx, network): fail closed.
+out=$(gh pr checks "$pr" --repo "$repo" --json name,bucket \
+  --jq '"\(length):" + ([.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.name)=\(.bucket)"] | join(", "))' \
+  2>/dev/null) || true
+count=${out%%:*}
+bad=${out#*:}
+case "$out" in *:*) ;; *) count="" ;; esac
 case "$count" in
   ''|*[!0-9]*|0)
     echo "::error::could not read checks for PR #$pr; not releasing"
     exit 1
     ;;
 esac
-bad=$(gh pr checks "$pr" --repo "$repo" --json name,bucket   --jq '[.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.name)=\(.bucket)"] | join(", ")' 2>/dev/null) || true
 if [ -n "$bad" ]; then
   echo "::error::PR #$pr has checks that did not pass: $bad; not releasing"
   exit 1
