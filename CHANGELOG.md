@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.2] - 2026-10-04
+
+### Fixes
+
+- fix(site): landing showcase cards caption the piece, not the shared pipeline ([`c5880ba`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/c5880bad43586c271a7de6cd2d070b0a2ff12687))
+- fix(site): scrollspy marks Examples and Showcase while their sections are in view ([`a882bd6`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a882bd6fa1f608b04c3b2749cfe0f0049a3d0850))
+- fix(gallery): nine showcase witness callouts quoted pre-remodel numbers ([`fc087a8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/fc087a86bf264895e219b42480cb6e67d317b772))
+
+### Other
+
+- docs(gallery): tighten the gallery index lede ([`afa5015`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/afa5015d49d7152ca2ea38b069f7c1f053ec28a8))
+
+[Release v0.143.2](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.2)
+
 ## [0.143.1] - 2026-10-04
 
 ### Fixes
