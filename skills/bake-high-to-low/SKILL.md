@@ -114,11 +114,18 @@ Snippet: `snippets/bake_normal_high_to_low.py`.
 
 ### 5. Save the datablock
 
-The bake writes the image **in memory**. `Image.save()` on a `GENERATED` image flips `source` to `'FILE'` and drops the buffer — the trap `examples/image-pixels-testcard/` witnesses. Use `save_render()`:
+The bake writes the image **in memory**. `Image.save()` on a `GENERATED` image flips `source` to `'FILE'` and drops the buffer — the trap `examples/image-pixels-testcard/` witnesses. Use `save_render()`.
+
+`save_render()` writes in the format of the **scene's** `render.image_settings`, not `img.file_format`: setting `img.file_format = "OPEN_EXR"` and calling `save_render` still writes a PNG on a default scene. Set the scene's format for the call and restore it:
 
 ```python
-img.file_format = "PNG"
-img.save_render(filepath)
+settings = scene.render.image_settings
+previous = settings.file_format
+settings.file_format = "OPEN_EXR"  # or "PNG"
+try:
+    img.save_render(filepath, scene=scene)
+finally:
+    settings.file_format = previous
 ```
 
 Snippet: `snippets/save_baked_image.py`. Folded save is the wrong size: the trap is its own contract.
