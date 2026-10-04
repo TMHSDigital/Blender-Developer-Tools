@@ -26,4 +26,6 @@
       /* gallery vocabulary for the same values */
       --surface: var(--panel); --surface-2: var(--panel-2); --text-dim: var(--dim);
       --font-sans: var(--font-body);
+      /* type scale for small and body text; display sizes stay fluid clamp()s */
+      --fs-xs: 0.75rem; --fs-sm: 0.8125rem; --fs-md: 0.875rem; --fs-lg: 0.9375rem; --fs-body: 1rem;
     }
