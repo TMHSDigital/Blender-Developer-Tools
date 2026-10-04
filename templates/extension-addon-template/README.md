@@ -34,9 +34,18 @@ Targets Blender 4.5 LTS and 5.x.
 
 From inside Blender:
 
-1. Edit > Preferences > Add-ons > Install from Disk.
-2. Select the directory (or zip it first).
+1. Build a package from the template directory (it holds
+   `blender_manifest.toml`):
+   `blender --command extension build --source-dir . --output-dir dist`
+2. Edit > Preferences > Get Extensions > the drop-down menu > Install from
+   Disk, and pick the `.zip` in `dist/`. "Install from Disk" takes a `.zip`
+   (or a `.py`), not a directory.
 3. Enable the add-on.
+
+For live editing without re-zipping, link the template directory into a
+local extensions repository instead (Preferences > Get Extensions >
+Repositories, add a "Local" repository, and place or symlink the directory
+in that repository's folder).
 
 The panel appears under `View3D > N-panel > Example` (rename when you
 edit `bl_category`).

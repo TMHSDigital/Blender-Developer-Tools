@@ -12,7 +12,7 @@ full version with Wrong/Right examples.
 
 ## always-free-bmesh
 
-Flag bmesh.new() calls without a paired bm.free() in a try/finally block. BMesh allocates C-side memory that Python's garbage collector cannot reclaim; missing free() leaks and eventually crashes Blender.
+Flag bmesh.new() calls without a paired bm.free() in a try/finally block. Blender frees an unreferenced BMesh only when its Python wrapper dies, which a traceback, global, closure or modal operator can delay for the whole session; an explicit free() in finally releases it deterministically.
 
 Applies to: `**/*.py`. Full rule: [`rules/always-free-bmesh.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/always-free-bmesh.mdc).
 

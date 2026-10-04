@@ -131,7 +131,7 @@ Origin at the lowest Z of the mesh (sit-on-ground) via `foreach_get` / `foreach_
 
 ### 6. Measure evaluated triangle count
 
-`obj.data` is the authored mesh. A DECIMATE modifier does not change `obj.data`. Count triangles on the evaluated mesh, and call `calc_loop_triangles()` first. Tessellation is not implicit on 4.5 or 5.x.
+`obj.data` is the authored mesh. A DECIMATE modifier does not change `obj.data`. Count triangles on the evaluated mesh. On 4.5 and 5.x `Mesh.loop_triangles` is computed lazily from the current topology, so `calc_loop_triangles()` is optional (harmless; it matters only on much older builds).
 
 ```python
 def evaluated_triangle_count(obj):
@@ -166,7 +166,7 @@ Draco, selected-only, explicit `export_yup`, and `export_apply=True` so the deci
 ## Common AI mistakes
 
 1. **Decimate ratio against `len(obj.data.polygons)`**. That ignores modifiers already on the stack and counts n-gons as one. Use evaluated `loop_triangles`.
-2. **Skipping `calc_loop_triangles()`**. `loop_triangles` can be empty or stale. Required on 4.5 LTS and 5.x.
+2. **Counting triangles on `obj.data`** instead of the evaluated mesh. A DECIMATE modifier does not change `obj.data`, so the count ignores the budget you just applied.
 3. **`export_apply=True` as "apply object transforms".** It applies modifiers excluding armatures. Apply object scale first.
 4. **Hulling the dense render mesh.** Over budget. Hull a coarse cage.
 5. **`bm.normal_update()` for flipped faces.** Use `recalc_face_normals`.
@@ -177,7 +177,7 @@ Draco, selected-only, explicit `export_yup`, and `export_apply=True` so the deci
 
 The cleanup sequence is the same on 4.5 LTS and 5.x:
 
-- `Mesh.calc_loop_triangles()` is still required before `mesh.loop_triangles` on 4.5 LTS, 5.1, and 5.2. Not implicit. Verified: https://docs.blender.org/api/5.1/bpy.types.Mesh.html#bpy.types.Mesh.calc_loop_triangles and https://docs.blender.org/api/4.5/bpy.types.Mesh.html#bpy.types.Mesh.calc_loop_triangles. The 5.1 bmesh module still says tessellation "needs to be called explicitly": https://docs.blender.org/api/5.1/bmesh.html
+- `Mesh.loop_triangles` is lazily computed on 4.5 LTS and 5.x: measured on 4.5.11 and 5.2.1, a fresh cube reads 12 without `calc_loop_triangles()`, as do a `to_mesh()` result and a mesh rewritten by bmesh. The "needs to be called explicitly" note in the bmesh docs is about `BMesh.calc_loop_triangles()`, the bmesh-side tessellation, not `Mesh.loop_triangles`.
 - `Mesh.calc_normals()` is gone since 4.0. `bmesh.ops.recalc_face_normals` on both LTS lines.
 - glTF import has no `global_scale` on either line. FBX does.
 - `DecimateModifier.decimate_type='COLLAPSE'` and `ratio` are stable across 4.5 LTS and 5.x.

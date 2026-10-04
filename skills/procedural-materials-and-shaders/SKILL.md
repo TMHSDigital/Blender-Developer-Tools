@@ -157,7 +157,7 @@ When the same subgraph appears across multiple materials, factor it into a `Shad
 - **Targeting Layered Textures**. The Layered Textures roadmap is deferred to 2027. Do not generate code that imports from `bpy.types.LayeredTextureNode` or similar; these do not exist in 5.1 stable. Stick with classic `ShaderNodeTex*` (ShaderNodeTexImage, ShaderNodeTexNoise, etc.) for 5.1.
 - **Calling `bpy.ops.material.new()`** to create a material when `bpy.data.materials.new()` works headlessly and is faster.
 - **Trying to wire sockets across material boundaries**. Each material has its own `node_tree`. To share logic, use a shader node group.
-- **Forgetting to clear default nodes**. A new material's tree (5.x, or 4.5 after `use_nodes = True`) holds a Principled BSDF and an Output. If you also add your own and link, you end up with two BSDFs feeding the output and the visible behavior is undefined. Either reuse the defaults or `nodes.clear()` first.
+- **Forgetting to clear default nodes**. A new material's tree (5.x, or 4.5 after `use_nodes = True`) holds a Principled BSDF and an Output. If you add your own BSDF and link it to `Surface`, the new link replaces the old one (an input socket takes one link), so the default Principled BSDF is left orphaned in the tree, confusing anyone who reads it and anything that later looks it up by type or name. Either reuse the defaults or `nodes.clear()` first.
 
 ## Version correctness
 

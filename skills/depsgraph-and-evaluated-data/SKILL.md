@@ -62,11 +62,10 @@ Three steps:
 
 ## The lifetime rule (critical)
 
-Every `to_mesh()` must be paired with a `to_mesh_clear()`. If you skip the clear:
+Every `to_mesh()` must be paired with a `to_mesh_clear()`. The evaluated object owns **one** temporary mesh: a second `to_mesh()` on the same object returns that same mesh (measured on 4.5.11 and 5.2.1), so a missing clear does not multiply per call. If you skip the clear:
 
-- The temporary mesh leaks for the lifetime of the depsgraph (typically the session)
-- Repeated calls accumulate memory
-- In some 5.x builds the next depsgraph evaluation crashes if too many temp meshes are outstanding
+- That temporary mesh stays allocated until the object is re-evaluated or freed, once per evaluated object you touched (a whole-scene exporter holds a full copy of every mesh)
+- Code that keeps using the mesh after the next depsgraph update reads freed data; clearing at a known point makes the lifetime explicit
 
 ```python
 obj_eval, mesh_eval = get_evaluated_mesh(obj)
@@ -180,7 +179,7 @@ When you build your own exporter on top of `evaluated_depsgraph_get()`, the deps
 ## Common AI mistakes
 
 - **Reading `obj.data.vertices` and calling it "what the user sees"**. It is not. This is the single most common AI exporter bug.
-- **Forgetting `to_mesh_clear`**. The temporary mesh leaks. Cumulative leaks degrade Blender's memory headroom and can crash long-running batch jobs.
+- **Forgetting `to_mesh_clear`**. Each evaluated object keeps its temporary mesh until it is re-evaluated or freed. Across a whole-scene export that is a second copy of every mesh held at once.
 - **Storing `mesh_eval` past the cleanup point**. Once `to_mesh_clear` runs, the mesh datablock is freed. Any references become dangling.
 - **Calling `evaluated_get` without the depsgraph argument**. The signature is `obj.evaluated_get(depsgraph)`; passing nothing raises a `TypeError`.
 - **Treating `obj.data` as identical to `obj_eval.data`**. They are different mesh datablocks. The first is the source; the second is post-evaluation.

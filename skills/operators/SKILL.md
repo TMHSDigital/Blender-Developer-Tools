@@ -87,10 +87,10 @@ class MESH_OT_offset_along_normals(bpy.types.Operator):
 
 ### `bl_options` you almost always want
 
-- `'REGISTER'`: makes the operator show up in the redo panel and undo history. Without this, the operator is invisible to the user after running and properties cannot be tweaked.
+- `'REGISTER'`: reports the operator in the Info editor and enables the Adjust Last Operation (redo) panel. Without it, properties cannot be tweaked after running. It does not add an undo step; that is `'UNDO'`.
 - `'UNDO'`: hooks into the undo stack. Without this, your operator's effect cannot be undone with Ctrl-Z.
-- `'INTERNAL'`: hides the operator from search and help. Use for operators called only by other operators or panels.
-- `'BLOCKING'`: pauses other UI updates while running. Reserve for modal operators that need exclusive input.
+- `'INTERNAL'`: hides the operator from operator search. Use for operators called only by other operators or panels. It still runs from Python and buttons.
+- `'BLOCKING'`: blocks anything else from using the cursor while the operator runs. Reserve for modal operators that need exclusive mouse input.
 - `'GRAB_CURSOR'` and `'GRAB_CURSOR_X'` / `'GRAB_CURSOR_Y'`: useful in modal operators to capture mouse motion.
 
 ## Defensive context handling
