@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Water Trough (water-trough) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/water-trough/water_trough.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, board-built ends with a drain bung, contained water with a rippled surface and meniscus, iron straps through-bolted and clipped over the rim, pegged trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The hull, ends, straps and water all sample the same YZ arc. Each end is three vertical boards whose bottoms follow the hull&#x27;s outer arc and whose tops are level, and the staves tenon into them. It is neither a bounding-box slab around the U (<code>--box-ends</code>) nor an open U-band (<code>--open-ends</code>). Straps sit at <code>STRAP_X</code>, offset from <code>LEG_X</code>, so the trestle does not punch through the iron. Stretchers span the inner faces of the legs. <code>--round-band</code> is not used; <code>--float-strap</code> is the seat falsifier.</p>

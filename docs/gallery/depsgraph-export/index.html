@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Depsgraph Export (depsgraph-export) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/depsgraph-export/depsgraph_export.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that proves <strong>modifiers actually ship in exports</strong> and demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> lifetime contract. It builds a game controller whose shell is a sparse quad control cage (90 vertices) under a level-2 <code>SUBSURF</code> modifier, with the sticks, d-pad, face buttons and bumpers modeled as ordinary parts parented to it. It measures every mesh via <code>evaluated_get().to_mesh()</code> (each paired with <code>to_mesh_clear()</code>), exports the scene through <code>wm.obj_export</code>, and asserts:</p>
 <ul><li>the evaluated shell has exactly the vertex count the Catmull-Clark closed form predicts from the cage&#x27;s own topology — per level <code>V&#x27; = V + E + F</code>, <code>E&#x27; = 2E + S</code>, <code>F&#x27; = S</code> (S = face corners) — which for this cage (V=90, E=176, F=88, S=352) is <strong>1,410</strong>;</li><li>the exported OBJ vertex count equals the summed <strong>evaluated</strong> counts of every mesh (3,666), not the summed base counts (2,346).</li></ul>

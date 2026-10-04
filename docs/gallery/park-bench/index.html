@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Park Bench (park-bench) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural wrought-iron park bench whose legs are each one bent bar from scroll toe to reclined back, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/park-bench/park_bench.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural wrought-iron park bench (round-bar legs bent in one piece from scroll toe to post, with the rear pair bending again into a reclined back; a slatted seat and back; armrests on quarter-round brackets), then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
 <p>Every leg is one bar swept along one path: a quarter-circle toe about <code>(hy ± R, R)</code>, tangent to the post where it meets it, then the post, and at the back a 12° bend into the upright that carries the back slats. The seat slats bear on the side rails, the back slats on the uprights, and each armrest on its arm bar and the front leg&#x27;s tenon, each by a named bite. The H-stretcher meets the legs at the shared stations (<code>HX</code>, <code>HY</code>, <code>SEAT_Z</code>, <code>ARM_Z</code>, <code>SCROLL_R</code>, <code>BACK_TOP</code>).</p>

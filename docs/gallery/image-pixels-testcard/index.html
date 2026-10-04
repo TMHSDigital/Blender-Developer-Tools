@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Image Pixels Testcard (image-pixels-testcard) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/image-pixels-testcard/image_pixels_testcard.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that writes a procedural broadcast test card — seven neon bars, a luminance ramp, a PLUGE row with a bottom-left origin marker, and the classic circle — into a <code>bpy.data.images.new()</code> datablock with <strong>one</strong> <code>pixels.foreach_set()</code> call (512 × 288 × 4 = 589,824 floats), then renders it on an emissive studio monitor.</p>
 <p><strong>What it witnesses:</strong> the <code>bpy.types.Image</code> pixel-buffer contract. <code>Image.pixels</code> is a flat, row-major, bottom-left-origin float buffer that is <em>always</em> RGBA: <code>channels == 4</code> and <code>len(pixels) == width × height × 4</code> even when the image is created with <code>alpha=False</code>, so an RGB-stride <code>foreach_set</code> raises <code>TypeError</code> instead of writing. A byte image (the default) stores 8 bits per channel — every written float round-trips with error ≤ 0.5/255 <strong>and strictly &gt; 0</strong> (an exact round-trip would mean storage is not 8-bit); <code>float_buffer=True</code> stores float32 and round-trips at ~1e-7. <code>Image.scale()</code> reallocates the buffer, so a <code>foreach_get</code> into a stale-size list raises <code>TypeError</code> rather than silently shearing rows.</p>

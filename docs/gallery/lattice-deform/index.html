@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Lattice Deform (lattice-deform) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear)." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/lattice-deform/lattice_deform.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that deforms a subdivided column with a <strong>2×2×2 lattice</strong> set to <code>&#x27;KEY_LINEAR&#x27;</code> interpolation on all three axes, then proves, vertex by vertex, that the Lattice modifier&#x27;s output is exactly the <strong>trilinear interpolation</strong> of the eight deformed control points. The deformed mesh is read through the depsgraph lifetime contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> (<code>evaluated_get</code> → <code>to_mesh</code> → <code>to_mesh_clear</code>), and the lattice points are edited the way <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> recommends for data-level work: through <code>bpy.data</code>, never <code>bpy.ops</code>.</p>
 <p><strong>What it witnesses:</strong> <code>LatticePoint.co</code> is the read-only rest position and <code>LatticePoint.co_deform</code> is the one you move. With linear interpolation a vertex at normalized rest coordinates (u, v, w) inside the lattice lands on Σ wᵢ · <code>co_deform</code>ᵢ with wᵢ = (u or 1−u)(v or 1−v)(w or 1−w), mapped through the lattice object&#x27;s matrix. The check computes that closed form independently for all 602 vertices, through a lattice object that is translated and non-uniformly scaled (1.7 × 1.7 × 2.4), and requires agreement to 1e-5 in world space (measured: 5.6e-7). It also asserts the undeformed lattice is the identity and that the deformation is not trivially small (max displacement 0.53).</p>

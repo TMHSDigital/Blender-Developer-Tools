@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="glTF Skin Roundtrip (gltf-skin-roundtrip) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that rigs a mech scorpion — 21 bones: a body, a five-segment tail and stinger, two three-bone claws (arm, hand, movable finger), eight legs; two-bone blends in the rubber boots at every flexing joint — exports it with <code>bpy.ops.export_scene.gltf</code> (<code>export_skins=True</code>), parses the file, re-imports it, and verifies the whole skinning contract against the authored rig, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
 <p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — this is the skinning counterpart to the crate&#x27;s geometry round-trip. Tangent frames for the normal maps are in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>.</p>

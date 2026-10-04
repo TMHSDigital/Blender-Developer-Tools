@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Attribute Domain Shear (attribute-domain-shear) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/attribute-domain-shear/attribute_domain_shear.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that witnesses what <code>POINT</code> versus <code>CORNER</code> <strong>means</strong> on <code>Mesh.color_attributes</code> once the mesh has shared vertices — the domain is not a storage detail, it decides where colors can live. Companion to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel"><code>color-attribute-wheel</code></a> (which covers <code>color_attributes.new()</code> versus the deprecated alias, CORNER sizing == <code>len(loops)</code>, and <code>active_color</code>); this example covers the trap one step later, when AI code knows the API exists but authors per-face colors into a <code>POINT</code>-domain attribute.</p>
 <p><strong>Pipeline arc neighbors:</strong> attribute authoring in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel"><code>color-attribute-wheel</code></a>, mesh topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>, tangent-space UV contracts in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Vertex Color AO (vertex-color-ao) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/vertex-color-ao/vertex_color_ao.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example baking <strong>ambient occlusion into a colour attribute</strong> — the cheap contact shadows an engine gets for free if it reads vertex colour. Unlike most bakes this one can be checked against a <em>formula</em> rather than against a previous run&#x27;s numbers: the hemisphere visibility integral has closed forms.</p>
 <p>For a point on the floor a distance <code>d</code> from an infinitely wide wall of height <code>H</code>, integrating the cosine-weighted hemisphere over the directions the wall blocks gives (the φ integral collapses to <code>π / √(1+k²)</code>):</p>

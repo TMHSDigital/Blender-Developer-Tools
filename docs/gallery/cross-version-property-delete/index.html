@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Cross Version Property Delete (cross-version-property-delete) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/cross-version-property-delete/cross_version_property_delete.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A pair of stage lamps that witnesses the custom <strong>ID-property</strong> delete contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/cross-version-property-delete.py"><code>cross-version-property-delete.py</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/custom-properties/SKILL.md"><code>custom-properties</code></a> — not the snippet&#x27;s <code>__main__</code>, which keys off <code>context.active_object</code> and prints nothing in <code>--background</code>.</p>
 <p>The IDs are two stage-lamp housings built with <code>bpy.data.objects.new</code>. The Keep lamp still carries <code>[&quot;accession&quot;] = 42</code>; the Clear lamp had <code>del obj[&quot;accession&quot;]</code>. Same <code>del</code> on 4.5 LTS and 5.x; there is no version branch.</p>

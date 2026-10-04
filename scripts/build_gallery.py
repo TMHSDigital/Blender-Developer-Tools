@@ -470,11 +470,14 @@ __CHROME__
     @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
     .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
       border-radius: 3px; padding: 0 0.3rem; margin: 0 0.1rem; }
-    .taglist { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
-    .taglist a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+    .taglist, .jumpnav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
+    .jumpnav { margin: 1.25rem 0 0; }
+    /* anchored sections land below the sticky site header */
+    .detail-section, .md h2[id] { scroll-margin-top: 4rem; }
+    .taglist a, .jumpnav a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
       background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px;
       padding: 0.12rem 0.6rem; transition: color 0.15s, border-color 0.15s; }
-    .taglist a:hover { color: var(--select); border-color: var(--select); text-decoration: none; }
+    .taglist a:hover, .jumpnav a:hover { color: var(--select); border-color: var(--select); text-decoration: none; }
     .related-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
     @media (min-width: 560px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
     .card.mini .card-body { padding: 0.65rem 0.9rem 0.75rem; }
@@ -1453,10 +1456,26 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
         parts.append("    </div>")
 
     readme = ex_dir / "README.md"
+    readme_html = ""
     if readme.is_file():
         resolve = make_resolver(base, ex["dir"])
+        readme_html = md_to_html(readme.read_text(encoding="utf-8"), resolve)
+
+    # Jump links only to anchors that exist on this page (README headings vary).
+    related = related_entries(ex, entries)
+    jumps = [(label, anchor) for label, anchor, present in (
+        ("Run", "run", 'id="run"' in readme_html),
+        ("Exit codes", "exit-codes", 'id="exit-codes"' in readme_html),
+        ("Source", "source", script is not None),
+        ("Related", "related", bool(related)),
+    ) if present]
+    if len(jumps) >= 2:
+        links = " ".join(f'<a href="#{a}">{label}</a>' for label, a in jumps)
+        parts.append(f'    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> {links}</nav>')
+
+    if readme_html:
         parts.append('    <section class="detail-section md">')
-        parts.append(md_to_html(readme.read_text(encoding="utf-8"), resolve))
+        parts.append(readme_html)
         parts.append("    </section>")
 
     if script is not None:
@@ -1476,7 +1495,6 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
         parts.append("      </div>")
         parts.append("    </section>")
 
-    related = related_entries(ex, entries)
     if related:
         parts.append('    <section class="detail-section" id="related" aria-labelledby="related-h">')
         parts.append('      <h2 id="related-h">Related</h2>')

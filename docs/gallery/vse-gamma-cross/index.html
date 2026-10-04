@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="VSE Gamma Cross (vse-gamma-cross) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable follow-up to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list"><code>vse-cut-list</code></a>: the check renders tiny frames across a GAMMA_CROSS between signal-orange and azure strips and asserts every sample against the fade&#x27;s actual math — because AI-generated sequencer code assumes the cross is the naive linear mix, and it is not.</p>
 <p><strong>What it witnesses:</strong> the fade math and the frame convention behind it.</p>

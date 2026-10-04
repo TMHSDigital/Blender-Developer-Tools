@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="GN Modifier Inputs (gn-modifier-inputs) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gn-modifier-inputs/gn_modifier_inputs.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that attaches one Geometry Nodes tree to three carrier objects and writes a per-modifier Float <strong>Height</strong> input through the version-appropriate API. The tree is a parametric spiral staircase: from Height it derives the step count (<code>round((Height - 0.3) / 0.1)</code>), instances the carrier mesh — one bevelled oak tread with its brass baluster — up a helix at 22.5° per step, and adds a teal newel post and a brass helical handrail. Written heights 1 / 2 / 3 m give 7 / 17 / 27 treads, so the three staircases read left to right as one design at three settings of one input.</p>
 <p>The closed form: the newel post runs from the floor at z=0 to exactly z=Height and every other part stays inside that span, so the evaluated Z-extent must equal the written height. If a write did not land, that staircase falls back to the socket default (1 m, 7 treads) and the extents are no longer distinct — in the render, the tall staircases collapse to copies of the short one.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Chopping Block (chopping-block) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/chopping-block/chopping_block.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural chopping block (a log round with a riveted iron hoop and a felling axe buried in the sawn face) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The log is an out-of-round loft whose radius is a closed-form function of angle and height; the hoop, its rivets, the top rim and the drying checks are all generated from that same function, so they stay seated when a dimension changes. The hoop is a lapped strip with two domed rivets through the lap. The axe head is one lofted shell from poll to bit with its chamfers modelled into the section profile, and the haft is swept through the eye rather than pushed into it. The haft is oval, bows away from the bit, and hooks toward it at the knob.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Wave Displace (wave-displace) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/wave-displace/wave_displace.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that displaces a 96×96 grid (9,409 vertices) into a standing wave using <strong>one <code>foreach_get</code> and one <code>foreach_set</code></strong> — the bulk-IO pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/use-foreach-set-for-bulk-data.mdc"><code>use-foreach-set-for-bulk-data</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> skill — instead of 9,409 individual <code>mesh.vertices[i].co</code> accesses.</p>
 <p><strong>What it witnesses:</strong> the bulk path is not just faster, it is <em>correct</em> — the check asserts the flat grid gained the expected Z span (the write actually landed) and that <strong>every</strong> vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer cannot hide behind a lucky probe.</p>

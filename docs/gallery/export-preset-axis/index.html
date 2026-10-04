@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Export Preset Axis (export-preset-axis) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/export-preset-axis/export_preset_axis.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that exports the same radio-mast mesh under the Unity and Godot glTF presets from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/engine-export-presets/SKILL.md"><code>engine-export-presets</code></a> and re-imports both files. The check is on coordinates, not a screenshot: Unity (<code>export_yup=True</code>) stands; Godot (<code>export_yup=False</code>) lies.</p>
 <p><strong>What it witnesses:</strong> named engine presets are not comments on the same kwargs. glTF axis RNA is <code>export_yup</code>, not FBX <code>axis_forward</code> / <code>axis_up</code>.</p>

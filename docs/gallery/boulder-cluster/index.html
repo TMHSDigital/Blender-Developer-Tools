@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Boulder Cluster (boulder-cluster) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural glacial boulder cluster — four boulders cut from ellipsoids by closed-form cleavage planes with weathered bevels, a speckled granite block, a banded sandstone boulder split in two with matching crack faces and bedding, a sandstone slab resting flat on a smaller granite boulder, lichen crusts and moss cushions on the tops and north faces — sunk into a soil mound with grass tufts, pebbles and wildflowers, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/boulder-cluster/boulder_cluster.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example, and the third in the <code>nature</code> category. It builds a procedural, game-ready cluster of glacial erratics on a patch of ground:</p>
 <ul><li>four boulders of clearly different sizes, each an ellipsoid cut by closed-form cleavage planes. The cuts are rounded off by a weathering bevel, a soft minimum in the radial field, so the flat faces meet in worn edges rather than knife edges. Seeded corner chips and a seeded sum of waves roughen them;</li><li>a 1.7 m granite block, pale and speckled with black biotite and milky quartz crystals, its crevices darkened and its edges worn pale;</li><li>a sandstone boulder split in two along a crack. The halves stand 75 mm apart. Both are cut from one field, so their crack faces match, and the bedding bands run straight across the gap. The crack faces are fresh rock, paler and unweathered. The bedding weathers out as shallow ledges on the flanks;</li><li>a 0.95 m granite boulder in front, with a 0.6 m sandstone slab resting flat on its top: the slab&#x27;s underside is a cleavage plane parallel to the granite&#x27;s top face, dropped until its deepest vertex bites 10 mm in;</li><li>26 lichen crusts (sage, grey-green and orange Xanthoria) and 8 moss cushions on the tops and north faces;</li><li>a soil mound with drifts banked against every boulder&#x27;s foot, 32 grass tufts (one growing in the crack), 36 pebbles and 14 wildflowers (oxeye, buttercup, harebell) in the gaps and round the bases.</li></ul>

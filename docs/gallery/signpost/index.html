@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Signpost (signpost) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber fingerboard signpost through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/signpost/signpost.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural timber fingerboard signpost (square post, pyramidal cap from the post half plus overhang, three axis-aligned painted boards lettered with their destinations, with wedges cut from the board section, iron shoe collar and U-wrap straps) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>Boards are yaw 0. Finger tips are wedges whose base is the board&#x27;s own thickness×height, bitten into the board so the base face is inside it. The cap is added after the post bevel. The post stays on the origin. Hygiene family 15–19: <code>--stray-vert</code>, <code>--lift-z</code> / <code>--short-shoe</code>, <code>--gap-board</code>, <code>--float-strap</code>, <code>--yaw-boards</code>.</p>

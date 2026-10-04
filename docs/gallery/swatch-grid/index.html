@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Swatch Grid (swatch-grid) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/swatch-grid/swatch_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that renders a tiered 3×2 material library — one sphere per material, each seated in a gunmetal collar on a two-tier walnut riser behind an engraved brass name plaque — to a single PNG. It demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> patterns end to end:</p>
 <ul><li><strong>Principled BSDF</strong> metals (gold, copper: high metallic, low roughness) and dielectrics (red/blue plastic, white rough), configured with <strong>string socket lookups</strong> and <strong>4-tuple colors</strong>.</li><li>The <strong>emission</strong> pattern (an emissive orange swatch, its <code>ShaderNodeEmission</code> core mixed toward a dark dielectric shell at the silhouette so it reads as a glowing globe).</li><li>The cross-version <strong><code>set_specular</code> shim</strong> (<code>Specular</code> → <code>Specular IOR Level</code>, renamed in Blender 4.0).</li></ul>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Compositor Glare (compositor-glare) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/compositor-glare/compositor_glare.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that puts bloom where it actually lives: the compositor. Three emissive rings are rendered, then a <code>Glare</code> (Fog Glow) node fed by <code>Render Layers</code> grows the halo — wired through <code>scene.compositing_node_group</code> on Blender 5.x and through <code>scene.node_tree</code> on 4.x, because the 5.0 compositor rewrite removed the scene-level tree entirely (<code>scene.use_nodes = True</code> now raises <code>AttributeError</code>).</p>
 <p>The Glare node changed shape with it: on 4.x it takes legacy enum properties (<code>glare_type=&#x27;FOG_GLOW&#x27;</code>, <code>quality=&#x27;HIGH&#x27;</code>, <code>size=6</code>), while on 5.x the same choices are menu/float <strong>input sockets</strong> (<code>inputs[&#x27;Type&#x27;].default_value = &#x27;Fog Glow&#x27;</code>). The 4.x <code>threshold</code> property is a dead shim — the real threshold is the <code>Threshold</code> input socket on both versions. And EEVEE has no <code>use_bloom</code> toggle on either version (removed in 4.2): bloom is a compositor node, period.</p>

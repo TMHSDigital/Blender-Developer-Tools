@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Anvil (anvil) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/anvil/anvil.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural London-pattern anvil on a coopered timber stump (16 jittered staves, chord-lofted iron hoops, a sawn head, spreading foot, pinched waist, one slotted face with hardy and pritchel through-holes, oval-lofted horn) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>The face is one <code>add_slotted_slab</code> so hardy/pritchel are real holes in a single shell, not nubs glued onto stacked boxes. Hoops evaluate the same <code>host_outer_r</code> chord as the stave flats. <code>--round-band</code> is the falsifier: a circle of <code>radius_at(z)</code> instead of the chord.</p>

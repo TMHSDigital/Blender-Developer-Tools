@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="VSE Cut List (vse-cut-list) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/vse-cut-list/vse_cut_list.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that witnesses the <strong>sequencer API rename between Blender 4.5 LTS and 5.x</strong> — the single most common way AI-generated VSE code dies on a modern Blender. Every tutorial-era snippet does <code>scene.sequence_editor.sequences.new_effect(..., frame_end=...)</code>; on 5.x that path is gone twice over (<code>sequences</code> removed, <code>frame_end</code> kwarg rejected), and on 4.5 the modern spelling (<code>strips</code>, <code>length=</code>) is already the only one the new collection accepts.</p>
 <p><strong>What it witnesses:</strong> a deterministic cut list — three color programs A/B/C, a GAMMA_CROSS fed by a dedicated source pair T1/T2, a scene strip, and a text strip — asserted against closed-form spans on each version&#x27;s canonical accessors, then re-asserted after a save/reload round-trip:</p>

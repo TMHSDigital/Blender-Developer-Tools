@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Ray Cast Space (ray-cast-space) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Object.ray_cast is object-local while Scene.ray_cast is world space: rays mapped through matrix_world.inverted() (directions by its 3x3 only) hit the same points both ways, and raw world coords handed to Object.ray_cast miss." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/ray-cast-space/ray_cast_space.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example of the coordinate-space contract behind Blender&#x27;s two ray casts, the one AI-written code gets wrong most often. <code>Scene.ray_cast(depsgraph, origin, direction)</code> takes and returns <strong>world</strong> space. <code>Object.ray_cast(origin, direction)</code> takes and returns the object&#x27;s <strong>local</strong> space. Feed world coordinates to <code>Object.ray_cast</code> and nothing raises: it quietly misses, or hits the wrong spot.</p>
 <p><strong>What it witnesses:</strong> a target block carries a transform with every ingredient that separates the two spaces: a translation, a 32° turn about Z, and non-uniform scale (1.55 × 0.62 × 0.62). The example casts five rays at closed-form points on three of its faces, arriving obliquely, and checks each one three ways:</p>

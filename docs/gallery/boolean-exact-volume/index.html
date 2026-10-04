@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Boolean Exact Volume (boolean-exact-volume) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that cuts a 2 m cube with a 2 × 1 × 1 m slab using the <strong>Boolean modifier on the EXACT solver</strong>, in all three operations (UNION, DIFFERENCE, INTERSECT), then proves that each result has the <strong>closed-form volume</strong> and is a <strong>closed 2-manifold</strong>. The hard part is deliberate: the slab&#x27;s top face lies in the cube&#x27;s top plane, the coplanar case where floating-point booleans go wrong. The results are read through the depsgraph lifetime contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> (<code>evaluated_get</code> → <code>to_mesh</code> → <code>to_mesh_clear</code>), and the operands are built with bmesh and freed in <code>try</code>/<code>finally</code> as <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> requires.</p>
 <p><strong>What it witnesses:</strong> with A = [0,2]³ and B = [1,3] × [0.5,1.5] × [1,2], the overlap is A ∩ B = [1,2] × [0.5,1.5] × [1,2], so the closed forms are V(A ∪ B) = 8 + 2 − 1 = 9, V(A − B) = 8 − 1 = 7 and V(A ∩ B) = 1 cubic metre. Each operand pair sits in an object matrix that is translated and turned 18° about Z, so the modifier has to carry B into A&#x27;s space. For every result the check:</p>

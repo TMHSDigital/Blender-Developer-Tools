@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Terrain Scatter (terrain-scatter) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A Geometry Nodes hill tile with embedded, varied stone scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/terrain-scatter/terrain_scatter.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid with an Index-jittered Instance-on-Points scatter, realized cubes replaced by closed-form cleaved, faceted stones seated on sampled dirt Z, then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>GN still builds the hill, with two closed-form micro-relief terms on top of the sine, and the instance grid. After realize+slabify, whose rim is bevelled into the walls, cube islands are deleted and each centroid is reseated as a sized stone, sunk until the ground closes around it on every side, then clamped above the slab floor.</p>

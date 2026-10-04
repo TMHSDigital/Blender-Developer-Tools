@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Soccer Ball Goldberg (soccer-ball-goldberg) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a soccer ball as a <strong>Goldberg polyhedron</strong>: a bmesh icosphere truncated at exactly 1/3 of every edge, yielding the truncated icosahedron — 12 pentagons, 20 hexagons — with every face ordered by walking the source mesh&#x27;s own link topology (fan walk per vertex, loop order per triangle). Nothing is hand-listed, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/always-free-bmesh.mdc"><code>always-free-bmesh</code></a> rule.</p>
 <p><strong>Sibling, not twin:</strong> <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a> witnesses parametric extrusion ownership (counts from construction parameters, watertightness). This witnesses polyhedral topology invariants — the truncated icosahedron is an Archimedean solid, so its counts, vertex degree, edge uniformity, face planarity, and circumsphere are all closed forms — plus <strong>per-face-class material binding</strong> driven by face vertex count, never by enumeration order.</p>

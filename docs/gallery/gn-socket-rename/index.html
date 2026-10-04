@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="GN Socket Rename (gn-socket-rename) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2" />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gn-socket-rename/gn_socket_rename.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A jo-block (steel plinth + copper column) whose Geometry Nodes tree witnesses the 5.2 socket-identifier collapse on <code>FunctionNodeCompare</code> and <code>FunctionNodeRandomValue</code>. Follows <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a>.</p>
 <p>On 4.5.11 and 5.1.2, Compare INT exposes <code>A_INT</code> / <code>B_INT</code> and Random Value FLOAT exposes <code>Min_001</code> / <code>Max_001</code> / <code>Value_001</code>. On 5.2.1 those identifiers are gone — the live sockets reuse <code>A</code> / <code>B</code> and <code>Min</code> / <code>Max</code> / <code>Value</code>. Looking up the unique <em>enabled</em> socket of a given name wires on all three. Hard-coding the pre-5.2 identifiers raises on 5.2.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Text Version Stamp (text-version-stamp) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The TextCurve data API — curves.new(type=&#x27;FONT&#x27;), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/text-version-stamp/text_version_stamp.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a beveled 3D stamp of the running Blender version — a <code>TextCurve</code> (<code>bpy.data.curves.new(type=&#x27;FONT&#x27;)</code>) whose <code>body</code> is the live <code>bpy.app.version_string</code>, so every render self-documents which Blender produced it. CI artifacts made this way are self-labeling.</p>
 <p><strong>What it witnesses:</strong> the TextCurve data-API contract. <code>curves.new(type=&#x27;FONT&#x27;)</code> returns a Curve subclass, the built-in font (&quot;Bfont Regular&quot;) is always loaded even headless, <code>body</code> is plain assignable text that regenerates geometry on edit (more characters → strictly wider evaluated mesh), and <code>extrude</code> / <code>bevel_depth</code> produce exactly predictable solids: the evaluated mesh z-extent equals 2 × (extrude + bevel_depth) and the round bevel widens the outline in-plane by 2 × bevel_depth. Flat text (no extrude, no bevel) is already <em>filled</em> — faces exist — but strictly planar. The check also witnesses the depsgraph lifetime hazard: after <code>to_mesh_clear()</code> the returned Mesh reference is dead and any access raises <code>ReferenceError</code>.</p>

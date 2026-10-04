@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Tavern Stool (tavern-stool) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural tavern stool with a lathed seat, turned splayed legs, staggered stretchers, and iron ferrules gripping each leg on its own axis over a level tread, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/tavern-stool/tavern_stool.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural tavern stool: a lathed round seat, turned splayed legs, tenoned stretchers at two heights, and iron ferrules on level treads. Then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
 <p>Legs are one loft per leg, not stacked cones. Each foot is an iron ferrule sleeve on the leg&#x27;s own axis, its inner wall a named grip (1.2 mm) inside the leg. The sleeve&#x27;s raked bottom rim is buried in a level iron tread, and the leg ends inside the sleeve, above the tread. The first build ended every leg 3 mm above a vertical ring on the floor, with a 1 mm air gap around the foot. The front-back and side stretchers sit at different heights, so their tenons do not meet inside the leg. Each member has its own wood tone and grain. The seat is dished 14 mm at the centre for sitting, from the same lathe ring count as the old 6 mm dish, so the triangle count did not move. The dish floor stays 8 mm above the leg tenons wherever a leg enters from below.</p>

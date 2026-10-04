@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Degenerate Bevel Weld (degenerate-bevel-weld) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Two rugged cases whose shells are the check&#x27;s meshes: flat end panel versus a rolled knife ridge, the collapsed seam traced hot from live mesh data." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/degenerate-bevel-weld/degenerate_bevel_weld.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example isolating the half-dimension bevel collapse: author a bevel width against one box and reuse it on a thinner one, and at <code>offset == min_dimension / 2</code> the bevel band pinches into zero-area faces — and those degenerate triangles <strong>cross the export boundary</strong>. Re-parsed from the shipped GLB with stdlib only, they are sitting in the file, where an engine-side merge-by-distance welds their loops. Found authoring <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> (its count check caught a 36-vertex weld on a thin crate part); this example isolates the threshold.</p>
 <p><strong>Pipeline arc neighbors:</strong> round-trip fidelity in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>, watertight parametric solids in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a>.</p>

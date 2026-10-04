@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Socket Attach Points (socket-attach-points) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/socket-attach-points/socket_attach_points.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example building the thing a spawn system actually leans on: <strong>named socket empties parented into an asset</strong>, so a module dropped onto a socket with an <em>identity local transform</em> lands exactly where the artist put it, oriented the way the naming convention promises. Every clause in that sentence is a matrix identity, and every one of them drifts silently — a skipped <code>matrix_parent_inverse</code>, a basis built with the cross product the wrong way round, a transform frozen on the parent after the sockets were placed.</p>
 <p><strong>The asset, for reuse:</strong> <code>Drone.Survey</code>, an 0.86 m span survey quadcopter — a lofted fuselage with a vented deck and canopy face, four canted booms with finned motor cans and nav lights, and a two-rail landing gear. Seven mount pads carry seven sockets, and four interchangeable modules seat on them:</p>

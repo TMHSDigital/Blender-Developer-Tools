@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Grease Pencil Rosette (grease-pencil-rosette) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Grease Pencil v3&#x27;s attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that draws five nested neon rose curves as Grease Pencil v3 strokes — layer → <code>frames.new(1).drawing</code> → <code>add_strokes([counts])</code> → per-point <code>position</code>, <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> — the attribute-based API that replaced legacy GPencil across the 4.x-to-5.x window, the largest bpy API break the gallery witnesses.</p>
 <p><strong>What it witnesses:</strong> GPv3 lives at <em>different addresses</em> on the two supported versions, and the check asserts each side&#x27;s actual contract:</p>

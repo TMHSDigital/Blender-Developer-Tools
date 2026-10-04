@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Solidify Even Thickness (solidify-even-thickness) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/solidify-even-thickness/solidify_even_thickness.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that solidifies an open, folded strip with the <strong>Solidify</strong> modifier and proves, fold by fold, what <code>use_even_offset</code> does to the shell&#x27;s thickness. The strip is a zigzag profile extruded along Y, folded at bend angles of <strong>60°, 90° and 120°</strong>. The evaluated shells are read through the depsgraph lifetime contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> (<code>evaluated_get</code> → <code>to_mesh</code> → <code>to_mesh_clear</code>), and the strip is built with bmesh in a <code>try</code>/<code>finally</code>, as <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> requires.</p>
 <p><strong>What it witnesses:</strong> in the default Simple mode (<code>solidify_mode = &#x27;EXTRUDE&#x27;</code>) with <code>offset = -1</code>, the original surface stays put and every vertex gets a copy pushed <code>thickness</code> along its vertex normal. At a fold the vertex normal is the bisector of the two face normals, which meet at the bend angle φ. So:</p>

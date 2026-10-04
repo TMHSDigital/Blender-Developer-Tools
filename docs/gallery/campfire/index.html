@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Campfire (campfire) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/campfire/campfire.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural campfire (two-course running-bond ring of 14 rounded fieldstones per course, pit-floor cobbles, ash with embers, a kissing log tripod that overshoots a shared apex ring, floor logs, and charcoal) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>Courses share a Z plane; <code>--gap-courses</code> is the falsifier. Teepee axes aim at a ring of radius <code>(STICK_R * 0.55) / sin(π/N)</code> and overshoot so the caps cross; <code>--float-logs</code> inflates that ring.</p>

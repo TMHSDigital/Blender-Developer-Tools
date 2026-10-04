@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Iron Cauldron (iron-cauldron) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/iron-cauldron/iron_cauldron.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural hanging cauldron (a round-bellied iron pot on a small flat base with a rolled rim, a pipe bail threaded through flat ear rings, timber tripod tenoned into a turned crown, iron ferrule cups coaxial with the poles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>Ferrules are lofted along the pole axis and shifted so the downhill rim sits at Z=0. A world-Z bucket lets a leaning pole slice the lip. <code>ferrule_bite</code> is measured in that same frame, and only samples wood inside the cup&#x27;s own axis span — a pole hovering above the well cannot fake a seat.</p>

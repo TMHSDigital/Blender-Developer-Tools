@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="USD Export Evaluation Mode (usd-export-evaluation-mode) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A SUBSURF cube exported through <code>wm.usd_export</code> that witnesses <code>evaluation_mode=&#x27;RENDER&#x27;</code> against <code>&#x27;VIEWPORT&#x27;</code> — the contract <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/usd-export-evaluation-mode.py"><code>usd-export-evaluation-mode.py</code></a> names but does not prove.</p>
 <p>Catmull-Clark on a cube is closed form: verts = <code>2 + 6 × 4^n</code> (n=1 → 26, n=2 → 98). TESSELLATE + VIEWPORT writes 26 points / 24 quads; TESSELLATE + RENDER writes 98 / 96. Default <code>export_subdivision=&#x27;BEST_MATCH&#x27;</code> writes the 8-vert cage plus <code>subdivisionScheme = catmullClark</code>, so evaluation_mode is silent — both files are the cage. TESSELLATE is what makes the mode observable.</p>

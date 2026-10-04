@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Prop Origin Transform (prop-origin-transform) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent throws the elbow off its mount; MPI keeps it seated." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/prop-origin-transform/prop_origin_transform.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a street utility pedestal with a flanged conduit elbow and proves the <strong>origin / scale-apply / MPI</strong> contract a prop pipeline relies on before engine ingest — following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> and the data-API parenting idiom from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery"><code>parent-inverse-orrery</code></a>.</p>
 <p><strong>Pipeline arc neighbors:</strong> MPI + stale <code>matrix_world</code> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery"><code>parent-inverse-orrery</code></a>, export origin sensitivity in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, collision bounds in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>, and mesh hygiene in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>. Origin at the base center with applied scale is what placement and physics ingest assume.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Sky Texture Sun Elevation (sky-texture-sun-elevation) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a World whose Background Color is driven by <code>ShaderNodeTexSky</code>, then proves <code>sun_elevation</code> is load-bearing with two tiny Cycles EXR zenith probes. The gallery still is a sky study: a red-granite gnomon obelisk on a paved plaza, lit by nothing but the sky, shown at both elevations side by side so the contract reads at thumbnail scale.</p>
 <p><strong>What it witnesses:</strong> the Sky Texture contract AI-generated lighting code most often gets wrong across the 4.5 LTS → 5.1 window.</p>

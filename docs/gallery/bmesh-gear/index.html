@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="BMesh Gear (bmesh-gear) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/bmesh-gear/bmesh_gear.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a 14-tooth gear entirely with bmesh — profile ring, face, <code>extrude_face_region</code>, translate — following the ownership contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/always-free-bmesh.mdc"><code>always-free-bmesh</code></a> rule: every <code>bmesh.new()</code> is paired with <code>bm.free()</code> in a <code>try</code>/<code>finally</code>.</p>
 <p><strong>What it witnesses:</strong> parametric bmesh construction has exactly predictable topology. The check asserts the closed-form counts — verts = 2 × (4 × teeth), faces = sides + 2 caps, edges = 3 × profile — and that the result is watertight (every edge borders exactly two faces). If an op leaks geometry or a face fails to close, the math catches it.</p>

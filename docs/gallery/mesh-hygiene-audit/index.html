@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Mesh Hygiene Audit (mesh-hygiene-audit) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds an upright flanged street valve — body casting, side outlet, 22 flange bolts, gland nut, threaded stem, brass handwheel hub, rim and spokes — and runs the <strong>engine-ingest mesh hygiene checklist</strong> on every part as executable topology checks, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc neighbors:</strong> watertight / Euler on collision <em>hulls</em> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>, parametric closed solids in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a>, LOD face budgets in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, and join context in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join"><code>temp-override-join</code></a>. Hygiene is the gate a prop pipeline runs on the <em>render</em> mesh before hull / LOD / export.</p>

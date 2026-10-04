@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="UV Layer Grid (uv-layer-grid) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/uv-layer-grid/uv_layer_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that witnesses the UV-layer authoring hazard behind <code>bmesh.ops.create_grid(..., calc_uvs=True)</code>: the flag is a <strong>silent no-op</strong> unless a UV layer already exists on the BMesh. AI-generated Blender code commonly trusts <code>calc_uvs=True</code>, wires an Image Texture, and ships a mesh that renders as one flat color — every fragment samples texel (0, 0).</p>
 <p>Found while authoring <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard"><code>image-pixels-testcard</code></a>; lifted into its own smoke-gated witness so the contract cannot quietly drift.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="GN SDF Remesh (gn-sdf-remesh) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gn-sdf-remesh/gn_sdf_remesh.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that remeshes an input mesh through an OpenVDB SDF grid using the <code>build_remesh_via_sdf</code> pattern from the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill: <code>GeometryNodeMeshToSDFGrid</code> → <code>GeometryNodeGridToMesh</code> at the SDF zero-level, attached as a NODES modifier and evaluated via the depsgraph.</p>
 <p><strong>Which fix it witnesses:</strong> an SDF grid is meshed with <strong>Grid to Mesh</strong>, not Volume to Mesh (the <code>Mesh to SDF Grid</code> output is a grid socket; <code>Volume to Mesh</code> takes a volume-geometry socket, so wiring the grid there is an invalid link that yields no geometry). <code>Grid to Mesh</code> has the matching grid input.</p>

@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="GN Sim Fountain (gn-sim-fountain) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A Simulation Zone only advances one step per consecutive frame_set. A direct jump to frame N runs a single step, and only a bake gives random access to the stepped state." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gn-sim-fountain/gn_sim_fountain.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A two-tier stone fountain whose twenty jets are integrated by a Simulation Zone, witnessing the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> frame contract: <strong>a Simulation Zone only advances when the scene steps one frame at a time.</strong> The evaluated state at frame N is not a function of N. AI code that calls <code>scene.frame_set(N)</code> and reads positions gets a silently wrong answer.</p>
 <p>Each droplet is a point with a <code>vel</code> attribute. Per step the zone applies the constant-gravity update that is exact for any <code>dt</code>:</p>

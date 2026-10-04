@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Lightmap UV Channel (lightmap-uv-channel) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 24 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, spoked wheel assemblies (felloe ring + eight spokes + hub + iron tyre + bolt ring) on a capped axle, draw shafts with a crossbar and a prop leg, four posts, and a ribbed canvas canopy. Each post rises from inside the bed into the canopy&#x27;s underside, its top sheared to the arc at its own station for a uniform 12 mm bite. Fixed 1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated. The UV1 contract is unchanged: every part keeps its island count, zero overlap and minimum island distance. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
 <p><strong>What it witnesses</strong> (all independently derived, nothing trusted from the packer):</p>

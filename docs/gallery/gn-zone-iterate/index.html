@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="GN Zone Iterate (gn-zone-iterate) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/gn-zone-iterate/gn_zone_iterate.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A Repeat Zone row and a For Each Element tower that witness <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> zone pairing — not tree structure.</p>
 <p><code>pair_with_output</code> is load-bearing. Unpaired Repeat Input has no Geometry sockets; unpaired For Each evaluates empty (<code>Cannot evaluate node group</code> on 4.5). For Each&#x27;s main <code>Geometry</code> output is the input mesh passthrough; generated cubes live on <code>Generation_0</code>.</p>

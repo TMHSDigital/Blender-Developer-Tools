@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Temp Override Join (temp-override-join) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/temp-override-join/temp_override_join.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that assembles a hurricane lantern from seven separate part objects with one <code>object.join</code> under <code>bpy.context.temp_override</code>, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/prefer-temp-override-over-context-copy.mdc"><code>prefer-temp-override-over-context-copy</code></a> rule and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> skill: operators that need a fabricated active/selection context run under <code>temp_override(**kwargs)</code>, not the deprecated <code>bpy.context.copy()</code> dict-pass form removed in Blender 5.x.</p>
 <p>The parts are the way a prop artist blocks the lantern out: a red enamel fount, an amber glass globe, an iron wire guard, the two hurricane side air tubes, the bell cap, the wire bail with its wooden grip, and the brass wick knob and filler cap. Each is its own object with its own mesh, materials and transform. The join produces the single <code>Lantern</code> object an engine wants.</p>

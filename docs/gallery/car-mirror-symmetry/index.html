@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Car Mirror Symmetry (car-mirror-symmetry) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/car-mirror-symmetry/car_mirror_symmetry.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a stylized hatchback as <strong>one half</strong> — a loft of 52 stations, each a 13-point half-ring from the bottom centerline out to the roof centerline — and completes it with a <strong>Mirror modifier</strong>, evaluated through the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>. Wheels, headlamps, taillamps, grille, door mirrors and door handles are separate objects mirrored the idiomatic way: the object origin sits <strong>on</strong> the symmetry plane and the mesh data is offset — mirror mirrors about the object&#x27;s own origin, so you offset the data, never the object. The grille is the one part authored <em>across</em> the plane: a half profile whose end points lie exactly on <code>x = 0</code>, welded into one grille by the merge.</p>
 <p><strong>What it witnesses:</strong> the original datablock keeps only the authored half while the depsgraph carries the mirrored whole, and both directions are closed forms:</p>

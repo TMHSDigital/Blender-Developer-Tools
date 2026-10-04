@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Vertex Weight Limit (vertex-weight-limit) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/vertex-weight-limit/vertex_weight_limit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that rigs a six-axis-style industrial robot arm — bolted floor plinth and turret drum with a finned rear drive pack, clevis cheeks and servo drums at the shoulder and elbow, a tapered box-section upper arm and forearm, a gas-spring balancer across the shoulder, a wrist fork and a two-jaw gripper — as <strong>one skinned mesh</strong>, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
 <p>Every rigid part (armor, motors, cheeks, piston, gripper) is weighted 1.0 to one bone. The two cable runs along the arm&#x27;s back are the flex parts: they hand over smoothly from bone to bone across each joint and carry the tail an auto-weighting pass leaves behind — a small, distance-ranked spill onto all five bones. That tail is the five-influence authoring the limit prunes.</p>

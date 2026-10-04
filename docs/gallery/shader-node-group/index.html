@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Shader Node Group (shader-node-group) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/shader-node-group/shader_node_group.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that declares a reusable <code>DippedGlaze</code> shader group through <code>tree.interface.new_socket</code> — the 4.x/5.x API that replaced <code>tree.inputs</code>/<code>tree.outputs</code> — and instances it in five mug materials with different parameters, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/shader-node-group.py"><code>shader-node-group</code></a> snippet.</p>
 <p><strong>What it witnesses:</strong> the grouping contract. Sockets declared on the interface appear on every group-node instance; all five materials share ONE group datablock (<code>users == 5</code>); and the per-material Tint lives on the group <strong>node</strong>, not inside the group — set it inside the tree and every mug changes at once.</p>

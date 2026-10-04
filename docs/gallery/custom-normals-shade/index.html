@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Custom Normals Shade (custom-normals-shade) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact)." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/custom-normals-shade/custom_normals_shade.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a jerry can prop — a pressed-steel shell whose front and back carry four raised rounded-triangle panels (the X is the channel between them), a weld-seam bead round the side band, a triple carry handle on welded feet, and a spout with red seal, domed cap, cam lever, hinge and locking pin; olive paint chipped to steel on exposed edges by a <code>wear</code> point attribute — and verifies the shading contract a game prop&#x27;s silhouette depends on: which edges read hard and which read smooth is mesh DATA, carried since Blender 4.1 by face smooth flags plus a <code>sharp_edge</code> attribute, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc neighbor:</strong> collision in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a> (the pair partner — same prop-pipeline audience), tangent space in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a> — normal maps are baked against exactly this shading, and engines harden or soften the same edges at ingest.</p>

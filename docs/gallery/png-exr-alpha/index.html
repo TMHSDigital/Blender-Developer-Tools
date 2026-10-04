@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="PNG EXR Alpha (png-exr-alpha) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255)." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/png-exr-alpha/png_exr_alpha.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that witnesses the float-image PNG save trap: a <code>float_buffer=True</code> image saved via <code>Image.save()</code> to PNG is written as <strong>16-bit RGBA</strong> and is <strong>unpremultiplied as if the buffer were associated-alpha</strong> before storage. The normal <code>pixels</code> API authors <em>straight</em> RGBA, so any channel where <code>c &gt; a</code> blows past 1.0 and clamps to white — closed-form RGB error reaches <strong>0.98</strong> for authored <code>(0.02, 0.02, 0.02)</code> at alpha <code>1/255</code>. The same buffer saved as OpenEXR round-trips at float precision. A byte image (<code>float_buffer=False</code>) writes <strong>8-bit</strong> PNG with straight alpha and only pays ordinary quantization.</p>
 <p>Found while probing the ROADMAP &quot;image save-format&quot; candidate against live Blender 5.1 — the hazard is not classic 8-bit premul quantization (float PNG is 16-bit); it is the false associated-alpha unpremultiply on a straight buffer. Documented here so the contract cannot quietly drift.</p>

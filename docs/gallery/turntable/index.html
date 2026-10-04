@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Turntable (turntable) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/turntable/turntable.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that keyframes a Z-rotation turntable through the <strong>slotted-actions</strong> cross-version channelbag path from the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/slotted-actions-animation/SKILL.md"><code>slotted-actions-animation</code></a> skill, and picks the render engine with the version-branch EEVEE-id helper.</p>
 <p><strong>Which fix it witnesses:</strong> the slotted-actions cross-version helper. On Blender 5.x the channelbag comes from <code>action_ensure_channelbag_for_slot</code>; on 4.4/4.5 from <code>strip.channelbag(slot, ensure=True)</code> (legacy <code>action.fcurves</code> still works on 4.5, raises <code>AttributeError</code> on 5.x).</p>

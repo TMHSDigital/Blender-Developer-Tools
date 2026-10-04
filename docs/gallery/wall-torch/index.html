@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Wall Torch (wall-torch) — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -57,6 +57,7 @@
       <pre id="runCmd">blender --background --python showcase/wall-torch/wall_torch.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A showcase piece, not an example. A procedural wall-mounted torch sconce: a running-bond dressed-stone plaque with dark mortar joints, an iron wall plate bolted to the stones, a level iron arm, an open iron cup, a leaning wooden haft with a pitch wrap, and upright emissive flames. Then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
 <p>The plaque back sits on the wall plane Y=0 with zmin at 0. The plate&#x27;s seat comes from the face of the facing stones (<code>stone_face_y()</code>), a named bite into it. The cup&#x27;s mid-height is the arm&#x27;s height, so the arm is level by construction. It runs from inside the plate into the cup&#x27;s wall. The cup sits on the haft&#x27;s axis, which leans 15° out from the wall. The haft stands on the cup&#x27;s floor and runs up into the wrap. The flames stand upright from the wrap, whatever the haft does.</p>

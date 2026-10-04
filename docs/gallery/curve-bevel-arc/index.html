@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Curve Bevel Arc (curve-bevel-arc) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/curve-bevel-arc/curve_bevel_arc.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, <code>bevel_depth</code>, and <code>use_fill_caps</code> — so the curve renders as a solid tube without a prior mesh conversion.</p>
 <p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.15</code>, <code>use_fill_caps</code>, and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts, 1028 faces for these resolution settings) with a Z span that rests on the floor (<code>[0, 2 × bevel]</code>) and an X span of <code>2 × radius + 2 × bevel</code>.</p>

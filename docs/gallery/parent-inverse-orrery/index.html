@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Parent Inverse Orrery (parent-inverse-orrery) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/parent-inverse-orrery/parent_inverse_orrery.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that assembles a brass orrery — sun, three planets on pivot arms, one moon — entirely through the data API, witnessing the parenting contract that generated Blender code gets wrong most often. <code>child.parent = pivot</code> alone re-interprets the child&#x27;s local matrix in the pivot&#x27;s space and the child visibly teleports; keeping the world transform takes the two-line idiom:</p>
 <pre><code>child.parent = pivot

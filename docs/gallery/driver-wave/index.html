@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Driver Wave (driver-wave) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/driver-wave/driver_wave.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that drives sixteen organ-pipe heights from a custom function registered in <code>bpy.app.driver_namespace</code> — the pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/drivers-and-app-handlers/SKILL.md"><code>drivers-and-app-handlers</code></a>. Each column gets a SCRIPTED driver on Z scale whose expression calls <code>wave_scale(i)</code>, producing a sine skyline.</p>
 <p><strong>What it witnesses:</strong> the driver evaluation contract. Driven values appear only after a view-layer update, and they land in <strong>two</strong> places that must agree: the depsgraph-evaluated copy (<code>evaluated_get(dg).scale</code>) and the original datablock, which the animation system flushes for display. The check asserts both against the closed-form profile.</p>

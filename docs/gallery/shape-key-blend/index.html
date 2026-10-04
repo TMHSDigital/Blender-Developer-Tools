@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Shape Key Blend (shape-key-blend) — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh." />
   <link rel="preload" href="../../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=160a8a8c00" />
+  <link rel="stylesheet" href="../gallery.css?v=cde6fee965" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -56,6 +56,7 @@
       <pre id="runCmd">blender --background --python examples/shape-key-blend/shape_key_blend.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that authors a relative shape key entirely through the data API — <code>shape_key_add</code>, <code>key_blocks[&quot;Tall&quot;].data</code> (bulk <code>foreach_get</code> / <code>foreach_set</code> on the key&#x27;s <code>co</code>), and <code>.value</code> — then reads the blend back from the depsgraph-evaluated mesh. The subject is a lathe-turned ceramic vase: its Basis is a squat jar, and the Tall key lifts the rim (stretching the neck), flares the lip into a trumpet, and slims the belly.</p>
 <p><strong>What it witnesses:</strong> shape keys do not rewrite <code>mesh.vertices</code>. The undeformed mesh stays at Basis (every vertex, plus the rim ring at <code>z = 1.0</code>, <code>r = 0.335</code>); every evaluated vertex matches the closed-form blend <code>co = basis + value × (key − basis)</code>. The check also pins the rim ring — lifted to <code>1.0 + value × 1.5</code> and flared to <code>0.335 + value × 0.38</code> — with the foot still on the floor, so a uniform scale or a lift without the flare cannot pass.</p>
