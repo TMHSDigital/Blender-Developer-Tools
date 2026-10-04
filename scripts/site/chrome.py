@@ -23,11 +23,11 @@ ALL_TOOLS_URL = "https://tmhsdigital.github.io/Developer-Tools-Directory/"
 NAV = (
     ("Examples", "gallery/#k=examples", "examples"),
     ("Showcase", "gallery/#k=showcase", "showcase"),
+    ("Install", "#install", "install"),
     ("What's new", "#new", "new"),
     ("Skills", "#skills", "skills"),
     ("Rules", "#rules", "rules"),
     ("Snippets", "#snippets", "snippets"),
-    ("Install", "#install", "install"),
 )
 
 CSS = """

@@ -64,7 +64,7 @@
     .skip:focus { left: 0.5rem; top: 0.5rem; }
 
     /* HUD vocabulary: small mono labels, everywhere */
-    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+    .hud { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em;
       color: var(--dim); text-transform: uppercase; }
 
 {{ chrome_css | safe }}
@@ -99,7 +99,7 @@
     .stats-hud { display: grid; grid-template-columns: auto auto; gap: 0.1rem 0.8rem; }
     .stats-hud a { color: var(--dim); transition: color 0.15s; }
     .stats-hud a:hover { color: var(--select); }
-    .stats-hud .v { color: var(--text); text-align: right; font-family: var(--font-mono); font-size: 0.6875rem; }
+    .stats-hud .v { color: var(--text); text-align: right; font-family: var(--font-mono); font-size: 0.75rem; }
     .ok-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
 
     .vp-center { position: relative; z-index: 3; text-align: center; padding: 4.5rem 1.25rem;
@@ -108,7 +108,12 @@
       font-size: clamp(2.3rem, 8.5vw, 5.6rem); line-height: 0.94; letter-spacing: 0.005em; }
     .vp-center h1 .runs { color: var(--select); }
     .vp-center .sub { color: var(--dim); font-size: 1.02rem; max-width: 56ch; margin: 1.25rem auto 0; }
-    .clone-row { display: flex; justify-content: center; align-items: stretch; margin-top: 1.75rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 1.75rem; }
+    .btn-cta.btn-lg, .btn-ghost.btn-lg { font-size: 1rem; line-height: 1.4; padding: 0.7rem 1.5rem; }
+    .btn-ghost { display: inline-block; font-weight: 500; color: var(--text); border: 1px solid var(--border);
+      border-radius: 4px; transition: color 0.15s, border-color 0.15s; }
+    .btn-ghost:hover { color: var(--select); border-color: var(--select); }
+    .clone-row { display: flex; justify-content: center; align-items: stretch; margin-top: 1.25rem; }
     .clone-row pre { min-width: 0; background: var(--bg2); border: 1px solid var(--border); border-right: none;
       border-radius: 4px 0 0 4px; padding: 0.6rem 0.9rem; font-family: var(--font-mono);
       font-size: 0.78rem; line-height: 1.4; overflow-x: auto; color: var(--text); text-align: left; }
@@ -117,10 +122,7 @@
       color: var(--dim); padding: 0 0.85rem; cursor: pointer; font-family: var(--font-mono);
       font-size: 0.72rem; transition: color 0.15s, border-color 0.15s; }
     .copy-btn:hover { color: var(--select); border-color: var(--select); }
-    .hero-links { margin-top: 1.1rem; font-size: 0.85rem; }
-    .hero-links a { color: var(--dim); font-weight: 500; margin: 0 0.7rem; transition: color 0.15s; }
-    .hero-links a:hover { color: var(--select); }
-    .hero-sponsor { margin-top: 0.9rem; line-height: 0; }
+    .install-sponsor { margin-top: 1.25rem; line-height: 0; }
 
     /* ---- sections as Blender panels ---- */
     main { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 2rem; }
@@ -134,7 +136,7 @@
     .panel-filter { background: var(--bg2); border: 1px solid var(--border); color: var(--text);
       border-radius: 3px; padding: 0.18rem 0.55rem; font-family: var(--font-mono); font-size: 0.72rem;
       width: 12rem; max-width: 45vw; align-self: center; }
-    .panel-filter:focus { border-color: var(--select); outline: none; }
+    .panel-filter:focus { border-color: var(--select); outline: 2px solid var(--select); outline-offset: 1px; }
     .panel-filter::placeholder { color: var(--dim); }
     .filter-empty { color: var(--dim); font-size: 0.85rem; padding: 0.75rem 0; }
     .is-filtered-out { display: none !important; }
@@ -172,8 +174,8 @@
     .skill-row .desc, .skill-row details { overflow-wrap: anywhere; }
     .skill-row .desc { color: var(--dim); font-size: 0.85rem; margin-top: 0.15rem; }
     .skill-row details { margin-top: 0.35rem; font-size: 0.8rem; color: var(--dim); }
-    .skill-row summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.68rem;
-      text-transform: uppercase; letter-spacing: 0.04em; width: fit-content; }
+    .skill-row summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.04em; width: fit-content; padding: 0.25rem 0; }
     .skill-row summary:hover { color: var(--select); }
     .skill-row details ul { margin: 0.35rem 0 0 1.1rem; }
     .skill-row details li { margin: 0.15rem 0; }
@@ -272,6 +274,7 @@
     }
     @media (max-width: 420px) {
       .hud-bl { grid-template-columns: repeat(2, auto auto); }
+      .hud-br { font-size: 0.6875rem; letter-spacing: 0.02em; }
     }
   </style>
   <script>document.documentElement.classList.add('js');</script>
@@ -310,16 +313,15 @@
         <p class="sub">Skills, rules, snippets, and starter templates that teach Cursor and Claude Code
           the <code>bpy</code> that works —
           backed by runnable examples asserted headless on Blender {{ bl_primary }} and {{ bl_fallback }} before they ship.</p>
+        <div class="hero-actions">
+          <a class="btn-cta btn-lg" href="#install">Get started</a>
+          <a class="btn-ghost btn-lg" href="gallery/">Browse the gallery</a>
+        </div>
         <div class="clone-row">
           {# <wbr> after each path slash: a phone wraps the URL there, not mid-word #}
           <pre id="cloneCmd"><span class="p">$</span> git clone {% for part in repo.split('/') %}{{ part }}{% if not loop.last %}/{% if loop.index >= 3 %}<wbr>{% endif %}{% endif %}{% endfor %}</pre>
           <button class="copy-btn" type="button" data-copy="git clone {{ repo }}">copy</button>
         </div>
-        <div class="hero-links">
-          <a href="#examples">See the proof &darr;</a>
-          <a href="gallery/">Examples gallery &rarr;</a>
-        </div>
-        <div class="hero-sponsor"><iframe src="https://github.com/sponsors/TMHSDigital/button" title="Sponsor TMHSDigital" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe></div>
       </div>
     </section>
   </div>
@@ -339,7 +341,7 @@
       <p class="lede">These aren't mockups. Each example runs headless on Blender {{ bl_primary }} and {{ bl_fallback }} in the
         smoke workflow, asserts its own correctness, and exits non-zero if the API drifted. Each still was
         rendered by that same script.</p>
-      <p class="cta-row"><a class="btn-cta" href="gallery/">Browse all {{ example_count }} rendered examples and {{ showcase_count }} showcase pieces in the gallery &rarr;</a></p>
+      <p class="cta-row"><a class="btn-cta" href="gallery/">Open the full gallery &rarr;</a></p>
       <div class="render-grid">
         {% for ex in shown %}
         <a class="render-card" href="gallery/{{ ex.name }}/">
@@ -351,7 +353,23 @@
         </a>
         {% endfor %}
       </div>
-      <a class="panel-cta" href="gallery/">Open the gallery — code, README, and full-size renders &rarr;</a>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if site.installSteps %}
+  <section class="panel" id="install">
+    <div class="panel-head">
+      <span class="hud">Install</span>
+    </div>
+    <div class="panel-body">
+      <h2>Clone it. Point your AI at it.</h2>
+      <ol class="steps">
+        {% for step in site.installSteps %}
+        <li><span>{{ step | safe }}</span></li>
+        {% endfor %}
+      </ol>
+      <div class="install-sponsor"><iframe src="https://github.com/sponsors/TMHSDigital/button" title="Sponsor TMHSDigital" height="32" width="114" style="border: 0; border-radius: 6px;" loading="lazy"></iframe></div>
     </div>
   </section>
   {% endif %}
@@ -498,22 +516,6 @@
       <p class="tmpl-note">Plus {{ template_count }} starter templates:
         {% for t in templates %}<a href="{{ repo }}/tree/main/{{ t.path }}">{{ t.name }}</a>{% if loop.revindex == 2 %}{{ ',' if loop.length > 2 }} and {% elif not loop.last %}, {% endif %}{% endfor %}.</p>
       {% endif %}
-    </div>
-  </section>
-  {% endif %}
-
-  {% if site.installSteps %}
-  <section class="panel" id="install">
-    <div class="panel-head">
-      <span class="hud">Install</span>
-    </div>
-    <div class="panel-body">
-      <h2>Clone it. Point your AI at it.</h2>
-      <ol class="steps">
-        {% for step in site.installSteps %}
-        <li><span>{{ step | safe }}</span></li>
-        {% endfor %}
-      </ol>
     </div>
   </section>
   {% endif %}
