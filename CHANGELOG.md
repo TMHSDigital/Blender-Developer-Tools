@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.3] - 2026-10-04
+
+### Fixes
+
+- fix(snippets): hull only the points so convex colliders come out closed (#407) ([`bc926e3`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/bc926e38a123994adc50bce8473f9402c6e741c7))
+- fix(examples): give gn-bundle-roundtrip a falsifier that can fail (#408) ([`9548e80`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/9548e800ca63eb50483137405aa81f899a3f2185))
+- fix(snippets): bind the action slot on the 4.5 LTS channelbag path (#406) ([`350b75d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/350b75df6c2f8d6f4d25520ad5b35d402b37b511))
+
+### Other
+
+- docs: describe the smoke push trigger and the full release-owned file list (#413) ([`bdaeb95`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/bdaeb954fb91bf431e73bfe973e72d6a3374b088))
+
+[Release v0.143.3](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.3)
+
 ## [0.143.2] - 2026-10-04
 
 ### Fixes
