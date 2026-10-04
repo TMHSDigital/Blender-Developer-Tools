@@ -9,7 +9,7 @@
       "name": "blender-developer-tools",
       "source": "./",
       "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
-      "version": "0.140.1"
+      "version": "0.141.0"
     }
   ]
 }
