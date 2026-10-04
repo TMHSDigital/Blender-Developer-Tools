@@ -133,7 +133,7 @@ def build(pair, match_names, pack_scale, match_mark=True):
 def check(ob):
     if len(ob.data.vertices) != 1:
         print("ERROR: carrier mesh was rewritten", file=sys.stderr)
-        return 2
+        return 6
 
     coords, faces, marks = eval_mesh(ob)
     xs = [c[0] for c in coords]
@@ -225,12 +225,14 @@ def main():
             tree.nodes.new("GeometryNodeCombineBundle")
         except RuntimeError as exc:
             print(f"ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
-            return 2
+            return 7
+        # A distinct code so the catalog falsifier (expect 7) fails if the
+        # legacy identifier ever comes back, instead of passing on any 2.
         print(
             "ERROR: GeometryNodeCombineBundle existed; 5.x RNA should reject it",
             file=sys.stderr,
         )
-        return 2
+        return 8
 
     ob = build(
         pair=not args.bypass,
