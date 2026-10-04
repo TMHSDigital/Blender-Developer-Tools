@@ -73,13 +73,17 @@ similar operators act on `selected_editable_objects`, so
 
 ## When you also need a window override
 
-Headless scripts often need `window`, `area`, `region`, or `screen`
-overrides because no UI exists by default. Pass them all to
-`temp_override`:
+Editor operators (`view3d.*`, `screen.*`) poll on an area and region,
+which a script's context does not provide. Object operators do not need
+this. Under `--background` the loaded file still has its window and screen,
+so borrow the 3D viewport from it, and guard the lookup: a file whose
+layout has no 3D viewport has nothing to borrow.
 
 ```python
 window = bpy.context.window_manager.windows[0]
-area = next(a for a in window.screen.areas if a.type == 'VIEW_3D')
+area = next((a for a in window.screen.areas if a.type == 'VIEW_3D'), None)
+if area is None:
+    raise RuntimeError("loaded file has no 3D viewport to override")
 region = next(r for r in area.regions if r.type == 'WINDOW')
 
 with bpy.context.temp_override(window=window, area=area, region=region):
