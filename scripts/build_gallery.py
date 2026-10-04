@@ -306,9 +306,9 @@ __CHROME__
     /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
        strip on wide viewports; inside the phone drawer it wraps again. */
     .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+    html.js .chips { max-height: 3.8rem; overflow-y: auto; padding-bottom: 0.25rem;
       scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar { width: 5px; height: 5px; }
     html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
       border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
@@ -323,10 +323,10 @@ __CHROME__
       html.js .controls-main { flex-wrap: nowrap; }
       html.js .searchwrap { flex: 1 1 auto; min-width: 0; }
       html.js .filters-toggle { display: inline-block; }
-      html.js .filters { display: none; max-height: calc(100vh - 140px); overflow-y: auto;
+      html.js .filters { display: none; max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); overflow-y: auto;
         padding: 0.4rem 0 0.2rem; border-top: 1px solid var(--border); }
       html.js .filters.open { display: flex; }
-      html.js .filters .chips { flex-wrap: wrap; overflow-x: visible; }
+      html.js .filters .chips { max-height: none; overflow-y: visible; }
       html.js .cats { flex-wrap: wrap; }
       html.js .cats .density { flex-wrap: wrap; }
     }
@@ -342,9 +342,9 @@ __CHROME__
        visually collapsed. Applied only by JS via the density-compact class. */
     html.density-compact .grid { gap: 1rem; }
     html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
-    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .card-body h2 { font-size: 0.95rem; margin-bottom: 0.15rem; }
     html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
     html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
       padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
     html.density-compact .card-body .slug { display: none; }
@@ -373,7 +373,12 @@ __CHROME__
     .card .stretch::after { content: ''; position: absolute; inset: 0; z-index: 1; }
     .card .stretch:focus-visible { outline: none; }
     .card.hidden { display: none; }
-    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; overflow: hidden; position: relative; }
+    /* Kind badge: examples are the default, so only showcase pieces are marked. */
+    .card[data-kind="showcase"] .card-media::after { content: "Showcase"; position: absolute; top: 0.5rem; left: 0.5rem;
+      background: color-mix(in srgb, var(--bg) 82%, transparent); color: var(--text); border: 1px solid var(--border);
+      border-radius: 3px; padding: 0.12rem 0.45rem; line-height: 1.4; font-family: var(--font-mono);
+      font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
     .card-media img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
       transition: transform 0.35s ease, opacity 0.3s ease; }
     .card:hover .card-media img { transform: scale(1.03); }
