@@ -104,5 +104,5 @@ against it.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--unlink-sky`, so exits 10 and 12 are
-render-path only.
+Smoke does not pass `--output`, so exits 10 and 12 are render-path only.
+Its catalog falsifier is `--unlink-sky` (expects exit 6).

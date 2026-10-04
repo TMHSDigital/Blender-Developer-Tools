@@ -65,5 +65,5 @@ against it.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--no-override`.
+Smoke does not pass `--output`. Its catalog falsifier is `--no-override` (expects exit 3).
 
