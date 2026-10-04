@@ -7,7 +7,11 @@
   "plugins": [
     {
       "name": "blender-developer-tools",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "TMHSDigital/Blender-Developer-Tools",
+        "ref": "plugin-dist"
+      },
       "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
       "version": "0.142.4"
     }

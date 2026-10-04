@@ -64,9 +64,11 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 - **Claude Code** — install as a plugin, then run `/skills` to see all 16 skills plus `blender-rules`:
 
   ```text
-  /plugin marketplace add TMHSDigital/Blender-Developer-Tools
+  /plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist
   /plugin install blender-developer-tools@blender-developer-tools
   ```
+
+  `@plugin-dist` is a generated branch holding only what the plugin loads (about 0.3 MB, rebuilt on every release), so the add does not clone the gallery renders, showcase props and history on `main`. Adding the repo without `@plugin-dist` still works; the plugin itself installs from `plugin-dist` either way.
 
   Claude Code does not read Cursor `.mdc` rules, so the plugin ships them as the `blender-rules` skill (generated from `rules/`), which Claude loads when it writes or reviews bpy code. No second clone is needed. To keep the rules in context all the time instead, add `@/path/to/Blender-Developer-Tools/claude/blender-rules.md` to your project's `CLAUDE.md` from a checkout. Without the plugin, copy `skills/*` and `claude/skills/*` into your project's `.claude/skills/`.
 - **Get Blender** — download **5.2 LTS** (primary target) or **4.5 LTS** (supported fallback) from [blender.org/download/lts](https://www.blender.org/download/lts/); current stable lives at [blender.org/download](https://www.blender.org/download/). The `blender` command below is that binary — on macOS it is inside the app bundle at `/Applications/Blender.app/Contents/MacOS/Blender`.

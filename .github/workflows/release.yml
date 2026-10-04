@@ -248,6 +248,26 @@ jobs:
             --title "v${{ steps.new.outputs.version }}" \
             --notes-file "$RUNNER_TEMP/release-notes.md"
 
+      - name: Publish the slim plugin build to plugin-dist
+        # Claude Code installs from this branch (marketplace.json on main points
+        # its plugin source here). One orphan commit, force-pushed, so the
+        # branch never grows history; only main is protected by the ruleset.
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.new.outputs.version }}
+        run: |
+          set -euo pipefail
+          dist="$RUNNER_TEMP/plugin-dist"
+          python3 scripts/build_plugin_dist.py --out "$dist"
+          cd "$dist"
+          git init -q -b plugin-dist
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -s -m "plugin build v$NEW_VERSION from $GITHUB_SHA"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:plugin-dist
+
       - name: Dispatch Pages
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
         env:

@@ -245,8 +245,9 @@ jobs:
               errors.append('marketplace.json must list exactly the one plugin from plugin.json')
           elif entries[0].get('version') != version:
               errors.append(f"marketplace.json plugin version {entries[0].get('version')!r} != VERSION {version!r}")
-          elif not os.path.isdir(os.path.join(entries[0].get('source', ''), 'skills')):
-              errors.append('marketplace.json source must point at a directory containing skills/')
+          elif entries[0].get('source') != {'source': 'github', 'repo': 'TMHSDigital/Blender-Developer-Tools', 'ref': 'plugin-dist'}:
+              errors.append('marketplace.json plugin source must be the plugin-dist branch '
+                            '(github TMHSDigital/Blender-Developer-Tools, ref plugin-dist)')
 
           # Claude Code discovers skills/<name>/SKILL.md plus every extra
           # directory in plugin.json "skills" (the generated blender-rules
@@ -293,6 +294,9 @@ jobs:
 
       - name: Check claude/blender-rules.md and the rules skill are regenerated from rules/*.mdc
         run: python3 scripts/build_claude_rules.py --check
+
+      - name: Check the plugin-dist build assembles, carries every skill, and stays slim
+        run: python3 scripts/build_plugin_dist.py --check
 
       - name: Check skill file references resolve outside a checkout
         run: python3 tests/check_skill_refs.py
