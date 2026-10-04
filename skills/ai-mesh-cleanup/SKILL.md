@@ -155,7 +155,7 @@ Snippet: [`snippets/decimate_to_budget.py`](https://github.com/TMHSDigital/Blend
 
 ### 8. Generate collider
 
-Convex hull via `bmesh.ops.convex_hull`, then delete `geom_interior` and `geom_unused`. Copy `matrix_world` onto the collider. Hull a coarse cage when the render mesh would blow a per-piece face budget. Witness: [`examples/collision-hull-proxy/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy).
+Convex hull via `bmesh.ops.convex_hull` over the points only: remove the source edges first (`bm.edges.remove`, which keeps the verts), hull, then delete verts left with no faces. Hulling a mesh that still has faces keeps every source face lying on the hull, so a cube collider comes out with 18 faces and 12 non-manifold edges instead of 12 closed triangles. Copy `matrix_world` onto the collider. Hull a coarse cage when the render mesh would blow a per-piece face budget. Witness: [`examples/collision-hull-proxy/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy).
 
 Snippet: [`snippets/convex_hull_collider.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/convex_hull_collider.py).
 
