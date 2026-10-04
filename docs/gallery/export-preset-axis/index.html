@@ -86,9 +86,9 @@ blender --background --python export_preset_axis.py -- --output mast.png --engin
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/export-preset-axis/export_preset_axis.py</code>
-        <span>758 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis/export_preset_axis.py">View on GitHub &rarr;</a></span>
+        <span>759 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis/export_preset_axis.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="758">
+      <div class="code" data-lines="759">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -846,7 +846,8 @@ blender --background --python export_preset_axis.py -- --output mast.png --engin
 755
 756
 757
-758</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Unity vs Godot glTF presets: a runnable example.
+758
+759</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Unity vs Godot glTF presets: a runnable example.
 
 Same source mesh, two presets. Unity is Y-up (`export_yup=True`). Godot in this
 repo is Z-up glTF (`export_yup=False`). Re-importing each file through Blender&#x27;s
@@ -1151,15 +1152,16 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
 
 
 <span class="k">def</span> apply_selected_mesh_transforms():
-    <span class="k">for</span> obj <span class="k">in</span> list(bpy.context.selected_objects):
-        <span class="k">if</span> obj.type != <span class="s">&quot;MESH&quot;</span>:
-            <span class="k">continue</span>
-        <span class="k">with</span> bpy.context.temp_override(
-            object=obj, active_object=obj, selected_objects=[obj]
-        ):
-            bpy.ops.object.transform_apply(
-                location=<span class="k">False</span>, rotation=<span class="k">True</span>, scale=<span class="k">True</span>
-            )
+    <span class="c"># Same body as snippets/export_preset_unity.py: one operator call for the</span>
+    <span class="c"># whole selection. transform_apply acts on selected_editable_objects, so</span>
+    <span class="c"># that is the key to override; selected_objects alone does not narrow it.</span>
+    meshes = [o <span class="k">for</span> o <span class="k">in</span> bpy.context.selected_objects <span class="k">if</span> o.type == <span class="s">&quot;MESH&quot;</span>]
+    <span class="k">if</span> <span class="k">not</span> meshes:
+        <span class="k">return</span>
+    <span class="k">with</span> bpy.context.temp_override(
+        object=meshes[<span class="n">0</span>], active_object=meshes[<span class="n">0</span>], selected_editable_objects=meshes
+    ):
+        bpy.ops.object.transform_apply(location=<span class="k">False</span>, rotation=<span class="k">True</span>, scale=<span class="k">True</span>)
 
 
 <span class="k">def</span> export_selected(path, kwargs):
