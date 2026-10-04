@@ -616,13 +616,22 @@
     })();
 
     // Scrollspy: mark the nav link of the section currently under the header.
-    // Only the in-page anchors (#install, #new, ...) take part; the Examples
-    // and Showcase links go to the gallery and are never marked.
+    // In-page anchors (#install, #new, ...) map to their section. The
+    // Examples and Showcase links go to the gallery (gallery/#k=examples),
+    // but this page also has #examples and #showcase sections, so they map
+    // by the filter key; otherwise scrolling through those sections left the
+    // previous link (Install) marked.
     (function () {
-      var links = Array.prototype.slice.call(document.querySelectorAll('.site-nav a[href^="#"]'));
+      var links = Array.prototype.slice.call(document.querySelectorAll('.site-nav a'));
       var spy = links.map(function (a) {
-        return { a: a, el: document.getElementById(a.getAttribute('href').slice(1)) };
+        var href = a.getAttribute('href') || '';
+        var m = href.charAt(0) === '#' ? [null, href.slice(1)] : href.match(/#k=([\w-]+)$/);
+        return { a: a, el: m ? document.getElementById(m[1]) : null };
       }).filter(function (s) { return s.el; });
+      // document order, so "the last section above the threshold" is right
+      spy.sort(function (x, y) {
+        return x.el.compareDocumentPosition(y.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
       if (!spy.length) return;
       var queued = false;
       function update() {
