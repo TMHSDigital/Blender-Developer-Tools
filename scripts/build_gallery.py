@@ -250,7 +250,10 @@ __CHROME__
       font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
     header.hero p { color: var(--text-dim); max-width: 62ch; margin: 0.7rem auto 0; font-size: 1rem; }
 
-    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    /* ---- index: filter bar ----
+       Wide: one pinned row (search | kind | sort | card density), then a
+       centered topics panel (categories + topic chips), then one results
+       line. Phones fold everything behind a single Filters button. */
     .controls { position: sticky; top: 46px; z-index: 4;
       background: color-mix(in srgb, var(--bg) 94%, transparent);
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -258,10 +261,10 @@ __CHROME__
     .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
       display: flex; flex-direction: column; gap: 0.5rem; }
     .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
-    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
-      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap { position: relative; flex: 1 1 260px; min-width: 150px; }
+    .searchwrap input { width: 100%; min-height: 36px; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.4rem 1.9rem 0.4rem 0.8rem;
+      font-family: var(--font-sans); font-size: 0.875rem; line-height: 1.4; }
     .searchwrap input:focus { border-color: var(--select); outline: none; }
     .searchwrap input::placeholder { color: var(--text-dim); }
     .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
@@ -269,53 +272,58 @@ __CHROME__
       background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
       cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
     .q-clear:hover { color: var(--select); }
-    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+    .count { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em;
       text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .results { text-align: center; margin: 1rem auto 0; padding: 0 1.25rem; }
+    .view-controls { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
     .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
       overflow: hidden; }
     .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
-      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; min-height: 34px;
+      text-transform: uppercase; padding: 0.4rem 0.8rem; transition: color 0.15s, background 0.15s; }
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
     .density-btn:hover { color: var(--select); }
     .density-btn.active { background: var(--select); color: var(--on-select); }
+    /* Card density is a view option, not a filter: selected state stays neutral
+       so orange only ever means "this is filtering the grid". */
+    .view-mode .density-btn.active { background: var(--border); color: var(--text); }
     /* Segmented groups clip overflow, so the ring has to sit inside. */
     .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
     .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-      border-radius: var(--radius); padding: 0.3rem 0.5rem; cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
+      border-radius: var(--radius); padding: 0.4rem 0.6rem; min-height: 36px; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .sort select:hover, .sort select:focus { color: var(--select); border-color: var(--select); outline: none; }
-    /* Category row: one segmented group that scrolls sideways on narrow
-       screens rather than wrapping its bordered buttons. */
-    .cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent; }
+
+    /* Topics panel: category tabs, then topic chips. */
+    .filters { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+    .cats { justify-content: center; }
     .cats[hidden] { display: none; }
     .cats .density { flex: 0 0 auto; }
-    .cats-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+    .cats-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em;
       text-transform: uppercase; color: var(--text-dim); flex: 0 0 auto; }
-    /* Filters: inline on wide screens; on phones (with JS) they fold behind
-       one "Filters" button so the first card sits above the fold. */
-    .filters { display: flex; flex-direction: column; gap: 0.5rem; }
     .filters-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text-dim); border-radius: var(--radius); padding: 0.34rem 0.75rem; cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--text-dim); border-radius: var(--radius); padding: 0.4rem 0.8rem; cursor: pointer; min-height: 36px;
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
       white-space: nowrap; }
     .filters-toggle:hover, .filters-toggle.has-active { color: var(--select); border-color: var(--select); }
     .cat-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
-      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em; white-space: nowrap;
-      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; white-space: nowrap; min-height: 34px;
+      text-transform: uppercase; padding: 0.4rem 0.8rem; transition: color 0.15s, background 0.15s; }
     .cat-btn + .cat-btn { border-left: 1px solid var(--border); }
     .cat-btn:hover { color: var(--select); }
     .cat-btn.active { background: var(--select); color: var(--on-select); }
     .cat-btn:focus-visible { outline-offset: -2px; }
 
-    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
-       strip on wide viewports; inside the phone drawer it wraps again. */
-    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    html.js .chips { max-height: 3.8rem; overflow-y: auto; padding-bottom: 0.25rem;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    html.js .chips::-webkit-scrollbar { width: 5px; height: 5px; }
-    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    /* Topic chips wrap in full by default (no-JS safe). With JS they collapse
+       to two rows behind a "Show all" toggle; no nested scrollbar. */
+    .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; }
+    html.js .chips { max-height: 3.5rem; overflow: hidden; }
+    html.js .chips.expanded { max-height: none; }
+    .chips-more { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 0.15rem 0.5rem;
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-decoration: underline;
+      text-underline-offset: 3px; }
+    .chips-more:hover { color: var(--select); }
+    .chips-more[hidden] { display: none; }
     .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
       border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
       font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
@@ -323,45 +331,49 @@ __CHROME__
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
     .chip .n { font-size: 0.66rem; margin-left: 0.15rem; }  /* inherits chip color: full contrast */
-    /* Active-filter pills live in the pinned search row, so a filter is
-       visible and removable even after the filter rows scroll away. */
+    /* Active-filter pills live in the pinned row, so a filter is visible and
+       removable even after the topics panel scrolls away. */
     .active-filters { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
     .active-filters[hidden] { display: none; }
     .pill { background: var(--surface-2); border: 1px solid var(--select); color: var(--text); cursor: pointer;
-      border-radius: 3px; padding: 0.1rem 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; }
+      border-radius: 3px; padding: 0.1rem 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; }
     .pill:hover { color: var(--select); }
     .pill-clear { border-color: var(--border); color: var(--text-dim); }
     @media (max-width: 639px) { .active-filters { display: none; } }
-    /* Wide screens: only the search row stays pinned. The filter rows scroll
-       away with the page (they were ~190px of a 900px viewport), and "/" or
-       scrolling back up brings them back. */
+
+    /* Wide screens: only the search row stays pinned; the topics panel scrolls
+       away with the page ("/" or scrolling up brings it back). */
     @media (min-width: 640px) {
       .controls, .controls-inner { display: contents; }
       .controls-main { position: sticky; top: 46px; z-index: 4;
-        padding: 0.55rem max(1.25rem, calc((100% - var(--maxw)) / 2 + 1.25rem));
+        padding: 0.6rem max(1.25rem, calc((100% - var(--maxw)) / 2 + 1.25rem));
         background: color-mix(in srgb, var(--bg) 94%, transparent);
         backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         border-bottom: 1px solid var(--border); }
-      .filters { max-width: var(--maxw); margin: 0 auto; padding: 0.6rem 1.25rem 0.75rem; }
+      .filters { width: calc(100% - 2.5rem); max-width: calc(var(--maxw) - 2.5rem); margin: 1.1rem auto 0;
+        padding: 1.1rem 1.25rem 1rem; background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-lg); }
     }
     @media (max-width: 639px) {
       .controls-inner { padding: 0.45rem 1rem 0.5rem; gap: 0.4rem; }
       .controls-row { gap: 0.4rem; }
-      .density-btn { padding: 0.36rem 0.5rem; }
-      html.js .controls-main { flex-wrap: nowrap; }
-      html.js .searchwrap { flex: 1 1 auto; min-width: 0; }
+      .density-btn, .cat-btn { padding: 0.4rem 0.55rem; }
+      .results { margin-top: 0.7rem; }
+      html.js .searchwrap { flex: 1 1 0; min-width: 0; }
       html.js .filters-toggle { display: inline-block; }
-      html.js .filters { display: none; max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); overflow-y: auto;
+      html.js .view-controls { display: none; flex: 0 0 100%; }
+      html.js .controls.open .view-controls { display: flex; }
+      html.js .filters { display: none; max-height: calc(100vh - 230px); max-height: calc(100dvh - 230px); overflow-y: auto;
         padding: 0.4rem 0 0.2rem; border-top: 1px solid var(--border); }
       html.js .filters.open { display: flex; }
-      html.js .filters .chips { max-height: none; overflow-y: visible; }
+      html.js .filters .chips { max-height: none; overflow: visible; }
+      html.js .chips-more { display: none; }
+      /* Category tabs wrap as separate bordered buttons instead of clipping. */
       html.js .cats { flex-wrap: wrap; }
-      html.js .cats .density { flex-wrap: wrap; }
-    }
-    @media (max-width: 420px) {
-      /* visually hidden, still the live region screen readers hear */
-      html.js .controls-main .count { position: absolute; width: 1px; height: 1px; overflow: hidden;
-        clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+      html.js .cats .density { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; gap: 0.4rem;
+        border: none; overflow: visible; }
+      html.js .cats .cat-btn { border: 1px solid var(--border); border-radius: var(--radius); }
+      html.js .cats .cat-btn.active { border-color: var(--select); }
     }
 
     /* Compact density: hero + name + one-line teaser. The description and
@@ -740,6 +752,35 @@ INDEX_JS = """
         pillsEl.hidden = items.length === 0;
       }
 
+      // Topic chips collapse to two rows; "Show all N topics" reveals the rest.
+      var moreBtn = document.getElementById('chipsMore');
+      function chipClipped(el) {
+        return el.getBoundingClientRect().bottom > chipsEl.getBoundingClientRect().bottom + 1;
+      }
+      function setChipsExpanded(on) {
+        chipsEl.classList.toggle('expanded', on);
+        moreBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        moreBtn.textContent = on ? 'Show fewer topics' : 'Show all ' + (chips.length - 1) + ' topics';
+      }
+      function measureChips() {
+        if (!chipsEl || !moreBtn) return;
+        var was = chipsEl.classList.contains('expanded');
+        chipsEl.classList.remove('expanded');
+        var over = chipsEl.scrollHeight > chipsEl.clientHeight + 2;
+        if (was) chipsEl.classList.add('expanded');
+        moreBtn.hidden = !over && !was;
+      }
+      if (chipsEl && moreBtn) {
+        moreBtn.addEventListener('click', function () {
+          setChipsExpanded(!chipsEl.classList.contains('expanded'));
+        });
+        // Keyboard focus never lands on a clipped chip: reveal the row first.
+        chipsEl.addEventListener('focusin', function (e) {
+          if (!chipsEl.classList.contains('expanded') && chipClipped(e.target)) setChipsExpanded(true);
+        });
+        window.addEventListener('resize', measureChips);
+      }
+
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
         syncSeg(densityBtns, 'data-density', state.density);
@@ -872,6 +913,7 @@ INDEX_JS = """
       });
       filtersToggle.addEventListener('click', function () {
         var open = filtersEl.classList.toggle('open');
+        document.querySelector('.controls').classList.toggle('open', open);
         filtersToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
 
@@ -923,7 +965,8 @@ INDEX_JS = """
         syncChips();
         // A deep-linked tag may sit off-screen in the chip scroll strip.
         var firstOn = chipsEl && chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
-        if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
+        measureChips();
+        if (firstOn && moreBtn && chipClipped(firstOn)) setChipsExpanded(true);
         applyDensity();
         applySort();
         applyFilters();
@@ -1625,7 +1668,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
             for t in all_tags
         ]
         chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">\n        '
-                      + "\n        ".join(chips) + "\n      </div>\n")
+                      + "\n        ".join(chips) + "\n      </div>\n"
+                      f'      <button class="chips-more" id="chipsMore" type="button" aria-expanded="false" hidden>Show all {len(all_tags)} topics</button>\n')
 
     # Category row: only categories that have pieces get a button, in
     # CATEGORIES order, each labelled with its piece count.
@@ -1658,35 +1702,35 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
         '            autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />\n'
         '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
         '        </div>\n'
-        f'        <span class="count" id="count" role="status" aria-live="polite">{html.escape(count_label)}</span>\n'
         '        <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>\n'
+        '        <div class="view-controls">\n'
+        '          <div class="density" role="group" aria-label="Show">\n'
+        '            <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>\n'
+        '            <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>\n'
+        '            <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>\n'
+        '          </div>\n'
+        '          <label class="sort"><span class="sr-only">Sort</span>\n'
+        '            <select id="sort">\n'
+        '              <option value="default">Gallery order</option>\n'
+        '              <option value="az">Name A&ndash;Z</option>\n'
+        '              <option value="kind">Examples first</option>\n'
+        '              <option value="cat">By category</option>\n'
+        '            </select>\n'
+        '          </label>\n'
+        '          <div class="density view-mode" role="group" aria-label="Card density">\n'
+        '            <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
+        '            <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
+        '          </div>\n'
+        '        </div>\n'
         '        <div class="active-filters" id="activeFilters" aria-label="Active filters" hidden></div>\n'
         '      </div>\n'
         '      <div class="filters" id="filters">\n'
-        '      <div class="controls-row">\n'
-        '        <div class="density" role="group" aria-label="Show">\n'
-        '          <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>\n'
-        '          <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>\n'
-        '          <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>\n'
-        '        </div>\n'
-        '        <label class="sort"><span class="sr-only">Sort</span>\n'
-        '          <select id="sort">\n'
-        '            <option value="default">Gallery order</option>\n'
-        '            <option value="az">Name A&ndash;Z</option>\n'
-        '            <option value="kind">Examples first</option>\n'
-        '            <option value="cat">By category</option>\n'
-        '          </select>\n'
-        '        </label>\n'
-        '        <div class="density" role="group" aria-label="Card density">\n'
-        '          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
-        '          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
-        '        </div>\n'
-        '      </div>\n'
         + cats_html
         + chips_html +
         '      </div>\n'
         '    </div>\n'
         '  </div>\n'
+        f'  <p class="count results" id="count" role="status" aria-live="polite">{html.escape(count_label)}</p>\n'
     )
 
     cards = []

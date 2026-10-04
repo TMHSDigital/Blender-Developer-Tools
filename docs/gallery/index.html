@@ -27,7 +27,7 @@
   <link rel="preload" href="../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="gallery.css?v=68979ebc7a" />
+  <link rel="stylesheet" href="gallery.css?v=63bab97c9c" />
   <script>document.documentElement.classList.add('js');</script>
   <script>
     (function () {
@@ -70,30 +70,29 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">56 examples, 76 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
+        <div class="view-controls">
+          <div class="density" role="group" aria-label="Show">
+            <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
+            <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
+            <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>
+          </div>
+          <label class="sort"><span class="sr-only">Sort</span>
+            <select id="sort">
+              <option value="default">Gallery order</option>
+              <option value="az">Name A&ndash;Z</option>
+              <option value="kind">Examples first</option>
+              <option value="cat">By category</option>
+            </select>
+          </label>
+          <div class="density view-mode" role="group" aria-label="Card density">
+            <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
+            <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
+          </div>
+        </div>
         <div class="active-filters" id="activeFilters" aria-label="Active filters" hidden></div>
       </div>
       <div class="filters" id="filters">
-      <div class="controls-row">
-        <div class="density" role="group" aria-label="Show">
-          <button class="density-btn" data-kind-filter="" type="button" aria-pressed="true">All</button>
-          <button class="density-btn" data-kind-filter="examples" type="button" aria-pressed="false">Examples</button>
-          <button class="density-btn" data-kind-filter="showcase" type="button" aria-pressed="false">Showcase</button>
-        </div>
-        <label class="sort"><span class="sr-only">Sort</span>
-          <select id="sort">
-            <option value="default">Gallery order</option>
-            <option value="az">Name A&ndash;Z</option>
-            <option value="kind">Examples first</option>
-            <option value="cat">By category</option>
-          </select>
-        </label>
-        <div class="density" role="group" aria-label="Card density">
-          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
-          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
-        </div>
-      </div>
       <div class="controls-row cats" id="cats">
         <span class="cats-label" id="catsLabel">Showcase category</span>
         <div class="density" role="group" aria-labelledby="catsLabel">
@@ -143,9 +142,11 @@
         <button class="chip" data-tag="uv" type="button" aria-pressed="false">uv <span class="n">4</span></button>
         <button class="chip" data-tag="world" type="button" aria-pressed="false">world <span class="n">1</span></button>
       </div>
+      <button class="chips-more" id="chipsMore" type="button" aria-expanded="false" hidden>Show all 35 topics</button>
       </div>
     </div>
   </div>
+  <p class="count results" id="count" role="status" aria-live="polite">56 examples, 76 showcase pieces</p>
   <main id="main">
     <div class="grid" id="grid">
       <article class="card" data-tags="materials rendering" data-kind="examples" data-name="swatch-grid" data-search="swatch grid swatch-grid procedural principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. materials rendering ">
@@ -1924,6 +1925,35 @@
         pillsEl.hidden = items.length === 0;
       }
 
+      // Topic chips collapse to two rows; "Show all N topics" reveals the rest.
+      var moreBtn = document.getElementById('chipsMore');
+      function chipClipped(el) {
+        return el.getBoundingClientRect().bottom > chipsEl.getBoundingClientRect().bottom + 1;
+      }
+      function setChipsExpanded(on) {
+        chipsEl.classList.toggle('expanded', on);
+        moreBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        moreBtn.textContent = on ? 'Show fewer topics' : 'Show all ' + (chips.length - 1) + ' topics';
+      }
+      function measureChips() {
+        if (!chipsEl || !moreBtn) return;
+        var was = chipsEl.classList.contains('expanded');
+        chipsEl.classList.remove('expanded');
+        var over = chipsEl.scrollHeight > chipsEl.clientHeight + 2;
+        if (was) chipsEl.classList.add('expanded');
+        moreBtn.hidden = !over && !was;
+      }
+      if (chipsEl && moreBtn) {
+        moreBtn.addEventListener('click', function () {
+          setChipsExpanded(!chipsEl.classList.contains('expanded'));
+        });
+        // Keyboard focus never lands on a clipped chip: reveal the row first.
+        chipsEl.addEventListener('focusin', function (e) {
+          if (!chipsEl.classList.contains('expanded') && chipClipped(e.target)) setChipsExpanded(true);
+        });
+        window.addEventListener('resize', measureChips);
+      }
+
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
         syncSeg(densityBtns, 'data-density', state.density);
@@ -2056,6 +2086,7 @@
       });
       filtersToggle.addEventListener('click', function () {
         var open = filtersEl.classList.toggle('open');
+        document.querySelector('.controls').classList.toggle('open', open);
         filtersToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
 
@@ -2107,7 +2138,8 @@
         syncChips();
         // A deep-linked tag may sit off-screen in the chip scroll strip.
         var firstOn = chipsEl && chipsEl.querySelector('.chip.active[data-tag]:not([data-tag=""])');
-        if (firstOn) { chipsEl.scrollLeft = firstOn.offsetLeft - chipsEl.offsetLeft - 8; }
+        measureChips();
+        if (firstOn && moreBtn && chipClipped(firstOn)) setChipsExpanded(true);
         applyDensity();
         applySort();
         applyFilters();
