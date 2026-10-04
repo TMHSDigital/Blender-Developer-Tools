@@ -122,7 +122,7 @@
       color: var(--dim); padding: 0 0.85rem; cursor: pointer; font-family: var(--font-mono);
       font-size: 0.72rem; transition: color 0.15s, border-color 0.15s; }
     .copy-btn:hover { color: var(--select); border-color: var(--select); }
-    .install-sponsor { margin-top: 1.25rem; line-height: 0; }
+    .install-sponsor { margin-top: 1.25rem; line-height: 0; text-align: center; }
 
     /* ---- sections as Blender panels ---- */
     main { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 2rem; }
@@ -141,9 +141,13 @@
     .filter-empty { color: var(--dim); font-size: 0.85rem; padding: 0.75rem 0; }
     .is-filtered-out { display: none !important; }
     .panel-body { padding: 1.5rem 1.75rem 1.75rem; }
+    /* Alignment: each section's heading block is centered under its panel
+       label; dense content (skills grid, rules table) stays left for
+       scanning, while visual and short content (renders, steps, chips) is
+       centered as a block. */
     .panel-body > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
-      font-size: clamp(1.6rem, 3.2vw, 2.2rem); line-height: 1.02; margin-bottom: 0.4rem; }
-    .panel-body > .lede { color: var(--dim); max-width: 66ch; margin-bottom: 1.5rem; }
+      font-size: clamp(1.6rem, 3.2vw, 2.2rem); line-height: 1.02; margin-bottom: 0.4rem; text-align: center; }
+    .panel-body > .lede { color: var(--dim); max-width: 66ch; margin: 0 auto 1.5rem; text-align: center; }
     .panel-body > .lede a { color: var(--select); }
     .panel-body > .lede a:hover { text-decoration: underline; }
 
@@ -160,7 +164,7 @@
     .panel-cta { display: inline-block; margin-top: 1.25rem; font-weight: 500; font-size: 0.9rem; color: var(--select); }
     .panel-cta:hover { text-decoration: underline; }
     /* featured subset: gallery link is the section's primary call to action */
-    .cta-row { margin: -0.25rem 0 1.5rem; }
+    .cta-row { margin: -0.25rem 0 1.5rem; text-align: center; }
     .btn-cta { display: inline-block; background: var(--select); color: var(--on-select); font-weight: 500;
       font-size: 0.92rem; border-radius: 4px; padding: 0.55rem 1.15rem; transition: filter 0.15s; }
     .btn-cta:hover { filter: brightness(1.12); }
@@ -193,7 +197,7 @@
     .rules-table .r-name a:hover { color: var(--select); }
 
     /* what's new */
-    .release-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1rem;
+    .release-line { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.4rem 1rem;
       margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--dim); }
     .release-line .ver { font-family: var(--font-mono); color: var(--text); font-size: 0.85rem; }
     .release-line a { color: var(--select); }
@@ -207,17 +211,17 @@
     .rules-table .r-scope { font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; }
 
     /* snippets */
-    .chip-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
     .chip-grid a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--dim);
       border: 1px solid var(--border); border-radius: 3px; padding: 0.28rem 0.6rem;
       transition: color 0.12s, border-color 0.12s; }
     .chip-grid a:hover { color: var(--select); border-color: var(--select); }
-    .tmpl-note { color: var(--dim); font-size: 0.9rem; margin-top: 1.25rem; }
+    .tmpl-note { color: var(--dim); font-size: 0.9rem; margin-top: 1.25rem; text-align: center; }
     .tmpl-note a { color: var(--select); }
     .tmpl-note a:hover { text-decoration: underline; }
 
     /* install */
-    .steps { list-style: none; counter-reset: n; max-width: 72ch; }
+    .steps { list-style: none; counter-reset: n; max-width: 72ch; margin: 0 auto; }
     .steps li { counter-increment: n; display: flex; gap: 0.9rem; align-items: flex-start;
       padding: 0.8rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); font-size: 0.92rem; }
     .steps li::before { content: counter(n); flex-shrink: 0; width: 24px; height: 24px; border-radius: 3px;

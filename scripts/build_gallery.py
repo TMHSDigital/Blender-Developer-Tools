@@ -239,10 +239,13 @@ __CHROME__
     .slug { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); }
     header.hero .slug { margin-top: 0.35rem; font-size: 0.85rem; }
 
-    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    /* Page headers are centered (title, slug, intro, crumbs); dense content
+       below (README prose, source, tables) stays left for reading. */
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; text-align: center; }
+    header.hero .crumbs ol { justify-content: center; }
     header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
-    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin: 0.7rem auto 0; font-size: 1rem; }
 
     /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
     .controls { position: sticky; top: 46px; z-index: 4;
@@ -422,7 +425,7 @@ __CHROME__
     .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
     .detail-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; text-align: center; }
     .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
       clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
     .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
@@ -480,7 +483,8 @@ __CHROME__
     @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
     .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
       border-radius: 3px; padding: 0 0.3rem; margin: 0 0.1rem; }
-    .taglist, .jumpnav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
+    .taglist, .jumpnav { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.4rem; margin: -0.5rem 0 1.5rem; }
+    #related > h2 { text-align: center; }
     .jumpnav { margin: 1.25rem 0 0; }
     /* anchored sections land below the sticky site header */
     .detail-section, .md h2[id] { scroll-margin-top: 4rem; }
