@@ -280,7 +280,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Check content counts match README
+      - name: Check content counts match the repo
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -320,44 +320,14 @@ jobs:
                   and os.path.exists(os.path.join('showcase', d, 'README.md'))
               ])
 
-          readme = open('README.md').read()
-          if f'{skill_count} skills' not in readme:
-              errors.append(f'README skill count mismatch (expected "{skill_count} skills" substring)')
-          if f'{rule_count} rules' not in readme:
-              errors.append(f'README rule count mismatch (expected "{rule_count} rules" substring)')
-          template_word = 'template' if template_count == 1 else 'templates'
-          if f'{template_count} {template_word}' not in readme:
-              errors.append(f'README template count mismatch (expected "{template_count} {template_word}" substring)')
-          if f'{snippet_count} snippets' not in readme:
-              errors.append(f'README snippet count mismatch (expected "{snippet_count} snippets" substring)')
-          if f'{example_count} examples' not in readme:
-              errors.append(f'README example count mismatch (expected "{example_count} examples" substring)')
-          showcase_word = 'piece' if showcase_count == 1 else 'pieces'
-          showcase_needle = f'{showcase_count} showcase {showcase_word}'
-          if showcase_needle not in readme:
-              errors.append(
-                  f'README showcase count mismatch (expected "{showcase_needle}" substring)'
-              )
-
-          # Documented snippet length cap (README, CLAUDE.md, CONTRIBUTING.md).
-          for f in sorted(os.listdir('snippets')):
-              if f.endswith('.py'):
-                  n = len(open(os.path.join('snippets', f), encoding='utf-8').read().splitlines())
-                  if not 5 <= n <= 75:
-                      errors.append(f'snippets/{f} is {n} lines (documented range is 5 to 75)')
-
-          # Secondary docs must not carry stale aggregate counts.
-          import re
-          for doc in ('AGENTS.md', 'CONTRIBUTING.md'):
-              text = open(doc, encoding='utf-8').read()
-              for kind, actual in (('examples', example_count), ('showcase pieces', showcase_count)):
-                  for m in re.finditer(r'(\d+) ' + kind, text):
-                      if int(m.group(1)) != actual:
-                          errors.append(f'{doc} says "{m.group(0)}" but the repo has {actual}')
+          # Every stated copy of every count, across README, CLAUDE.md, AGENTS.md,
+          # CONTRIBUTING.md and docs/new-example-prompt.md, plus the snippet cap.
+          import subprocess
+          if subprocess.run([sys.executable, 'tests/check_counts.py']).returncode:
+              errors.append('tests/check_counts.py found stale counts (see above)')
 
           # The GitHub About text drifts silently otherwise. Warn only: it is
           # repo metadata edited by hand and must not block content PRs.
-          import subprocess
           try:
               about = subprocess.run(
                   ['gh', 'repo', 'view', '--json', 'description', '--jq', '.description'],
@@ -374,7 +344,7 @@ jobs:
                   print(f'::error::{e}', file=sys.stderr)
               sys.exit(1)
 
-          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets, {example_count} examples, {showcase_needle}')
+          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} templates, {snippet_count} snippets, {example_count} examples, {showcase_count} showcase pieces')
           PYEOF
 
   validate-harness:

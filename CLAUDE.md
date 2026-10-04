@@ -195,7 +195,7 @@ touching `examples/`; the landing page builds from `scripts/site/` at deploy tim
 - **One palette:** `scripts/site/tokens.css` is the single `:root` for every published
   page — the landing and 404 templates `{% include %}` it and `build_gallery.py` inlines
   it. Change colors or type there, never in a hand-copied `:root`; a token edit changes
-  all 89 gallery pages, so regenerate and commit `docs/gallery/`.
+  every gallery page, so regenerate and commit `docs/gallery/`.
 - **Link gate:** after building both (`python scripts/site/build_site.py --repo-root . --out docs`
   then `python scripts/build_gallery.py`), run `python tests/check_site_links.py`. It resolves
   every internal `href`/`src`/`#anchor` across all pages and requires `alt` on every `<img>`;
