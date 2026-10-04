@@ -580,26 +580,54 @@ def aluminium_material(name):
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
+    # Brushing: noise stretched hard along Z gives fine vertical streaks.
+    # They drive roughness and a faint bump, so the facets catch broken,
+    # streaky highlights instead of reading as flat grey planes.
     mapping = nt.nodes.new("ShaderNodeMapping")
-    mapping.inputs["Scale"].default_value = (60.0, 60.0, 4.0)
+    mapping.inputs["Scale"].default_value = (260.0, 260.0, 5.0)
     nt.links.new(tc.outputs["Object"], mapping.inputs["Vector"])
-    noise = nt.nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 1.0
-    noise.inputs["Detail"].default_value = 5.0
-    nt.links.new(mapping.outputs["Vector"], noise.inputs["Vector"])
+    brush = nt.nodes.new("ShaderNodeTexNoise")
+    brush.inputs["Scale"].default_value = 1.0
+    brush.inputs["Detail"].default_value = 3.0
+    nt.links.new(mapping.outputs["Vector"], brush.inputs["Vector"])
+    # Broad tone: the uneven sheen of cast metal, at hand scale.
+    tone = nt.nodes.new("ShaderNodeTexNoise")
+    tone.inputs["Scale"].default_value = 18.0
+    tone.inputs["Detail"].default_value = 4.0
+    nt.links.new(tc.outputs["Object"], tone.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.35
-    ramp.color_ramp.elements[0].color = (0.60, 0.61, 0.64, 1.0)
-    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[0].position = 0.38
+    ramp.color_ramp.elements[0].color = (0.50, 0.51, 0.53, 1.0)
+    ramp.color_ramp.elements[1].position = 0.66
     ramp.color_ramp.elements[1].color = (0.80, 0.80, 0.82, 1.0)
-    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Metallic"].default_value = 0.78
+    nt.links.new(tone.outputs["Fac"], ramp.inputs["Fac"])
+    # Heat tint: a stovetop pot darkens and warms where the flame reaches,
+    # strongest at the base and gone ~4.5 cm up the boiler.
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
+    heat = nt.nodes.new("ShaderNodeMapRange")
+    heat.inputs["From Min"].default_value = 0.0
+    heat.inputs["From Max"].default_value = 0.045
+    heat.inputs["To Min"].default_value = 0.9
+    heat.inputs["To Max"].default_value = 0.0
+    nt.links.new(sep.outputs["Z"], heat.inputs["Value"])
+    scorch = nt.nodes.new("ShaderNodeMix")
+    scorch.data_type = "RGBA"
+    scorch.inputs["B"].default_value = (0.20, 0.17, 0.14, 1.0)
+    nt.links.new(heat.outputs["Result"], scorch.inputs["Factor"])
+    nt.links.new(ramp.outputs["Color"], scorch.inputs["A"])
+    nt.links.new(scorch.outputs["Result"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Metallic"].default_value = 0.85
     rmap = nt.nodes.new("ShaderNodeMapRange")
-    rmap.inputs["To Min"].default_value = 0.22
-    rmap.inputs["To Max"].default_value = 0.36
-    nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+    rmap.inputs["To Min"].default_value = 0.16
+    rmap.inputs["To Max"].default_value = 0.42
+    nt.links.new(brush.outputs["Fac"], rmap.inputs["Value"])
     nt.links.new(rmap.outputs["Result"], bsdf.inputs["Roughness"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.06
+    bump.inputs["Distance"].default_value = 0.0005
+    nt.links.new(brush.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
 

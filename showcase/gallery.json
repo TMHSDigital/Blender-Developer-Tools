@@ -954,7 +954,7 @@
       "dir": "showcase/moka-pot",
       "category": "household",
       "teaches": "A procedural three-cup Moka Express-pattern pot — an eight-flat boiler and collector flaring out from an hourglass waist with a proud grip band, a V beak pinched from the rim, a hinged faceted lid and bakelite knob, a two-root bakelite D handle on a riveted fin, and a brass valve — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "An eight-sided aluminium moka pot pinched to an hourglass waist with a proud grip band, a V-beak spout, a black bakelite knob and D handle, and a brass valve.",
+      "alt": "A brushed eight-sided aluminium moka pot pinched to an hourglass waist with a proud grip band, a V-beak spout, a black bakelite knob and D handle, and a brass valve.",
       "witnessesFix": "Recomputed: 1300 tris, three materials with 197 aluminium, 388 bakelite and 124 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.1327×0.0832×0.1600 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, 10 shells, the collector 3.5 mm onto the boiler, both handle roots 2.5 mm into the fin, the knob 1.8 mm into the lid, spout and fin 1.5 mm into the wall, fasteners 1.2–1.6 mm in and ≥1.8 mm proud, 83.2/80.2/160.0 mm foot/collector/height against a 16 cm, 9 cm-base three-cup pot, plumb 0 and eight-fold spread 0. --lean-pot exits 19 at 3.3 mm of plumb drift and --odd-facet at 2.0 mm of facet spread, both inside the unchanged bounding box.",
       "hero": "docs/gallery/assets/moka-pot-hero.webp",
       "preview": "showcase/moka-pot/preview.webp",

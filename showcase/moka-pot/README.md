@@ -1,6 +1,6 @@
 # moka-pot
 
-![A polished eight-sided aluminium moka pot pinched to an hourglass waist with a proud grip band at the joint, a V-beak spout, a faceted lid with a black bakelite knob and a hinge knuckle, a black bakelite D handle on a fin, and a brass safety valve on the boiler](preview.webp)
+![A brushed eight-sided aluminium moka pot pinched to an hourglass waist with a proud grip band at the joint, a V-beak spout, a faceted lid with a black bakelite knob and a hinge knuckle, a black bakelite D handle on a fin, and a brass safety valve on the boiler](preview.webp)
 
 A three-cup Moka Express-pattern stovetop pot: an eight-flat boiler that
 flares out to its foot, a collector that flares out to its rim, both
@@ -136,6 +136,13 @@ Spout tip to handle is about 133 mm.
 - **Shading.** Aluminium is flat-shaded, because the faceting is the
   object. Bakelite and brass are turned or swept and smooth-shaded with
   every edge over 35° hard.
+- **Aluminium surface (#345).** Flat facets under a uniform grey read as
+  plain planes, and the asset sheet judged the pot the least-designed
+  object in its lineup. The material now carries vertical brushing (noise
+  stretched along Z driving roughness 0.16–0.42 and a faint bump), a
+  broad tone variation, and heat tint darkening the lowest 4.5 cm of the
+  boiler, where a stovetop flame discolours a real pot. Render-only: no
+  budget, face count or check changed.
 
 ## Findings the budgets forced
 
