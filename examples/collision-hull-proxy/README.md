@@ -86,6 +86,8 @@ against it.
 | 7 | Euler characteristic ≠ 2 |
 | 8 | Piece over the 255-face collision budget |
 | 9 | `--output` produced no file |
+| 10 | Gallery framing violation (render path) |
+| 11 | Gallery asset-quality violation (render path) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

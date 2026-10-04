@@ -38,6 +38,11 @@ import argparse
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 RING_MAJOR = 0.7
 RING_MINOR = 0.12
 RING_Z = 0.85                # ring center height; bottom edge grazes the floor
@@ -279,7 +284,11 @@ def check_pixels(scene):
 
 def render_still(scene, path, engine, samples, width):
     """Dark-studio beauty pass: the same rings, now grounded on a reflective
-    floor — the glow and its reflection are the compositor's doing."""
+    floor — the glow and its reflection are the compositor's doing.
+
+    Returns 0, 10 (gallery framing violation, checked before the beauty
+    render) or 6 (no file written)."""
+    rings = [o for o in scene.objects if o.type == 'MESH']
     # glossy dark floor stays below the bloom threshold; only the rings bloom
     mesh = bpy.data.meshes.new("Floor")
     half = 30.0
@@ -330,8 +339,18 @@ def render_still(scene, path, engine, samples, width):
     scene.render.image_settings.file_format = 'WEBP' if path.lower().endswith(".webp") else 'PNG'
     scene.render.use_compositing = True
     scene.render.filepath = path
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=rings, elements=rings, stage=[floor],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 6
+    return 0
 
 
 def main():
@@ -362,10 +381,10 @@ def main():
         return code
 
     if args.output:
-        if not render_still(scene, os.path.abspath(args.output), args.engine, args.samples,
-                            args.width):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(scene, os.path.abspath(args.output), args.engine, args.samples,
+                             args.width)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("compositor-glare OK")

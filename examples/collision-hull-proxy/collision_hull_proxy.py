@@ -38,6 +38,13 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Vector
 
+# Shared render gates (render path only) — see gallery_framing.py and
+# gallery_asset_quality.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+import gallery_asset_quality
+
 SEGMENTS = 48          # lathe resolution of the render mesh
 CAGE_SEG_BODY = 8      # collision cage resolutions — the hull face budget
 CAGE_SEG_CAP = 8       #   is spent through these, not through SEGMENTS
@@ -480,8 +487,26 @@ def render_still(groups, pieces, path, engine):
     scene.render.filepath = path
     # AgX would flatten the enamel toward pastel (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate and the asset-quality floors, both before the
+    # beauty render so a defective still ships no artifact. The hero is the
+    # hydrant itself; its hulls are framed elements too.
+    hydrant = [o for g in groups for o in g["render"]]
+    hulls = [hull for _, hull, _ in pieces]
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=hydrant, elements=hydrant + hulls, stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
+    acode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hydrant, stage=[floor, wall],
+    )
+    if acode:
+        return acode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 9
+    return 0
 
 
 def main():
@@ -508,9 +533,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(groups, pieces, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(groups, pieces, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("collision-hull-proxy OK")

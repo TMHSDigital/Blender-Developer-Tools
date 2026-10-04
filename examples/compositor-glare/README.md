@@ -51,6 +51,7 @@ against it.
 | 4 | Check render missing, tube dark, no halo, or halo does not fall off |
 | 5 | Halo present with compositing off |
 | 6 | `--output` produced no file |
+| 10 | Gallery framing violation (render path; checked before the beauty render) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

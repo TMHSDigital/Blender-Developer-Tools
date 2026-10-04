@@ -81,16 +81,16 @@ blender --background --python collision_hull_proxy.py -- --output hydrant.png
 blender --background --python collision_hull_proxy.py -- --output hydrant.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Render vertex escapes its hull (<code>--shrink-hull</code> lands here)</td></tr><tr><td>4</td><td>Hull edge does not border exactly two faces</td></tr><tr><td>5</td><td>Signed volume ≤ 0 (inverted winding)</td></tr><tr><td>6</td><td>Hull vertex off its own face plane</td></tr><tr><td>7</td><td>Euler characteristic ≠ 2</td></tr><tr><td>8</td><td>Piece over the 255-face collision budget</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Render vertex escapes its hull (<code>--shrink-hull</code> lands here)</td></tr><tr><td>4</td><td>Hull edge does not border exactly two faces</td></tr><tr><td>5</td><td>Signed volume ≤ 0 (inverted winding)</td></tr><tr><td>6</td><td>Hull vertex off its own face plane</td></tr><tr><td>7</td><td>Euler characteristic ≠ 2</td></tr><tr><td>8</td><td>Piece over the 255-face collision budget</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (render path)</td></tr><tr><td>11</td><td>Gallery asset-quality violation (render path)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--shrink-hull</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/collision-hull-proxy/collision_hull_proxy.py</code>
-        <span>524 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy/collision_hull_proxy.py">View on GitHub &rarr;</a></span>
+        <span>549 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy/collision_hull_proxy.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="524">
+      <div class="code" data-lines="549">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -614,7 +614,32 @@ blender --background --python collision_hull_proxy.py -- --output hydrant.png --
 521
 522
 523
-524</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A fire hydrant prop plus its convex collision proxies — a runnable example.
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;A fire hydrant prop plus its convex collision proxies — a runnable example.
 
 Witnesses the collision contract every game prop pipeline (engines generally,
 FiveM/GTA-style prop workflows specifically) depends on: a prop&#x27;s collision is
@@ -653,6 +678,13 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Shared render gates (render path only) — see gallery_framing.py and</span>
+<span class="c"># gallery_asset_quality.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 SEGMENTS = <span class="n">48</span>          <span class="c"># lathe resolution of the render mesh</span>
 CAGE_SEG_BODY = <span class="n">8</span>      <span class="c"># collision cage resolutions — the hull face budget</span>
@@ -1096,8 +1128,26 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
     scene.render.filepath = path
     <span class="c"># AgX would flatten the enamel toward pastel (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate and the asset-quality floors, both before the</span>
+    <span class="c"># beauty render so a defective still ships no artifact. The hero is the</span>
+    <span class="c"># hydrant itself; its hulls are framed elements too.</span>
+    hydrant = [o <span class="k">for</span> g <span class="k">in</span> groups <span class="k">for</span> o <span class="k">in</span> g[<span class="s">&quot;render&quot;</span>]]
+    hulls = [hull <span class="k">for</span> _, hull, _ <span class="k">in</span> pieces]
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=hydrant, elements=hydrant + hulls, stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    acode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hydrant, stage=[floor, wall],
+    )
+    <span class="k">if</span> acode:
+        <span class="k">return</span> acode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -1124,9 +1174,9 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(groups, pieces, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+        rcode = render_still(groups, pieces, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;collision-hull-proxy OK&quot;</span>)

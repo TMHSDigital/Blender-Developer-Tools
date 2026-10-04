@@ -76,16 +76,16 @@ blender --background --python compositor_glare.py -- --output rings.png
 blender --background --python compositor_glare.py -- --output rings.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Compositor tree / Glare / Threshold / link-chain contract (<code>--threshold-high</code> lands here)</td></tr><tr><td>4</td><td>Check render missing, tube dark, no halo, or halo does not fall off</td></tr><tr><td>5</td><td>Halo present with compositing off</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Compositor tree / Glare / Threshold / link-chain contract (<code>--threshold-high</code> lands here)</td></tr><tr><td>4</td><td>Check render missing, tube dark, no halo, or halo does not fall off</td></tr><tr><td>5</td><td>Halo present with compositing off</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (render path; checked before the beauty render)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--threshold-high</code>.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/compositor-glare/compositor_glare.py</code>
-        <span>379 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/compositor-glare/compositor_glare.py">View on GitHub &rarr;</a></span>
+        <span>398 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/compositor-glare/compositor_glare.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="379">
+      <div class="code" data-lines="398">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -464,7 +464,26 @@ blender --background --python compositor_glare.py -- --output rings.png --engine
 376
 377
 378
-379</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Bloom through the compositor across the 4.x -&gt; 5.x boundary — a runnable example.
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Bloom through the compositor across the 4.x -&gt; 5.x boundary — a runnable example.
 
 Witnesses the compositor-plumbing contract that AI-generated Blender code breaks
 constantly:
@@ -503,6 +522,11 @@ render a still:
 <span class="k">import</span> argparse
 <span class="k">from</span> bpy_extras.object_utils <span class="k">import</span> world_to_camera_view
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 RING_MAJOR = <span class="n">0.7</span>
 RING_MINOR = <span class="n">0.12</span>
@@ -745,7 +769,11 @@ CHECK_W, CHECK_H = <span class="n">96</span>, <span class="n">54</span>    <span
 
 <span class="k">def</span> render_still(scene, path, engine, samples, width):
     <span class="s">&quot;&quot;&quot;Dark-studio beauty pass: the same rings, now grounded on a reflective
-    floor — the glow and its reflection are the compositor&#x27;s doing.&quot;&quot;&quot;</span>
+    floor — the glow and its reflection are the compositor&#x27;s doing.
+
+    Returns 0, 10 (gallery framing violation, checked before the beauty
+    render) or 6 (no file written).&quot;&quot;&quot;</span>
+    rings = [o <span class="k">for</span> o <span class="k">in</span> scene.objects <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span>]
     <span class="c"># glossy dark floor stays below the bloom threshold; only the rings bloom</span>
     mesh = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     half = <span class="n">30.0</span>
@@ -796,8 +824,18 @@ CHECK_W, CHECK_H = <span class="n">96</span>, <span class="n">54</span>    <span
     scene.render.image_settings.file_format = <span class="s">&#x27;WEBP&#x27;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&#x27;PNG&#x27;</span>
     scene.render.use_compositing = <span class="k">True</span>
     scene.render.filepath = path
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=rings, elements=rings, stage=[floor],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -828,10 +866,10 @@ CHECK_W, CHECK_H = <span class="n">96</span>, <span class="n">54</span>    <span
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(scene, os.path.abspath(args.output), args.engine, args.samples,
-                            args.width):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+        rcode = render_still(scene, os.path.abspath(args.output), args.engine, args.samples,
+                             args.width)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;compositor-glare OK&quot;</span>)
