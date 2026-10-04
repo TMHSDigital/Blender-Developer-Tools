@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.1] - 2026-10-04
+
+### Fixes
+
+- fix(showcase): moka-pot gets brushed, heat-tinted aluminium ([`5a9aee8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5a9aee8b50ec34459de148572bb90eeffe9b7a5a))
+- fix(showcase): remodel iron-cauldron (chain, forged head, casting band, feet, cast-iron finish) ([`e6a0d68`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e6a0d68209d29eefe3aba64994fd2b9c110d0c13))
+
+### Other
+
+- docs(gallery): rebuild temp-override-join contact sheet against the current calibration set ([`fe0bd2f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/fe0bd2fd615a460cca6caebac81322b1fcaf5d36))
+- test(smoke): each showcase row re-proves a piece-specific falsifier, not --skip-decimate ([`2cac933`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2cac93340a37ffe865bfe6101b548503417c1e1b))
+- docs(showcase): asset sheets for the last 17 pieces; 76/76 now carry one ([`7602b28`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/7602b2888b45a9b3b9b7cb85b11e2f59022ffc01))
+
+[Release v0.143.1](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.1)
+
 ## [0.143.0] - 2026-10-04
 
 ### Features
