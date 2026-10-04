@@ -169,7 +169,7 @@ def main(argv=None) -> int:
             png.unlink()
         t0 = time.time()
         proc = subprocess.run(
-            [blender, "--background", "--factory-startup", "--python", str(script), "--", *cmd],
+            [blender, "--background", "--factory-startup", "--python-exit-code", "1", "--python", str(script), "--", *cmd],
             capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=REPO,
         )
         secs = time.time() - t0

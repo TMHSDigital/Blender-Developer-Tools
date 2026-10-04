@@ -171,6 +171,27 @@ class CatalogWiring(unittest.TestCase):
         self.assertEqual(row["sidecar_contains"], "exit_pre-ok")
 
 
+class BuildCmd(unittest.TestCase):
+    """Blender exits 0 on an uncaught exception unless --python-exit-code is set."""
+
+    def _cmd(self, xvfb=False):
+        import argparse
+
+        import run_example
+
+        ns = argparse.Namespace(blender="bl", script="s.py", script_args=["--x"], xvfb=xvfb)
+        return run_example.build_cmd(ns)
+
+    def test_exit_code_flag_precedes_python(self):
+        cmd = self._cmd()
+        i = cmd.index("--python-exit-code")
+        self.assertEqual(cmd[i + 1], "1")
+        self.assertLess(i, cmd.index("--python"))
+
+    def test_xvfb_keeps_exit_code_flag(self):
+        self.assertIn("--python-exit-code", self._cmd(xvfb=True))
+
+
 class RunCatalog(unittest.TestCase):
     """run_catalog runs every row and reports all failures; empty is red."""
 

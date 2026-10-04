@@ -33,7 +33,7 @@ def append_status(path, record):
 
 
 def build_cmd(args):
-    cmd = [args.blender, "--background", "--python", args.script, "--"]
+    cmd = [args.blender, "--background", "--python-exit-code", "1", "--python", args.script, "--"]
     cmd.extend(args.script_args)
     if args.xvfb:
         cmd = ["xvfb-run", "-a"] + cmd

@@ -160,7 +160,7 @@ def render_panel(blender: str, entry: dict, png: Path) -> bool:
         env = dict(os.environ, BDT_SHEET_SCRIPT=str(script), BDT_SHEET_SELECT=inc,
                    BDT_SHEET_EXCLUDE=exc or "", BDT_SHEET_OUT=str(png))
         proc = subprocess.run(
-            [blender, "--background", "--factory-startup", "--python",
+            [blender, "--background", "--factory-startup", "--python-exit-code", "1", "--python",
              str(REPO / "scripts" / "asset_sheet_panel.py"), "--", *cmd],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             cwd=REPO, env=env,

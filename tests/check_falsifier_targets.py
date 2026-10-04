@@ -228,7 +228,7 @@ def check_runtime(blender, only=None):
         for flag, (want, _target) in sorted(falsifiers.items()):
             checked += 1
             proc = subprocess.run(
-                [blender, "--background", "--python", script, "--", flag],
+                [blender, "--background", "--python-exit-code", "1", "--python", script, "--", flag],
                 capture_output=True,
             )
             got = proc.returncode

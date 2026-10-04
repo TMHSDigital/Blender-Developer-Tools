@@ -71,7 +71,7 @@ def main(argv=None) -> int:
                 continue
             script = next((REPO / e["dir"]).glob("*.py"))
             proc = subprocess.run(
-                [blender, "--background", "--factory-startup", "--python", str(script),
+                [blender, "--background", "--factory-startup", "--python-exit-code", "1", "--python", str(script),
                  "--", *cmd],
                 capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=REPO,
             )
