@@ -2,6 +2,11 @@
 # do not churn gallery.json, plugin.json, or skill files.
 *.json text eol=lf
 *.md text eol=lf
+# Generated gallery HTML/CSS and Python stay LF too: build_gallery.py writes
+# LF, so a Windows checkout with core.autocrlf=false must not see drift.
+*.html text eol=lf
+*.css text eol=lf
+*.py text eol=lf
 
 # Binary. Gallery stills and any future .blend fixtures.
 *.webp binary

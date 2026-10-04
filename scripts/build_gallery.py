@@ -4,7 +4,8 @@
 Emits the gallery index (docs/gallery/index.html) AND one detail page per
 example (docs/gallery/<name>/index.html) with the hero render (click to
 zoom), a run-it-yourself command, the example's README rendered inline, and
-the full Python source syntax-highlighted at build time.
+a link to the script on GitHub (the source is linked, not inlined, so a page
+does not change when only its script does).
 
 The index carries a sticky controls bar (search, tag chips, compact/detailed
 density toggle, back-to-top) driven by inline vanilla JS — no external
@@ -30,13 +31,10 @@ need no escaping.
 """
 import hashlib
 import html
-import io
 import json
-import keyword
 import posixpath
 import re
 import sys
-import tokenize
 import urllib.parse
 from pathlib import Path
 
@@ -477,11 +475,6 @@ __CHROME__
       padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
     .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
 
-    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
-      font-size: 0.82rem; line-height: 1.55; }
-    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
-    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
     .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
@@ -527,21 +520,6 @@ __CHROME__
     @media (hover: none) { .codewrap > .copy-btn { opacity: 1; } }
     .copy-btn.done { color: var(--ok); border-color: var(--ok); }
     .copy-btn.fail { color: var(--code-k); border-color: var(--code-k); }
-    .src .code { display: grid; grid-template-columns: auto minmax(0, 1fr);
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden; }
-    .src .code pre { background: none; border: 0; border-radius: 0; }
-    .src .code .gutter { color: color-mix(in srgb, var(--text-dim) 60%, transparent); text-align: right;
-      user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border);
-      background: var(--bg2); overflow: hidden; }
-    .src .code.collapsed { max-height: 42rem; position: relative; }
-    .src .code.collapsed::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5rem;
-      background: linear-gradient(transparent, var(--surface-2)); pointer-events: none; }
-    .src-expand { display: block; margin: 0.6rem auto 0; background: var(--surface-2);
-      border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius);
-      padding: 0.4rem 0.9rem; cursor: pointer; font: 500 0.8rem var(--font-sans);
-      transition: color 0.15s, border-color 0.15s; }
-    .src-expand:hover { color: var(--select); border-color: var(--select); }
 
     .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
       max-height: none; background: var(--scrim); cursor: zoom-out; }
@@ -1075,7 +1053,7 @@ DETAIL_JS = """
       if (copy) {
         wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
       }
-      Array.prototype.forEach.call(document.querySelectorAll('.md pre, .src .code'), function (block) {
+      Array.prototype.forEach.call(document.querySelectorAll('.md pre'), function (block) {
         var wrap = block;
         if (block.tagName === 'PRE') {
           wrap = document.createElement('div');
@@ -1090,26 +1068,6 @@ DETAIL_JS = """
         wireCopy(btn, function () { return src.textContent; });
         wrap.appendChild(btn);
       });
-
-      // Long listings start collapsed; with JS off they render in full.
-      var code = document.querySelector('.src .code');
-      if (code) {
-        var lines = parseInt(code.getAttribute('data-lines'), 10) || 0;
-        if (lines > 120) {
-          code.classList.add('collapsed');
-          var more = document.createElement('button');
-          more.type = 'button'; more.className = 'src-expand';
-          more.setAttribute('aria-expanded', 'false');
-          more.textContent = 'Show all ' + lines + ' lines';
-          code.parentNode.insertBefore(more, code.nextSibling);
-          more.addEventListener('click', function () {
-            var open = code.classList.toggle('collapsed') === false;
-            more.setAttribute('aria-expanded', open ? 'true' : 'false');
-            more.textContent = open ? 'Collapse source' : 'Show all ' + lines + ' lines';
-            if (!open) code.scrollIntoView({ block: 'start' });
-          });
-        }
-      }
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
@@ -1156,51 +1114,6 @@ MINI_CARD = """        <article class="card mini">
 # Cards above the fold on a typical desktop load eagerly; the rest stay lazy.
 EAGER_CARDS = 4
 
-
-# ---------------------------------------------------------------------------
-# Build-time Python syntax highlighting (stdlib tokenize; no Pygments).
-# ---------------------------------------------------------------------------
-
-_FSTRING_TYPES = {
-    getattr(tokenize, name, -1)
-    for name in ("FSTRING_START", "FSTRING_MIDDLE", "FSTRING_END")
-}
-
-
-def highlight_python(src: str) -> str:
-    """Return HTML for *src* with keyword/string/comment/number spans."""
-    line_starts = [0]
-    for line in src.splitlines(keepends=True):
-        line_starts.append(line_starts[-1] + len(line))
-
-    def offset(row: int, col: int) -> int:
-        return line_starts[row - 1] + col
-
-    out: list[str] = []
-    last = 0
-    try:
-        for tok in tokenize.generate_tokens(io.StringIO(src).readline):
-            start, end = offset(*tok.start), offset(*tok.end)
-            if start < last:  # overlapping synthetic token (NEWLINE/INDENT)
-                continue
-            if start > last:
-                out.append(html.escape(src[last:start]))
-            cls = None
-            if tok.type == tokenize.COMMENT:
-                cls = "c"
-            elif tok.type == tokenize.STRING or tok.type in _FSTRING_TYPES:
-                cls = "s"
-            elif tok.type == tokenize.NUMBER:
-                cls = "n"
-            elif tok.type == tokenize.NAME and keyword.iskeyword(tok.string):
-                cls = "k"
-            text = html.escape(src[start:end])
-            out.append(f'<span class="{cls}">{text}</span>' if cls and text else text)
-            last = end
-    except tokenize.TokenError:
-        return html.escape(src)
-    out.append(html.escape(src[last:]))
-    return "".join(out)
 
 
 # ---------------------------------------------------------------------------
@@ -1580,19 +1493,15 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
         parts.append("    </section>")
 
     if script is not None:
-        blob = f"{base}/{ex['dir']}/{script.name}"
-        src = script.read_text(encoding="utf-8")
-        n_lines = len(src.splitlines())
-        gutter = "\n".join(str(n) for n in range(1, n_lines + 1))
+        # Link the script rather than inline it: inlined, highlighted source
+        # made every detail page several times its script's size and rewrote
+        # the page on every script edit (the bulk of repo history growth).
+        blob = f"{base.replace('/tree/', '/blob/', 1)}/{ex['dir']}/{script.name}"
         parts.append('    <section class="detail-section src" id="source">')
         parts.append("      <h2>Source</h2>")
         parts.append('      <div class="src-meta">')
         parts.append(f"        <code>{html.escape(ex['dir'])}/{html.escape(script.name)}</code>")
-        parts.append(f'        <span>{n_lines} lines &middot; <a href="{html.escape(blob, quote=True)}">View on GitHub &rarr;</a></span>')
-        parts.append("      </div>")
-        parts.append(f'      <div class="code" data-lines="{n_lines}">')
-        parts.append(f'<pre class="gutter" aria-hidden="true">{gutter}</pre>'
-                     f'<pre class="code-lines">{highlight_python(src)}</pre>')
+        parts.append(f'        <a href="{html.escape(blob, quote=True)}">View the script on GitHub &rarr;</a>')
         parts.append("      </div>")
         parts.append("    </section>")
 
@@ -1829,10 +1738,10 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     css = gallery_css()
     css_v = css_version(css)
-    (OUT_DIR / "gallery.css").write_text(css, encoding="utf-8")
+    (OUT_DIR / "gallery.css").write_text(css, encoding="utf-8", newline="\n")
     (OUT_DIR / "index.html").write_text(
         build_index(data, base=base, repo_root_url=repo_root_url, site=site, css_v=css_v),
-        encoding="utf-8",
+        encoding="utf-8", newline="\n",
     )
     for ex in examples:
         page_dir = OUT_DIR / ex["name"]
@@ -1840,7 +1749,7 @@ def main() -> int:
         (page_dir / "index.html").write_text(
             build_detail(ex, examples, base=base, repo_root_url=repo_root_url, site=site,
                          css_v=css_v),
-            encoding="utf-8",
+            encoding="utf-8", newline="\n",
         )
 
     # A renamed or removed entry would otherwise leave its old page published

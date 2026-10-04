@@ -344,11 +344,6 @@
       padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
     .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
 
-    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
-      font-size: 0.82rem; line-height: 1.55; }
-    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
-    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
     .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
@@ -394,21 +389,6 @@
     @media (hover: none) { .codewrap > .copy-btn { opacity: 1; } }
     .copy-btn.done { color: var(--ok); border-color: var(--ok); }
     .copy-btn.fail { color: var(--code-k); border-color: var(--code-k); }
-    .src .code { display: grid; grid-template-columns: auto minmax(0, 1fr);
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden; }
-    .src .code pre { background: none; border: 0; border-radius: 0; }
-    .src .code .gutter { color: color-mix(in srgb, var(--text-dim) 60%, transparent); text-align: right;
-      user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border);
-      background: var(--bg2); overflow: hidden; }
-    .src .code.collapsed { max-height: 42rem; position: relative; }
-    .src .code.collapsed::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5rem;
-      background: linear-gradient(transparent, var(--surface-2)); pointer-events: none; }
-    .src-expand { display: block; margin: 0.6rem auto 0; background: var(--surface-2);
-      border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius);
-      padding: 0.4rem 0.9rem; cursor: pointer; font: 500 0.8rem var(--font-sans);
-      transition: color 0.15s, border-color 0.15s; }
-    .src-expand:hover { color: var(--select); border-color: var(--select); }
 
     .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
       max-height: none; background: var(--scrim); cursor: zoom-out; }
