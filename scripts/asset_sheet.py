@@ -135,6 +135,23 @@ SELECT = {
     "garden-gate": (r"^GateLow$", None),
     "ships-wheel": (r"^WheelLow$", None),
     "sawhorse-plank": (r"^SawhorseLow$", None),
+    "bamboo-clump": (r"^BambooLow$", None),
+    "cart": (r"^CartLow$", None),
+    "crate-stack": (r"^StackLow$", None),
+    "cricket-wicket": (r"^WicketLow$", None),
+    "hay-bale": (r"^BaleLow$", None),
+    "iron-cauldron": (r"^CauldronLow$", None),
+    "market-stall": (r"^StallLow$", None),
+    "moka-pot": (r"^PotLow$", None),
+    "park-bench": (r"^BenchLow$", None),
+    "stone-archway": (r"^ArchLow$", None),
+    "stone-well": (r"^WellLow$", None),
+    "sundial": (r"^SundialLow$", None),
+    "toboggan": (r"^SledLow$", None),
+    "treasure-chest": (r"^ChestLow$", None),
+    "wall-torch": (r"^TorchLow$", None),
+    "wooden-barrel": (r"^BarrelLow$", None),
+    "wooden-bucket": (r"^BucketLow$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
