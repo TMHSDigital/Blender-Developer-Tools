@@ -98,6 +98,12 @@ EAR_MINOR = 0.0045
 EAR_BITE = 0.002
 RIM_OUT = 0.018
 POLE_OFFSET = math.radians(18.0)
+CHAIN_LINKS = 5          # round links from the hook ring to the iron head
+CHAIN_R = 0.016          # link ring radius
+CHAIN_r = 0.0035         # link wire radius
+BAND_r = 0.004           # casting band at the belly
+FOOT_RAD = 0.050         # stub feet under the base
+FOOT_H = 0.034
 
 BBOX_TOL = 0.015
 OUTER_SIZE = (0.987, 0.961, 0.860)
@@ -574,27 +580,49 @@ def build_cauldron_mesh(
             euler=(0.0, math.radians(90.0), 0.0),
         )
         crown_z0 = APEX_Z - CROWN_H
-        lathe_axis(
-            bm,
-            (0.0, 0.0, hook_z + HOOK_R),
-            (0.0, 0.0, crown_z0 + 0.008),
-            ((0.0, HOOK_R * 0.9), (1.0, HOOK_R * 0.9)),
-            8,
-            METAL_IDX,
-        )
+        # A short chain of round links from the hook ring up into the iron
+        # head, each link turned 90 degrees from the last so they read as
+        # interlocked; replaces the bare rod the pot used to hang from.
+        hook_major = BAIL_R + HOOK_R * 0.85
+        z_lo = hook_z + hook_major + CHAIN_R - 2.0 * CHAIN_r
+        z_hi = crown_z0 + 0.006 - CHAIN_R
+        pitch = (z_hi - z_lo) / (CHAIN_LINKS - 1)
+        for k in range(CHAIN_LINKS):
+            euler = (math.pi / 2.0, 0.0, 0.0) if k % 2 == 0 else (0.0, math.pi / 2.0, 0.0)
+            add_torus(
+                bm, (0.0, 0.0, z_lo + k * pitch), CHAIN_R, CHAIN_r,
+                8, 4, METAL_IDX, euler=euler,
+            )
 
+        # Forged iron tripod head: a collar the three poles seat into, with
+        # a flared skirt and a domed cap, instead of a turned wooden ball.
         lathe_z(
             bm,
             (
-                (0.000, 0.032),
-                (0.018, 0.046),
-                (0.048, 0.042),
-                (CROWN_H, 0.026),
+                (0.000, 0.034),
+                (0.014, 0.045),
+                (0.050, 0.040),
+                (CROWN_H, 0.022),
             ),
             16,
-            WOOD_IDX,
+            METAL_IDX,
             z0=crown_z0,
         )
+        # Casting band: the raised seam a sand-cast pot carries at its belly.
+        add_torus(
+            bm, (0.0, 0.0, POT_Z0 + BELLY_Z), R_BELLY + 0.001, BAND_r,
+            N_AROUND - 6, 3, METAL_IDX,
+        )
+        # Three stub feet under the base, splayed slightly outward.
+        for i in range(3):
+            ang = i * (2.0 * math.pi / 3.0) + POLE_OFFSET + math.pi / 3.0
+            top = Vector((FOOT_RAD * math.cos(ang), FOOT_RAD * math.sin(ang), POT_Z0 + 0.006))
+            bot = Vector((
+                (FOOT_RAD + 0.008) * math.cos(ang),
+                (FOOT_RAD + 0.008) * math.sin(ang),
+                POT_Z0 - FOOT_H,
+            ))
+            lathe_axis(bm, top, bot, ((0.0, 0.013), (1.0, 0.008)), 6, METAL_IDX)
         feet = pole_feet()
         ferrule_z0 = 0.05 if short_legs else 0.0
         if short_legs:
@@ -667,20 +695,35 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         tex.inputs["Scale"].default_value = noise_scale
         tex.inputs["Detail"].default_value = 8.0
         tex.inputs["Roughness"].default_value = 0.55
+        # Contrast ramp: raw noise sits near 0.5 everywhere, which blends the
+        # wear colour in as a uniform tint; the ramp breaks it into blotches.
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].position = 0.46
+        ramp.color_ramp.elements[1].position = 0.64
+        nt.links.new(tex.outputs["Fac"], ramp.inputs["Fac"])
         mix = nt.nodes.new("ShaderNodeMix")
         mix.data_type = "RGBA"
         mix.inputs["A"].default_value = color
         mix.inputs["B"].default_value = wear
         fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
-        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(ramp.outputs["Color"], fac)
         nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
         rmix = nt.nodes.new("ShaderNodeMix")
         rmix.data_type = "FLOAT"
         rmix.inputs["A"].default_value = roughness
-        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.25)
         rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
-        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(ramp.outputs["Color"], rfac)
         nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
+        # Fine pitting from a second, smaller noise: the sand-cast surface.
+        pit = nt.nodes.new("ShaderNodeTexNoise")
+        pit.inputs["Scale"].default_value = noise_scale * 9.0
+        pit.inputs["Detail"].default_value = 4.0
+        bump = nt.nodes.new("ShaderNodeBump")
+        bump.inputs["Strength"].default_value = 0.18
+        bump.inputs["Distance"].default_value = 0.002
+        nt.links.new(pit.outputs["Fac"], bump.inputs["Height"])
+        nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
 
@@ -803,8 +846,8 @@ def cauldron_materials():
     """
     wood = wood_material("TripodWood")
     metal = principled(
-        "CauldronIron", (0.075, 0.072, 0.070, 1.0), 0.80, 0.58,
-        noise_scale=22.0, wear=(0.10, 0.055, 0.03, 1.0),
+        "CauldronIron", (0.105, 0.100, 0.095, 1.0), 0.75, 0.48,
+        noise_scale=14.0, wear=(0.20, 0.085, 0.035, 1.0),
     )
     return wood, metal
 
@@ -1109,11 +1152,15 @@ def hook_bail_join(me):
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
         cz = 0.5 * (a[2] + a[5])
         if cz > 0.55 and max(dx, dy, dz) < 0.08:
-            hooks.append(g)
+            hooks.append((a[2], g))
         elif dz > 0.12 and a[2] > 0.35 and max(dx, dy) > 0.20:
             bails.append(g)
     if not hooks or not bails:
         return 99.0
+    # The chain above is small iron shells too; the hook is the lowest one,
+    # the ring that carries the bail. Each chain link only meets its
+    # neighbours, so testing them against the bail would measure nothing.
+    hooks = [min(hooks, key=lambda t: t[0])[1]]
     bm_b = bmesh.new()
     try:
         bm_b.from_mesh(me)

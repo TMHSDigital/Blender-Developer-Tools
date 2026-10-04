@@ -1,10 +1,10 @@
 # Iron cauldron
 
 A showcase piece, not an example. Procedural hanging cauldron (a
-round-bellied iron pot on a small flat base with a rolled rim, a pipe
-bail threaded through flat ear rings, timber
-tripod tenoned into a turned crown, iron ferrule cups coaxial with the
-poles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low
+round-bellied cast-iron pot with a rolled rim, a raised casting band at
+the belly and three stub feet, a pipe bail threaded through flat ear
+rings and hung by a five-link chain, a timber tripod seated in a forged
+iron head, iron ferrule cups coaxial with the poles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Ferrules are lofted along the pole axis and shifted so the downhill rim
@@ -29,18 +29,25 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2800–4200 | 3664 / 3664 / 3664 |
+| Base triangles | 2800–4200 | 4180 / 4180 / 4180 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 |
-| Materials | exactly 2 distinct; ≥80 wood, ≥200 metal faces | 2 slots; 224 / 1768 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 |
+| Materials | exactly 2 distinct; ≥80 wood, ≥200 metal faces | 2 slots; 144 / 2116 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.987, 0.961, 0.860) m ± 0.015 | (0.9866, 0.9605, 0.8600), zmin 0 |
-| Collider tris | ≤ 280 | 246 |
-| Export | written, size > 0 | 287380 / 287380 / 287368 bytes |
+| Collider tris | ≤ 280 | 252 |
+| Export | written, size > 0 | 324056 / 324056 / 324044 bytes |
 
 Base triangles rose from **3388 to 3664** in the quality pass: coaxial
 ferrule cups and a dual-wall lathe with a rolled rim replaced the old
-cone-tripod / overlapping-torus construction.
+cone-tripod / overlapping-torus construction. The #345 remodel (the asset
+sheet read it as the least-designed object in the lineup) took it to
+**4180**: a five-link chain replaced the bare hanging rod, a forged iron
+head replaced the turned wooden crown, and the pot gained a casting band
+and three stub feet. The iron material breaks its rust into blotches and
+adds fine sand-cast pitting. 4180 leaves 20 triangles under the ceiling,
+enough for `--short-legs`'s 12-triangle shim to still land on the support
+check (16), not the triangle budget (4).
 
 ### Hygiene
 
@@ -64,7 +71,7 @@ Recomputed from the generated mesh, not asserted about the script.
 
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
-| Hook-bail BVH gap | ≤ 0.010 m | 0.00000 |
+| Hook-bail BVH gap (the hook is the lowest small iron shell; the chain links above it only meet each other) | ≤ 0.010 m | 0.00000 |
 | **Bail through the ears** | 2 rings; 0 ring vertices inside the bail; bail within the hole (< 0.0135 m of the ring centre) | 2; 0; 0.00641 |
 | Ferrule bite (pole r − inner wall, pole frame) | −0.006–0.000 m | −0.00185 |
 
