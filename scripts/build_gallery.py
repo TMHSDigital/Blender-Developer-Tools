@@ -178,6 +178,9 @@ __OGIMAGETAGS__  <meta property="og:site_name" content="Blender Developer Tools"
   <meta name="twitter:title" content="__TITLE__" />
   <meta name="twitter:description" content="__DESC__" />
   <link rel="preload" href="__SITEROOT__fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="__SITEROOT__fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="__SITEROOT__fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="__SITEROOT__fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="__GALLERYROOT__gallery.css?v=__CSSV__" />
   <script>document.documentElement.classList.add('js');</script>__HEADJS__
 </head>
@@ -319,7 +322,7 @@ __CHROME__
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
-    .chip .n { opacity: 0.6; font-size: 0.66rem; margin-left: 0.15rem; }
+    .chip .n { font-size: 0.66rem; margin-left: 0.15rem; }  /* inherits chip color: full contrast */
     /* Active-filter pills live in the pinned search row, so a filter is
        visible and removable even after the filter rows scroll away. */
     .active-filters { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }

@@ -189,7 +189,7 @@
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
-    .chip .n { opacity: 0.6; font-size: 0.66rem; margin-left: 0.15rem; }
+    .chip .n { font-size: 0.66rem; margin-left: 0.15rem; }  /* inherits chip color: full contrast */
     /* Active-filter pills live in the pinned search row, so a filter is
        visible and removable even after the filter rows scroll away. */
     .active-filters { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
