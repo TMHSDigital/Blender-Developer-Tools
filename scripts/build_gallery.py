@@ -316,6 +316,16 @@ __CHROME__
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
+    .chip .n { opacity: 0.6; font-size: 0.66rem; margin-left: 0.15rem; }
+    /* Active-filter pills live in the pinned search row, so a filter is
+       visible and removable even after the filter rows scroll away. */
+    .active-filters { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+    .active-filters[hidden] { display: none; }
+    .pill { background: var(--surface-2); border: 1px solid var(--select); color: var(--text); cursor: pointer;
+      border-radius: 3px; padding: 0.1rem 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; }
+    .pill:hover { color: var(--select); }
+    .pill-clear { border-color: var(--border); color: var(--text-dim); }
+    @media (max-width: 639px) { .active-filters { display: none; } }
     /* Wide screens: only the search row stays pinned. The filter rows scroll
        away with the page (they were ~190px of a 900px viewport), and "/" or
        scrolling back up brings them back. */
@@ -692,6 +702,33 @@ INDEX_JS = """
         filtersToggle.classList.toggle('has-active', n > 0);
       }
 
+      // One removable pill per active filter, in the pinned search row.
+      var pillsEl = document.getElementById('activeFilters');
+      function syncPills() {
+        if (!pillsEl) return;
+        var items = state.tags.map(function (t) { return { label: t, drop: function () { state.tags.splice(state.tags.indexOf(t), 1); } }; });
+        if (state.kind) items.push({ label: state.kind, drop: function () { state.kind = ''; } });
+        if (state.cat) items.push({ label: state.cat, drop: function () { state.cat = ''; } });
+        pillsEl.textContent = '';
+        items.forEach(function (it) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'pill';
+          b.textContent = it.label + ' \\u00d7';
+          b.setAttribute('aria-label', 'Remove filter: ' + it.label);
+          b.addEventListener('click', function () {
+            it.drop(); syncChips(); applyFilters(); writeHash();
+          });
+          pillsEl.appendChild(b);
+        });
+        if (items.length > 1) {
+          var all = document.createElement('button');
+          all.type = 'button'; all.className = 'pill pill-clear'; all.textContent = 'Clear all';
+          all.addEventListener('click', function () { if (resetFilters) resetFilters.click(); });
+          pillsEl.appendChild(all);
+        }
+        pillsEl.hidden = items.length === 0;
+      }
+
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
         syncSeg(densityBtns, 'data-density', state.density);
@@ -733,6 +770,7 @@ INDEX_JS = """
         syncSeg(kindBtns, 'data-kind-filter', state.kind);
         syncSeg(catBtns, 'data-cat-filter', state.cat);
         syncFiltersToggle();
+        syncPills();
       }
 
       q.addEventListener('input', function () {
@@ -1560,8 +1598,10 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
     chips_html = ""
     if all_tags:
         chips = ['<button class="chip active" data-tag="" type="button" aria-pressed="true">All</button>']
+        tag_counts = {t: sum(1 for ex in examples if t in ex.get("tags", [])) for t in all_tags}
         chips += [
-            f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button" aria-pressed="false">{html.escape(t)}</button>'
+            f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button" aria-pressed="false">'
+            f'{html.escape(t)} <span class="n">{tag_counts[t]}</span></button>'
             for t in all_tags
         ]
         chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">\n        '
@@ -1600,6 +1640,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
         '        </div>\n'
         f'        <span class="count" id="count" role="status" aria-live="polite">{html.escape(count_label)}</span>\n'
         '        <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>\n'
+        '        <div class="active-filters" id="activeFilters" aria-label="Active filters" hidden></div>\n'
         '      </div>\n'
         '      <div class="filters" id="filters">\n'
         '      <div class="controls-row">\n'

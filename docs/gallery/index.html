@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Examples and Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs. Showcase pieces share the grid (use the Showcase filter to see only them); they are budget-conformance props, not examples." />
   <link rel="preload" href="../fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="gallery.css?v=cde6fee965" />
+  <link rel="stylesheet" href="gallery.css?v=fb56584039" />
   <script>document.documentElement.classList.add('js');</script>
   <script>
     (function () {
@@ -69,6 +69,7 @@
         </div>
         <span class="count" id="count" role="status" aria-live="polite">56 examples, 76 showcase pieces</span>
         <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
+        <div class="active-filters" id="activeFilters" aria-label="Active filters" hidden></div>
       </div>
       <div class="filters" id="filters">
       <div class="controls-row">
@@ -101,41 +102,41 @@
       </div>
       <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">
         <button class="chip active" data-tag="" type="button" aria-pressed="true">All</button>
-        <button class="chip" data-tag="alpha" type="button" aria-pressed="false">alpha</button>
-        <button class="chip" data-tag="animation" type="button" aria-pressed="false">animation</button>
-        <button class="chip" data-tag="armature" type="button" aria-pressed="false">armature</button>
-        <button class="chip" data-tag="attributes" type="button" aria-pressed="false">attributes</button>
-        <button class="chip" data-tag="bevel" type="button" aria-pressed="false">bevel</button>
-        <button class="chip" data-tag="bmesh" type="button" aria-pressed="false">bmesh</button>
-        <button class="chip" data-tag="compositor" type="button" aria-pressed="false">compositor</button>
-        <button class="chip" data-tag="constraints" type="button" aria-pressed="false">constraints</button>
-        <button class="chip" data-tag="context" type="button" aria-pressed="false">context</button>
-        <button class="chip" data-tag="curves" type="button" aria-pressed="false">curves</button>
-        <button class="chip" data-tag="depsgraph" type="button" aria-pressed="false">depsgraph</button>
-        <button class="chip" data-tag="drivers" type="button" aria-pressed="false">drivers</button>
-        <button class="chip" data-tag="export" type="button" aria-pressed="false">export</button>
-        <button class="chip" data-tag="game-pipeline" type="button" aria-pressed="false">game-pipeline</button>
-        <button class="chip" data-tag="geometry-nodes" type="button" aria-pressed="false">geometry-nodes</button>
-        <button class="chip" data-tag="grease-pencil" type="button" aria-pressed="false">grease-pencil</button>
-        <button class="chip" data-tag="images" type="button" aria-pressed="false">images</button>
-        <button class="chip" data-tag="instancing" type="button" aria-pressed="false">instancing</button>
-        <button class="chip" data-tag="line-art" type="button" aria-pressed="false">line-art</button>
-        <button class="chip" data-tag="materials" type="button" aria-pressed="false">materials</button>
-        <button class="chip" data-tag="mesh" type="button" aria-pressed="false">mesh</button>
-        <button class="chip" data-tag="modifiers" type="button" aria-pressed="false">modifiers</button>
-        <button class="chip" data-tag="node-groups" type="button" aria-pressed="false">node-groups</button>
-        <button class="chip" data-tag="objects" type="button" aria-pressed="false">objects</button>
-        <button class="chip" data-tag="operators" type="button" aria-pressed="false">operators</button>
-        <button class="chip" data-tag="parenting" type="button" aria-pressed="false">parenting</button>
-        <button class="chip" data-tag="performance" type="button" aria-pressed="false">performance</button>
-        <button class="chip" data-tag="properties" type="button" aria-pressed="false">properties</button>
-        <button class="chip" data-tag="rendering" type="button" aria-pressed="false">rendering</button>
-        <button class="chip" data-tag="sequencer" type="button" aria-pressed="false">sequencer</button>
-        <button class="chip" data-tag="shape-keys" type="button" aria-pressed="false">shape-keys</button>
-        <button class="chip" data-tag="sky" type="button" aria-pressed="false">sky</button>
-        <button class="chip" data-tag="transforms" type="button" aria-pressed="false">transforms</button>
-        <button class="chip" data-tag="uv" type="button" aria-pressed="false">uv</button>
-        <button class="chip" data-tag="world" type="button" aria-pressed="false">world</button>
+        <button class="chip" data-tag="alpha" type="button" aria-pressed="false">alpha <span class="n">1</span></button>
+        <button class="chip" data-tag="animation" type="button" aria-pressed="false">animation <span class="n">3</span></button>
+        <button class="chip" data-tag="armature" type="button" aria-pressed="false">armature <span class="n">3</span></button>
+        <button class="chip" data-tag="attributes" type="button" aria-pressed="false">attributes <span class="n">5</span></button>
+        <button class="chip" data-tag="bevel" type="button" aria-pressed="false">bevel <span class="n">1</span></button>
+        <button class="chip" data-tag="bmesh" type="button" aria-pressed="false">bmesh <span class="n">7</span></button>
+        <button class="chip" data-tag="compositor" type="button" aria-pressed="false">compositor <span class="n">1</span></button>
+        <button class="chip" data-tag="constraints" type="button" aria-pressed="false">constraints <span class="n">1</span></button>
+        <button class="chip" data-tag="context" type="button" aria-pressed="false">context <span class="n">2</span></button>
+        <button class="chip" data-tag="curves" type="button" aria-pressed="false">curves <span class="n">2</span></button>
+        <button class="chip" data-tag="depsgraph" type="button" aria-pressed="false">depsgraph <span class="n">10</span></button>
+        <button class="chip" data-tag="drivers" type="button" aria-pressed="false">drivers <span class="n">1</span></button>
+        <button class="chip" data-tag="export" type="button" aria-pressed="false">export <span class="n">81</span></button>
+        <button class="chip" data-tag="game-pipeline" type="button" aria-pressed="false">game-pipeline <span class="n">7</span></button>
+        <button class="chip" data-tag="geometry-nodes" type="button" aria-pressed="false">geometry-nodes <span class="n">6</span></button>
+        <button class="chip" data-tag="grease-pencil" type="button" aria-pressed="false">grease-pencil <span class="n">2</span></button>
+        <button class="chip" data-tag="images" type="button" aria-pressed="false">images <span class="n">2</span></button>
+        <button class="chip" data-tag="instancing" type="button" aria-pressed="false">instancing <span class="n">3</span></button>
+        <button class="chip" data-tag="line-art" type="button" aria-pressed="false">line-art <span class="n">1</span></button>
+        <button class="chip" data-tag="materials" type="button" aria-pressed="false">materials <span class="n">5</span></button>
+        <button class="chip" data-tag="mesh" type="button" aria-pressed="false">mesh <span class="n">97</span></button>
+        <button class="chip" data-tag="modifiers" type="button" aria-pressed="false">modifiers <span class="n">6</span></button>
+        <button class="chip" data-tag="node-groups" type="button" aria-pressed="false">node-groups <span class="n">1</span></button>
+        <button class="chip" data-tag="objects" type="button" aria-pressed="false">objects <span class="n">3</span></button>
+        <button class="chip" data-tag="operators" type="button" aria-pressed="false">operators <span class="n">1</span></button>
+        <button class="chip" data-tag="parenting" type="button" aria-pressed="false">parenting <span class="n">1</span></button>
+        <button class="chip" data-tag="performance" type="button" aria-pressed="false">performance <span class="n">2</span></button>
+        <button class="chip" data-tag="properties" type="button" aria-pressed="false">properties <span class="n">1</span></button>
+        <button class="chip" data-tag="rendering" type="button" aria-pressed="false">rendering <span class="n">12</span></button>
+        <button class="chip" data-tag="sequencer" type="button" aria-pressed="false">sequencer <span class="n">2</span></button>
+        <button class="chip" data-tag="shape-keys" type="button" aria-pressed="false">shape-keys <span class="n">1</span></button>
+        <button class="chip" data-tag="sky" type="button" aria-pressed="false">sky <span class="n">1</span></button>
+        <button class="chip" data-tag="transforms" type="button" aria-pressed="false">transforms <span class="n">4</span></button>
+        <button class="chip" data-tag="uv" type="button" aria-pressed="false">uv <span class="n">4</span></button>
+        <button class="chip" data-tag="world" type="button" aria-pressed="false">world <span class="n">1</span></button>
       </div>
       </div>
     </div>
@@ -1887,6 +1888,33 @@
         filtersToggle.classList.toggle('has-active', n > 0);
       }
 
+      // One removable pill per active filter, in the pinned search row.
+      var pillsEl = document.getElementById('activeFilters');
+      function syncPills() {
+        if (!pillsEl) return;
+        var items = state.tags.map(function (t) { return { label: t, drop: function () { state.tags.splice(state.tags.indexOf(t), 1); } }; });
+        if (state.kind) items.push({ label: state.kind, drop: function () { state.kind = ''; } });
+        if (state.cat) items.push({ label: state.cat, drop: function () { state.cat = ''; } });
+        pillsEl.textContent = '';
+        items.forEach(function (it) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'pill';
+          b.textContent = it.label + ' \u00d7';
+          b.setAttribute('aria-label', 'Remove filter: ' + it.label);
+          b.addEventListener('click', function () {
+            it.drop(); syncChips(); applyFilters(); writeHash();
+          });
+          pillsEl.appendChild(b);
+        });
+        if (items.length > 1) {
+          var all = document.createElement('button');
+          all.type = 'button'; all.className = 'pill pill-clear'; all.textContent = 'Clear all';
+          all.addEventListener('click', function () { if (resetFilters) resetFilters.click(); });
+          pillsEl.appendChild(all);
+        }
+        pillsEl.hidden = items.length === 0;
+      }
+
       function applyDensity() {
         de.classList.toggle('density-compact', state.density === 'compact');
         syncSeg(densityBtns, 'data-density', state.density);
@@ -1928,6 +1956,7 @@
         syncSeg(kindBtns, 'data-kind-filter', state.kind);
         syncSeg(catBtns, 'data-cat-filter', state.cat);
         syncFiltersToggle();
+        syncPills();
       }
 
       q.addEventListener('input', function () {

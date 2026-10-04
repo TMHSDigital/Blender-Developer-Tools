@@ -184,6 +184,16 @@
       transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: var(--on-select); background: var(--select); border-color: var(--select); }
+    .chip .n { opacity: 0.6; font-size: 0.66rem; margin-left: 0.15rem; }
+    /* Active-filter pills live in the pinned search row, so a filter is
+       visible and removable even after the filter rows scroll away. */
+    .active-filters { flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+    .active-filters[hidden] { display: none; }
+    .pill { background: var(--surface-2); border: 1px solid var(--select); color: var(--text); cursor: pointer;
+      border-radius: 3px; padding: 0.1rem 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; }
+    .pill:hover { color: var(--select); }
+    .pill-clear { border-color: var(--border); color: var(--text-dim); }
+    @media (max-width: 639px) { .active-filters { display: none; } }
     /* Wide screens: only the search row stays pinned. The filter rows scroll
        away with the page (they were ~190px of a 900px viewport), and "/" or
        scrolling back up brings them back. */
