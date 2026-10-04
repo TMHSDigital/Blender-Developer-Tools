@@ -8,7 +8,8 @@ as a self-contained marketplace (its marketplace.json points at "./"):
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
     .claude-plugin/plugin.json + marketplace.json, and a short README
 
-    python scripts/build_plugin_dist.py --out DIR     # build
+    python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
+    python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
     python scripts/build_plugin_dist.py --check       # build to a temp dir, verify, report size
 
 release.yml force-pushes the built tree as a single orphan commit to
@@ -43,6 +44,25 @@ Examples, the showcase and the gallery live on `main`.
 /plugin install blender-developer-tools@blender-developer-tools
 ```
 """
+
+
+def unsafe_out(out: Path, force: bool) -> str | None:
+    """Why `out` must not be deleted, or None when building there is safe.
+
+    build() replaces `out` wholesale, so refuse anything that is the repo,
+    contains the repo, or is a git checkout, and only replace a non-empty
+    directory when the caller asked for it with --force.
+    """
+    out = out.resolve()
+    if out == ROOT or out in ROOT.parents:
+        return f"{out} is the repository or one of its parents"
+    if (out / ".git").exists():
+        return f"{out} contains a .git directory"
+    if out.exists() and not out.is_dir():
+        return f"{out} exists and is not a directory"
+    if out.is_dir() and any(out.iterdir()) and not force:
+        return f"{out} is not empty; pass --force to replace it"
+    return None
 
 
 def build(out: Path) -> int:
@@ -81,9 +101,16 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--out", type=Path)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--force", action="store_true",
+                    help="replace a non-empty --out directory")
     a = ap.parse_args(argv)
     if not a.out and not a.check:
         ap.error("give --out DIR or --check")
+    if a.out:
+        reason = unsafe_out(a.out, a.force)
+        if reason:
+            print(f"::error::refusing to build into {reason}", file=sys.stderr)
+            return 2
     with tempfile.TemporaryDirectory() as td:
         out = a.out or Path(td) / "dist"
         size = build(out)
