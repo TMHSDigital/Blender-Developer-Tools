@@ -76,12 +76,14 @@ Blender-Developer-Tools/
 - **Squash-merge with branch deletion is the standard.** The PR becomes one
   commit on `main`; delete the remote feature branch after merge, then
   fast-forward local `main`.
-- **Smoke jobs do not re-run on the merge SHA.** `blender-smoke.yml` triggers
-  on `pull_request` (plus a weekly schedule and manual dispatch) — there is no
-  `push` trigger. The correct post-merge evidence for example changes is:
-  both Blender smoke jobs (5.2 LTS and 4.5 LTS) passed on the PR head SHA that
-  became the sole squash-merged commit, with the actual binary versions
-  confirmed in the job logs.
+- **Smoke runs on the PR head and again on `main`.** `blender-smoke.yml`
+  triggers on `pull_request`, on `push` to `main` (both with the same
+  `paths-ignore`: `**.md`, `docs/**`, `assets/**`), weekly, and on manual
+  dispatch. The merge evidence for example changes is still both Blender smoke
+  jobs (5.2 LTS and 4.5 LTS) passing on the PR head SHA that became the sole
+  squash-merged commit, with the actual binary versions confirmed in the job
+  logs. The push run is what `release-gate.sh` waits for on a direct push to
+  `main`; for a PR merge the gate reads the PR's own checks.
 - **Post-merge, verify green on `main`:** Release (`release.yml`), Validate
   (`validate.yml`), Ecosystem drift check (`drift-check.yml`), and Deploy
   GitHub Pages (`pages.yml`; paths-filtered, so it does not trigger for every
@@ -92,7 +94,8 @@ Blender-Developer-Tools/
   unresolved — wait before merging.
 - **Release-owned fields are never hand-edited:** `VERSION`, `CHANGELOG.md`,
   the CLAUDE.md `**Version:**` line, the ROADMAP.md `**Current:**` line, and
-  the manifest `"version"` in `.cursor-plugin/plugin.json`. Generated gallery
+  the manifest `"version"` in `.cursor-plugin/plugin.json`,
+  `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Generated gallery
   pages under `docs/gallery/` are regenerated via `scripts/build_gallery.py`,
   never hand-edited.
 - **Evidence over assertion:** PR bodies must label what was proven by live
@@ -170,8 +173,9 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   5.2 LTS and 4.5 LTS for every PR. 5.1 is weekly cron, the opt-in
   `needs-5.1` PR label (`pull_request` types include `labeled`), or
   `workflow_dispatch` with a `series` input. Auto-label does not apply
-  `needs-5.1`. Contributor-facing notes for the smoke lever, the deliberate
-  lack of a `push` trigger, Pages path filters, and the three-role exit-code
+  `needs-5.1`. It also runs on `push` to `main` (same `paths-ignore`), which
+  is what the release gate waits for on a direct push. Contributor-facing
+  notes for the smoke lever, Pages path filters, and the three-role exit-code
   convention live in CONTRIBUTING.md. Examples run
   through `tests/smoke/run_example.py` (catalog: `tests/smoke/catalog.json`).
   SKIP is exit 77 plus a `SMOKE_SKIP:` reason, and only when `--min-version`
@@ -179,14 +183,20 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   Post-exit sidecars are opt-in (`--expect-sidecar`). A leg with zero PASSes
   is red. A new example is not shipped until it has a catalog row.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
-  drift-check@v1.15` to enforce ecosystem standards-version markers.
-- `release.yml` auto-bumps the version, tags, force-updates floating tags
-  `v0` and `v0.1`, and runs `release-doc-sync@v1` to rewrite CHANGELOG.md,
-  CLAUDE.md `**Version:**`, and ROADMAP.md `**Current:**`. It also rewrites
-  the `"version"` line in `.cursor-plugin/plugin.json` so the manifest tracks
-  each release. Triggered on push to `main` for content-changing paths only.
-- `label-sync.yml` self-heals labels via `gh label create --force` per
-  label, then applies them to the PR.
+  drift-check`, pinned by SHA (the pin's comment names the tag), to enforce
+  ecosystem standards-version markers.
+- `release.yml` runs on every push to `main` (no path filter). It releases
+  only when a commit subject in range is `feat:`/`fix:`/breaking, and only
+  after `.github/scripts/release-gate.sh` sees green CI for the SHA. It then
+  bumps the version, tags `vX.Y.Z`, force-updates the floating tags
+  `v<major>` and `v<major>.<minor>` (currently `v0` and `v0.143`), runs
+  `release-doc-sync` to rewrite CHANGELOG.md, CLAUDE.md `**Version:**`, and
+  ROADMAP.md `**Current:**`, rewrites the `"version"` in
+  `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json` and
+  `.claude-plugin/marketplace.json`, and force-pushes the slim plugin build
+  to the `plugin-dist` branch.
+- `label-sync.yml` creates any missing label and applies path-based labels
+  to same-repo PRs.
 - `pages.yml` builds the landing page from the **locally vendored** template
   at `scripts/site/` (originally scaffolded from Developer-Tools-Directory's
   site-template, now owned by this repo — the fleet template only scaffolds

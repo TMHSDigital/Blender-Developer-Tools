@@ -241,7 +241,7 @@ The AI consumes content via:
 
 ## Release Hygiene
 
-The release pipeline is automated via `release.yml` on push to `main` for content-changing paths. The `release-doc-sync@v1` step rewrites CHANGELOG.md, this CLAUDE.md `**Version:**` line, and ROADMAP.md `**Current:**` line on each release. Never hand-edit those lines, the action owns them.
+The release pipeline is automated via `release.yml` on every push to `main`; it releases only for `feat:`/`fix:`/breaking commit subjects and only after `release-gate.sh` sees green CI. The `release-doc-sync@v1` step rewrites CHANGELOG.md, this CLAUDE.md `**Version:**` line, and ROADMAP.md `**Current:**` line on each release. Never hand-edit those lines, the action owns them.
 
 When adding content to a future version:
 

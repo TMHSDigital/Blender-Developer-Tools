@@ -17,11 +17,11 @@ Label every claim.
 - **live-run-proven:** exact binary path + the version that binary printed (`blender --version`). Headless harness only. Live MCP does not count.
 - **inspection-only:** read the skill / diff / RNA docs; no process ran.
 
-`blender-smoke.yml` has no `push` trigger. Post-merge smoke evidence is the PR-head 5.2 + 4.5 jobs (state the versions from those logs). Apply `needs-5.1` when 5.1 must be CI-proven on the PR; default matrix does not include it.
+Merge evidence is the PR-head 5.2 + 4.5 smoke jobs (state the versions from those logs). Smoke also re-runs on the push to `main`; the release gate uses that run only for direct pushes. Apply `needs-5.1` when 5.1 must be CI-proven on the PR; default matrix does not include it.
 
 ## Release-owned fields — do not hand-edit
 
-`VERSION`, `CHANGELOG.md`, CLAUDE.md `**Version:**`, ROADMAP.md `**Current:**`, `.cursor-plugin/plugin.json` `"version"`. The release pipeline rewrites those. Do not bump `standards-version` unless the fleet stamp actually moved.
+`VERSION`, `CHANGELOG.md`, CLAUDE.md `**Version:**`, ROADMAP.md `**Current:**`, and `"version"` in `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. The release pipeline rewrites those. Do not bump `standards-version` unless the fleet stamp actually moved.
 
 ## Checklist
 

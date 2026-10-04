@@ -798,5 +798,6 @@ contact patch on the ground).
 ## Smoke
 
 `tests/smoke/catalog.json` takes opaque script paths. A showcase row is
-enough; `blender-smoke.yml` has no path filter and runs the whole catalog
-on every PR. Measure wall-clock before adding the next piece.
+enough; `blender-smoke.yml` runs the whole catalog on every PR and every
+push to `main` that touches a file outside its `paths-ignore` (`**.md`,
+`docs/**`, `assets/**`). Measure wall-clock before adding the next piece.
