@@ -144,6 +144,19 @@ jobs:
           previous-version: ${{ steps.current.outputs.version }}
           meta-repo-ref: v1.15.1
 
+      - name: Write release notes (CHANGELOG entry and release body)
+        # release-doc-sync prepends a "See release notes ... for details." stub;
+        # replace it with the feat/fix/other subjects since the previous tag,
+        # and keep the same list for the GitHub release body.
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        env:
+          NEW_VERSION: ${{ steps.new.outputs.version }}
+        run: |
+          last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          python3 .github/scripts/release_notes.py ${last_tag:+--since "$last_tag"} \
+            --version "$NEW_VERSION" --notes "$RUNNER_TEMP/release-notes.md" \
+            --changelog CHANGELOG.md
+
       - name: Sync plugin manifest version
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         env:
@@ -233,7 +246,7 @@ jobs:
         run: |
           gh release create "v${{ steps.new.outputs.version }}" \
             --title "v${{ steps.new.outputs.version }}" \
-            --generate-notes
+            --notes-file "$RUNNER_TEMP/release-notes.md"
 
       - name: Dispatch Pages
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true' && steps.commit.outputs.stale != 'true'
