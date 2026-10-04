@@ -181,3 +181,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 17 | Wood–metal BVH gap above 8 mm |
 | 18 | Hung ring, shoe, band, horseshoe, brace or end-cap seat (`--clip-ring`, `--sunk-bands`, `--float-horseshoe`, `--float-braces`) |
 | 19 | Post plumb, origin, and cup seat (`--short-post`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

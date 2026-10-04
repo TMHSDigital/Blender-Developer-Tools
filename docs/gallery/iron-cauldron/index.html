@@ -97,15 +97,15 @@ blender --background --python iron_cauldron.py -- --output cauldron.png</code></
 <p>Smoke passes no flags.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer / pot clips tripod</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named ferrule floats</td></tr><tr><td>17</td><td>Joint fit: hook-bail gap, or the bail not threading the ear rings</td></tr><tr><td>18</td><td>Seat: ferrule bite band</td></tr><tr><td>19</td><td>Pot diameter or height off the stated real-world size, or pot form (base radius, belly height)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer / pot clips tripod</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named ferrule floats</td></tr><tr><td>17</td><td>Joint fit: hook-bail gap, or the bail not threading the ear rings</td></tr><tr><td>18</td><td>Seat: ferrule bite band</td></tr><tr><td>19</td><td>Pot diameter or height off the stated real-world size, or pot form (base radius, belly height)</td></tr><tr><td>20</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/iron-cauldron/iron_cauldron.py</code>
-        <span>1718 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/iron-cauldron/iron_cauldron.py">View on GitHub &rarr;</a></span>
+        <span>1723 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/iron-cauldron/iron_cauldron.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1718">
+      <div class="code" data-lines="1723">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1823,7 +1823,12 @@ blender --background --python iron_cauldron.py -- --output cauldron.png</code></
 1715
 1716
 1717
-1718</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hanging iron cauldron — a showcase piece, not an example.
+1718
+1719
+1720
+1721
+1722
+1723</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready hanging iron cauldron — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural cauldron (lathed pot with a
 rolled rim, pipe bail through ear rings, timber tripod tenoned into a
@@ -1872,6 +1877,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># Camp cauldron ~40 cm across, hanging from an ~85 cm timber tripod</span>
 <span class="c"># whose feet land on a ~1.0 m circle. The pot&#x27;s own size is gated</span>
@@ -3492,6 +3498,10 @@ METAL_IDX = <span class="n">1</span>
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">20</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

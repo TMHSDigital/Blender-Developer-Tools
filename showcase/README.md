@@ -735,7 +735,9 @@ entry in `showcase/gallery.json`, and a rendered still.
   violation, the same call pattern as `gallery_framing`. Showcase
   numbering already spends 11 on the collider-triangle ceiling, so remap
   the return at the call site rather than letting two budgets share a
-  code.
+  code. `tests/check_render_gates.py` (Validate) fails any piece whose
+  script does not import `gallery_asset_quality` and call
+  `check_asset_quality`.
 
 - **Composition.** The README names which shipped skills and snippets the
   piece composes. Duplicated helpers stay inlined or copied; showcase

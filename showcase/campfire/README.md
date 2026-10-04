@@ -157,3 +157,4 @@ hygiene and joint-fit family; `20` is file-local.
 | 18 | Seat: course gap (`--gap-courses`) |
 | 19 | Ring diameter or height off the stated real-world size |
 | 20 | Stone variation: the ring stones are identical (`--uniform-stones`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

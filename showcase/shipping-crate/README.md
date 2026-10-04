@@ -190,3 +190,4 @@ hygiene and joint-fit family.
 | 18 | Seat: slat-post gap, or a nail head off its strap seat band (`--float-nails`) |
 | 19 | Body plan off the stated real-world size |
 | 20 | A handle mounting plate not seated on a single end board (`--straddle-handle`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

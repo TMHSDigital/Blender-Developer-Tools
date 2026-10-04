@@ -177,6 +177,7 @@ wrapper — a crash, never a named check.
 | 17 | A tie not in its neck's waist (`--slip-tie`) |
 | 18 | Tie seat, or press between sacks (`--loose-tie`, `--part-sacks`) |
 | 19 | Contact patch or settled belly (`--round-bottom`, `--high-belly`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

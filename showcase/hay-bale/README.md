@@ -246,3 +246,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 18 | Banded belt seat depth (`--slack-belt`) |
 | 19 | Loaf X-mirror symmetry (`--odd-loaf`), belt mirror symmetry (`--skew-belt`), cinch depth, or loaf real-world size |
 | 20 | Bake texel density below the floor (`--low-bake`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

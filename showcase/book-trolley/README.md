@@ -247,6 +247,7 @@ wrapper — a crash, never a named check.
 | 21 | Backrest contact, trough / lying count, or a trough without one backrest (`--off-back`, `--deep-back`) |
 | 22 | Books overlap each other or the carcass (`--crowd-books`) |
 | 23 | Right-angle wood edges (`--sharp-deck`) |
+| 24 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

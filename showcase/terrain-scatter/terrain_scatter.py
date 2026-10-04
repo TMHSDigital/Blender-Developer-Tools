@@ -47,6 +47,7 @@ _REPO = os.path.abspath(
 sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
+import gallery_asset_quality  # noqa: E402
 
 PATCH = 1.80
 FREQ = 2.2
@@ -1645,6 +1646,10 @@ def render_still(low, dirt, tex, path, engine):
     )
     if fcode:
         return fcode
+    # asset-quality floors (examples/gallery_asset_quality.py) return 11,
+    # which this piece's numbering already spends; remap at the call site
+    if gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        return 26
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)

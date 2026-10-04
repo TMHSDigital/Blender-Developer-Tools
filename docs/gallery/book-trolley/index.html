@@ -87,7 +87,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the deck</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-caster</code></td><td>named wheels</td><td>lifts one caster 5 mm; the other three still ground the AABB</td><td>16</td></tr><tr><td><code>--short-shelves</code></td><td>dado bite</td><td>stops the four shelves 4 mm short of the ends; −4.0 mm</td><td>17</td></tr><tr><td><code>--loose-pages</code></td><td>page-block bite</td><td>builds every page block 0.9 mm clear of its boards; −0.9 mm</td><td>17</td></tr><tr><td><code>--float-books</code></td><td>book seat</td><td>lifts every book 6 mm off its shelf or the deck; −5.0 mm</td><td>18</td></tr><tr><td><code>--float-bands</code></td><td>band seat</td><td>builds every band 1.1 mm off its spine; −1.1 mm</td><td>18</td></tr><tr><td><code>--drop-plates</code></td><td>caster plate seat</td><td>drops every caster plate 2.5 mm, clear of its skid; −1.5 mm</td><td>18</td></tr><tr><td><code>--skew-caster</code></td><td>mirror symmetry</td><td>moves one caster 6 mm along the trolley; 6.0 mm</td><td>19</td></tr><tr><td><code>--uniform-books</code></td><td>size spread</td><td>one height and depth, thickness within ±1.5 %; 1.030 / 1.000</td><td>20</td></tr><tr><td><code>--off-back</code></td><td>backrest contact</td><td>stands every trough book 3 mm off its backrest; −3.0 mm</td><td>21</td></tr><tr><td><code>--deep-back</code></td><td>backrest contact</td><td>drives every trough book 4.5 mm into its backrest; 4.5 mm</td><td>21</td></tr><tr><td><code>--crowd-books</code></td><td>book overlaps</td><td>closes the front upper trough&#x27;s gaps to −6 mm; 13 overlaps</td><td>22</td></tr><tr><td><code>--sharp-deck</code></td><td>edge treatment</td><td>leaves the deck unchamfered; 12 right-angle edges</td><td>23</td></tr></tbody></table></div>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a wheel floating (<code>--lift-z</code>, <code>--float-caster</code>)</td></tr><tr><td>17</td><td>Dado or page-block bite, or a book without one block and two bands (<code>--short-shelves</code>, <code>--loose-pages</code>)</td></tr><tr><td>18</td><td>Book, band or caster-plate seat (<code>--float-books</code>, <code>--float-bands</code>, <code>--drop-plates</code>)</td></tr><tr><td>19</td><td>Carcass and casters off mirror symmetry (<code>--skew-caster</code>)</td></tr><tr><td>20</td><td>Size spread below floor (<code>--uniform-books</code>)</td></tr><tr><td>21</td><td>Backrest contact, trough / lying count, or a trough without one backrest (<code>--off-back</code>, <code>--deep-back</code>)</td></tr><tr><td>22</td><td>Books overlap each other or the carcass (<code>--crowd-books</code>)</td></tr><tr><td>23</td><td>Right-angle wood edges (<code>--sharp-deck</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a wheel floating (<code>--lift-z</code>, <code>--float-caster</code>)</td></tr><tr><td>17</td><td>Dado or page-block bite, or a book without one block and two bands (<code>--short-shelves</code>, <code>--loose-pages</code>)</td></tr><tr><td>18</td><td>Book, band or caster-plate seat (<code>--float-books</code>, <code>--float-bands</code>, <code>--drop-plates</code>)</td></tr><tr><td>19</td><td>Carcass and casters off mirror symmetry (<code>--skew-caster</code>)</td></tr><tr><td>20</td><td>Size spread below floor (<code>--uniform-books</code>)</td></tr><tr><td>21</td><td>Backrest contact, trough / lying count, or a trough without one backrest (<code>--off-back</code>, <code>--deep-back</code>)</td></tr><tr><td>22</td><td>Books overlap each other or the carcass (<code>--crowd-books</code>)</td></tr><tr><td>23</td><td>Right-angle wood edges (<code>--sharp-deck</code>)</td></tr><tr><td>24</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render.
 blender --background --python book_trolley.py --
@@ -109,9 +109,9 @@ blender --background --python book_trolley.py -- --output book-trolley.webp</cod
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/book-trolley/book_trolley.py</code>
-        <span>1820 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/book-trolley/book_trolley.py">View on GitHub &rarr;</a></span>
+        <span>1825 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/book-trolley/book_trolley.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1820">
+      <div class="code" data-lines="1825">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1931,7 +1931,12 @@ blender --background --python book_trolley.py -- --output book-trolley.webp</cod
 1817
 1818
 1819
-1820</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready library book trolley — a showcase piece, not an example.
+1820
+1821
+1822
+1823
+1824
+1825</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready library book trolley — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural double-sided library book
 truck: two arched end panels standing in skids on four swivel casters, a
@@ -1992,6 +1997,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># The carcass. X along the trolley, Y front (-) to back (+), Z up. Two end</span>
 <span class="c"># panels carry everything; every cross member is housed into both of them.</span>
@@ -3688,6 +3694,10 @@ BOX_FACES = ((<span class="n">0</span>, <span class="n">1</span>, <span class="n
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">24</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

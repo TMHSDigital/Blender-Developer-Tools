@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex under the bowl</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>named feet</td><td>lifts one foot 12 mm; the other two still ground the AABB</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>leg-to-bowl bite</td><td>starts every leg 12 mm off the wall; −10.0 mm</td><td>17</td></tr><tr><td><code>--float-coals</code></td><td>coal seat</td><td>lifts every coal 30 mm off the ash; −13.9 to −23.3 mm</td><td>18</td></tr><tr><td><code>--overfill</code></td><td>freeboard</td><td>raises the ash and heap 45 mm, still below the rim; 8.3 mm</td><td>18</td></tr><tr><td><code>--tuck-legs</code></td><td>tip angle</td><td>brings the feet in to 0.15 m of the axis; 10.23°</td><td>19</td></tr><tr><td><code>--pile-coals</code></td><td>coal interpenetration</td><td>packs coals at 0.6 of their spacing; 40 pairs</td><td>20</td></tr><tr><td><code>--uniform-coals</code></td><td>coal size spread</td><td>one size for every coal; 1.198</td><td>21</td></tr></tbody></table></div>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a foot floating (<code>--lift-z</code>, <code>--float-foot</code>)</td></tr><tr><td>17</td><td>A leg not biting the bowl (<code>--short-legs</code>)</td></tr><tr><td>18</td><td>Coal seat or freeboard (<code>--float-coals</code>, <code>--overfill</code>)</td></tr><tr><td>19</td><td>Tip angle below floor (<code>--tuck-legs</code>)</td></tr><tr><td>20</td><td>Coals interpenetrate (<code>--pile-coals</code>)</td></tr><tr><td>21</td><td>Coal size spread below floor (<code>--uniform-coals</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a foot floating (<code>--lift-z</code>, <code>--float-foot</code>)</td></tr><tr><td>17</td><td>A leg not biting the bowl (<code>--short-legs</code>)</td></tr><tr><td>18</td><td>Coal seat or freeboard (<code>--float-coals</code>, <code>--overfill</code>)</td></tr><tr><td>19</td><td>Tip angle below floor (<code>--tuck-legs</code>)</td></tr><tr><td>20</td><td>Coals interpenetrate (<code>--pile-coals</code>)</td></tr><tr><td>21</td><td>Coal size spread below floor (<code>--uniform-coals</code>)</td></tr><tr><td>22</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render. ~2.2 s on 4.5, ~2.0 s on 5.1, ~2.4 s on 5.2.
 blender --background --python brazier.py --
@@ -108,9 +108,9 @@ blender --background --python brazier.py -- --output brazier.webp</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/brazier/brazier.py</code>
-        <span>1371 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/brazier/brazier.py">View on GitHub &rarr;</a></span>
+        <span>1376 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/brazier/brazier.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1371">
+      <div class="code" data-lines="1376">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1481,7 +1481,12 @@ blender --background --python brazier.py -- --output brazier.webp</code></pre>
 1368
 1369
 1370
-1371</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready brazier — a showcase piece, not an example.
+1371
+1372
+1373
+1374
+1375
+1376</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready brazier — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural iron brazier: a spun bowl
 with a rolled rim on three forged legs, a bed of ash in the bowl and a
@@ -1533,6 +1538,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># The bowl: a half-ellipsoid spun from sheet iron, rim at RIM_Z, with a</span>
 <span class="c"># rolled bead at the lip. The inner wall is the outer wall offset along</span>
@@ -2799,6 +2805,10 @@ _ICO = {}
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">22</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

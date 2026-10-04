@@ -225,3 +225,4 @@ hygiene and joint-fit family.
 | 21 | A stone not sealed in every sector (`--perch-rocks`) |
 | 22 | Stone footprint ratio below floor (`--uniform-rocks`) |
 | 23 | Rim tilt step above ceiling (`--sharp-rim`) |
+| 26 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

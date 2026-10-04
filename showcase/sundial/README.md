@@ -230,6 +230,7 @@ wrapper — a crash, never a named check.
 | 17 | Style angle or hour-line bearings (`--wrong-latitude`, `--linear-hours`) |
 | 18 | Gnomon bite, style foot or ink seat (`--float-gnomon`, `--float-lines`) |
 | 19 | Noon on the meridian, plumb column or real-world size (`--shift-noon`, `--lean-pedestal`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

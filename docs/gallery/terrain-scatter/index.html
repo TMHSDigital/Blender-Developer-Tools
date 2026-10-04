@@ -103,15 +103,15 @@ blender --background --python terrain_scatter.py -- --output terrain.png</code><
 <p>Smoke passes no flags.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or stone faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Stone floor poke (<code>--poke-rock</code>)</td></tr><tr><td>18</td><td>Float above host (<code>--float-rocks</code>)</td></tr><tr><td>19</td><td>Stone shell faces (<code>--box-rocks</code>)</td></tr><tr><td>20</td><td>Stone pairs interpenetrate (<code>--pile-rocks</code>)</td></tr><tr><td>21</td><td>A stone not sealed in every sector (<code>--perch-rocks</code>)</td></tr><tr><td>22</td><td>Stone footprint ratio below floor (<code>--uniform-rocks</code>)</td></tr><tr><td>23</td><td>Rim tilt step above ceiling (<code>--sharp-rim</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or stone faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Stone floor poke (<code>--poke-rock</code>)</td></tr><tr><td>18</td><td>Float above host (<code>--float-rocks</code>)</td></tr><tr><td>19</td><td>Stone shell faces (<code>--box-rocks</code>)</td></tr><tr><td>20</td><td>Stone pairs interpenetrate (<code>--pile-rocks</code>)</td></tr><tr><td>21</td><td>A stone not sealed in every sector (<code>--perch-rocks</code>)</td></tr><tr><td>22</td><td>Stone footprint ratio below floor (<code>--uniform-rocks</code>)</td></tr><tr><td>23</td><td>Rim tilt step above ceiling (<code>--sharp-rim</code>)</td></tr><tr><td>26</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/terrain-scatter/terrain_scatter.py</code>
-        <span>1700 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/terrain-scatter/terrain_scatter.py">View on GitHub &rarr;</a></span>
+        <span>1705 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/terrain-scatter/terrain_scatter.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1700">
+      <div class="code" data-lines="1705">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1811,7 +1811,12 @@ blender --background --python terrain_scatter.py -- --output terrain.png</code><
 1697
 1698
 1699
-1700</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
+1700
+1701
+1702
+1703
+1704
+1705</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
 
 Asserts budget conformance of a Geometry Nodes hill grid with instanced
 rocks after composing shipped pipeline pieces: GN construction,
@@ -1860,6 +1865,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 PATCH = <span class="n">1.80</span>
 FREQ = <span class="n">2.2</span>
@@ -3458,6 +3464,10 @@ RELIEF = ((<span class="n">9.1</span>, <span class="n">7.3</span>, <span class="
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">26</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

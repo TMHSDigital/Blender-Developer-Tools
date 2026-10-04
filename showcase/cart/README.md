@@ -151,3 +151,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 19 | Wheel mirror deviation above epsilon (`--skew-wheel` lands here) |
 | 20 | A right-angle edge survived the chamfer passes (`--sharp-bar` lands here) |
 | 21 | Bake texel density below the floor (`--low-bake` lands here) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

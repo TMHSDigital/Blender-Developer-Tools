@@ -149,6 +149,7 @@ hygiene and joint-fit family.
 | 17 | Joint fit: rail-to-post engage, side-rail engage, or deck bearing |
 | 18 | Seat: girt-collar standoff |
 | 19 | Post plumb or plan off the stated real-world size |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Hero
 

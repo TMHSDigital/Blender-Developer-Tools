@@ -243,3 +243,4 @@ hygiene and joint-fit family; `20`–`21` are file-local.
 | 19 | Hull length or width off the stated real-world size (`--narrow-hull`) |
 | 20 | An end is fewer than three boards (`--slab-ends`) |
 | 21 | Bolt seat: a bolt head not inside its strap, or not exactly ten (`--float-bolts`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

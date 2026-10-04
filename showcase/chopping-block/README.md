@@ -196,3 +196,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: shell count, eye clearance, engagement, breakout, bury, inset |
 | 18 | Contact fit: hoop bite band, haft fouling the log, or a rivet off its seat band |
 | 19 | Log out of plumb, off its stated real-world size, or a round haft section |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

@@ -168,3 +168,4 @@ hygiene and joint-fit family.
 | 19 | Stone diameter or thickness off the stated real-world size |
 | 20 | A right-angle edge survived the chamfer passes (`--sharp-handle` lands here) |
 | 21 | Bake texel density below the floor (`--low-bake` lands here) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

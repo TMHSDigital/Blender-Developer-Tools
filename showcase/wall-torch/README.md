@@ -161,3 +161,4 @@ hygiene and joint-fit family. `20`–`22` are this piece's own.
 | 20 | Arm not level (`--droop-arm`) |
 | 21 | Plate not seated on the stone face (`--sink-plate`) |
 | 22 | Bake texel density below floor (`--low-bake`) |
+| 23 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

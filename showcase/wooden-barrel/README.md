@@ -142,3 +142,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: head-croze gap (`--float-head`), or head boards and seams (`--one-piece-head`) |
 | 18 | Seat: hoop bite band (`--round-band`) |
 | 19 | Body diameter or height off the stated real-world size |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

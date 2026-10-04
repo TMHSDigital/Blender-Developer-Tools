@@ -177,3 +177,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: foot-on-head gap (`--float-anvil`) |
 | 18 | Seat: hoop bite band (`--round-band`) |
 | 19 | Body length or height off the stated real-world size, or waist form (`--round-waist`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

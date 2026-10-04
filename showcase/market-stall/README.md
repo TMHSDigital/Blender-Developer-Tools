@@ -141,3 +141,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: brace occupying the counter volume, or a side brace not seated in both posts |
 | 18 | Seat: awning-on-header gap |
 | 19 | Post plumb or frame plan off the stated real-world size |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

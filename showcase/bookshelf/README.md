@@ -257,6 +257,7 @@ is reserved across pieces and unused here.
 | 22 | Lean contact, or leaning / lying count (`--air-lean`, `--deep-lean`) |
 | 23 | Books overlap each other or the carcass (`--crowd-books`) |
 | 24 | Right-angle wood edges (`--sharp-shelf`) |
+| 25 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

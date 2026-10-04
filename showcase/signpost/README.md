@@ -170,3 +170,4 @@ hygiene and joint-fit family.
 | 17 | Board-to-post gap (`--gap-board`) |
 | 18 | Strap-to-post gap (`--float-strap`) |
 | 19 | Board yaw / AABB Y (`--yaw-boards`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

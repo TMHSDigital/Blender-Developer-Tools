@@ -189,3 +189,4 @@ hygiene and joint-fit family; `20`–`21` are file-local.
 | 19 | Post plumb or post size off the stated real-world size (`--rake-post`) |
 | 20 | Brace bite: a brace end not inside the post or the arm (`--shallow-brace`) |
 | 21 | Scroll weld: an arm scroll not welded into the arm, or not exactly two (`--float-scroll`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

@@ -164,3 +164,4 @@ hygiene and joint-fit family. `20` and `21` are this piece's own.
 | 19 | Seat span (`--narrow-seat`) or back recline (`--upright-back`) |
 | 20 | Bearing bite on slats and armrests (`--float-slats`) |
 | 21 | Legs not bent in one piece from toe to seat (`--split-feet`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

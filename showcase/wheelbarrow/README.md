@@ -199,3 +199,4 @@ hygiene and joint-fit family.
 | 19 | Tray size off the stated real-world dimensions |
 | 20 | A shaft is not one timber from grip to axle (`--split-shafts`) |
 | 21 | Tray flare or front rake under its floor (`--box-tray`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

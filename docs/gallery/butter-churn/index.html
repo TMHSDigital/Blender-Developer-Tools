@@ -91,7 +91,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the body</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--short-stave</code></td><td>named staves</td><td>stops one stave&#x27;s foot 6 mm above the floor; the rest ground the AABB</td><td>16</td></tr><tr><td><code>--one-piece-bottom</code></td><td>bottom boards</td><td>one disk instead of three boards</td><td>17</td></tr><tr><td><code>--short-handle</code></td><td>handle bite</td><td>starts the handle 5 mm above the slats; −5.0 mm</td><td>17</td></tr><tr><td><code>--float-hoops</code></td><td>hoop seat</td><td>builds every hoop 4 mm off the staves; −3.5 mm</td><td>18</td></tr><tr><td><code>--float-lid</code></td><td>lid seat</td><td>lifts the lid 5 mm; −3.6 to −3.0 mm</td><td>18</td></tr><tr><td><code>--tight-hole</code></td><td>handle clearance</td><td>cuts the hole 2 mm inside the handle; −2.0 mm</td><td>18</td></tr><tr><td><code>--wide-dasher</code></td><td>plunge stroke</td><td>widens the slats to 125 mm; 140.4 mm</td><td>20</td></tr></tbody></table></div>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check. <code>19</code> (plumb and real-world size) is reserved across pieces and unused here.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a stave floating (<code>--lift-z</code>, <code>--short-stave</code>)</td></tr><tr><td>17</td><td>Bottom boards or handle bite (<code>--one-piece-bottom</code>, <code>--short-handle</code>)</td></tr><tr><td>18</td><td>Hoop seat, lid seat or handle clearance (<code>--float-hoops</code>, <code>--float-lid</code>, <code>--tight-hole</code>)</td></tr><tr><td>20</td><td>Plunge stroke below floor (<code>--wide-dasher</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a stave floating (<code>--lift-z</code>, <code>--short-stave</code>)</td></tr><tr><td>17</td><td>Bottom boards or handle bite (<code>--one-piece-bottom</code>, <code>--short-handle</code>)</td></tr><tr><td>18</td><td>Hoop seat, lid seat or handle clearance (<code>--float-hoops</code>, <code>--float-lid</code>, <code>--tight-hole</code>)</td></tr><tr><td>20</td><td>Plunge stroke below floor (<code>--wide-dasher</code>)</td></tr><tr><td>21</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render. ~1.8 s on 4.5 and 5.2.
 blender --background --python butter_churn.py --
@@ -112,9 +112,9 @@ blender --background --python butter_churn.py -- --output butter_churn.webp</cod
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/butter-churn/butter_churn.py</code>
-        <span>1272 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/butter-churn/butter_churn.py">View on GitHub &rarr;</a></span>
+        <span>1277 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/butter-churn/butter_churn.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1272">
+      <div class="code" data-lines="1277">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1386,7 +1386,12 @@ blender --background --python butter_churn.py -- --output butter_churn.webp</cod
 1269
 1270
 1271
-1272</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready butter churn — a showcase piece, not an example.
+1272
+1273
+1274
+1275
+1276
+1277</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready butter churn — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural plunge churn: a tall staved
 body that narrows toward the top, three iron hoops, a bottom of three
@@ -1438,6 +1443,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># The body: sixteen staves on a straight taper, wider at the foot.</span>
 HEIGHT = <span class="n">0.750</span>
@@ -2605,6 +2611,10 @@ IRON_IDX = <span class="n">2</span>
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">21</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

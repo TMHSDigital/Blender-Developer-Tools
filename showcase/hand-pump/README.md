@@ -178,3 +178,4 @@ hygiene and joint-fit family.
 | 18 | Flange-to-plinth gap (`--float-flange`) |
 | 19 | Column radius (`--skinny-col`) |
 | 20 | Bucket under the spout (`--shift-bucket`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

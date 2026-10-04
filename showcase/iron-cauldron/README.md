@@ -158,3 +158,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: hook-bail gap, or the bail not threading the ear rings |
 | 18 | Seat: ferrule bite band |
 | 19 | Pot diameter or height off the stated real-world size, or pot form (base radius, belly height) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

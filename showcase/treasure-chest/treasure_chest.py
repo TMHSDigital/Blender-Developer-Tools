@@ -39,6 +39,7 @@ _REPO = os.path.abspath(
 sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
+import gallery_asset_quality  # noqa: E402
 
 # A small iron-bound chest: 0.74 × 0.46 m plan, ~0.37 m to the rim,
 # shallow barrel-vault lid. The old piece was a crate of overlay boxes
@@ -1460,6 +1461,10 @@ def render_still(low, wood, tex, path, engine):
     )
     if fcode:
         return fcode
+    # asset-quality floors (examples/gallery_asset_quality.py) return 11,
+    # which this piece's numbering already spends; remap at the call site
+    if gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        return 20
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)

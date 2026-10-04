@@ -157,3 +157,4 @@ hygiene and joint-fit family. `20` and `21` are this piece's own.
 | 19 | Seat diameter or height off the stated real-world size |
 | 20 | Foot stack: leg end below its tread's top, or sleeve not buried (`--sink-legs`) |
 | 21 | Bake texel density below floor (`--low-bake`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

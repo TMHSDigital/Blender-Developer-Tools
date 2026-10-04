@@ -91,7 +91,7 @@
 <ul><li><strong>The chamfer pass silently repainted the mesh.</strong> <code>bmesh.ops.bevel</code> gives every face it creates <code>material_index</code> 0, so chamfering nineteen blocks left 30 faces on the dressed slot and moved 464 to ashlar. The slot count and the distinct-material check both still passed. Only the per-material face floor caught it, which is exactly the class <code>showcase/README.md</code> warns about. Materials are now re-stamped after the bevel, per block, by nearest recorded centroid.</li><li><strong>The impost landed exactly on the top course.</strong> Same footprint, same plane, two coincident face centres — a z-fight. It now sits on its own mortar bed, which is why the pier lays <code>N_COURSE</code> beds rather than <code>N_COURSE - 1</code>.</li><li><strong><code>find_nearest</code> is unsigned.</strong> A voussoir seated <em>inside</em> the pier head reported a 5.4 mm gap where there was none, because the distance to the host&#x27;s skin is positive from inside too. Joint gaps now test BVH overlap first and return zero when two blocks interpenetrate.</li><li><strong>Joint gaps have to be measured both ways.</strong> The keystone&#x27;s radial faces are wider in Y than its neighbours&#x27;, so every keystone vertex on the joint lies outside the neighbour and read 33 mm instead of the 9.7 mm joint. The metric is the closest approach of the two surfaces, min of both directions.</li></ul>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code; there is no rule against it. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a pier base floating (<code>--lift-z</code>, <code>--float-pier</code>)</td></tr><tr><td>17</td><td>Keystone projection or springing joint (<code>--sink-keystone</code>)</td></tr><tr><td>18</td><td>Mortar joint outside band (<code>--wide-mortar</code>), or a mortar shell not seated in exactly two stones (<code>--short-mortar</code>)</td></tr><tr><td>19</td><td>Intrados circle fit, or clear opening (<code>--off-circle</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a pier base floating (<code>--lift-z</code>, <code>--float-pier</code>)</td></tr><tr><td>17</td><td>Keystone projection or springing joint (<code>--sink-keystone</code>)</td></tr><tr><td>18</td><td>Mortar joint outside band (<code>--wide-mortar</code>), or a mortar shell not seated in exactly two stones (<code>--short-mortar</code>)</td></tr><tr><td>19</td><td>Intrados circle fit, or clear opening (<code>--off-circle</code>)</td></tr><tr><td>20</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render. ~1.1 s on 4.5, ~1.2 s on 5.1, ~1.4 s on 5.2.
 blender --background --python stone_archway.py --
@@ -112,9 +112,9 @@ blender --background --python stone_archway.py -- --output arch.webp</code></pre
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/stone-archway/stone_archway.py</code>
-        <span>1424 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/stone-archway/stone_archway.py">View on GitHub &rarr;</a></span>
+        <span>1429 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/stone-archway/stone_archway.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1424">
+      <div class="code" data-lines="1429">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1538,7 +1538,12 @@ blender --background --python stone_archway.py -- --output arch.webp</code></pre
 1421
 1422
 1423
-1424</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready stone archway — a showcase piece, not an example.
+1424
+1425
+1426
+1427
+1428
+1429</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready stone archway — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural masonry arch: two coursed
 piers, nine voussoirs turning a semicircle, and a proud keystone, carried
@@ -1586,6 +1591,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># A 1.2 m clear opening under a semicircular head: a gate arch, about</span>
 <span class="c"># 1.6 m across the piers and 2.0 m to the crown.</span>
@@ -2913,6 +2919,10 @@ BLOCK_TONE_JITTER = <span class="n">0.25</span>
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">20</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

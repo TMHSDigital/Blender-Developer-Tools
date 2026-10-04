@@ -107,15 +107,15 @@ blender --background --python hay_bale.py -- --output bale.png</code></pre>
 <p>It is all object-space, so it runs continuously across the per-face UV cells. The baked normal is chained under that bump (<code>wire_normal</code>) at <code>NRM_STRENGTH</code> 0.55. The UV budget (zero per-face AABB overlap) gives every face its own cell, so the bake&#x27;s tangent frame breaks at every cell edge; at full strength those breaks cut dark gashes along the top edge. The end face used to be <code>sin(z)</code> strata, which baked into cake layers gouged across the end. It is now a product of slow terms in y and z, which reads as the stem mat of the last flake. That changed the hull: the collider went from 140 to 100 tris. The twine is a 10 × 14 mm orange polypropylene cord standing 6 mm proud. As an 8 × 10 mm dark brown cord it stood 4 mm proud of the waisted loaf and read as a scored cut in every view. The longitudinal ridge dropped from 14 mm to 6 mm, because at 14 mm it crumpled the top edge in profile and the bale read as a stuffed sack. Each knot is a tight loop, <code>KNOT_MAJOR</code> 13 mm, standing in the belt&#x27;s plane with its tube sized from <code>TWINE_T</code>. A 60 mm ring lying flat on the top read as a printed symbol. The earlier note here, that the surface belonged to the material and bake and not to more geometry, was right. The cord was the other half of the parcel read.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or hay/twine faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose, non-manifold, zero-area, doubles, n-gons, or cross-shell z-fight (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded: AABB zmin (<code>--lift-z</code>), or a belt that does not wrap under (<code>--float-belts</code>)</td></tr><tr><td>17</td><td>Shell count, or hay–twine BVH gap above 8 mm</td></tr><tr><td>18</td><td>Banded belt seat depth (<code>--slack-belt</code>)</td></tr><tr><td>19</td><td>Loaf X-mirror symmetry (<code>--odd-loaf</code>), belt mirror symmetry (<code>--skew-belt</code>), cinch depth, or loaf real-world size</td></tr><tr><td>20</td><td>Bake texel density below the floor (<code>--low-bake</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or hay/twine faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose, non-manifold, zero-area, doubles, n-gons, or cross-shell z-fight (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded: AABB zmin (<code>--lift-z</code>), or a belt that does not wrap under (<code>--float-belts</code>)</td></tr><tr><td>17</td><td>Shell count, or hay–twine BVH gap above 8 mm</td></tr><tr><td>18</td><td>Banded belt seat depth (<code>--slack-belt</code>)</td></tr><tr><td>19</td><td>Loaf X-mirror symmetry (<code>--odd-loaf</code>), belt mirror symmetry (<code>--skew-belt</code>), cinch depth, or loaf real-world size</td></tr><tr><td>20</td><td>Bake texel density below the floor (<code>--low-bake</code>)</td></tr><tr><td>21</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/hay-bale/hay_bale.py</code>
-        <span>1692 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hay-bale/hay_bale.py">View on GitHub &rarr;</a></span>
+        <span>1697 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/hay-bale/hay_bale.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1692">
+      <div class="code" data-lines="1697">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1807,7 +1807,12 @@ blender --background --python hay_bale.py -- --output bale.png</code></pre>
 1689
 1690
 1691
-1692</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready bound hay bale — a showcase piece, not an example.
+1692
+1693
+1694
+1695
+1696
+1697</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready bound hay bale — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural straw bale after composing
 shipped pipeline pieces: bmesh construction, UVs, two materials,
@@ -1850,6 +1855,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 BALE_X = <span class="n">0.90</span>
 BALE_Y = <span class="n">0.48</span>
@@ -3413,6 +3419,10 @@ NRM_STRENGTH = <span class="n">0.55</span>
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">21</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

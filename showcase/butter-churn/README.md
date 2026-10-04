@@ -206,6 +206,7 @@ is reserved across pieces and unused here.
 | 17 | Bottom boards or handle bite (`--one-piece-bottom`, `--short-handle`) |
 | 18 | Hoop seat, lid seat or handle clearance (`--float-hoops`, `--float-lid`, `--tight-hole`) |
 | 20 | Plunge stroke below floor (`--wide-dasher`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

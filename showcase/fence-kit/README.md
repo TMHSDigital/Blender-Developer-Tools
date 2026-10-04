@@ -178,3 +178,4 @@ hygiene and joint-fit family. `20` and `21` are this piece's own.
 | 19 | Rail span (`--long-rails`) |
 | 20 | Brace not housed in both posts or not bearing on the middle rail (`--float-brace`) |
 | 21 | Section does not fit its tile (`--wide-tile`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

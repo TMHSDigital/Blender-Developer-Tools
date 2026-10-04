@@ -200,6 +200,7 @@ against it. `1` is the FATAL wrapper — a crash, never a named check.
 | 17 | Keystone projection or springing joint (`--sink-keystone`) |
 | 18 | Mortar joint outside band (`--wide-mortar`), or a mortar shell not seated in exactly two stones (`--short-mortar`) |
 | 19 | Intrados circle fit, or clear opening (`--off-circle`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

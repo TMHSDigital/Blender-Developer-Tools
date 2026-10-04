@@ -190,3 +190,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 18 | Shoe bite / cover (`--short-stile`) |
 | 19 | Rung pitch (`--drift-rungs`) |
 | 20 | Tie-rod seat (`--float-nuts`) |
+| 21 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

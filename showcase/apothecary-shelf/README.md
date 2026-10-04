@@ -231,6 +231,7 @@ is reserved across pieces and unused here.
 | 21 | Vessels overlap each other or the carcass (`--crowd-jars`) |
 | 22 | Form spread below floor (`--uniform-vessels`) |
 | 23 | Right-angle wood edges (`--sharp-rail`) |
+| 24 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

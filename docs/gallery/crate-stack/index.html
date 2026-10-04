@@ -93,7 +93,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>adds one loose vertex <em>inside</em> the silhouette, so hygiene catches it rather than the bounding box</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>lifts the whole mesh 50 mm off the floor</td><td>16</td></tr><tr><td><code>--short-skids</code></td><td>floats <strong>one</strong> of the three ground runners 12 mm; the other two still ground the AABB, so only the named-support budget sees it</td><td>16</td></tr><tr><td><code>--float-stack</code></td><td>lifts the top crate 9 mm clear of the lid below, opening a 34 mm seat gap</td><td>18</td></tr><tr><td><code>--same-seed</code></td><td>gives all three crates the same design seed; yaw spread and plank spread both go to 0</td><td>20</td></tr><tr><td><code>--float-nails</code></td><td>lifts every nail head 1.5 mm along its plate normal; bite goes to −0.90 mm, nail seat budget</td><td>18</td></tr><tr><td><code>--sharp-iron</code></td><td>skips the iron chamfer pass; 216 right-angle iron edges, edge-treatment budget</td><td>21</td></tr></tbody></table></div>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>File-local and sequential. <code>9</code> is a valid check code; there is no rule against it. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a named ground runner floating (<code>--lift-z</code>, <code>--short-skids</code>)</td></tr><tr><td>18</td><td>Crate-to-crate seat gap (<code>--float-stack</code>), or a nail head off its strap seat band (<code>--float-nails</code>)</td></tr><tr><td>19</td><td>Crate body footprint off declared size</td></tr><tr><td>20</td><td>Per-instance variation collapsed (<code>--same-seed</code>)</td></tr><tr><td>21</td><td>A manifold edge within 5° of a right angle: a chamfer pass skipped (<code>--sharp-iron</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a named ground runner floating (<code>--lift-z</code>, <code>--short-skids</code>)</td></tr><tr><td>18</td><td>Crate-to-crate seat gap (<code>--float-stack</code>), or a nail head off its strap seat band (<code>--float-nails</code>)</td></tr><tr><td>19</td><td>Crate body footprint off declared size</td></tr><tr><td>20</td><td>Per-instance variation collapsed (<code>--same-seed</code>)</td></tr><tr><td>21</td><td>A manifold edge within 5° of a right angle: a chamfer pass skipped (<code>--sharp-iron</code>)</td></tr><tr><td>22</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <p><code>17</code> is unused here: this piece has no diagonal member. <code>15</code>–<code>19</code> are reserved across showcase pieces for the hygiene family, so the numbering skips rather than reuses.</p>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
 <pre><code># Budget check, no render. ~1.4-1.7 s on 4.5 / 5.1 / 5.2.
@@ -115,9 +115,9 @@ blender --background --python crate_stack.py -- --output stack.webp</code></pre>
       <h2>Source</h2>
       <div class="src-meta">
         <code>showcase/crate-stack/crate_stack.py</code>
-        <span>1751 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/crate-stack/crate_stack.py">View on GitHub &rarr;</a></span>
+        <span>1756 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/crate-stack/crate_stack.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1751">
+      <div class="code" data-lines="1756">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1868,7 +1868,12 @@ blender --background --python crate_stack.py -- --output stack.webp</code></pre>
 1748
 1749
 1750
-1751</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready stack of three shipping crates — a showcase piece, not an example.
+1751
+1752
+1753
+1754
+1755
+1756</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Game-ready stack of three shipping crates — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural crate *stack*: one crate
 generator invoked three times with a per-instance seed, each instance
@@ -1920,6 +1925,7 @@ _REPO = os.path.abspath(
 sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 <span class="c"># One crate: 0.58 x 0.42 at the posts, 0.244 tall including skids and lid.</span>
 <span class="c"># Three stacked come to knee height, wider than they are tall.</span>
@@ -3570,6 +3576,10 @@ METAL_IDX = <span class="n">1</span>
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (examples/gallery_asset_quality.py) return 11,</span>
+    <span class="c"># which this piece&#x27;s numbering already spends; remap at the call site</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">22</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)

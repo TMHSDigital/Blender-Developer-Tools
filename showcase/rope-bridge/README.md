@@ -203,6 +203,7 @@ wrapper — a crash, never a named check.
 | 19 | Plumb, deck parabola, plank pitch or rail height (`--lean-post`, `--vee-deck`, `--drift-planks`, `--slack-rails`) |
 | 20 | Right-angle edges (`--sharp-plank`) |
 | 21 | Baked texels per UV island below floor (`--low-bake`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

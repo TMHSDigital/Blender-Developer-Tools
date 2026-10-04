@@ -207,6 +207,7 @@ wrapper — a crash, never a named check.
 | 17 | Leg protrusion, staple bite or threaded ring (`--short-bows`, `--short-staple`, `--edge-on-ring`) |
 | 18 | Pin seat or hung ring (`--float-pins`, `--clip-ring`) |
 | 19 | Neck opening or mirrored bows (`--pinch-bows`, `--skew-bow`) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

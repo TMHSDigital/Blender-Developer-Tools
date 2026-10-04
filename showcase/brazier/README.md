@@ -198,6 +198,7 @@ wrapper — a crash, never a named check.
 | 19 | Tip angle below floor (`--tuck-legs`) |
 | 20 | Coals interpenetrate (`--pile-coals`) |
 | 21 | Coal size spread below floor (`--uniform-coals`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 ## Run it
 

@@ -53,6 +53,7 @@ _REPO = os.path.abspath(
 sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
+import gallery_asset_quality  # noqa: E402
 
 # The carcass. X across, Y front (-) to back (+), Z up. Two full-height
 # sides carry everything; every cross member is housed into both of them.
@@ -1576,6 +1577,10 @@ def render_still(low, mats, tex, path, engine):
     fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
     if fcode:
         return fcode
+    # asset-quality floors (examples/gallery_asset_quality.py) return 11,
+    # which this piece's numbering already spends; remap at the call site
+    if gallery_asset_quality.check_asset_quality(scene, cam, [low], stage=[floor, wall]):
+        return 24
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)

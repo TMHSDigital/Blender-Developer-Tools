@@ -183,6 +183,7 @@ against it. `1` is the FATAL wrapper — a crash, never a named check.
 | 19 | Crate body footprint off declared size |
 | 20 | Per-instance variation collapsed (`--same-seed`) |
 | 21 | A manifold edge within 5° of a right angle: a chamfer pass skipped (`--sharp-iron`) |
+| 22 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
 
 `17` is unused here: this piece has no diagonal member. `15`–`19` are
 reserved across showcase pieces for the hygiene family, so the numbering

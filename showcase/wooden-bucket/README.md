@@ -166,3 +166,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: bail-ear gap, floor-croze gap, bottom boards and seams, or rope through an ear plate |
 | 18 | Seat: hoop bite band (`--round-band`) |
 | 19 | Body diameter or height off the stated real-world size |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |

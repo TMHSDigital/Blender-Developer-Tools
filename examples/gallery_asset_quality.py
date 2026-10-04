@@ -288,15 +288,17 @@ class AssetQualityResult:
         def mark(ok):
             return "ok" if ok else "FAIL"
         name_ok = not self.bad_names
-        mat_ok = self.parts < 2 or (self.materials >= MATERIALS_MIN
-                                    and self.dominant_share <= DOMINANT_MAT_MAX)
+        # Gated: the material count. The dominant share is a dropped floor
+        # (docs/VISUAL-STYLE.md § Asset quality) printed as information, so
+        # it must not print FAIL next to a gate that passes.
+        mat_ok = self.parts < 2 or self.materials >= MATERIALS_MIN
         edge_ok = self.edge90 <= EDGE90_MAX_FRAC
         return "\n".join([
             f"aq_naming default_names={self.bad_names or 'none'} {mark(name_ok)}",
             f"aq_materials n={self.materials} floor={MATERIALS_MIN} "
+            f"(applies at parts>=2, n={self.parts}) {mark(mat_ok)}; "
             f"dominant={self.dominant_name}@{self.dominant_share:.2f} "
-            f"ceiling={DOMINANT_MAT_MAX} (applies at parts>=2, n={self.parts}) "
-            f"{mark(mat_ok)}",
+            f"informational-only",
             f"aq_edge90 frac={self.edge90:.3f} ({self.edge_right}/{self.edge_total}) "
             f"degenerate_faces={self.degenerate_faces} "
             f"ceiling={EDGE90_MAX_FRAC} {mark(edge_ok)}",
@@ -326,7 +328,7 @@ def check_asset_quality(scene, camera, hero, stage=(), *,
 
     Render path only — never call from an example's check-only path.
     Floors: no default datablock names; for assembled heroes (parts >= 2)
-    at least two materials with the dominant share under the ceiling;
+    at least two materials (the dominant share is printed, not gated);
     right-angle edge fraction under the ceiling. Compactness is measured
     and printed but never gated (dropped: fails genuinely good simple
     subjects — see module docstring and docs/VISUAL-STYLE.md).

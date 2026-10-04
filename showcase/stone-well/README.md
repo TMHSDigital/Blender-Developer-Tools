@@ -120,3 +120,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 17 | Material-island gap above tolerance (parts meant to touch) |
 | 18 | Post tenon depth outside its band (`--shallow-tenon`), or bucket clearance outside its band (`--drop-bucket`) |
 | 19 | A post not under a roof hip corner in plan (`--turn-posts` lands here) |
+| 20 | Gallery asset-quality violation (render path; the floors' 11 is remapped here) |
