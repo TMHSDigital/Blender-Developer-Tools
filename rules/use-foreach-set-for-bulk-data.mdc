@@ -22,7 +22,7 @@ Any of these patterns:
 
 - `for v in mesh.vertices: v.co = ...`
 - `for i, v in enumerate(mesh.vertices): v.co = coords[i]`
-- `for loop in mesh.loops: loop.normal = ...`
+- `for e in mesh.edges: e.use_seam = ...`
 - `for face in mesh.polygons: face.use_smooth = True`
 - Manual `enumerate` loops that index into a parallel array of values
 
@@ -99,11 +99,17 @@ Pre-allocate the buffer; do not let `foreach_get` allocate per call.
 
 Same pattern applies to:
 
-- `mesh.loops` (per-loop normals, custom split normals, UV coordinates
-  via the UV layer's `data`)
+- `mesh.loops`: `foreach_get("normal", ...)` to read per-loop normals
+  (`MeshLoop.normal` is read-only; write custom normals in bulk with
+  `mesh.normals_split_custom_set(...)` instead), and UV coordinates via the
+  UV layer's `data`
 - `mesh.polygons` (per-face material index, smooth flag, area)
-- `mesh.edges` (per-edge use_seam, use_sharp, crease)
-- `bpy.types.MeshUVLoopLayer.data` and other layer collections
+- `mesh.edges` (per-edge `use_seam`, `use_edge_sharp`). Edge crease is not
+  an edge property on 4.5 LTS or 5.x; it is the `crease_edge` FLOAT
+  attribute: `mesh.attributes["crease_edge"].data.foreach_set("value", buf)`
+  (create it with `mesh.attributes.new("crease_edge", "FLOAT", "EDGE")`).
+- `mesh.attributes[name].data` for any generic attribute (`"value"`,
+  `"vector"` or `"color"` key by type), and `MeshUVLoopLayer.data`
 
 For example, batch-flag every face as smooth-shaded:
 

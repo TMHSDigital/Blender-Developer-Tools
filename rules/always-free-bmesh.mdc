@@ -73,8 +73,8 @@ finally:
 
 The `try`/`finally` covers the case where any operation between `bmesh.new()`
 and `bm.free()` raises. Without it, a `KeyError` reading
-`mesh.vertex_layers_int.get("missing")` skips the `free()`, and the BMesh
-leaks for the remaining session.
+`mesh.attributes["missing"]` skips the `free()`, and the BMesh leaks for the
+remaining session.
 
 For the edit-mode case where the bmesh comes from `bmesh.from_edit_mesh()`,
 **do not call `bm.free()`**. Edit-mode bmeshes are owned by Blender and
