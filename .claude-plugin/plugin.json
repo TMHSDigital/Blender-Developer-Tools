@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/TMHSDigital/Blender-Developer-Tools",
   "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
-  "license": "CC-BY-NC-ND-4.0",
+  "license": "CC-BY-NC-ND-4.0 AND MIT",
   "keywords": [
     "claude-code",
     "blender",

@@ -1483,7 +1483,7 @@ Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugi
 
 ## Using the templates
 
-`templates/extension-addon-template/` is a working Blender extension. Copy the directory, edit `blender_manifest.toml` (id, version, name, maintainer), and install via Edit > Preferences > Get Extensions > Install From Disk. The template registers an Operator, a Panel, and a PropertyGroup, and demonstrates the `register_classes_factory` pattern with symmetric `register()` and `unregister()`.
+`templates/extension-addon-template/` is a working Blender extension. Copy the directory, edit `blender_manifest.toml` (id, version, name, maintainer, and `copyright`, which ships as the template author's), and install via Edit > Preferences > Get Extensions > Install From Disk. The template registers an Operator, a Panel, and a PropertyGroup, and demonstrates the `register_classes_factory` pattern with symmetric `register()` and `unregister()`.
 
 `templates/headless-batch-script-template/` is a working starter for unattended Blender batch jobs. It opens a `.blend`, optionally adds and applies a modifier to every mesh, and exports to glTF, with explicit exit codes for CI integration. Run with `blender --background <input.blend> --python script.py -- --output ...`.
 
@@ -1523,6 +1523,12 @@ look in [`docs/VISUAL-STYLE.md`](docs/VISUAL-STYLE.md).
 Copyright (c) 2026 TM Hospitality Strategies.
 
 - **Code you copy and adapt is MIT:** [`snippets/`](snippets/LICENSE) and [`templates/`](templates/LICENSE). Copy lines or whole files into your own projects, modify them, and ship the result commercially; keep the copyright notice with substantial copies.
-- **Everything else is [CC-BY-NC-ND-4.0](LICENSE):** skills, rules, examples, showcase pieces, docs and the site. Read and use them freely, but do not redistribute modified copies or use them commercially.
+- **Everything else is [CC-BY-NC-ND-4.0](LICENSE):** skills, rules, examples, showcase pieces, docs and the site. The license covers this material itself: do not redistribute modified copies of it, and do not sell or commercially republish it.
 
 A `LICENSE` file inside a directory governs that directory.
+
+### Can I use this to build a commercial or GPL add-on?
+
+**Yes.** Using the skills and rules while you (or your AI agent) write your own add-on, script or pipeline, including paid and client work, is the intended use. The code you write with their guidance is yours, under whatever license you choose. Blender extensions must be GPL-compatible, and that is fine too: the add-on template ships with `license = ["SPDX:GPL-3.0-or-later"]` in its manifest, and its MIT license lets you relicense your copy under the GPL.
+
+What the NC-ND terms restrict is redistributing this pack: republishing modified copies of the skills, rules, examples or showcase pieces, or selling them (for example, bundling them into a paid course or a paid skill pack). Code copied out of `snippets/` and `templates/` is MIT and carries no such limit; keep the copyright notice with substantial copies.

@@ -6,7 +6,7 @@
   "author": {
     "name": "TMHSDigital"
   },
-  "license": "CC-BY-NC-ND-4.0",
+  "license": "CC-BY-NC-ND-4.0 AND MIT",
   "keywords": [
     "cursor-plugin",
     "claude-code",
