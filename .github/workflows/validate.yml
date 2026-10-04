@@ -389,6 +389,9 @@ jobs:
       - name: Release gate fails closed (stubbed gh)
         run: python3 tests/test_release_gate.py -v
 
+      - name: Release bump detection (bump-kind.sh)
+        run: python3 tests/test_bump_kind.py -v
+
       - name: Hero-drift tool exit-code tests
         run: |
           pip install numpy==2.2.6 Pillow==11.2.1

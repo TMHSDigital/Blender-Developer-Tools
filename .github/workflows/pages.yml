@@ -37,22 +37,25 @@ jobs:
   # A push that will cut a release gets its deploy from release.yml, which dispatches
   # this workflow after committing the version bump. Deploying on the push too only
   # built a page that the dispatch then cancelled (8 of 9 push runs measured, #215).
-  # The pattern mirrors release.yml's "Determine bump type" step exactly. If that
+  # Both workflows call .github/scripts/bump-kind.sh, so the decision cannot drift. If that
   # release fails, redeploy by hand: Actions > Deploy GitHub Pages > Run workflow.
   gate:
     runs-on: ubuntu-latest
     outputs:
       deploy: ${{ steps.decide.outputs.deploy }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github/scripts
       - id: decide
         env:
           EVENT: ${{ github.event_name }}
           COMMITS: ${{ toJSON(github.event.commits) }}
         run: |
           deploy=true
-          if [ "$EVENT" = "push" ] && echo "$COMMITS" \
-              | jq -r '.[].message | split("\n")[0]' \
-              | grep -qiE '^(feat|feature|fix)(\(.+\))?!?:|BREAKING[ -]CHANGE'; then
+          if [ "$EVENT" = "push" ] && [ "$(echo "$COMMITS" \
+              | jq -j '.[].message + "\u0000"' \
+              | bash .github/scripts/bump-kind.sh)" != "none" ]; then
             deploy=false
             echo "Release-worthy push: release.yml dispatches Pages after the version bump."
           fi
