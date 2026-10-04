@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.0] - 2026-10-04
+
+### Features
+
+- feat(distribution): install the plugin from a slim, bot-built plugin-dist branch ([`08c6672`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/08c6672d46bf8dfb73bd218e9392eefb59db61f7))
+- feat(site): JPEG og:image on every page, a sitemap, and a sharper description ([`60f388a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/60f388a9f76fbfc729c0044ac722e36006d4346b))
+- feat(distribution): plugin ships the rules as a skill; skill file refs work outside a checkout ([`cf881a7`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/cf881a7fe4f7f1b71521b688a8e10029ecaca07a))
+- feat(smoke): every catalog row re-proves a falsifier on every smoke run ([`275e23d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/275e23dbba94fee429dec8ef1abeef5a3eee061d))
+
+### Fixes
+
+- fix(smoke): version-gate the four falsifiers that target a 5.2-only API change ([`449101a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/449101a2622e9be1fb0d41826d8716895e65b279))
+- fix(showcase): one canonical convex_hull_collider and export_unity; report helper drift ([`fe0fcef`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/fe0fcef63f003413597fabd97066c3ed2bac3c2d))
+- fix(showcase): all 76 pieces run the asset-quality floors; lint enforces it ([`60506e8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/60506e85534af496c6c5150b65b64e96b7e8ce80))
+- fix(examples): gate compositor-glare and collision-hull-proxy stills; lint every gallery entry ([`2bd2041`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2bd20412059afb3dbee0dedc4c7394f6397494e4))
+
+### Other
+
+- chore(deps): Bump actions/cache (#317) ([`216188b`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/216188bdcfb7fa4208aa6c920dc1f68aa5c2df7c))
+- docs(readme): replace the 1,300-line catalog with a featured strip and the gallery ([`2335989`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/233598953e96187f47b083b48b675a3fa2f70164))
+- perf(gallery): link each script instead of inlining it; LF-pin generated files ([`0bb1d1a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0bb1d1a6f47b6ff534cdf47c4175df853c2b3ef1))
+- docs: one consistent Claude Code install path, plus updating and uninstalling ([`d59b154`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d59b154451856b61adcc74f176b4da3754cb61d1))
+- docs(license): say plainly that building commercial or GPL add-ons is fine ([`c35d441`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/c35d441024c5fb9032a4de03f10f69196f622b58))
+- ci: release notes and CHANGELOG entries list what actually shipped ([`d8521f9`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d8521f920055fef3fbcbe0f762a56ae153c86db5))
+
+[Release v0.143.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.0)
+
 ## [0.142.4] - 2026-10-04
 
 See [release notes](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.142.4) for details.
