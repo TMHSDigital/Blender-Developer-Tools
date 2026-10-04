@@ -298,6 +298,16 @@ class RunCatalog(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("a [falsifier --break]", err)
 
+    def test_falsifier_below_its_min_version_is_skipped(self):
+        rows = [{"name": "a", "script": "a.py",
+                 "falsifiers": [{"args": ["--new-api"], "expect_exit": 4,
+                                 "min_version": "5.2"}]}]
+        code, seen, _ = self._run(rows, {})  # _run uses --series 5.2: runs
+        self.assertEqual(seen, ["a", "a [falsifier --new-api]", "expect 4"])
+        rows[0]["falsifiers"][0]["min_version"] = "9.9"
+        code, seen, _ = self._run(rows, {})
+        self.assertEqual((code, seen), (0, ["a"]))
+
     def test_no_falsifiers_flag(self):
         rows = [{"name": "a", "script": "a.py",
                  "falsifiers": [{"args": ["--break"], "expect_exit": 4}]}]

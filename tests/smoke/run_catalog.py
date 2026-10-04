@@ -19,6 +19,9 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from protocol import parse_version  # noqa: E402
+from run_example import append_status  # noqa: E402
 
 
 def main(argv=None):
@@ -101,6 +104,16 @@ def main(argv=None):
         for fz in item.get("falsifiers") or []:
             fargs = [a.replace("$OUT", args.out) for a in fz["args"]]
             label = f"{name} [falsifier {' '.join(fz['args'])}]"
+            floor = fz.get("min_version")
+            if floor and parse_version(args.series) < parse_version(floor):
+                # A falsifier that targets a version-specific API change has
+                # nothing to break below it (its README records exit 0 there).
+                detail = f"falsifier applies from Blender {floor}; this is {args.series}"
+                print(f"[SKIP] {label}: {detail}", flush=True)
+                if args.status:
+                    append_status(args.status, {"name": label, "status": "SKIP",
+                                                "detail": detail, "falsifier": True})
+                continue
             n_falsifiers += 1
             print(f"::group::{label}", flush=True)
             fcode = subprocess.call(row_cmd(item, label, base_args + fargs, fz))

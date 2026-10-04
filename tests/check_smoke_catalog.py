@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -29,7 +30,7 @@ EXCLUDED: set[str] = set()
 
 ROW_KEYS = {"name", "script", "args", "min_version", "expect_file",
             "expect_sidecar", "sidecar_contains", "falsifiers"}
-FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail"}
+FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "min_version"}
 FORBIDDEN_EXITS = {0, 1, 77}
 
 
@@ -62,6 +63,9 @@ def check_schema(row: dict) -> list[str]:
                 errors.append(f"{where}: expect_exit {code!r} must be an int other than 0, 1, 77")
         elif not row.get("expect_sidecar"):
             errors.append(f"{where}: expect_sidecar_fail on a row with no expect_sidecar")
+        mv = f.get("min_version")
+        if mv is not None and not (isinstance(mv, str) and re.fullmatch(r"[0-9]+[.][0-9]+", mv)):
+            errors.append(f"{where}: min_version {mv!r} must look like '5.2'")
     return errors
 
 
