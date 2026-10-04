@@ -236,6 +236,59 @@ class BuildCmd(unittest.TestCase):
         self.assertIn("--python-exit-code", self._cmd(xvfb=True))
 
 
+class Stream(unittest.TestCase):
+    """run_example.stream: a hung run is killed and reported, output is UTF-8."""
+
+    def _stream(self, code, timeout=30):
+        import contextlib
+        import io
+
+        import run_example
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            return run_example.stream([sys.executable, "-c", code], timeout=timeout)
+
+    def test_exit_code_is_returned(self):
+        self.assertEqual(self._stream("import sys; sys.exit(3)")[0], 3)
+
+    def test_hang_is_killed_and_returns_none(self):
+        import time
+
+        t0 = time.monotonic()
+        code, out = self._stream(
+            "import time; print('started', flush=True); time.sleep(120)", timeout=2)
+        self.assertIsNone(code)
+        self.assertIn("started", out)
+        self.assertLess(time.monotonic() - t0, 30)
+
+    @unittest.skipUnless(os.name == "posix", "process groups (xvfb-run case) are POSIX")
+    def test_hang_kills_grandchild(self):
+        import time
+
+        with tempfile.TemporaryDirectory() as td:
+            pidfile = os.path.join(td, "pid")
+            child = ("import subprocess, sys, time; "
+                     "p = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)']); "
+                     f"open({pidfile!r}, 'w').write(str(p.pid)); time.sleep(120)")
+            self.assertIsNone(self._stream(child, timeout=2)[0])
+            pid = int(open(pidfile).read())
+            for _ in range(50):
+                try:
+                    os.kill(pid, 0)
+                except ProcessLookupError:
+                    break
+                time.sleep(0.1)
+            else:
+                self.fail("grandchild survived the timeout kill")
+
+    def test_utf8_output_survives_any_locale(self):
+        # U+201D contains byte 0x9D, which a strict cp1252 decode rejects.
+        code, out = self._stream(
+            r"import sys; sys.stdout.buffer.write(b'\xe2\x80\x9d\n'); sys.stdout.flush()")
+        self.assertEqual(code, 0)
+        self.assertIn("”", out)
+
+
 class RunCatalog(unittest.TestCase):
     """run_catalog runs every row and reports all failures; empty is red."""
 
@@ -290,6 +343,50 @@ class RunCatalog(unittest.TestCase):
         code, seen, _ = self._run(rows, {})
         self.assertEqual(code, 0)
         self.assertEqual(seen, ["a", "a [falsifier --break]", "expect 4"])
+
+    def test_row_timeout_is_forwarded(self):
+        from unittest import mock
+
+        import run_catalog
+
+        got = []
+
+        def fake_call(cmd):
+            got.append(cmd[cmd.index("--timeout") + 1] if "--timeout" in cmd else None)
+            return 0
+
+        with tempfile.TemporaryDirectory() as td:
+            cat = os.path.join(td, "catalog.json")
+            with open(cat, "w", encoding="utf-8") as fh:
+                json.dump([{"name": "a", "script": "a.py", "timeout": 1800}], fh)
+            import contextlib
+            import io
+            with mock.patch.object(run_catalog.subprocess, "call", fake_call),                     contextlib.redirect_stdout(io.StringIO()):
+                run_catalog.main(["--blender", "x", "--series", "5.2", "--out", td,
+                                  "--catalog", cat])
+        self.assertEqual(got, ["1800"])
+
+    def test_stale_expect_file_does_not_satisfy_row(self):
+        import contextlib
+        import io
+        from unittest import mock
+
+        import run_catalog
+
+        with tempfile.TemporaryDirectory() as td:
+            stale = os.path.join(td, "still.png")
+            with open(stale, "wb") as fh:
+                fh.write(b"old render")
+            cat = os.path.join(td, "catalog.json")
+            with open(cat, "w", encoding="utf-8") as fh:
+                json.dump([{"name": "a", "script": "a.py",
+                            "expect_file": "$OUT/still.png"}], fh)
+            err = io.StringIO()
+            with mock.patch.object(run_catalog.subprocess, "call", lambda cmd: 0),                     contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                code = run_catalog.main(["--blender", "x", "--series", "5.2", "--out", td,
+                                         "--catalog", cat])
+        self.assertEqual(code, 1)
+        self.assertIn("missing", err.getvalue())
 
     def test_failing_falsifier_is_red(self):
         rows = [{"name": "a", "script": "a.py",

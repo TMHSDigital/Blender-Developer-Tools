@@ -219,6 +219,9 @@ def check_static():
     return failures, undocumented_only, checked, pieces, undocumented_pieces
 
 
+RUN_TIMEOUT = 900  # seconds per Blender run, matching tests/smoke/run_example.py
+
+
 def check_runtime(blender, only=None):
     failures, checked = [], 0
     for name, readme, script in piece_paths():
@@ -227,11 +230,18 @@ def check_runtime(blender, only=None):
         falsifiers, _exits = parse_readme(readme)
         for flag, (want, _target) in sorted(falsifiers.items()):
             checked += 1
-            proc = subprocess.run(
-                [blender, "--background", "--python-exit-code", "1", "--python", script, "--", flag],
-                capture_output=True,
-            )
-            got = proc.returncode
+            try:
+                proc = subprocess.run(
+                    [blender, "--background", "--python-exit-code", "1", "--python", script,
+                     "--", flag],
+                    capture_output=True,
+                    timeout=RUN_TIMEOUT,
+                )
+                got = proc.returncode
+            except subprocess.TimeoutExpired:
+                # subprocess.run kills Blender on expiry; record it and move on so
+                # one hang cannot stall the weekly sweep.
+                got = f"timeout after {RUN_TIMEOUT}s"
             status = "ok" if got == want else "MISMATCH"
             print(f"  {status:9} {name} {flag}: want {want}, got {got}")
             if got != want:

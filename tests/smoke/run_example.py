@@ -4,16 +4,22 @@ Usage:
   python tests/smoke/run_example.py --name NAME --blender BIN --script PATH
       [--series 5.2] [--min-version 5.0] [--xvfb]
       [--expect-sidecar FILE] [--sidecar-contains TEXT]
-      [--forbid-skip] [--status FILE]
+      [--forbid-skip] [--status FILE] [--timeout SECONDS]
       -- extra args passed after Blender's `--`
+
+--timeout (default $BDT_SMOKE_TIMEOUT or 900 s) bounds one Blender run. On
+expiry the whole process group (xvfb-run and Blender) is killed and the run is
+recorded as FAIL "timeout after Ns", so one hang cannot eat the CI job.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import signal
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +46,66 @@ def build_cmd(args):
     return cmd
 
 
+DEFAULT_TIMEOUT = 900
+
+
+def _kill_tree(proc):
+    """Kill proc and everything it spawned (xvfb-run starts Blender as a child)."""
+    try:
+        if os.name == "posix":
+            os.killpg(proc.pid, signal.SIGKILL)
+        else:
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                           capture_output=True, check=False)
+    except (ProcessLookupError, PermissionError, OSError):
+        pass
+    try:
+        proc.kill()
+    except OSError:
+        pass
+
+
+def stream(cmd, env=None, timeout=None):
+    """Run cmd, echo its combined output live, return (exit code or None, output).
+
+    None means the run was killed after `timeout` seconds. Output is decoded as
+    UTF-8 with replacement: Blender writes UTF-8 whatever the host locale is,
+    and a strict cp1252 decode would raise mid-run and orphan Blender.
+    """
+    popen_kw = {"start_new_session": True} if os.name == "posix" else {
+        "creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        **popen_kw,
+    )
+    chunks = []
+
+    def pump():
+        assert proc.stdout is not None
+        for line in proc.stdout:
+            sys.stdout.write(line)
+            sys.stdout.flush()
+            chunks.append(line)
+
+    reader = threading.Thread(target=pump, daemon=True)
+    reader.start()
+    try:
+        proc.wait(timeout=timeout)
+        code = proc.returncode
+    except subprocess.TimeoutExpired:
+        _kill_tree(proc)
+        proc.wait()
+        code = None
+    reader.join(timeout=10)
+    return code, "".join(chunks)
+
+
 def run(args):
     sidecar = args.expect_sidecar
     env = os.environ.copy()
@@ -55,35 +121,24 @@ def run(args):
     print(f"=== run_example {args.name} ===", flush=True)
     print(" ".join(cmd), flush=True)
 
-    proc = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        env=env,
-    )
-    chunks = []
-    assert proc.stdout is not None
-    for line in proc.stdout:
-        sys.stdout.write(line)
-        sys.stdout.flush()
-        chunks.append(line)
-    proc.wait()
-    output = "".join(chunks)
-    proc_exit = proc.returncode if proc.returncode is not None else 1
-
-    status, detail = classify(
-        proc_exit=proc_exit,
-        output=output,
-        min_version=args.min_version,
-        blender_version=args.series,
-        forbid_skip=args.forbid_skip,
-        expect_sidecar=bool(sidecar),
-        sidecar_path=sidecar,
-        sidecar_contains=args.sidecar_contains,
-        expect_exit=args.expect_exit,
-        expect_sidecar_fail=args.expect_sidecar_fail,
-    )
+    code, output = stream(cmd, env=env, timeout=args.timeout)
+    if code is None:
+        proc_exit = None
+        status, detail = "FAIL", f"timeout after {args.timeout:g}s (process group killed)"
+    else:
+        proc_exit = code
+        status, detail = classify(
+            proc_exit=proc_exit,
+            output=output,
+            min_version=args.min_version,
+            blender_version=args.series,
+            forbid_skip=args.forbid_skip,
+            expect_sidecar=bool(sidecar),
+            sidecar_path=sidecar,
+            sidecar_contains=args.sidecar_contains,
+            expect_exit=args.expect_exit,
+            expect_sidecar_fail=args.expect_sidecar_fail,
+        )
     record = {
         "name": args.name,
         "status": status,
@@ -134,6 +189,11 @@ def main(argv=None):
         "--status",
         default=os.environ.get("BDT_SMOKE_STATUS"),
         help="JSONL status file (default $BDT_SMOKE_STATUS)",
+    )
+    p.add_argument(
+        "--timeout", type=float,
+        default=float(os.environ.get("BDT_SMOKE_TIMEOUT") or DEFAULT_TIMEOUT),
+        help="seconds before the run is killed and recorded as FAIL",
     )
     p.add_argument("script_args", nargs=argparse.REMAINDER)
     args = p.parse_args(argv)
