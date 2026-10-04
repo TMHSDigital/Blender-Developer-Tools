@@ -63,7 +63,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 | always-free-bmesh | `*.py` | `bmesh.new()` without paired `bm.free()` in a `try`/`finally` block |
 | target-extensions-platform-format | Add-on roots | Legacy `bl_info` only add-ons missing `blender_manifest.toml` |
 | type-annotate-props-and-defend-context | `*.py` | `bpy.props` defined as assignments, unguarded `context.active_object` |
-| prefer-temp-override-over-context-copy | `*.py` | `bpy.context.copy()` passed to operators (deprecated 4.x, removed 5.x) |
+| prefer-temp-override-over-context-copy | `*.py` | `bpy.context.copy()` passed to operators (deprecated 3.2, removed 4.0) |
 | use-foreach-set-for-bulk-data | `*.py` | Python loops over `mesh.vertices` setting bulk attributes one at a time |
 | validate-imported-mesh-scale | `*.py` | glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check |
 | no-unapplied-modifiers-on-export | `*.py` | Export with live modifiers when the export does not request evaluated geometry |

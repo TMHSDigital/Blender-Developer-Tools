@@ -196,11 +196,11 @@ api_key = prefs.api_key
 ## Why "just use Python attributes" does not work
 
 ```python
-# WRONG: this attribute does not survive save and load.
+# WRONG: raises AttributeError: 'Scene' object has no attribute 'my_intensity'
 bpy.context.scene.my_intensity = 1.5
 ```
 
-Properties attached as plain Python attributes to a Blender datablock are not serialized into the `.blend` file. The .blend file format only saves registered `bpy.props`. Reload the file and the value is gone.
+Blender datablocks do not accept arbitrary Python attributes: the assignment fails immediately, on 4.5 LTS and 5.x alike. Only registered `bpy.props` (or ID properties set with `scene["key"] = value`) exist on a datablock and are saved into the `.blend` file.
 
 This is a frequent AI mistake when generating quick scripts. Always wrap state in a `PropertyGroup` bound via `PointerProperty` if it must persist.
 
@@ -218,8 +218,10 @@ This is a frequent AI mistake when generating quick scripts. Always wrap state i
 2. **Storing complex state on Python attributes**:
 
    ```python
-   scene.my_data = {"items": [...]}  # gone after save and reload
+   scene.my_data = {"items": [...]}  # AttributeError: not a registered property
    ```
+
+   Ad-hoc ID properties (`scene["my_data"] = ...`) do save, but they are untyped and invisible to the UI; use a `PropertyGroup` for anything an add-on owns.
 
 3. **Wrong unregister order** (unregister class before deleting binding) -> crash on save.
 

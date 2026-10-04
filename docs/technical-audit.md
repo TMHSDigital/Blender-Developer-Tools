@@ -2,6 +2,8 @@
 
 _Audit date: 2026-06-20 · Repo @ v0.5.0 · Auditor: Principal Eng review_
 
+> **Historical.** The audit sections describe the repository as of v0.5.0 and are kept as a record; counts and file references in them are not current. Only "Findings the release notes did not list" below is a standing, maintained log.
+
 ## Findings the release notes did not list
 
 _Standing log. Notes-derived 5.1→5.2 (and later) deltas are incomplete by default._

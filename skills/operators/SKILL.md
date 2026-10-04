@@ -28,15 +28,15 @@ Use this skill when the user:
 import bpy
 
 
-class MESH_OT_extrude_normal(bpy.types.Operator):
-    bl_idname = "mesh.extrude_normal"
-    bl_label = "Extrude Along Normal"
-    bl_description = "Extrude active mesh by a fixed amount along its normal"
+class MESH_OT_offset_along_normals(bpy.types.Operator):
+    bl_idname = "mesh.offset_along_normals"
+    bl_label = "Offset Along Normals"
+    bl_description = "Move every vertex of the active mesh a fixed distance along its normal"
     bl_options = {'REGISTER', 'UNDO'}
 
     distance: bpy.props.FloatProperty(
         name="Distance",
-        description="How far to extrude",
+        description="How far to move each vertex",
         default=0.5,
         min=-100.0,
         max=100.0,
@@ -54,14 +54,20 @@ class MESH_OT_extrude_normal(bpy.types.Operator):
             self.report({'ERROR'}, "No active object")
             return {'CANCELLED'}
 
-        # Operate on bpy.data, not bpy.ops, in tight loops.
-        # See the mesh-editing-and-bmesh skill for the full pattern.
+        # Operate on bpy.data, not bpy.ops, and in bulk: one foreach_get /
+        # foreach_set pair instead of a Python loop over mesh.vertices (rule
+        # use-foreach-set-for-bulk-data). See the mesh-editing-and-bmesh skill.
         mesh = obj.data
-        for v in mesh.vertices:
-            v.co += v.normal * self.distance
+        n = len(mesh.vertices)
+        co = [0.0] * (n * 3)
+        nor = [0.0] * (n * 3)
+        mesh.vertices.foreach_get("co", co)
+        mesh.vertices.foreach_get("normal", nor)
+        d = self.distance
+        mesh.vertices.foreach_set("co", [c + k * d for c, k in zip(co, nor)])
 
         mesh.update()
-        self.report({'INFO'}, f"Extruded {len(mesh.vertices)} vertices by {self.distance:.3f}")
+        self.report({'INFO'}, f"Offset {n} vertices by {d:.3f}")
         return {'FINISHED'}
 ```
 
@@ -71,7 +77,7 @@ class MESH_OT_extrude_normal(bpy.types.Operator):
 | --- | --- | --- | --- |
 | `poll(cls, context)` | Optional | Every UI redraw to decide if the operator is enabled. Must be cheap. | `True` to enable, `False` or falsy to disable |
 | `invoke(self, context, event)` | Optional | The user triggers the operator interactively (button, menu, keymap). Default forwards to `execute`. | `{'FINISHED'}`, `{'CANCELLED'}`, `{'PASS_THROUGH'}`, `{'RUNNING_MODAL'}` |
-| `execute(self, context)` | Yes | The operator runs, either after `invoke` or directly via `bpy.ops.mesh.extrude_normal()` | `{'FINISHED'}` or `{'CANCELLED'}` |
+| `execute(self, context)` | Yes | The operator runs, either after `invoke` or directly via `bpy.ops.mesh.offset_along_normals()` | `{'FINISHED'}` or `{'CANCELLED'}` |
 | `modal(self, context, event)` | Optional | After `invoke` returns `{'RUNNING_MODAL'}`. Called for each event until you return `{'FINISHED'}` or `{'CANCELLED'}`. | Standard return set |
 | `draw(self, context)` | Optional | The redo panel after the operator runs. Defaults to drawing all properties. | None |
 
