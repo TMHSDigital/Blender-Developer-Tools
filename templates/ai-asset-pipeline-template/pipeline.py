@@ -236,11 +236,16 @@ def box_collider(obj, name=None):
 
 
 def apply_selected_mesh_transforms():
-    # Duplicated from snippets/export_preset_unity.py
-    for obj in list(bpy.context.selected_objects):
-        if obj.type != "MESH":
-            continue
-        apply_object_transform(obj)
+    # Duplicated from snippets/export_preset_unity.py. One operator call for
+    # the whole selection; transform_apply reads selected_editable_objects,
+    # so that is the key to override (selected_objects alone does not narrow it).
+    meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+    if not meshes:
+        return
+    with bpy.context.temp_override(
+        object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
+    ):
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 
 def select_only(obj):
@@ -272,9 +277,17 @@ def export_preset(filepath, preset, draco):
             export_animations=False,
         )
         return
+    # Unreal: centimeters. Scale location with scale (as in
+    # snippets/export_preset_unreal.py) so node translations are in cm too;
+    # origin_to_base() leaves location.z off zero, so this always matters.
     for obj in list(bpy.context.selected_objects):
         if obj.type != "MESH":
             continue
+        obj.location = (
+            obj.location[0] * 100.0,
+            obj.location[1] * 100.0,
+            obj.location[2] * 100.0,
+        )
         obj.scale = (
             obj.scale[0] * 100.0,
             obj.scale[1] * 100.0,

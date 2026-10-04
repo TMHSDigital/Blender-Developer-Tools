@@ -46,11 +46,16 @@ def scale_is_identity(obj, tol=1e-6):
     return abs(sx - 1.0) < tol and abs(sy - 1.0) < tol and abs(sz - 1.0) < tol
 
 
-def apply_object_transform(obj):
+def apply_transforms(objs):
+    # One operator call for the whole list. transform_apply acts on
+    # selected_editable_objects, so that is the key to override; overriding
+    # selected_objects alone does not narrow it.
+    if not objs:
+        return
     with bpy.context.temp_override(
-        object=obj,
-        active_object=obj,
-        selected_objects=[obj],
+        object=objs[0],
+        active_object=objs[0],
+        selected_editable_objects=list(objs),
     ):
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
@@ -107,9 +112,7 @@ if not scene_units_are_meters(scene):
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
 
-for obj in imported_meshes():
-    if not scale_is_identity(obj):
-        apply_object_transform(obj)
+apply_transforms([o for o in imported_meshes() if not scale_is_identity(o)])
 ```
 
 `export_apply=True` on glTF applies **modifiers**, not object scale. Unapplied object scale lands on the glTF node. Witness: `examples/unapplied-scale-gltf/`.

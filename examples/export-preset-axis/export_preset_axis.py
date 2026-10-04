@@ -303,15 +303,16 @@ def principled(name, color, metallic, roughness):
 
 
 def apply_selected_mesh_transforms():
-    for obj in list(bpy.context.selected_objects):
-        if obj.type != "MESH":
-            continue
-        with bpy.context.temp_override(
-            object=obj, active_object=obj, selected_objects=[obj]
-        ):
-            bpy.ops.object.transform_apply(
-                location=False, rotation=True, scale=True
-            )
+    # Same body as snippets/export_preset_unity.py: one operator call for the
+    # whole selection. transform_apply acts on selected_editable_objects, so
+    # that is the key to override; selected_objects alone does not narrow it.
+    meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+    if not meshes:
+        return
+    with bpy.context.temp_override(
+        object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
+    ):
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 
 def export_selected(path, kwargs):

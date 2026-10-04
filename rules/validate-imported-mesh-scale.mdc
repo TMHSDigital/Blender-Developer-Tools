@@ -63,17 +63,18 @@ if scene.unit_settings.system not in {"METRIC", "NONE"}:
     scene.unit_settings.system = "METRIC"
 scene.unit_settings.scale_length = 1.0
 
-for obj in bpy.context.selected_objects:
-    if obj.type != "MESH":
-        continue
-    sx, sy, sz = obj.scale
-    if abs(sx - 1.0) > 1e-6 or abs(sy - 1.0) > 1e-6 or abs(sz - 1.0) > 1e-6:
-        with bpy.context.temp_override(
-            object=obj, active_object=obj, selected_editable_objects=[obj]
-        ):
-            bpy.ops.object.transform_apply(
-                location=False, rotation=True, scale=True
-            )
+def scaled(obj):
+    return any(abs(s - 1.0) > 1e-6 for s in obj.scale)
+
+# One transform_apply for every scaled mesh, not one call per object.
+# transform_apply acts on selected_editable_objects, so that is the key to
+# override; selected_objects alone does not narrow it.
+meshes = [o for o in bpy.context.selected_objects if o.type == "MESH" and scaled(o)]
+if meshes:
+    with bpy.context.temp_override(
+        object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
+    ):
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 ```
 
 For FBX, pass `global_scale=1.0` on import as well, then still check
