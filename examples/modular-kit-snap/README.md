@@ -84,6 +84,7 @@ with `strategy="projection"`.
 
 ```bash
 blender --background --python modular_kit_snap.py --
+blender --background --python modular_kit_snap.py -- --seam-gap   # falsifier: tiled duplicate 120 mm past the joint; exits 5
 blender --background --python modular_kit_snap.py -- --output corridor.png
 blender --background --python modular_kit_snap.py -- --falsify seams.png
 blender --background --python modular_kit_snap.py -- --output close.png --close-camera
@@ -102,7 +103,7 @@ the shared Layer 1 helper). `11` is the shared asset-quality helper.
 | 2 | argparse / usage |
 | 3 | Boundary vert count or end-plane membership |
 | 4 | End rings do not partition evenly, or opposing loops differ |
-| 5 | Tiled instances do not share boundary positions |
+| 5 | Tiled instances do not share boundary positions (`--seam-gap` lands here) |
 | 6 | Shell or whole-asset bbox off the declared tile |
 | 7 | Boundary edge count, non-manifold edges, or rim off the end planes |
 | 8 | Detail part not watertight |
@@ -112,4 +113,4 @@ the shared Layer 1 helper). `11` is the shared asset-quality helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`, `--falsify`, or `--close-camera`.
+Smoke does not pass `--output`, `--falsify`, or `--close-camera`. Its catalog falsifier is `--seam-gap` (expect exit 5): the `--falsify` render's 120 mm gap and 50 mm jog, applied to the duplicate the joint check measures.

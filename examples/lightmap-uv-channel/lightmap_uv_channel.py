@@ -574,7 +574,7 @@ def min_island_distance(me, layer_name):
 # Check
 # ---------------------------------------------------------------------------
 
-def check():
+def check(overlap=False):
     meshes = build_cart_meshes()
     fails = []
 
@@ -615,6 +615,8 @@ def check():
         ob = bpy.data.objects.new(me.name, me)
         bpy.context.collection.objects.link(ob)
         author_uv1(ob)
+        if overlap and suffix == "Bed":
+            drag_second_island(me)  # falsifier: the SAT scan must report it
 
         # re-fetch by name after CustomData-reallocating ops (see header)
         layers = me.uv_layers
@@ -775,6 +777,23 @@ def build_studio(sc):
     return floor, wall
 
 
+def drag_second_island(me):
+    """Translate the mesh's second-largest UV1 face onto the largest one's
+    anchor, shape intact. Shared by --overlap-islands (check path, exit 7)
+    and --falsify (render path). Returns the dragged polygon index."""
+    layer = me.uv_layers[LAYER1]
+    polys = sorted(me.polygons, key=lambda p: p.area, reverse=True)
+    big, second = polys[0], polys[1]
+    anchor = tuple(layer.data[big.loop_indices[0]].uv)
+    first = second.loop_indices[0]
+    du = (anchor[0] - layer.data[first].uv[0],
+          anchor[1] - layer.data[first].uv[1])
+    for li in second.loop_indices:
+        u, v = layer.data[li].uv
+        layer.data[li].uv = (u + du[0], v + du[1])
+    return second.index
+
+
 def render_still(path, engine, falsify=False):
     """The cart beside its UV1 atlas board — island polygons built from the
     LIVE packed UVs, so a change in the atlas moves the board. Falsified:
@@ -825,18 +844,7 @@ def render_still(path, engine, falsify=False):
     # emissive red on the board (tiny-strip overlaps would not read)
     dragged = set()
     if falsify:
-        bed = meshes["Bed"]
-        layer = bed.uv_layers[LAYER1]
-        polys = sorted(bed.polygons, key=lambda p: p.area, reverse=True)
-        big, second = polys[0], polys[1]
-        anchor = tuple(layer.data[big.loop_indices[0]].uv)
-        dragged.add(second.index)
-        first = second.loop_indices[0]
-        du = (anchor[0] - layer.data[first].uv[0],
-              anchor[1] - layer.data[first].uv[1])
-        for li in second.loop_indices:
-            u, v = layer.data[li].uv
-            layer.data[li].uv = (u + du[0], v + du[1])
+        dragged.add(drag_second_island(meshes["Bed"]))
 
     # atlas board: the Bed's live UV1 as flat island polygons mapped onto the
     # board face — a change in the packed atlas moves the board geometry
@@ -981,6 +989,9 @@ def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
+    p.add_argument("--overlap-islands", action="store_true",
+                   help="falsifier: drag the Bed's second-largest UV1 island onto "
+                        "the largest before the overlap scan (exit 7)")
     p.add_argument("--falsify", default=None,
                    help="optional: render the overlapping-atlas variant here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
@@ -989,7 +1000,7 @@ def main():
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code = check()
+    code = check(overlap=args.overlap_islands)
     if code:
         return code
 

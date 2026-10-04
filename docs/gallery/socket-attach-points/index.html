@@ -77,22 +77,23 @@
 <p><strong>Render as proof:</strong> the drone hovering over the dark stage with every module seated, the orange mount pads reading as the socket signature. The livery is two-tone — a gloss cobalt fuselage shell (the pads&#x27; complement, so the sockets pop), off-white arm fairings and spinners, graphite deck and trim — and the booms carry a procedural twill carbon weave under a clear coat. The camera looks down at the airframe, so the floor is the backdrop: a small close key keeps its falloff on the drone and the warm wedge pools on the floor behind it. The falsification variant (<code>--falsify</code>) parents the sockets without <code>matrix_parent_inverse</code>: the pads are left bare, the rotors and mast vanish from the airframe, and the camera pod and battery hang in space near the top of frame. A broken matrix is not a subtle pixel difference here — the asset comes apart.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python socket_attach_points.py --
+blender --background --python socket_attach_points.py -- --skip-mpi   # falsifier: sockets parented without matrix_parent_inverse; exits 3
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe</code></pre>
 <p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.741x</strong>, margins <strong>0.131/0.128/0.172/0.156</strong>, no edge touched — pulled back from 0.881x so the rotor tips clear gallery card crops) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). <code>--falsify</code> is a diagnostic, not a gallery hero: it measures and prints framing but does not enforce the Layer 1 band — modules leave the frame on purpose. <code>--falsify</code> and <code>--probe</code> still exit 0.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Socket world matrix, orthonormal basis, or determinant</td></tr><tr><td>4</td><td>Socket pad normal, origin, or up-axis rule</td></tr><tr><td>5</td><td>Module seating / mount axis / leftover local transform</td></tr><tr><td>6</td><td>Population, namespace, default datablock name, SKT_ prefix, or skid plane</td></tr><tr><td>7</td><td>Re-pose: socket or module lost the root</td></tr><tr><td>8</td><td>Parent-inverse clear, child scale pushdown, or post-apply module drift</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--falsify</code>, or <code>--probe</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Socket world matrix, orthonormal basis, or determinant (<code>--skip-mpi</code> lands here)</td></tr><tr><td>4</td><td>Socket pad normal, origin, or up-axis rule</td></tr><tr><td>5</td><td>Module seating / mount axis / leftover local transform</td></tr><tr><td>6</td><td>Population, namespace, default datablock name, SKT_ prefix, or skid plane</td></tr><tr><td>7</td><td>Re-pose: socket or module lost the root</td></tr><tr><td>8</td><td>Parent-inverse clear, child scale pushdown, or post-apply module drift</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--falsify</code>, or <code>--probe</code>. Its catalog falsifier is <code>--skip-mpi</code> (expect exit 3): the sockets are parented without <code>matrix_parent_inverse</code>, the defect <code>--falsify</code> renders.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/socket-attach-points/socket_attach_points.py</code>
-        <span>1177 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/socket-attach-points/socket_attach_points.py">View on GitHub &rarr;</a></span>
+        <span>1181 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/socket-attach-points/socket_attach_points.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1177">
+      <div class="code" data-lines="1181">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1269,7 +1270,11 @@ blender --background --python socket_attach_points.py -- --probe</code></pre>
 1174
 1175
 1176
-1177</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Socket attach points — named empties parented into an asset as spawn mounts.
+1177
+1178
+1179
+1180
+1181</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Socket attach points — named empties parented into an asset as spawn mounts.
 
 Witnesses the contract a spawn system depends on when it bolts modules onto a
 prop at runtime: an attachment placed at socket S with an identity local
@@ -1931,7 +1936,7 @@ MODULE_MOUNT_AXIS = Vector((<span class="n">0.0</span>, <span class="n">0.0</spa
                <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>) <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>))
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(skip_mpi=<span class="k">False</span>):
     sc = bpy.context.scene
     fails = []
 
@@ -1940,7 +1945,8 @@ MODULE_MOUNT_AXIS = Vector((<span class="n">0.0</span>, <span class="n">0.0</spa
         fails.append(code)
 
     chassis = build_chassis_meshes()
-    root, parts, sockets, modules = assemble(sc, chassis_meshes=chassis)
+    root, parts, sockets, modules = assemble(sc, chassis_meshes=chassis,
+                                             skip_mpi=skip_mpi)
     spec = socket_spec()
     pad_by_socket = {s[<span class="n">0</span>]: s[<span class="n">1</span>] <span class="k">for</span> s <span class="k">in</span> spec}
     local_by_socket = {s[<span class="n">0</span>]: authored_local(s[<span class="n">2</span>], s[<span class="n">3</span>]) <span class="k">for</span> s <span class="k">in</span> spec}
@@ -2410,6 +2416,9 @@ WEAVE_SLOTS = {<span class="s">&quot;Boom&quot;</span>}
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: render the no-parent-inverse variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--skip-mpi&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: parent the sockets without &quot;</span>
+                        <span class="s">&quot;matrix_parent_inverse; the world-matrix check fails (exit 3)&quot;</span>)
     p.add_argument(<span class="s">&quot;--probe&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
                    help=<span class="s">&quot;optional: print the measured no-parent-inverse jump&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
@@ -2417,7 +2426,7 @@ WEAVE_SLOTS = {<span class="s">&quot;Boom&quot;</span>}
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    code = check()
+    code = check(skip_mpi=args.skip_mpi)
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.probe:

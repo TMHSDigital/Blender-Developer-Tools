@@ -258,7 +258,7 @@ def manifold_report(me):
         bm.free()
 
 
-def check():
+def check(seam_gap=False):
     meshes = build_kit_meshes()
     shell = meshes["Shell"]
     fails = []
@@ -305,7 +305,9 @@ def check():
     shell_ob.parent = root
     dup = shell_ob.copy()                       # linked duplicate (shares mesh)
     dup.parent = None
-    dup.location = (TILE, 0.0, 0.0)
+    # --seam-gap: the --falsify render's 120 mm gap and 50 mm lateral jog,
+    # applied to the duplicate the joint check measures (exit 5)
+    dup.location = (TILE + 0.12, 0.05, 0.0) if seam_gap else (TILE, 0.0, 0.0)
     bpy.context.collection.objects.link(dup)
     bpy.context.view_layer.update()
     end_b_yz = [ring_key(shell_ob.matrix_world @ v.co) for v in on
@@ -737,6 +739,9 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--falsify", default=None,
                    help="optional: render the unsnapped-joint seam variant here")
+    p.add_argument("--seam-gap", action="store_true",
+                   help="falsifier: place the tiled duplicate 120 mm past and 50 mm "
+                        "beside the joint; the tiling check fails (exit 5)")
     p.add_argument("--close-camera", action="store_true",
                    help="falsification: push the camera into the corridor so "
                         "framing deviation exceeds the cap (needs --output)")
@@ -746,7 +751,7 @@ def main():
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code = check()
+    code = check(seam_gap=args.seam_gap)
     if code:
         return code
 

@@ -171,6 +171,50 @@ class CatalogWiring(unittest.TestCase):
         self.assertEqual(row["sidecar_contains"], "exit_pre-ok")
 
 
+class Falsifier(unittest.TestCase):
+    """A falsifier passes only by failing exactly as declared."""
+
+    def c(self, code, **kw):
+        return classify(proc_exit=code, output="", **kw)[0]
+
+    def test_exact_exit_passes(self):
+        self.assertEqual(self.c(7, expect_exit=7), PASS)
+
+    def test_exit_0_is_fail(self):
+        # the check did not fire: the falsifier witnesses nothing
+        self.assertEqual(self.c(0, expect_exit=7), FAIL)
+
+    def test_other_check_is_fail(self):
+        # an earlier check fired: the target check is unproven
+        self.assertEqual(self.c(3, expect_exit=7), FAIL)
+
+    def test_crash_is_fail(self):
+        self.assertEqual(self.c(1, expect_exit=7), FAIL)
+
+    def test_cannot_expect_0_1_or_77(self):
+        for bad in (0, 1, SKIP_EXIT):
+            self.assertEqual(self.c(bad, expect_exit=bad), FAIL)
+
+    def test_legal_skip_stays_skip(self):
+        out = "SMOKE_SKIP: needs 5.1\n"
+        st, _ = classify(proc_exit=SKIP_EXIT, output=out, min_version="5.1",
+                         blender_version="4.5", expect_exit=3)
+        self.assertEqual(st, SKIP)
+
+    def test_sidecar_falsifier(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = os.path.join(td, "s.txt")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("atexit-ok")
+            kw = dict(expect_sidecar=True, sidecar_path=path,
+                      sidecar_contains="exit_pre-ok", expect_sidecar_fail=True)
+            self.assertEqual(self.c(0, **kw), PASS)  # wrong contents caught
+            self.assertEqual(self.c(2, **kw), FAIL)  # script itself failed
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("exit_pre-ok")
+            self.assertEqual(self.c(0, **kw), FAIL)  # sidecar check not broken
+
+
 class BuildCmd(unittest.TestCase):
     """Blender exits 0 on an uncaught exception unless --python-exit-code is set."""
 
@@ -207,6 +251,9 @@ class RunCatalog(unittest.TestCase):
         def fake_call(cmd):
             name = cmd[cmd.index("--name") + 1]
             seen.append(name)
+            if "--expect-exit" in cmd:
+                want = cmd[cmd.index("--expect-exit") + 1]
+                seen.append(f"expect {want}")
             return codes.get(name, 0)
 
         with tempfile.TemporaryDirectory() as td:
@@ -236,6 +283,26 @@ class RunCatalog(unittest.TestCase):
     def test_all_pass_is_green(self):
         rows = [{"name": "a", "script": "a.py"}]
         self.assertEqual(self._run(rows, {})[0], 0)
+
+    def test_falsifiers_run_after_each_row(self):
+        rows = [{"name": "a", "script": "a.py",
+                 "falsifiers": [{"args": ["--break"], "expect_exit": 4}]}]
+        code, seen, _ = self._run(rows, {})
+        self.assertEqual(code, 0)
+        self.assertEqual(seen, ["a", "a [falsifier --break]", "expect 4"])
+
+    def test_failing_falsifier_is_red(self):
+        rows = [{"name": "a", "script": "a.py",
+                 "falsifiers": [{"args": ["--break"], "expect_exit": 4}]}]
+        code, _, err = self._run(rows, {"a [falsifier --break]": 1})
+        self.assertEqual(code, 1)
+        self.assertIn("a [falsifier --break]", err)
+
+    def test_no_falsifiers_flag(self):
+        rows = [{"name": "a", "script": "a.py",
+                 "falsifiers": [{"args": ["--break"], "expect_exit": 4}]}]
+        _, seen, _ = self._run(rows, {}, extra=("--no-falsifiers",))
+        self.assertEqual(seen, ["a"])
 
     def test_empty_catalog_is_red(self):
         code, seen, err = self._run([], {})

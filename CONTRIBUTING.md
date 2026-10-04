@@ -114,7 +114,9 @@ budget conformance, never an API contract.
    exit-code table, and a falsifier that breaks one pipeline stage so a
    **named** budget fails.
 2. List the directory in `.cursor-plugin/plugin.json` `"showcase"` and add a
-   `tests/smoke/catalog.json` row. The runner takes opaque script paths.
+   `tests/smoke/catalog.json` row with at least one entry in `falsifiers`
+   (`{"args": ["--your-flag"], "expect_exit": N}`, matching the README
+   falsifier table). The runner takes opaque script paths.
 3. Add a `showcase/gallery.json` `pieces[]` entry, including an `alt`: one
    sentence saying what the still shows (the generator fails without it).
    Render a still, and run `python scripts/build_gallery.py`. Do not hand-edit `docs/gallery/` HTML.

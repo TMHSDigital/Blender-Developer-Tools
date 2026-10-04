@@ -96,7 +96,7 @@ jobs:
     needs: resolve-matrix
     if: needs.resolve-matrix.result == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75  # happy paths + one falsifier per catalog row (~2x the old run)
     strategy:
       fail-fast: false
       matrix:
@@ -345,6 +345,15 @@ jobs:
             --out "$RUNNER_TEMP/out" \
             --xvfb \
             --catalog tests/smoke/catalog.json
+
+      - name: Full showcase falsifier sweep (weekly, 5.2)
+        # The catalog runs one falsifier per row on every smoke run. The weekly
+        # cron also runs every falsifier in every showcase README table and
+        # asserts each lands on the exit it declares (~5 min).
+        if: ${{ github.event_name == 'schedule' && matrix.series == '5.2' }}
+        run: |
+          set -euo pipefail
+          python3 tests/check_falsifier_targets.py --run "$BLENDER"
 
       - name: Smoke summary
         if: ${{ always() && env.BLENDER != '' }}

@@ -660,7 +660,7 @@ def ortho_error(m3):
                for i in range(3) for j in range(3))
 
 
-def check():
+def check(skip_mpi=False):
     sc = bpy.context.scene
     fails = []
 
@@ -669,7 +669,8 @@ def check():
         fails.append(code)
 
     chassis = build_chassis_meshes()
-    root, parts, sockets, modules = assemble(sc, chassis_meshes=chassis)
+    root, parts, sockets, modules = assemble(sc, chassis_meshes=chassis,
+                                             skip_mpi=skip_mpi)
     spec = socket_spec()
     pad_by_socket = {s[0]: s[1] for s in spec}
     local_by_socket = {s[0]: authored_local(s[2], s[3]) for s in spec}
@@ -1139,6 +1140,9 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--falsify", default=None,
                    help="optional: render the no-parent-inverse variant here")
+    p.add_argument("--skip-mpi", action="store_true",
+                   help="falsifier: parent the sockets without "
+                        "matrix_parent_inverse; the world-matrix check fails (exit 3)")
     p.add_argument("--probe", action="store_true",
                    help="optional: print the measured no-parent-inverse jump")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
@@ -1146,7 +1150,7 @@ def main():
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code = check()
+    code = check(skip_mpi=args.skip_mpi)
     if code:
         return code
     if args.probe:

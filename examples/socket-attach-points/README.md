@@ -123,6 +123,7 @@ subtle pixel difference here — the asset comes apart.
 
 ```bash
 blender --background --python socket_attach_points.py --
+blender --background --python socket_attach_points.py -- --skip-mpi   # falsifier: sockets parented without matrix_parent_inverse; exits 3
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe
@@ -149,7 +150,7 @@ helper.
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Socket world matrix, orthonormal basis, or determinant |
+| 3 | Socket world matrix, orthonormal basis, or determinant (`--skip-mpi` lands here) |
 | 4 | Socket pad normal, origin, or up-axis rule |
 | 5 | Module seating / mount axis / leftover local transform |
 | 6 | Population, namespace, default datablock name, SKT_ prefix, or skid plane |
@@ -161,4 +162,4 @@ helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`, `--falsify`, or `--probe`.
+Smoke does not pass `--output`, `--falsify`, or `--probe`. Its catalog falsifier is `--skip-mpi` (expect exit 3): the sockets are parented without `matrix_parent_inverse`, the defect `--falsify` renders.

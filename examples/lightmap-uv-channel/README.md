@@ -93,6 +93,7 @@ over Object coordinates; no check reads a material.
 
 ```bash
 blender --background --python lightmap_uv_channel.py --
+blender --background --python lightmap_uv_channel.py -- --overlap-islands   # falsifier: overlap scan reports the dragged island; exits 7
 blender --background --python lightmap_uv_channel.py -- --output atlas.png
 blender --background --python lightmap_uv_channel.py -- --falsify overlap.png
 ```
@@ -112,7 +113,7 @@ helper.
 | 4 | UVMap / UV1 render/clone flags wrong after re-assert |
 | 5 | Channel 0 (UV0) touched by the UV1 unwrap |
 | 6 | UV1 loops outside `[0,1]` |
-| 7 | SAT overlap self-test failed, or UV1 triangle pairs overlap |
+| 7 | SAT overlap self-test failed, or UV1 triangle pairs overlap (`--overlap-islands` lands here) |
 | 8 | Min island distance below margin |
 | 9 | Part is not watertight |
 | 10 | Gallery framing violation; also `--output` produced no file |
@@ -120,4 +121,4 @@ helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--falsify`.
+Smoke does not pass `--output` or `--falsify`. Its catalog falsifier is `--overlap-islands` (expect exit 7): the same island drag as `--falsify`, applied before the SAT scan.

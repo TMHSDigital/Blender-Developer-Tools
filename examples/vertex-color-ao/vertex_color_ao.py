@@ -102,6 +102,12 @@ def eevee_engine_id():
 # The AO integrator
 # ---------------------------------------------------------------------------
 
+# Falsifier switch (--uniform-hemisphere): sample uniformly in solid angle
+# instead of cosine-weighted. The closed form is the cosine-weighted integral,
+# so the calibration check (exit 3) must catch it.
+COSINE_WEIGHTED = True
+
+
 def hemisphere_dirs(n):
     """Deterministic cosine-weighted hemisphere directions about +Z.
 
@@ -113,7 +119,11 @@ def hemisphere_dirs(n):
     golden = math.pi * (3.0 - math.sqrt(5.0))
     dirs = []
     for i in range(n):
-        r = math.sqrt((i + 0.5) / n)
+        if COSINE_WEIGHTED:
+            r = math.sqrt((i + 0.5) / n)
+        else:  # uniform in solid angle: z uniform on [0, 1]
+            z = 1.0 - (i + 0.5) / n
+            r = math.sqrt(1.0 - z * z)
         phi = i * golden
         x, y = r * math.cos(phi), r * math.sin(phi)
         dirs.append(Vector((x, y, math.sqrt(max(0.0, 1.0 - r * r)))))
@@ -1021,9 +1031,14 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--falsify", default=None,
                    help="optional: render the inverted-AO variant here")
+    p.add_argument("--uniform-hemisphere", action="store_true",
+                   help="falsifier: sample the hemisphere uniformly instead of "
+                        "cosine-weighted; the closed-form calibration fails (exit 3)")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
     args = p.parse_args(argv)
 
+    global COSINE_WEIGHTED
+    COSINE_WEIGHTED = not args.uniform_hemisphere
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     code = check()

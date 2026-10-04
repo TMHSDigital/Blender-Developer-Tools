@@ -5,7 +5,12 @@ Run: blender --background --python tests/smoke/check_extension_template.py
 Imports templates/extension-addon-template/__init__.py as a package, calls
 register(), asserts the operator, panel and Scene pointer exist and that the
 operator works, then calls unregister() and asserts all three are gone. Exits
-non-zero naming the first failed assertion.
+non-zero naming the first failed assertion:
+
+  3  register() or the operator/PropertyGroup contract failed
+  4  something survived unregister()
+
+Falsifier (catalog row): `-- --skip-unregister` must exit 4.
 """
 import importlib.util
 import os
@@ -17,9 +22,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 PKG_DIR = os.path.join(ROOT, "templates", "extension-addon-template")
 
 
-def fail(msg):
+SKIP_UNREGISTER = "--skip-unregister" in (sys.argv[sys.argv.index("--") + 1:]
+                                         if "--" in sys.argv else [])
+
+
+def fail(msg, code=3):
     print(f"FAIL: {msg}", file=sys.stderr)
-    sys.exit(1)
+    sys.exit(code)
 
 
 def operator_present():
@@ -60,12 +69,13 @@ bpy.ops.example.nudge_active(factor=2.5)
 if abs(cube.location.z - (z0 + 2.5)) > 1e-6:
     fail(f"operator moved z by {cube.location.z - z0}, expected 2.5")
 
-mod.unregister()
+if not SKIP_UNREGISTER:
+    mod.unregister()
 if operator_present():
-    fail("operator example.nudge_active still present after unregister()")
+    fail("operator example.nudge_active still present after unregister()", 4)
 if panel_present():
-    fail("panel still present after unregister()")
+    fail("panel still present after unregister()", 4)
 if hasattr(bpy.types.Scene, "example_addon"):
-    fail("Scene.example_addon pointer still bound after unregister()")
+    fail("Scene.example_addon pointer still bound after unregister()", 4)
 
 print("extension template register/unregister lifecycle OK")

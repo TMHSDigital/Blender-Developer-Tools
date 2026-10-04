@@ -4,6 +4,10 @@ Exit 0 if at least one PASS and no FAIL.
 Exit 1 if any FAIL.
 Exit 2 if every recorded example skipped (or nothing ran) — a green all-skip is illegal.
 
+Falsifier runs (records with "falsifier": true) are counted and tabled
+separately: a falsifier PASS means the contract broke as declared, so it must
+not make an all-skip example run look green, and any falsifier FAIL is red.
+
 Writes GitHub step summary when $GITHUB_STEP_SUMMARY is set.
 """
 from __future__ import annotations
@@ -29,19 +33,28 @@ def load(path):
     return records
 
 
-def render(records, passed, skipped, failed):
+def _table(title, records, counts, noun):
+    passed, skipped, failed = counts
     lines = [
-        "## Smoke summary",
+        title,
         "",
         f"**{passed} passed**, **{skipped} skipped**, **{failed} failed**",
         "",
-        "| Example | Result | Detail |",
+        f"| {noun} | Result | Detail |",
         "| --- | --- | --- |",
     ]
     for rec in records:
         detail = (rec.get("detail") or "").replace("|", "\\|")
         lines.append(f"| {rec['name']} | {rec['status']} | {detail} |")
     lines.append("")
+    return lines
+
+
+def render(records, passed, skipped, failed, falsifiers=(), fcounts=(0, 0, 0)):
+    lines = _table("## Smoke summary", records, (passed, skipped, failed), "Example")
+    if falsifiers:
+        lines += _table("## Falsifiers (each must fail exactly as declared)",
+                        falsifiers, fcounts, "Falsifier")
     return "\n".join(lines)
 
 
@@ -53,9 +66,15 @@ def main(argv=None):
         required=False,
     )
     args = p.parse_args(argv)
-    records = load(args.status)
+    allrec = load(args.status)
+    records = [r for r in allrec if not r.get("falsifier")]
+    falsifiers = [r for r in allrec if r.get("falsifier")]
     passed, skipped, failed, code = summarize_records(records)
-    text = render(records, passed, skipped, failed)
+    fpassed, fskipped, ffailed, _ = summarize_records(falsifiers)
+    if ffailed and code == 0:
+        code = 1
+    text = render(records, passed, skipped, failed, falsifiers,
+                  (fpassed, fskipped, ffailed))
     print(text)
     if code == 2:
         print(

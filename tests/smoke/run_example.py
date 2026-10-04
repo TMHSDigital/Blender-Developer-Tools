@@ -81,6 +81,8 @@ def run(args):
         expect_sidecar=bool(sidecar),
         sidecar_path=sidecar,
         sidecar_contains=args.sidecar_contains,
+        expect_exit=args.expect_exit,
+        expect_sidecar_fail=args.expect_sidecar_fail,
     )
     record = {
         "name": args.name,
@@ -89,6 +91,8 @@ def run(args):
         "proc_exit": proc_exit,
         "ts": _now(),
     }
+    if args.expect_exit is not None or args.expect_sidecar_fail:
+        record["falsifier"] = True
     append_status(args.status, record)
 
     if status == "PASS":
@@ -113,6 +117,14 @@ def main(argv=None):
     p.add_argument("--expect-sidecar", default=None)
     p.add_argument("--sidecar-contains", default=None)
     p.add_argument("--forbid-skip", action="store_true")
+    p.add_argument(
+        "--expect-exit", type=int, default=None,
+        help="falsifier run: PASS only if Blender exits exactly this code",
+    )
+    p.add_argument(
+        "--expect-sidecar-fail", action="store_true",
+        help="falsifier run: PASS only if the script exits 0 and the sidecar check fails",
+    )
     p.add_argument(
         "--no-record",
         action="store_true",

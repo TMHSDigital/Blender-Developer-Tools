@@ -72,21 +72,22 @@
 <p><strong>Framing deviation:</strong> the still is an interior corridor run — the envelope surrounds the camera on five sides and the tiling joints are the proof, so the subject reads as extending past the frame. The helper measures; this example enforces a projection-space fill-over cap (<code>FRAME_DEV_MAX = 8.0</code>). Gallery camera scores ~5.06 (pass). <code>--close-camera</code> scores ~30.9 and exits 10. Silhouette saturates at fill 1.0, so the cap is measured with <code>strategy=&quot;projection&quot;</code>.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python modular_kit_snap.py --
+blender --background --python modular_kit_snap.py -- --seam-gap   # falsifier: tiled duplicate 120 mm past the joint; exits 5
 blender --background --python modular_kit_snap.py -- --output corridor.png
 blender --background --python modular_kit_snap.py -- --falsify seams.png
 blender --background --python modular_kit_snap.py -- --output close.png --close-camera</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is this example&#x27;s framing-deviation cap (call site, not the shared Layer 1 helper). <code>11</code> is the shared asset-quality helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Boundary vert count or end-plane membership</td></tr><tr><td>4</td><td>End rings do not partition evenly, or opposing loops differ</td></tr><tr><td>5</td><td>Tiled instances do not share boundary positions</td></tr><tr><td>6</td><td>Shell or whole-asset bbox off the declared tile</td></tr><tr><td>7</td><td>Boundary edge count, non-manifold edges, or rim off the end planes</td></tr><tr><td>8</td><td>Detail part not watertight</td></tr><tr><td>9</td><td>Detail part reaches a tile boundary; also <code>--output</code> produced no file</td></tr><tr><td>10</td><td>Framing deviation score exceeds cap (<code>--close-camera</code>)</td></tr><tr><td>11</td><td>Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--falsify</code>, or <code>--close-camera</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Boundary vert count or end-plane membership</td></tr><tr><td>4</td><td>End rings do not partition evenly, or opposing loops differ</td></tr><tr><td>5</td><td>Tiled instances do not share boundary positions (<code>--seam-gap</code> lands here)</td></tr><tr><td>6</td><td>Shell or whole-asset bbox off the declared tile</td></tr><tr><td>7</td><td>Boundary edge count, non-manifold edges, or rim off the end planes</td></tr><tr><td>8</td><td>Detail part not watertight</td></tr><tr><td>9</td><td>Detail part reaches a tile boundary; also <code>--output</code> produced no file</td></tr><tr><td>10</td><td>Framing deviation score exceeds cap (<code>--close-camera</code>)</td></tr><tr><td>11</td><td>Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--falsify</code>, or <code>--close-camera</code>. Its catalog falsifier is <code>--seam-gap</code> (expect exit 5): the <code>--falsify</code> render&#x27;s 120 mm gap and 50 mm jog, applied to the duplicate the joint check measures.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/modular-kit-snap/modular_kit_snap.py</code>
-        <span>779 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap/modular_kit_snap.py">View on GitHub &rarr;</a></span>
+        <span>784 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap/modular_kit_snap.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="779">
+      <div class="code" data-lines="784">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -865,7 +866,12 @@ blender --background --python modular_kit_snap.py -- --output close.png --close-
 776
 777
 778
-779</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Modular kit snap — boundary vertices welded to the tile grid so segments tile seamlessly.
+779
+780
+781
+782
+783
+784</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Modular kit snap — boundary vertices welded to the tile grid so segments tile seamlessly.
 
 Witnesses the contract a tiling modular kit lives or dies by: a corridor
 segment whose open-end boundary vertices sit EXACTLY on the declared tile
@@ -1125,7 +1131,7 @@ PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per 
         bm.free()
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(seam_gap=<span class="k">False</span>):
     meshes = build_kit_meshes()
     shell = meshes[<span class="s">&quot;Shell&quot;</span>]
     fails = []
@@ -1172,7 +1178,9 @@ PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per 
     shell_ob.parent = root
     dup = shell_ob.copy()                       <span class="c"># linked duplicate (shares mesh)</span>
     dup.parent = <span class="k">None</span>
-    dup.location = (TILE, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="c"># --seam-gap: the --falsify render&#x27;s 120 mm gap and 50 mm lateral jog,</span>
+    <span class="c"># applied to the duplicate the joint check measures (exit 5)</span>
+    dup.location = (TILE + <span class="n">0.12</span>, <span class="n">0.05</span>, <span class="n">0.0</span>) <span class="k">if</span> seam_gap <span class="k">else</span> (TILE, <span class="n">0.0</span>, <span class="n">0.0</span>)
     bpy.context.collection.objects.link(dup)
     bpy.context.view_layer.update()
     end_b_yz = [ring_key(shell_ob.matrix_world @ v.co) <span class="k">for</span> v <span class="k">in</span> on
@@ -1604,6 +1612,9 @@ _mat_cache = {}
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: render the unsnapped-joint seam variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--seam-gap&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: place the tiled duplicate 120 mm past and 50 mm &quot;</span>
+                        <span class="s">&quot;beside the joint; the tiling check fails (exit 5)&quot;</span>)
     p.add_argument(<span class="s">&quot;--close-camera&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
                    help=<span class="s">&quot;falsification: push the camera into the corridor so &quot;</span>
                         <span class="s">&quot;framing deviation exceeds the cap (needs --output)&quot;</span>)
@@ -1613,7 +1624,7 @@ _mat_cache = {}
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    code = check()
+    code = check(seam_gap=args.seam_gap)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

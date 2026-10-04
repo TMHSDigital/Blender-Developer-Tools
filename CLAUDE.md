@@ -176,8 +176,16 @@ The host runner is `tests/smoke/run_example.py`. Shipped examples are listed in
 - **Post-exit sidecar:** opt-in `--expect-sidecar PATH`. The example writes
   `$BDT_SMOKE_SIDECAR` (set by the runner). The harness asserts after Blender
   exits. Not a gallery still.
+- **Falsifiers in CI:** every catalog row carries `falsifiers`, at least one
+  `{"args": [...], "expect_exit": N}` (N not 0, 1 or 77) or, for a contract
+  the sidecar check owns, `{"args": [...], "expect_sidecar_fail": true}`.
+  `run_catalog.py` runs each after the row's happy path; it passes only on
+  exactly that exit. `tests/check_smoke_catalog.py` rejects a row without one
+  and any unknown key. The weekly cron also runs the full showcase sweep
+  (`tests/check_falsifier_targets.py --run`).
 - **Summary:** `tests/smoke/summarize.py` prints passed/skipped/failed. Zero
-  PASSes makes the job red even if every example skipped cleanly.
+  PASSes makes the job red even if every example skipped cleanly. Falsifier
+  runs are tabled separately and never count toward that PASS.
 
 ## Example-Run Process
 

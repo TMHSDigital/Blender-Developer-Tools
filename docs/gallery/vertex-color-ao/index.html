@@ -78,21 +78,22 @@
 <p>The studio rig is presentation only. Its fill and rim used to be strongly blue, which lit the whole stage cold (stage luma 0.243, warmth +0.01 against the calibration set). Its wedge grazed floor the camera barely saw and left a hard-edged patch on the back wall. Both are now near neutral, and the wedge pools warm light on the floor just behind the well from the camera&#x27;s side: luma 0.274, warmth +0.023. The bake, the checks and the exit codes are unchanged.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python vertex_color_ao.py --
+blender --background --python vertex_color_ao.py -- --uniform-hemisphere   # falsifier: uniform instead of cosine-weighted hemisphere; calibration exits 3
 blender --background --python vertex_color_ao.py -- --output well.png
 blender --background --python vertex_color_ao.py -- --falsify inverted.png</code></pre>
 <p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.839y</strong>, margins <strong>0.241/0.238/0.072/0.089</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (11 materials, <code>edge90</code> <strong>0.152</strong>, no default names).</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Calibration AO off closed form</td></tr><tr><td>4</td><td>Unoccluded plate is not 1.0, or AO is not strictly increasing with distance</td></tr><tr><td>5</td><td>Bake empty, out of range, or spread too small</td></tr><tr><td>6</td><td>FLOAT_COLOR / BYTE_COLOR round-trip contract</td></tr><tr><td>7</td><td>Colour attributes missing, retyped, or drifted under the depsgraph</td></tr><tr><td>8</td><td>Asset part count, unapplied scale, namespace, render attribute, or ground plane</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Calibration AO off closed form (<code>--uniform-hemisphere</code> lands here)</td></tr><tr><td>4</td><td>Unoccluded plate is not 1.0, or AO is not strictly increasing with distance</td></tr><tr><td>5</td><td>Bake empty, out of range, or spread too small</td></tr><tr><td>6</td><td>FLOAT_COLOR / BYTE_COLOR round-trip contract</td></tr><tr><td>7</td><td>Colour attributes missing, retyped, or drifted under the depsgraph</td></tr><tr><td>8</td><td>Asset part count, unapplied scale, namespace, render attribute, or ground plane</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>. Its catalog falsifier is <code>--uniform-hemisphere</code> (expect exit 3): sampling uniformly in solid angle instead of cosine-weighted misses the closed form the calibration holds.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/vertex-color-ao/vertex_color_ao.py</code>
-        <span>1056 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-color-ao/vertex_color_ao.py">View on GitHub &rarr;</a></span>
+        <span>1071 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-color-ao/vertex_color_ao.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1056">
+      <div class="code" data-lines="1071">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1148,7 +1149,22 @@ blender --background --python vertex_color_ao.py -- --falsify inverted.png</code
 1053
 1054
 1055
-1056</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Vertex-colour AO — cheap baked occlusion in a colour attribute.
+1056
+1057
+1058
+1059
+1060
+1061
+1062
+1063
+1064
+1065
+1066
+1067
+1068
+1069
+1070
+1071</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Vertex-colour AO — cheap baked occlusion in a colour attribute.
 
 Engines that read vertex colour get their contact shadows for free if the
 asset ships with ambient occlusion baked into a colour attribute. The bake is
@@ -1252,6 +1268,12 @@ WEDGE_POOL = (-<span class="n">1.8</span>, <span class="n">2.2</span>, <span cla
 <span class="c"># The AO integrator</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
+<span class="c"># Falsifier switch (--uniform-hemisphere): sample uniformly in solid angle</span>
+<span class="c"># instead of cosine-weighted. The closed form is the cosine-weighted integral,</span>
+<span class="c"># so the calibration check (exit 3) must catch it.</span>
+COSINE_WEIGHTED = <span class="k">True</span>
+
+
 <span class="k">def</span> hemisphere_dirs(n):
     <span class="s">&quot;&quot;&quot;Deterministic cosine-weighted hemisphere directions about +Z.
 
@@ -1263,7 +1285,11 @@ WEDGE_POOL = (-<span class="n">1.8</span>, <span class="n">2.2</span>, <span cla
     golden = math.pi * (<span class="n">3.0</span> - math.sqrt(<span class="n">5.0</span>))
     dirs = []
     <span class="k">for</span> i <span class="k">in</span> range(n):
-        r = math.sqrt((i + <span class="n">0.5</span>) / n)
+        <span class="k">if</span> COSINE_WEIGHTED:
+            r = math.sqrt((i + <span class="n">0.5</span>) / n)
+        <span class="k">else</span>:  <span class="c"># uniform in solid angle: z uniform on [0, 1]</span>
+            z = <span class="n">1.0</span> - (i + <span class="n">0.5</span>) / n
+            r = math.sqrt(<span class="n">1.0</span> - z * z)
         phi = i * golden
         x, y = r * math.cos(phi), r * math.sin(phi)
         dirs.append(Vector((x, y, math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - r * r)))))
@@ -2171,9 +2197,14 @@ _mat_cache = {}
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: render the inverted-AO variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--uniform-hemisphere&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: sample the hemisphere uniformly instead of &quot;</span>
+                        <span class="s">&quot;cosine-weighted; the closed-form calibration fails (exit 3)&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
     args = p.parse_args(argv)
 
+    <span class="k">global</span> COSINE_WEIGHTED
+    COSINE_WEIGHTED = <span class="k">not</span> args.uniform_hemisphere
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     code = check()

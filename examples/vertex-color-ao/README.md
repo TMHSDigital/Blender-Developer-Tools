@@ -125,6 +125,7 @@ unchanged.
 
 ```bash
 blender --background --python vertex_color_ao.py --
+blender --background --python vertex_color_ao.py -- --uniform-hemisphere   # falsifier: uniform instead of cosine-weighted hemisphere; calibration exits 3
 blender --background --python vertex_color_ao.py -- --output well.png
 blender --background --python vertex_color_ao.py -- --falsify inverted.png
 ```
@@ -146,7 +147,7 @@ helper.
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Calibration AO off closed form |
+| 3 | Calibration AO off closed form (`--uniform-hemisphere` lands here) |
 | 4 | Unoccluded plate is not 1.0, or AO is not strictly increasing with distance |
 | 5 | Bake empty, out of range, or spread too small |
 | 6 | FLOAT_COLOR / BYTE_COLOR round-trip contract |
@@ -158,4 +159,4 @@ helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--falsify`.
+Smoke does not pass `--output` or `--falsify`. Its catalog falsifier is `--uniform-hemisphere` (expect exit 3): sampling uniformly in solid angle instead of cosine-weighted misses the closed form the calibration holds.

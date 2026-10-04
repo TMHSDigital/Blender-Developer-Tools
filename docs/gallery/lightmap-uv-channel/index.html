@@ -72,20 +72,21 @@
 <p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas display — a slate face in a walnut frame on a plinth with a brass <code>UV1 LIGHTMAP</code> plate, a faint quarter grid marking the [0,1] square the bounds check holds — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 24 named parts, 5 materials, right-angle share 0.138. Wood, canvas and iron carry procedural grain, weave and pitting over Object coordinates; no check reads a material.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
 <pre><code>blender --background --python lightmap_uv_channel.py --
+blender --background --python lightmap_uv_channel.py -- --overlap-islands   # falsifier: overlap scan reports the dragged island; exits 7
 blender --background --python lightmap_uv_channel.py -- --output atlas.png
 blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>UV layer names ≠ UV0 / UV1</td></tr><tr><td>4</td><td>UVMap / UV1 render/clone flags wrong after re-assert</td></tr><tr><td>5</td><td>Channel 0 (UV0) touched by the UV1 unwrap</td></tr><tr><td>6</td><td>UV1 loops outside <code>[0,1]</code></td></tr><tr><td>7</td><td>SAT overlap self-test failed, or UV1 triangle pairs overlap</td></tr><tr><td>8</td><td>Min island distance below margin</td></tr><tr><td>9</td><td>Part is not watertight</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>UV layer names ≠ UV0 / UV1</td></tr><tr><td>4</td><td>UVMap / UV1 render/clone flags wrong after re-assert</td></tr><tr><td>5</td><td>Channel 0 (UV0) touched by the UV1 unwrap</td></tr><tr><td>6</td><td>UV1 loops outside <code>[0,1]</code></td></tr><tr><td>7</td><td>SAT overlap self-test failed, or UV1 triangle pairs overlap (<code>--overlap-islands</code> lands here)</td></tr><tr><td>8</td><td>Min island distance below margin</td></tr><tr><td>9</td><td>Part is not watertight</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>. Its catalog falsifier is <code>--overlap-islands</code> (expect exit 7): the same island drag as <code>--falsify</code>, applied before the SAT scan.</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>
       <div class="src-meta">
         <code>examples/lightmap-uv-channel/lightmap_uv_channel.py</code>
-        <span>1019 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel/lightmap_uv_channel.py">View on GitHub &rarr;</a></span>
+        <span>1030 lines &middot; <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel/lightmap_uv_channel.py">View on GitHub &rarr;</a></span>
       </div>
-      <div class="code" data-lines="1019">
+      <div class="code" data-lines="1030">
 <pre class="gutter" aria-hidden="true">1
 2
 3
@@ -1104,7 +1105,18 @@ blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</c
 1016
 1017
 1018
-1019</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Lightmap UV channel — the second UV layer engines need for baked lighting.
+1019
+1020
+1021
+1022
+1023
+1024
+1025
+1026
+1027
+1028
+1029
+1030</pre><pre class="code-lines"><span class="s">&quot;&quot;&quot;Lightmap UV channel — the second UV layer engines need for baked lighting.
 
 Witnesses the two-channel UV contract a bake pipeline depends on, on an
 asset built to be reused (a market cart: bed, axle, two wheels, four posts,
@@ -1680,7 +1692,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
 <span class="c"># Check</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(overlap=<span class="k">False</span>):
     meshes = build_cart_meshes()
     fails = []
 
@@ -1721,6 +1733,8 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         ob = bpy.data.objects.new(me.name, me)
         bpy.context.collection.objects.link(ob)
         author_uv1(ob)
+        <span class="k">if</span> overlap <span class="k">and</span> suffix == <span class="s">&quot;Bed&quot;</span>:
+            drag_second_island(me)  <span class="c"># falsifier: the SAT scan must report it</span>
 
         <span class="c"># re-fetch by name after CustomData-reallocating ops (see header)</span>
         layers = me.uv_layers
@@ -1881,6 +1895,23 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="k">return</span> floor, wall
 
 
+<span class="k">def</span> drag_second_island(me):
+    <span class="s">&quot;&quot;&quot;Translate the mesh&#x27;s second-largest UV1 face onto the largest one&#x27;s
+    anchor, shape intact. Shared by --overlap-islands (check path, exit 7)
+    and --falsify (render path). Returns the dragged polygon index.&quot;&quot;&quot;</span>
+    layer = me.uv_layers[LAYER1]
+    polys = sorted(me.polygons, key=<span class="k">lambda</span> p: p.area, reverse=<span class="k">True</span>)
+    big, second = polys[<span class="n">0</span>], polys[<span class="n">1</span>]
+    anchor = tuple(layer.data[big.loop_indices[<span class="n">0</span>]].uv)
+    first = second.loop_indices[<span class="n">0</span>]
+    du = (anchor[<span class="n">0</span>] - layer.data[first].uv[<span class="n">0</span>],
+          anchor[<span class="n">1</span>] - layer.data[first].uv[<span class="n">1</span>])
+    <span class="k">for</span> li <span class="k">in</span> second.loop_indices:
+        u, v = layer.data[li].uv
+        layer.data[li].uv = (u + du[<span class="n">0</span>], v + du[<span class="n">1</span>])
+    <span class="k">return</span> second.index
+
+
 <span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;The cart beside its UV1 atlas board — island polygons built from the
     LIVE packed UVs, so a change in the atlas moves the board. Falsified:
@@ -1931,18 +1962,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="c"># emissive red on the board (tiny-strip overlaps would not read)</span>
     dragged = set()
     <span class="k">if</span> falsify:
-        bed = meshes[<span class="s">&quot;Bed&quot;</span>]
-        layer = bed.uv_layers[LAYER1]
-        polys = sorted(bed.polygons, key=<span class="k">lambda</span> p: p.area, reverse=<span class="k">True</span>)
-        big, second = polys[<span class="n">0</span>], polys[<span class="n">1</span>]
-        anchor = tuple(layer.data[big.loop_indices[<span class="n">0</span>]].uv)
-        dragged.add(second.index)
-        first = second.loop_indices[<span class="n">0</span>]
-        du = (anchor[<span class="n">0</span>] - layer.data[first].uv[<span class="n">0</span>],
-              anchor[<span class="n">1</span>] - layer.data[first].uv[<span class="n">1</span>])
-        <span class="k">for</span> li <span class="k">in</span> second.loop_indices:
-            u, v = layer.data[li].uv
-            layer.data[li].uv = (u + du[<span class="n">0</span>], v + du[<span class="n">1</span>])
+        dragged.add(drag_second_island(meshes[<span class="s">&quot;Bed&quot;</span>]))
 
     <span class="c"># atlas board: the Bed&#x27;s live UV1 as flat island polygons mapped onto the</span>
     <span class="c"># board face — a change in the packed atlas moves the board geometry</span>
@@ -2087,6 +2107,9 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--overlap-islands&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: drag the Bed&#x27;s second-largest UV1 island onto &quot;</span>
+                        <span class="s">&quot;the largest before the overlap scan (exit 7)&quot;</span>)
     p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: render the overlapping-atlas variant here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
@@ -2095,7 +2118,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    code = check()
+    code = check(overlap=args.overlap_islands)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

@@ -59,6 +59,11 @@ def sidecar_ok(path: Optional[str], contains: Optional[str]) -> Tuple[bool, str]
     return True, ""
 
 
+# Exits a falsifier may never "expect": 0 is a pass, 1 is the FATAL wrapper
+# (an uncaught exception, not a named check), 77 is a skip.
+FORBIDDEN_FALSIFIER_EXITS = (0, 1, SKIP_EXIT)
+
+
 def classify(
     *,
     proc_exit: int,
@@ -69,13 +74,60 @@ def classify(
     expect_sidecar: bool = False,
     sidecar_path: Optional[str] = None,
     sidecar_contains: Optional[str] = None,
+    expect_exit: Optional[int] = None,
+    expect_sidecar_fail: bool = False,
 ) -> Tuple[str, str]:
     """Return (PASS|SKIP|FAIL, detail).
 
     Skip is legal only when ``min_version`` is set and ``blender_version``
     is strictly below it (and ``forbid_skip`` is false). An expected skip
     does not require a sidecar.
+
+    Falsifier runs invert the verdict. With ``expect_exit=N`` the run passes
+    only when Blender exits exactly N: not 0 (the check did not fire), not
+    another code (an earlier check fired), not 1 (it crashed). With
+    ``expect_sidecar_fail`` the run passes only when the script exits 0 and
+    the post-exit sidecar check then fails (falsifiers the harness, not the
+    script, is meant to catch). A legal skip stays a skip either way.
     """
+    base, detail = _classify(
+        proc_exit=proc_exit, output=output, min_version=min_version,
+        blender_version=blender_version, forbid_skip=forbid_skip,
+        expect_sidecar=expect_sidecar, sidecar_path=sidecar_path,
+        sidecar_contains=sidecar_contains,
+    )
+    if expect_exit is None and not expect_sidecar_fail:
+        return base, detail
+    if base == SKIP:
+        return SKIP, detail
+    if proc_exit == SKIP_EXIT:
+        return FAIL, detail  # illegal skip: _classify already explained why
+    if expect_exit is not None:
+        if expect_exit in FORBIDDEN_FALSIFIER_EXITS:
+            return FAIL, f"falsifier expects exit {expect_exit}, which names no check"
+        if proc_exit == expect_exit:
+            return PASS, f"falsifier exited {proc_exit} as declared"
+        if proc_exit == 0:
+            return FAIL, f"falsifier did not fail (exit 0, expected {expect_exit})"
+        return FAIL, f"falsifier exited {proc_exit}, expected {expect_exit}"
+    if proc_exit != 0:
+        return FAIL, f"falsifier exited {proc_exit}; expected 0 and a failed sidecar"
+    if base == FAIL:
+        return PASS, f"falsifier tripped the sidecar check: {detail}"
+    return FAIL, "falsifier passed the sidecar check it was meant to break"
+
+
+def _classify(
+    *,
+    proc_exit: int,
+    output: str,
+    min_version: Optional[str] = None,
+    blender_version: Optional[str] = None,
+    forbid_skip: bool = False,
+    expect_sidecar: bool = False,
+    sidecar_path: Optional[str] = None,
+    sidecar_contains: Optional[str] = None,
+) -> Tuple[str, str]:
     reason = parse_skip_reason(output)
     skipped = proc_exit == SKIP_EXIT
 
