@@ -453,9 +453,11 @@ def belt_seat_depths(me, loaf_comp, belt_comp, station_x, segs):
                     pass
         if not bm.faces:
             return []
+        # FromBMesh copies the geometry into the tree, so the BMesh can be
+        # freed here, on the early return and the normal path alike.
         bvh = BVHTree.FromBMesh(bm)
     finally:
-        pass
+        bm.free()
     zs = [me.vertices[i].co.z for i in loaf_comp]
     cz = 0.5 * (min(zs) + max(zs))
     buckets = {}
@@ -498,7 +500,6 @@ def belt_seat_depths(me, loaf_comp, belt_comp, station_x, segs):
         vals = [d for d in (depth(co) for co in buckets[k]) if d is not None]
         if vals:
             depths.append(max(vals))
-    bm.free()
     return depths
 
 
@@ -1142,13 +1143,15 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
         low.data.update()
     if stray_vert:
         bm = bmesh.new()
-        bm.from_mesh(low.data)
-        # Inside the existing AABB: a stray vertex parked above the bale
-        # blew the bounding-box budget (exit 8) before the hygiene gate
-        # could see it, so it proved nothing about hygiene.
-        bm.verts.new((0.0, 0.0, BALE_Z * 0.5))
-        bm.to_mesh(low.data)
-        bm.free()
+        try:
+            bm.from_mesh(low.data)
+            # Inside the existing AABB: a stray vertex parked above the bale
+            # blew the bounding-box budget (exit 8) before the hygiene gate
+            # could see it, so it proved nothing about hygiene.
+            bm.verts.new((0.0, 0.0, BALE_Z * 0.5))
+            bm.to_mesh(low.data)
+        finally:
+            bm.free()
         low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:

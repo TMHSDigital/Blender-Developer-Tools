@@ -369,22 +369,36 @@ def check(shell, obj_path, unevaluated=False):
     V, E, F, S = len(me.vertices), len(me.edges), len(me.polygons), len(me.loops)
     expected = catmull_clark_vcount(V, E, F, S, SUBSURF_LEVELS)
 
-    out = obj_path or os.path.join(tempfile.gettempdir(), "depsgraph_export.obj")
+    # A per-run name, removed before and after: a fixed name let a previous
+    # run's OBJ satisfy the "file exists" check below when this export wrote
+    # nothing, and Blender points TMPDIR at the working directory (#404).
+    out = obj_path or os.path.join(tempfile.gettempdir(),
+                                   f"depsgraph_export_{os.getpid()}.obj")
     os.makedirs(os.path.dirname(os.path.abspath(out)) or ".", exist_ok=True)
-    # obj_export writes the evaluated (modifier-applied) geometry by default
-    bpy.ops.wm.obj_export(
-        filepath=out,
-        export_selected_objects=False,
-        apply_modifiers=not unevaluated,
-    )
-    if not (os.path.exists(out) and os.path.getsize(out) > 0):
-        print("ERROR: no OBJ written", file=sys.stderr)
-        return 4
-    exported = 0
-    with open(out, encoding="utf-8") as f:
-        for line in f:
-            if line.startswith("v "):
-                exported += 1
+    sidecars = [out, os.path.splitext(out)[0] + ".mtl"]
+    for path in sidecars:
+        if os.path.exists(path):
+            os.remove(path)
+    try:
+        # obj_export writes the evaluated (modifier-applied) geometry by default
+        bpy.ops.wm.obj_export(
+            filepath=out,
+            export_selected_objects=False,
+            apply_modifiers=not unevaluated,
+        )
+        if not (os.path.exists(out) and os.path.getsize(out) > 0):
+            print("ERROR: no OBJ written", file=sys.stderr)
+            return 4
+        exported = 0
+        with open(out, encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("v "):
+                    exported += 1
+    finally:
+        if not obj_path:
+            for path in sidecars:
+                if os.path.exists(path):
+                    os.remove(path)
 
     print(f"shell_cage V={V} E={E} F={F} S={S} levels={SUBSURF_LEVELS} "
           f"shell_eval_vcount={shell_eval} closed_form={expected}")
