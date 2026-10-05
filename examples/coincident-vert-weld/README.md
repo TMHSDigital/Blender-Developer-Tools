@@ -88,4 +88,4 @@ against it.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--weld`. Its catalog falsifier is `--no-duplicate` (expects exit 3).
+Its catalog falsifiers are `--no-duplicate` (expects exit 3) and `--weld` (expects exit 4).
