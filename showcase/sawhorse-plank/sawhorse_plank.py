@@ -694,10 +694,7 @@ def wood_material(name, ramp_cols, tone_gain, rough, knots=False, gloss=False):
         wave.inputs["Distortion"].default_value = distortion
         wave.inputs["Detail"].default_value = 5.0
         wave.inputs["Detail Scale"].default_value = 1.5
-        try:
-            wave.inputs["Detail Roughness"].default_value = 0.65
-        except KeyError:
-            pass
+        wave.inputs["Detail Roughness"].default_value = 0.65
         nt.links.new(mp.outputs["Vector"], wave.inputs["Vector"])
         return wave.outputs["Fac"]
 
@@ -791,10 +788,7 @@ def wood_material(name, ramp_cols, tone_gain, rough, knots=False, gloss=False):
     r = _math(nt, "MULTIPLY_ADD", grain, -0.10, rough)
     r = _math(nt, "MULTIPLY_ADD", streak, -0.12, r)
     nt.links.new(_math(nt, "ADD", r, 0.06), bsdf.inputs["Roughness"])
-    try:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.35
-    except KeyError:
-        pass
+    bsdf.inputs["Specular IOR Level"].default_value = 0.35
     if gloss:
         try:
             bsdf.inputs["Coat Weight"].default_value = 0.45
@@ -1434,10 +1428,7 @@ def render_still(low, mats, tex, path, engine):
         scene.cycles.samples = 48
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "WEBP" if path.lower().endswith(".webp") else "PNG"

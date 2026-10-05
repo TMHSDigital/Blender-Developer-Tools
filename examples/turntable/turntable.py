@@ -304,8 +304,7 @@ def render_still(obj, path, engine):
         try: sc.cycles.samples = 48
         except Exception: pass
     else:
-        try: sc.eevee.taa_render_samples = 64
-        except Exception: pass
+        sc.eevee.taa_render_samples = 64
     # pin the still to a deliberate pose: frame 4 is ~31 degrees of turn, a
     # three-quarter view where ears and brow read instantly as Suzanne. An
     # arbitrary turntable frame can land face-away and read as broken geometry.

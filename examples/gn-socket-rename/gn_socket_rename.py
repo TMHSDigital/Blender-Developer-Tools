@@ -619,10 +619,7 @@ def render_still(obj, path, engine):
     if engine == "cycles":
         scene.cycles.samples = 32
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "PNG"

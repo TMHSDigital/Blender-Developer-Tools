@@ -879,10 +879,7 @@ def render_still(sc, heroes, path, engine):
     if engine == 'cycles':
         sc.cycles.samples = 48
     else:
-        try:
-            sc.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = 1280
     sc.render.resolution_y = 720
     sc.render.image_settings.file_format = 'PNG'

@@ -625,10 +625,7 @@ def render_still(path, engine):
         sc.cycles.samples = 64
         sc.cycles.use_denoising = True
     else:
-        try:
-            sc.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = 1280
     sc.render.resolution_y = 720
     sc.render.image_settings.file_format = "PNG"

@@ -617,10 +617,7 @@ def _render_panel(sc, path, engine, samples):
         sc.cycles.samples = samples
         sc.cycles.use_denoising = True
     else:
-        try:
-            sc.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = PANEL_W
     sc.render.resolution_y = PANEL_H
     sc.render.resolution_percentage = 100

@@ -1806,10 +1806,7 @@ def flower_material():
     col = mix_color(nt, col, (0.50, 0.36, 0.06), band(nt, zone, 3.0, 3.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.5
-    try:
-        bsdf.inputs["Subsurface Weight"].default_value = 0.12
-    except KeyError:
-        pass
+    bsdf.inputs["Subsurface Weight"].default_value = 0.12
     return mat
 
 
@@ -2694,10 +2691,7 @@ def render_still(low, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "WEBP" if path.lower().endswith(".webp") else "PNG"

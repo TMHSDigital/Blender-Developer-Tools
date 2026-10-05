@@ -2416,10 +2416,7 @@ def water_material():
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.07
     bsdf.inputs["IOR"].default_value = 1.33
-    try:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.45
-    except KeyError:
-        pass
+    bsdf.inputs["Specular IOR Level"].default_value = 0.45
     ruffle = noise(nt, mapping(nt, coord, scale=(1.0, 1.8, 1.0)), 30.0, 3.0, 0.5)
     add_bump(nt, bsdf, ruffle, 0.10, 0.002)
     return mat
@@ -3533,10 +3530,7 @@ def render_still(low, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "WEBP" if path.lower().endswith(".webp") else "PNG"
