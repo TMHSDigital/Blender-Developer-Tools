@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.4] - 2026-10-05
+
+### Fixes
+
+- fix(templates): apply rotation as well as scale before grounding the origin (#412) ([`8960f3f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/8960f3f44d75f74ab1fa4cf0eefbd2d6fe6a06ec))
+- fix(skills): re-register driver functions on file load (#411) ([`e1d8310`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e1d8310a9b3a012d31c44b7603347c7c90e6baf8))
+- fix(skills): correct four API claims that make agent code silently wrong (#410) ([`ae57f0d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ae57f0dc2f668b594509dae93d749537ff21dd90))
+- fix(scripts): refuse destructive --out targets and skip fork PR labelling (#409) ([`e5f7938`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e5f7938ccf76324bfb306f060eebb42cc215efc0))
+
+[Release v0.143.4](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.4)
+
 ## [0.143.3] - 2026-10-04
 
 ### Fixes
