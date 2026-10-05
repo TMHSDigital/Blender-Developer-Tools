@@ -18,9 +18,12 @@
     "github": "https://github.com/TMHSDigital/Blender-Developer-Tools"
   },
   "installSteps": [
-    "Clone the repo: <code>git clone https://github.com/TMHSDigital/Blender-Developer-Tools</code>",
-    "<strong>Cursor:</strong> <code>git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools</code>, then reload the window; Customize lists the 16 skills and 9 rules",
-    "<strong>Claude Code:</strong> run <code>/plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist</code> then <code>/plugin install blender-developer-tools@blender-developer-tools</code>; the rules come with it as the <code>blender-rules</code> skill",
+    "<strong>Claude Code:</strong> <code>/plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist</code> then <code>/plugin install blender-developer-tools@blender-developer-tools</code>. The 16 skills load when a task matches; the rules come along as the <code>blender-rules</code> skill",
+    "<strong>Cursor:</strong> <code>git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools</code>, then reload the window; Customize lists the 16 skills and 9 rules. This clones only the 0.3 MB plugin build",
+    "<strong>Other agents (Codex, Copilot, Windsurf):</strong> clone the repo and copy <code>skills/*</code> into your agent's skills folder (for example <code>.agents/skills/</code>); point it at <code>claude/blender-rules.md</code> for the rules",
     "Grab <code>snippets/</code> and <code>templates/</code> as starting points for add-ons and headless batch jobs"
-  ]
+  ],
+  "heroCommand": "/plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist",
+  "heroPrompt": "Claude Code",
+  "installHeading": "Install it in your agent. No clone needed."
 }

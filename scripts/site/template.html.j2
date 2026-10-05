@@ -324,9 +324,12 @@
           <a class="btn-ghost btn-lg" href="gallery/">Browse the gallery</a>
         </div>
         <div class="clone-row">
-          {# <wbr> after each path slash: a phone wraps the URL there, not mid-word #}
-          <pre id="cloneCmd"><span class="p">$</span> git clone {% for part in repo.split('/') %}{{ part }}{% if not loop.last %}/{% if loop.index >= 3 %}<wbr>{% endif %}{% endif %}{% endfor %}</pre>
-          <button class="copy-btn" type="button" data-copy="git clone {{ repo }}">copy</button>
+          {# site.heroCommand: the one command most visitors need (this repo: the
+             Claude Code marketplace add). <wbr> after each slash lets a phone
+             wrap there, not mid-word. #}
+          {% set hero_cmd = site.heroCommand or ('git clone ' ~ repo) %}
+          <pre id="cloneCmd"><span class="p">{{ site.heroPrompt or '$' }}</span> {% for part in hero_cmd.split('/') %}{{ part }}{% if not loop.last %}/<wbr>{% endif %}{% endfor %}</pre>
+          <button class="copy-btn" type="button" data-copy="{{ hero_cmd }}">copy</button>
         </div>
       </div>
     </section>
@@ -369,7 +372,7 @@
       <span class="hud">Install</span>
     </div>
     <div class="panel-body">
-      <h2>Clone it. Point your AI at it.</h2>
+      <h2>{{ site.installHeading or 'Clone it. Point your AI at it.' }}</h2>
       <ol class="steps">
         {% for step in site.installSteps %}
         <li><span>{{ step | safe }}</span></li>
