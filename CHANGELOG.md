@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.144.1] - 2026-10-05
+
+### Fixes
+
+- fix(site): give each agent its own install path, Claude Code first (#435) ([`cebd788`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/cebd7880a911bf0213873e086fc6c07cd4d2c31f))
+
+[Release v0.144.1](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.144.1)
+
 ## [0.144.0] - 2026-10-05
 
 ### Features
