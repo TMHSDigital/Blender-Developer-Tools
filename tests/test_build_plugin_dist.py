@@ -1,4 +1,4 @@
-"""Safety tests for scripts/build_plugin_dist.py --out. No Blender required.
+"""Tests for scripts/build_plugin_dist.py: --out safety and link rewriting. No Blender required.
 
 build() replaces --out wholesale, so the script must refuse a target it
 would destroy (the repo, a parent of it, a git checkout, or a non-empty
@@ -68,6 +68,52 @@ class OutGuard(unittest.TestCase):
             self.assertEqual(run(["--out", str(out)])[0], 2)
             self.assertEqual(run(["--out", str(out), "--force"])[0], 0)
             self.assertFalse((out / "stale.txt").exists())
+
+
+class Links(unittest.TestCase):
+    # #394: skills read the files the plugin installed, everything else pins
+    # the release tag, and the tag never makes a release look like new content.
+    URL = b.REPO_URL
+
+    def test_skill_links_resolve_inside_the_plugin(self):
+        text = f"[s]({self.URL}/blob/main/snippets/lod_chain.py) [t]({self.URL}/tree/main/templates)"
+        self.assertEqual(b.rewrite_links(text, "v1.2.3", local=True),
+                         "[s](${CLAUDE_PLUGIN_ROOT}/snippets/lod_chain.py) [t](${CLAUDE_PLUGIN_ROOT}/templates)")
+
+    def test_other_links_pin_the_release_tag(self):
+        text = f"[e]({self.URL}/tree/main/examples/bmesh-gear) [r]({self.URL}/blob/main/rules/x.mdc)"
+        self.assertEqual(b.rewrite_links(text, "v1.2.3", local=False),
+                         f"[e]({self.URL}/tree/v1.2.3/examples/bmesh-gear) [r]({self.URL}/blob/v1.2.3/rules/x.mdc)")
+
+    def test_built_dist_has_no_main_links_and_every_local_link_resolves(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "dist"
+            size = b.build(out)
+            self.assertEqual(b.verify(out, size), [])
+            skill = (out / "skills" / "ai-mesh-cleanup" / "SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("${CLAUDE_PLUGIN_ROOT}/snippets/", skill)
+
+    def test_verify_flags_a_missing_local_target_and_a_main_link(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "dist"
+            size = b.build(out)
+            skill = out / "skills" / "ai-mesh-cleanup" / "SKILL.md"
+            skill.write_text(skill.read_text(encoding="utf-8")
+                             + "\n${CLAUDE_PLUGIN_ROOT}/snippets/gone.py\n"
+                             + f"{self.URL}/blob/main/README.md\n", encoding="utf-8")
+            errors = "\n".join(b.verify(out, size))
+            self.assertIn("snippets/gone.py", errors)
+            self.assertIn("main branch", errors)
+
+    def test_fingerprint_ignores_the_release_tag(self):
+        with tempfile.TemporaryDirectory() as td:
+            a, c = Path(td) / "a", Path(td) / "c"
+            for d, tag in ((a, "v0.1.0"), (c, "v0.2.0")):
+                d.mkdir()
+                (d / "x.md").write_text(f"{self.URL}/blob/{tag}/docs/y.md\n", encoding="utf-8")
+            self.assertEqual(b.fingerprint(a), b.fingerprint(c))
+            (c / "x.md").write_text(f"{self.URL}/blob/v0.2.0/docs/z.md\n", encoding="utf-8")
+            self.assertNotEqual(b.fingerprint(a), b.fingerprint(c))
 
 
 if __name__ == "__main__":
