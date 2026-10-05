@@ -1902,6 +1902,44 @@
     }
   },
   {
+    "name": "timers-modal-threading",
+    "path": "examples/timers-modal-threading/",
+    "script": "examples/timers-modal-threading/timers_modal_threading.py",
+    "skills": [
+      "operators",
+      "timers-modal-and-threading"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/timers-modal-threading/timers_modal_threading.py",
+    "summary": "Proves the event-loop contracts behind long-running add-on work.",
+    "falsifiers": [
+      {
+        "args": [
+          "--return-zero-once"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--non-persistent"
+        ],
+        "expect_exit": 8
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`--background` child failed, or its timer ran",
+      "4": "Windowed child wrote no result",
+      "5": "Timer return values not honoured (`--return-zero-once` lands here)",
+      "6": "Worker result not applied once on the main thread",
+      "7": "Modal operator did not finish and remove its timer",
+      "8": "File load did not keep only the persistent timer (`--non-persistent` lands here)"
+    }
+  },
+  {
     "name": "triangulate-tangents",
     "path": "examples/triangulate-tangents/",
     "script": "examples/triangulate-tangents/triangulate_tangents.py",

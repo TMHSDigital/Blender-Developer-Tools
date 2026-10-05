@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <strong>17 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>28 snippets</strong> &nbsp;&bull;&nbsp; <strong>65 examples</strong> &nbsp;&bull;&nbsp; <strong>76 showcase pieces</strong>
+  <strong>18 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>29 snippets</strong> &nbsp;&bull;&nbsp; <strong>66 examples</strong> &nbsp;&bull;&nbsp; <strong>76 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -44,7 +44,7 @@
 
 ## Overview
 
-This repository ships **17 skills, 9 rules, 3 templates, 28 snippets, 65 examples, and 76 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **18 skills, 9 rules, 3 templates, 29 snippets, 66 examples, and 76 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Both agents install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -63,14 +63,14 @@ The content is consumed by AI coding agents reading these files directly from a 
 git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 ```
 
-- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 17 skills and 9 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
+- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 18 skills and 9 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
 
   ```bash
   git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
   ```
 
   (On Windows the folder is `%USERPROFILE%\.cursor\plugins\local\`. Cursor skips symlinks that point outside that folder, so clone or copy rather than link.) Teams can import the repository as a team marketplace instead; it carries `.cursor-plugin/marketplace.json`. For one project only, copy `skills/*` into the project's `.cursor/skills/` and `rules/*.mdc` into `.cursor/rules/` from a checkout. Copying only the rules gives you no skills.
-- **Claude Code** — install as a plugin, then run `/skills` to see all 17 skills plus `blender-rules`:
+- **Claude Code** — install as a plugin, then run `/skills` to see all 18 skills plus `blender-rules`:
 
   ```text
   /plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist
@@ -105,7 +105,7 @@ Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 
 ## Falsifiers
 
-Every one of the 65 examples carries a **falsifier**: a flag that changes the
+Every one of the 66 examples carries a **falsifier**: a flag that changes the
 input so a real assertion fails. It never disables the assertion, skips the
 check, or short-circuits to an error — it feeds the script something the
 contract says must not pass, and the same check that guards the happy path
@@ -133,7 +133,7 @@ per-script exit-code model, are in
 
 ## Examples and showcase
 
-**65 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **76 showcase pieces** in [`showcase/`](showcase/) exist to show the skills working together at production scale: each is a single headless script that models a game prop, then runs it through the same cleanup, bake, LOD, collider and export steps the skills teach, and fails if a measured budget (triangle counts, colliders, materials, real-world size) is missed. They are not API examples. Conventions: [`showcase/README.md`](showcase/README.md).
+**66 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **76 showcase pieces** in [`showcase/`](showcase/) exist to show the skills working together at production scale: each is a single headless script that models a game prop, then runs it through the same cleanup, bake, LOD, collider and export steps the skills teach, and fails if a measured budget (triangle counts, colliders, materials, real-world size) is missed. They are not API examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 Browse both, with filters, full-size renders and each script's README, in the **[gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**.
 
@@ -151,11 +151,11 @@ Browse both, with filters, full-size renders and each script's README, in the **
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 17 skill files, YAML frontmatter, one canonical pattern each
+skills/<name>/SKILL.md   - 18 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 9 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
-snippets/<name>.py       - 28 standalone Python snippets, 5 to 75 lines each
-examples/<name>/         - 65 example directories: script, README with exit codes and falsifier
+snippets/<name>.py       - 29 standalone Python snippets, 5 to 75 lines each
+examples/<name>/         - 66 example directories: script, README with exit codes and falsifier
 showcase/<name>/         - 76 showcase pieces: budget-gated game props, script and README
 claude/                  - generated Claude Code copies of the rules (blender-rules skill + import file)
 ```

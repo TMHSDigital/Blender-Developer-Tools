@@ -53,6 +53,7 @@
   "solidify-even-thickness": ["depsgraph-and-evaluated-data", "mesh-editing-and-bmesh"],
   "swatch-grid": ["procedural-materials-and-shaders"],
   "temp-override-join": ["headless-batch-scripting", "operators"],
+  "timers-modal-threading": ["operators", "timers-modal-and-threading"],
   "text-version-stamp": [],
   "triangulate-tangents": ["mesh-editing-and-bmesh"],
   "turntable": ["slotted-actions-animation"],
