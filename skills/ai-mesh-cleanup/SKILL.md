@@ -1,6 +1,6 @@
 ---
 name: ai-mesh-cleanup
-description: Ordered cleanup for an imported generated mesh. Unit scale, transform apply, origin, normals, evaluated triangle count, decimate to budget, convex collider. Targets 5.2 LTS with 4.5 LTS fallback.
+description: "Ordered cleanup for an imported generated or scanned mesh before it goes to an engine: scene units, apply rotation and scale, origin to base, recalculate normals, evaluated triangle count, decimate to a budget, convex collider. Use when the user has a GLB, glTF or FBX that is not engine-ready, mentions unit scale, unapplied transforms, triangle budget, LODs or a collision hull, or is about to run mesh operations on an import without checking its scale. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

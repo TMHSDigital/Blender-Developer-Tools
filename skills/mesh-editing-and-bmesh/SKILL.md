@@ -1,6 +1,6 @@
 ---
 name: mesh-editing-and-bmesh
-description: Performant mesh manipulation in Blender. When to use bpy.data vs bpy.ops vs bmesh, the canonical bm.new/free pattern, foreach_set bulk vertex injection, and depsgraph evaluation for modifier-applied geometry. Targets 5.2 LTS.
+description: "Create, edit and read meshes efficiently: when to use bpy.data, bpy.ops or bmesh, the bmesh.new / try / finally / free pattern, foreach_get and foreach_set for bulk data, and evaluated meshes for modifier results. Use when the user writes mesh-generating or mesh-editing Python, mentions bmesh, from_pydata, foreach_set or mesh.vertices, has a slow script looping over bpy.ops.mesh or per-vertex assignments, or a bmesh script that misbehaves on its second run. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 

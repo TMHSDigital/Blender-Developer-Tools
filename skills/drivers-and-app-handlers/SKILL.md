@@ -1,6 +1,6 @@
 ---
 name: drivers-and-app-handlers
-description: Drive properties from expressions or other properties via the Driver API, and react to scene events via the bpy.app.handlers callbacks. Covers driver_namespace for Python functions, the new exit_pre handler in 5.1, and the must-be-fast contract for any handler.
+description: "Drive properties from expressions with the Driver API (driver_add, driver_namespace for custom Python functions) and react to events with bpy.app.handlers (load_post, save_pre, frame_change_post, depsgraph_update_post, exit_pre in 5.1+). Use when the user wants one property to follow another, runs code on load, save, frame change or exit, or has a driver failing with NameError or the Python security block, including drivers that die after reopening a file."
 standards-version: 1.10.0
 ---
 

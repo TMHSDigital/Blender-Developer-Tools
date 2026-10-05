@@ -61,7 +61,7 @@ showcase/
    ```yaml
    ---
    name: procedural-materials-and-shaders
-   description: One-line description, under 200 chars.
+   description: "What it covers. Use when the user mentions X, does Y, or hits error Z."
    standards-version: <current meta-repo STANDARDS_VERSION>
    ---
    ```

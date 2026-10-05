@@ -1,6 +1,6 @@
 ---
 name: bake-high-to-low
-description: Cage-bake high-poly surface detail onto a low-poly target as a tangent-space normal map. Cycles CPU, selected-to-active, active image node, UV layer, save_render. Targets 5.2 LTS with 4.5 LTS fallback.
+description: "Cage-bake high-poly surface detail onto a low-poly target as a tangent-space normal map with bpy.ops.object.bake (Cycles, selected-to-active, active Image Texture node, UV layer, save_render). Use when the user wants a normal map from a dense mesh onto a game-resolution or decimated LOD, mentions cage_extrusion or use_selected_to_active, or gets a bake that returns CANCELLED, comes out black or flat, or fails with 'No active UV layer found'. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

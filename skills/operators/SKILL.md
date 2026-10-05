@@ -1,6 +1,6 @@
 ---
 name: operators
-description: Author Blender operators with bpy.types.Operator, bl_idname conventions, the poll/invoke/execute/modal lifecycle, REGISTER and UNDO options, and defensive context handling. Targets 5.2 LTS with 4.5 LTS compatibility.
+description: "Author bpy.types.Operator classes: bl_idname naming, poll / invoke / execute / modal lifecycle, bl_options (REGISTER, UNDO, INTERNAL, BLOCKING), operator properties and defensive context handling. Use when the user creates an operator for a button, menu, keymap or script, asks why its properties are missing from the Adjust Last Operation (redo) panel or why Ctrl-Z ignores it, or gets poll failures or None context objects. Targets 5.2 LTS with 4.5 LTS compatibility."
 standards-version: 1.10.0
 ---
 

@@ -39,6 +39,9 @@ def need_str(data: dict, key: str, label: str, errors: list[str]) -> None:
         errors.append(f"{label}: '{key}' must be a non-empty string")
 
 
+SKILL_DESCRIPTION_MAX = 1024
+
+
 def check(root: Path) -> list[str]:
     errors: list[str] = []
     for path in sorted((root / "skills").glob("*/SKILL.md")):
@@ -51,6 +54,15 @@ def check(root: Path) -> list[str]:
             need_str(data, key, label, errors)
         if data.get("name") != path.parent.name:
             errors.append(f"{label}: name {data.get('name')!r} != directory {path.parent.name!r}")
+        desc = data.get("description")
+        if isinstance(desc, str):
+            # Agents pick a skill from its description alone, so it must say
+            # when to use it; 1024 is the Agent Skills format's cap (#357, #396).
+            if len(desc) > SKILL_DESCRIPTION_MAX:
+                errors.append(f"{label}: description is {len(desc)} chars, over "
+                              f"{SKILL_DESCRIPTION_MAX}")
+            if "Use when" not in desc:
+                errors.append(f"{label}: description has no 'Use when ...' trigger clause")
     for path in sorted((root / "rules").glob("*.mdc")):
         label = path.relative_to(root).as_posix()
         data, why = front(path)
