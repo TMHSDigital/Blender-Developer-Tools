@@ -81,6 +81,7 @@
   {"name": "bake-normal-high-to-low", "script": "examples/bake-normal-high-to-low/bake_normal_high_to_low.py", "falsifiers": [{"args": ["--flat-source"], "expect_exit": 5}]},
   {"name": "vse-linear-modifiers", "script": "examples/vse-linear-modifiers/vse_linear_modifiers.py", "falsifiers": [{"args": ["--assume-present"], "expect_exit": 4, "min_version": "5.2"}]},
   {"name": "gn-socket-rename", "script": "examples/gn-socket-rename/gn_socket_rename.py", "falsifiers": [{"args": ["--legacy-ids"], "expect_exit": 5, "min_version": "5.2"}]},
+  {"name": "extension-package-lifecycle", "script": "examples/extension-package-lifecycle/extension_package_lifecycle.py", "falsifiers": [{"args": ["--validate-only"], "expect_exit": 4}, {"args": ["--data-next-to-file"], "expect_exit": 7}]},
   {"name": "eval-mesh-datablock-name", "script": "examples/eval-mesh-datablock-name/eval_mesh_datablock_name.py", "falsifiers": [{"args": ["--assume-distinct-names"], "expect_exit": 6, "min_version": "5.2"}]},
   {"name": "mesh-automasking-settings", "script": "examples/mesh-automasking-settings/mesh_automasking_settings.py", "falsifiers": [{"args": ["--assume-brush-attrs"], "expect_exit": 5, "min_version": "5.2"}]},
   {"name": "ray-cast-space", "script": "examples/ray-cast-space/ray_cast_space.py", "falsifiers": [{"args": ["--world-to-object"], "expect_exit": 4}]},

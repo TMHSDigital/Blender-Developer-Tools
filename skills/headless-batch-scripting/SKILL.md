@@ -270,6 +270,7 @@ except Exception as e:
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
+- [`extension-package-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle): Takes templates/extension-addon-template through what an extension meets after its first run. Falsify: `--validate-only` (exit 4).
 - [`gltf-export-roundtrip`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip): A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Falsify: `--no-yup` (exit 9).
 - [`temp-override-join`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join): Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form. Falsify: `--no-override` (exit 3).
 - [`usd-export-evaluation-mode`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/usd-export-evaluation-mode): The USD exporter evaluation_mode chooses viewport versus render modifier quality. Falsify: `--subdivision BEST_MATCH` (exit 4).

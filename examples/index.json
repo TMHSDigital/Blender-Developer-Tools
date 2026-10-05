@@ -691,6 +691,44 @@
     }
   },
   {
+    "name": "extension-package-lifecycle",
+    "path": "examples/extension-package-lifecycle/",
+    "script": "examples/extension-package-lifecycle/extension_package_lifecycle.py",
+    "skills": [
+      "extension-runtime-and-packaging",
+      "headless-batch-scripting"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/extension-package-lifecycle/extension_package_lifecycle.py",
+    "summary": "Takes templates/extension-addon-template through what an extension meets after its first run.",
+    "falsifiers": [
+      {
+        "args": [
+          "--validate-only"
+        ],
+        "expect_exit": 4
+      },
+      {
+        "args": [
+          "--data-next-to-file"
+        ],
+        "expect_exit": 7
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Template does not validate or build, or the zip lacks its manifest",
+      "4": "Missing-wheel package passed the release gate (`--validate-only` lands here)",
+      "5": "`server-generate` listing missing or wrong",
+      "6": "Install, import, upgrade or remove failed, or `__package__` wrong",
+      "7": "User data inside the install tree, lost on upgrade, or kept after removal (`--data-next-to-file` lands here)",
+      "8": "`online_access` default or `--online-mode` value wrong"
+    }
+  },
+  {
     "name": "gltf-export-roundtrip",
     "path": "examples/gltf-export-roundtrip/",
     "script": "examples/gltf-export-roundtrip/gltf_export_roundtrip.py",

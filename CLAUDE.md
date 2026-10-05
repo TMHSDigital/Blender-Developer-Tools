@@ -17,11 +17,11 @@ The **Blender Developer Tools** repository is at **v0.144.3**. It packages skill
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 16 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 17 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 3 total
-snippets/<snippet-name>.py     - Standalone code patterns, 27 total
-examples/<name>/               - Runnable smoke-gated examples, 64 total (+ gallery.json)
+snippets/<snippet-name>.py     - Standalone code patterns, 28 total
+examples/<name>/               - Runnable smoke-gated examples, 65 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 76 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
 scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
@@ -30,7 +30,7 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (16)
+## Skills (17)
 
 | Skill | Purpose |
 | --- | --- |
@@ -50,6 +50,7 @@ VERSION                        - Source of truth for the repo version
 | drivers-and-app-handlers | Driver expressions, `driver_namespace`, application handlers including the new 5.1 `exit_pre` |
 | bl-info-migration | Three-step migration from legacy `bl_info` to Extensions Platform, dual-format pattern |
 | vse-python | VSE timeline from Python: `.strips` vs `.sequences`, `new_effect` kwargs, 5.2 COLOR `width`/`height` bake |
+| extension-runtime-and-packaging | Bundled wheels, `extension_path_user` data that survives upgrades, `online_access`, `bl_ext` names, `--command extension` build in CI |
 
 ## Rules (9)
 
@@ -95,7 +96,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 - Unity / Godot / Unreal glTF export via the engine-export-presets contract
 - Explicit exit codes matching `headless-batch-script-template` (0, then 2+)
 
-## Snippets (27)
+## Snippets (28)
 
 Small standalone `.py` files at `snippets/<name>.py`, each 5 to 75 lines.
 
@@ -105,13 +106,15 @@ v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namesp
 
 AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`, `setup_bake_target_image.py`, `bake_normal_high_to_low.py`, `save_baked_image.py`.
 
-## Examples (64)
+Extensions runtime: `extension-user-data.py` (`extension_path_user` settings file and an `online_access` guard).
+
+## Examples (65)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
 `--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
-**56 of the 64 ship a render in the site gallery** at `docs/gallery/`. The other
-eight are **check-only**: they carry no `--output` path, no gallery entry, and no
+**56 of the 65 ship a render in the site gallery** at `docs/gallery/`. The other
+nine are **check-only**: they carry no `--output` path, no gallery entry, and no
 hero asset. The criterion is whether the contract is expressible in pixels. An
 example is check-only when its witness is a data or state fact that no scene
 redesign can make visible — a datablock name, an RNA attribute's presence, a

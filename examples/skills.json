@@ -20,6 +20,7 @@
   "eval-mesh-datablock-name": ["depsgraph-and-evaluated-data"],
   "exit-pre-sidecar": ["drivers-and-app-handlers"],
   "export-preset-axis": ["engine-export-presets"],
+  "extension-package-lifecycle": ["extension-runtime-and-packaging", "headless-batch-scripting"],
   "gltf-export-roundtrip": ["depsgraph-and-evaluated-data", "engine-export-presets", "headless-batch-scripting"],
   "gltf-skin-roundtrip": ["depsgraph-and-evaluated-data", "engine-export-presets"],
   "gn-bundle-roundtrip": ["geometry-nodes-python"],
