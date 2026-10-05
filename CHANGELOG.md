@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.13] - 2026-10-05
+
+### Fixes
+
+- fix(skills): name the silent bake failure and check the bake result (#429) ([`0471ac6`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0471ac6d2ffa361ba5556f8afa7e2031628ac07d))
+- fix(site): visible focus on selected filters, arrow keys stay in code blocks, pager polish (#423) ([`5891799`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/589179956745f76191be0a021b93e25dbea6dcf5))
+
+### Other
+
+- refactor(examples): drop 139 try/except guards that could never fire (#428) ([`f30667e`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f30667e26f9e0cf03483e7e87e3c07274ac0a0db))
+
+[Release v0.143.13](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.13)
+
 ## [0.143.12] - 2026-10-05
 
 ### Fixes
