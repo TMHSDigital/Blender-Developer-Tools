@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.8] - 2026-10-05
+
+### Fixes
+
+- fix(ci): close five gates that checked less than they claimed (#419) ([`536f60f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/536f60f895c8bed1d4522616327b24c5a9a49363))
+
+[Release v0.143.8](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.8)
+
 ## [0.143.7] - 2026-10-05
 
 ### Fixes
