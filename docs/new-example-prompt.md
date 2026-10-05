@@ -59,7 +59,7 @@ metadata — so the render would be identical whether the API held or broke. The
 "redesign the scene until failure would be visible" instruction above is the test:
 attempt it first, and only when it cannot succeed in principle does the example
 become check-only. The exception is for contracts that are invisible, not for
-renders that are hard. Nine of the 65 examples currently qualify, and `CLAUDE.md`
+renders that are hard. Ten of the 66 examples currently qualify, and `CLAUDE.md`
 carries the same rule. A check-only example is otherwise a full example: it still
 asserts a real contract, still exits non-zero on failure, still carries a falsifier,
 and still takes a `tests/smoke/catalog.json` row so it runs on every PR.
