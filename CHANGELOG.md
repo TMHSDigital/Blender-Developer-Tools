@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.9] - 2026-10-05
+
+### Fixes
+
+- fix(examples): free hay-bale's bmesh on every path; per-run depsgraph-export OBJ (#421) ([`db2ca4b`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/db2ca4b4d876b62852447419923a46b321b96b1e))
+- fix(skills): document that registered props are not ID properties on 5.0+ (#420) ([`b612f3a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/b612f3ac8848ace30138c5c29b482ae8568432b7))
+
+### Other
+
+- docs(roadmap): keep only open candidates and define what 1.0 means (#425) ([`e0d73a9`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e0d73a997bf393b6f9bfe551e02c14113d766155))
+
+[Release v0.143.9](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.9)
+
 ## [0.143.8] - 2026-10-05
 
 ### Fixes
