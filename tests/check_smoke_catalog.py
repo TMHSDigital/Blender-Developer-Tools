@@ -29,7 +29,7 @@ from pathlib import Path
 EXCLUDED: set[str] = set()
 
 ROW_KEYS = {"name", "script", "args", "min_version", "expect_file",
-            "expect_sidecar", "sidecar_contains", "falsifiers"}
+            "expect_sidecar", "sidecar_contains", "falsifiers", "timeout"}
 FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "min_version"}
 # 2 is argparse's usage-error exit: an unknown or deleted flag also exits 2,
 # so a falsifier expecting 2 passes even when its flag no longer exists.
@@ -42,6 +42,9 @@ def check_schema(row: dict) -> list[str]:
     for k in ("name", "script"):
         if not isinstance(row.get(k), str):
             errors.append(f"catalog row {name!r}: {k!r} missing or not a string")
+    t = row.get("timeout")
+    if t is not None and (isinstance(t, bool) or not isinstance(t, (int, float)) or t <= 0):
+        errors.append(f"catalog row {name!r}: timeout {t!r} must be a positive number of seconds")
     fz = row.get("falsifiers")
     if not isinstance(fz, list) or not fz:
         errors.append(f"catalog row {name!r} has no falsifiers: nothing proves its "

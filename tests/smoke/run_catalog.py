@@ -9,6 +9,10 @@ one runs after the row's happy path and must fail exactly as declared
 (``expect_exit: N``, or ``expect_sidecar_fail: true`` for a falsifier the
 post-exit sidecar check catches). A check that can no longer fail turns the
 job red here instead of passing silently. ``--no-falsifiers`` skips them.
+
+A row may set ``timeout`` (seconds) for an example that legitimately needs
+longer than run_example.py's default; a hung run is killed and reported as a
+failure, and the catalog moves on to the next row.
 """
 from __future__ import annotations
 
@@ -68,6 +72,8 @@ def main(argv=None):
             ])
         if item.get("sidecar_contains"):
             cmd.extend(["--sidecar-contains", item["sidecar_contains"]])
+        if item.get("timeout"):
+            cmd.extend(["--timeout", str(item["timeout"])])
         if falsifier is not None:
             if falsifier.get("expect_sidecar_fail"):
                 cmd.append("--expect-sidecar-fail")
@@ -82,6 +88,10 @@ def main(argv=None):
         n += 1
         name = item["name"]
         base_args = [a.replace("$OUT", args.out) for a in (item.get("args") or [])]
+        expect = (item.get("expect_file") or "").replace("$OUT", args.out)
+        if expect and os.path.isfile(expect):
+            # A render left by an earlier local run must not satisfy this one.
+            os.remove(expect)
         print(f"::group::{name}", flush=True)
         code = subprocess.call(row_cmd(item, name, base_args))
         print("::endgroup::", flush=True)
@@ -91,9 +101,7 @@ def main(argv=None):
             if args.fail_fast:
                 break
         else:
-            expect = item.get("expect_file")
             if expect:
-                expect = expect.replace("$OUT", args.out)
                 if not os.path.isfile(expect) or os.path.getsize(expect) == 0:
                     print(f"ERROR: expected output missing {expect}", file=sys.stderr)
                     failures.append(f"{name} (missing {expect})")
