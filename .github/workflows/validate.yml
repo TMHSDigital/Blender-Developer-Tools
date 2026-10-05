@@ -38,7 +38,7 @@ jobs:
 
       - name: Validate skill and rule frontmatter (parsed YAML, first block only)
         run: |
-          pip install PyYAML==6.0.2
+          pip install -r requirements-dev.txt
           python3 tests/check_frontmatter.py
 
       - name: Validate snippet Python syntax
@@ -434,5 +434,5 @@ jobs:
 
       - name: Hero-drift tool exit-code tests
         run: |
-          pip install numpy==2.2.6 Pillow==11.2.1
+          pip install -r requirements-dev.txt
           python3 tests/test_measure_hero_drift.py -v
