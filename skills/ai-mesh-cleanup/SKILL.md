@@ -41,9 +41,16 @@ def scene_units_are_meters(scene):
     return abs(units.scale_length - 1.0) < 1e-6
 
 
-def scale_is_identity(obj, tol=1e-6):
-    sx, sy, sz = obj.scale
-    return abs(sx - 1.0) < tol and abs(sy - 1.0) < tol and abs(sz - 1.0) < tol
+def rot_scale_is_identity(obj, tol=1e-6):
+    # Rotation and scale both: origin_to_base() shifts along local Z, which is
+    # world Z only once rotation is applied. A GLB node often carries a
+    # rotation with identity scale.
+    m = obj.matrix_basis.to_3x3()
+    return all(
+        abs(m[i][j] - (1.0 if i == j else 0.0)) < tol
+        for i in range(3)
+        for j in range(3)
+    )
 
 
 def apply_transforms(objs):
@@ -61,6 +68,7 @@ def apply_transforms(objs):
 
 
 def origin_to_base(obj):
+    # Precondition: rotation and scale applied (local Z == world Z).
     mesh = obj.data
     n = len(mesh.vertices)
     flat = [0.0] * (n * 3)
@@ -112,18 +120,20 @@ if not scene_units_are_meters(scene):
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
 
-apply_transforms([o for o in imported_meshes() if not scale_is_identity(o)])
+apply_transforms([o for o in imported_meshes() if not rot_scale_is_identity(o)])
 ```
 
 `export_apply=True` on glTF applies **modifiers**, not object scale. Unapplied object scale lands on the glTF node. Witness: [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
 
 ### 3. Apply transforms
 
-`transform_apply` needs a real object in context. Use `temp_override`, not `bpy.context.copy()`. After apply, `obj.scale` is `(1, 1, 1)` and `obj.data` vertex positions hold the world size.
+`transform_apply` needs a real object in context. Use `temp_override`, not `bpy.context.copy()`. After apply, `obj.scale` is `(1, 1, 1)`, rotation is zero, and `obj.data` vertex positions hold the world size and orientation.
+
+Gate the apply on rotation **and** scale (`rot_scale_is_identity`). Imported glTF nodes often carry a rotation with identity scale; skipping the apply then makes step 4 ground the mesh along its local Z, which moves it in world space (a cube rotated 90° on X at z=5 shifted by −1 in Y and Z).
 
 ### 4. Set origin
 
-Origin at the lowest Z of the mesh (sit-on-ground) via `foreach_get` / `foreach_set`, not a Python loop on `mesh.vertices`. See [`examples/prop-origin-transform/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform) for origin-to-base plus `matrix_parent_inverse`.
+Origin at the lowest Z of the mesh (sit-on-ground) via `foreach_get` / `foreach_set`, not a Python loop on `mesh.vertices`. This works in local space, so run it only after step 3. See [`examples/prop-origin-transform/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform) for origin-to-base plus `matrix_parent_inverse`.
 
 ### 5. Recalculate normals
 

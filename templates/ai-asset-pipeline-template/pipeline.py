@@ -103,9 +103,16 @@ def scene_units_are_meters(scene):
     return abs(units.scale_length - 1.0) < 1e-6
 
 
-def scale_is_identity(obj, tol=1e-6):
-    sx, sy, sz = obj.scale
-    return abs(sx - 1.0) < tol and abs(sy - 1.0) < tol and abs(sz - 1.0) < tol
+def rot_scale_is_identity(obj, tol=1e-6):
+    # Rotation and scale both: origin_to_base() shifts along local Z, which is
+    # world Z only once rotation is applied. A GLB node often carries a
+    # rotation with identity scale.
+    m = obj.matrix_basis.to_3x3()
+    return all(
+        abs(m[i][j] - (1.0 if i == j else 0.0)) < tol
+        for i in range(3)
+        for j in range(3)
+    )
 
 
 def apply_object_transform(obj):
@@ -116,6 +123,7 @@ def apply_object_transform(obj):
 
 
 def origin_to_base(obj):
+    # Precondition: rotation and scale applied (local Z == world Z).
     mesh = obj.data
     n = len(mesh.vertices)
     if n == 0:
@@ -370,7 +378,7 @@ def main():
         print("Set scene units to metric meters")
 
     hero = max(meshes, key=evaluated_triangle_count)
-    if not scale_is_identity(hero):
+    if not rot_scale_is_identity(hero):
         apply_object_transform(hero)
         print(f"Applied object scale/rotation on {hero.name}")
     origin_to_base(hero)
