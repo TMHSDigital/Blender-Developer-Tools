@@ -1303,8 +1303,10 @@ def check(skip_decimate, lift_z=False, **flags):
     assign_slots(low, mats)
     assign_slots(high, mats)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
         bpy.context.view_layer.update()
     if len(low.data.polygons) < 6 or not low.data.uv_layers:

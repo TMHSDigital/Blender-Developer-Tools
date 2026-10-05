@@ -123,8 +123,7 @@ def _mesh_obj(sc, name, build_bm, loc, mat, smooth=True):
     finally:
         bm.free()
     if smooth:
-        for p in me.polygons:
-            p.use_smooth = True
+        me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
     ob.location = loc

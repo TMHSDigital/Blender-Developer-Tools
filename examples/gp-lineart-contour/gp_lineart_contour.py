@@ -380,8 +380,7 @@ def build_lighthouse(sc):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = False
+    me.polygons.foreach_set("use_smooth", [False] * len(me.polygons))
     for name, col in (("Lighthouse.Red", (0.72, 0.07, 0.05, 1.0)),
                       ("Lighthouse.White", (0.93, 0.90, 0.82, 1.0)),
                       ("Lighthouse.Iron", (0.10, 0.12, 0.15, 1.0)),

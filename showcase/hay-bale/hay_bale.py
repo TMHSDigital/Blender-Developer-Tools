@@ -1138,8 +1138,10 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
     assign_slots(low, hay, twine)
     assign_slots(high, hay, twine)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
     if stray_vert:
         bm = bmesh.new()

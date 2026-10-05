@@ -346,6 +346,7 @@ def build_cart_meshes():
         top = canopy_z0 + math.sqrt(r_in * r_in - py * py) + post_bite
         me = _box(f"Cart.Post.{tag}", (0.09, 0.09, top - post_z0),
                   (px, py, 0.5 * (post_z0 + top)), 0.015)
+        # foreach-exempt: conditional per-vertex arc fit of the post tops
         for v in me.vertices:
             if v.co.z > top - 0.05:
                 arc = canopy_z0 + math.sqrt(r_in * r_in - v.co.y * v.co.y) + post_bite

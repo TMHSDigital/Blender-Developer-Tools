@@ -202,8 +202,7 @@ def build_mug_mesh(name):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     return me
 
 
@@ -303,8 +302,7 @@ def render_still(objs, path, engine):
         bm.to_mesh(riser_me)
     finally:
         bm.free()
-    for poly in riser_me.polygons:
-        poly.use_smooth = True
+    riser_me.polygons.foreach_set("use_smooth", [True] * len(riser_me.polygons))
     rmat = bpy.data.materials.new("Walnut")
     rmat.use_nodes = True
     rb = rmat.node_tree.nodes["Principled BSDF"]

@@ -140,8 +140,7 @@ def decimate_apply(obj, target_tris):
         object=obj, active_object=obj, selected_objects=[obj]
     ):
         bpy.ops.object.modifier_apply(modifier=mod.name)
-    for poly in obj.data.polygons:
-        poly.use_smooth = True
+    obj.data.polygons.foreach_set("use_smooth", [True] * len(obj.data.polygons))
     obj.data.update()
     return current, evaluated_triangle_count(obj)
 

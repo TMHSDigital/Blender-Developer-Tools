@@ -127,10 +127,11 @@ def build_scene():
             major_segments=64, minor_segments=16,
             location=(x, y, RING_Z), rotation=(math.radians(90), 0.0, 0.0))
         ring = bpy.context.active_object
+        if ring is None:
+            raise RuntimeError("the add operator left no active object")
         ring.name = name
         ring.data.materials.append(make_emissive(f"Neon{name[4:]}", color, strength))
-        for poly in ring.data.polygons:
-            poly.use_smooth = True
+        ring.data.polygons.foreach_set("use_smooth", [True] * len(ring.data.polygons))
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True

@@ -478,8 +478,7 @@ def check_by_angle(objs, mismatch_angle=False):
     total_sharp = total_manifold = 0
     for obj in objs:
         me = obj.data
-        for p in me.polygons:
-            p.use_smooth = True
+        me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
         me.set_sharp_from_angle(angle=mark)
         dih, nonmanifold = manifold_dihedrals(me)
         if nonmanifold:
@@ -751,8 +750,7 @@ def shade(parts, mode):
     """The one variable across the three cans."""
     for o in parts:
         me = o.data
-        for p in me.polygons:
-            p.use_smooth = mode != "flat"
+        me.polygons.foreach_set("use_smooth", [mode != 'flat'] * len(me.polygons))
         if mode == "byangle":
             me.set_sharp_from_angle(angle=ANGLE)
 

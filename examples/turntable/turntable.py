@@ -44,6 +44,8 @@ def build(no_keys=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.mesh.primitive_monkey_add(location=(0, 0, 1.0))
     obj = bpy.context.active_object
+    if obj is None:
+        raise RuntimeError("the add operator left no active object")
     obj.data.shade_smooth()
     mat = bpy.data.materials.new("M"); mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
@@ -143,8 +145,7 @@ def _mesh_object(name, build, mats, smooth_angle=35.0):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     me.set_sharp_from_angle(angle=math.radians(smooth_angle))
     for m in mats:
         me.materials.append(m)

@@ -288,8 +288,7 @@ def tube_mesh(name, segments, radius, sides=10):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     return me
 
 
@@ -357,8 +356,7 @@ def render_still(results, cutters, path, engine):
         # the boolean output carries the operands' (empty) material slots;
         # start clean so every face takes the finish below
         shown.materials.clear()
-        for poly in shown.polygons:
-            poly.material_index = 0
+        shown.polygons.foreach_set("material_index", [0] * len(shown.polygons))
         ob = add(f"{op.title()}Shown", shown, finishes[op], res.matrix_world.copy())
         bev = ob.modifiers.new("MachinedChamfer", 'BEVEL')
         bev.width = 0.012

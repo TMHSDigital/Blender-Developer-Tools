@@ -259,8 +259,7 @@ def _mat(name, base, rough, metal=0.0, noise=None, coat=0.0):
 def render_still(obj, path, engine):
     scene = bpy.context.scene
     me = obj.data
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
 
     mat = build_material()
     if mat is None:

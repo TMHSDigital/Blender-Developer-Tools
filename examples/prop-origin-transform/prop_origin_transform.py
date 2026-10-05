@@ -359,10 +359,10 @@ def bbox_delta(a, b):
 def apply_scale_data_api(obj):
     """Bake non-uniform scale into mesh verts; leave obj.scale == (1,1,1)."""
     sx, sy, sz = obj.scale
-    for v in obj.data.vertices:
-        v.co.x *= sx
-        v.co.y *= sy
-        v.co.z *= sz
+    co = [0.0] * (len(obj.data.vertices) * 3)
+    obj.data.vertices.foreach_get("co", co)
+    scale = (sx, sy, sz)
+    obj.data.vertices.foreach_set("co", [c * scale[i % 3] for i, c in enumerate(co)])
     obj.scale = (1.0, 1.0, 1.0)
     obj.data.update()
 
@@ -374,8 +374,9 @@ def origin_to_base_center(obj):
     oy = 0.5 * (mn.y + mx.y)
     oz = mn.z
     offset = Vector((ox, oy, oz))
-    for v in obj.data.vertices:
-        v.co -= offset
+    co = [0.0] * (len(obj.data.vertices) * 3)
+    obj.data.vertices.foreach_get("co", co)
+    obj.data.vertices.foreach_set("co", [c - offset[i % 3] for i, c in enumerate(co)])
     obj.data.update()
     # World translation that compensates the mesh shift under current transform
     bpy.context.view_layer.update()

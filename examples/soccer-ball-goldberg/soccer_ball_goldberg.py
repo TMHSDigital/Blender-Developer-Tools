@@ -165,6 +165,7 @@ def build_ball(invert_bind=False):
     # bound by face CLASS (vertex count), never by enumeration order: a
     # builder that assigns "first 12 faces black" passes only by luck of
     # bmesh face ordering, and the check below must catch it
+    # foreach-exempt: per-face pentagon/hexagon test on a 32-face ball
     for poly in me.polygons:
         pent = len(poly.vertices) == 5
         poly.material_index = (0 if pent else 1) if invert_bind else (1 if pent else 0)
@@ -440,8 +441,7 @@ def render_still(obj, path, engine):
     # the faceted Goldberg cage reads as a stitched ball. Panel materials
     # carry through every stage per face class, so a misbound panel would
     # still show in the image.
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     sub = obj.modifiers.new("Inflate", 'SUBSURF')
     sub.subdivision_type = 'CATMULL_CLARK'
     sub.levels = 3
@@ -461,8 +461,7 @@ def render_still(obj, path, engine):
     # proud of the ball, draw every panel boundary. A render-only copy of
     # the mesh, so the checked mesh and its binding are untouched.
     seam_me = me.copy()
-    for poly in seam_me.polygons:
-        poly.material_index = 1
+    seam_me.polygons.foreach_set("material_index", [1] * len(seam_me.polygons))
     seams = bpy.data.objects.new("Seams", seam_me)
     scene.collection.objects.link(seams)
     seams.parent = obj

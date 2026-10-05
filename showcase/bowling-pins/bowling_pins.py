@@ -857,6 +857,7 @@ def build_ball_mesh(shallow):
     # version, so classify its faces by geometry instead: a face of the shell
     # faces straight out from the centre and lies on the sphere; everything
     # else (countersink, bore, bottom) is the drilled bore.
+    # foreach-exempt: per-face test of position and normal against the ball
     for p in out.polygons:
         c = p.center
         on = c.length > BALL_R - 0.002 and p.normal.dot(c.normalized()) > 0.9
@@ -1706,8 +1707,10 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     if stray_vert:
         add_stray_vert(low.data)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
 
     none3 = (None, None, None)

@@ -290,8 +290,7 @@ def companion_pitch_r(teeth):
 
 def render_still(obj, path, engine):
     scene = bpy.context.scene
-    for poly in obj.data.polygons:
-        poly.use_smooth = False  # crisp machined facets
+    obj.data.polygons.foreach_set("use_smooth", [False] * len(obj.data.polygons))  # crisp machined facets
     brass = machined_brass()
     obj.data.materials.append(brass)
     blued = principled("BluedSteel", (0.07, 0.11, 0.22), 0.26, metal=1.0, noise=3.0)
@@ -329,8 +328,7 @@ def render_still(obj, path, engine):
         cy = HERO_C[1] + dist * math.sin(direction)
         me = ring_gear_mesh(name, teeth, pr - ADDENDUM, pr + ADDENDUM, depth, bore=bore)
         me.materials.append(mat)
-        for p in me.polygons:
-            p.use_smooth = False
+        me.polygons.foreach_set("use_smooth", [False] * len(me.polygons))
         ob = bpy.data.objects.new(name, me)
         scene.collection.objects.link(ob)
         # a gap centred on the line of centres, facing the checked gear's tooth
@@ -368,8 +366,7 @@ def render_still(obj, path, engine):
     def add(name, build, mat, cx, cy, smooth=False, bevel=0.01):
         me = solid_mesh(name, build)
         me.materials.append(mat)
-        for p in me.polygons:
-            p.use_smooth = smooth
+        me.polygons.foreach_set("use_smooth", [smooth] * len(me.polygons))
         ob = bpy.data.objects.new(name, me)
         scene.collection.objects.link(ob)
         place(ob, cx, cy)

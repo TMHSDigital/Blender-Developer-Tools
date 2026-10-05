@@ -185,8 +185,7 @@ def make_block(name, sx, sy, sz, bevel):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     me.set_sharp_from_angle(angle=math.radians(40.0))
     return me
 
@@ -275,8 +274,7 @@ def build_scene(mats):
                 bm.to_mesh(me)
             finally:
                 bm.free()
-            for poly in me.polygons:
-                poly.use_smooth = True
+            me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
             ob = bpy.data.objects.new(f"Swatch{i}", me)
             # seated in the collar: the sphere rests on its rim, 0.4 in from
             # the equator, so it reads as mounted rather than balanced

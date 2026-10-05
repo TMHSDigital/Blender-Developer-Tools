@@ -282,8 +282,7 @@ def _finish_part(name, build, mat, smooth_angle=35.0):
     finally:
         bm.free()
     me.materials.append(mat)
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     if hasattr(me, "set_sharp_from_angle"):
         me.set_sharp_from_angle(angle=math.radians(smooth_angle))
     ob = bpy.data.objects.new(name, me)
@@ -559,6 +558,7 @@ def mark_defects_from_audit(sc, ob):
                              emit=(1.0, 0.5, 0.03), estr=1.0)
     me.materials.append(ngon_mat)
     slot = len(me.materials) - 1
+    # foreach-exempt: marks only the n-gons the audit found
     for p in me.polygons:
         if len(p.vertices) > 4:
             p.material_index = slot
@@ -585,8 +585,7 @@ def mark_defects_from_audit(sc, ob):
         finally:
             sbm.free()
         sme.materials.append(red)
-        for p in sme.polygons:
-            p.use_smooth = True
+        sme.polygons.foreach_set("use_smooth", [True] * len(sme.polygons))
         s = bpy.data.objects.new(f"Defect.Loose{i}", sme)
         s.location = co
         sc.collection.objects.link(s)

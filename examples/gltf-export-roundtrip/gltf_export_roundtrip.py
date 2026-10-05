@@ -148,8 +148,7 @@ def build_crate():
         bm.to_mesh(me)
     finally:
         bm.free()  # the ownership contract, as always
-    for poly in me.polygons:
-        poly.use_smooth = False  # crisp low-poly facets; normals are unambiguous
+    me.polygons.foreach_set("use_smooth", [False] * len(me.polygons))  # crisp low-poly facets; normals are unambiguous
     uv = me.uv_layers.new(name="UVMap")
     for poly in me.polygons:
         for li in poly.loop_indices:

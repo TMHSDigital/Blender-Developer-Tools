@@ -432,6 +432,7 @@ def render_still(obj, path, engine):
     boss_end = BOSS_RINGS * SIDES                       # quads up to the boss step
     flange_end = (BOSS_RINGS + FLANGE_RINGS - 1) * SIDES
     dome_end = (BOSS_RINGS + FLANGE_RINGS + DOME_RINGS - 1) * SIDES
+    # foreach-exempt: per-face material by build-order band
     for p in me.polygons:
         i = p.index
         if i < boss_end:

@@ -390,8 +390,7 @@ def render_still(obj, path, engine):
     for ob, x in ((left, -1.75), (right, 1.75)):
         ob.data.materials.clear()
         ob.data.materials.append(pewter)
-        for poly in ob.data.polygons:
-            poly.use_smooth = False
+        ob.data.polygons.foreach_set("use_smooth", [False] * len(ob.data.polygons))
         ob.location = (x, 0.0, 0.0)
         ob.rotation_euler = (0.0, 0.0, math.radians(11.25))
         ob.scale = (1.0, 1.0, 1.0)

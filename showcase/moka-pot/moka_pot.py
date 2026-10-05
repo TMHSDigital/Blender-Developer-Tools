@@ -1105,11 +1105,15 @@ def check(skip_decimate, lift_z=False, lean_pot=False, **flags):
     assign_slots(low, mats)
     assign_slots(high, mats)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
     if lean_pot:
-        for v in low.data.vertices:
-            v.co.x += LEAN * v.co.z / OUTER_SIZE[2]
+        co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", co)
+        co[0::3] = [x + LEAN * z / OUTER_SIZE[2] for x, z in zip(co[0::3], co[2::3])]
+        low.data.vertices.foreach_set("co", co)
     if lift_z or lean_pot:
         low.data.update()
         bpy.context.view_layer.update()

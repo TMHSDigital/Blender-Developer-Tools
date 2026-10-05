@@ -58,8 +58,7 @@ def sphere(name, rgb, x, coll):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     mat = bpy.data.materials.new(name + "M")
     mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
@@ -103,8 +102,7 @@ def _cyl(sc, name, r1, r2, depth, loc, mat, bevel=0.0):
     finally:
         bm.free()
     me.update()
-    for p in me.polygons:       # smooth the wall, keep the caps flat
-        p.use_smooth = abs(p.normal.z) < 0.5
+    me.polygons.foreach_set("use_smooth", [abs(p.normal.z) < 0.5 for p in me.polygons])  # smooth the wall, keep the caps flat
     me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
     ob.location = loc

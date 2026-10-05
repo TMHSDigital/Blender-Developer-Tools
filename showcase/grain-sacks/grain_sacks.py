@@ -1153,8 +1153,10 @@ def check(skip_decimate, lift_z=False, stray_vert=False, **flags):
     assign_slots(low, cloth, twine)
     assign_slots(high, cloth, twine)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
         bpy.context.view_layer.update()
     if len(low.data.polygons) < 6 or low.data.uv_layers.get("UVMap") is None:

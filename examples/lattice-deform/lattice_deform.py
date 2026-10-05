@@ -236,8 +236,7 @@ def tube_mesh(name, segments, radius, sides=10):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     return me
 
 
@@ -252,8 +251,7 @@ def sphere_mesh(name, centers, radius):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for p in me.polygons:
-        p.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     return me
 
 
@@ -291,8 +289,7 @@ def render_still(obj, lat_obj, path, engine):
              for i in (0, 1) for j in (0, 1) for k in (0, 1)}
 
     obj.data.materials.append(checker_ceramic())
-    for p in obj.data.polygons:
-        p.use_smooth = False
+    obj.data.polygons.foreach_set("use_smooth", [False] * len(obj.data.polygons))
 
     steel = principled("CageSteel", (0.58, 0.60, 0.64), 0.22, metal=1.0)
     ghost = principled("RestCage", (0.16, 0.17, 0.19), 0.6, metal=0.3)

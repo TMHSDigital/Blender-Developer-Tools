@@ -467,8 +467,7 @@ def dress_bench(obj):
             bm.free()
         me.materials.append(mat)
         me.set_sharp_from_angle(angle=math.radians(40))
-        for p in me.polygons:
-            p.use_smooth = True
+        me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
         ob = bpy.data.objects.new(name, me)
         scene.collection.objects.link(ob)
         ob.parent = parent
