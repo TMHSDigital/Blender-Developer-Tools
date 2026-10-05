@@ -1,6 +1,6 @@
 ---
 name: procedural-materials-and-shaders
-description: Build materials and shader graphs from Python by enabling nodes, instantiating shader nodes, setting socket default values, and wiring links. Targets Blender 5.2 LTS EEVEE Next and Cycles. Avoids the (deferred to 2027) Layered Textures roadmap.
+description: "Build materials and shader node graphs from Python: bpy.data.materials, node_tree, Principled BSDF and its 4.0+ socket names, default values, links and shader node groups, for EEVEE and Cycles. Use when the user creates or edits materials in a script, generates many material variations, hits a KeyError on a Principled BSDF input such as Specular or Emission, or asks about EEVEE vs Cycles differences or the deferred Layered Textures system. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 

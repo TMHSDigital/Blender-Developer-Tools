@@ -1,6 +1,6 @@
 ---
 name: headless-batch-scripting
-description: Run Blender headless via blender --background --python script.py for batch jobs. What changes without a UI, how to avoid UI-dependent operators, the temp_override pattern when ops must be used, and argparse after the -- separator.
+description: "Run Blender unattended with blender --background --python, arguments after the -- separator, --factory-startup and --python-exit-code, and temp_override for operators that need context. Use when the user renders, exports or processes .blend files from a CLI, CI job or batch script, passes arguments to a Blender script, or hits 'poll() failed, context is incorrect' or a job that exits 0 despite a Python traceback. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

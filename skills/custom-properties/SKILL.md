@@ -1,6 +1,6 @@
 ---
 name: custom-properties
-description: Define and bind Blender custom properties via bpy.props using the type annotation form, with PropertyGroup for grouping, PointerProperty for binding, and the four storage location options for Scene/Object/WindowManager/AddonPreferences. Targets 5.2 LTS.
+description: "Define and bind custom properties with bpy.props annotations, PropertyGroup and PointerProperty, and choose where to store them (Scene, Object, WindowManager, AddonPreferences). Use when the user attaches settings or data to datablocks so it survives save and load, is unsure where add-on settings belong, or writes a property as an assignment instead of an annotation and gets a deprecation warning or a _PropertyDeferred value. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 

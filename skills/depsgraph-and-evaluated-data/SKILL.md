@@ -1,6 +1,6 @@
 ---
 name: depsgraph-and-evaluated-data
-description: Read the actual evaluated geometry the user sees by going through the dependency graph rather than reading raw `obj.data`. Covers `evaluated_get`, `to_mesh`, `to_mesh_clear`, and the lifetime rules that prevent crashes and memory leaks. Targets Blender 5.2 LTS.
+description: "Read the evaluated geometry the user actually sees through the dependency graph instead of raw obj.data: evaluated_depsgraph_get, evaluated_get, to_mesh and to_mesh_clear lifetimes. Use when the user writes an exporter, measurement or inspection script, reports that modifiers, shape keys, armatures or geometry nodes are missing from exported or measured geometry, or reads obj.data.vertices and gets the undeformed base mesh. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 

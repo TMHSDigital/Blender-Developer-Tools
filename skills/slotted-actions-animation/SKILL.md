@@ -1,6 +1,6 @@
 ---
 name: slotted-actions-animation
-description: Animate from Python under the Slotted Actions architecture (data model shipped in Blender 4.4). Action contains Layers contain Strips contain Channelbags. Cross-version channelbag access - action_ensure_channelbag_for_slot is new in 5.0; on 4.4/4.5 LTS use strip.channelbag(slot, ensure=True) or the still-present legacy action.fcurves.
+description: "Create and edit animation from Python under Slotted Actions (Blender 4.4+): Action, slots, layers, strips, channelbags. Bind the action slot, then reach F-curves through a channelbag; action_ensure_channelbag_for_slot exists only on 5.0+, so use strip.channelbag(slot, ensure=True) on 4.5 LTS. Use when the user inserts keyframes or builds F-curves in a script, hits AttributeError on action.fcurves in 5.x, or has keys that exist but never play back. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

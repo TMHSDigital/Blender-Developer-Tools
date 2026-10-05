@@ -1,6 +1,6 @@
 ---
 name: engine-export-presets
-description: Unity, Godot, and Unreal glTF/FBX export presets. glTF is engine-neutral by spec (+Y up, meters, export_yup=True for every engine; Unreal converts to cm on import); FBX uses axis_forward/axis_up plus centimeter scale. Targets 5.2 LTS with 4.5 LTS fallback.
+description: "Export presets for Unity, Godot and Unreal. glTF is +Y up and meters by spec, so every engine gets export_yup=True with no scale bake (Unreal converts to centimeters on import); FBX takes axis_forward/axis_up plus global_scale. Use when the user exports for a game engine, mentions export_yup, axis_forward, axis_up, global_scale, Y-up or centimeters, passes FBX axis kwargs to export_scene.gltf, or gets a model that imports lying on its back or 100x too large. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

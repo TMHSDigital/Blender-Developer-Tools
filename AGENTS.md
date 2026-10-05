@@ -123,7 +123,7 @@ Each skill lives at `skills/<skill-name>/SKILL.md`. Frontmatter is YAML:
 ```yaml
 ---
 name: <kebab-case-skill-name>
-description: <one-line, under 200 chars>
+description: "<what it covers>. Use when <the situations, API names and error strings that should load it>."  # <= 1024 chars, enforced
 standards-version: 1.10.0
 ---
 ```

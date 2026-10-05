@@ -1,6 +1,6 @@
 ---
 name: vse-python
-description: Build Video Sequence Editor timelines from Python. SequenceEditor.strips vs .sequences, new_effect length vs frame_end, and the 5.2 COLOR strip width/height bake from scene resolution.
+description: "Build and inspect Video Sequence Editor timelines from Python: SequenceEditor.strips vs the removed .sequences, new_effect length vs frame_end, strip transforms, and the 5.2 COLOR strip width/height bake from scene resolution. Use when the user scripts the sequencer, hits AttributeError on sequence_editor.sequences in 5.x or a TypeError on new_effect keyword arguments, or renders COLOR strips that ignore transform scale after a resolution change. Targets 5.2 LTS with 4.5 LTS fallback."
 standards-version: 1.10.0
 ---
 

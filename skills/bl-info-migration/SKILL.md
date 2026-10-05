@@ -1,6 +1,6 @@
 ---
 name: bl-info-migration
-description: Migrate a legacy bl_info-format add-on to the Extensions Platform. Three concrete steps, before-and-after diff, dual-format pattern for backward compatibility, and answers to "is bl_info still supported?" Targets Blender 5.2 LTS.
+description: "Migrate a legacy bl_info add-on to the Extensions Platform in three steps, with a before/after diff and the dual-format pattern. Use when the user has a bl_info dictionary in __init__.py, asks whether bl_info is deprecated or still supported, wants to publish to extensions.blender.org or ship an extension .zip, or sees warnings about legacy add-ons at install time. Targets 5.2 LTS; manifests work from 4.2."
 standards-version: 1.10.0
 ---
 

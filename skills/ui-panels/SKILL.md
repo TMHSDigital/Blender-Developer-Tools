@@ -1,6 +1,6 @@
 ---
 name: ui-panels
-description: Author Blender UI panels with bpy.types.Panel, declarative draw(), bl_space_type and bl_region_type, layout primitives like row/column/split, and conditional UI via .enabled. Targets 5.2 LTS.
+description: "Author bpy.types.Panel UI: bl_space_type, bl_region_type, bl_category sidebar tabs, declarative draw(), layout row, column and split, sub-panels, and conditional UI with enabled and active. Use when the user adds an N-panel tab or properties-editor panel, exposes add-on properties or operator buttons, or has a panel that does not appear, shows the wrong labels or warns about a missing _PT_ in its bl_idname. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 
