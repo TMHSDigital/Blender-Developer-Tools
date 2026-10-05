@@ -3,22 +3,25 @@
 ---
 
 <p align="center">
-  <strong>Skills, rules, snippets, templates, and runnable examples for Blender Python development</strong>
+  <strong>Teach Cursor and Claude Code the Blender Python that actually runs on Blender 5.2 LTS and 4.5 LTS.</strong>
+</p>
+
+<p align="center">
+  Skills and rules that stop AI agents writing the <code>bpy</code> that breaks: <code>bpy.context.copy()</code> operator overrides (removed in 4.0), <code>action.fcurves</code> on 5.x Slotted Actions, glTF exports that land on their back in every engine. Each contract is backed by a headless example that is smoke-tested on both LTS versions.
+</p>
+
+<p align="center">
+  <code>/plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist</code><br />
+  <code>/plugin install blender-developer-tools@blender-developer-tools</code><br />
+  <sub>Claude Code. Cursor and other agents: <a href="#quick-start">Quick start</a>.</sub>
 </p>
 
 <p align="center">
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases"><img src="https://img.shields.io/github/v/release/TMHSDigital/Blender-Developer-Tools?style=flat-square&color=e87d0d&label=release" alt="Release" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-CC--BY--NC--ND--4.0-384d54?style=flat-square" alt="License" /></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/sponsors/TMHSDigital"><img src="https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa?style=flat-square&logo=githubsponsors&logoColor=white" alt="Sponsor TMHSDigital on GitHub Sponsors" /></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/validate.yml?branch=main&style=flat-square&label=validate" alt="Validate" /></a>
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/blender-smoke.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/blender-smoke.yml?branch=main&style=flat-square&label=blender%204.5%20%2B%205.2%20smoke" alt="Blender smoke tests" /></a>
-  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/drift-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/drift-check.yml?branch=main&style=flat-square&label=drift-check" alt="Drift check" /></a>
+  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/validate.yml?branch=main&style=flat-square&label=validate" alt="Validate" /></a>
+  <a href="#license"><img src="https://img.shields.io/badge/license-CC%20BY--NC--ND%204.0%20%2B%20MIT%20code-384d54?style=flat-square" alt="License: CC BY-NC-ND 4.0, with snippets and templates under MIT" /></a>
+  <a href="https://github.com/sponsors/TMHSDigital"><img src="https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa?style=flat-square&logo=githubsponsors&logoColor=white" alt="Sponsor TMHSDigital on GitHub Sponsors" /></a>
 </p>
 
 <p align="center">
@@ -43,7 +46,7 @@
 
 This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 64 examples, and 76 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code installs the skills as a plugin and reads the rules through a generated summary (see [Quick start](#quick-start)), since it does not read Cursor `.mdc` files. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
+The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Both agents install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |

@@ -1,11 +1,11 @@
 {
   "name": "blender-developer-tools",
-  "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
   "version": "0.143.13",
   "author": {
     "name": "TMHSDigital",
     "url": "https://github.com/TMHSDigital"
   },
+  "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
   "homepage": "https://github.com/TMHSDigital/Blender-Developer-Tools",
   "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
   "license": "CC-BY-NC-ND-4.0 AND MIT",
