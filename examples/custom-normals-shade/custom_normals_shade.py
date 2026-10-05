@@ -237,22 +237,26 @@ def build_shell(name):
     """Side band lofted along Y through wear-ring stations, capped by the
     two pressed faces. The face/band edge is a true 90-deg break."""
     bm = bmesh.new()
-    wl = bm.verts.layers.float.new(WEAR)
-    prof = rrect(0.0)
-    n = len(prof)
-    rings = []
-    for y, wear in ((-D / 2, 1.0), (-D / 2 + EDGE_BAND, 0.0), (0.0, 0.0),
-                    (D / 2 - EDGE_BAND, 0.0), (D / 2, 1.0)):
-        ring = [bm.verts.new((x, y, z)) for x, z in prof]
-        for v in ring:
-            v[wl] = wear
-        rings.append(ring)
-    for ra, rb in zip(rings, rings[1:]):
-        for i in range(n):
-            j = (i + 1) % n
-            bm.faces.new((ra[i], ra[j], rb[j], rb[i]))
-    pressed_face(bm, wl, rings[0], -D / 2, -1.0)
-    pressed_face(bm, wl, rings[-1], D / 2, 1.0)
+    try:
+        wl = bm.verts.layers.float.new(WEAR)
+        prof = rrect(0.0)
+        n = len(prof)
+        rings = []
+        for y, wear in ((-D / 2, 1.0), (-D / 2 + EDGE_BAND, 0.0), (0.0, 0.0),
+                        (D / 2 - EDGE_BAND, 0.0), (D / 2, 1.0)):
+            ring = [bm.verts.new((x, y, z)) for x, z in prof]
+            for v in ring:
+                v[wl] = wear
+            rings.append(ring)
+        for ra, rb in zip(rings, rings[1:]):
+            for i in range(n):
+                j = (i + 1) % n
+                bm.faces.new((ra[i], ra[j], rb[j], rb[i]))
+        pressed_face(bm, wl, rings[0], -D / 2, -1.0)
+        pressed_face(bm, wl, rings[-1], D / 2, 1.0)
+    except BaseException:
+        bm.free()  # finish_mesh() frees it on success
+        raise
     return finish_mesh(name, bm)
 
 
@@ -264,27 +268,31 @@ def sweep(name, path, section, axis, closed=False, wear=0.0, matrix=None):
     pts = [Vector(p) for p in path]
     n = len(pts)
     bm = bmesh.new()
-    wl = bm.verts.layers.float.new(WEAR)
-    rings = []
-    for i, p in enumerate(pts):
-        if closed:
-            t = (pts[(i + 1) % n] - pts[i - 1])
-        else:
-            t = pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]
-        nrm = axis.cross(t.normalized()).normalized()   # outward for CCW paths
-        ring = [bm.verts.new(p + nrm * u + axis * v) for u, v in section]
-        for v in ring:
-            v[wl] = wear
-        rings.append(ring)
-    k = len(section)
-    for i in range(n if closed else n - 1):
-        ra, rb = rings[i], rings[(i + 1) % n]
-        for j in range(k):
-            jj = (j + 1) % k
-            bm.faces.new((ra[j], ra[jj], rb[jj], rb[j]))
-    if not closed:
-        bm.faces.new(rings[0])
-        bm.faces.new(rings[-1][::-1])
+    try:
+        wl = bm.verts.layers.float.new(WEAR)
+        rings = []
+        for i, p in enumerate(pts):
+            if closed:
+                t = (pts[(i + 1) % n] - pts[i - 1])
+            else:
+                t = pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]
+            nrm = axis.cross(t.normalized()).normalized()   # outward for CCW paths
+            ring = [bm.verts.new(p + nrm * u + axis * v) for u, v in section]
+            for v in ring:
+                v[wl] = wear
+            rings.append(ring)
+        k = len(section)
+        for i in range(n if closed else n - 1):
+            ra, rb = rings[i], rings[(i + 1) % n]
+            for j in range(k):
+                jj = (j + 1) % k
+                bm.faces.new((ra[j], ra[jj], rb[jj], rb[j]))
+        if not closed:
+            bm.faces.new(rings[0])
+            bm.faces.new(rings[-1][::-1])
+    except BaseException:
+        bm.free()  # finish_mesh() frees it on success
+        raise
     return finish_mesh(name, bm, matrix)
 
 
@@ -298,31 +306,35 @@ def lathe(name, profile, segments=16, closed=False, wear=None, matrix=None):
     profile makes a ring. `wear` is an optional per-profile-point list."""
     wear = list(wear) if wear else [0.0] * len(profile)
     bm = bmesh.new()
-    wl = bm.verts.layers.float.new(WEAR)
-    bot = top = None
-    if not closed and profile[0][0] == 0.0:
-        bot = bm.verts.new((0.0, 0.0, profile[0][1]))
-        profile, wear = profile[1:], wear[1:]
-    if not closed and profile[-1][0] == 0.0:
-        top = bm.verts.new((0.0, 0.0, profile[-1][1]))
-        profile, wear = profile[:-1], wear[:-1]
-    rings = []
-    for i in range(segments):
-        a = 2.0 * math.pi * i / segments
-        ring = [bm.verts.new((r * math.cos(a), r * math.sin(a), z)) for r, z in profile]
-        for v, w in zip(ring, wear):
-            v[wl] = w
-        rings.append(ring)
-    m = len(profile)
-    for i in range(segments):
-        j = (i + 1) % segments
-        for k in range(m if closed else m - 1):
-            kk = (k + 1) % m
-            bm.faces.new((rings[i][k], rings[j][k], rings[j][kk], rings[i][kk]))
-        if bot is not None:
-            bm.faces.new((rings[j][0], rings[i][0], bot))
-        if top is not None:
-            bm.faces.new((rings[i][-1], rings[j][-1], top))
+    try:
+        wl = bm.verts.layers.float.new(WEAR)
+        bot = top = None
+        if not closed and profile[0][0] == 0.0:
+            bot = bm.verts.new((0.0, 0.0, profile[0][1]))
+            profile, wear = profile[1:], wear[1:]
+        if not closed and profile[-1][0] == 0.0:
+            top = bm.verts.new((0.0, 0.0, profile[-1][1]))
+            profile, wear = profile[:-1], wear[:-1]
+        rings = []
+        for i in range(segments):
+            a = 2.0 * math.pi * i / segments
+            ring = [bm.verts.new((r * math.cos(a), r * math.sin(a), z)) for r, z in profile]
+            for v, w in zip(ring, wear):
+                v[wl] = w
+            rings.append(ring)
+        m = len(profile)
+        for i in range(segments):
+            j = (i + 1) % segments
+            for k in range(m if closed else m - 1):
+                kk = (k + 1) % m
+                bm.faces.new((rings[i][k], rings[j][k], rings[j][kk], rings[i][kk]))
+            if bot is not None:
+                bm.faces.new((rings[j][0], rings[i][0], bot))
+            if top is not None:
+                bm.faces.new((rings[i][-1], rings[j][-1], top))
+    except BaseException:
+        bm.free()  # finish_mesh() frees it on success
+        raise
     return finish_mesh(name, bm, matrix)
 
 

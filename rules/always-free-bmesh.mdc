@@ -61,6 +61,35 @@ class MyOperator(bpy.types.Operator):
         self.bm = bmesh.new()  # leaks on operator unregister
 ```
 
+## Ownership transfer is allowed, if exactly one owner frees
+
+A function whose job is to build a BMesh may return it, and a builder may
+hand it to a finisher, as long as every path has exactly one owner that frees
+it:
+
+```python
+# OK: a factory returns a new BMesh; the CALLER owns it and frees in finally
+cb = cone_bm(tone)
+try:
+    merge_bm(scene_bm, cb, matrix)
+finally:
+    cb.free()
+
+# OK: build, then hand off to a finisher that frees in its own finally;
+# free here only if the build itself fails
+bm = bmesh.new()
+try:
+    build_geometry(bm)
+except BaseException:
+    bm.free()
+    raise
+return finish_mesh(name, bm)   # finish_mesh(): try: bm.to_mesh(me) finally: bm.free()
+```
+
+What stays wrong is a path with **no** owner: a caller that frees a returned
+BMesh outside `finally`, a build step that can raise before the hand-off,
+or an object attribute (`self.bm`) that nothing frees.
+
 ## The required pattern
 
 ```python

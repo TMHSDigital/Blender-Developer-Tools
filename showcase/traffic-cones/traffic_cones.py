@@ -822,25 +822,31 @@ def build_cones(bm, flags):
     for i, (x, y, yaw) in enumerate(STANDING):
         cb = cone_bm(CONE_TONES[k], lean_deg=LEAN_DEG if (flags["lean_cone"] and i == 1) else 0.0,
                      float_band=FLOAT_BAND if (flags["float_band"] and i == 0) else 0.0)
-        lift = FLOAT_CONE if (flags["float_cone"] and i == 2) else 0.0
-        M = Matrix.Translation((x, y, SLAB_T - SEAT + lift)) @ Matrix.Rotation(
-            math.radians(yaw), 4, "Z")
-        merge_bm(bm, cb, M)
-        cb.free()
+        try:
+            lift = FLOAT_CONE if (flags["float_cone"] and i == 2) else 0.0
+            M = Matrix.Translation((x, y, SLAB_T - SEAT + lift)) @ Matrix.Rotation(
+                math.radians(yaw), 4, "Z")
+            merge_bm(bm, cb, M)
+        finally:
+            cb.free()
         k += 1
     for j, yaw in enumerate(STACK_YAW):
         cb = cone_bm(CONE_TONES[k])
-        lift = LOOSE_STACK if (flags["loose_stack"] and j == len(STACK_YAW) - 1) else 0.0
-        M = Matrix.Translation((STACK_XY[0], STACK_XY[1],
-                                SLAB_T - SEAT + j * STACK_PITCH + lift)) @ Matrix.Rotation(
-            math.radians(yaw), 4, "Z")
-        merge_bm(bm, cb, M)
-        cb.free()
+        try:
+            lift = LOOSE_STACK if (flags["loose_stack"] and j == len(STACK_YAW) - 1) else 0.0
+            M = Matrix.Translation((STACK_XY[0], STACK_XY[1],
+                                    SLAB_T - SEAT + j * STACK_PITCH + lift)) @ Matrix.Rotation(
+                math.radians(yaw), 4, "Z")
+            merge_bm(bm, cb, M)
+        finally:
+            cb.free()
         k += 1
     cb = cone_bm(CONE_TONES[k])
-    M, _phi = tipped_matrix(cb)
-    merge_bm(bm, cb, M)
-    cb.free()
+    try:
+        M, _phi = tipped_matrix(cb)
+        merge_bm(bm, cb, M)
+    finally:
+        cb.free()
 
 
 # --------------------------------------------------------------------------
@@ -999,8 +1005,10 @@ def build_barrier(bm, n_corner, bevel_verts, flags):
             M = Matrix((X, d, n_out)).transposed().to_4x4()
             M.translation = C
             bb = board_bm(n_corner, 0.2 + 0.2 * bi + (0.4 if back else 0.0))
-            merge_bm(bm, bb, M)
-            bb.free()
+            try:
+                merge_bm(bm, bb, M)
+            finally:
+                bb.free()
             ux = LEG_X + (LEG_SPLIT if back else -LEG_SPLIT)
             for su in (-1.0, 1.0):
                 for sv_ in (-1.0, 1.0):
