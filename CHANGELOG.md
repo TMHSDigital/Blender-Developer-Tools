@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.144.3] - 2026-10-05
+
+### Fixes
+
+- fix(ci): run every documented example falsifier in smoke (#443) ([`0b8097d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0b8097de040971cf4198e02b2de01c133d4478dd))
+- fix(tests): cover the helpers the drift check never saw (#440) ([`a31d5eb`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a31d5eba68ed919a0191b2ff1c713febf0ee248a))
+- fix(plugin): point skills at the files the plugin installed (#439) ([`9472f4c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/9472f4cba4231faf5d8222bf0b37dd4ffeaeef98))
+
+[Release v0.144.3](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.144.3)
+
 ## [0.144.2] - 2026-10-05
 
 ### Fixes
