@@ -54,7 +54,10 @@ def _summary(readme: str, teaches: str | None) -> str:
     else:
         paras = [p for p in re.split(r"\n\s*\n", readme) if p.strip()]
         body = next((p for p in paras if not p.lstrip().startswith(("#", "<", "!", "|", "```"))), "")
-    text = MD_LINK.sub(r"\1", " ".join(body.split()))
+    # Keep a link's text, but unquote a path: a backticked repo path in a skill
+    # must be a live link (tests/check_skill_refs.py), and the link is dropped here.
+    text = MD_LINK.sub(lambda m: m.group(1).strip("`") if "/" in m.group(1) else m.group(1),
+                       " ".join(body.split()))
     m = SENTENCE.match(text)
     text = (m.group(1) if m else text).strip()
     if len(text) <= MAX_SUMMARY:
