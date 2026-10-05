@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.6] - 2026-10-05
+
+### Fixes
+
+- fix(testing): bound every smoke run with a timeout and decode output as UTF-8 (#416) ([`192e1b1`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/192e1b177cce4148f65bbfe7f5483bbab88f03a4))
+
+### Other
+
+- docs(examples): stop READMEs saying smoke skips the flag CI runs as the falsifier (#415) ([`2cdde2c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2cdde2cf8a98e855ed944434e8c009bc93f2c161))
+
+[Release v0.143.6](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.6)
+
 ## [0.143.5] - 2026-10-05
 
 ### Fixes
