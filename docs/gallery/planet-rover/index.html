@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural six-wheeled planetary science rover in the rocker-bogie tradition on a patch of rocky red-grey regolith — a cream warm-electronics body with gold-foil insulation blankets quilted into puffed cells, anodised corner posts and a trimmed deck carrying instrument boxes, sample inlets, a calibration target, a UHF can and a whip; a finned radioisotope power unit on struts between two radiator fin banks; on each side a rocker pivoting on a boss in the body side through its eye and pin, and a bogie pinned in a clevis on its front end, the two rockers linked through cranks and links to a differential bar on the deck so they turn equal and opposite; six 0.50 m aluminium drum wheels with 24 chevron grousers, six curved titanium flexure spokes and a drive actuator each, the four corners hanging from steering actuators through C-brackets; a camera mast with a laser telescope window, two camera barrels and navigation cameras; a high-gain dish on a two-axis gimbal; a 5-DOF arm whose turret drills a boulder; cable harnesses along every leg, the mast and the arm; ruts trailing behind both wheel lines and 19 broken rocks, the regolith fitted so every wheel sinks into it — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../wingback-armchair/" aria-label="Previous showcase piece: wingback-armchair"><span aria-hidden="true">&larr;</span> wingback-armchair</a><span class="pager-pos hud">60 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../traffic-cones/" aria-label="Next showcase piece: traffic-cones">traffic-cones <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../wingback-armchair/" aria-label="Previous showcase piece: wingback-armchair"><span aria-hidden="true">&larr;</span><span class="pager-label">wingback-armchair</span></a><span class="pager-pos hud">60 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../traffic-cones/" aria-label="Next showcase piece: traffic-cones"><span class="pager-label">traffic-cones</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A six-wheeled rocker-bogie rover with gold-foil sides, a camera mast, a dish antenna and a finned power unit, its arm drilling a boulder on red-grey regolith.">
       <img src="../assets/planet-rover-hero.webp" alt="A six-wheeled rocker-bogie rover with gold-foil sides, a camera mast, a dish antenna and a finned power unit, its arm drilling a boulder on red-grey regolith." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/planet-rover/planet_rover.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/planet-rover/planet_rover.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-wheel</code></td><td>every wheel sunk into the regolith (the right middle wheel lifted 30 mm off its actuator: sink −0.0184 m)</td><td>16</td></tr><tr><td><code>--offset-pin</code></td><td>pivot pins coaxial (the right bogie pin 4 mm forward: 0.00400 m off its bushings&#x27; axis)</td><td>17</td></tr><tr><td><code>--sink-grousers</code></td><td>grousers seated (the right front wheel&#x27;s grousers pressed 3 mm into the drum: root 0.00400 m in, crown 0.00450 m proud)</td><td>18</td></tr><tr><td><code>--lean-mast</code></td><td>mast plumb and size (the mast turned 1.5° about its foot: tilt 1.5000°, height 2.1034 m still in band)</td><td>19</td></tr><tr><td><code>--jam-rocker</code></td><td>differential (the right rocker turned 1.5° past the bar: deflections +4.0°, −2.5°, residual 1.5000°, link eye 0.00785 m off its crank pin)</td><td>20</td></tr><tr><td><code>--offset-steer</code></td><td>steering axes (the right front steering actuator 10 mm forward: 0.01000 m off the wheel&#x27;s centre)</td><td>21</td></tr><tr><td><code>--camber-wheel</code></td><td>axles level and lateral (the right front wheel tilted 1° about its centre: 1.0000°)</td><td>22</td></tr><tr><td><code>--bunch-grousers</code></td><td>grouser pitch (one right front grouser turned 3° about the axle: pitch off by 3.0148°)</td><td>23</td></tr><tr><td><code>--overload-turret</code></td><td>stance (the turret 40 times its mass, 296.7 kg: centre at x 0.467, margin 0.6645 m &lt; 0.7470 m)</td><td>24</td></tr><tr><td><code>--loose-dish</code></td><td>one connected assembly (the dish, hub, feed and struts lifted 0.12 m along the boresight off the elevation axle: 2 components, 6 shells and 435)</td><td>25</td></tr></tbody></table></div>
 <p><code>--float-wheel</code> lifts the middle wheel because its contact patch lies on the support polygon&#x27;s edge between the front and rear wheels&#x27; patches: its first draft lifted the right front wheel, which also removed a corner of the polygon and failed the stance budget with it. <code>--sink-grousers</code> replaced a first draft that floated the grousers 3 mm off the skin; that also split them from the drum and failed the assembly budget. Pressed in, they stay attached and only the seat band sees them; the wheel still sinks in band (the tips are 3 mm higher). <code>--jam-rocker</code> keeps the regolith fitted to the jammed stance (the wheels still sink in band) and builds the differential for the nominal one, so only the differential sees it; the height moves 3 mm, inside its band. <code>--loose-dish</code>&#x27;s first draft moved the dish 60 mm and left the hub still round the axle (exit 0); the dish hangs on the gimbal by that one joint, and at 0.12 m it comes away alone. <code>--camber-wheel</code> widens the track 4.3 mm, inside its 6 mm tolerance, and <code>--lean-mast</code> raises the envelope 2.9 mm, inside <code>BBOX_TOL</code>.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python planet_rover.py --
+<pre tabindex="0"><code>blender --background --python planet_rover.py --
 blender --background --python planet_rover.py -- --skip-decimate
 blender --background --python planet_rover.py -- --stray-vert
 blender --background --python planet_rover.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python planet_rover.py -- --output rover.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../wingback-armchair/" aria-label="Previous showcase piece: wingback-armchair"><span aria-hidden="true">&larr;</span> wingback-armchair</a><span class="pager-pos hud">60 of 76 showcase pieces</span><a rel="next" href="../traffic-cones/" aria-label="Next showcase piece: traffic-cones">traffic-cones <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../wingback-armchair/" aria-label="Previous showcase piece: wingback-armchair"><span aria-hidden="true">&larr;</span><span class="pager-label">wingback-armchair</span></a><span class="pager-pos hud">60 of 76 showcase pieces</span><a rel="next" href="../traffic-cones/" aria-label="Next showcase piece: traffic-cones"><span class="pager-label">traffic-cones</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python planet_rover.py -- --output rover.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

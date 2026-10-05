@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural apothecary shelf — housed shelves, gallery rails, a drawer bank and an arched crest, stocked with fifteen lathed bottles, flasks and glazed jars, each corked or lidded and labelled — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../brazier/" aria-label="Previous showcase piece: brazier"><span aria-hidden="true">&larr;</span> brazier</a><span class="pager-pos hud">32 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wooden-yoke/" aria-label="Next showcase piece: wooden-yoke">wooden-yoke <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../brazier/" aria-label="Previous showcase piece: brazier"><span aria-hidden="true">&larr;</span><span class="pager-label">brazier</span></a><span class="pager-pos hud">32 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wooden-yoke/" aria-label="Next showcase piece: wooden-yoke"><span class="pager-label">wooden-yoke</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars.">
       <img src="../assets/apothecary-shelf-hero.webp" alt="A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/apothecary-shelf/apothecary_shelf.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/apothecary-shelf/apothecary_shelf.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -90,7 +90,7 @@
 <p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check. <code>19</code> (plumb and real-world size) is reserved across pieces and unused here.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a side floating (<code>--lift-z</code>, <code>--float-side</code>)</td></tr><tr><td>17</td><td>Dado, closure or knob bite (<code>--short-shelves</code>, <code>--pop-corks</code>, <code>--pull-knobs</code>)</td></tr><tr><td>18</td><td>Vessel, drawer or label seat (<code>--float-jars</code>, <code>--lift-drawers</code>, <code>--float-labels</code>)</td></tr><tr><td>20</td><td>Headroom under the member above (<code>--tall-flask</code>)</td></tr><tr><td>21</td><td>Vessels overlap each other or the carcass (<code>--crowd-jars</code>)</td></tr><tr><td>22</td><td>Form spread below floor (<code>--uniform-vessels</code>)</td></tr><tr><td>23</td><td>Right-angle wood edges (<code>--sharp-rail</code>)</td></tr><tr><td>24</td><td>Gallery asset-quality violation (render path; the floors&#x27; 11 is remapped here)</td></tr></tbody></table></div>
 <h2 id="run-it">Run it<a class="anchor" href="#run-it" aria-label="Link to this section">#</a></h2>
-<pre><code># Budget check, no render. ~4.5 s on 5.1 and 5.2.
+<pre tabindex="0"><code># Budget check, no render. ~4.5 s on 5.1 and 5.2.
 blender --background --python apothecary_shelf.py --
 
 # Falsifier: the middle-shelf flask runs into the shelf above. Must exit 20.
@@ -144,7 +144,7 @@ blender --background --python apothecary_shelf.py -- --output apothecary_shelf.w
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../brazier/" aria-label="Previous showcase piece: brazier"><span aria-hidden="true">&larr;</span> brazier</a><span class="pager-pos hud">32 of 76 showcase pieces</span><a rel="next" href="../wooden-yoke/" aria-label="Next showcase piece: wooden-yoke">wooden-yoke <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../brazier/" aria-label="Previous showcase piece: brazier"><span aria-hidden="true">&larr;</span><span class="pager-label">brazier</span></a><span class="pager-pos hud">32 of 76 showcase pieces</span><a rel="next" href="../wooden-yoke/" aria-label="Next showcase piece: wooden-yoke"><span class="pager-label">wooden-yoke</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -296,10 +296,18 @@ blender --background --python apothecary_shelf.py -- --output apothecary_shelf.w
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural pin deck end of a ten-pin bowling lane — one laminated slab of 39 maple boards, 41.5 in across, each board&#x27;s top edges chamfered into a V seam and crossed by the joint to a dark pin deck, ten pin spots inlaid on a 12 in equilateral triangle 34 3/16 in from the pit edge, a chevron of targeting arrows and a row of range dots, channel-profile gutters, cappings, kickbacks with sloped noses under mitred aluminium caps and phenolic kick plates, a steel pit-edge bullnose and five sleepers; ten pins lathe-turned from the regulation profile table (15 in tall, 4.766 in belly) with two red neck stripes and a crown band of red teeth; and an 8.5 in marbled resin ball drilled by an exact Boolean with a countersunk thumb hole and two parallel finger holes — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../motor-scooter/" aria-label="Previous showcase piece: motor-scooter"><span aria-hidden="true">&larr;</span> motor-scooter</a><span class="pager-pos hud">49 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../pond-edge/" aria-label="Next showcase piece: pond-edge">pond-edge <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../motor-scooter/" aria-label="Previous showcase piece: motor-scooter"><span aria-hidden="true">&larr;</span><span class="pager-label">motor-scooter</span></a><span class="pager-pos hud">49 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../pond-edge/" aria-label="Next showcase piece: pond-edge"><span class="pager-label">pond-edge</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Ten white pins with red neck stripes racked on a dark pin deck at the end of a glossy maple lane with arrows and dots, a marbled violet ball resting on the approach.">
       <img src="../assets/bowling-pins-hero.webp" alt="Ten white pins with red neck stripes racked on a dark pin deck at the end of a glossy maple lane with arrows and dots, a marbled violet ball resting on the approach." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=sports">Sports</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/bowling-pins/bowling_pins.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/bowling-pins/bowling_pins.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -87,7 +87,7 @@
 <p><code>--offset-pin</code>, <code>--float-pin</code> and <code>--lean-pin</code> each move one pin and leave its spot, so the lattice holds. <code>--lean-pin</code> tips the pin about the centre of its base, so the base centre stays on its spot and at its seat; the tilt alone fails. The pin measures 1.396° rather than 1.5° because its axis runs from the bottom cap&#x27;s centroid to the top cap&#x27;s, and the top cap is a small flat, not a point. <code>--wide-rack</code> moves pins with their spots, so every pin stays centred and seated; the back row, 24 mm further back, is still on the deck. <code>--fat-neck</code> changes the neck only, so height and belly hold. <code>--proud-board</code> raises a board that carries no pin, spot, arrow, dot or the ball; pins read the deck face under themselves, not the lane&#x27;s highest board, so their seat holds. <code>--float-ball</code> also splits the assembly, but the rest (22) is checked first.</p>
 <p>Before the audits were settled, <code>--lift-z</code> exited 16 on the sleepers, not on the bounding box: <code>bound_box</code> is a cached copy that an in-place vertex edit does not refresh, so the AABB gate now reads the vertices. The first hole audit took each hole&#x27;s axis from its vertices by principal components; a 30 mm hole is barely longer than it is wide, so the axis wandered and <code>--shallow-holes</code> also moved the bore and bridge. The axis now comes from the drilled bottom, and the flag moves the depth alone.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python bowling_pins.py --
+<pre tabindex="0"><code>blender --background --python bowling_pins.py --
 blender --background --python bowling_pins.py -- --skip-decimate
 blender --background --python bowling_pins.py -- --stray-vert
 blender --background --python bowling_pins.py -- --lift-z
@@ -147,7 +147,7 @@ blender --background --python bowling_pins.py -- --output pins.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../motor-scooter/" aria-label="Previous showcase piece: motor-scooter"><span aria-hidden="true">&larr;</span> motor-scooter</a><span class="pager-pos hud">49 of 76 showcase pieces</span><a rel="next" href="../pond-edge/" aria-label="Next showcase piece: pond-edge">pond-edge <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../motor-scooter/" aria-label="Previous showcase piece: motor-scooter"><span aria-hidden="true">&larr;</span><span class="pager-label">motor-scooter</span></a><span class="pager-pos hud">49 of 76 showcase pieces</span><a rel="next" href="../pond-edge/" aria-label="Next showcase piece: pond-edge"><span class="pager-label">pond-edge</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -299,10 +299,18 @@ blender --background --python bowling_pins.py -- --output pins.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

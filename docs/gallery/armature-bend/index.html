@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a ribbed bellows hose through rest, half, and full curl.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../grease-pencil-rosette/" aria-label="Previous example: grease-pencil-rosette"><span aria-hidden="true">&larr;</span> grease-pencil-rosette</a><span class="pager-pos hud">19 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../text-version-stamp/" aria-label="Next example: text-version-stamp">text-version-stamp <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../grease-pencil-rosette/" aria-label="Previous example: grease-pencil-rosette"><span aria-hidden="true">&larr;</span><span class="pager-label">grease-pencil-rosette</span></a><span class="pager-pos hud">19 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../text-version-stamp/" aria-label="Next example: text-version-stamp"><span class="pager-label">text-version-stamp</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature.">
       <img src="../assets/armature-bend-hero.webp" alt="Three ribbed bellows hoses with brass collars on steel foot flanges, banded teal to amber to coral, standing straight, half curled and fully curled by an armature." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal Σ wᵢ·(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected — a straight tube fails.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=armature">armature</a> <a href="../#tag=depsgraph">depsgraph</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/armature-bend/armature_bend.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/armature-bend/armature_bend.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -67,7 +67,7 @@
 <p>The armature API is identical on Blender 4.5 LTS and 5.1 — no version gate needed. One portability hazard is baked in as a comment: interleaving <code>color_attributes</code> writes with <code>VertexGroup.add()</code> dangles the attribute reference when the deform layer is allocated (hard crash on 4.5, silent luck on 5.1), so the script finishes all weight writes before creating the color attribute.</p>
 <p>The render shows rest → half curl → full curl left to right. The hose is lathed from an <code>(r, z)</code> profile — brass collars at both ends, a ribbed rubber section between — and every weight is a function of <code>z</code> alone, so the ribs change nothing the LBS check asserts; they make the deformation legible, fanning open on the outside of each bend and crowding on the inside. Per-bone weight bands are visualized through a <code>BoneTint</code> color attribute on the rib crests (a <code>Crest</code> attribute darkens the valleys) — the smooth color blends at the joints are the same weights the check asserts. Each hose stands on a render-only steel foot flange; the render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python armature_bend.py --
 
 # Falsifier: rest pose. Must exit non-zero (tip deflection).
@@ -120,7 +120,7 @@ blender --background --python armature_bend.py -- --output bend.png --engine cyc
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../grease-pencil-rosette/" aria-label="Previous example: grease-pencil-rosette"><span aria-hidden="true">&larr;</span> grease-pencil-rosette</a><span class="pager-pos hud">19 of 56 examples</span><a rel="next" href="../text-version-stamp/" aria-label="Next example: text-version-stamp">text-version-stamp <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../grease-pencil-rosette/" aria-label="Previous example: grease-pencil-rosette"><span aria-hidden="true">&larr;</span><span class="pager-label">grease-pencil-rosette</span></a><span class="pager-pos hud">19 of 56 examples</span><a rel="next" href="../text-version-stamp/" aria-label="Next example: text-version-stamp"><span class="pager-label">text-version-stamp</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -272,10 +272,18 @@ blender --background --python armature_bend.py -- --output bend.png --engine cyc
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

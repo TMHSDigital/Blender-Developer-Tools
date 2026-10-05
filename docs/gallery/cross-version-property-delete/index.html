@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span> vertex-color-ao</a><span class="pager-pos hud">47 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode">usd-export-evaluation-mode <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span><span class="pager-label">vertex-color-ao</span></a><span class="pager-pos hud">47 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode"><span class="pager-label">usd-export-evaluation-mode</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark.">
       <img src="../assets/cross-version-property-delete-hero.webp" alt="Two stage lamps on one stand: the left, still carrying its ID property, glows over a placard reading obj[&quot;accession&quot;] = 42; the right, after del obj[&quot;accession&quot;], stands dark." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=context">context</a> <a href="../#tag=properties">properties</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/cross-version-property-delete/cross_version_property_delete.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/cross-version-property-delete/cross_version_property_delete.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -72,7 +72,7 @@
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
 <p>Both lamps hang in U-yokes from one T-stand. The render path reads each housing&#x27;s <code>keys()</code> after the check has run, so the still is driven by the checked IDs, not staged from the expected outcome. A lamp that still carries the property gets an emissive lens and a real SPOT light along its beam axis, which pools warm light on the placard below it. A lamp without the property keeps a dark lens and casts nothing. Each placard is set in the bundled DejaVu Sans Mono and shows the line of code that produced its lamp&#x27;s state. Only render-side geometry (stand, yokes, lenses, placards) is added in the render path; the check reads ID properties, never geometry.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python cross_version_property_delete.py --
+<pre tabindex="0"><code>blender --background --python cross_version_property_delete.py --
 blender --background --python cross_version_property_delete.py -- --output lamps.png</code></pre>
 <p><code>--skip-delete</code> and <code>--unset-instead</code> are falsification switches: both leave the Clear lamp tagged and exit 7.</p>
 <p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
@@ -102,7 +102,7 @@ blender --background --python cross_version_property_delete.py -- --output lamps
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span> vertex-color-ao</a><span class="pager-pos hud">47 of 56 examples</span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode">usd-export-evaluation-mode <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../vertex-color-ao/" aria-label="Previous example: vertex-color-ao"><span aria-hidden="true">&larr;</span><span class="pager-label">vertex-color-ao</span></a><span class="pager-pos hud">47 of 56 examples</span><a rel="next" href="../usd-export-evaluation-mode/" aria-label="Next example: usd-export-evaluation-mode"><span class="pager-label">usd-export-evaluation-mode</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -254,10 +254,18 @@ blender --background --python cross_version_property_delete.py -- --output lamps
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

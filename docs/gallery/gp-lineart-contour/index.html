@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../sky-texture-sun-elevation/" aria-label="Previous example: sky-texture-sun-elevation"><span aria-hidden="true">&larr;</span> sky-texture-sun-elevation</a><span class="pager-pos hud">36 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../mesh-hygiene-audit/" aria-label="Next example: mesh-hygiene-audit">mesh-hygiene-audit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../sky-texture-sun-elevation/" aria-label="Previous example: sky-texture-sun-elevation"><span aria-hidden="true">&larr;</span><span class="pager-label">sky-texture-sun-elevation</span></a><span class="pager-pos hud">36 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../mesh-hygiene-audit/" aria-label="Next example: mesh-hygiene-audit"><span class="pager-label">mesh-hygiene-audit</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink.">
       <img src="../assets/gp-lineart-contour-hero.webp" alt="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving every edge type off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=grease-pencil">grease-pencil</a> <a href="../#tag=line-art">line-art</a> <a href="../#tag=modifiers">modifiers</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/gp-lineart-contour/gp_lineart_contour.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/gp-lineart-contour/gp_lineart_contour.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -70,7 +70,7 @@
 <h3 id="stage-deviation">Stage deviation<a class="anchor" href="#stage-deviation" aria-label="Link to this section">#</a></h3>
 <p>Line Art is a non-photoreal contract: the hero&#x27;s materials are cel-shaded (Diffuse → Shader to RGB → constant ramp, emitted) instead of Principled, so the ink reads against flat tone fields. The stage itself — floor, wall, world, key, fill and warm wedge — is the default. The cel shading uses Shader to RGB, which is EEVEE-only, so <code>--engine cycles</code> does not render the look.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Depsgraph contour check — the CI check:
+<pre tabindex="0"><code># Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
 
 # Falsifier: use_contour off. Must exit non-zero.
@@ -122,7 +122,7 @@ blender --background --python gp_lineart_contour.py -- --output lineart.png</cod
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../sky-texture-sun-elevation/" aria-label="Previous example: sky-texture-sun-elevation"><span aria-hidden="true">&larr;</span> sky-texture-sun-elevation</a><span class="pager-pos hud">36 of 56 examples</span><a rel="next" href="../mesh-hygiene-audit/" aria-label="Next example: mesh-hygiene-audit">mesh-hygiene-audit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../sky-texture-sun-elevation/" aria-label="Previous example: sky-texture-sun-elevation"><span aria-hidden="true">&larr;</span><span class="pager-label">sky-texture-sun-elevation</span></a><span class="pager-pos hud">36 of 56 examples</span><a rel="next" href="../mesh-hygiene-audit/" aria-label="Next example: mesh-hygiene-audit"><span class="pager-label">mesh-hygiene-audit</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -274,10 +274,18 @@ blender --background --python gp_lineart_contour.py -- --output lineart.png</cod
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

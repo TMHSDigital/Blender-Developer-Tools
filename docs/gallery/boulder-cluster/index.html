@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural glacial boulder cluster — four boulders cut from ellipsoids by closed-form cleavage planes with weathered bevels, a speckled granite block, a banded sandstone boulder split in two with matching crack faces and bedding, a sandstone slab resting flat on a smaller granite boulder, lichen crusts and moss cushions on the tops and north faces — sunk into a soil mound with grass tufts, pebbles and wildflowers, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../weight-rack/" aria-label="Previous showcase piece: weight-rack"><span aria-hidden="true">&larr;</span> weight-rack</a><span class="pager-pos hud">46 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../floor-fan/" aria-label="Next showcase piece: floor-fan">floor-fan <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../weight-rack/" aria-label="Previous showcase piece: weight-rack"><span aria-hidden="true">&larr;</span><span class="pager-label">weight-rack</span></a><span class="pager-pos hud">46 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../floor-fan/" aria-label="Next showcase piece: floor-fan"><span class="pager-label">floor-fan</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A speckled granite block, a banded sandstone boulder split in two and a slab resting on a smaller boulder, sunk in a grassy soil mound with pebbles and wildflowers.">
       <img src="../assets/boulder-cluster-hero.webp" alt="A speckled granite block, a banded sandstone boulder split in two and a slab resting on a smaller boulder, sunk in a grassy soil mound with pebbles and wildflowers." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/boulder-cluster/boulder_cluster.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/boulder-cluster/boulder_cluster.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--perch-boulder</code></td><td>embedding (the front boulder raised 90 mm off its bed: shallowest sector −0.0151 m, deepest vertex 0.0086 m)</td><td>17</td></tr><tr><td><code>--float-slab</code></td><td>slab seat (the slab lifted 20 mm off the front boulder: deepest vertex −0.0100 m)</td><td>18</td></tr><tr><td><code>--perch-slab</code></td><td>slab balance (the slab slid 0.36 m south across the boulder&#x27;s top and re-seated: centroid 0.1170 m outside its 41-vertex footprint)</td><td>19</td></tr><tr><td><code>--skew-half</code></td><td>split halves matching (the east half turned 6° about Z at its crack: faces 6.65° apart)</td><td>20</td></tr><tr><td><code>--sunny-lichen</code></td><td>growth on up- and shade-facing surfaces (every crust turned by one rotation onto south faces: 0.6243)</td><td>21</td></tr><tr><td><code>--float-cover</code></td><td>ground cover rooted (every blade, pebble and flower lifted 30 mm: 475 of 497 shells loose)</td><td>22</td></tr></tbody></table></div>
 <p><code>--perch-boulder</code> carries the slab with the boulder, so the slab still seats 10 mm deep and balances; only the embedding fails. <code>--float-slab</code> keeps the slab&#x27;s footprint (read relative to its lowest gap), so balance still passes. <code>--perch-slab</code> re-seats the slab at the same 10 mm bite, so the seat passes and only the balance fails. <code>--skew-half</code> turns the half about its crack&#x27;s own centre, so the gap (0.0779 m) and slide (0.0102 m) stay in band and the half stays bedded. <code>--sunny-lichen</code> moves the crusts only: a moss cushion on the block&#x27;s crown is the top of the envelope, and moving it would move the box. It uses one rigid rotation for every crust, so crusts that were apart stay apart. <code>--float-cover</code> leaves 22 of the largest pebbles still touching, sunk deeper than 30 mm.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python boulder_cluster.py --
+<pre tabindex="0"><code>blender --background --python boulder_cluster.py --
 blender --background --python boulder_cluster.py -- --skip-decimate
 blender --background --python boulder_cluster.py -- --stray-vert
 blender --background --python boulder_cluster.py -- --lift-z
@@ -144,7 +144,7 @@ blender --background --python boulder_cluster.py -- --output cluster.png</code><
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../weight-rack/" aria-label="Previous showcase piece: weight-rack"><span aria-hidden="true">&larr;</span> weight-rack</a><span class="pager-pos hud">46 of 76 showcase pieces</span><a rel="next" href="../floor-fan/" aria-label="Next showcase piece: floor-fan">floor-fan <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../weight-rack/" aria-label="Previous showcase piece: weight-rack"><span aria-hidden="true">&larr;</span><span class="pager-label">weight-rack</span></a><span class="pager-pos hud">46 of 76 showcase pieces</span><a rel="next" href="../floor-fan/" aria-label="Next showcase piece: floor-fan"><span class="pager-label">floor-fan</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -296,10 +296,18 @@ blender --background --python boulder_cluster.py -- --output cluster.png</code><
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

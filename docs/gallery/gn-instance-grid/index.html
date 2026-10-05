@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../temp-override-join/" aria-label="Previous example: temp-override-join"><span aria-hidden="true">&larr;</span> temp-override-join</a><span class="pager-pos hud">10 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-modifier-inputs/" aria-label="Next example: gn-modifier-inputs">gn-modifier-inputs <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../temp-override-join/" aria-label="Previous example: temp-override-join"><span aria-hidden="true">&larr;</span><span class="pager-label">temp-override-join</span></a><span class="pager-pos hud">10 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-modifier-inputs/" aria-label="Next example: gn-modifier-inputs"><span class="pager-label">gn-modifier-inputs</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right.">
       <img src="../assets/gn-instance-grid-hero.webp" alt="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology (9 keycaps × 121 = 1089 verts, 1089 faces), Set Material carries the keycap plastic, a position-field Set Material lands the accent on exactly one keycap, and the corner keycap sits at its closed-form grid coordinate.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=geometry-nodes">geometry-nodes</a> <a href="../#tag=instancing">instancing</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/gn-instance-grid/gn_instance_grid.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/gn-instance-grid/gn_instance_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -65,7 +65,7 @@
 <p><strong>What it witnesses:</strong> instancing is not free geometry until you realize it. The check asserts the closed-form evaluated topology — verts = grid points × keycap verts (9 × 121 = 1089), faces = 9 × 121 = 1089 — where the keycap counts come from its construction parameters (six rounded-rectangle rings of 4 × (4 + 1) = 20 verts, plus the dish centre; five ring-to-ring quad bands, a 20-triangle dish fan and one bottom n-gon), not from measuring the mesh. It also asserts that the (+x, +y) corner cell holds exactly one keycap, centred on its closed-form grid point with its foot at the Transform lift, that <code>Set Material</code> carries <code>Keycap.PBT</code>, and that a second <code>Set Material</code>, selected by a per-face position field, puts <code>Keycap.Accent</code> on exactly one keycap at the front-right grid point. If Realize Instances is bypassed, the evaluated mesh is empty and the count gate fails.</p>
 <p><strong>What the render shows:</strong> nine identical keycaps, one per grid point, seated on switch housings in the recessed well of an anodized case, and the one orange &quot;enter&quot; key the position-field selection picked out. The count gate is numeric: an unrealized grid renders the same keycaps, because the renderer draws instances either way. What does show is the grid itself — <code>--one-cell</code> renders a single keycap in the centre of an empty well — and where the accent selection landed. The knob, OLED, case and switch housings are render-only staging built in bmesh; only the key field comes from the tree.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_instance_grid.py --
 
 # Falsifier: 1×1 grid. Must exit non-zero (4: eight keycaps missing).
@@ -118,7 +118,7 @@ blender --background --python gn_instance_grid.py -- --output grid.png --engine 
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../temp-override-join/" aria-label="Previous example: temp-override-join"><span aria-hidden="true">&larr;</span> temp-override-join</a><span class="pager-pos hud">10 of 56 examples</span><a rel="next" href="../gn-modifier-inputs/" aria-label="Next example: gn-modifier-inputs">gn-modifier-inputs <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../temp-override-join/" aria-label="Previous example: temp-override-join"><span aria-hidden="true">&larr;</span><span class="pager-label">temp-override-join</span></a><span class="pager-pos hud">10 of 56 examples</span><a rel="next" href="../gn-modifier-inputs/" aria-label="Next example: gn-modifier-inputs"><span class="pager-label">gn-modifier-inputs</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -270,10 +270,18 @@ blender --background --python gn_instance_grid.py -- --output grid.png --engine 
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

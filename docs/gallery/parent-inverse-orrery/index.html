@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span><span class="pager-label">color-attribute-wheel</span></a><span class="pager-pos hud">17 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette"><span class="pager-label">grease-pencil-rosette</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon.">
       <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery on a turned walnut base: a glowing gold sun atop the column, mottled blue, green and orange planets on riser posts, orbit rings beneath them, and a silver moon." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,17 +56,17 @@
     <div class="callout"><span class="tag">witnesses</span> Bare <code>.parent =</code> really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=objects">objects</a> <a href="../#tag=transforms">transforms</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/parent-inverse-orrery/parent_inverse_orrery.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/parent-inverse-orrery/parent_inverse_orrery.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example that assembles a brass orrery — sun, three planets on pivot arms, one moon — entirely through the data API, witnessing the parenting contract that generated Blender code gets wrong most often. <code>child.parent = pivot</code> alone re-interprets the child&#x27;s local matrix in the pivot&#x27;s space and the child visibly teleports; keeping the world transform takes the two-line idiom:</p>
-<pre><code>child.parent = pivot
+<pre tabindex="0"><code>child.parent = pivot
 child.matrix_parent_inverse = pivot.matrix_world.inverted()</code></pre>
 <p><strong>What it witnesses:</strong> the check first proves the trap is real (a bare-parented probe jumps by more than half a unit), then that the idiom restores the probe&#x27;s world position to within 1e-5. It also asserts the second half of the contract — <code>matrix_world</code> is the <em>last-evaluated</em> matrix, stale after any transform edit until <code>bpy.context.view_layer.update()</code> — and finally that every planet and the two-level moon land exactly on their closed-form orbit positions after the pivots spin.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python parent_inverse_orrery.py --
 
 # Falsifier: parent without MPI. Must exit non-zero (orbit closed form).
@@ -121,7 +121,7 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png --
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span> color-attribute-wheel</a><span class="pager-pos hud">17 of 56 examples</span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette">grease-pencil-rosette <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../color-attribute-wheel/" aria-label="Previous example: color-attribute-wheel"><span aria-hidden="true">&larr;</span><span class="pager-label">color-attribute-wheel</span></a><span class="pager-pos hud">17 of 56 examples</span><a rel="next" href="../grease-pencil-rosette/" aria-label="Next example: grease-pencil-rosette"><span class="pager-label">grease-pencil-rosette</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png --
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

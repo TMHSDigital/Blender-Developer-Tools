@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural sci-fi hover bike — a sculpted two-tone fuselage with panel seams, gasketed access panels with hex fasteners, a belly service plate, decal plate, hinged charge-port door, heat sink, intake grilles, grab rail and tail light, a stitched pleated saddle, a twin-stanchion fork through sculpted triple clamps with clip-ons, switch pods, pivoted levers and a visored instrument cluster, two glowing exhaust nozzles, two ducted fans with canted stator vanes and handed seven-blade rotors, aerofoil pylons flared into the shrouds with fastener rows and a conduit, and landing gear of twin-plate pressed links and oleo shocks on sixteen pinned joints carrying ski-section skids on wear strips — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../office-chair/" aria-label="Previous showcase piece: office-chair"><span aria-hidden="true">&larr;</span> office-chair</a><span class="pager-pos hud">44 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../weight-rack/" aria-label="Next showcase piece: weight-rack">weight-rack <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../office-chair/" aria-label="Previous showcase piece: office-chair"><span aria-hidden="true">&larr;</span><span class="pager-label">office-chair</span></a><span class="pager-pos hud">44 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../weight-rack/" aria-label="Next showcase piece: weight-rack"><span class="pager-label">weight-rack</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A muted-teal hover bike with panelled flanks, a stitched saddle and two ducted fans, standing on pinned landing gear with orange shock absorbers and teal skis on a dark studio floor.">
       <img src="../assets/hover-bike-hero.webp" alt="A muted-teal hover bike with panelled flanks, a stitched saddle and two ducted fans, standing on pinned landing gear with orange shock absorbers and teal skis on a dark studio floor." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/hover-bike/hover_bike.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/hover-bike/hover_bike.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-skid</code></td><td>both skids on the ground (the y+ shoe, strip, caps and bolts 4 mm up: its <code>zmin</code> 0.004, the other 0)</td><td>16</td></tr><tr><td><code>--offset-hub</code></td><td>fans coaxial (rear rotor 2.5 mm off its shroud&#x27;s axis: 0.00250 m)</td><td>17</td></tr><tr><td><code>--long-blades</code></td><td>blade-tip clearance band (rear blades 12 mm longer: clearance −0.0022 m)</td><td>18</td></tr><tr><td><code>--odd-hull</code></td><td>hull mirror symmetry (a 4 mm sideways bow, zero at both ends: deviation 0.00799 m)</td><td>19</td></tr><tr><td><code>--skew-blade</code></td><td>blade spacing (one rear blade turned 4°: worst gap error 4.000°)</td><td>20</td></tr><tr><td><code>--narrow-skids</code></td><td>stance (shoes drawn in to ±0.150 m: margin 0.1715 m)</td><td>21</td></tr><tr><td><code>--pop-lens</code></td><td>one connected assembly (headlight lens 20 mm out of its housing: 2 components)</td><td>22</td></tr><tr><td><code>--offset-pin</code></td><td>joints (the near front link&#x27;s foot pin 1.5 mm along x: 0.001500 m off its bushings&#x27; axis)</td><td>24</td></tr><tr><td><code>--skew-rod</code></td><td>shocks (the near rear rod 1.5 mm across its axis: 0.001500 m off its barrel&#x27;s)</td><td>25</td></tr><tr><td><code>--short-rod</code></td><td>shocks (the near rear rod&#x27;s inner end drawn out 45 mm: engaged 0.020 m, floor 0.045)</td><td>25</td></tr></tbody></table></div>
 <p>The rear fan is the one <code>--offset-hub</code>, <code>--long-blades</code> and <code>--skew-blade</code> change, because nothing inside a shroud sets the envelope. <code>--offset-hub</code> leaves the tip clearance inside its band and the blade gaps exact, so only coaxiality sees it. <code>--long-blades</code> pushes the tips 2.2 mm into the wall, and every blade still sits in its hub. <code>--odd-hull</code> bows the fuselage by <code>cos(πx / 2·0.515)</code>, so both ends stay inside their shroud walls, and it bows everything laid on the skin with it: when only the hull bowed, a panel met a hull facet at a shared plane and the run stopped at hygiene (15) instead. <code>--float-skid</code> lifts one skid&#x27;s own parts while the other grounds the box; its first draft lifted the skid lug&#x27;s pin too, which slid a pin face onto a boss&#x27;s plane and also stopped at 15, so the lug and its pin now stay with the gear. <code>--pop-lens</code> first stopped at 15 because the lens (36 segments) and its housing (32) had faces within 0.6° of parallel; both are now 32 segments turned half a step apart. <code>--narrow-skids</code> keeps both strips on the ground and the envelope unchanged; only the contact polygon shrinks. <code>--offset-pin</code> moves a pin and no bushing; <code>--skew-rod</code> and <code>--short-rod</code> move a rod and no pin, so each fails its own budget alone.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python hover_bike.py --
+<pre tabindex="0"><code>blender --background --python hover_bike.py --
 blender --background --python hover_bike.py -- --skip-decimate
 blender --background --python hover_bike.py -- --stray-vert
 blender --background --python hover_bike.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python hover_bike.py -- --output bike.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../office-chair/" aria-label="Previous showcase piece: office-chair"><span aria-hidden="true">&larr;</span> office-chair</a><span class="pager-pos hud">44 of 76 showcase pieces</span><a rel="next" href="../weight-rack/" aria-label="Next showcase piece: weight-rack">weight-rack <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../office-chair/" aria-label="Previous showcase piece: office-chair"><span aria-hidden="true">&larr;</span><span class="pager-label">office-chair</span></a><span class="pager-pos hud">44 of 76 showcase pieces</span><a rel="next" href="../weight-rack/" aria-label="Next showcase piece: weight-rack"><span class="pager-label">weight-rack</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python hover_bike.py -- --output bike.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

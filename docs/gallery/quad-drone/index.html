@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural camera quadcopter — a two-tone moulded shell with panel lines, grilles, a sensor visor, a battery pack and a GPS puck, four folding arms hinged on pinned clevises with lock rings, slotted brushless motors carrying twisted, swept two-blade propellers, rubber-footed skids and a three-axis gimbal camera — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../desk-lamp/" aria-label="Previous showcase piece: desk-lamp"><span aria-hidden="true">&larr;</span> desk-lamp</a><span class="pager-pos hud">40 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../soccer-goal/" aria-label="Next showcase piece: soccer-goal">soccer-goal <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../desk-lamp/" aria-label="Previous showcase piece: desk-lamp"><span aria-hidden="true">&larr;</span><span class="pager-label">desk-lamp</span></a><span class="pager-pos hud">40 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../soccer-goal/" aria-label="Next showcase piece: soccer-goal"><span class="pager-label">soccer-goal</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A white-and-graphite camera drone seen from above on a dark studio floor: four carbon arms with red lock rings, two-blade props on slotted motors, skids, and a gimbal camera under the nose.">
       <img src="../assets/quad-drone-hero.webp" alt="A white-and-graphite camera drone seen from above on a dark studio floor: four carbon arms with red lock rings, two-blade props on slotted motors, skids, and a gimbal camera under the nose." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/quad-drone/quad_drone.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/quad-drone/quad_drone.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -87,7 +87,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>every foot on the ground (front-left foot 3 mm up: its <code>zmin</code> 0.00300, the other three 0)</td><td>16</td></tr><tr><td><code>--unlock-arm</code></td><td>motor axes on an exact X (rear-left arm 2.5° short of locked open: worst gap 1.491° off 90°, motor centroid 1.69 mm off centre)</td><td>17</td></tr><tr><td><code>--long-blades</code></td><td>propeller clearance (rear-left blades 14 mm longer: disc 0.1795 m, gap to both neighbours 0.0226 m)</td><td>18</td></tr><tr><td><code>--narrow-skids</code></td><td>stance (skids drawn in to ±0.075 m: margin 0.0776 m)</td><td>19</td></tr><tr><td><code>--drop-lens</code></td><td>one connected assembly (glass element 12 mm out of its barrel: 2 components)</td><td>20</td></tr></tbody></table></div>
 <p>The rear-left arm is the one both <code>--unlock-arm</code> and <code>--long-blades</code> move because its prop is parked across its arm, so neither its tips nor its motor ever set the envelope. <code>--unlock-arm</code> leaves the prop gaps inside their band (0.0317 and 0.0412 m), so only the layout budget sees it. <code>--long-blades</code> leaves every motor where it was. <code>--float-foot</code> lifts one foot while the other three still ground the box. <code>--narrow-skids</code> keeps the feet on the ground and the envelope unchanged; only the footprint shrinks. It stops at ±0.075 m on purpose: drawn in to ±0.044 m, the front struts ran through the gimbal&#x27;s roll arm and the run exited 15 on 69 coplanar pairs instead of 19. The stance footprint is each foot&#x27;s sole (its lowest ring) rather than only the vertices touching the floor. Otherwise <code>--float-foot</code> also collapsed the footprint to a triangle (margin 0.0039 m) and broke two budgets at once.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python quad_drone.py --
+<pre tabindex="0"><code>blender --background --python quad_drone.py --
 blender --background --python quad_drone.py -- --skip-decimate
 blender --background --python quad_drone.py -- --stray-vert
 blender --background --python quad_drone.py -- --lift-z
@@ -142,7 +142,7 @@ blender --background --python quad_drone.py -- --output drone.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../desk-lamp/" aria-label="Previous showcase piece: desk-lamp"><span aria-hidden="true">&larr;</span> desk-lamp</a><span class="pager-pos hud">40 of 76 showcase pieces</span><a rel="next" href="../soccer-goal/" aria-label="Next showcase piece: soccer-goal">soccer-goal <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../desk-lamp/" aria-label="Previous showcase piece: desk-lamp"><span aria-hidden="true">&larr;</span><span class="pager-label">desk-lamp</span></a><span class="pager-pos hud">40 of 76 showcase pieces</span><a rel="next" href="../soccer-goal/" aria-label="Next showcase piece: soccer-goal"><span class="pager-label">soccer-goal</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -294,10 +294,18 @@ blender --background --python quad_drone.py -- --output drone.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

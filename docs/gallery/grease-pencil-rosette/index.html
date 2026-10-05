@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Grease Pencil v3&#x27;s attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../parent-inverse-orrery/" aria-label="Previous example: parent-inverse-orrery"><span aria-hidden="true">&larr;</span> parent-inverse-orrery</a><span class="pager-pos hud">18 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../armature-bend/" aria-label="Next example: armature-bend">armature-bend <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../parent-inverse-orrery/" aria-label="Previous example: parent-inverse-orrery"><span aria-hidden="true">&larr;</span><span class="pager-label">parent-inverse-orrery</span></a><span class="pager-pos hud">18 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../armature-bend/" aria-label="Next example: armature-bend"><span class="pager-label">armature-bend</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall.">
       <img src="../assets/grease-pencil-rosette-hero.webp" alt="A neon rosette sign: five nested Grease Pencil rose loops, cyan through magenta to red, glowing a few centimetres proud of a black lacquer board in a brass frame on a dark wall." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=grease-pencil">grease-pencil</a> <a href="../#tag=attributes">attributes</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <h2 id="render">Render<a class="anchor" href="#render" aria-label="Link to this section">#</a></h2>
 <p>The strokes stay unlit (<code>layer.use_lights = False</code>) and act as the neon tubes of a sign: they hang a few centimetres proud of a satin black-lacquer backboard in a brass frame with brass standoff caps and a maker&#x27;s plate, mounted on the studio wall. Grease Pencil does not light its surroundings, so the spill is staged: one small shadowless disk light per sample along each ring, placed on that ring&#x27;s <code>rose_point</code> and tinted with its <code>ring_color</code>, washes the board behind each tube. The spill reads the same closed-form curve the check asserts. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python grease_pencil_rosette.py --
 
 # Falsifier: open strokes. Must exit non-zero (cyclic).
@@ -121,7 +121,7 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png -
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../parent-inverse-orrery/" aria-label="Previous example: parent-inverse-orrery"><span aria-hidden="true">&larr;</span> parent-inverse-orrery</a><span class="pager-pos hud">18 of 56 examples</span><a rel="next" href="../armature-bend/" aria-label="Next example: armature-bend">armature-bend <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../parent-inverse-orrery/" aria-label="Previous example: parent-inverse-orrery"><span aria-hidden="true">&larr;</span><span class="pager-label">parent-inverse-orrery</span></a><span class="pager-pos hud">18 of 56 examples</span><a rel="next" href="../armature-bend/" aria-label="Next example: armature-bend"><span class="pager-label">armature-bend</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png -
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

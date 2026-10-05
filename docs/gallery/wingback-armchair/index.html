@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural reading corner on a fringed wool rug — a Queen Anne / Chesterfield wingback armchair in oxblood leather whose tall reclined back is deep-button tufted, thirteen buttons on a diamond lattice each seated in a funnelled dimple with the leather puffed into pillows between them and folded into sharp pleats along every line that joins two buttons; two wings sweeping forward from the back into rolled arms, each arm one lofted scroll section with an English roll tucked under on the outside, a crowned front, a piped welt round the front seam and a row of brass nailheads following the scroll; a nailed front rail, a loose cushion with a crowned top and piped welts on both seams, cabriole front legs on pad feet and square rear legs splayed into brass ferrules; beside it a walnut tripod side table with a brass reading lamp (knopped stem, harp, finial, linen shade) and two cloth-bound books — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../palm-tree/" aria-label="Previous showcase piece: palm-tree"><span aria-hidden="true">&larr;</span> palm-tree</a><span class="pager-pos hud">59 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../planet-rover/" aria-label="Next showcase piece: planet-rover">planet-rover <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../palm-tree/" aria-label="Previous showcase piece: palm-tree"><span aria-hidden="true">&larr;</span><span class="pager-label">palm-tree</span></a><span class="pager-pos hud">59 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../planet-rover/" aria-label="Next showcase piece: planet-rover"><span class="pager-label">planet-rover</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: An oxblood leather wingback armchair with a deep-button tufted back and brass-nailed rolled arms, beside a tripod side table with a brass reading lamp and books, on a fringed rug.">
       <img src="../assets/wingback-armchair-hero.webp" alt="An oxblood leather wingback armchair with a deep-button tufted back and brass-nailed rolled arms, beside a tripod side table with a brass reading lamp and books, on a fringed rug." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=household">Household</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/wingback-armchair/wingback_armchair.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/wingback-armchair/wingback_armchair.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>feet sunk into the rug (one table pad and its leg&#x27;s end 3 mm up: −0.00100 m)</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>legs tenoned into the body (the right rear leg&#x27;s top 40 mm lower: −0.0038 m)</td><td>17</td></tr><tr><td><code>--sink-buttons</code></td><td>buttons seated in their dimples (all 6 mm deeper: seat 0.00850, proud 0.00140 m)</td><td>18</td></tr><tr><td><code>--odd-wing</code></td><td>mirror symmetry (the right wing 6 mm outward: 0.006000 m)</td><td>19</td></tr><tr><td><code>--drift-buttons</code></td><td>diamond lattice (the row-2 side buttons and their dimples 18 mm outward, a mirrored pair: spread 0.01358 m)</td><td>20</td></tr><tr><td><code>--narrow-tripod</code></td><td>table mass centre inside its feet (legs&#x27; reach cut to 30%: 0.0280 m)</td><td>21</td></tr><tr><td><code>--lift-cushion</code></td><td>cushion resting on the deck (5 mm up: −0.00300 m)</td><td>22</td></tr><tr><td><code>--bunch-nails</code></td><td>nailheads evenly spaced (nail 6 of each arm slid 45% of a pitch: spread 0.02699 m)</td><td>23</td></tr></tbody></table></div>
 <p><code>--drift-buttons</code> moves a mirrored pair, dimples and all, so the back stays symmetric and every button still sits in its own dimple; only the lattice breaks. <code>--short-legs</code> keeps the leg&#x27;s foot in its ferrule on the rug. <code>--float-foot</code> lifts the pad with its leg&#x27;s end, so the leg stays in its pad. <code>--bunch-nails</code> re-seats the slid nails on the arm&#x27;s surface, so only the spacing breaks.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python wingback_armchair.py --
+<pre tabindex="0"><code>blender --background --python wingback_armchair.py --
 blender --background --python wingback_armchair.py -- --skip-decimate
 blender --background --python wingback_armchair.py -- --stray-vert
 blender --background --python wingback_armchair.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python wingback_armchair.py -- --output armchair.png</cod
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../palm-tree/" aria-label="Previous showcase piece: palm-tree"><span aria-hidden="true">&larr;</span> palm-tree</a><span class="pager-pos hud">59 of 76 showcase pieces</span><a rel="next" href="../planet-rover/" aria-label="Next showcase piece: planet-rover">planet-rover <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../palm-tree/" aria-label="Previous showcase piece: palm-tree"><span aria-hidden="true">&larr;</span><span class="pager-label">palm-tree</span></a><span class="pager-pos hud">59 of 76 showcase pieces</span><a rel="next" href="../planet-rover/" aria-label="Next showcase piece: planet-rover"><span class="pager-label">planet-rover</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python wingback_armchair.py -- --output armchair.png</cod
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural timber market stall through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../campfire/" aria-label="Previous showcase piece: campfire"><span aria-hidden="true">&larr;</span> campfire</a><span class="pager-pos hud">5 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../street-lantern/" aria-label="Next showcase piece: street-lantern">street-lantern <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../campfire/" aria-label="Previous showcase piece: campfire"><span aria-hidden="true">&larr;</span><span class="pager-label">campfire</span></a><span class="pager-pos hud">5 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../street-lantern/" aria-label="Next showcase piece: street-lantern"><span class="pager-label">street-lantern</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained timber market stall with diagonal side braces, a red and cream striped canvas awning and a counter with shelves.">
       <img src="../assets/market-stall-hero.webp" alt="A grained timber market stall with diagonal side braces, a red and cream striped canvas awning and a counter with shelves." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/market-stall/market_stall.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/market-stall/market_stall.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -80,7 +80,7 @@
 <p>Each violates one named budget. Every falsifier was run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-feet</code></td><td>named wrap-foot supports at Z=0</td><td>16</td></tr><tr><td><code>--low-brace</code></td><td>brace-vs-counter overlap</td><td>17</td></tr><tr><td><code>--short-brace</code></td><td>brace-in-post seat (front end stops at mid-depth, -0.4181 m)</td><td>17</td></tr><tr><td><code>--float-awning</code></td><td>awning-on-header seat</td><td>18</td></tr><tr><td><code>--rake-posts</code></td><td>post plumb</td><td>19</td></tr></tbody></table></div>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python market_stall.py --
+<pre tabindex="0"><code>blender --background --python market_stall.py --
 blender --background --python market_stall.py -- --skip-decimate
 blender --background --python market_stall.py -- --stray-vert
 blender --background --python market_stall.py -- --lift-z
@@ -134,7 +134,7 @@ blender --background --python market_stall.py -- --output stall.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../campfire/" aria-label="Previous showcase piece: campfire"><span aria-hidden="true">&larr;</span> campfire</a><span class="pager-pos hud">5 of 76 showcase pieces</span><a rel="next" href="../street-lantern/" aria-label="Next showcase piece: street-lantern">street-lantern <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../campfire/" aria-label="Previous showcase piece: campfire"><span aria-hidden="true">&larr;</span><span class="pager-label">campfire</span></a><span class="pager-pos hud">5 of 76 showcase pieces</span><a rel="next" href="../street-lantern/" aria-label="Next showcase piece: street-lantern"><span class="pager-label">street-lantern</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -286,10 +286,18 @@ blender --background --python market_stall.py -- --output stall.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

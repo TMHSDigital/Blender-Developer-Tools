@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural 1950s oscillating pedestal fan — a hollow two-tier cast base on a rubber gasket with a rotary speed switch and badge, a telescoping enamel and chrome column with a knurled height-lock collar, a strap yoke with a knurled tilt knob, a slotted motor housing with a trim band and an oscillation knob, a two-half wire guard of radial spokes and concentric rings welded to clipped rim rings with a centre badge, four swept brass blades on a hub with a hex spinner nut, and a cord to a plug — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../boulder-cluster/" aria-label="Previous showcase piece: boulder-cluster"><span aria-hidden="true">&larr;</span> boulder-cluster</a><span class="pager-pos hud">47 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../motor-scooter/" aria-label="Next showcase piece: motor-scooter">motor-scooter <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../boulder-cluster/" aria-label="Previous showcase piece: boulder-cluster"><span aria-hidden="true">&larr;</span><span class="pager-label">boulder-cluster</span></a><span class="pager-pos hud">47 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../motor-scooter/" aria-label="Next showcase piece: motor-scooter"><span class="pager-label">motor-scooter</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sage-green 1950s pedestal fan, head turned on a tilt yoke: chrome wire guard over four brass blades, telescoping column, round cast base with a speed knob, cord to a plug.">
       <img src="../assets/floor-fan-hero.webp" alt="A sage-green 1950s pedestal fan, head turned on a tilt yoke: chrome wire guard over four brass blades, telescoping column, round cast base with a speed knob, cord to a plug." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=household">Household</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/floor-fan/floor_fan.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/floor-fan/floor_fan.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -91,7 +91,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--offset-hub</code></td><td>rotor coaxial with the guard (hub, spinner and blades moved 3 mm off the axis: 0.003000 m)</td><td>17</td></tr><tr><td><code>--short-spoke</code></td><td>guard wires seated (one front spoke stopped 12 mm short of its rim ring: 0.014906 m)</td><td>18</td></tr><tr><td><code>--lean-column</code></td><td>column plumb and coaxial (lower tube leaning 1° on its foot: 1.0000°, 0.001501 m off the base&#x27;s axis)</td><td>19</td></tr><tr><td><code>--long-blades</code></td><td>blade-tip clearance band (tips 12 mm longer: 0.00745 m)</td><td>20</td></tr><tr><td><code>--skew-blade</code></td><td>equal blade spacing (one blade turned 5°: 4.9998°)</td><td>21</td></tr><tr><td><code>--hollow-base</code></td><td>stance (base pressed from 1.2 mm sheet: 18.64 kg, base 2.87 kg, centre 0.752 m up: 12.39°)</td><td>22</td></tr><tr><td><code>--loose-spinner</code></td><td>one connected assembly (spinner nut backed 6 mm off the hub: 2 components)</td><td>23</td></tr></tbody></table></div>
 <p><code>--offset-hub</code> leaves the tip clearance in band (0.01648 m) and the blades evenly spaced about their own hub, so only the coaxial budget sees it. <code>--long-blades</code> still leaves every tip 7.4 mm clear of the nearest wire, so the band&#x27;s floor is what fails. <code>--lean-column</code> tilts only the lower tube; the upper tube, the collar and the head stay put, and the tube stays inside the base&#x27;s boss. <code>--hollow-base</code> keeps the outer casting, so the envelope and footprint are unchanged and only the mass moves.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python floor_fan.py --
+<pre tabindex="0"><code>blender --background --python floor_fan.py --
 blender --background --python floor_fan.py -- --skip-decimate
 blender --background --python floor_fan.py -- --stray-vert
 blender --background --python floor_fan.py -- --lift-z
@@ -148,7 +148,7 @@ blender --background --python floor_fan.py -- --output fan.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../boulder-cluster/" aria-label="Previous showcase piece: boulder-cluster"><span aria-hidden="true">&larr;</span> boulder-cluster</a><span class="pager-pos hud">47 of 76 showcase pieces</span><a rel="next" href="../motor-scooter/" aria-label="Next showcase piece: motor-scooter">motor-scooter <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../boulder-cluster/" aria-label="Previous showcase piece: boulder-cluster"><span aria-hidden="true">&larr;</span><span class="pager-label">boulder-cluster</span></a><span class="pager-pos hud">47 of 76 showcase pieces</span><a rel="next" href="../motor-scooter/" aria-label="Next showcase piece: motor-scooter"><span class="pager-label">motor-scooter</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -300,10 +300,18 @@ blender --background --python floor_fan.py -- --output fan.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

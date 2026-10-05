@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../hitching-post/" aria-label="Previous showcase piece: hitching-post"><span aria-hidden="true">&larr;</span> hitching-post</a><span class="pager-pos hud">17 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hand-pump/" aria-label="Next showcase piece: hand-pump">hand-pump <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../hitching-post/" aria-label="Previous showcase piece: hitching-post"><span aria-hidden="true">&larr;</span><span class="pager-label">hitching-post</span></a><span class="pager-pos hud">17 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hand-pump/" aria-label="Next showcase piece: hand-pump"><span class="pager-label">hand-pump</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes.">
       <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel dipping into a water-filled trough, turning in a chamfered timber A-frame with its iron crank toward the viewer, the sills capped by iron shoes." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/grindstone/grindstone.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/grindstone/grindstone.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -83,7 +83,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--flush-shoes</code></td><td>coplanar cross-shell pairs: shoes sized to the sill and flush with its end (0 → 4 pairs)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--float-crank</code></td><td>crank-axle gap</td><td>17</td></tr><tr><td><code>--float-legs</code></td><td>shoe-wood join</td><td>17</td></tr><tr><td><code>--narrow-trough</code></td><td>trough-sill seat</td><td>18</td></tr><tr><td><code>--no-dip</code></td><td>stone dip band</td><td>18</td></tr><tr><td><code>--low-stretchers</code></td><td>trough bearing: stretchers back at sill height, 5.9 mm under the trough</td><td>18</td></tr><tr><td><code>--sharp-handle</code></td><td>edge treatment: the crank handle&#x27;s rims left square (20 right-angle edges)</td><td>20</td></tr><tr><td><code>--low-bake</code></td><td>bake texel density: 256 px bake (7.36 px per cell)</td><td>21</td></tr></tbody></table></div>
 <p><code>--flush-shoes</code> moves the shoe envelope 12 mm inside <code>BBOX_TOL</code> (15 mm), so the AABB gate cannot steal it. <code>--sharp-handle</code> leaves the triangle count inside its band, so only the edge budget sees it.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python grindstone.py --
+<pre tabindex="0"><code>blender --background --python grindstone.py --
 blender --background --python grindstone.py -- --skip-decimate
 blender --background --python grindstone.py -- --stray-vert
 blender --background --python grindstone.py -- --flush-shoes
@@ -141,7 +141,7 @@ blender --background --python grindstone.py -- --output grindstone.png</code></p
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../hitching-post/" aria-label="Previous showcase piece: hitching-post"><span aria-hidden="true">&larr;</span> hitching-post</a><span class="pager-pos hud">17 of 76 showcase pieces</span><a rel="next" href="../hand-pump/" aria-label="Next showcase piece: hand-pump">hand-pump <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../hitching-post/" aria-label="Previous showcase piece: hitching-post"><span aria-hidden="true">&larr;</span><span class="pager-label">hitching-post</span></a><span class="pager-pos hud">17 of 76 showcase pieces</span><a rel="next" href="../hand-pump/" aria-label="Next showcase piece: hand-pump"><span class="pager-label">hand-pump</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -293,10 +293,18 @@ blender --background --python grindstone.py -- --output grindstone.png</code></p
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span><span class="pager-label">soccer-ball-goldberg</span></a><span class="pager-pos hud">40 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear"><span class="pager-label">attribute-domain-shear</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille.">
       <img src="../assets/car-mirror-symmetry-hero.webp" alt="A smooth candy-red hatchback in front three-quarter view with tinted glass, a chrome sill, five-spoke alloy wheels, and matched headlamps and mirrors either side of one centered grille." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Mirror is a modifier, not applied data: the original keeps the authored half while the evaluated mesh is the welded, watertight, exactly symmetric whole.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/car-mirror-symmetry/car_mirror_symmetry.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/car-mirror-symmetry/car_mirror_symmetry.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -69,7 +69,7 @@
 <p>The render is the proof: hide the mirror and the still is literally half a car — one headlamp, one door mirror, half a grille, a hood cut open at the centerline. The camera stands on the key light&#x27;s side, high enough to look down the hood centerline so both halves read at once. The weld itself is not a pixel witness — the hood and roof are nearly flat across the plane, so an unwelded seam renders within 12/255 of the welded one; the <code>2n − c</code> count is what catches it.</p>
 <p>Render notes: the 13-point loft reads faceted at gallery size, so the <code>--output</code> path — after <code>check()</code> has asserted every closed-form count on the Mirror-only stack — stacks a Subdivision Surface modifier (level 2) <strong>after</strong> <code>MirrorHalf</code>. Order matters: subdividing the half first would pull the centerline off the plane; subdividing the welded whole keeps it exact. Panel breaks stay crisp through a <code>crease_edge</code> attribute: every material border (glass, pillars, arch cladding, the chrome window-sill strip) creases fully and the fascia cap outlines half-crease, so the nose keeps its shape. The body is smooth-shaded with hard shading only at material borders; the separate parts keep a 40° dihedral split, and their boundary edges on the plane take the angle to their own mirror image, <code>acos(1 − 2nₓ²)</code>, so centerlines shade smooth. The paint is candy red over a faint metallic base under a softened clear coat; the rim light is large and dim and set steep — a small bright rim mirrors in the roof as a clipped white slab, and a shallow one prints its own terminator line across the floor. Tires carry a 72-groove tread bump masked to the outward-facing band, and the rims are a half-metallic alloy (a full metal mirrors the black stage and the spokes vanish). The previous faceted loft had a thin pink-white streak on the hood by the windshield: not a seam (it sat at <code>|x|</code> 0.11–0.38, on the mirrored half, and all weld checks passed) but a sliver facet — the loft&#x27;s greenhouse points collapsing onto the hood — flat-shaded and facing the key almost head on (<code>n · −key = 0.967</code>). The redesigned ring lerps a hood layout into a cabin layout, so no such sliver exists. Panel classes are by construction position: underbody, rocker and arch cladding are trim; side glass is the sill-to-glass-top segment under the roof, broken by a trim B-pillar; the drip rail becomes the A-pillar; windshield and hatch glass are the roof bands where the cabin factor ramps. The glass is a dark dielectric whose base colour ramps toward steel blue at grazing angles (Layer Weight → Color Ramp) — on a near-black stage there is little to reflect, and flat dark glass read as dull paint. Lamps, grille, mirrors and handles are closed superellipse pods seated on the skin by a <code>BVHTree</code> ray cast, with a chrome bezel and an inset lens rather than flat boxes.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python car_mirror_symmetry.py --
 
 # Falsifier: Mirror X off. Must exit non-zero (evaluated verts stay at n).
@@ -122,7 +122,7 @@ blender --background --python car_mirror_symmetry.py -- --output car.png --engin
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span> soccer-ball-goldberg</a><span class="pager-pos hud">40 of 56 examples</span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear">attribute-domain-shear <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../soccer-ball-goldberg/" aria-label="Previous example: soccer-ball-goldberg"><span aria-hidden="true">&larr;</span><span class="pager-label">soccer-ball-goldberg</span></a><span class="pager-pos hud">40 of 56 examples</span><a rel="next" href="../attribute-domain-shear/" aria-label="Next example: attribute-domain-shear"><span class="pager-label">attribute-domain-shear</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -274,10 +274,18 @@ blender --background --python car_mirror_symmetry.py -- --output car.png --engin
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

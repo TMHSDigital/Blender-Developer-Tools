@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../turntable/" aria-label="Previous example: turntable"><span aria-hidden="true">&larr;</span> turntable</a><span class="pager-pos hud">3 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../depsgraph-export/" aria-label="Next example: depsgraph-export">depsgraph-export <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../turntable/" aria-label="Previous example: turntable"><span aria-hidden="true">&larr;</span><span class="pager-label">turntable</span></a><span class="pager-pos hud">3 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../depsgraph-export/" aria-label="Next example: depsgraph-export"><span class="pager-label">depsgraph-export</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two amphora vases on walnut bats: left, a kit of overlapping clay primitives under their own ring-topology cage; right, the same kit SDF-remeshed into one fused cobalt-glazed shell.">
       <img src="../assets/gn-sdf-remesh-hero.webp" alt="Two amphora vases on walnut bats: left, a kit of overlapping clay primitives under their own ring-topology cage; right, the same kit SDF-remeshed into one fused cobalt-glazed shell." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=geometry-nodes">geometry-nodes</a> <a href="../#tag=materials">materials</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/gn-sdf-remesh/gn_sdf_remesh.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/gn-sdf-remesh/gn_sdf_remesh.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -67,7 +67,7 @@
 <h2 id="render">Render<a class="anchor" href="#render" aria-label="Link to this section">#</a></h2>
 <p>The check measures a torus; the still proves the same <code>build_remesh_via_sdf</code> tree on a subject where remeshing is visible. A vase is kitbashed from overlapping primitives (foot, belly, neck, lip, two handles), each in its own clay tone under a thin cage of its own edges, so the interior faces and hard intersection seams read. Beside it the identical kit runs through the tree (finer 0.018 voxels, cobalt glaze carried in by Set Material) and comes out one fused, watertight shell with the handles filleted into the belly. The torus leaves the stage before the render; the render path gates framing through <code>examples/gallery_framing.py</code> (exit 10).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check only (no render) — the CI smoke check:
+<pre tabindex="0"><code># Cheap correctness check only (no render) — the CI smoke check:
 blender --background --python gn_sdf_remesh.py --
 
 # Falsifier: no SDF modifier. Must exit non-zero (evaluated == base).
@@ -120,7 +120,7 @@ blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine c
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../turntable/" aria-label="Previous example: turntable"><span aria-hidden="true">&larr;</span> turntable</a><span class="pager-pos hud">3 of 56 examples</span><a rel="next" href="../depsgraph-export/" aria-label="Next example: depsgraph-export">depsgraph-export <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../turntable/" aria-label="Previous example: turntable"><span aria-hidden="true">&larr;</span><span class="pager-label">turntable</span></a><span class="pager-pos hud">3 of 56 examples</span><a rel="next" href="../depsgraph-export/" aria-label="Next example: depsgraph-export"><span class="pager-label">depsgraph-export</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -272,10 +272,18 @@ blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine c
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

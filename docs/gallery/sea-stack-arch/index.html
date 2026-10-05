@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural coastal diorama tile — a fragment of a bedded sandstone headland at the sea&#x27;s edge as one eroded mass: eighteen level hard and soft beds running on from the legs into the roof and the stack, jointed faces leaning back and battered and flared at the foot, one weathering field read on the face through every bed, fallen-out blocks and open joints, soft beds undercut to a wave-cut notch; two legs curving in on an ellipse to meet at the crown under a roof that steps down seaward; a tapering stack standing in the sea; the sea filling the tile to its rim with foam at the shore and round the feet, a wave-cut platform, tide pools and a shingle cove, fallen blocks, boulders and pebbles, and a draped turf mat with sea grass and thrift cushions — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../fern-mossy-rock/" aria-label="Previous showcase piece: fern-mossy-rock"><span aria-hidden="true">&larr;</span> fern-mossy-rock</a><span class="pager-pos hud">67 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../moka-pot/" aria-label="Next showcase piece: moka-pot">moka-pot <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../fern-mossy-rock/" aria-label="Previous showcase piece: fern-mossy-rock"><span aria-hidden="true">&larr;</span><span class="pager-label">fern-mossy-rock</span></a><span class="pager-pos hud">67 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../moka-pot/" aria-label="Next showcase piece: moka-pot"><span class="pager-label">moka-pot</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A ragged bedded sandstone sea arch and a tapering sea stack standing in a sea that fills the tile to its rim, beside a wave-cut platform and a shingle cove, with thrift on the turfed tops.">
       <img src="../assets/sea-stack-arch-hero.webp" alt="A ragged bedded sandstone sea arch and a tapering sea stack standing in a sea that fills the tile to its rim, beside a wave-cut platform and a shingle cove, with thrift on the turfed tops." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/sea-stack-arch/sea_stack_arch.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/sea-stack-arch/sea_stack_arch.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--gap-lintel</code></td><td>beds bite (the left leg&#x27;s top bed stopped 15 mm under the roof: −0.0150 m)</td><td>17</td></tr><tr><td><code>--lean-stack</code></td><td>stack plumb (the stack sheared 0.50 m per metre of height toward the sea: 0.0571 m)</td><td>19</td></tr><tr><td><code>--cut-pillar</code></td><td>feet sealed (the right leg&#x27;s foot stopped 20 mm over the seabed: worst sector −0.0406 m, 0 of 8)</td><td>20</td></tr><tr><td><code>--close-arch</code></td><td>aperture (the right leg&#x27;s side of the opening narrowed to a tenth: width 0.2080 m)</td><td>21</td></tr><tr><td><code>--tilt-beds</code></td><td>bedding level (the interior bed boundaries turned 2.5° about a line across the fin: 2.530°)</td><td>22</td></tr><tr><td><code>--flush-beds</code></td><td>undercut (every soft bed&#x27;s middle rings 2 mm behind the hard beds, its bites unchanged: 0.0020–0.0065 m on the failing beds)</td><td>23</td></tr><tr><td><code>--flat-sea</code></td><td>water level and ripple (the sheet laid flat: ripple 0.00000 m)</td><td>24</td></tr><tr><td><code>--short-sea</code></td><td>water contained (the rim stopped 50 mm short of the shoreline: −0.01925 m)</td><td>25</td></tr><tr><td><code>--lift-foam</code></td><td>foam seated (the foam raised 20 mm: 0.02430 m off the water, land edge −0.01465 m)</td><td>26</td></tr><tr><td><code>--perch-talus</code></td><td>loose rock sealed (each piece seated against the ground at its centre alone: −0.0420 m)</td><td>27</td></tr><tr><td><code>--pile-talus</code></td><td>loose rock apart (three blocks drawn together after the relaxation: 1 pair overlaps)</td><td>28</td></tr><tr><td><code>--float-cover</code></td><td>cover rooted (every blade, stalk and cushion base raised 50 mm, its tip held: −0.0335 m, all 398 pieces loose)</td><td>29</td></tr><tr><td><code>--tidy-rock</code></td><td>ragged (every bed squared to a box on its column&#x27;s axes, leaning and battered as before but without weathering, fallen blocks, joints or the curved arch: 0.8314)</td><td>31</td></tr></tbody></table></div>
 <p>The roof&#x27;s grass and thrift are the top of the envelope, so <code>--float-cover</code> holds every tip where it was and moves the bases alone. <code>--lean-stack</code> shears the stack horizontally about its foot, which keeps each bed&#x27;s footprint over the one below at every height, so the bites do not steal it; <code>--close-arch</code> narrows only the right leg&#x27;s side of the hole, so the legs&#x27; faces never come to share a plane; <code>--tilt-beds</code> turns the interior boundaries only, leaving the foot and the top. <code>--tidy-rock</code> keeps the triangle count (every ring keeps its rays) and spreads the cover over the weathered top&#x27;s outline, so it changes the rock alone.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python sea_stack_arch.py --
+<pre tabindex="0"><code>blender --background --python sea_stack_arch.py --
 blender --background --python sea_stack_arch.py -- --skip-decimate
 blender --background --python sea_stack_arch.py -- --stray-vert
 blender --background --python sea_stack_arch.py -- --lift-z
@@ -151,7 +151,7 @@ blender --background --python sea_stack_arch.py -- --output arch.png</code></pre
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../fern-mossy-rock/" aria-label="Previous showcase piece: fern-mossy-rock"><span aria-hidden="true">&larr;</span> fern-mossy-rock</a><span class="pager-pos hud">67 of 76 showcase pieces</span><a rel="next" href="../moka-pot/" aria-label="Next showcase piece: moka-pot">moka-pot <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../fern-mossy-rock/" aria-label="Previous showcase piece: fern-mossy-rock"><span aria-hidden="true">&larr;</span><span class="pager-label">fern-mossy-rock</span></a><span class="pager-pos hud">67 of 76 showcase pieces</span><a rel="next" href="../moka-pot/" aria-label="Next showcase piece: moka-pot"><span class="pager-label">moka-pot</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -303,10 +303,18 @@ blender --background --python sea_stack_arch.py -- --output arch.png</code></pre
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../bmesh-gear/" aria-label="Previous example: bmesh-gear"><span aria-hidden="true">&larr;</span> bmesh-gear</a><span class="pager-pos hud">8 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../temp-override-join/" aria-label="Next example: temp-override-join">temp-override-join <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../bmesh-gear/" aria-label="Previous example: bmesh-gear"><span aria-hidden="true">&larr;</span><span class="pager-label">bmesh-gear</span></a><span class="pager-pos hud">8 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../temp-override-join/" aria-label="Next example: temp-override-join"><span class="pager-label">temp-override-join</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group.">
       <img src="../assets/shader-node-group-hero.webp" alt="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Grouping contract: interface sockets appear on every instance, all five materials share one group datablock (users == 5), and per-material parameters live on the group node, not inside the tree.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=materials">materials</a> <a href="../#tag=node-groups">node-groups</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/shader-node-group/shader_node_group.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/shader-node-group/shader_node_group.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -67,7 +67,7 @@
 <h2 id="staging">Staging<a class="anchor" href="#staging" aria-label="Link to this section">#</a></h2>
 <p>A staggered shop-display lineup on the dark house stage: the odd mugs stand on a low walnut riser behind the even ones, so five mugs fill the frame without shrinking to a thin strip. Handles all turn the same way so the only thing that changes along the row is colour. The still renders under the Standard view transform (AgX would wash the five tints toward pastel); the key&#x27;s spread is narrowed so it lights the mugs, not the back wall, and a warm wedge sits between the riser and the wall. Render path only.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shader_node_group.py --
 
 # Falsifier: identical instance Tints. Must exit non-zero.
@@ -120,7 +120,7 @@ blender --background --python shader_node_group.py -- --output mugs.png --engine
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../bmesh-gear/" aria-label="Previous example: bmesh-gear"><span aria-hidden="true">&larr;</span> bmesh-gear</a><span class="pager-pos hud">8 of 56 examples</span><a rel="next" href="../temp-override-join/" aria-label="Next example: temp-override-join">temp-override-join <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../bmesh-gear/" aria-label="Previous example: bmesh-gear"><span aria-hidden="true">&larr;</span><span class="pager-label">bmesh-gear</span></a><span class="pager-pos hud">8 of 56 examples</span><a rel="next" href="../temp-override-join/" aria-label="Next example: temp-override-join"><span class="pager-label">temp-override-join</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -272,10 +272,18 @@ blender --background --python shader_node_group.py -- --output mugs.png --engine
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

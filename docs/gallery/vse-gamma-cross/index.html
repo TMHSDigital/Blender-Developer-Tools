@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gltf-skin-roundtrip/" aria-label="Previous example: gltf-skin-roundtrip"><span aria-hidden="true">&larr;</span> gltf-skin-roundtrip</a><span class="pager-pos hud">31 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../light-link-studio/" aria-label="Next example: light-link-studio">light-link-studio <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gltf-skin-roundtrip/" aria-label="Previous example: gltf-skin-roundtrip"><span aria-hidden="true">&larr;</span><span class="pager-label">gltf-skin-roundtrip</span></a><span class="pager-pos hud">31 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../light-link-studio/" aria-label="Next example: light-link-studio"><span class="pager-label">light-link-studio</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet.">
       <img src="../assets/vse-gamma-cross-hero.webp" alt="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.250; AgX-default sampling poisons the fit (Standard is mandatory).</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=sequencer">sequencer</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -69,7 +69,7 @@
 <p>The render is the evidence itself, mounted. All 32 frames of the cross are rendered by the sequencer and laid side by side as a filmstrip: the GAMMA_CROSS strip on top, and directly beneath it the same two strips crossed by the sequencer&#x27;s linear <code>CROSS</code> effect, frame for frame. Both filmstrips are authentic sequencer pixels shown unaltered (closest-texel sampling, emission only, Standard view) on a hooded grading monitor beside a three-ball control surface. The gamma strip sinks into a dark neutral valley at mid-cross where the linear strip passes through violet; three small warm ticks mark the t = 1/2 column. A GAMMA_CROSS that was really a lerp would make the two strips identical, so the still visibly breaks with the contract.</p>
 <p>Before shooting, the render path guards its own comparison (exit 9): every frame must fill its tile edge to edge — a 5.2 COLOR strip bakes the scene size into its width/height at creation, so strips built before the tile resolution is set letterbox into black bars (probe: in-frame spread 1.0) — and each strip&#x27;s mid frame must match its closed form, so the lower strip really is the lerp (probe: wiring GAMMA_CROSS in its place fails at 0.249).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
+<pre tabindex="0"><code># Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
 
 # Falsifier: GC T2 -&gt; T1. Must exit non-zero (inputs).
@@ -122,7 +122,7 @@ blender --background --python vse_gamma_cross.py -- --output bench.png --engine 
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gltf-skin-roundtrip/" aria-label="Previous example: gltf-skin-roundtrip"><span aria-hidden="true">&larr;</span> gltf-skin-roundtrip</a><span class="pager-pos hud">31 of 56 examples</span><a rel="next" href="../light-link-studio/" aria-label="Next example: light-link-studio">light-link-studio <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gltf-skin-roundtrip/" aria-label="Previous example: gltf-skin-roundtrip"><span aria-hidden="true">&larr;</span><span class="pager-label">gltf-skin-roundtrip</span></a><span class="pager-pos hud">31 of 56 examples</span><a rel="next" href="../light-link-studio/" aria-label="Next example: light-link-studio"><span class="pager-label">light-link-studio</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -274,10 +274,18 @@ blender --background --python vse_gamma_cross.py -- --output bench.png --engine 
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

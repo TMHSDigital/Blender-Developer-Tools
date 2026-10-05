@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span> socket-attach-points</a><span class="pager-pos hud">46 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete">cross-version-property-delete <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span><span class="pager-label">socket-attach-points</span></a><span class="pager-pos hud">46 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete"><span class="pager-label">cross-version-property-delete</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round well of chamfered, irregular stone blocks with a timber windlass frame, every masonry joint and the shaft darkened by baked vertex-colour ambient occlusion.">
       <img src="../assets/vertex-color-ao-hero.webp" alt="A round well of chamfered, irregular stone blocks with a timber windlass frame, every masonry joint and the shaft darkened by baked vertex-colour ambient occlusion." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,14 +56,14 @@
     <div class="callout"><span class="tag">witnesses</span> Integrator matches 1 - 0.5(1 - 1/sqrt(1+k^2)) to 6.760e-04, unoccluded plate exactly 1.0, FLOAT_COLOR exact vs BYTE_COLOR sRGB-quantised (model agreement 3.189e-07), evaluated deviation 0.0.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=attributes">attributes</a> <a href="../#tag=game-pipeline">game-pipeline</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/vertex-color-ao/vertex_color_ao.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/vertex-color-ao/vertex_color_ao.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A runnable example baking <strong>ambient occlusion into a colour attribute</strong> — the cheap contact shadows an engine gets for free if it reads vertex colour. Unlike most bakes this one can be checked against a <em>formula</em> rather than against a previous run&#x27;s numbers: the hemisphere visibility integral has closed forms.</p>
 <p>For a point on the floor a distance <code>d</code> from an infinitely wide wall of height <code>H</code>, integrating the cosine-weighted hemisphere over the directions the wall blocks gives (the φ integral collapses to <code>π / √(1+k²)</code>):</p>
-<pre><code>A(k) = ½ (1 − 1/√(1+k²)),   k = H/d        AO = 1 − A(k)</code></pre>
+<pre tabindex="0"><code>A(k) = ½ (1 − 1/√(1+k²)),   k = H/d        AO = 1 − A(k)</code></pre>
 <p><code>AO</code> depends only on the ratio <code>H/d</code> and increases strictly with <code>d</code> — which is exactly &quot;a concave corner darkens monotonically with depth&quot;, as an equation. For an unoccluded flat surface the integral is exactly <strong>1</strong>.</p>
 <p><strong>The asset, for reuse:</strong> <code>Well.Stone</code>, a 2.5 m stone village well — three courses of 16-17 chamfered masonry blocks of irregular width on a 16-slab paved apron, a 15-slab coping ring, a lined bore, two braced timber posts with a crossbeam, an iron-banded windlass with a crank, and a hanging bucket. 11 parts, 11 materials, 15678 vertices. Origin at the ground contact centre (<code>z == 0</code> is where it rests), identity transforms, datablocks under <code>Well.Stone.*</code>. Every part ships with the AO baked into two colour attributes, and <code>default_color_name</code> points at the linear one so an engine reads the right channel.</p>
 <p><strong>Pipeline arc neighbours:</strong> attribute domains in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/attribute-domain-shear"><code>attribute-domain-shear</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel"><code>color-attribute-wheel</code></a>, the second UV set for <em>texture</em>-baked lighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel"><code>lightmap-uv-channel</code></a>, topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>.</p>
@@ -77,7 +77,7 @@
 <p><strong>Render as proof:</strong> the well on the dark stage, lit only by the studio rig, with the baked AO multiplied into base colour — the masonry joints, the shaft mouth, the coping undersides and the apron contact all darken from the attribute, not from the lights. Every block, coping slab and flagstone is chamfered top and bottom, so neighbours meet in a V groove the bake can see into. The shader raises the AO to the power 2.4 before multiplying it in, so a joint that is 70 % visible reads clearly darker; stone gets a per-block Voronoi tone and a chisel bump, timber a streaked grain. The stored attribute is untouched by any of this. The falsification variant (<code>--falsify</code>) writes the same bake <strong>inverted</strong>: sky-facing coping and apron tops go grimy while the recesses and post bases glow, occlusion turned inside out.</p>
 <p>The studio rig is presentation only. Its fill and rim used to be strongly blue, which lit the whole stage cold (stage luma 0.243, warmth +0.01 against the calibration set). Its wedge grazed floor the camera barely saw and left a hard-edged patch on the back wall. Both are now near neutral, and the wedge pools warm light on the floor just behind the well from the camera&#x27;s side: luma 0.274, warmth +0.023. The bake, the checks and the exit codes are unchanged.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python vertex_color_ao.py --
+<pre tabindex="0"><code>blender --background --python vertex_color_ao.py --
 blender --background --python vertex_color_ao.py -- --uniform-hemisphere   # falsifier: uniform instead of cosine-weighted hemisphere; calibration exits 3
 blender --background --python vertex_color_ao.py -- --output well.png
 blender --background --python vertex_color_ao.py -- --falsify inverted.png</code></pre>
@@ -126,7 +126,7 @@ blender --background --python vertex_color_ao.py -- --falsify inverted.png</code
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span> socket-attach-points</a><span class="pager-pos hud">46 of 56 examples</span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete">cross-version-property-delete <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../socket-attach-points/" aria-label="Previous example: socket-attach-points"><span aria-hidden="true">&larr;</span><span class="pager-label">socket-attach-points</span></a><span class="pager-pos hud">46 of 56 examples</span><a rel="next" href="../cross-version-property-delete/" aria-label="Next example: cross-version-property-delete"><span class="pager-label">cross-version-property-delete</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -278,10 +278,18 @@ blender --background --python vertex_color_ao.py -- --falsify inverted.png</code
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

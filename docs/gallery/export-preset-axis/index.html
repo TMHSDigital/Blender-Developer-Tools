@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A radio mast exported once with the engine glTF preset (export_yup=True, shared by Unity, Godot and Unreal) and once naively Z-up, then re-imported: the Z-up file lies on its back</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gltf-export-roundtrip/" aria-label="Previous example: gltf-export-roundtrip"><span aria-hidden="true">&larr;</span> gltf-export-roundtrip</a><span class="pager-pos hud">26 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../lod-decimate-chain/" aria-label="Next example: lod-decimate-chain">lod-decimate-chain <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gltf-export-roundtrip/" aria-label="Previous example: gltf-export-roundtrip"><span aria-hidden="true">&larr;</span><span class="pager-label">gltf-export-roundtrip</span></a><span class="pager-pos hud">26 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../lod-decimate-chain/" aria-label="Next example: lod-decimate-chain"><span class="pager-label">lod-decimate-chain</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two re-imports of a red-and-white radio mast with axis gizmos: the engine-preset copy stands with blue Z up, the naive Z-up copy lies on the floor with green Y up and blue Z along the mast.">
       <img src="../assets/export-preset-axis-hero.webp" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the engine-preset copy stands with blue Z up, the naive Z-up copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> The engine preset (export_yup=True) round-trips standing (x,y,z); a naive export_yup=False file reimports lying along -Y as (x,-z,y), as it would in any glTF engine; --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=export">export</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/export-preset-axis/export_preset_axis.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/export-preset-axis/export_preset_axis.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <p>The subject is a radio mast chosen because &quot;up&quot; is unmistakable on it: a stepped concrete footing, a bolted base flange, a tapered mast in red and white aviation bands with steel collars, three sector panel antennas, a shrouded microwave dish on a raked arm, an equipment cabinet, and a red obstruction lamp under a lightning rod. The rod&#x27;s point is the witnessed tip vertex.</p>
 <p>The still stages the two re-imports side by side: the preset copy standing on the left, the Z-up copy lying along the floor on the right. Beside each sits a modelled X/Y/Z axis gizmo (red, green, blue) showing that re-import&#x27;s frame. The gizmo is measured, not placed: the render path tries all 24 axis-aligned rotations and keeps the one that maps the source vertices onto the re-imported vertices (worst nearest-vertex distance, printed as <code>fit_err</code>; exit 12 if it exceeds 1 mm). The preset gizmo comes out as the identity, blue Z up. The Z-up gizmo comes out as <code>Y -&gt; +Z, Z -&gt; -Y</code>: green Y points up and blue Z runs along the lying mast. The mast didn&#x27;t fall over. The Z-up file stores Z-up coordinates, and the importer reads them as Y-up, as every glTF consumer does.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) - the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) - the CI check:
 blender --background --python export_preset_axis.py --
 
 # Falsifier: both exports Y-up. Must exit non-zero.
@@ -121,7 +121,7 @@ blender --background --python export_preset_axis.py -- --output mast.png --engin
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gltf-export-roundtrip/" aria-label="Previous example: gltf-export-roundtrip"><span aria-hidden="true">&larr;</span> gltf-export-roundtrip</a><span class="pager-pos hud">26 of 56 examples</span><a rel="next" href="../lod-decimate-chain/" aria-label="Next example: lod-decimate-chain">lod-decimate-chain <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gltf-export-roundtrip/" aria-label="Previous example: gltf-export-roundtrip"><span aria-hidden="true">&larr;</span><span class="pager-label">gltf-export-roundtrip</span></a><span class="pager-pos hud">26 of 56 examples</span><a rel="next" href="../lod-decimate-chain/" aria-label="Next example: lod-decimate-chain"><span class="pager-label">lod-decimate-chain</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python export_preset_axis.py -- --output mast.png --engin
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

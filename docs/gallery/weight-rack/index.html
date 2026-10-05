@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural home-gym strength set — a half rack of punched, numbered square uprights on bolted feet with rubber pads, side rails on bolted flanges, a pull-up bar, J-hooks with UHMW saddles and spotter arms on pull pins seated in the holes, plate-storage horns, an Olympic barbell with a knurled shaft, collars and sleeves loaded with bumpers (steel hubs, raised rims and numerals) and cast-iron change plates behind coiled spring clips, and two hex dumbbells — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../hover-bike/" aria-label="Previous showcase piece: hover-bike"><span aria-hidden="true">&larr;</span> hover-bike</a><span class="pager-pos hud">45 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../boulder-cluster/" aria-label="Next showcase piece: boulder-cluster">boulder-cluster <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../hover-bike/" aria-label="Previous showcase piece: hover-bike"><span aria-hidden="true">&larr;</span><span class="pager-label">hover-bike</span></a><span class="pager-pos hud">45 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../boulder-cluster/" aria-label="Next showcase piece: boulder-cluster"><span class="pager-label">boulder-cluster</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red home-gym half rack holding an Olympic barbell loaded with blue and yellow bumpers on J-hooks, plates on storage horns and two hex dumbbells, on a dark studio floor.">
       <img src="../assets/weight-rack-hero.webp" alt="A red home-gym half rack holding an Olympic barbell loaded with blue and yellow bumpers on J-hooks, plates on storage horns and two hex dumbbells, on a dark studio floor." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=sports">Sports</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/weight-rack/weight_rack.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/weight-rack/weight_rack.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>every pad and dumbbell head on the floor (left front pad 3 mm up: its <code>zmin</code> 0.00300, the rest 0)</td><td>16</td></tr><tr><td><code>--offset-pin</code></td><td>pins coaxial with their holes (left spotter and its pin 12 mm up: 0.012 m off the hole axis)</td><td>17</td></tr><tr><td><code>--float-bar</code></td><td>bar seated in both saddles (bar, plates and clips 5 mm up: shaft-to-liner +0.0048 m on both)</td><td>18</td></tr><tr><td><code>--hook-high</code></td><td>bar level (right J-hook one hole higher, bar resting across both saddles: tilt 2.644°)</td><td>19</td></tr><tr><td><code>--gap-plate</code></td><td>plates seated (right iron plate and clip 8 mm out along the sleeve: gap +0.0075 m)</td><td>20</td></tr><tr><td><code>--odd-load</code></td><td>load balance (left 5 kg iron plate swapped for 2.5 kg: mass centre 0.0226 m off the midpoint)</td><td>21</td></tr><tr><td><code>--loose-horn</code></td><td>one connected rack (upper-left horn with its weld plate, bolts and plates 10 mm off the upright: 4 components)</td><td>22</td></tr></tbody></table></div>
 <p><code>--offset-pin</code> moves the spotter, not a J-hook, so the bar stays seated and level. <code>--float-bar</code> also splits the assembly, but seating (18) is checked first. <code>--hook-high</code> keeps every pin in a hole (the J-hook moves one full pitch) and both saddle gaps inside their band (−0.215 mm); the bar end moves 0.2 mm in x, inside the bounding-box tolerance. <code>--gap-plate</code> moves the load&#x27;s mass centre 0.4 mm, inside the balance tolerance. <code>--odd-load</code> keeps every plate seated, since the clip moves in against the thinner plate.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python weight_rack.py --
+<pre tabindex="0"><code>blender --background --python weight_rack.py --
 blender --background --python weight_rack.py -- --skip-decimate
 blender --background --python weight_rack.py -- --stray-vert
 blender --background --python weight_rack.py -- --lift-z
@@ -143,7 +143,7 @@ blender --background --python weight_rack.py -- --output rack.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../hover-bike/" aria-label="Previous showcase piece: hover-bike"><span aria-hidden="true">&larr;</span> hover-bike</a><span class="pager-pos hud">45 of 76 showcase pieces</span><a rel="next" href="../boulder-cluster/" aria-label="Next showcase piece: boulder-cluster">boulder-cluster <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../hover-bike/" aria-label="Previous showcase piece: hover-bike"><span aria-hidden="true">&larr;</span><span class="pager-label">hover-bike</span></a><span class="pager-pos hud">45 of 76 showcase pieces</span><a rel="next" href="../boulder-cluster/" aria-label="Next showcase piece: boulder-cluster"><span class="pager-label">boulder-cluster</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -295,10 +295,18 @@ blender --background --python weight_rack.py -- --output rack.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

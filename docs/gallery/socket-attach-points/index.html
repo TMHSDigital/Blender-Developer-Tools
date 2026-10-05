@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lightmap-uv-channel/" aria-label="Previous example: lightmap-uv-channel"><span aria-hidden="true">&larr;</span> lightmap-uv-channel</a><span class="pager-pos hud">45 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-color-ao/" aria-label="Next example: vertex-color-ao">vertex-color-ao <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lightmap-uv-channel/" aria-label="Previous example: lightmap-uv-channel"><span aria-hidden="true">&larr;</span><span class="pager-label">lightmap-uv-channel</span></a><span class="pager-pos hud">45 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-color-ao/" aria-label="Next example: vertex-color-ao"><span class="pager-label">vertex-color-ao</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets.">
       <img src="../assets/socket-attach-points-hero.webp" alt="A cobalt-and-graphite survey quadcopter with carbon-weave arms hovering over a dark stage, orange mount pads ringing each rotor, with a sensor mast and belly camera pod seated on their sockets." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> 7 socket world matrices within 1.788e-07 of the authored transform, socket +Z == the pad&#x27;s Newell normal (1.794e-07), seating offset 0.0; the no-parent-inverse probe jumps 0.690128 m.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=transforms">transforms</a> <a href="../#tag=game-pipeline">game-pipeline</a> <a href="../#tag=instancing">instancing</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/socket-attach-points/socket_attach_points.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/socket-attach-points/socket_attach_points.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -76,7 +76,7 @@
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same measured deviations to every printed digit, and the same framing numbers on the render path.</p>
 <p><strong>Render as proof:</strong> the drone hovering over the dark stage with every module seated, the orange mount pads reading as the socket signature. The livery is two-tone — a gloss cobalt fuselage shell (the pads&#x27; complement, so the sockets pop), off-white arm fairings and spinners, graphite deck and trim — and the booms carry a procedural twill carbon weave under a clear coat. The camera looks down at the airframe, so the floor is the backdrop: a small close key keeps its falloff on the drone and the warm wedge pools on the floor behind it. The falsification variant (<code>--falsify</code>) parents the sockets without <code>matrix_parent_inverse</code>: the pads are left bare, the rotors and mast vanish from the airframe, and the camera pod and battery hang in space near the top of frame. A broken matrix is not a subtle pixel difference here — the asset comes apart.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python socket_attach_points.py --
+<pre tabindex="0"><code>blender --background --python socket_attach_points.py --
 blender --background --python socket_attach_points.py -- --skip-mpi   # falsifier: sockets parented without matrix_parent_inverse; exits 3
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
@@ -126,7 +126,7 @@ blender --background --python socket_attach_points.py -- --probe</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lightmap-uv-channel/" aria-label="Previous example: lightmap-uv-channel"><span aria-hidden="true">&larr;</span> lightmap-uv-channel</a><span class="pager-pos hud">45 of 56 examples</span><a rel="next" href="../vertex-color-ao/" aria-label="Next example: vertex-color-ao">vertex-color-ao <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lightmap-uv-channel/" aria-label="Previous example: lightmap-uv-channel"><span aria-hidden="true">&larr;</span><span class="pager-label">lightmap-uv-channel</span></a><span class="pager-pos hud">45 of 56 examples</span><a rel="next" href="../vertex-color-ao/" aria-label="Next example: vertex-color-ao"><span class="pager-label">vertex-color-ao</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -278,10 +278,18 @@ blender --background --python socket_attach_points.py -- --probe</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../shader-node-group/" aria-label="Previous example: shader-node-group"><span aria-hidden="true">&larr;</span> shader-node-group</a><span class="pager-pos hud">9 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-instance-grid/" aria-label="Next example: gn-instance-grid">gn-instance-grid <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../shader-node-group/" aria-label="Previous example: shader-node-group"><span aria-hidden="true">&larr;</span><span class="pager-label">shader-node-group</span></a><span class="pager-pos hud">9 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-instance-grid/" aria-label="Next example: gn-instance-grid"><span class="pager-label">gn-instance-grid</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor.">
       <img src="../assets/temp-override-join-hero.webp" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes all six sources, exactly one mesh remains, no geometry is lost, the five part materials merge into one slot each with every face still on its own material, and local Z spans foot to grip.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=operators">operators</a> <a href="../#tag=context">context</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/temp-override-join/temp_override_join.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/temp-override-join/temp_override_join.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -66,7 +66,7 @@
 <p><strong>What it witnesses:</strong> <code>object.join</code> under <code>temp_override</code> actually consumes the sources and merges their material slots. The check asserts that exactly one mesh remains and it is the target, that all six sources are gone, and that no geometry was lost (verts and faces equal the sum over the parts). The joined mesh must carry exactly the five part materials, once each, and every material must still own exactly the faces its parts brought. So the glass is still glass and the grip is still wood. The local Z span must run from the fount&#x27;s foot (0) to the top of the grip (closed form 2.303), which proves the part transforms were applied. A no-op override (the 5.x failure mode of the old dict-pass path) leaves seven objects.</p>
 <p><strong>The render is the joined object.</strong> Everything in the still is one mesh object. It shows five materials because the slots merged and the per-face indices were remapped. If they had not been, the lantern would render in the target&#x27;s red enamel from grip to foot. A shadowless warm point light inside the globe (render-only) stands in for the lit wick.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python temp_override_join.py --
 
 # Falsifier: join without temp_override. Must exit non-zero.
@@ -101,7 +101,7 @@ blender --background --python temp_override_join.py -- --output join.png --engin
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../shader-node-group/" aria-label="Previous example: shader-node-group"><span aria-hidden="true">&larr;</span> shader-node-group</a><span class="pager-pos hud">9 of 56 examples</span><a rel="next" href="../gn-instance-grid/" aria-label="Next example: gn-instance-grid">gn-instance-grid <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../shader-node-group/" aria-label="Previous example: shader-node-group"><span aria-hidden="true">&larr;</span><span class="pager-label">shader-node-group</span></a><span class="pager-pos hud">9 of 56 examples</span><a rel="next" href="../gn-instance-grid/" aria-label="Next example: gn-instance-grid"><span class="pager-label">gn-instance-grid</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -253,10 +253,18 @@ blender --background --python temp_override_join.py -- --output join.png --engin
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

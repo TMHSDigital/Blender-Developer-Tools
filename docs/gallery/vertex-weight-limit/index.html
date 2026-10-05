@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lod-decimate-chain/" aria-label="Previous example: lod-decimate-chain"><span aria-hidden="true">&larr;</span> lod-decimate-chain</a><span class="pager-pos hud">28 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../triangulate-tangents/" aria-label="Next example: triangulate-tangents">triangulate-tangents <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lod-decimate-chain/" aria-label="Previous example: lod-decimate-chain"><span aria-hidden="true">&larr;</span><span class="pager-label">lod-decimate-chain</span></a><span class="pager-pos hud">28 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../triangulate-tangents/" aria-label="Next example: triangulate-tangents"><span class="pager-label">triangulate-tangents</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint.">
       <img src="../assets/vertex-weight-limit-hero.webp" alt="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh&#x27;s own deform layer, not the authoring function.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=armature">armature</a> <a href="../#tag=mesh">mesh</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/vertex-weight-limit/vertex_weight_limit.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/vertex-weight-limit/vertex_weight_limit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -71,7 +71,7 @@
 <p>The render path paints the <strong>post-limit weights</strong> onto the arm as a <code>BoneBlend</code> colour attribute — <code>Σ wᵢ · colourᵢ</code> per vertex, read back from <code>v.groups</code> after the prune — and the cables, side hatches and trim bands display it through a matte Attribute-node material. Each rigid segment therefore shows its bone&#x27;s flat colour (blue turret, teal upper arm, violet forearm, magenta wrist, lime gripper), and the cables grade from colour to colour exactly where the skin weights blend across each joint, while the posed arm shows those weights deforming it.</p>
 <p><strong>Numeric-only contract</strong> (docs/VISUAL-STYLE.md § The render is the proof): the four-influence cap itself has no visual signature. The pruned fifth weight is the small spill (at most 0.0027 on any vertex), so a five-influence arm deforms and paints indistinguishably — the prune preserves the pose by design, and that is what check 3 asserts. The render depicts the subject and where its weights blend; the cap is witnessed by the numbers above and by the <code>--skip-limit</code> falsifier.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vertex_weight_limit.py --
 
 # Falsifier: skip the 4-influence prune. Must exit non-zero.
@@ -124,7 +124,7 @@ blender --background --python vertex_weight_limit.py -- --output arm.png --engin
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lod-decimate-chain/" aria-label="Previous example: lod-decimate-chain"><span aria-hidden="true">&larr;</span> lod-decimate-chain</a><span class="pager-pos hud">28 of 56 examples</span><a rel="next" href="../triangulate-tangents/" aria-label="Next example: triangulate-tangents">triangulate-tangents <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lod-decimate-chain/" aria-label="Previous example: lod-decimate-chain"><span aria-hidden="true">&larr;</span><span class="pager-label">lod-decimate-chain</span></a><span class="pager-pos hud">28 of 56 examples</span><a rel="next" href="../triangulate-tangents/" aria-label="Next example: triangulate-tangents"><span class="pager-label">triangulate-tangents</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -276,10 +276,18 @@ blender --background --python vertex_weight_limit.py -- --output arm.png --engin
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

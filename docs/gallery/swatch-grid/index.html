@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><span></span><span class="pager-pos hud">1 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../turntable/" aria-label="Next example: turntable">turntable <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><span></span><span class="pager-pos hud">1 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../turntable/" aria-label="Next example: turntable"><span class="pager-label">turntable</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front.">
       <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=materials">materials</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/swatch-grid/swatch_grid.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/swatch-grid/swatch_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -65,7 +65,7 @@
 <ul><li><strong>Principled BSDF</strong> metals (gold, copper: high metallic, low roughness) and dielectrics (red/blue plastic, white rough), configured with <strong>string socket lookups</strong> and <strong>4-tuple colors</strong>.</li><li>The <strong>emission</strong> pattern (an emissive orange swatch, its <code>ShaderNodeEmission</code> core mixed toward a dark dielectric shell at the silhouette so it reads as a glowing globe).</li><li>The cross-version <strong><code>set_specular</code> shim</strong> (<code>Specular</code> → <code>Specular IOR Level</code>, renamed in Blender 4.0).</li></ul>
 <p>It doubles as a live proof of the <strong>EEVEE engine-id</strong> behavior: the version-branch helper resolves <code>BLENDER_EEVEE</code> on Blender 5.x and <code>BLENDER_EEVEE_NEXT</code> on 4.2–4.5, and the check witnesses the inversion for real — the <em>other</em> era&#x27;s id must be <strong>rejected</strong> by the running build (assignment raises <code>TypeError</code>) and the helper&#x27;s id accepted — so a regression in that mapping fails the example, not just the docs.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (materials + engine-id witness, no render):
+<pre tabindex="0"><code># Cheap correctness check (materials + engine-id witness, no render):
 blender --background --python swatch_grid.py --
 
 # Falsifier: same RGB on every swatch. Must exit non-zero.
@@ -129,7 +129,7 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><span></span><span class="pager-pos hud">1 of 56 examples</span><a rel="next" href="../turntable/" aria-label="Next example: turntable">turntable <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><span></span><span class="pager-pos hud">1 of 56 examples</span><a rel="next" href="../turntable/" aria-label="Next example: turntable"><span class="pager-label">turntable</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -281,10 +281,18 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

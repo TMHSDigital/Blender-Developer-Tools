@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. A striped parasol keeps crisp stripes under CORNER and smears, with one panel turned the wrong color, under POINT; the measured shear equals the palette closed form.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../car-mirror-symmetry/" aria-label="Previous example: car-mirror-symmetry"><span aria-hidden="true">&larr;</span> car-mirror-symmetry</a><span class="pager-pos hud">41 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../degenerate-bevel-weld/" aria-label="Next example: degenerate-bevel-weld">degenerate-bevel-weld <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../car-mirror-symmetry/" aria-label="Previous example: car-mirror-symmetry"><span aria-hidden="true">&larr;</span><span class="pager-label">car-mirror-symmetry</span></a><span class="pager-pos hud">41 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../degenerate-bevel-weld/" aria-label="Next example: degenerate-bevel-weld"><span class="pager-label">degenerate-bevel-weld</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink.">
       <img src="../assets/attribute-domain-shear-hero.webp" alt="Two patio parasols on a terracotta paver deck behind CORNER and POINT slate placards: the left has crisp crimson and cream stripes, the right has its stripes smeared pink." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Authoring per-face colors into a POINT-domain attribute overwrites shared vertices once per neighbor; the last write wins and intended colors shear across every shared vertex.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=attributes">attributes</a> <a href="../#tag=mesh">mesh</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/attribute-domain-shear/attribute_domain_shear.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/attribute-domain-shear/attribute_domain_shear.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -71,7 +71,7 @@
 <p>The render uses a two-tone palette (crimson and cream, alternating). It is not the check&#x27;s palette. The check keeps its eight distinct hues because an off-by-two ordering bug would pass unnoticed under a period-2 palette. A parasol reads as broken only when stripes everyone expects to be crisp go soft. Both palettes go through the same <code>assign_corner</code> and <code>assign_point_naive</code>. Those functions take a <code>faces_per_wedge</code> stride (gore-major face order). It is 1 on the check&#x27;s fan, so the check&#x27;s writes are unchanged, and its output is identical before and after.</p>
 <p>The staging is render-only and does not touch the checked mesh. Each parasol is eight named parts with five materials: canopy, aluminium ribs and stretchers, brass runner, finial and tilt knuckle, teak upper and lower pole, and a cast-iron base. The canopy tilts 24 degrees toward the camera about the knuckle so the whole top reads. The pair stands on a terracotta paver patio (a render-only 10 x 5 deck of beveled pavers with grout joints, two tones alternated by a fixed index hash, passed to the framing gate as stage like the floor), and each base has a slate placard on a brass post in front of it, the domain name inlaid in cream enamel. The render path runs the framing gate (exit 10) and the asset-quality floors on one parasol (exit 11).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python attribute_domain_shear.py --
+<pre tabindex="0"><code>blender --background --python attribute_domain_shear.py --
 blender --background --python attribute_domain_shear.py -- --no-overwrite
 blender --background --python attribute_domain_shear.py -- --output shear.png
 blender --background --python attribute_domain_shear.py -- --output shear.png --engine cycles</code></pre>
@@ -119,7 +119,7 @@ blender --background --python attribute_domain_shear.py -- --output shear.png --
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../car-mirror-symmetry/" aria-label="Previous example: car-mirror-symmetry"><span aria-hidden="true">&larr;</span> car-mirror-symmetry</a><span class="pager-pos hud">41 of 56 examples</span><a rel="next" href="../degenerate-bevel-weld/" aria-label="Next example: degenerate-bevel-weld">degenerate-bevel-weld <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../car-mirror-symmetry/" aria-label="Previous example: car-mirror-symmetry"><span aria-hidden="true">&larr;</span><span class="pager-label">car-mirror-symmetry</span></a><span class="pager-pos hud">41 of 56 examples</span><a rel="next" href="../degenerate-bevel-weld/" aria-label="Next example: degenerate-bevel-weld"><span class="pager-label">degenerate-bevel-weld</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -271,10 +271,18 @@ blender --background --python attribute_domain_shear.py -- --output shear.png --
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

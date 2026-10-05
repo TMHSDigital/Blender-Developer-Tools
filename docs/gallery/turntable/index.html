@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../swatch-grid/" aria-label="Previous example: swatch-grid"><span aria-hidden="true">&larr;</span> swatch-grid</a><span class="pager-pos hud">2 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-sdf-remesh/" aria-label="Next example: gn-sdf-remesh">gn-sdf-remesh <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../swatch-grid/" aria-label="Previous example: swatch-grid"><span aria-hidden="true">&larr;</span><span class="pager-label">swatch-grid</span></a><span class="pager-pos hud">2 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-sdf-remesh/" aria-label="Next example: gn-sdf-remesh"><span class="pager-label">gn-sdf-remesh</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat.">
       <img src="../assets/turntable-hero.webp" alt="A copper Suzanne turned three-quarters on a lathed display turntable: vented motor base with a status lamp, a steel platter ticked every keyed frame, and an amber arrow on the mat." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=animation">animation</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/turntable/turntable.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/turntable/turntable.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -64,7 +64,7 @@
 <p>A runnable example that keyframes a Z-rotation turntable through the <strong>slotted-actions</strong> cross-version channelbag path from the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/slotted-actions-animation/SKILL.md"><code>slotted-actions-animation</code></a> skill, and picks the render engine with the version-branch EEVEE-id helper.</p>
 <p><strong>Which fix it witnesses:</strong> the slotted-actions cross-version helper. On Blender 5.x the channelbag comes from <code>action_ensure_channelbag_for_slot</code>; on 4.4/4.5 from <code>strip.channelbag(slot, ensure=True)</code> (legacy <code>action.fcurves</code> still works on 4.5, raises <code>AttributeError</code> on 5.x).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check only (no render) — the CI smoke check:
+<pre tabindex="0"><code># Cheap correctness check only (no render) — the CI smoke check:
 blender --background --python turntable.py --
 
 # Falsifier: no rotation keys. Must exit non-zero (keys drive playback).
@@ -110,7 +110,7 @@ blender --background --python turntable.py -- --output turntable.png --engine cy
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../swatch-grid/" aria-label="Previous example: swatch-grid"><span aria-hidden="true">&larr;</span> swatch-grid</a><span class="pager-pos hud">2 of 56 examples</span><a rel="next" href="../gn-sdf-remesh/" aria-label="Next example: gn-sdf-remesh">gn-sdf-remesh <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../swatch-grid/" aria-label="Previous example: swatch-grid"><span aria-hidden="true">&larr;</span><span class="pager-label">swatch-grid</span></a><span class="pager-pos hud">2 of 56 examples</span><a rel="next" href="../gn-sdf-remesh/" aria-label="Next example: gn-sdf-remesh"><span class="pager-label">gn-sdf-remesh</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -262,10 +262,18 @@ blender --background --python turntable.py -- --output turntable.png --engine cy
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

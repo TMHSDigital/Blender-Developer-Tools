@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Solidify&#x27;s use_even_offset on a folded strip: off, each fold vertex moves t along the bisector of its face normals and the shell thins to t*cos(phi/2); on, it moves t/cos(phi/2) and stays exactly t thick at 60, 90 and 120 degree folds.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lattice-deform/" aria-label="Previous example: lattice-deform"><span aria-hidden="true">&larr;</span> lattice-deform</a><span class="pager-pos hud">55 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../boolean-exact-volume/" aria-label="Next example: boolean-exact-volume">boolean-exact-volume <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../lattice-deform/" aria-label="Previous example: lattice-deform"><span aria-hidden="true">&larr;</span><span class="pager-label">lattice-deform</span></a><span class="pager-pos hud">55 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../boolean-exact-volume/" aria-label="Next example: boolean-exact-volume"><span class="pager-label">boolean-exact-volume</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width.">
       <img src="../assets/solidify-even-thickness-hero.webp" alt="Two teal-glazed zigzag shells with orange cut ends on a walnut plinth: the left band pinches at each fold, falling short of a red line marking full thickness; the right stays even width." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Simple-mode Solidify (offset -1, t = 0.16) on a strip folded at 60, 90 and 120 degrees: the even shell is exactly t thick at every fold, its copies t/cos(phi/2) along the bisector; the plain shell is t*cos(phi/2) thick: 0.1386, 0.1131, 0.0800 (max error 3.7e-8). --no-even exits 4 at 0.0800 vs 0.1600.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/solidify-even-thickness/solidify_even_thickness.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/solidify-even-thickness/solidify_even_thickness.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <p><strong>The trap it exposes:</strong> <code>use_even_offset</code> is off by default. A script that solidifies a bent panel, a folded bracket or a box with <code>thickness = t</code> gets a wall that is noticeably thinner at every corner, down to half at a 120° bend, and nothing errors. <code>--no-even</code> leaves the flag off on the shell that the check expects to be even, and check 4 fails with the measured thickness.</p>
 <p>The still shows both shells in teal glaze side by side on a walnut plinth, viewed nearly end-on. The cut section, Solidify&#x27;s rim, is drawn in selection-orange enamel through <code>material_offset_rim</code>, so the band&#x27;s width is the shell&#x27;s thickness. On the left, with <code>use_even_offset = False</code>, the band pinches at every fold, and to half at the sharp V. A red line on that cut face traces where a <em>t</em>-thick shell&#x27;s inner face would run: it is the even shell&#x27;s own evaluated copy positions, placed through the plain shell&#x27;s transform, so the gap between the orange band and the red line is the thickness lost at each fold, drawn at true size. On the right, with <code>use_even_offset = True</code>, the band stays one width all the way round. Engraved brass plaques name each setting, and brass dowels hold the raised folds off the plinth.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python solidify_even_thickness.py --
 
 # Falsifier: leave use_even_offset off on the shell checked as even. Must exit 4.
@@ -121,7 +121,7 @@ blender --background --python solidify_even_thickness.py -- --output solidify.pn
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lattice-deform/" aria-label="Previous example: lattice-deform"><span aria-hidden="true">&larr;</span> lattice-deform</a><span class="pager-pos hud">55 of 56 examples</span><a rel="next" href="../boolean-exact-volume/" aria-label="Next example: boolean-exact-volume">boolean-exact-volume <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../lattice-deform/" aria-label="Previous example: lattice-deform"><span aria-hidden="true">&larr;</span><span class="pager-label">lattice-deform</span></a><span class="pager-pos hud">55 of 56 examples</span><a rel="next" href="../boolean-exact-volume/" aria-label="Next example: boolean-exact-volume"><span class="pager-label">boolean-exact-volume</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python solidify_even_thickness.py -- --output solidify.pn
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

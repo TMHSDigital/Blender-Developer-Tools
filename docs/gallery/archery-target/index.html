@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural archery range target on a turf patch — a 1.10 m compressed-straw boss coiled from rope courses that show on its back and round its edge, bound with doubled jute twine drawn tight over the crests; an 80 cm ten-zone World Archery face in aged inks with ring lines, an X ring and a printed X, held by four target pins; a timber easel leaning it back 12° on toe skids with knee braces, a ledge with a stop lip on a bolted rail and gussets, a numbered butt board, a strap hinge pinned to a rear leg in a steel ferrule and foot, and a splay chain between eye bolts; five carbon arrows in the face with cresting, nocks and three vanes, one glancing into the straw edge, one snapped with its fletched half on the grass, and a leather quiver of arrows lying among grass tufts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cargo-loader/" aria-label="Previous showcase piece: cargo-loader"><span aria-hidden="true">&larr;</span> cargo-loader</a><span class="pager-pos hud">53 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cactus-garden/" aria-label="Next showcase piece: cactus-garden">cactus-garden <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cargo-loader/" aria-label="Previous showcase piece: cargo-loader"><span aria-hidden="true">&larr;</span><span class="pager-label">cargo-loader</span></a><span class="pager-pos hud">53 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../cactus-garden/" aria-label="Next showcase piece: cactus-garden"><span class="pager-label">cactus-garden</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A straw archery boss with a gold, red, blue, black and white face and five arrows, leaning on a timber easel numbered 12, a quiver on the grass patch below.">
       <img src="../assets/archery-target-hero.webp" alt="A straw archery boss with a gold, red, blue, black and white face and five arrows, leaning on a timber easel numbered 12, a quiver on the grass patch below." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=sports">Sports</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/archery-target/archery_target.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/archery-target/archery_target.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>every support bedded in the turf (rear tread and ferrule 6 mm up: bite −0.004 m)</td><td>16</td></tr><tr><td><code>--offset-hinge</code></td><td>hinge pin coaxial with its knuckles (pin 2.5 mm up the face: all three 0.0025 m off)</td><td>17</td></tr><tr><td><code>--lift-boss</code></td><td>boss resting on its ledge (boss and all it carries 6 mm up the legs: seat −0.0035 m, lean unchanged)</td><td>18</td></tr><tr><td><code>--high-boss</code></td><td>regulation gold height (boss, ledge, rail and gussets 80 mm up the legs: 1.3783 m)</td><td>19</td></tr><tr><td><code>--shallow-arrow</code></td><td>every point buried (third arrow in 30 mm: 0.0287 m)</td><td>20</td></tr><tr><td><code>--short-arrow</code></td><td>every fletching clear of the face (second arrow a 0.40 m shaft: a vane 0.1420 m from the straw)</td><td>21</td></tr><tr><td><code>--skew-vane</code></td><td>vanes at 120° (one vane of the first arrow turned 15°: 15.000° off)</td><td>22</td></tr><tr><td><code>--wide-gold</code></td><td>ring radii of the scoring table (gold/red line printed at 0.09 m)</td><td>23</td></tr><tr><td><code>--short-skids</code></td><td>forward tip angle (skid toes cut back to 50 mm ahead of the legs: 15.20°, mass centre still 0.289 m inside)</td><td>24</td></tr><tr><td><code>--loose-pin</code></td><td>one connected assembly (one target pin 75 mm out of the face: 2 components)</td><td>25</td></tr></tbody></table></div>
 <p><code>--lift-boss</code> moves the boss along the legs, so it still leans on both. <code>--high-boss</code> moves the ledge with the boss, so the seat holds and only the height fails. <code>--shallow-arrow</code> pushes the fletching further from the face. <code>--short-arrow</code> keeps the point&#x27;s depth. <code>--short-skids</code> keeps both skids bedded and the mass centre inside the supports.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python archery_target.py --
+<pre tabindex="0"><code>blender --background --python archery_target.py --
 blender --background --python archery_target.py -- --skip-decimate
 blender --background --python archery_target.py -- --stray-vert
 blender --background --python archery_target.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python archery_target.py -- --output target.png</code></p
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cargo-loader/" aria-label="Previous showcase piece: cargo-loader"><span aria-hidden="true">&larr;</span> cargo-loader</a><span class="pager-pos hud">53 of 76 showcase pieces</span><a rel="next" href="../cactus-garden/" aria-label="Next showcase piece: cactus-garden">cactus-garden <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cargo-loader/" aria-label="Previous showcase piece: cargo-loader"><span aria-hidden="true">&larr;</span><span class="pager-label">cargo-loader</span></a><span class="pager-pos hud">53 of 76 showcase pieces</span><a rel="next" href="../cactus-garden/" aria-label="Next showcase piece: cactus-garden"><span class="pager-label">cactus-garden</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python archery_target.py -- --output target.png</code></p
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

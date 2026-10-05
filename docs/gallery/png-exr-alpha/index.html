@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../image-pixels-testcard/" aria-label="Previous example: image-pixels-testcard"><span aria-hidden="true">&larr;</span> image-pixels-testcard</a><span class="pager-pos hud">22 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../uv-layer-grid/" aria-label="Next example: uv-layer-grid">uv-layer-grid <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../image-pixels-testcard/" aria-label="Previous example: image-pixels-testcard"><span aria-hidden="true">&larr;</span><span class="pager-label">image-pixels-testcard</span></a><span class="pager-pos hud">22 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../uv-layer-grid/" aria-label="Next example: uv-layer-grid"><span class="pager-label">uv-layer-grid</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two thin-bezel monitors on a walnut console with brass desk plates reading FLOAT to PNG and FLOAT to EXR; the PNG screen washes its dark rows to white while the EXR screen keeps every bar.">
       <img src="../assets/png-exr-alpha-hero.webp" alt="Two thin-bezel monitors on a walnut console with brass desk plates reading FLOAT to PNG and FLOAT to EXR; the PNG screen washes its dark rows to white while the EXR screen keeps every bar." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> float→PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte→PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=images">images</a> <a href="../#tag=rendering">rendering</a> <a href="../#tag=alpha">alpha</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/png-exr-alpha/png_exr_alpha.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/png-exr-alpha/png_exr_alpha.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -70,7 +70,7 @@
 <p><strong>Version divergence:</strong> none probed on the save/reload contracts above — they assert on Blender 5.1.1 locally. Blender 4.5 LTS is exercised by the <code>blender-smoke</code> CI job (4.5 is not installed on this authoring host; do not treat a 4.4 run as a 4.5 substitute). The only version gate in the file is the EEVEE engine id for the optional render (<code>BLENDER_EEVEE_NEXT</code> on 4.x, <code>BLENDER_EEVEE</code> on 5.x).</p>
 <p><strong>Render:</strong> two thin-bezel monitors on machined stands, sharing a walnut-topped console — the left screen bakes the closed-form PNG mangling (dark rows flash to white at low-alpha columns), the right screen shows the authored straight buffer (EXR-clean); brass desk plates in front read <code>FLOAT → PNG</code> and <code>FLOAT → EXR</code>. If the contract failed, both screens would read the same. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python png_exr_alpha.py --
 
 # Falsifier: opaque authored alpha. Must exit non-zero (float→PNG error floor).
@@ -123,7 +123,7 @@ blender --background --python png_exr_alpha.py -- --output alpha.png --engine cy
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../image-pixels-testcard/" aria-label="Previous example: image-pixels-testcard"><span aria-hidden="true">&larr;</span> image-pixels-testcard</a><span class="pager-pos hud">22 of 56 examples</span><a rel="next" href="../uv-layer-grid/" aria-label="Next example: uv-layer-grid">uv-layer-grid <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../image-pixels-testcard/" aria-label="Previous example: image-pixels-testcard"><span aria-hidden="true">&larr;</span><span class="pager-label">image-pixels-testcard</span></a><span class="pager-pos hud">22 of 56 examples</span><a rel="next" href="../uv-layer-grid/" aria-label="Next example: uv-layer-grid"><span class="pager-label">uv-layer-grid</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -275,10 +275,18 @@ blender --background --python png_exr_alpha.py -- --output alpha.png --engine cy
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

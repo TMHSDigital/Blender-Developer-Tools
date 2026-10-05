@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-modifier-inputs/" aria-label="Previous example: gn-modifier-inputs"><span aria-hidden="true">&larr;</span> gn-modifier-inputs</a><span class="pager-pos hud">12 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../curve-bevel-arc/" aria-label="Next example: curve-bevel-arc">curve-bevel-arc <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-modifier-inputs/" aria-label="Previous example: gn-modifier-inputs"><span aria-hidden="true">&larr;</span><span class="pager-label">gn-modifier-inputs</span></a><span class="pager-pos hud">12 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../curve-bevel-arc/" aria-label="Next example: curve-bevel-arc"><span class="pager-label">curve-bevel-arc</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest.">
       <img src="../assets/shape-key-blend-hero.webp" alt="One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar&#x27;s belly around the tallest." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the lifted, flared rim ring.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=shape-keys">shape-keys</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/shape-key-blend/shape_key_blend.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/shape-key-blend/shape_key_blend.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -66,7 +66,7 @@
 <h2 id="the-render">The render<a class="anchor" href="#the-render" aria-label="Link to this section">#</a></h2>
 <p>The same vase at <code>Tall.value</code> 0, 0.5 (the checked object) and 1, left to right: squat jar, amphora, trumpet vase. The ochre band is part of the lathe profile, so it rides the key — thin on the jar&#x27;s shoulder, stretched tall and higher on the full key. Around the full-key vase, three thin pale rings are read straight from the <code>Basis</code> key block: the jar&#x27;s belly it was blended from. If the blend broke, the three vases would render as three identical jars.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shape_key_blend.py --
 
 # Falsifier: Tall.value = 0. Must exit non-zero.
@@ -119,7 +119,7 @@ blender --background --python shape_key_blend.py -- --output blend.png --engine 
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gn-modifier-inputs/" aria-label="Previous example: gn-modifier-inputs"><span aria-hidden="true">&larr;</span> gn-modifier-inputs</a><span class="pager-pos hud">12 of 56 examples</span><a rel="next" href="../curve-bevel-arc/" aria-label="Next example: curve-bevel-arc">curve-bevel-arc <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gn-modifier-inputs/" aria-label="Previous example: gn-modifier-inputs"><span aria-hidden="true">&larr;</span><span class="pager-label">gn-modifier-inputs</span></a><span class="pager-pos hud">12 of 56 examples</span><a rel="next" href="../curve-bevel-arc/" aria-label="Next example: curve-bevel-arc"><span class="pager-label">curve-bevel-arc</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -271,10 +271,18 @@ blender --background --python shape_key_blend.py -- --output blend.png --engine 
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();
