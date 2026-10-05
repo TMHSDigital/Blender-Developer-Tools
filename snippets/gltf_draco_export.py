@@ -14,6 +14,7 @@ import bpy
 def export_gltf_draco(filepath, selected_only=True, yup=True):
     bpy.ops.export_scene.gltf(
         filepath=filepath,
+        export_format="GLB",
         use_selection=selected_only,
         export_draco_mesh_compression_enable=True,
         export_draco_mesh_compression_level=6,

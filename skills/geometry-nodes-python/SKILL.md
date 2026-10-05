@@ -164,8 +164,10 @@ To list all available Geometry node types in your Blender version:
 
 ```python
 import bpy
-for cls in bpy.types.GeometryNode.__subclasses__():
-    print(cls.bl_idname)
+# bpy.types registers node classes lazily, so GeometryNode.__subclasses__()
+# returns [] until something touches them. dir(bpy.types) lists them all.
+for name in sorted(n for n in dir(bpy.types) if n.startswith("GeometryNode")):
+    print(name)
 ```
 
 ## Wiring nodes
@@ -323,7 +325,7 @@ def has_for_each_element():
    tree.nodes.new('GeometryNodeSetPosition')  # RIGHT
    ```
 
-   When in doubt, list `bpy.types.GeometryNode.__subclasses__()` and grep.
+   When in doubt, list `[n for n in dir(bpy.types) if n.startswith("GeometryNode")]` and grep. (`bpy.types.GeometryNode.__subclasses__()` returns an empty list: the classes are created lazily.)
 
 3. **Linking nodes by name when both inputs share a name** (`Value`, `Vector`, `Geometry`) and getting the wrong one. Use indices or the named inputs of the parent node.
 
