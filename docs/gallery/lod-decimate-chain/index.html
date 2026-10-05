@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span><span class="pager-label">export-preset-axis</span></a><span class="pager-pos hud">27 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit"><span class="pager-label">vertex-weight-limit</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris.">
       <img src="../assets/lod-decimate-chain-hero.webp" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); a fin extreme on an oblique plate corner is shaved at ratio 0.18 (caught).</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=depsgraph">depsgraph</a> <a href="../#tag=mesh">mesh</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/lod-decimate-chain/lod_decimate_chain.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/lod-decimate-chain/lod_decimate_chain.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <p>The Decimate modifier API (<code>decimate_type=&#x27;COLLAPSE&#x27;</code>, <code>ratio</code>) is stable across Blender 4.5 LTS, 5.1 and 5.2 — the example runs identically on all three, which is itself the version witness (measured values match to the digit).</p>
 <p>The render stages the three LODs left to right with a dark triangle wireframe laid over each: the same mesh through the same Decimate, then Triangulate and Wireframe, so the overlay draws exactly the triangles the check counts (measured 4,784 / 2,392 / 860 faces on the overlay&#x27;s input). The density drop reads at thumbnail size — a fine mesh on LOD0, large facets on LOD2, where the porthole flange collapses to an octagon — while the silhouettes stay identical, which is contract 3 made visible. One label per LOD carries the evaluated triangle count from the check.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python lod_decimate_chain.py --
 
 # Falsifier: no Decimate on the LOD copies. Must exit non-zero (no reduction).
@@ -121,7 +121,7 @@ blender --background --python lod_decimate_chain.py -- --output rocket.png --eng
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span> export-preset-axis</a><span class="pager-pos hud">27 of 56 examples</span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit">vertex-weight-limit <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../export-preset-axis/" aria-label="Previous example: export-preset-axis"><span aria-hidden="true">&larr;</span><span class="pager-label">export-preset-axis</span></a><span class="pager-pos hud">27 of 56 examples</span><a rel="next" href="../vertex-weight-limit/" aria-label="Next example: vertex-weight-limit"><span class="pager-label">vertex-weight-limit</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python lod_decimate_chain.py -- --output rocket.png --eng
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

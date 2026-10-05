@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural shaded woodland corner on a sloping soil bank — a gritstone boulder cut by deep cleavage planes into broad flat fracture faces meeting at crisp, weathered arrises, pitted, lichened and damp at its foot, split down its front by a deep crack and sunk into the bank all round; lobed moss cushions and satellite tufts laid on it as conforming shells, deepest in its hollows and feathering to nothing at the rim, tucked over the crack&#x27;s lip, with bare patches; a male fern&#x27;s shuttlecock crown of bipinnate fronds (alternate pinnae cut into pinnules, tapering to the tip) with fiddleheads unrolling as true spirals from a scaly rootstock bedded in the soil, a small fern growing out of the crack, beech litter, pebbles, a twig and wood sorrel — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../farm-tractor/" aria-label="Previous showcase piece: farm-tractor"><span aria-hidden="true">&larr;</span> farm-tractor</a><span class="pager-pos hud">66 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../sea-stack-arch/" aria-label="Next showcase piece: sea-stack-arch">sea-stack-arch <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../farm-tractor/" aria-label="Previous showcase piece: farm-tractor"><span aria-hidden="true">&larr;</span><span class="pager-label">farm-tractor</span></a><span class="pager-pos hud">66 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../sea-stack-arch/" aria-label="Next showcase piece: sea-stack-arch"><span class="pager-label">sea-stack-arch</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A male fern&#x27;s arching crown of cut fronds and fiddleheads beside a split gritstone boulder with flat broken faces, lobed moss cushions and a small fern in its crack, on a soil bank with beech litter.">
       <img src="../assets/fern-mossy-rock-hero.webp" alt="A male fern&#x27;s arching crown of cut fronds and fiddleheads beside a split gritstone boulder with flat broken faces, lobed moss cushions and a small fern in its crack, on a soil bank with beech litter." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/fern-mossy-rock/fern_mossy_rock.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/fern-mossy-rock/fern_mossy_rock.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -90,7 +90,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--smooth-rock</code></td><td>cleaved (the shipped recipe: shallow cuts through broad bevels, full waves on the faces, the ellipsoid drawn 0.90 smaller to keep its size: 0.2892 of the turning in sharp arrises)</td><td>27</td></tr><tr><td><code>--float-fronds</code></td><td>rooted (every frond&#x27;s stipe starts 60 mm out along its path, which is otherwise unchanged: shallowest base −0.0503 m)</td><td>17</td></tr><tr><td><code>--lift-crown</code></td><td>rooted (the rootstock alone raised 50 mm: worst sector −0.0180 m, 1 of 8)</td><td>17</td></tr><tr><td><code>--float-moss</code></td><td>moss seat (every cushion lifted 40 mm along the stone&#x27;s normal: top up to 0.0858 m, rim −0.0380 m)</td><td>18</td></tr><tr><td><code>--slab-moss</code></td><td>moss rim feathers (the shipped profile, near full height to the last ring: 0.0189 m)</td><td>28</td></tr><tr><td><code>--perch-rock</code></td><td>boulder sealed (bedded against the soil height at its centre alone: worst sector −0.0321 m, 7 of 8)</td><td>20</td></tr><tr><td><code>--sunny-moss</code></td><td>moss facing (the main cushion laid on the boulder&#x27;s sunny back face: 0.5986)</td><td>21</td></tr><tr><td><code>--perch-crack-fern</code></td><td>crack fern (slid 100 mm sideways out of the cleft into the wall: centre not in the cleft, walls 0.1576 m)</td><td>22</td></tr><tr><td><code>--flat-taper</code></td><td>pinnae taper (one frond&#x27;s pinnae all 0.80 of its longest: tip 0.996)</td><td>23</td></tr><tr><td><code>--opposite-pinnae</code></td><td>pinnae alternate (one frond&#x27;s lower-side pinnae moved level with the upper side&#x27;s: gaps 0.0013–0.9987)</td><td>23</td></tr><tr><td><code>--open-crozier</code></td><td>fiddleheads (each coil a circular arc of the spiral&#x27;s length: 0.932 turns, ratio 1.128)</td><td>24</td></tr><tr><td><code>--float-cover</code></td><td>ground cover (leaves, pebbles, twig and sorrel lifted 50 mm: −0.046 m, 164 shells loose)</td><td>25</td></tr></tbody></table></div>
 <p>The crack fern is the top of the envelope, so <code>--float-moss</code> and <code>--perch-rock</code> (which lifts the boulder with its moss) cannot move the box; the soil disc sets the left and back, frond tips the right and front, so <code>--smooth-rock</code> (a different stone, re-bedded, cutting its own flat foot) leaves it too. <code>--slab-moss</code> keeps every cushion&#x27;s outline, thickness and windows&#x27; places and changes only the height profile. <code>--flat-taper</code> and <code>--opposite-pinnae</code> reshape only the crown frond held furthest inside the envelope. <code>--perch-crack-fern</code> moves the small fern level, never up. <code>--lift-crown</code> moves the rootstock alone; the stalks stay inside it.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python fern_mossy_rock.py --
+<pre tabindex="0"><code>blender --background --python fern_mossy_rock.py --
 blender --background --python fern_mossy_rock.py -- --skip-decimate
 blender --background --python fern_mossy_rock.py -- --stray-vert
 blender --background --python fern_mossy_rock.py -- --lift-z
@@ -152,7 +152,7 @@ blender --background --python fern_mossy_rock.py -- --output fern.png</code></pr
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../farm-tractor/" aria-label="Previous showcase piece: farm-tractor"><span aria-hidden="true">&larr;</span> farm-tractor</a><span class="pager-pos hud">66 of 76 showcase pieces</span><a rel="next" href="../sea-stack-arch/" aria-label="Next showcase piece: sea-stack-arch">sea-stack-arch <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../farm-tractor/" aria-label="Previous showcase piece: farm-tractor"><span aria-hidden="true">&larr;</span><span class="pager-label">farm-tractor</span></a><span class="pager-pos hud">66 of 76 showcase pieces</span><a rel="next" href="../sea-stack-arch/" aria-label="Next showcase piece: sea-stack-arch"><span class="pager-label">sea-stack-arch</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -304,10 +304,18 @@ blender --background --python fern_mossy_rock.py -- --output fern.png</code></pr
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

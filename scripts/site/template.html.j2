@@ -444,7 +444,7 @@
   <section class="panel" id="skills">
     <div class="panel-head">
       <span class="hud">Skills</span>
-      <input class="panel-filter" type="search" data-filter="#skills .skill-row" placeholder="filter skills"
+      <input class="panel-filter" type="search" name="filter-skills" id="filter-skills" data-filter="#skills .skill-row" placeholder="filter skills"
         aria-label="Filter skills" autocomplete="off" spellcheck="false" hidden />
       <span class="hud count" data-count-label="{{ skill_count }} loaded">{{ skill_count }} loaded</span>
     </div>
@@ -476,7 +476,7 @@
   <section class="panel" id="rules">
     <div class="panel-head">
       <span class="hud">Rules</span>
-      <input class="panel-filter" type="search" data-filter="#rules tbody tr" placeholder="filter rules"
+      <input class="panel-filter" type="search" name="filter-rules" id="filter-rules" data-filter="#rules tbody tr" placeholder="filter rules"
         aria-label="Filter rules" autocomplete="off" spellcheck="false" hidden />
       <span class="hud count" data-count-label="{{ rule_count }} active">{{ rule_count }} active</span>
     </div>

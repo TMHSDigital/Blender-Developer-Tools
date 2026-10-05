@@ -301,6 +301,10 @@ __CHROME__
     .view-mode .density-btn.active { background: var(--border); color: var(--text); }
     /* Segmented groups clip overflow, so the ring has to sit inside. */
     .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
+    /* On a selected (orange) button an orange ring vanishes into the fill
+       (#397): draw a dark inset ring instead, ~7.8:1 against --select. */
+    .density-btn.active:focus-visible, .cat-btn.active:focus-visible,
+    .chip.active:focus-visible { outline: 2px solid var(--on-select); outline-offset: -4px; }
     .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
       border-radius: var(--radius); padding: 0.4rem 0.6rem; min-height: 36px; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -498,9 +502,11 @@ __CHROME__
       margin: 0 0 1.25rem; font-size: 0.85rem; }
     .pager-foot { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--border); }
     .pager a { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.8rem;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      display: flex; align-items: baseline; gap: 0.35em; min-width: 0; white-space: nowrap; }
+    /* Only the name truncates; the arrow is its own box so it never clips (#399). */
+    .pager-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     .pager a:hover { color: var(--select); text-decoration: none; }
-    .pager [rel="next"] { text-align: right; }
+    .pager [rel="next"] { justify-content: flex-end; }
     .pager-pos { text-align: center; }
     @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
     .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);
@@ -596,6 +602,10 @@ INDEX_JS = """
       var chipsEl = document.getElementById('chips');
       var chips = chipsEl ? Array.prototype.slice.call(chipsEl.querySelectorAll('.chip')) : [];
       var q = document.getElementById('q');
+      // Touch devices have no "/" key shortcut to advertise (#399).
+      if (q && window.matchMedia && window.matchMedia('(hover: none)').matches) {
+        q.placeholder = 'Search the gallery';
+      }
       var qClear = document.getElementById('qClear');
       var count = document.getElementById('count');
       var noResults = document.getElementById('noResults');
@@ -1085,10 +1095,18 @@ DETAIL_JS = """
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();
@@ -1236,7 +1254,7 @@ def md_to_html(text: str, resolve, skip_first_h1: bool = True) -> str:
                 code.append(lines[i])
                 i += 1
             i += 1  # closing fence
-            out.append(f"<pre><code>{html.escape(chr(10).join(code))}</code></pre>")
+            out.append(f'<pre tabindex="0"><code>{html.escape(chr(10).join(code))}</code></pre>')
             continue
 
         m = re.match(r"^(#{1,3})\s+(.*)$", stripped)
@@ -1424,8 +1442,9 @@ def pager_html(prev: dict | None, nxt: dict | None, pos: int, total: int, noun: 
         if e is None:
             return "<span></span>"
         n = html.escape(e["name"])
-        label = (f'<span aria-hidden="true">&larr;</span> {n}' if rel == "prev"
-                 else f'{n} <span aria-hidden="true">&rarr;</span>')
+        name = f'<span class="pager-label">{n}</span>'
+        label = (f'<span aria-hidden="true">&larr;</span>{name}' if rel == "prev"
+                 else f'{name}<span aria-hidden="true">&rarr;</span>')
         return (f'<a rel="{rel}" href="../{html.escape(e["name"], quote=True)}/" '
                 f'aria-label="{"Previous" if rel == "prev" else "Next"} {noun}: {n}">{label}</a>')
     cls = "pager pager-foot" if foot else "pager"
@@ -1484,7 +1503,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     if script is not None:
         cmd = f"blender --background --python {ex['dir']}/{script.name} --"
         parts.append('    <div class="runline">')
-        parts.append(f'      <pre id="runCmd">{html.escape(cmd)}</pre>')
+        parts.append(f'      <pre id="runCmd" tabindex="0">{html.escape(cmd)}</pre>')
         parts.append('      <button class="copy-btn" id="copyRun" type="button">Copy</button>')
         parts.append("    </div>")
 
@@ -1628,7 +1647,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
         '    <div class="controls-inner">\n'
         '      <div class="controls-row controls-main">\n'
         '        <div class="searchwrap">\n'
-        '          <input id="q" type="search" placeholder="Search the gallery (press /)"\n'
+        '          <input id="q" name="q" type="search" placeholder="Search the gallery (press /)"\n'
         '            autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />\n'
         '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
         '        </div>\n'
@@ -1673,7 +1692,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
                            CATEGORIES.get(ex.get("category") or "", "")]).lower()
         cards.append(
             CARD
-            .replace("__LOADING__", "eager" if i < EAGER_CARDS else "lazy")
+            .replace("__LOADING__", ("eager\" fetchpriority=\"high" if i == 0 else "eager")
+                     if i < EAGER_CARDS else "lazy")
             .replace("__TAGS__", html.escape(" ".join(ex.get("tags", [])), quote=True))
             .replace("__SEARCH__", html.escape(search, quote=True))
             .replace("__HREF__", html.escape(f'{ex["name"]}/', quote=True))

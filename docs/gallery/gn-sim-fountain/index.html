@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A Simulation Zone only advances one step per consecutive frame_set. A direct jump to frame N runs a single step, and only a bake gives random access to the stepped state.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-zone-iterate/" aria-label="Previous example: gn-zone-iterate"><span aria-hidden="true">&larr;</span> gn-zone-iterate</a><span class="pager-pos hud">50 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../bake-normal-high-to-low/" aria-label="Next example: bake-normal-high-to-low">bake-normal-high-to-low <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../gn-zone-iterate/" aria-label="Previous example: gn-zone-iterate"><span aria-hidden="true">&larr;</span><span class="pager-label">gn-zone-iterate</span></a><span class="pager-pos hud">50 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../bake-normal-high-to-low/" aria-label="Next example: bake-normal-high-to-low"><span class="pager-label">bake-normal-high-to-low</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A two-tier sandstone fountain in a dark studio whose twenty jets are strings of glowing cyan droplet beads, each string threaded on a thin line tracing its ballistic arc into the pool.">
       <img src="../assets/gn-sim-fountain-hero.webp" alt="A two-tier sandstone fountain in a dark studio whose twenty jets are strings of glowing cyan droplet beads, each string threaded on a thin line tracing its ballistic arc into the pool." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,14 +56,14 @@
     <div class="callout"><span class="tag">witnesses</span> 24 stepped frames match p0 + v0 t - g t^2/2 within 6.6e-7 m. An unbaked jump 1-&gt;25 runs one step and sits 1.68-2.42 m off the arc; calculate_to_frame returns PASS_THROUGH headless; after a bake, random-access frames match within 5.6e-7 m.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=geometry-nodes">geometry-nodes</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/gn-sim-fountain/gn_sim_fountain.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/gn-sim-fountain/gn_sim_fountain.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
 <p>A two-tier stone fountain whose twenty jets are integrated by a Simulation Zone, witnessing the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> frame contract: <strong>a Simulation Zone only advances when the scene steps one frame at a time.</strong> The evaluated state at frame N is not a function of N. AI code that calls <code>scene.frame_set(N)</code> and reads positions gets a silently wrong answer.</p>
 <p>Each droplet is a point with a <code>vel</code> attribute. Per step the zone applies the constant-gravity update that is exact for any <code>dt</code>:</p>
-<pre><code>p += v*dt - 0.5*g*dt^2 * z
+<pre tabindex="0"><code>p += v*dt - 0.5*g*dt^2 * z
 v -= g*dt * z</code></pre>
 <p>so at frame <code>f</code> every point must lie on the closed-form ballistic arc <code>p0 + v0*t - 0.5*g*t^2*z</code> and carry <code>v0 - g*t*z</code>, with <code>t = (f - frame_start) / fps</code>. The check recomputes both from the launch data (8 crown jets thrown up and out, 12 rim jets arcing inward; <code>g = 9.81</code>, 24 fps, 24 steps = 1.0 s).</p>
 <h2 id="measured-behavior">Measured behavior<a class="anchor" href="#measured-behavior" aria-label="Link to this section">#</a></h2>
@@ -75,7 +75,7 @@ v -= g*dt * z</code></pre>
 <ul><li>exit 3 — the zone is unpaired or drops points: <code>pair_with_output</code> not called evaluates to 0 points (<code>--unpair</code>)</li><li>exit 4 — the integrator is not the exact constant-gravity update: naive <code>p += v*dt</code> drifts by <code>g*dt*t/2</code>, 0.2044 m at t = 1 s (<code>--euler</code>)</li><li>exit 5 — a direct frame jump did <strong>not</strong> reproduce the one-step trap — e.g. because a bake was already present (<code>--prebake-trap</code>). This is what keeps the trap claim above honest on every version CI runs</li><li>exit 6 — random-access reads after a cache fill miss the arc, or the fill operator did not return <code>FINISHED</code>: <code>calculate_to_frame</code> headless (<code>--calc-to-frame</code>)</li></ul>
 <p><strong>The render is the proof.</strong> Every droplet bead in the still is a recorded simulated position from the stepped run (check 4). The thin line each string of beads is threaded on is the closed-form arc, drawn from the launch data, not from the simulation. A drifting integrator would pull the late beads off their line — by 0.20 m at the pool for <code>--euler</code>, as check 4 measures (that flag exits before rendering, so this is computed, not a rendered still).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python gn_sim_fountain.py --
+<pre tabindex="0"><code>blender --background --python gn_sim_fountain.py --
 blender --background --python gn_sim_fountain.py -- --output fountain.png</code></pre>
 <p>The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
 <h2 id="falsifiers">Falsifiers<a class="anchor" href="#falsifiers" aria-label="Link to this section">#</a></h2>
@@ -125,7 +125,7 @@ blender --background --python gn_sim_fountain.py -- --output fountain.png</code>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gn-zone-iterate/" aria-label="Previous example: gn-zone-iterate"><span aria-hidden="true">&larr;</span> gn-zone-iterate</a><span class="pager-pos hud">50 of 56 examples</span><a rel="next" href="../bake-normal-high-to-low/" aria-label="Next example: bake-normal-high-to-low">bake-normal-high-to-low <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../gn-zone-iterate/" aria-label="Previous example: gn-zone-iterate"><span aria-hidden="true">&larr;</span><span class="pager-label">gn-zone-iterate</span></a><span class="pager-pos hud">50 of 56 examples</span><a rel="next" href="../bake-normal-high-to-low/" aria-label="Next example: bake-normal-high-to-low"><span class="pager-label">bake-normal-high-to-low</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -277,10 +277,18 @@ blender --background --python gn_sim_fountain.py -- --output fountain.png</code>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

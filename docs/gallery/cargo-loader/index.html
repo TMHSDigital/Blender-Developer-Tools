@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural sci-fi industrial cargo loader, a bipedal powered-lift exoframe standing in a crouch and holding a corrugated cargo crate off the ground on two forged L-tines — broad flat feet with rubber soles, grip cleats and toe bumpers; hydraulic legs of lofted box-section shins and thighs pinned at the ankle, knee and hip; arms hung from shoulder yokes, each joint a clevis of two lug bushings straddling an eye bushing with a chrome pin through all three; eight rams (hip and knee, shoulder and elbow), each a collared steel cylinder with a chromed rod, a pinned clevis bracket at each end and a hose from its port; fork carriages with hazard-striped faces; an open roll-cage cockpit with a bucket seat, four-point harness, joystick consoles, amber beacon and work lights; a power pack with a slatted grille, cooling fins, hazard bands, exhaust stacks and cable looms — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../stand-mixer/" aria-label="Previous showcase piece: stand-mixer"><span aria-hidden="true">&larr;</span> stand-mixer</a><span class="pager-pos hud">52 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../archery-target/" aria-label="Next showcase piece: archery-target">archery-target <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../stand-mixer/" aria-label="Previous showcase piece: stand-mixer"><span aria-hidden="true">&larr;</span><span class="pager-label">stand-mixer</span></a><span class="pager-pos hud">52 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../archery-target/" aria-label="Next showcase piece: archery-target"><span class="pager-label">archery-target</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A yellow bipedal cargo loader in a crouch, hydraulic rams on its legs and arms, an open roll-cage cockpit with an amber beacon, holding a blue-grey crate on its forks.">
       <img src="../assets/cargo-loader-hero.webp" alt="A yellow bipedal cargo loader in a crouch, hydraulic rams on its legs and arms, an open roll-cage cockpit with an amber beacon, holding a blue-grey crate on its forks." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/cargo-loader/cargo_loader.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/cargo-loader/cargo_loader.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>both soles on the ground (left sole 5 mm up into its foot: <code>zmin</code> 0.00500, the right 0)</td><td>16</td></tr><tr><td><code>--offset-pin</code></td><td>clevis pins coaxial with their bushings (left knee pin 2.5 mm forward: 0.002500 m off)</td><td>17</td></tr><tr><td><code>--lift-crate</code></td><td>crate resting on both tines (crate 6 mm up: bites −0.0040 m on both)</td><td>18</td></tr><tr><td><code>--tilt-sole</code></td><td>soles level (left sole turned 0.6° about its toe edge: spread 0.012545 m, tilt 0.600°)</td><td>19</td></tr><tr><td><code>--skew-rod</code></td><td>rams coaxial (left hip ram&#x27;s rod turned 1° about its eye: tilt 1.0000°, 0.002184 m off)</td><td>20</td></tr><tr><td><code>--bottom-ram</code></td><td>ram stroke (left knee ram&#x27;s barrel run up to 40 mm short of the rod eye: exposed 0.0440 m)</td><td>21</td></tr><tr><td><code>--overload</code></td><td>stance (the crate 14 times as dense: 6401.9 kg of cargo, margin −0.3853 m)</td><td>22</td></tr><tr><td><code>--loose-light</code></td><td>one connected assembly (left work light 60 mm out along its aim, off its bracket: 2 components)</td><td>23</td></tr></tbody></table></div>
 <p><code>--float-foot</code> lifts only the left sole, into its foot, so the foot stays on its sole and the right sole grounds the box. <code>--tilt-sole</code> turns the sole about its own front bottom edge, so the toe stays on the ground and only the heel lifts; its contact shrinks to that edge, which drops the stance margin to 0.2097, but the level budget is checked first. <code>--offset-pin</code> moves one pin across its three bushings, inside them, and leaves them where they are. <code>--lift-crate</code> moves the whole crate, so every station along both tines sees the same gap; the crate also loses contact with the assembly, which is why the contact budget is checked before connectivity. <code>--skew-rod</code> turns the rod about its own eye, so the eye end stays pinned and only the barrel end wanders. <code>--bottom-ram</code> lengthens one barrel, not the ram: both pins, the rod and the envelope stay put. <code>--overload</code> changes a density, not the mesh, which is the point: the machine that stands with 457 kg in its forks tips with 6.4 t. <code>--loose-light</code> moves the lamp head 60 mm, well clear of the bracket&#x27;s end, and the head is held by that one bracket only.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python cargo_loader.py --
+<pre tabindex="0"><code>blender --background --python cargo_loader.py --
 blender --background --python cargo_loader.py -- --skip-decimate
 blender --background --python cargo_loader.py -- --stray-vert
 blender --background --python cargo_loader.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python cargo_loader.py -- --output loader.png</code></pre
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../stand-mixer/" aria-label="Previous showcase piece: stand-mixer"><span aria-hidden="true">&larr;</span> stand-mixer</a><span class="pager-pos hud">52 of 76 showcase pieces</span><a rel="next" href="../archery-target/" aria-label="Next showcase piece: archery-target">archery-target <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../stand-mixer/" aria-label="Previous showcase piece: stand-mixer"><span aria-hidden="true">&larr;</span><span class="pager-label">stand-mixer</span></a><span class="pager-pos hud">52 of 76 showcase pieces</span><a rel="next" href="../archery-target/" aria-label="Next showcase piece: archery-target"><span class="pager-label">archery-target</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python cargo_loader.py -- --output loader.png</code></pre
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

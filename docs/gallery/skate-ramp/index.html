@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural backyard quarter-pipe, 1.2 m high on a 1.8 m transition and 2.44 m wide, with a skateboard on its deck — five plywood transition templates (curved bands with a solid toe and an arm under the deck) on 2x4 sills with studs and a back post sistered to their faces, nine 2x4 stringers under a two-layer 12 mm plywood skin whose joints are offset between layers and land on stringers, 143 screws in rows over the stringers, a 60 mm steel coping pipe standing proud of the transition on five welded, bolted tabs, a steel kicker plate ground to a lip at the toe on a timber toe block, a worn stencilled roundel and wheel marks on the riding face; the skateboard a seven-ply maple deck with concave and kicktails under grip tape, two trucks (baseplate, raked kingpin, bushings, hanger, pivot arm, axle) and four urethane wheels on bearings — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../road-bicycle/" aria-label="Previous showcase piece: road-bicycle"><span aria-hidden="true">&larr;</span> road-bicycle</a><span class="pager-pos hud">57 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../palm-tree/" aria-label="Next showcase piece: palm-tree">palm-tree <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../road-bicycle/" aria-label="Previous showcase piece: road-bicycle"><span aria-hidden="true">&larr;</span><span class="pager-label">road-bicycle</span></a><span class="pager-pos hud">57 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../palm-tree/" aria-label="Next showcase piece: palm-tree"><span class="pager-label">palm-tree</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck.">
       <img src="../assets/skate-ramp-hero.webp" alt="A plywood quarter-pipe with a steel coping and kicker plate, screw rows, sheet seams and a red stencilled roundel, its open side showing studs and sills, a skateboard on the deck." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=sports">Sports</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/skate-ramp/skate_ramp.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/skate-ramp/skate_ramp.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -84,7 +84,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-sill</code></td><td>every sill on the floor (the middle sill 3 mm up: its <code>zmin</code> 0.003, the rest 0)</td><td>16</td></tr><tr><td><code>--short-rib</code></td><td>every template seated under the skin (the middle template&#x27;s curved edge 4 mm short: bite −3.10 mm)</td><td>17</td></tr><tr><td><code>--small-wheel</code></td><td>every wheel on the deck (one wheel 2 mm smaller: bite −1.50 mm)</td><td>18</td></tr><tr><td><code>--sag-skin</code></td><td>transition on its circle (the middle top sheet 4 mm down mid-span: radius 1.77073, deviation 1.55 mm, lowest point 5.65 mm)</td><td>19</td></tr><tr><td><code>--sink-coping</code></td><td>coping reveal (the pipe 6 mm deeper into the ramp: reveal −1.00 mm)</td><td>20</td></tr><tr><td><code>--proud-plate</code></td><td>kicker plate flush (its top 3 mm proud at the joint, ramped to 0 at the toe: step 2.99 mm, toe still 0.80 mm)</td><td>21</td></tr><tr><td><code>--stack-seams</code></td><td>seams staggered (the inner joint moved 10 mm from a top joint: stagger 0.010 m, still over its stringer)</td><td>22</td></tr><tr><td><code>--miss-screws</code></td><td>screws over stringers (the row at 1.44 m moved 60 mm along the arc: 20.6 mm past a stringer&#x27;s edge)</td><td>23</td></tr><tr><td><code>--skew-wheel</code></td><td>wheels coaxial (one wheel 2 mm along the deck: 2.00 mm off its axle)</td><td>24</td></tr><tr><td><code>--lift-grip</code></td><td>one connected assembly (grip tape and its eight bolt heads lifted 1 mm: 2 components)</td><td>25</td></tr></tbody></table></div>
 <p><code>--stray-vert</code> also leaves the stray vertex as a second component and <code>--lift-z</code> also moves the fitted arc and the plate&#x27;s toe off the ground; both fail their target first. <code>--float-sill</code> lifts only the sill: its template, still standing where it was, sits 5 mm into it, inside the seat band. <code>--sag-skin</code> sags the sheet as sin², level with its neighbours at both joints; the screws follow the sheet they hold down, so they stay seated. <code>--stack-seams</code> moves the inner joint rather than a top one: moving a top joint moved sheet corners onto the collider&#x27;s side faces and tripped its ceiling (exit 11) first. <code>--small-wheel</code> shrinks one wheel&#x27;s tread and keeps its bore, so it stays on its bearings and coaxial; <code>--skew-wheel</code> slides one along the deck and keeps its lowest point, so it stays on the deck.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python skate_ramp.py --
+<pre tabindex="0"><code>blender --background --python skate_ramp.py --
 blender --background --python skate_ramp.py -- --skip-decimate
 blender --background --python skate_ramp.py -- --stray-vert
 blender --background --python skate_ramp.py -- --lift-z
@@ -144,7 +144,7 @@ blender --background --python skate_ramp.py -- --output ramp.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../road-bicycle/" aria-label="Previous showcase piece: road-bicycle"><span aria-hidden="true">&larr;</span> road-bicycle</a><span class="pager-pos hud">57 of 76 showcase pieces</span><a rel="next" href="../palm-tree/" aria-label="Next showcase piece: palm-tree">palm-tree <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../road-bicycle/" aria-label="Previous showcase piece: road-bicycle"><span aria-hidden="true">&larr;</span><span class="pager-label">road-bicycle</span></a><span class="pager-pos hud">57 of 76 showcase pieces</span><a rel="next" href="../palm-tree/" aria-label="Next showcase piece: palm-tree"><span class="pager-label">palm-tree</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -296,10 +296,18 @@ blender --background --python skate_ramp.py -- --output ramp.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural 1970s lugged-steel road bicycle standing on its side kickstand — a 56 cm diamond frame of round tubes joined in chromed, spear-pointed lugs at the head tube, seat cluster and bottom bracket, tapered stays in chromed tips, a fork with a chromed sloping crown and socks; two 700c wheels, each a box-section rim with 36 spokes laced three-cross from both flanges of a small-flange hub to nipples through the rim, quick-release skewers and tan-wall tyres with a black file-tread crown; a 52/42 crankset with quill pedals, toe clips and straps, a six-speed freewheel, a roller chain of 112 individual links solved round the ring, the cog and both jockey wheels, front and rear derailleurs, down-tube shifters, side-pull calipers with pads a millimetre off the rims, levers under gum hoods on cotton-taped drop bars, a quill stem, a leather saddle on rails and a bottle in a bolted wire cage — leaned 5° onto its stand, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../espresso-machine/" aria-label="Previous showcase piece: espresso-machine"><span aria-hidden="true">&larr;</span> espresso-machine</a><span class="pager-pos hud">56 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../skate-ramp/" aria-label="Next showcase piece: skate-ramp">skate-ramp <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../espresso-machine/" aria-label="Previous showcase piece: espresso-machine"><span aria-hidden="true">&larr;</span><span class="pager-label">espresso-machine</span></a><span class="pager-pos hud">56 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../skate-ramp/" aria-label="Next showcase piece: skate-ramp"><span class="pager-label">skate-ramp</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A deep red lugged-steel road bicycle leaning on its kickstand: chromed lugs and fork socks, tan-wall 700c wheels, a honey leather saddle, cream-taped drop bars and a chain over a double crankset.">
       <img src="../assets/road-bicycle-hero.webp" alt="A deep red lugged-steel road bicycle leaning on its kickstand: chromed lugs and fork socks, tan-wall 700c wheels, a honey leather saddle, cream-taped drop bars and a chain over a double crankset." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/road-bicycle/road_bicycle.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/road-bicycle/road_bicycle.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-tyre</code></td><td>both tyres and the stand foot on the ground (rear tyre 3 mm up: its <code>zmin</code> 0.00300, the rest 0)</td><td>16</td></tr><tr><td><code>--slip-wheel</code></td><td>hubs coaxial with their dropouts (front wheel 2 mm forward in its dropouts: 0.00200 m)</td><td>17</td></tr><tr><td><code>--short-spoke</code></td><td>spoke seats (one front spoke 9 mm short at the rim: its end 1.5 mm outside its nipple, −0.00150 m)</td><td>18</td></tr><tr><td><code>--dish-wheel</code></td><td>wheels in the frame&#x27;s plane (rear rim, tyre and nipples 3 mm to the drive side, spokes re-aimed from their flanges: 0.00299 m)</td><td>19</td></tr><tr><td><code>--steep-head</code></td><td>steering trail (head tube turned 6° steeper about its middle: trail −0.02926 m)</td><td>20</td></tr><tr><td><code>--bunch-spokes</code></td><td>lacing (one front spoke and nipple turned 4° about the axle: pitch off by 4.000°)</td><td>21</td></tr><tr><td><code>--lift-chain</code></td><td>chain seated (the chain wrapped 5 mm high on ring and cog: seated up to 8.11 mm above the root)</td><td>22</td></tr><tr><td><code>--shift-rollers</code></td><td>chain line (every roller pushed 1.5 mm inboard along its pin: 0.00150 m)</td><td>23</td></tr><tr><td><code>--tuck-stand</code></td><td>stance (the stand&#x27;s foot drawn in to 40 mm off the tyres&#x27; line: margin −0.0062 m)</td><td>24</td></tr><tr><td><code>--pop-bottle</code></td><td>one connected assembly (the bottle lifted 80 mm straight off the tube, clear of its cage: 2 components, bottle and cap)</td><td>25</td></tr></tbody></table></div>
 <p><code>--float-tyre</code> lifts only the rear tyre, so the rim, spokes and chain stay seated and only the support budget sees it. <code>--slip-wheel</code> moves the whole front wheel (tyre, rim, spokes, nipples, hub, skewer) along its dropouts, so every spoke still seats and the trail stays in band (53.4 mm); only the hub-to-eye distance sees it. Its first draft moved it 3 mm, which set a hub face on a dropout eye&#x27;s plane and exited 15. <code>--short-spoke</code> pulls one spoke&#x27;s rim end back along the spoke, which barely turns it about the axle, so the lacing still passes. <code>--dish-wheel</code> moves the rim horizontally in world space rather than along the leaned axle, which would have lifted the rear tyre off the ground and exited 16. <code>--steep-head</code> turns only the head tube, in the frame&#x27;s plane, so the frame-plane budget before it is unchanged. <code>--shift-rollers</code> replaced a first draft that bent the chain&#x27;s rear half inboard: a gradient of 2 mm over the chain stay moved each plate 0.12 mm per two links, exactly one stagger level, and 4528 plate faces landed on each other&#x27;s planes (exit 15). Moving the rollers along their own pins leaves every plate face where it was. The chain audit counts a roller as engaged only when its body straddles the sprocket&#x27;s plane; with contact alone the shifted rollers&#x27; pin tips touched the 19 and the audit chose it as the driven cog (exit 22). <code>--pop-bottle</code> lifts a part held by one joint only, and it caught a real defect: its first draft moved the bottle 30 mm sideways and split off seven shells, not two — the wire cage had been hanging on the bottle, its spines never reaching the bosses. The cage now has a crossbar and bolt at each boss, and the bottle, lifted 80 mm clear of the hoops, comes away alone with its cap. <code>--float-tyre</code>&#x27;s first draft lifted the tyre 4 mm and set a face on a brake pad&#x27;s plane (exit 15); it lifts 3 mm.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python road_bicycle.py --
+<pre tabindex="0"><code>blender --background --python road_bicycle.py --
 blender --background --python road_bicycle.py -- --skip-decimate
 blender --background --python road_bicycle.py -- --stray-vert
 blender --background --python road_bicycle.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python road_bicycle.py -- --output bicycle.png</code></pr
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../espresso-machine/" aria-label="Previous showcase piece: espresso-machine"><span aria-hidden="true">&larr;</span> espresso-machine</a><span class="pager-pos hud">56 of 76 showcase pieces</span><a rel="next" href="../skate-ramp/" aria-label="Next showcase piece: skate-ramp">skate-ramp <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../espresso-machine/" aria-label="Previous showcase piece: espresso-machine"><span aria-hidden="true">&larr;</span><span class="pager-label">espresso-machine</span></a><span class="pager-pos hud">56 of 76 showcase pieces</span><a rel="next" href="../skate-ramp/" aria-label="Next showcase piece: skate-ramp"><span class="pager-label">skate-ramp</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python road_bicycle.py -- --output bicycle.png</code></pr
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

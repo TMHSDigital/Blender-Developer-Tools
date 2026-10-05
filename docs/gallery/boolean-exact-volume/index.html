@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>The Boolean modifier on the EXACT solver: union, difference and intersection of a cube and a slab whose top face is coplanar with the cube&#x27;s, read back through the depsgraph and measured by the divergence theorem.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span> solidify-even-thickness</a><span class="pager-pos hud">56 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span><span class="pager-label">solidify-even-thickness</span></a><span class="pager-pos hud">56 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><span></span></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass.">
       <img src="../assets/boolean-exact-volume-hero.webp" alt="Three results on a walnut plinth behind brass UNION, DIFFERENCE and INTERSECT plaques: a teal union, a bronze cube notched under amber ghost glass, and an orange cube inside frosted glass." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> EXACT booleans are closed-form even on coplanar faces: through translated, 18°-turned operands the union, difference and intersection measure 9, 7 and 1 m³ (8.999999 / 6.999999 / 1.000000, float32) and are closed 2-manifolds with no loose geometry; the floating-point solver (&#x27;FAST&#x27; on 4.5, &#x27;FLOAT&#x27; on 5.x) gives a 7.708 m³ union and --float-solver exits 3.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <p>The still shows the three operations side by side on a walnut plinth, each named by a brass plaque in front of it. On the left, the union in teal glaze, with the slab&#x27;s free end grown out of the cube. In the middle, the difference in machined bronze, with the notch cut down through the top face and the removed slab drawn as frosted amber glass. On the right, the intersection: the 1 m³ overlap cube in orange glaze, inside frosted ghosts of both operands. Thin rods trace the operands&#x27; edges (steel for the cube, amber for the coplanar slab).</p>
 <p>Everything shown is render-only and is built after the check has run. The results on display are frozen copies of the checked meshes with a 12 mm chamfer; the measured modifier objects and the cutter objects never render. The ghosts are grown 2 mm and 4 mm so none of their faces is coplanar with a result or with each other.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python boolean_exact_volume.py --
 
 # Falsifier: the floating-point solver (FLOAT / FAST) on the coplanar case. Must exit 3.
@@ -121,7 +121,7 @@ blender --background --python boolean_exact_volume.py -- --output boolean.png --
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span> solidify-even-thickness</a><span class="pager-pos hud">56 of 56 examples</span><span></span></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../solidify-even-thickness/" aria-label="Previous example: solidify-even-thickness"><span aria-hidden="true">&larr;</span><span class="pager-label">solidify-even-thickness</span></a><span class="pager-pos hud">56 of 56 examples</span><span></span></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -273,10 +273,18 @@ blender --background --python boolean_exact_volume.py -- --output boolean.png --
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

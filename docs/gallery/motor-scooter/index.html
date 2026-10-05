@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural 1960s Italian step-through motor scooter — a pressed-steel tail lofted from superellipse sections with two bulbous side cowls (pressed louvres on the engine side, chrome belt trims), a floorboard with rubber runner strips and chrome edge trims pressed up into the tail and into a leg shield convex in plan, arched up into the headset and rimmed in a rolled chrome trim, with a horn cast and grille, a single-sided front end (a column raked 26 degrees, crown, fork leg, trailing link and coil spring) under a crested mudguard, a headset carrying the headlamp, speedometer, ribbed grips, levers and two mirrors, a two-tone dual saddle with piping and a grab strap, 10-inch split rims with five nuts and finned drums in block-tread tyres, an alloy engine case with a finned cylinder, header, silencer and kick-start, a luggage rack, tail lamp and plate, and a centre stand with rubber feet — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../floor-fan/" aria-label="Previous showcase piece: floor-fan"><span aria-hidden="true">&larr;</span> floor-fan</a><span class="pager-pos hud">48 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../bowling-pins/" aria-label="Next showcase piece: bowling-pins">bowling-pins <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../floor-fan/" aria-label="Previous showcase piece: floor-fan"><span aria-hidden="true">&larr;</span><span class="pager-label">floor-fan</span></a><span class="pager-pos hud">48 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../bowling-pins/" aria-label="Next showcase piece: bowling-pins"><span class="pager-label">bowling-pins</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A pastel sea-green 1960s scooter on its centre stand: cream and oxblood saddle, louvred side cowl, curved chrome-rimmed leg shield, split-rim front wheel, black silencer.">
       <img src="../assets/motor-scooter-hero.webp" alt="A pastel sea-green 1960s scooter on its centre stand: cream and oxblood saddle, louvred side cowl, curved chrome-rimmed leg shield, split-rim front wheel, black silencer." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/motor-scooter/motor_scooter.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/motor-scooter/motor_scooter.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-tyre</code></td><td>both tyres and both stand feet on the ground (rear wheel 4 mm up: its <code>zmin</code> 0.00400, the rest 0)</td><td>16</td></tr><tr><td><code>--toe-wheel</code></td><td>wheel alignment (front wheel steered 2.5° about its own vertical: toe 2.5000°)</td><td>17</td></tr><tr><td><code>--steep-head</code></td><td>steering trail (column turned 6° steeper about its crown: rake 20.000°, trail 0.01683 m)</td><td>18</td></tr><tr><td><code>--odd-body</code></td><td>body mirror symmetry (a 3.5 mm sideways bow in the tail, zero at both ends: deviation 0.00695 m)</td><td>19</td></tr><tr><td><code>--short-wheelbase</code></td><td>wheelbase band (rear wheel 15 mm forward: 1.18500 m)</td><td>20</td></tr><tr><td><code>--narrow-stand</code></td><td>stance (stand feet drawn in to ±0.060 m: margin 0.0424 m)</td><td>21</td></tr><tr><td><code>--pop-speedo</code></td><td>one connected assembly (speedometer 30 mm out of the headset: 2 components)</td><td>22</td></tr><tr><td><code>--lift-shield</code></td><td>shield seam (the shield&#x27;s foot stood 4 mm above the floor&#x27;s top: −0.00400 m)</td><td>23</td></tr></tbody></table></div>
 <p><code>--float-tyre</code> lifts the rear wheel while the front tyre and the stand ground the box. <code>--toe-wheel</code> turns the front wheel about the vertical through its axle, so its contact ring stays where it was and the trail does not move; the rim, drum and nuts turn with the tyre and stay in the link. <code>--steep-head</code> turns only the column, about its crown, so the headset and horn cast stay put. <code>--odd-body</code> bows the tail by <code>sin²(π s)</code> along its length, so both ends stay seated in the floorboard and under the tail lamp; its first draft, a plain <code>sin</code> bow with the luggage rack&#x27;s rails riding past the tail&#x27;s shoulder, laid one rail face in the plane of a bowed tail face and exited 15. The rails now follow the crown inside the shoulder, and the falsifier reaches 19. <code>--narrow-stand</code> keeps both feet on the ground; the first draft drew them in to ±0.035 m, where the two soles&#x27; faces came within the coplanar range of each other and exited 15, so it stops at ±0.060 m. <code>--short-wheelbase</code> moves the rear wheel inside the envelope; the plate and the mudguard still set the length. <code>--pop-speedo</code> lifts a part held by one joint only: the speedometer is seated in the headset and nothing else. Its first draft moved it 15 mm, which left its base still inside the headset&#x27;s crown; it moves 30 mm. <code>--lift-shield</code> raises only the shield&#x27;s foot, its top held, so the fillets follow it and the assembly stays one piece; only the seam budget sees the gap.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python motor_scooter.py --
+<pre tabindex="0"><code>blender --background --python motor_scooter.py --
 blender --background --python motor_scooter.py -- --skip-decimate
 blender --background --python motor_scooter.py -- --stray-vert
 blender --background --python motor_scooter.py -- --lift-z
@@ -146,7 +146,7 @@ blender --background --python motor_scooter.py -- --output scooter.png</code></p
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../floor-fan/" aria-label="Previous showcase piece: floor-fan"><span aria-hidden="true">&larr;</span> floor-fan</a><span class="pager-pos hud">48 of 76 showcase pieces</span><a rel="next" href="../bowling-pins/" aria-label="Next showcase piece: bowling-pins">bowling-pins <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../floor-fan/" aria-label="Previous showcase piece: floor-fan"><span aria-hidden="true">&larr;</span><span class="pager-label">floor-fan</span></a><span class="pager-pos hud">48 of 76 showcase pieces</span><a rel="next" href="../bowling-pins/" aria-label="Next showcase piece: bowling-pins"><span class="pager-label">bowling-pins</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -298,10 +298,18 @@ blender --background --python motor_scooter.py -- --output scooter.png</code></p
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

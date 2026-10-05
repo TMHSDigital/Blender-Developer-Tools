@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../chopping-block/" aria-label="Previous showcase piece: chopping-block"><span aria-hidden="true">&larr;</span> chopping-block</a><span class="pager-pos hud">21 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wall-torch/" aria-label="Next showcase piece: wall-torch">wall-torch <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../chopping-block/" aria-label="Previous showcase piece: chopping-block"><span aria-hidden="true">&larr;</span><span class="pager-label">chopping-block</span></a><span class="pager-pos hud">21 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wall-torch/" aria-label="Next showcase piece: wall-torch"><span class="pager-label">wall-torch</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings.">
       <img src="../assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/wooden-bucket/wooden_bucket.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/wooden-bucket/wooden_bucket.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -85,7 +85,7 @@
 <h2 id="surface">Surface<a class="anchor" href="#surface" aria-label="Link to this section">#</a></h2>
 <p>Every stave and board carries a seeded <code>PlankTone</code> and a <code>GrainDir</code> (its own long axis) as face attributes, and <code>wood_material</code> stretches grain along that axis. The hoops, plates and rings are dark rusted iron. The temp <code>.glb</code> is removed once its size is measured.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python wooden_bucket.py --
+<pre tabindex="0"><code>blender --background --python wooden_bucket.py --
 blender --background --python wooden_bucket.py -- --skip-decimate
 blender --background --python wooden_bucket.py -- --stray-vert
 blender --background --python wooden_bucket.py -- --lift-z
@@ -140,7 +140,7 @@ blender --background --python wooden_bucket.py -- --output bucket.png</code></pr
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../chopping-block/" aria-label="Previous showcase piece: chopping-block"><span aria-hidden="true">&larr;</span> chopping-block</a><span class="pager-pos hud">21 of 76 showcase pieces</span><a rel="next" href="../wall-torch/" aria-label="Next showcase piece: wall-torch">wall-torch <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../chopping-block/" aria-label="Previous showcase piece: chopping-block"><span aria-hidden="true">&larr;</span><span class="pager-label">chopping-block</span></a><span class="pager-pos hud">21 of 76 showcase pieces</span><a rel="next" href="../wall-torch/" aria-label="Next showcase piece: wall-torch"><span class="pager-label">wall-torch</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -292,10 +292,18 @@ blender --background --python wooden_bucket.py -- --output bucket.png</code></pr
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

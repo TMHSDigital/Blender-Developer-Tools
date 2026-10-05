@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../light-link-studio/" aria-label="Previous example: light-link-studio"><span aria-hidden="true">&larr;</span> light-link-studio</a><span class="pager-pos hud">33 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../custom-normals-shade/" aria-label="Next example: custom-normals-shade">custom-normals-shade <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../light-link-studio/" aria-label="Previous example: light-link-studio"><span aria-hidden="true">&larr;</span><span class="pager-label">light-link-studio</span></a><span class="pager-pos hud">33 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../custom-normals-shade/" aria-label="Next example: custom-normals-shade"><span class="pager-label">custom-normals-shade</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull.">
       <img src="../assets/collision-hull-proxy-hero.webp" alt="A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> A hull of the dense render mesh measures 380 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 4.4e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=bmesh">bmesh</a> <a href="../#tag=mesh">mesh</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/collision-hull-proxy/collision_hull_proxy.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/collision-hull-proxy/collision_hull_proxy.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -70,7 +70,7 @@
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same piece counts, same volumes, same excursions. <code>bmesh.ops.convex_hull</code> and <code>foreach_get</code> are stable across the pair.</p>
 <p>The render shows the prop inside its four faceted translucent hull pieces: if any piece failed to enclose its geometry, painted metal would poke through the shell in frame.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python collision_hull_proxy.py --
 
 # Falsifier: shrink hull vertices. Must exit non-zero (containment).
@@ -123,7 +123,7 @@ blender --background --python collision_hull_proxy.py -- --output hydrant.png --
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../light-link-studio/" aria-label="Previous example: light-link-studio"><span aria-hidden="true">&larr;</span> light-link-studio</a><span class="pager-pos hud">33 of 56 examples</span><a rel="next" href="../custom-normals-shade/" aria-label="Next example: custom-normals-shade">custom-normals-shade <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../light-link-studio/" aria-label="Previous example: light-link-studio"><span aria-hidden="true">&larr;</span><span class="pager-label">light-link-studio</span></a><span class="pager-pos hud">33 of 56 examples</span><a rel="next" href="../custom-normals-shade/" aria-label="Next example: custom-normals-shade"><span class="pager-label">custom-normals-shade</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -275,10 +275,18 @@ blender --background --python collision_hull_proxy.py -- --output hydrant.png --
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

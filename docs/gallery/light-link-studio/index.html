@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 233% while the hero holds at 0.3% drift.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../vse-gamma-cross/" aria-label="Previous example: vse-gamma-cross"><span aria-hidden="true">&larr;</span> vse-gamma-cross</a><span class="pager-pos hud">32 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../collision-hull-proxy/" aria-label="Next example: collision-hull-proxy">collision-hull-proxy <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../vse-gamma-cross/" aria-label="Previous example: vse-gamma-cross"><span aria-hidden="true">&larr;</span><span class="pager-label">vse-gamma-cross</span></a><span class="pager-pos hud">32 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../collision-hull-proxy/" aria-label="Next example: collision-hull-proxy"><span class="pager-label">collision-hull-proxy</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two identical porcelain chess kings on dark plinths: the left, labelled LINKED, glows under an amber key; the right, labelled UNLINKED, stays cool grey.">
       <img src="../assets/light-link-studio-hero.webp" alt="Two identical porcelain chess kings on dark plinths: the left, labelled LINKED, glows under an amber key; the right, labelled UNLINKED, stays cool grey." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere&#x27;s projected center; EEVEE honors linking too (probe-measured 3.8x on 4.5.11 EEVEE Next and 5.1.2 EEVEE), Cycles pinned for deterministic samples.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=rendering">rendering</a> <a href="../#tag=objects">objects</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/light-link-studio/light_link_studio.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/light-link-studio/light_link_studio.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -68,7 +68,7 @@
 <p><strong>Version witness:</strong> ObjectLightLinking API and the measured ratios match on Blender 4.5 LTS and 5.1 (3.7x vs 3.6x linked; rise 238% vs 233% — inside the rise noise described above).</p>
 <p>The render is the contract at a glance, on designed subjects: after the check passes on the spheres, the still hides them and stands two <strong>identical</strong> lathed porcelain chess kings (gilt collar and cross, one shared material) in the hero and decoy collections. The only difference between the kings is the linked key, recoloured amber for the still: the LINKED king glows warm over its placard and the warm floor inlay, the UNLINKED king stays cool grey. The shared fill and rim are pulled down for the still only, because glossy porcelain picks up far more of them than the matte check spheres do. The still&#x27;s render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Two-render correctness check (tiny Cycles CPU renders) — the CI check:
+<pre tabindex="0"><code># Two-render correctness check (tiny Cycles CPU renders) — the CI check:
 blender --background --python light_link_studio.py --
 
 # Falsifier: receiver_collection unset. Must exit non-zero (assignment).
@@ -120,7 +120,7 @@ blender --background --python light_link_studio.py -- --output linked.png</code>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../vse-gamma-cross/" aria-label="Previous example: vse-gamma-cross"><span aria-hidden="true">&larr;</span> vse-gamma-cross</a><span class="pager-pos hud">32 of 56 examples</span><a rel="next" href="../collision-hull-proxy/" aria-label="Next example: collision-hull-proxy">collision-hull-proxy <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../vse-gamma-cross/" aria-label="Previous example: vse-gamma-cross"><span aria-hidden="true">&larr;</span><span class="pager-label">vse-gamma-cross</span></a><span class="pager-pos hud">32 of 56 examples</span><a rel="next" href="../collision-hull-proxy/" aria-label="Next example: collision-hull-proxy"><span class="pager-label">collision-hull-proxy</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -272,10 +272,18 @@ blender --background --python light_link_studio.py -- --output linked.png</code>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

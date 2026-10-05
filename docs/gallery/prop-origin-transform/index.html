@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent throws the elbow off its mount; MPI keeps it seated.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../mesh-hygiene-audit/" aria-label="Previous example: mesh-hygiene-audit"><span aria-hidden="true">&larr;</span> mesh-hygiene-audit</a><span class="pager-pos hud">38 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../soccer-ball-goldberg/" aria-label="Next example: soccer-ball-goldberg">soccer-ball-goldberg <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../mesh-hygiene-audit/" aria-label="Previous example: mesh-hygiene-audit"><span aria-hidden="true">&larr;</span><span class="pager-label">mesh-hygiene-audit</span></a><span class="pager-pos hud">38 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../soccer-ball-goldberg/" aria-label="Next example: soccer-ball-goldberg"><span class="pager-label">soccer-ball-goldberg</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two green street utility pedestals in floor pivot rings: the left one keeps its orange conduit elbow bolted on, the right one&#x27;s elbow hangs in the air beside a glowing cyan outline of its seat.">
       <img src="../assets/prop-origin-transform-hero.webp" alt="Two green street utility pedestals in floor pivot rings: the left one keeps its orange conduit elbow bolted on, the right one&#x27;s elbow hangs in the air beside a glowing cyan outline of its seat." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Bare child.parent = parent teleports accessories off their mounts; skipping view_layer.update() before matrix_world, or leaving non-uniform scale / centered origin, breaks engine ingest placement.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=transforms">transforms</a> <a href="../#tag=parenting">parenting</a> <a href="../#tag=game-pipeline">game-pipeline</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/prop-origin-transform/prop_origin_transform.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/prop-origin-transform/prop_origin_transform.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -71,7 +71,7 @@
 <p><strong>The asset.</strong> The pedestal is one mesh with five materials: a precast concrete footing, a galvanised base plate with anchor nuts, a green cabinet on a black kick skirt, a hipped lid, a door with hinges, a T-handle and a hazard plate, louvred side vents, a conduit boss on the +X face and a sleeve in the pad. It is authored the way an import often arrives: origin at the geometric centre and coordinates divided by a non-uniform object scale. The bake lands it on exactly the designed shape. The accessory is a flanged PVC conduit elbow with bolt heads, a strap clamp and a coupling that drops into the sleeve.</p>
 <p><strong>The render.</strong> Two baked pedestals stand on a sidewalk slab. On the left the elbow is parented with MPI and stays bolted to its boss, seated in the sleeve. On the right, bare <code>child.parent = parent</code> applies the pedestal&#x27;s transform a second time. The elbow is thrown 0.65 m, past the slab edge and into the air, and a glowing cyan outline (a Wireframe modifier on a copy) marks the seat it left. The slab raises both origins 0.20 m, so the doubled translation lifts the elbow instead of sliding it along the floor. A pivot ring on the floor is centred on each pedestal&#x27;s origin, with red notches on its X axis and green notches on Y. The origin is under the base, so the ring frames it. There are no text labels: the ghost and the stranded elbow carry the proof. The check&#x27;s closed forms are unchanged.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python prop_origin_transform.py --
+<pre tabindex="0"><code>blender --background --python prop_origin_transform.py --
 blender --background --python prop_origin_transform.py -- --skip-mpi
 blender --background --python prop_origin_transform.py -- --output origin.png
 blender --background --python prop_origin_transform.py -- --output origin.png --engine cycles</code></pre>
@@ -119,7 +119,7 @@ blender --background --python prop_origin_transform.py -- --output origin.png --
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../mesh-hygiene-audit/" aria-label="Previous example: mesh-hygiene-audit"><span aria-hidden="true">&larr;</span> mesh-hygiene-audit</a><span class="pager-pos hud">38 of 56 examples</span><a rel="next" href="../soccer-ball-goldberg/" aria-label="Next example: soccer-ball-goldberg">soccer-ball-goldberg <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../mesh-hygiene-audit/" aria-label="Previous example: mesh-hygiene-audit"><span aria-hidden="true">&larr;</span><span class="pager-label">mesh-hygiene-audit</span></a><span class="pager-pos hud">38 of 56 examples</span><a rel="next" href="../soccer-ball-goldberg/" aria-label="Next example: soccer-ball-goldberg"><span class="pager-label">soccer-ball-goldberg</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -271,10 +271,18 @@ blender --background --python prop_origin_transform.py -- --output origin.png --
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

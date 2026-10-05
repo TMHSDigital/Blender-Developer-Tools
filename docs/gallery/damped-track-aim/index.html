@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: twelve spotlight heads on stands, all swung onto one glowing orb.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../compositor-glare/" aria-label="Previous example: compositor-glare"><span aria-hidden="true">&larr;</span> compositor-glare</a><span class="pager-pos hud">15 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../color-attribute-wheel/" aria-label="Next example: color-attribute-wheel">color-attribute-wheel <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../compositor-glare/" aria-label="Previous example: compositor-glare"><span aria-hidden="true">&larr;</span><span class="pager-label">compositor-glare</span></a><span class="pager-pos hud">15 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../color-attribute-wheel/" aria-label="Next example: color-attribute-wheel"><span class="pager-label">color-attribute-wheel</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal.">
       <img src="../assets/damped-track-aim-hero.webp" alt="Twelve red-and-brass spotlight heads on low and high stands in an open ring, every lens swung to face a glowing amber orb on a brass pedestal." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Every lamp head has one unmuted DAMPED_TRACK on the orb; evaluated local +Z (the lens) aligns toward the orb (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=constraints">constraints</a> <a href="../#tag=animation">animation</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/damped-track-aim/damped_track_aim.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/damped-track-aim/damped_track_aim.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -66,7 +66,7 @@
 <p><strong>What it witnesses:</strong> every lamp head carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the orb on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the orb (dot ≥ 0.998 ≈ 3.6°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
 <p>The stands, ball pivots and the orb&#x27;s pedestal are render-only staging, built after the check. The ring opens toward the camera so no head hides the orb. The render path gates framing through <code>examples/gallery_framing.py</code> (exit 10) before writing the still.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
 
 # Falsifier: mute every constraint. Must exit non-zero.
@@ -110,7 +110,7 @@ blender --background --python damped_track_aim.py -- --output aim.png --engine c
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../compositor-glare/" aria-label="Previous example: compositor-glare"><span aria-hidden="true">&larr;</span> compositor-glare</a><span class="pager-pos hud">15 of 56 examples</span><a rel="next" href="../color-attribute-wheel/" aria-label="Next example: color-attribute-wheel">color-attribute-wheel <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../compositor-glare/" aria-label="Previous example: compositor-glare"><span aria-hidden="true">&larr;</span><span class="pager-label">compositor-glare</span></a><span class="pager-pos hud">15 of 56 examples</span><a rel="next" href="../color-attribute-wheel/" aria-label="Next example: color-attribute-wheel"><span class="pager-label">color-attribute-wheel</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -262,10 +262,18 @@ blender --background --python damped_track_aim.py -- --output aim.png --engine c
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural wrought-iron park bench whose legs are each one bent bar from scroll toe to reclined back, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cart/" aria-label="Previous showcase piece: cart"><span aria-hidden="true">&larr;</span> cart</a><span class="pager-pos hud">12 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wheelbarrow/" aria-label="Next showcase piece: wheelbarrow">wheelbarrow <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cart/" aria-label="Previous showcase piece: cart"><span aria-hidden="true">&larr;</span><span class="pager-label">cart</span></a><span class="pager-pos hud">12 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../wheelbarrow/" aria-label="Next showcase piece: wheelbarrow"><span class="pager-label">wheelbarrow</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A park bench of grained wooden slats with a reclined back, on a dark wrought-iron frame whose round-bar legs curl into scrolled feet, with armrests on curved brackets.">
       <img src="../assets/park-bench-hero.webp" alt="A park bench of grained wooden slats with a reclined back, on a dark wrought-iron frame whose round-bar legs curl into scrolled feet, with armrests on curved brackets." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/park-bench/park_bench.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/park-bench/park_bench.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -83,7 +83,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-feet</code></td><td>named toes plant at z=0</td><td>16</td></tr><tr><td><code>--float-stretcher</code></td><td>stretcher-to-leg BVH gap</td><td>17</td></tr><tr><td><code>--gap-slats</code></td><td>slat-to-leg BVH gap</td><td>18</td></tr><tr><td><code>--narrow-seat</code></td><td>seat span vs <code>2·hx</code></td><td>19</td></tr><tr><td><code>--upright-back</code></td><td>back recline band (measured 0.00°)</td><td>19</td></tr><tr><td><code>--float-slats</code></td><td>bearing bite (seat slats 6 mm up; measured −0.00354)</td><td>20</td></tr><tr><td><code>--split-feet</code></td><td>legs in one piece (measured 0 of 4)</td><td>21</td></tr></tbody></table></div>
 <p><code>--short-feet</code> lifts only the outward toe verts. After recentring, the bottom of the scroll is the AABB <code>zmin</code>, so the AABB gate would still pass. The named-toe stations fail. <code>--split-feet</code> restores the first build: each foot is an arc stopped short of its post, and each post starts at the arc&#x27;s top. The toes still ground and every gap budget still passes. Only the one-piece budget sees the 14 mm of daylight. <code>--upright-back</code> keeps the back top where it was, so the envelope does not move.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python park_bench.py --
+<pre tabindex="0"><code>blender --background --python park_bench.py --
 blender --background --python park_bench.py -- --skip-decimate
 blender --background --python park_bench.py -- --stray-vert
 blender --background --python park_bench.py -- --lift-z
@@ -139,7 +139,7 @@ blender --background --python park_bench.py -- --output bench.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cart/" aria-label="Previous showcase piece: cart"><span aria-hidden="true">&larr;</span> cart</a><span class="pager-pos hud">12 of 76 showcase pieces</span><a rel="next" href="../wheelbarrow/" aria-label="Next showcase piece: wheelbarrow">wheelbarrow <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cart/" aria-label="Previous showcase piece: cart"><span aria-hidden="true">&larr;</span><span class="pager-label">cart</span></a><span class="pager-pos hud">12 of 76 showcase pieces</span><a rel="next" href="../wheelbarrow/" aria-label="Next showcase piece: wheelbarrow"><span class="pager-label">wheelbarrow</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -291,10 +291,18 @@ blender --background --python park_bench.py -- --output bench.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

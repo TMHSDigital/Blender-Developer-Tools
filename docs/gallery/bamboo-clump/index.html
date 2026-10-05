@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural clump of seven clumping-bamboo culms rising from a 0.6 m rhizome mass on a lobed hummock of leaf-litter soil, five jointed rhizome knuckles breaking the soil at the outer culms&#x27; feet; each culm splayed out from the soil, then leaning and arching to a fine whip, ringed with 99 raised nodes at a pitch short at the foot, long through the middle and short again at the tip, its lowest three nodes still in papery sheaths and a fresh culm white-waxed below every node; 107 arching branches, one or two to a node, carrying 815 slim leaves with a droop of their own; three young shoots and litter off the hummock, through UVs, bake, LOD, collider and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cricket-wicket/" aria-label="Previous showcase piece: cricket-wicket"><span aria-hidden="true">&larr;</span> cricket-wicket</a><span class="pager-pos hud">70 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../toboggan/" aria-label="Next showcase piece: toboggan">toboggan <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../cricket-wicket/" aria-label="Previous showcase piece: cricket-wicket"><span aria-hidden="true">&larr;</span><span class="pager-label">cricket-wicket</span></a><span class="pager-pos hud">70 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../toboggan/" aria-label="Next showcase piece: toboggan"><span class="pager-label">toboggan</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A clump of seven bamboo culms, one gone yellow, ringed with dark nodes and sheathed in straw at the foot, arching apart under drooping leafy branches from a dark soil hummock.">
       <img src="../assets/bamboo-clump-hero.webp" alt="A clump of seven bamboo culms, one gone yellow, ringed with dark nodes and sheathed in straw at the foot, arching apart under drooping leafy branches from a dark soil hummock." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/bamboo-clump/bamboo_clump.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/bamboo-clump/bamboo_clump.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -91,7 +91,7 @@
 <p>Each falsifier moves only what its budget measures. <code>--stray-branches</code> moves one branch, <code>--crowd-culms</code> one culm and <code>--float-culm</code> one culm straight up, so the envelope does not move: each stays inside <code>BBOX_TOL</code>. <code>--swell-culm</code> scales the radius and the rings that follow it, <code>--bunch-nodes</code> moves one ring and the branch on it, <code>--sunk-nodes</code> moves only the crest of every ring, and <code>--loose-sheaths</code> moves only the sheaths. The first <code>--stray-branches</code> shifted every branch and grew the box 0.09 m, exit 8; the first <code>--crowd-culms</code> moved culm 4, which set the box&#x27;s Y, exit 8 again.</p>
 <p>In the quality pass <code>--crowd-culms</code> was re-aimed twice. Moving culm 0 (the tallest, which sets the top) toward culm 4 and holding its foot&#x27;s height so the top stayed put left the foot 14 mm above the soil, because the rhizome hummock falls away from the centre: exit 16, not 21. Re-bedding it instead would have dropped the top. Every culm-and-neighbour pair was then tried against the envelope, and culm 3 stood against culm 6 is one of the few that moves no extreme: the envelope changes by 0.0000 m and only the clump budget fails.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python bamboo_clump.py --
+<pre tabindex="0"><code>blender --background --python bamboo_clump.py --
 blender --background --python bamboo_clump.py -- --skip-decimate
 blender --background --python bamboo_clump.py -- --stray-vert
 blender --background --python bamboo_clump.py -- --lift-z
@@ -150,7 +150,7 @@ blender --background --python bamboo_clump.py -- --output bamboo.png</code></pre
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cricket-wicket/" aria-label="Previous showcase piece: cricket-wicket"><span aria-hidden="true">&larr;</span> cricket-wicket</a><span class="pager-pos hud">70 of 76 showcase pieces</span><a rel="next" href="../toboggan/" aria-label="Next showcase piece: toboggan">toboggan <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../cricket-wicket/" aria-label="Previous showcase piece: cricket-wicket"><span aria-hidden="true">&larr;</span><span class="pager-label">cricket-wicket</span></a><span class="pager-pos hud">70 of 76 showcase pieces</span><a rel="next" href="../toboggan/" aria-label="Next showcase piece: toboggan"><span class="pager-label">toboggan</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -302,10 +302,18 @@ blender --background --python bamboo_clump.py -- --output bamboo.png</code></pre
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

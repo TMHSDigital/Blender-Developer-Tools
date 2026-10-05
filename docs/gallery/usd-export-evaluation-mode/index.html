@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../cross-version-property-delete/" aria-label="Previous example: cross-version-property-delete"><span aria-hidden="true">&larr;</span> cross-version-property-delete</a><span class="pager-pos hud">48 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-zone-iterate/" aria-label="Next example: gn-zone-iterate">gn-zone-iterate <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../cross-version-property-delete/" aria-label="Previous example: cross-version-property-delete"><span aria-hidden="true">&larr;</span><span class="pager-label">cross-version-property-delete</span></a><span class="pager-pos hud">48 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gn-zone-iterate/" aria-label="Next example: gn-zone-iterate"><span class="pager-label">gn-zone-iterate</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right.">
       <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two brass goblets on dark plinths, each re-imported from its own USDA export: an eight-sided 130-point goblet labelled VIEWPORT on the left and a smooth 8450-point goblet labelled RENDER on the right." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=depsgraph">depsgraph</a> <a href="../#tag=export">export</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -69,7 +69,7 @@
 <p>Staging: Catmull-Clark pulls the surface inside the cage, and each level shrinks it by a different amount, so each re-imported goblet is seated on its plinth from its own vertices rather than from the cage&#x27;s z.</p>
 <p>Probed on the CI Linux portables <strong>Blender 5.2.1 LTS</strong> (<code>9e2066aef7ef</code>) and <strong>Blender 4.5.13 LTS</strong> (<code>daeeeca98fb0</code>): <code>wm.usd_export</code> exists, <code>poll()</code> is true in <code>--background</code>, <code>evaluation_mode</code> is <code>{RENDER, VIEWPORT}</code>. The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python usd_export_evaluation_mode.py --
+<pre tabindex="0"><code>blender --background --python usd_export_evaluation_mode.py --
 blender --background --python usd_export_evaluation_mode.py -- --output u.png</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
@@ -115,7 +115,7 @@ blender --background --python usd_export_evaluation_mode.py -- --output u.png</c
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../cross-version-property-delete/" aria-label="Previous example: cross-version-property-delete"><span aria-hidden="true">&larr;</span> cross-version-property-delete</a><span class="pager-pos hud">48 of 56 examples</span><a rel="next" href="../gn-zone-iterate/" aria-label="Next example: gn-zone-iterate">gn-zone-iterate <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../cross-version-property-delete/" aria-label="Previous example: cross-version-property-delete"><span aria-hidden="true">&larr;</span><span class="pager-label">cross-version-property-delete</span></a><span class="pager-pos hud">48 of 56 examples</span><a rel="next" href="../gn-zone-iterate/" aria-label="Next example: gn-zone-iterate"><span class="pager-label">gn-zone-iterate</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -267,10 +267,18 @@ blender --background --python usd_export_evaluation_mode.py -- --output u.png</c
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

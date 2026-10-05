@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural rental go-kart on a patch of kart-track asphalt against a red and white kerb — a 30 mm tube chassis whose main loop is one bar swept round every bend, cross tubes ending inside the rails with welded gussets, bearing hangers and kingpin C-brackets; spindles on kingpin bolts with 14° caster, a raked column in a bushing, a steering plate and two tie rods on rod-end eyes; blue moulded bodywork — a nose cone with a raised hump and lipped shoulders, pods with a crest, a ribbed deck and a groove, a front panel leaning back from the hump with a white number plate — on ten strap brackets welded to the tubes and bolted to the mouldings; a moulded seat on stays, a floor tray, pedals, a brake master cylinder with its hose to the caliper, a throttle cable, a strapped fuel tank and a lead ballast block; a finned four-stroke clamped to the rail driving the live rear axle through a clutch, an 88-link chain solved to a whole number of pitches and a 60-tooth sprocket, bearing carriers, a brake disc and caliper; and four loaded slicks on split rims with valve stems, the fronts narrower than the rears — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../mushroom-stump/" aria-label="Previous showcase piece: mushroom-stump"><span aria-hidden="true">&larr;</span> mushroom-stump</a><span class="pager-pos hud">63 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../broadleaf-oak/" aria-label="Next showcase piece: broadleaf-oak">broadleaf-oak <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../mushroom-stump/" aria-label="Previous showcase piece: mushroom-stump"><span aria-hidden="true">&larr;</span><span class="pager-label">mushroom-stump</span></a><span class="pager-pos hud">63 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../broadleaf-oak/" aria-label="Next showcase piece: broadleaf-oak"><span class="pager-label">broadleaf-oak</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Blue go-kart on a patch of track asphalt before a red and white kerb: moulded nose, side pods and a front panel with a white plate, red tube chassis, black seat, finned engine.">
       <img src="../assets/go-kart-hero.webp" alt="Blue go-kart on a patch of track asphalt before a red and white kerb: moulded nose, side pods and a front panel with a white plate, red tube chassis, black seat, finned engine." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=vehicles">Vehicles</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/go-kart/go_kart.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/go-kart/go_kart.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -84,7 +84,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-tyre</code></td><td>every tyre pressed into the asphalt in one plane (the left front lifted 4 mm: −2.5 mm, the rest 1.5 mm)</td><td>16</td></tr><tr><td><code>--cock-hub</code></td><td>hubs coaxial (the left rear hub 1.5 mm off the axle: 1.5 mm)</td><td>17</td></tr><tr><td><code>--drop-bearing</code></td><td>axle through both bearings (the right bearing and carrier 2 mm low: 2.0 mm)</td><td>17</td></tr><tr><td><code>--short-tierod</code></td><td>tie-rod eyes on their pins (the left rod 6 mm short: 6.0 mm)</td><td>17</td></tr><tr><td><code>--sink-tyre</code></td><td>tyre bead seat (the right rear bead 3 mm into its seat: 3.000 mm)</td><td>18</td></tr><tr><td><code>--lift-chain</code></td><td>chain seated on its sprockets (the chain 4 mm off both: −2.089 and −2.060 mm)</td><td>18</td></tr><tr><td><code>--toe-wheel</code></td><td>wheels mirrored (the left front corner turned 1.5°: 4.539 mm)</td><td>19</td></tr><tr><td><code>--wide-track</code></td><td>rear track at its stated size (each rear wheel 4 mm out: 1.2080 m)</td><td>19</td></tr><tr><td><code>--odd-frame</code></td><td>chassis mirror symmetry (the left rail bowed 3 mm out: 1.819 mm)</td><td>19</td></tr><tr><td><code>--no-caster</code></td><td>caster band (kingpins vertical: 0.0°)</td><td>19</td></tr><tr><td><code>--aft-ballast</code></td><td>stance (the 8 kg ballast moved behind the axle: 0.2887 m)</td><td>20</td></tr><tr><td><code>--loose-ballast</code></td><td>one connected assembly (the ballast lifted 3 mm off the tray: 2 components, 5 and 325 shells)</td><td>21</td></tr><tr><td><code>--float-nose</code></td><td>bodywork brackets (the nose and its bolts slid 3 mm forward: both nose brackets&#x27; tabs −2.0 mm)</td><td>23</td></tr></tbody></table></div>
 <p><code>--float-tyre</code> lifts the tyre alone, after the patch is flattened, while the slab still grounds the box. <code>--toe-wheel</code> turns the whole corner (spindle, hub, rim and tyre) about the vertical through the kingpin, and the tie rod is rebuilt to the moved arm, so the hubs stay coaxial and the eye stays on its pin; a turn about the raked kingpin itself would have dropped the patch out of its band first. <code>--lift-chain</code> moves the chain alone, keeping the tooth phase of the seated chain: phasing the teeth to the lifted pins, and lifts of 1.7, 2.0, 2.5, 3.0 and 3.5 mm, each put a chain face within 0.1 mm of a tooth flat&#x27;s plane and exited 15. The assembly falsifier first lifted a side pod, which broke the bodywork&#x27;s mirror and exited 19; the ballast stack is measured by nothing else. <code>--float-nose</code> moves the nose along X only, so the mirror holds, the nose stays on its bumper bars and on the panel&#x27;s foot (one assembly), and the slab still sets the envelope.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python go_kart.py --
+<pre tabindex="0"><code>blender --background --python go_kart.py --
 blender --background --python go_kart.py -- --skip-decimate
 blender --background --python go_kart.py -- --stray-vert
 blender --background --python go_kart.py -- --lift-z
@@ -150,7 +150,7 @@ blender --background --python go_kart.py -- --output kart.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../mushroom-stump/" aria-label="Previous showcase piece: mushroom-stump"><span aria-hidden="true">&larr;</span> mushroom-stump</a><span class="pager-pos hud">63 of 76 showcase pieces</span><a rel="next" href="../broadleaf-oak/" aria-label="Next showcase piece: broadleaf-oak">broadleaf-oak <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../mushroom-stump/" aria-label="Previous showcase piece: mushroom-stump"><span aria-hidden="true">&larr;</span><span class="pager-label">mushroom-stump</span></a><span class="pager-pos hud">63 of 76 showcase pieces</span><a rel="next" href="../broadleaf-oak/" aria-label="Next showcase piece: broadleaf-oak"><span class="pager-label">broadleaf-oak</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -302,10 +302,18 @@ blender --background --python go_kart.py -- --output kart.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

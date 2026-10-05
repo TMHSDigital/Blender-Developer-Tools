@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural pond margin on a raised soil disc — a shallow pond whose water is its own mesh at a declared level, rippled in low rings round the reeds and the branch, its rim run on under a sloped mud bank; a clump of cattails with arching strap leaves and five stems, each threaded through a brown seed head with a bare spike above it; soft rush and turf tufts on the bank; five notched lily pads floating on the water with two layered white-and-pink water lilies; wet stones at the waterline, a half-submerged branch, pebbles and fallen leaves — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../bowling-pins/" aria-label="Previous showcase piece: bowling-pins"><span aria-hidden="true">&larr;</span> bowling-pins</a><span class="pager-pos hud">50 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../stand-mixer/" aria-label="Next showcase piece: stand-mixer">stand-mixer <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../bowling-pins/" aria-label="Previous showcase piece: bowling-pins"><span aria-hidden="true">&larr;</span><span class="pager-label">bowling-pins</span></a><span class="pager-pos hud">50 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../stand-mixer/" aria-label="Next showcase piece: stand-mixer"><span class="pager-label">stand-mixer</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A dark rippled pond on a raised soil disc: cattails with brown seed heads and rush tufts on the far bank, notched lily pads and two pink-white water lilies, wet stones and a branch at the waterline.">
       <img src="../assets/pond-edge-hero.webp" alt="A dark rippled pond on a raised soil disc: cattails with brown seed heads and rush tufts on the far bank, notched lily pads and two pink-white water lilies, wet stones and a branch at the waterline." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/pond-edge/pond_edge.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/pond-edge/pond_edge.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -87,7 +87,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-reeds</code></td><td>rooted reeds (every leaf and stem base raised 70 mm, fading to 0 at the tip: lowest vertex −0.0303 to −0.0255 m, above the mud)</td><td>17</td></tr><tr><td><code>--sink-pad</code></td><td>floating pads (the first pad pushed 4 mm under, its rim still awash: freeboard −0.00251 m, draft 0.00550 m)</td><td>18</td></tr><tr><td><code>--flat-water</code></td><td>water level and ripple band (the sheet laid flat: ripple 0.00000 m)</td><td>19</td></tr><tr><td><code>--slip-heads</code></td><td>threaded heads (every head slid 8 mm off its stem&#x27;s axis, still pierced by it: 0.0079–0.0080 m off)</td><td>20</td></tr><tr><td><code>--short-water</code></td><td>enclosed water (the rim stopped 60 mm short of the shoreline: the bank 0.03736 m below it)</td><td>21</td></tr><tr><td><code>--float-cover</code></td><td>cover joined (every rush blade, pebble and bank leaf lifted 30 mm: 108 of 598 shells loose)</td><td>22</td></tr></tbody></table></div>
 <p><code>--float-reeds</code> holds each tip where it was, so the envelope, set by a spike tip, does not move; the heads stay threaded (1.0 mm off-axis). The stems and leaves still cross the water, so the cover budget still joins them. <code>--sink-pad</code> pushes the pad 4 mm, not more: pushed 12 mm it drowned whole and came loose from the water, which the cover budget saw too. <code>--slip-heads</code> slides 8 mm for the same reason: at 25 mm the heads left their stems and came loose. <code>--flat-water</code> changes no draw, so the pads float exactly as before. <code>--short-water</code> changes only the water; the ripples, the pads and the cover are unchanged. <code>--stray-vert</code> and <code>--lift-z</code> necessarily move the loose-shell count and the water&#x27;s absolute level with them; they exit on their own, earlier codes.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python pond_edge.py --
+<pre tabindex="0"><code>blender --background --python pond_edge.py --
 blender --background --python pond_edge.py -- --skip-decimate
 blender --background --python pond_edge.py -- --stray-vert
 blender --background --python pond_edge.py -- --lift-z
@@ -143,7 +143,7 @@ blender --background --python pond_edge.py -- --output pond.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../bowling-pins/" aria-label="Previous showcase piece: bowling-pins"><span aria-hidden="true">&larr;</span> bowling-pins</a><span class="pager-pos hud">50 of 76 showcase pieces</span><a rel="next" href="../stand-mixer/" aria-label="Next showcase piece: stand-mixer">stand-mixer <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../bowling-pins/" aria-label="Previous showcase piece: bowling-pins"><span aria-hidden="true">&larr;</span><span class="pager-label">bowling-pins</span></a><span class="pager-pos hud">50 of 76 showcase pieces</span><a rel="next" href="../stand-mixer/" aria-label="Next showcase piece: stand-mixer"><span class="pager-label">stand-mixer</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -295,10 +295,18 @@ blender --background --python pond_edge.py -- --output pond.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

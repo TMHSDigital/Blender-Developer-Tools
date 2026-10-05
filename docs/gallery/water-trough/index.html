@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../anvil/" aria-label="Previous showcase piece: anvil"><span aria-hidden="true">&larr;</span> anvil</a><span class="pager-pos hud">15 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hitching-post/" aria-label="Next showcase piece: hitching-post">hitching-post <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../anvil/" aria-label="Previous showcase piece: anvil"><span aria-hidden="true">&larr;</span><span class="pager-label">anvil</span></a><span class="pager-pos hud">15 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hitching-post/" aria-label="Next showcase piece: hitching-post"><span class="pager-label">hitching-post</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A staved wooden water trough on pegged trestle legs, iron straps bolted and clipped over its rim, half full of rippled dark water, a bung in one end.">
       <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough on pegged trestle legs, iron straps bolted and clipped over its rim, half full of rippled dark water, a bung in one end." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/water-trough/water_trough.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/water-trough/water_trough.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -93,7 +93,7 @@
 <p><code>--short-legs</code> lifts the shoes and stretches each leg&#x27;s foot down to the floor, so AABB <code>zmin</code> stays 0 (the legs still plant) and the named-support gate is what fires. Lifting the shoes alone used to let the whole piece re-ground on the legs. That shrank the AABB by ~10 mm, 0.4 mm inside the bounding-box tolerance, and a 1.5 mm model change in this pass tipped it to exit 8. With the feet stretched, the envelope moves 1.6 mm.</p>
 <p><code>--float-strap</code> lifted the straps 0.040 m until the fifth pass. With bolt heads and rim clips riding on the straps, that widened the AABB past its tolerance and the probe hit exit 8 before the strap-seat budget it exists for. It now lifts them <code>STRAP_FLOAT</code> (0.012 m), still a 0.0117 m gap against the 0.008 m budget.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python water_trough.py --
+<pre tabindex="0"><code>blender --background --python water_trough.py --
 blender --background --python water_trough.py -- --skip-decimate
 blender --background --python water_trough.py -- --stray-vert
 blender --background --python water_trough.py -- --lift-z
@@ -149,7 +149,7 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../anvil/" aria-label="Previous showcase piece: anvil"><span aria-hidden="true">&larr;</span> anvil</a><span class="pager-pos hud">15 of 76 showcase pieces</span><a rel="next" href="../hitching-post/" aria-label="Next showcase piece: hitching-post">hitching-post <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../anvil/" aria-label="Previous showcase piece: anvil"><span aria-hidden="true">&larr;</span><span class="pager-label">anvil</span></a><span class="pager-pos hud">15 of 76 showcase pieces</span><a rel="next" href="../hitching-post/" aria-label="Next showcase piece: hitching-post"><span class="pager-label">hitching-post</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -301,10 +301,18 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

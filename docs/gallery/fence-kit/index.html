@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span> terrain-scatter</a><span class="pager-pos hud">9 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower">watchtower <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span><span class="pager-label">terrain-scatter</span></a><span class="pager-pos hud">9 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower"><span class="pager-label">watchtower</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands.">
       <img src="../assets/fence-kit-hero.webp" alt="A weathered post-and-rail fence run of three sections on a packed-earth strip, one capped post at each joint, each bay with a diagonal board brace and dark iron bands." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=village">Village</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/fence-kit/fence_kit.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/fence-kit/fence_kit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -84,7 +84,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-shoes</code></td><td>named shoes plant at z=0</td><td>16</td></tr><tr><td><code>--short-brace</code></td><td>brace-to-post BVH gap (both posts)</td><td>17</td></tr><tr><td><code>--gap-rails</code></td><td>rail-to-post BVH gap</td><td>18</td></tr><tr><td><code>--long-rails</code></td><td>rail span vs <code>2·RAIL_HALF</code></td><td>19</td></tr><tr><td><code>--float-brace</code></td><td>brace bearing on the middle rail (brace 6 mm forward; measured −0.00400)</td><td>20</td></tr><tr><td><code>--wide-tile</code></td><td>tile fit (the first build&#x27;s post stations; measured 1.6240)</td><td>21</td></tr></tbody></table></div>
 <p><code>--short-shoes</code> lifts only the iron shoes. After recentring, a post or the kick is the AABB <code>zmin</code>, so the AABB gate would still pass. The named-shoe stations fail. <code>--short-brace</code> shortens the left end; <code>brace_gap</code> is the maximum of the per-post minima, so a brace that still reaches the right post cannot sneak through. <code>--long-rails</code> adds an extra spanning board, and the tenoned rails stay put, so the gap budget still passes. <code>--wide-tile</code> moves the posts out to where the first build had them and moves the rails with them. It is checked before the AABB gate, which it would also fail.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python fence_kit.py --
+<pre tabindex="0"><code>blender --background --python fence_kit.py --
 blender --background --python fence_kit.py -- --skip-decimate
 blender --background --python fence_kit.py -- --stray-vert
 blender --background --python fence_kit.py -- --lift-z
@@ -139,7 +139,7 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span> terrain-scatter</a><span class="pager-pos hud">9 of 76 showcase pieces</span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower">watchtower <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../terrain-scatter/" aria-label="Previous showcase piece: terrain-scatter"><span aria-hidden="true">&larr;</span><span class="pager-label">terrain-scatter</span></a><span class="pager-pos hud">9 of 76 showcase pieces</span><a rel="next" href="../watchtower/" aria-label="Next showcase piece: watchtower"><span class="pager-label">watchtower</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -291,10 +291,18 @@ blender --background --python fence_kit.py -- --output fence.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

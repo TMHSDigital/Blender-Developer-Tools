@@ -27,7 +27,7 @@
   <link rel="preload" href="../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
   <script>
     (function () {
@@ -66,7 +66,7 @@
     <div class="controls-inner">
       <div class="controls-row controls-main">
         <div class="searchwrap">
-          <input id="q" type="search" placeholder="Search the gallery (press /)"
+          <input id="q" name="q" type="search" placeholder="Search the gallery (press /)"
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
@@ -151,7 +151,7 @@
     <div class="grid" id="grid">
       <article class="card" data-tags="materials rendering" data-kind="examples" data-name="swatch-grid" data-search="swatch grid swatch-grid procedural principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. materials rendering ">
         <div class="card-media">
-          <img src="assets/swatch-grid-hero-640.webp" srcset="assets/swatch-grid-hero-640.webp 640w, assets/swatch-grid-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." width="1280" height="720" loading="eager" decoding="async" />
+          <img src="assets/swatch-grid-hero-640.webp" srcset="assets/swatch-grid-hero-640.webp 640w, assets/swatch-grid-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Six material spheres in gunmetal collars on a two-tier walnut riser, each over an engraved brass plaque: gold, copper, red plastic behind; blue plastic, emissive, white rough in front." width="1280" height="720" loading="eager" fetchpriority="high" decoding="async" />
         </div>
         <div class="card-body">
           <h2><a class="stretch" href="swatch-grid/">Swatch Grid</a></h2>
@@ -1777,6 +1777,10 @@
       var chipsEl = document.getElementById('chips');
       var chips = chipsEl ? Array.prototype.slice.call(chipsEl.querySelectorAll('.chip')) : [];
       var q = document.getElementById('q');
+      // Touch devices have no "/" key shortcut to advertise (#399).
+      if (q && window.matchMedia && window.matchMedia('(hover: none)').matches) {
+        q.placeholder = 'Search the gallery';
+      }
       var qClear = document.getElementById('qClear');
       var count = document.getElementById('count');
       var noResults = document.getElementById('noResults');

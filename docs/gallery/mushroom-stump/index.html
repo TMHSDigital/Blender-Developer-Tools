@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural felled-tree stump on a sloping forest-floor soil disc — one furrowed lathe about a plumb axis flaring through five buttresses into the ground, its bark peeled in two patches to grey sapwood a bark&#x27;s thickness under a ragged torn lip with curling flakes, a felling top with weathered growth rings, radial drying checks, the undercut floor a step under the back cut and a low band of torn hinge fibres along the step, five surface roots bedded along their run, thin moss cushions laid on the furrowed bark with tufted rims, two tiers of turkey-tail brackets rooted in the bark, three fly agarics with warted caps, pleated gills, volva and skirt, and two clusters of ringed honey fungus out of a root and the stump&#x27;s foot — with fallen leaves, bipinnate ferns, twigs and pebbles, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../traffic-cones/" aria-label="Previous showcase piece: traffic-cones"><span aria-hidden="true">&larr;</span> traffic-cones</a><span class="pager-pos hud">62 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../go-kart/" aria-label="Next showcase piece: go-kart">go-kart <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../traffic-cones/" aria-label="Previous showcase piece: traffic-cones"><span aria-hidden="true">&larr;</span><span class="pager-label">traffic-cones</span></a><span class="pager-pos hud">62 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../go-kart/" aria-label="Next showcase piece: go-kart"><span class="pager-label">go-kart</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sawn tree stump with a stepped felling cut and torn hinge fibres, peeled bark, moss, shelf fungi, honey mushrooms, red fly agarics, ferns and fallen leaves on soil.">
       <img src="../assets/mushroom-stump-hero.webp" alt="A sawn tree stump with a stepped felling cut and torn hinge fibres, peeled bark, moss, shelf fungi, honey mushrooms, red fly agarics, ferns and fallen leaves on soil." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/mushroom-stump/mushroom_stump.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/mushroom-stump/mushroom_stump.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--perch-stump</code></td><td>stump sealed all round (the foot set from the soil at the axis alone: sealed in 6/8 sectors)</td><td>17</td></tr><tr><td><code>--float-caps</code></td><td>caps seated on their stipes (every cap moved 24 mm up its axis: stipe bite −0.0156 to −0.0100 m)</td><td>18</td></tr><tr><td><code>--tilt-cut</code></td><td>saw cut level (the cut plane turned 5° about the hinge chord: measured 4.9584°)</td><td>19</td></tr><tr><td><code>--fat-stump</code></td><td>stated size (every stump radius × 1.08: 0.6706 m across)</td><td>19</td></tr><tr><td><code>--arch-roots</code></td><td>roots bedded along their run (each root&#x27;s middle raised 120 mm: shallowest station −0.0524 m)</td><td>20</td></tr><tr><td><code>--float-mushrooms</code></td><td>stipes rooted in their host (every mushroom moved 50 mm off its host: −0.0249 to −0.0032 m)</td><td>21</td></tr><tr><td><code>--float-brackets</code></td><td>brackets rooted in the bark (every shelf moved 35 mm off the bark: −0.0164 to −0.0131 m)</td><td>22</td></tr><tr><td><code>--sunny-moss</code></td><td>moss on up- and shade-facing surfaces (every cushion and tuft turned half round the stump: 0.4270)</td><td>23</td></tr><tr><td><code>--float-cover</code></td><td>ground cover joined (every leaf lifted 25 mm off the soil: 77 of 339 shells loose)</td><td>24</td></tr><tr><td><code>--flat-felling</code></td><td>felling step (the undercut floor sawn level with the back cut: step 0.0006 m)</td><td>25</td></tr><tr><td><code>--tall-hinge</code></td><td>felling hinge band low (every torn fibre × 1.25: tallest 0.0358 m; the AABB&#x27;s top rises 7.2 mm, inside its 10 mm tolerance)</td><td>25</td></tr><tr><td><code>--flush-peel</code></td><td>torn bark over the sapwood (no bark thickness and no lip: −0.0015 and −0.0011 m)</td><td>26</td></tr><tr><td><code>--float-flakes</code></td><td>flakes rooted in the bark (every flake moved 20 mm off the bark along its normal: −0.0108 to 0.0011 m)</td><td>26</td></tr><tr><td><code>--slab-moss</code></td><td>moss conforms (every cushion the old 26 mm dome over the plate crests: 0.0360 m)</td><td>27</td></tr></tbody></table></div>
 <p><code>--tilt-cut</code> turns the cut about the hinge chord, so the holding wood and the stump&#x27;s height at its axis stay put and only the tilt fails. <code>--fat-stump</code> scales the stump and leaves the soil, the roots and the holding wood&#x27;s height alone, so only the diameter fails. <code>--float-caps</code> at 30 mm put one honey cap&#x27;s crown on a neighbour&#x27;s gill plane and exited 15; 24 mm keeps it on 18. <code>--float-mushrooms</code> moves soil- and root-grown mushrooms straight up and stump-grown ones out along the bark&#x27;s normal: lifted, those would have stayed inside the flaring foot. <code>--tall-hinge</code> is sized to the tolerance: the tallest fibre sets the top of the envelope, and × 1.25 clears the 0.034 m band by 1.8 mm while the top moves 7.2 mm of its 10 mm. <code>--arch-roots</code> went from 90 to 120 mm when the roots were shortened for the smaller disc and bedded deeper: at 90 mm the shallowest station still lay 3.4 mm under the soil, a fail by only 2.6 mm.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python mushroom_stump.py --
+<pre tabindex="0"><code>blender --background --python mushroom_stump.py --
 blender --background --python mushroom_stump.py -- --skip-decimate
 blender --background --python mushroom_stump.py -- --stray-vert
 blender --background --python mushroom_stump.py -- --lift-z
@@ -152,7 +152,7 @@ blender --background --python mushroom_stump.py -- --output stump.png</code></pr
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../traffic-cones/" aria-label="Previous showcase piece: traffic-cones"><span aria-hidden="true">&larr;</span> traffic-cones</a><span class="pager-pos hud">62 of 76 showcase pieces</span><a rel="next" href="../go-kart/" aria-label="Next showcase piece: go-kart">go-kart <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../traffic-cones/" aria-label="Previous showcase piece: traffic-cones"><span aria-hidden="true">&larr;</span><span class="pager-label">traffic-cones</span></a><span class="pager-pos hud">62 of 76 showcase pieces</span><a rel="next" href="../go-kart/" aria-label="Next showcase piece: go-kart"><span class="pager-label">go-kart</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -304,10 +304,18 @@ blender --background --python mushroom_stump.py -- --output stump.png</code></pr
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

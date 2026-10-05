@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../curve-bevel-arc/" aria-label="Previous example: curve-bevel-arc"><span aria-hidden="true">&larr;</span> curve-bevel-arc</a><span class="pager-pos hud">14 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../damped-track-aim/" aria-label="Next example: damped-track-aim">damped-track-aim <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../curve-bevel-arc/" aria-label="Previous example: curve-bevel-arc"><span aria-hidden="true">&larr;</span><span class="pager-label">curve-bevel-arc</span></a><span class="pager-pos hud">14 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../damped-track-aim/" aria-label="Next example: damped-track-aim"><span class="pager-label">damped-track-aim</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three glowing neon rings, violet, cyan and warm white, with fog-glow bloom and reflections on the floor.">
       <img src="../assets/compositor-glare-hero.webp" alt="Three glowing neon rings, violet, cyan and warm white, with fog-glow bloom and reflections on the floor." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=compositor">compositor</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/compositor-glare/compositor_glare.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/compositor-glare/compositor_glare.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -65,7 +65,7 @@
 <p>The Glare node changed shape with it: on 4.x it takes legacy enum properties (<code>glare_type=&#x27;FOG_GLOW&#x27;</code>, <code>quality=&#x27;HIGH&#x27;</code>, <code>size=6</code>), while on 5.x the same choices are menu/float <strong>input sockets</strong> (<code>inputs[&#x27;Type&#x27;].default_value = &#x27;Fog Glow&#x27;</code>). The 4.x <code>threshold</code> property is a dead shim — the real threshold is the <code>Threshold</code> input socket on both versions. And EEVEE has no <code>use_bloom</code> toggle on either version (removed in 4.2): bloom is a compositor node, period.</p>
 <p><strong>What it witnesses:</strong> the halo is the compositor&#x27;s output, proven with pixels. The check renders the scene twice at 96×54 (single-sample Cycles, noise-free) — once with <code>use_compositing</code> on, once off — and samples a column of pixels above the middle ring&#x27;s silhouette via <code>world_to_camera_view</code>. With the compositor on, the halo luminance just outside the silhouette is far above zero and falls off strictly with distance (the Fog Glow kernel signature); with it off, those same pixels are exactly zero. The structural check pins the wiring (<code>Render Layers → Glare → output</code>), the version-correct tree plumbing, and the absence of any EEVEE bloom toggle.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (two tiny renders) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (two tiny renders) — the CI check:
 blender --background --python compositor_glare.py --
 
 # Falsifier: Threshold=10.0. Must exit non-zero (Threshold==1.0).
@@ -118,7 +118,7 @@ blender --background --python compositor_glare.py -- --output rings.png --engine
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../curve-bevel-arc/" aria-label="Previous example: curve-bevel-arc"><span aria-hidden="true">&larr;</span> curve-bevel-arc</a><span class="pager-pos hud">14 of 56 examples</span><a rel="next" href="../damped-track-aim/" aria-label="Next example: damped-track-aim">damped-track-aim <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../curve-bevel-arc/" aria-label="Previous example: curve-bevel-arc"><span aria-hidden="true">&larr;</span><span class="pager-label">curve-bevel-arc</span></a><span class="pager-pos hud">14 of 56 examples</span><a rel="next" href="../damped-track-aim/" aria-label="Next example: damped-track-aim"><span class="pager-label">damped-track-aim</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -270,10 +270,18 @@ blender --background --python compositor_glare.py -- --output rings.png --engine
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

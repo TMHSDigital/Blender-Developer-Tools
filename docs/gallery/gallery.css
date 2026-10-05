@@ -156,6 +156,10 @@
     .view-mode .density-btn.active { background: var(--border); color: var(--text); }
     /* Segmented groups clip overflow, so the ring has to sit inside. */
     .density-btn:focus-visible, .chip:focus-visible { outline-offset: -2px; }
+    /* On a selected (orange) button an orange ring vanishes into the fill
+       (#397): draw a dark inset ring instead, ~7.8:1 against --select. */
+    .density-btn.active:focus-visible, .cat-btn.active:focus-visible,
+    .chip.active:focus-visible { outline: 2px solid var(--on-select); outline-offset: -4px; }
     .sort select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
       border-radius: var(--radius); padding: 0.4rem 0.6rem; min-height: 36px; cursor: pointer;
       font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -353,9 +357,11 @@
       margin: 0 0 1.25rem; font-size: 0.85rem; }
     .pager-foot { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--border); }
     .pager a { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.8rem;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      display: flex; align-items: baseline; gap: 0.35em; min-width: 0; white-space: nowrap; }
+    /* Only the name truncates; the arrow is its own box so it never clips (#399). */
+    .pager-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     .pager a:hover { color: var(--select); text-decoration: none; }
-    .pager [rel="next"] { text-align: right; }
+    .pager [rel="next"] { justify-content: flex-end; }
     .pager-pos { text-align: center; }
     @media (max-width: 559px), (hover: none) { .pager-keys { display: none; } }
     .pager kbd { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid var(--border);

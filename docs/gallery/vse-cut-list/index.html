@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../uv-layer-grid/" aria-label="Previous example: uv-layer-grid"><span aria-hidden="true">&larr;</span> uv-layer-grid</a><span class="pager-pos hud">24 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gltf-export-roundtrip/" aria-label="Next example: gltf-export-roundtrip">gltf-export-roundtrip <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../uv-layer-grid/" aria-label="Previous example: uv-layer-grid"><span aria-hidden="true">&larr;</span><span class="pager-label">uv-layer-grid</span></a><span class="pager-pos hud">24 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../gltf-export-roundtrip/" aria-label="Next example: gltf-export-roundtrip"><span class="pager-label">gltf-export-roundtrip</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A monitor on a walnut desk showing crimson, teal, amber and cross-blend cells, above a tilted timeline console laying out the same strips as coloured blocks under a playhead.">
       <img src="../assets/vse-cut-list-hero.webp" alt="A monitor on a walnut desk showing crimson, teal, amber and cross-blend cells, above a tilted timeline console laying out the same strips as coloured blocks under a playhead." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Each side hard-fails the other&#x27;s spelling: TypeError on the wrong end kwarg, AttributeError on .sequences. The cross clamps to the source overlap, effect strips consume their inputs only when stacked above them, and a same-scene scene strip renders transparent.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=sequencer">sequencer</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/vse-cut-list/vse_cut_list.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/vse-cut-list/vse_cut_list.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -75,7 +75,7 @@
 <h2 id="framing-measurement">Framing measurement<a class="anchor" href="#framing-measurement" aria-label="Link to this section">#</a></h2>
 <p>The gallery still renders from the dedicated <code>Bay</code> scene (camera <code>BayCam</code>), not <code>bpy.context.scene</code> — a framing measurement with <code>examples/gallery_framing.py</code> must be handed that (scene, camera) pair explicitly.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vse_cut_list.py --
 
 # Falsifier: GC T2 -&gt; T1. Must exit non-zero (wiring). `--check-pixels` is a
@@ -131,7 +131,7 @@ blender --background --python vse_cut_list.py -- --output vse.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../uv-layer-grid/" aria-label="Previous example: uv-layer-grid"><span aria-hidden="true">&larr;</span> uv-layer-grid</a><span class="pager-pos hud">24 of 56 examples</span><a rel="next" href="../gltf-export-roundtrip/" aria-label="Next example: gltf-export-roundtrip">gltf-export-roundtrip <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../uv-layer-grid/" aria-label="Previous example: uv-layer-grid"><span aria-hidden="true">&larr;</span><span class="pager-label">uv-layer-grid</span></a><span class="pager-pos hud">24 of 56 examples</span><a rel="next" href="../gltf-export-roundtrip/" aria-label="Next example: gltf-export-roundtrip"><span class="pager-label">gltf-export-roundtrip</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -283,10 +283,18 @@ blender --background --python vse_cut_list.py -- --output vse.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

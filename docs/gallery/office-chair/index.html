@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural ergonomic task chair on a chair mat at a desk corner — a polished aluminium five-star base with ribbed spokes and five swivelled hooded twin-wheel casters pressed into a smoked polycarbonate mat, a chrome gas lift in a telescoping cover under a synchro-tilt mechanism with tension knob and paddles, a moulded shell cupping a two-tone sculpted cushion with thigh channels, a waterfall front and two piped welts, an elastomeric mesh back on a graphite frame with an S-curved lumbar pad on sliders, a mesh headrest, 4D armrests, and a snake plant in a stone planter — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../fallen-log/" aria-label="Previous showcase piece: fallen-log"><span aria-hidden="true">&larr;</span> fallen-log</a><span class="pager-pos hud">43 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hover-bike/" aria-label="Next showcase piece: hover-bike">hover-bike <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../fallen-log/" aria-label="Previous showcase piece: fallen-log"><span aria-hidden="true">&larr;</span><span class="pager-label">fallen-log</span></a><span class="pager-pos hud">43 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../hover-bike/" aria-label="Next showcase piece: hover-bike"><span class="pager-label">hover-bike</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A graphite mesh-back office chair with a muted-teal two-tone seat, mesh headrest and polished five-star base, on a smoked chair mat beside a snake plant in a stone planter.">
       <img src="../assets/office-chair-hero.webp" alt="A graphite mesh-back office chair with a muted-teal two-tone seat, mesh headrest and polished five-star base, on a smoked chair mat beside a snake plant in a stone planter." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=household">Household</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/office-chair/office_chair.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/office-chair/office_chair.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -86,7 +86,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-caster</code></td><td>every wheel pressed into the mat (caster 3&#x27;s body lifted 5 mm up its stem: its wheels 4.4 mm over the sheet, the other eight still pressed 0.6 mm in)</td><td>16</td></tr><tr><td><code>--curl-mat</code></td><td>mat flat on the floor (its back-left corner curled 6 mm up: underside rises to 0.00600 m, clear of every wheel)</td><td>16</td></tr><tr><td><code>--skew-spoke</code></td><td>five-star geometry (spoke 0 and its caster turned 3°: worst gap off 72° by 3.000°)</td><td>17</td></tr><tr><td><code>--offset-column</code></td><td>gas lift coaxial (column moved 3 mm in X: 0.00300 m off both the hub&#x27;s and the socket&#x27;s axes)</td><td>18</td></tr><tr><td><code>--uneven-arms</code></td><td>armrests mirrored and level (right post, buttons, plate and pad raised 10 mm in the cover: 0.01000 m)</td><td>19</td></tr><tr><td><code>--loose-wheel</code></td><td>one connected chair (caster 0&#x27;s outer wheel slid 24 mm off its axle end: 2 components)</td><td>20</td></tr><tr><td><code>--float-lumbar</code></td><td>lumbar sliders clamped on the frame (pad, straps and sliders floated 6 mm forward: gap 0.07–11.0 mm)</td><td>21</td></tr><tr><td><code>--float-leaves</code></td><td>leaves rooted in the soil (every blade lifted 40 mm: depth −15.5 to −8.4 mm)</td><td>22</td></tr></tbody></table></div>
 <p><code>--float-caster</code> lifts the caster body, not the stem, so the stem only rides deeper into the web and the star budget still passes. <code>--curl-mat</code> curls only the corner where −x + y is largest, which no wheel reaches, so the wheels stay seated and the mat-flat budget is the one that fires. <code>--offset-column</code> leaves the column seated 52 mm and 28 mm deep and plumb, so only the coaxial budget sees it. <code>--uneven-arms</code> slides the arm up its own cover, as the height adjuster does, so the chair stays connected and the envelope holds; the seat and armrest heights stay in band. <code>--loose-wheel</code> slides a wheel along its own axle, so it still presses into the mat and the named-supports budget passes; it is attached by one joint, the axle, which is why it is the part that splits. <code>--float-lumbar</code> moves the lumbar unit less than a slider&#x27;s wall is deep past the frame, so the sliders still bite the frame and the chair stays one component; only the clamp band sees it. <code>--float-leaves</code> lifts the blades inside the envelope: the headrest, not the plant, sets the top.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python office_chair.py --
+<pre tabindex="0"><code>blender --background --python office_chair.py --
 blender --background --python office_chair.py -- --skip-decimate
 blender --background --python office_chair.py -- --stray-vert
 blender --background --python office_chair.py -- --lift-z
@@ -144,7 +144,7 @@ blender --background --python office_chair.py -- --output chair.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../fallen-log/" aria-label="Previous showcase piece: fallen-log"><span aria-hidden="true">&larr;</span> fallen-log</a><span class="pager-pos hud">43 of 76 showcase pieces</span><a rel="next" href="../hover-bike/" aria-label="Next showcase piece: hover-bike">hover-bike <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../fallen-log/" aria-label="Previous showcase piece: fallen-log"><span aria-hidden="true">&larr;</span><span class="pager-label">fallen-log</span></a><span class="pager-pos hud">43 of 76 showcase pieces</span><a rel="next" href="../hover-bike/" aria-label="Next showcase piece: hover-bike"><span class="pager-label">hover-bike</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -296,10 +296,18 @@ blender --background --python office_chair.py -- --output chair.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

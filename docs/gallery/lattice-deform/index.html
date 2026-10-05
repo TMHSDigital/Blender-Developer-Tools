@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness">solidify-even-thickness <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span><span class="pager-label">ray-cast-space</span></a><span class="pager-pos hud">54 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness"><span class="pager-label">solidify-even-thickness</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out.">
       <img src="../assets/lattice-deform-hero.webp" alt="Two checker-glazed columns on a walnut plinth, each in a steel-rod cage: the left upright in its rest cage, the right sheared and tapered where two orange cage corners have been pulled out." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Linear lattice deform is exact trilinear interpolation: all 602 evaluated verts land on the closed-form blend of the eight co_deform corners (max error 5.6e-7 through a translated, non-uniformly scaled lattice), the undeformed lattice is the identity, and --bspline (the default interpolation) misses by 0.2145 and exits 4.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/lattice-deform/lattice_deform.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/lattice-deform/lattice_deform.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -66,7 +66,7 @@
 <p><strong>The trap it exposes:</strong> a new lattice defaults to <code>&#x27;KEY_BSPLINE&#x27;</code>. B-spline weights smooth over the control points instead of interpolating them, so a script that moves a corner and expects the mesh to follow it linearly gets a softer, smaller pull. On a 2×2×2 lattice the rest state is still the identity, so nothing looks wrong until a point moves. <code>--bspline</code> keeps the default and fails check 4 with the measured error.</p>
 <p>The still shows the rule as a before-and-after on a walnut plinth: on the left a render-only twin of the column, undeformed, inside its rest cage; on the right the checked column inside the deformed cage, with the two moved corners in selection orange and a short orange rod from each back to its rest position. The column carries a glazed two-tone checker in Generated (rest) coordinates, so the squares are square before the lattice acts, and their shear and taper in the still are the deformation. Lattices do not render, so both cages are drawn as thin steel rods built from the corner positions after the check has run.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code># Cheap correctness check (no render) — the CI check:
+<pre tabindex="0"><code># Cheap correctness check (no render) — the CI check:
 blender --background --python lattice_deform.py --
 
 # Falsifier: keep the default KEY_BSPLINE interpolation. Must exit 4.
@@ -119,7 +119,7 @@ blender --background --python lattice_deform.py -- --output lattice.png --engine
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span> ray-cast-space</a><span class="pager-pos hud">54 of 56 examples</span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness">solidify-even-thickness <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../ray-cast-space/" aria-label="Previous example: ray-cast-space"><span aria-hidden="true">&larr;</span><span class="pager-label">ray-cast-space</span></a><span class="pager-pos hud">54 of 56 examples</span><a rel="next" href="../solidify-even-thickness/" aria-label="Next example: solidify-even-thickness"><span class="pager-label">solidify-even-thickness</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -271,10 +271,18 @@ blender --background --python lattice_deform.py -- --output lattice.png --engine
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

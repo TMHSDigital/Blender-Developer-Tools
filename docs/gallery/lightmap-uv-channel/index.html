@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Examples"><a rel="prev" href="../modular-kit-snap/" aria-label="Previous example: modular-kit-snap"><span aria-hidden="true">&larr;</span> modular-kit-snap</a><span class="pager-pos hud">44 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../socket-attach-points/" aria-label="Next example: socket-attach-points">socket-attach-points <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Examples"><a rel="prev" href="../modular-kit-snap/" aria-label="Previous example: modular-kit-snap"><span aria-hidden="true">&larr;</span><span class="pager-label">modular-kit-snap</span></a><span class="pager-pos hud">44 of 56 examples<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../socket-attach-points/" aria-label="Next example: socket-attach-points"><span class="pager-label">socket-attach-points</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid.">
       <img src="../assets/lightmap-uv-channel-hero.webp" alt="A covered wooden cart on spoked wheels with draw shafts, beside a walnut-framed slate display showing its packed lightmap UV atlas as coloured islands on a quarter grid." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -56,7 +56,7 @@
     <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 3680 islands with 0 SAT overlaps, min island distance 0.00401.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=uv">uv</a> <a href="../#tag=game-pipeline">game-pipeline</a> <a href="../#tag=rendering">rendering</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -71,7 +71,7 @@
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.2.1 (24 parts, 3428 islands, drift 0, overlap 0, min island distance 0.00401). The UV <em>layout</em> is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
 <p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas display — a slate face in a walnut frame on a plinth with a brass <code>UV1 LIGHTMAP</code> plate, a faint quarter grid marking the [0,1] square the bounds check holds — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 24 named parts, 5 materials, right-angle share 0.138. Wood, canvas and iron carry procedural grain, weave and pitting over Object coordinates; no check reads a material.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python lightmap_uv_channel.py --
+<pre tabindex="0"><code>blender --background --python lightmap_uv_channel.py --
 blender --background --python lightmap_uv_channel.py -- --overlap-islands   # falsifier: overlap scan reports the dragged island; exits 7
 blender --background --python lightmap_uv_channel.py -- --output atlas.png
 blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</code></pre>
@@ -119,7 +119,7 @@ blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</c
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../modular-kit-snap/" aria-label="Previous example: modular-kit-snap"><span aria-hidden="true">&larr;</span> modular-kit-snap</a><span class="pager-pos hud">44 of 56 examples</span><a rel="next" href="../socket-attach-points/" aria-label="Next example: socket-attach-points">socket-attach-points <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Examples"><a rel="prev" href="../modular-kit-snap/" aria-label="Previous example: modular-kit-snap"><span aria-hidden="true">&larr;</span><span class="pager-label">modular-kit-snap</span></a><span class="pager-pos hud">44 of 56 examples</span><a rel="next" href="../socket-attach-points/" aria-label="Next example: socket-attach-points"><span class="pager-label">socket-attach-points</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -271,10 +271,18 @@ blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</c
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

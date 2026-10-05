@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural mature, open-grown English oak on a grassy mound — a massive, short trunk with broad flutes and deep-furrowed bark plates flaring through seven buttresses into surface roots bedded in the soil, a low fork into five zig-zag scaffold limbs (the low ones reaching out sideways nearly level) that divide three more times, every branch a tapered tube seated inside its parent and narrowing past each junction by its child&#x27;s area (da Vinci&#x27;s rule), a domed crown of 295 leaf-mass cushions — a hidden core on each carrier, faceted leaf clusters centred in it shaded as one billow by custom normals, small lobed oak leaves on the outer clusters — dead twigs, acorns (scaly cup and glossy nut) hanging on stalks and lying among leaf litter, twigs and tufts — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../go-kart/" aria-label="Previous showcase piece: go-kart"><span aria-hidden="true">&larr;</span> go-kart</a><span class="pager-pos hud">64 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../farm-tractor/" aria-label="Next showcase piece: farm-tractor">farm-tractor <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../go-kart/" aria-label="Previous showcase piece: go-kart"><span aria-hidden="true">&larr;</span><span class="pager-label">go-kart</span></a><span class="pager-pos hud">64 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../farm-tractor/" aria-label="Next showcase piece: farm-tractor"><span class="pager-label">farm-tractor</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A mature oak with a massive buttressed trunk and crooked limbs reaching out under a broad dome of lumpy dark-green leaf cushions, on a grassy mound with roots, tufts and fallen leaves.">
       <img src="../assets/broadleaf-oak-hero.webp" alt="A mature oak with a massive buttressed trunk and crooked limbs reaching out under a broad dome of lumpy dark-green leaf cushions, on a grassy mound with roots, tufts and fallen leaves." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=nature">Nature</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/broadleaf-oak/broadleaf_oak.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/broadleaf-oak/broadleaf_oak.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -93,7 +93,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--float-branches</code></td><td>branch seat (every tube starts 1.3 parent radii plus its own radius along its path, or 0.85 of its first segment: shallowest −1.5494)</td><td>17</td></tr><tr><td><code>--pop-nuts</code></td><td>nut seat (hanging nuts pushed 35 mm out along the cup&#x27;s axis: −0.0248 m)</td><td>18</td></tr><tr><td><code>--lean-crown</code></td><td>trunk plumb (bole bent <code>x += 0.040 (z − 0.55)²</code> up to 1.95 m above the soil, the crown carried over rigidly: lean 2.908°)</td><td>19</td></tr><tr><td><code>--fat-twigs</code></td><td>taper (every twig 1.8× thicker: junction ratio up to 1.7240, a child 1.0413 of its parent)</td><td>20</td></tr><tr><td><code>--perch-trunk</code></td><td>trunk sealed (foot rings set from the soil at the axis alone: 0 of 8 sectors)</td><td>21</td></tr><tr><td><code>--arch-roots</code></td><td>roots bedded (each root&#x27;s middle lifted clear of the soil: shallowest station −0.1555 m)</td><td>21</td></tr><tr><td><code>--orphan-clump</code></td><td>cushion on its carrier (the cushion on the live twig nearest the crown&#x27;s centre dropped 0.55 m off it: −0.1063 m)</td><td>22</td></tr><tr><td><code>--scatter-clusters</code></td><td>cluster in its cushion (the clusters of cushions inside crown_q 0.70 pushed 0.25 m out along their bearing: −0.1894 m)</td><td>22</td></tr><tr><td><code>--shed-leaves</code></td><td>leaf in its cluster (leaves inside crown_q 0.85 slid 0.9 m in toward the crown&#x27;s centre: −0.8680 m)</td><td>22</td></tr><tr><td><code>--drop-acorns</code></td><td>hanging acorns (cups and nuts lowered 60 mm off their pedicels: pedicel in cup −0.0491 m)</td><td>23</td></tr><tr><td><code>--float-cover</code></td><td>ground cover (tufts, fallen leaves, fallen acorns and sticks lifted 60 mm: 100 shells not joined, tufts 0.0010–0.0047 m)</td><td>24</td></tr></tbody></table></div>
 <p><code>--float-branches</code> keeps each branch&#x27;s path, so its tip and everything carried on it stay put; only the tube&#x27;s first ring moves. <code>--fat-twigs</code> also bursts twigs out of their parents, so the taper (20) is checked before the seat (17) and names the cause. <code>--lean-crown</code> bends only the bole under the fork and carries the crown over rigidly, so the envelope keeps its size. The three foliage falsifiers move only interior cushions, clusters or leaves (and carry what hangs on them), so nothing at the envelope moves; <code>--shed-leaves</code> slides leaves inward because pushed outward the outermost ones grew the envelope 0.11 m and would have exited 8.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python broadleaf_oak.py --
+<pre tabindex="0"><code>blender --background --python broadleaf_oak.py --
 blender --background --python broadleaf_oak.py -- --skip-decimate
 blender --background --python broadleaf_oak.py -- --stray-vert
 blender --background --python broadleaf_oak.py -- --lift-z
@@ -154,7 +154,7 @@ blender --background --python broadleaf_oak.py -- --output oak.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../go-kart/" aria-label="Previous showcase piece: go-kart"><span aria-hidden="true">&larr;</span> go-kart</a><span class="pager-pos hud">64 of 76 showcase pieces</span><a rel="next" href="../farm-tractor/" aria-label="Next showcase piece: farm-tractor">farm-tractor <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../go-kart/" aria-label="Previous showcase piece: go-kart"><span aria-hidden="true">&larr;</span><span class="pager-label">go-kart</span></a><span class="pager-pos hud">64 of 76 showcase pieces</span><a rel="next" href="../farm-tractor/" aria-label="Next showcase piece: farm-tractor"><span class="pager-label">farm-tractor</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -306,10 +306,18 @@ blender --background --python broadleaf_oak.py -- --output oak.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();

@@ -27,7 +27,7 @@
   <link rel="preload" href="../../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="../gallery.css?v=40c1159600" />
+  <link rel="stylesheet" href="../gallery.css?v=64acd552f3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
     <p>A procedural balanced-arm desk lamp — stepped cast base, swivel turret, two parallelogram arm sections pinned through knuckle bosses with knurled tension knobs, three extension springs hung on cross bars, a domed enamel shade with a rolled rim, reflector and glowing lamp, a draped flex and a cable to a plug — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone">quad-drone <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span><span class="pager-label">pine-tree</span></a><span class="pager-pos hud">39 of 76 showcase pieces<span class="pager-keys"> &middot; <kbd>&larr;</kbd><kbd>&rarr;</kbd></span></span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone"><span class="pager-label">quad-drone</span><span aria-hidden="true">&rarr;</span></a></nav>
     <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red balanced-arm desk lamp on a dark studio floor: stepped base, parallel-rod arms with chrome springs and knobs, and a domed shade whose white reflector frames a glowing bulb.">
       <img src="../assets/desk-lamp-hero.webp" alt="A red balanced-arm desk lamp on a dark studio floor: stepped base, parallel-rod arms with chrome springs and knobs, and a domed shade whose white reflector frames a glowing bulb." width="1280" height="720" fetchpriority="high" />
     </button>
@@ -57,7 +57,7 @@
     <p class="taglist"><span class="tag">category</span> <a href="../#k=showcase&amp;c=household">Household</a></p>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=export">export</a> <a href="../#tag=showcase">showcase</a></p>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/desk-lamp/desk_lamp.py --</pre>
+      <pre id="runCmd" tabindex="0">blender --background --python showcase/desk-lamp/desk_lamp.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
@@ -88,7 +88,7 @@
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (measured 1.0000)</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0 (measured 1, placed inside the envelope)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0 (measured 0.05000)</td><td>16</td></tr><tr><td><code>--offset-pin</code></td><td>joint pins coaxial (elbow pin moved 2.5 mm off its eyes: offset 0.00250 m)</td><td>17</td></tr><tr><td><code>--unhook-spring</code></td><td>spring seat (one loop 10 mm short of its bar: 0.01000 m)</td><td>18</td></tr><tr><td><code>--hollow-base</code></td><td>stance (base pressed from 1.5 mm steel: 3.22 kg, centre at x 0.184, margin −0.094 m)</td><td>19</td></tr><tr><td><code>--unscrew-bulb</code></td><td>one connected assembly (lamp backed 5 mm out of its socket: 2 components)</td><td>20</td></tr></tbody></table></div>
 <p><code>--offset-pin</code> still leaves the pin inside every eye it passes through, and the arm lengths it moves (0.3208, 0.3575 m) stay inside their tolerance, so only the coaxial budget sees it. <code>--unhook-spring</code> leaves the spring hanging from its lower bar, so the assembly stays connected. <code>--hollow-base</code> keeps the outer loft, so the envelope and footprint are unchanged and only the mass moves.</p>
 <h2 id="run">Run<a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
-<pre><code>blender --background --python desk_lamp.py --
+<pre tabindex="0"><code>blender --background --python desk_lamp.py --
 blender --background --python desk_lamp.py -- --skip-decimate
 blender --background --python desk_lamp.py -- --stray-vert
 blender --background --python desk_lamp.py -- --lift-z
@@ -142,7 +142,7 @@ blender --background --python desk_lamp.py -- --output lamp.png</code></pre>
         </article>
       </div>
     </section>
-    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span> pine-tree</a><span class="pager-pos hud">39 of 76 showcase pieces</span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone">quad-drone <span aria-hidden="true">&rarr;</span></a></nav>
+    <nav class="pager pager-foot" aria-label="Showcase pieces"><a rel="prev" href="../pine-tree/" aria-label="Previous showcase piece: pine-tree"><span aria-hidden="true">&larr;</span><span class="pager-label">pine-tree</span></a><span class="pager-pos hud">39 of 76 showcase pieces</span><a rel="next" href="../quad-drone/" aria-label="Next showcase piece: quad-drone"><span class="pager-label">quad-drone</span><span aria-hidden="true">&rarr;</span></a></nav>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <div class="lightbox-bar"><button class="lightbox-close" id="lightboxNative" type="button" aria-pressed="false">Actual size</button><button class="lightbox-close" id="lightboxClose" type="button" autofocus>Close</button></div>
@@ -294,10 +294,18 @@ blender --background --python desk_lamp.py -- --output lamp.png</code></pre>
 
       // Left/right arrows page between entries, but only when nothing has
       // focus and nothing is selected: a focused control, a scrolled code
-      // block, or a text selection keeps its own arrow keys.
+      // block, or a text selection keeps its own arrow keys. A click inside a
+      // code block does not always move focus (or a selection), so also keep
+      // the arrows when the last click landed in one that scrolls sideways
+      // (#398).
+      var lastPointer = null;
+      document.addEventListener('pointerdown', function (e) { lastPointer = e.target; }, true);
       document.addEventListener('keydown', function (e) {
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (box && box.open) return;
+        var scroller = lastPointer && lastPointer.closest
+          && lastPointer.closest('pre, .code-lines, .codewrap');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth) return;
         var ae = document.activeElement;
         if (ae && ae !== document.body && ae !== document.documentElement) return;
         var sel = window.getSelection && window.getSelection();
