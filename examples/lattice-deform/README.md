@@ -70,4 +70,4 @@ same on 4.5 LTS, 5.1 and 5.2 LTS. Measured identically on 4.5.11, 5.1.2 and 5.2.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--bspline`.
+Smoke does not pass `--output`. Its catalog falsifier is `--bspline` (expects exit 4).

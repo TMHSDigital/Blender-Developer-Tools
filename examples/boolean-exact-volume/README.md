@@ -83,4 +83,4 @@ renamed in 5.0. Measured identically on 4.5.11, 5.1.2 and 5.2.1: EXACT union 8.9
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--float-solver`.
+Smoke does not pass `--output`. Its catalog falsifier is `--float-solver` (expects exit 3).

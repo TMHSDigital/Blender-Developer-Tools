@@ -67,7 +67,7 @@ against it. `10` and `11` are the shared framing and asset-quality helpers.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`, `--obj`, or `--unevaluated`.
+Smoke does not pass `--output` or `--obj`. Its catalog falsifier is `--unevaluated` (expects exit 5).
 
 The `--output` render path additionally measures framing against the Layer 1 band via
 `examples/gallery_framing.py` (exit 10) and the asset-quality floors on the shipped

@@ -75,7 +75,7 @@ against it. `10` is the shared framing helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`, `--same-height`, or `--api dict`/`rna`.
+Smoke does not pass `--output` or `--api dict`/`rna`. Its catalog falsifier is `--same-height` (expects exit 7).
 
 ## Falsification
 

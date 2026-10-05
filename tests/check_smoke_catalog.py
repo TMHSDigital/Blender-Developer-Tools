@@ -71,6 +71,24 @@ def check_schema(row: dict) -> list[str]:
     return errors
 
 
+# "Smoke does not pass `--a` or `--b`." in an example README. CI runs every
+# catalog falsifier, so naming one here contradicts the workflow (#359).
+NOT_PASSED = re.compile(r"Smoke does\s+not\s+pass\s+(.*?)\.(?:\s|$)", re.S)
+
+
+def check_readme_claims(root: Path, row: dict) -> list[str]:
+    readme = root / Path(row["script"]).parent / "README.md"
+    if not readme.is_file():
+        return []
+    m = NOT_PASSED.search(readme.read_text(encoding="utf-8"))
+    if not m:
+        return []
+    named = set(re.findall(r"`(--[\w-]+)", m.group(1)))
+    ran = {a for f in row.get("falsifiers", []) for a in f.get("args", []) if a.startswith("--")}
+    return [f"{readme.relative_to(root).as_posix()}: says smoke does not pass {flag}, "
+            f"but it is this row's catalog falsifier" for flag in sorted(named & ran)]
+
+
 def check(root: Path) -> list[str]:
     catalog = json.loads((root / "tests/smoke/catalog.json").read_text(encoding="utf-8"))
     if not catalog:
@@ -80,6 +98,7 @@ def check(root: Path) -> list[str]:
     errors: list[str] = []
     for row in catalog:
         errors += check_schema(row)
+        errors += check_readme_claims(root, row)
         parts = Path(row["script"]).parts
         if len(parts) >= 2 and parts[0] in ("examples", "showcase"):
             key = f"{parts[0]}/{parts[1]}"
