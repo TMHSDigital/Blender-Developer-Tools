@@ -64,6 +64,14 @@ Blender-Developer-Tools/
   - Other types (`chore:`, `docs:`, `ci:`, `refactor:`, etc.) do **not** cut a release: the
     workflow runs, decides there is nothing to release, and exits without a tag or version
     bump. A mixed push still releases if any commit in range is a `feat:`/`fix:`.
+  - Exception: if plugin content (`skills/`, `claude/`, `rules/`, `snippets/`, `templates/`)
+    changed since the last tag, a patch release is cut whatever the commit types, so a
+    `docs:` fix to a skill still reaches plugin users
+    (`.github/scripts/plugin-content-changed.sh`).
+  - The `plugin-dist` branch is republished only when the built plugin differs from the
+    published one (`build_plugin_dist.py --fingerprint`, which ignores version strings). A
+    release cut for the gallery or site leaves plugin users on their current version
+    instead of offering an update with identical content.
   - `[skip ci]` in the head commit still bypasses the workflow entirely. With the commit-type
     gate above it is now an optional override, not a requirement for non-release commits.
 - Commit messages should describe the why, not the what, and carry a DCO

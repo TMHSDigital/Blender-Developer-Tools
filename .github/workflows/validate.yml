@@ -423,6 +423,9 @@ jobs:
       - name: Plugin-dist --out refuses destructive targets
         run: python3 tests/test_build_plugin_dist.py -v
 
+      - name: Plugin-content change detector (release cadence)
+        run: python3 tests/test_plugin_content_changed.py -v
+
       - name: Exit-code gate resolves fail() helpers and tuple returns
         run: python3 tests/test_exit_code_readme.py -v
 
