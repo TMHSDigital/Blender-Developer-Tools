@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.12] - 2026-10-05
+
+### Fixes
+
+- fix(testing): let the exit-code gate see fail() helpers and tuple returns (#426) ([`f454d51`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f454d51bbf8b07772b75ad0e76148f9d8d250bfd))
+
+[Release v0.143.12](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.12)
+
 ## [0.143.11] - 2026-10-05
 
 ### Fixes
