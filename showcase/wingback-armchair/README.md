@@ -97,8 +97,8 @@ export file.
 | Materials | exactly 9 distinct; face floors ≥14500 leather, ≥3350 wood, ≥4450 brass, ≥620 shade, ≥615 rug, ≥1390 fringe, ≥114 cloth, ≥11 paper, ≥195 bulb | 9 slots; 15712 / 3628 / 4825 / 672 / 668 / 1512 / 124 / 12 / 212 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.0304, 1.400, 1.160) m ± 0.01 | (2.0304, 1.4000, 1.1600), zmin 0 |
-| Collider tris | ≤ 820 | 802 |
-| Export | written, size > 0, removed after measuring | 3509556 bytes |
+| Collider tris | ≤ 820 | 640 |
+| Export | written, size > 0, removed after measuring | 3503360 / 3503360 / 3503352 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the topology or the envelope: every run measures the
 default's 44324 triangles and AABB.

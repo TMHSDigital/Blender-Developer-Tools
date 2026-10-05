@@ -85,8 +85,8 @@ export file.
 | Materials | exactly 10 distinct; ≥940 paint, ≥5650 chrome, ≥6250 alloy, ≥7410 steel, ≥480 tread rubber, ≥850 gum, ≥320 leather, ≥970 tape, ≥1620 black, ≥158 bottle faces | 10 slots; 1048 / 6438 / 6950 / 8239 / 540 / 952 / 356 / 1080 / 1810 / 176 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.670, 0.438, 0.997) m ± 0.01 | (1.6698, 0.4376, 0.9969), zmin 0 |
-| Collider tris | ≤ 970 | 880 |
-| Export | written, size > 0, removed after measuring | 3598060 bytes |
+| Collider tris | ≤ 970 | 574 |
+| Export | written, size > 0, removed after measuring | 3579436 / 3579436 / 3579428 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 46092: they move parts,
 never add or remove them. `--lift-chain` keeps the default chain's link

@@ -120,7 +120,7 @@ export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.2872, 1.9008, 1.1111) m ± 0.01 | (2.2872, 1.9008, 1.1111), zmin 0 |
 | Collider tris (boulder hull) | ≤ 200 | 130 |
-| Export | written, size > 0, removed after measuring | 10731436 bytes |
+| Export | written, size > 0, removed after measuring | 10731448 / 10731448 / 10731436 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels

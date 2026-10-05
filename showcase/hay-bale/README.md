@@ -67,7 +67,7 @@ RNG and no version-dependent operator.
 | Hay–twine gap | BVH surface < 0.008 m | 0.00009 |
 | Collider tris | ≤ 400 | 100 |
 | Bake texels | smallest UV cell ≥ 12 px at the baked resolution | 22.43 px at 1024 px |
-| Export | written, size > 0 | 203508 / 203508 / 203496 bytes |
+| Export | written, size > 0 | 200356 / 200356 / 200348 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical
 across series — the gate is a ratio band, not an exact count. Bake

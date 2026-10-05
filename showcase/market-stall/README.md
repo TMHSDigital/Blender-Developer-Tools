@@ -44,8 +44,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 3 distinct; ≥16 faces per stripe slot | 3 slots; 34 / 34 stripe faces |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.389, 1.011, 1.740) m ± 0.01 | (1.3892, 1.0107, 1.7402), zmin 0 |
-| Collider tris | ≤ 80 | 58 |
-| Export | written, size > 0, removed after measuring | 312400 / 312400 / 312376 bytes |
+| Collider tris | ≤ 80 | 56 |
+| Export | written, size > 0, removed after measuring | 310792 / 310792 / 310784 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 ### Hygiene
 

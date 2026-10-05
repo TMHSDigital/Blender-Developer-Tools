@@ -34,7 +34,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.807, 0.808, 0.404) m ± 0.015 | (0.8024, 0.8022, 0.4037), zmin 0 |
 | Collider tris | ≤ 360 | 162 |
-| Export | written, size > 0 | 231952 / 231952 / 231944 bytes |
+| Export | written, size > 0 | 231712 / 231712 / 231708 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles dropped from **3616 to 2200** in the quality pass: the
 old piece stacked identical boxes with a mortar gap and a teepee that

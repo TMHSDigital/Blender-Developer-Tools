@@ -84,7 +84,7 @@ export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (5.2645, 5.1503, 6.0258) m ± 0.01 | (5.2645, 5.1503, 6.0258), zmin 0 |
 | Collider tris (lower trunk hull) | ≤ 60 | 44 |
-| Export | written, size > 0, removed after measuring | 3518252 bytes |
+| Export | written, size > 0, removed after measuring | 3518264 / 3518264 / 3518252 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the triangle count: every falsifier run measured
 45196 tris. None moves the envelope by more than 0.1 mm.

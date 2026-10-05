@@ -84,8 +84,8 @@ export file.
 | Materials | exactly 6 distinct; ≥3600 enamel, ≥8300 steel, ≥310 bulb, ≥1350 rubber, ≥560 reflector, ≥340 bakelite faces | 6 slots; 3972 / 9210 / 348 / 1508 / 622 / 384 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.725, 0.361, 0.442) m ± 0.01 | (0.7252, 0.3606, 0.4421), zmin 0 |
-| Collider tris | ≤ 760 | 713 |
-| Export | written, size > 0, removed after measuring | 2229360 bytes |
+| Collider tris | ≤ 760 | 472 |
+| Export | written, size > 0, removed after measuring | 2217452 / 2217452 / 2217444 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The triangle band is wide enough to hold `--hollow-base` (30974) and
 `--unhook-spring` (29790), so those falsifiers exit on their own budgets

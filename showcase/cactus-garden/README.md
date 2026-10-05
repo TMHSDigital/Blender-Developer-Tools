@@ -89,7 +89,7 @@ export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.9950, 2.6077, 2.3754) m ± 0.01 | (2.9950, 2.6077, 2.3754), zmin 0 |
 | Collider tris (sand hull) | ≤ 120 | 112 |
-| Export | written, size > 0, removed after measuring | 3772220 bytes |
+| Export | written, size > 0, removed after measuring | 3772228 / 3772228 / 3772220 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the triangle count: every falsifier run measured
 45364 tris. Only `--lean-saguaro` moves the envelope, by 6.5 mm in Z

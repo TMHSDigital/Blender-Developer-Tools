@@ -45,8 +45,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 3 distinct; ≥80 metal, ≥40 roof faces | 3 slots; 300 metal, 126 roof |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.594, 1.594, 2.973) m ± 0.01 | (1.5940, 1.5940, 2.9731), zmin 0 |
-| Collider tris | ≤ 180 | 150 |
-| Export | written, size > 0, removed after measuring | 494508 / 494508 / 494492 bytes |
+| Collider tris | ≤ 180 | 122 |
+| Export | written, size > 0, removed after measuring | 492624 / 492624 / 492616 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **5220 to 6408** in the first quality pass (a
 taller eave-true roof and coursed shakes) and to **6840** in the second

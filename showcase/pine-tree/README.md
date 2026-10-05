@@ -93,8 +93,8 @@ export file.
 | Materials | exactly 6 distinct; face floors bark ≥2850, needle ≥35000, cone ≥950, deadwood ≥250, soil ≥820, stone ≥170 | 6 slots; 3026 / 36612 / 1024 / 274 / 878 / 192 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (9.284, 7.932, 7.659) m ± 0.01 | (9.2837, 7.9318, 7.6586), zmin 0 |
-| Collider tris (trunk hull) | ≤ 60 | 56 |
-| Export | written, size > 0, removed after measuring | 5703388 bytes |
+| Collider tris (trunk hull) | ≤ 60 | 54 |
+| Export | written, size > 0, removed after measuring | 5703232 / 5703232 / 5703216 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels

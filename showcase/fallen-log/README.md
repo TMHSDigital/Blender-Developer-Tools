@@ -74,8 +74,8 @@ export file.
 | Materials | exactly 9 distinct; ≥4600 bark, ≥800 wood, ≥340 rot, ≥2150 moss, ≥2200 bracket, ≥1160 toadstool, ≥2240 soil, ≥1870 litter, ≥4580 fern faces | 9 slots; 5144 / 892 / 384 / 2400 / 2448 / 1296 / 2494 / 2080 / 5090 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (4.1189, 2.1885, 1.0267) m ± 0.01 | (4.1189, 2.1885, 1.0267), zmin 0 |
-| Collider tris (log hull) | ≤ 240 | 215 |
-| Export | written, size > 0, removed after measuring | 2826044 bytes |
+| Collider tris (log hull) | ≤ 240 | 142 |
+| Export | written, size > 0, removed after measuring | 2823404 / 2823404 / 2823392 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the triangle count: they move parts or the soil,
 never add or remove them.

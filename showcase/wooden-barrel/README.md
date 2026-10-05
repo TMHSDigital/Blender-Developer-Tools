@@ -36,8 +36,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct; ≥400 wood, ≥200 metal faces | 2 slots; 2584 / 1440 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.722, 0.714, 0.880) m ± 0.015 | (0.7220, 0.7142, 0.8800), zmin 0 |
-| Collider tris | ≤ 400 | 238 |
-| Export | written, size > 0 | 552456 / 552456 / 552440 bytes |
+| Collider tris | ≤ 400 | 226 |
+| Export | written, size > 0 | 555344 / 555344 / 555340 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **4312 to 7216** in the quality pass: 12 identical
 staves with 5 mm daylight and circular hoops became 20 jittered staves,

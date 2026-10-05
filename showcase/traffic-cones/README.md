@@ -73,8 +73,8 @@ export file.
 | Materials | exactly 11 distinct; ≥5560 cone PVC, ≥3760 reflective, ≥7440 rubber, ≥540 asphalt, ≥50 road paint, ≥450 tar, ≥58 orange sheeting, ≥350 board plastic, ≥2670 steel, ≥660 black plastic, ≥640 lens faces | 11 slots; 6048 / 4088 / 8096 / 596 / 56 / 496 / 64 / 384 / 2912 / 720 / 696 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (3.0365, 2.0374, 1.3354) m ± 0.01, read off the vertices | (3.0365, 2.0374, 1.3354), zmin 0 |
-| Collider tris | ≤ 540 | 493 |
-| Export | written, size > 0, removed after measuring | 3335792 bytes |
+| Collider tris | ≤ 540 | 342 |
+| Export | written, size > 0, removed after measuring | 3327800 / 3327800 / 3327792 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 45816 and the envelope at
 (3.0365, 2.0374, 1.3354): they move parts, never add or remove them.

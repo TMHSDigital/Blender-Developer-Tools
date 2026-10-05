@@ -46,8 +46,8 @@ mesh, materials, UVs, evaluated LOD, collider or export file.
 | Materials | exactly 2 distinct; ≥200 wood, ≥48 metal faces | 2 slots; 1168 / 576 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.341, 0.341, 0.470) m ± 0.015 | (0.3406, 0.3406, 0.4700), zmin 0 |
-| Collider tris | ≤ 640 | 468 |
-| Export | written, size > 0 | 259676 / 259676 / 259668 bytes |
+| Collider tris | ≤ 640 | 308 |
+| Export | written, size > 0 | 251188 / 251188 / 251184 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **2528 to 3040** in the second quality pass, and the
 band moved from 2300–3200 to 2750–3350. Each foot gained a tread, and the

@@ -34,8 +34,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.764, 0.524, 0.696) m ± 0.015 | (0.7640, 0.5237, 0.6958), zmin 0 |
 | Lid bands on the vault | 3 bands spanning the lid; every vertex radius within 1e-4 m of the band's inner/outer radius | 3; 0.000000 |
-| Collider tris | ≤ 200 | 180 |
-| Export | written, size > 0 | 285980 / 285980 / 285972 bytes |
+| Collider tris | ≤ 200 | 156 |
+| Export | written, size > 0 | 283028 / 283028 / 283024 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 ### Hygiene
 

@@ -91,8 +91,8 @@ export file.
 | Materials | exactly 6 distinct; ≥4350 enamel, ≥12800 chrome, ≥540 brass, ≥1120 rubber, ≥740 bakelite, ≥400 badge faces | 6 slots; 4732 / 13960 / 584 / 1216 / 810 / 440 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.761, 0.704, 1.230) m ± 0.01 | (0.7614, 0.7039, 1.2286), zmin 0 |
-| Collider tris | ≤ 2200 | 1997 |
-| Export | written, size > 0, removed after measuring | 3114936 bytes |
+| Collider tris | ≤ 2200 | 1560 |
+| Export | written, size > 0, removed after measuring | 3119064 / 3119064 / 3119060 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the topology, so every one of them measures the
 default's 41460 triangles and the default's AABB.

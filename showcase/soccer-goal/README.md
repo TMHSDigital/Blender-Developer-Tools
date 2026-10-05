@@ -80,8 +80,8 @@ export file.
 | Materials | exactly 10 distinct; ≥2300 paint, ≥8300 cord, ≥150 rope, ≥310 steel, ≥1350 cast, ≥3300 nylon, ≥920 galvanised, ≥180 turf, ≥16 line paint, ≥95 soil faces | 10 slots; 2514 / 9028 / 160 / 340 / 1464 / 3604 / 1000 / 196 / 16 / 102 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (6.220, 2.640, 2.153) m ± 0.01 | (6.2200, 2.6400, 2.1527), zmin 0 |
-| Collider tris | ≤ 190 | 168 |
-| Export | written, size > 0, removed after measuring | 2525996 bytes |
+| Collider tris | ≤ 190 | 126 |
+| Export | written, size > 0, removed after measuring | 2523792 / 2523792 / 2523784 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier but one leaves the triangle count at 34804: they move or
 shorten parts, never add or remove them. `--wide-mouth` measures 34816,

@@ -104,7 +104,7 @@ export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (3.8168, 3.5512, 4.8254) m ± 0.01 | (3.8168, 3.5512, 4.8254), zmin 0 |
 | Collider tris (lower 1.25 m hull) | ≤ 96 | 88 |
-| Export | written, size > 0, removed after measuring | 5606968 bytes |
+| Export | written, size > 0, removed after measuring | 5606976 / 5606976 / 5606968 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The quality pass re-fitted four of these around the new measurements, each
 for a stated reason. The triangle band moved from 51500–53500 to 72800–74800,

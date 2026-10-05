@@ -45,9 +45,9 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 3 distinct; ≥ 280 wood, ≥ 190 stone, ≥ 260 metal faces | 3 slots; 400 / 240 / 364 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.722, 0.419, 0.610) m ± 0.015 | (0.7220, 0.4185, 0.6100), zmin 0 |
-| Collider tris | ≤ 320 | 304 |
+| Collider tris | ≤ 320 | 202 |
 | Bake texels | smallest UV cell ≥ 12 px at the baked resolution | 29.44 px at 1024 px |
-| Export | written, size > 0 | 152272 / 152272 / 152260 bytes |
+| Export | written, size > 0 | 147532 / 147532 / 147528 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider ceiling moved from 240 to 320 with the stone. 48 segments
 put more of its rim on the hull (198 → 304 triangles).

@@ -1135,6 +1135,10 @@ def convex_hull_collider(obj, name):
     bm = bmesh.new()
     try:
         bm.from_mesh(obj.data)
+        # Hull the points, not the surface: convex_hull keeps source faces
+        # lying on the hull, which made colliders non-manifold (#386).
+        for edge in list(bm.edges):
+            bm.edges.remove(edge)
         result = bmesh.ops.convex_hull(bm, input=list(bm.verts))
         interior = [g for g in result.get("geom_interior") or [] if g.is_valid]
         if interior:
@@ -1142,6 +1146,9 @@ def convex_hull_collider(obj, name):
         unused = [g for g in result.get("geom_unused") or [] if g.is_valid]
         if unused:
             bmesh.ops.delete(bm, geom=unused, context="VERTS")
+        loose = [v for v in bm.verts if v.is_valid and not v.link_faces]
+        if loose:
+            bmesh.ops.delete(bm, geom=loose, context="VERTS")
         bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(10.0), verts=list(bm.verts),
                                  edges=list(bm.edges), delimit={"NORMAL"})
         bmesh.ops.triangulate(bm, faces=list(bm.faces))

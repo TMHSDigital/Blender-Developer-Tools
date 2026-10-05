@@ -83,8 +83,8 @@ export file.
 | Materials | exactly 8 distinct; ≥1580 shell, ≥2120 carbon, ≥5950 gunmetal, ≥480 glass, ≥700 light, ≥1190 rubber, ≥7800 graphite, ≥2000 anodised faces | 8 slots; 1720 / 2304 / 6472 / 524 / 760 / 1296 / 8464 / 2184 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.692, 0.569, 0.243) m ± 0.01 | (0.6924, 0.5693, 0.2433), zmin 0 |
-| Collider tris | ≤ 540 | 499 |
-| Export | written, size > 0, removed after measuring | 3128864 bytes |
+| Collider tris | ≤ 540 | 374 |
+| Export | written, size > 0, removed after measuring | 3121080 / 3121080 / 3121072 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 41048: they move, scale or
 narrow parts, never add or remove them.

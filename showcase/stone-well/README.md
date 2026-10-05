@@ -36,8 +36,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Post placement | each post within 0.02 rad, in plan, of a roof hip corner recomputed from the mesh | 0.00000 |
 | Bucket clearance | hangs 0.085–0.115 m clear of the measured coping top | 0.10000 |
 | Material-island gap | stone↔wood and metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 |
-| Collider tris | ≤ 380 | 346 |
-| Export | written, size > 0, removed after measuring | 690216 bytes on 5.2.1 |
+| Collider tris | ≤ 380 | 258 |
+| Export | written, size > 0, removed after measuring | 686472 / 686472 / 686468 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh happened
