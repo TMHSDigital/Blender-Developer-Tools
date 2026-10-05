@@ -57,7 +57,7 @@
   {"name": "lightmap-uv-channel", "script": "examples/lightmap-uv-channel/lightmap_uv_channel.py", "falsifiers": [{"args": ["--overlap-islands"], "expect_exit": 7}]},
   {"name": "socket-attach-points", "script": "examples/socket-attach-points/socket_attach_points.py", "falsifiers": [{"args": ["--skip-mpi"], "expect_exit": 3}]},
   {"name": "vertex-color-ao", "script": "examples/vertex-color-ao/vertex_color_ao.py", "falsifiers": [{"args": ["--uniform-hemisphere"], "expect_exit": 3}]},
-  {"name": "cross-version-property-delete", "script": "examples/cross-version-property-delete/cross_version_property_delete.py", "falsifiers": [{"args": ["--skip-delete"], "expect_exit": 7}]},
+  {"name": "cross-version-property-delete", "script": "examples/cross-version-property-delete/cross_version_property_delete.py", "falsifiers": [{"args": ["--skip-delete"], "expect_exit": 7}, {"args": ["--subscript-registered"], "expect_exit": 8, "min_version": "5.0"}]},
   {"name": "usd-export-evaluation-mode", "script": "examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py", "falsifiers": [{"args": ["--subdivision", "BEST_MATCH"], "expect_exit": 4}]},
   {"name": "gn-zone-iterate", "script": "examples/gn-zone-iterate/gn_zone_iterate.py", "falsifiers": [{"args": ["--unpair-repeat"], "expect_exit": 3}]},
   {"name": "gn-sim-fountain", "script": "examples/gn-sim-fountain/gn_sim_fountain.py", "falsifiers": [{"args": ["--unpair"], "expect_exit": 3}]},

@@ -45,7 +45,7 @@ def add_simple_driver(obj, data_path, index, expression):
 
 `driver_add(data_path, index)`:
 
-- `data_path` is the RNA path of the property, like `"location"` or `"scale"` or `'["my_custom_prop"]'`.
+- `data_path` is the RNA path of the property, like `"location"` or `"scale"`. A user custom (ID) property set with `obj["my_custom_prop"] = 1.0` is `'["my_custom_prop"]'`; a registered `bpy.props` property is its plain name, `"my_prop"`. On 5.0+ `'["my_prop"]'` no longer resolves a registered property (`ValueError`), though it did on 4.x.
 - `index` is the array index for vector or color properties (0 = X, 1 = Y, 2 = Z), or `-1` for scalar properties.
 - Returns the `FCurve` whose `.driver` is now active.
 
