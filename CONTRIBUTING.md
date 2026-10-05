@@ -18,6 +18,18 @@ Thanks for helping improve this repository. This document describes how to set u
    git checkout -b your-feature-name
    ```
 
+4. **Run the checks** before you open a pull request. One command runs every
+   Validate check that does not need Blender (the frontmatter, catalog,
+   exit-code, gallery, link and packaging gates, plus the tooling tests):
+
+   ```bash
+   pip install -r requirements-dev.txt
+   python tests/run_all.py            # or: python tests/run_all.py -k catalog
+   ```
+
+   Blender smoke runs in CI on 5.2 LTS and 4.5 LTS; to run an example locally,
+   see `tests/smoke/run_example.py`.
+
 ## Repository Structure
 
 This repo is a content collection (skills, rules, snippets, templates, examples, and showcase pieces) for Blender Python development. There is no runtime and no MCP server. Headless checks run through `tests/smoke/run_example.py`; CI validates frontmatter, syntax, and aggregate counts.

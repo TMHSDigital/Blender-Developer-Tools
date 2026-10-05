@@ -7,6 +7,8 @@
 *.html text eol=lf
 *.css text eol=lf
 *.py text eol=lf
+# Shell scripts run under bash in CI and Git Bash/WSL locally; CRLF breaks WSL.
+*.sh text eol=lf
 
 # Binary. Gallery stills and any future .blend fixtures.
 *.webp binary
