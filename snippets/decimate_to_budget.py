@@ -3,9 +3,10 @@
 # not obj.data. ratio = target_tris / current, clamped to 1.0.
 # Returns None when the object is already at or under budget.
 #
-# Mesh.calc_loop_triangles() is required before reading loop_triangles on
-# 4.5 LTS and on 5.x; tessellation is not implicit. Always call it.
-# Do not use a hasattr guard.
+# On 4.5 LTS and 5.x, Mesh.loop_triangles is computed lazily from the
+# current topology, so calc_loop_triangles() is not required (a fresh cube,
+# a to_mesh() result and a post-edit mesh all read correct counts without
+# it). Calling it is harmless; kept for code that also runs on older builds.
 #
 # Reference:
 #   https://docs.blender.org/api/5.1/bpy.types.Mesh.html#bpy.types.Mesh.calc_loop_triangles

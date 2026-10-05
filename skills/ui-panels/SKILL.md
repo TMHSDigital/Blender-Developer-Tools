@@ -54,7 +54,7 @@ After registering the class, the panel appears in the 3D viewport's sidebar (pre
 | `bl_parent_id` | Another panel's `bl_idname` | Makes this a sub-panel under that parent |
 | `bl_options` | `{'DEFAULT_CLOSED'}`, `{'HIDE_HEADER'}` | UI options |
 
-The class name convention `EDITOR_PT_name` is enforced by Blender (the `_PT_` infix) and the editor prefix maps to `bl_space_type`.
+The `EDITOR_PT_name` convention is checked, not enforced: a `bl_idname` without the `_PT_` infix still registers, and Blender prints `Warning: 'mypanel' does not contain '_PT_' with prefix and suffix` (4.5.11 and 5.2.1). Follow it anyway; the editor prefix maps to `bl_space_type`, and sub-panels reference the parent by this id.
 
 ## The declarative `draw` method
 
@@ -226,7 +226,7 @@ def unregister():
 
 5. **Show/hide instead of `.enabled`**. The panel jumps and confuses the user. Gray out unless the entire concept is gone.
 
-6. **`bl_idname` not matching the convention**. The `_PT_` infix is required, and the editor prefix should match `bl_space_type`.
+6. **`bl_idname` not matching the convention**. Registration still succeeds but prints a `_PT_` warning on every load, and the editor prefix should match `bl_space_type`.
 
 ## Related
 

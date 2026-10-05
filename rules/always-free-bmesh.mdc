@@ -1,5 +1,5 @@
 ---
-description: Flag bmesh.new() calls without a paired bm.free() in a try/finally block. BMesh allocates C-side memory that Python's garbage collector cannot reclaim; missing free() leaks and eventually crashes Blender.
+description: Flag bmesh.new() calls without a paired bm.free() in a try/finally block. Blender frees an unreferenced BMesh only when its Python wrapper dies, which a traceback, global, closure or modal operator can delay for the whole session; an explicit free() in finally releases it deterministically.
 alwaysApply: false
 globs:
   - "**/*.py"
@@ -10,13 +10,21 @@ standards-version: 1.10.0
 
 `bmesh.new()` returns a Python wrapper around a C-side BMesh structure.
 The structure holds the vertex, edge, face, loop, and attribute layer
-storage that the bmesh module operates on. Python's garbage collector
-sees the wrapper but **cannot free the underlying C memory**. That has
-to be done explicitly with `bm.free()`.
+storage that the bmesh module operates on. Blender frees it when the
+wrapper is garbage-collected ("typically when the script finishes
+executing", per the `BMesh.free()` docs), so the problem is not that the
+memory can never be reclaimed. It is **when**:
 
-Forgetting `bm.free()` leaks. Long-running scripts and modal operators
-that loop without freeing eventually exhaust memory and crash Blender,
-often after the user has done significant unsaved work.
+- An exception's traceback holds the frame, and with it `bm`, alive
+  (`sys.last_traceback` keeps the last one for the whole session).
+- A global, a closure, a class attribute or a modal operator's `self`
+  keeps the wrapper reachable for as long as the add-on runs.
+- A loop that builds a BMesh per iteration without freeing can hold many
+  full mesh copies at once before collection catches up.
+
+`bm.free()` in a `finally` releases the storage at a point you choose,
+on every path, and makes any later use of `bm` fail fast with
+`ReferenceError` instead of quietly reading stale data.
 
 ## What this rule flags
 
@@ -77,8 +85,8 @@ and `bm.free()` raises. Without it, a `KeyError` reading
 remaining session.
 
 For the edit-mode case where the bmesh comes from `bmesh.from_edit_mesh()`,
-**do not call `bm.free()`**. Edit-mode bmeshes are owned by Blender and
-freeing them double-frees and crashes:
+**do not call `bm.free()`**. Blender owns the edit-mode BMesh for as long
+as the mesh is in Edit Mode; your wrapper only borrows it:
 
 ```python
 # Edit-mode: Blender owns the bmesh, do not free it
@@ -124,9 +132,9 @@ RAM and survives until they restart Blender. For users on machines with
 16GB or less, even modest leaks (a few hundred MB per modal session)
 make Blender unusable after an hour.
 
-The crash itself is hard to diagnose: the OOM may not happen during
+The symptom is hard to diagnose: memory pressure may not surface during
 your code's execution at all, but during a later modifier evaluation
-that allocates the last piece of available RAM.
+that needs the RAM a lingering BMesh still holds.
 
 ## Related
 

@@ -1,9 +1,10 @@
 # bmesh load/edit/free pattern.
-# bmesh.new() allocates C-side memory that Python's garbage collector
-# does not reclaim. Always pair with bm.free() in a try/finally.
+# bmesh.new() allocates C-side storage that lives until the wrapper is
+# collected, which a traceback, global or closure can delay indefinitely.
+# Always pair with bm.free() in a try/finally to release it on every path.
 #
 # (For edit-mode bmeshes from bmesh.from_edit_mesh(), do NOT call
-# bm.free(): Blender owns those, and freeing double-frees.)
+# bm.free(): Blender owns those.)
 #
 # Reference:
 #   https://docs.blender.org/api/current/bmesh.html

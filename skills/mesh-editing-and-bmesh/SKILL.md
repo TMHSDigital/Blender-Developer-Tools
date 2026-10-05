@@ -69,7 +69,7 @@ Use this layer when:
 - You're doing structural edits (split edges, merge verts, dissolve faces).
 - You need iteration order to be stable mid-edit.
 
-The `try`/`finally` with `bm.free()` is **mandatory**. `bmesh.new()` allocates memory in the C side that Python's garbage collector cannot reclaim. Forgetting `bm.free()` leaks BMesh structures and eventually crashes Blender. See the rule `always-free-bmesh`.
+The `try`/`finally` with `bm.free()` is **mandatory**. `bmesh.new()` allocates C-side storage that is released only when the wrapper is collected, and a traceback, global, closure or modal operator can keep it alive for the whole session. `free()` in `finally` releases it on every path and makes any later use of `bm` raise `ReferenceError`. See the rule `always-free-bmesh`.
 
 ### Layer 3: `bpy.ops.mesh.*` operators
 
@@ -127,7 +127,7 @@ obj = bpy.data.objects["Cube"]
 bpy.data.objects.remove(obj, do_unlink=True)
 ```
 
-`do_unlink=True` removes the object from any collections it was linked into before deleting it. Skip it and Blender will refuse to delete an object still referenced.
+`do_unlink=True` removes the object from any collections it was linked into before deleting it. It is already the default (`remove(object, *, do_unlink=True, ...)`); passing it explicitly documents intent. With `do_unlink=False`, Blender refuses to delete an object that is still referenced.
 
 ## `foreach_set` for bulk vertex injection
 
@@ -264,7 +264,7 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 
 6. **Skipping `mesh.update()`** after `foreach_set` or vertex coordinate edits. The mesh stays out of date until the next depsgraph cycle.
 
-7. **Wrong dtype in `foreach_set`** (`float64` instead of `float32`). Silently writes garbage on some platforms.
+7. **Mismatched dtype in `foreach_set`** (a `float64` buffer for a float32 attribute). The values are converted correctly (round-trip error about 1e-7, float32 precision, on 4.5.11 and 5.2.1), but slower: 38 ms vs 21 ms for 361k vertices on 5.2.1 (34 vs 24 ms on 4.5.11). Match the attribute's type (`float32` for `co`) for bulk speed.
 
 8. **Trusting glTF as an n-gon witness.** The exporter always triangulates. A cube and a hexagon-from-dissolved-edge both ship 12 tris. Hygiene (`len(poly.vertices) <= 4`) and `Mesh.calc_tangents` (aborts on n-gons) must run on the Blender mesh. Witness: [`examples/ngon-triangulate/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate).
 

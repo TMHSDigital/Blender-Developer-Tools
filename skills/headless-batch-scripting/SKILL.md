@@ -33,7 +33,12 @@ Or with arguments after `--`:
 blender --background scene.blend --python my_script.py -- --output out.png --frames 1,5,10
 ```
 
-`--background` (or `-b`) tells Blender not to launch a UI window. `--python` (or `-P`) runs a Python script. The script receives `sys.argv` containing everything after the `--` separator.
+`--background` (or `-b`) tells Blender not to launch a UI window. `--python` (or `-P`) runs a Python script. The script's `sys.argv` is Blender's **full** command line (`blender`, `--background`, `--python`, ...); slice off everything up to and including `--` to get your own arguments, as the parser below does.
+
+Two flags matter for unattended runs:
+
+- `--factory-startup` ignores the user's startup file and preferences (add-ons, themes, auto-run settings), so the job behaves the same on every machine.
+- `--python-exit-code N` makes an uncaught exception in the script exit Blender with code `N`. Without it, a traceback still exits **0**, and CI reports success.
 
 ## What changes without a UI
 
@@ -68,8 +73,8 @@ for obj in list(bpy.data.objects):
 ```
 
 ```python
-# WRONG: requires UI for the file dialog.
-bpy.ops.export_scene.obj(filepath="/tmp/out.obj")  # may also fail because the OBJ exporter is now under wm.obj_export
+# WRONG: export_scene.obj was the legacy Python OBJ add-on, removed in 4.0.
+bpy.ops.export_scene.obj(filepath="/tmp/out.obj")  # AttributeError on 4.x / 5.x
 
 # RIGHT in 5.x: the new exporter operates on bpy.data, not the active object selection.
 bpy.ops.wm.obj_export(filepath="/tmp/out.obj", export_selected_objects=False)
@@ -201,7 +206,7 @@ if __name__ == "__main__":
 
 Notes:
 
-- `bpy.ops.render.render(write_still=True)` is one of the few `bpy.ops` calls that work in `--background`.
+- `bpy.ops.render.render(write_still=True)` works in `--background`, like other operators that do not need a window or editor area.
 - EEVEE's engine identifier is `BLENDER_EEVEE` on Blender 5.0+ and `BLENDER_EEVEE_NEXT` on 4.2-4.5 LTS (the id was reclaimed in 5.0 after legacy EEVEE was removed in 4.2). Detect via `bpy.app.version`.
 
 ## Detecting Blender version in scripts

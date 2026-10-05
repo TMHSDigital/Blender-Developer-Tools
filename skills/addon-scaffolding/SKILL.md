@@ -199,7 +199,7 @@ def unregister():
 
 ## Compatibility paths
 
-For libraries you want to be installable on both 4.5 LTS and 5.2 LTS, also keep `bl_info` for 4.5 fallback even though new submissions to the extensions platform require the manifest. Blender prefers the manifest when both are present.
+`blender_manifest.toml` alone covers 4.2 and later, including 4.5 LTS and 5.2 LTS: with `blender_version_min = "4.5.0"`, a `bl_info` dict adds nothing. Keep `bl_info` alongside the manifest only if the add-on must also install on 4.1 or earlier, or through the legacy add-on folder / "Install legacy Add-on" path. Blender prefers the manifest when both are present.
 
 ```python
 bl_info = {

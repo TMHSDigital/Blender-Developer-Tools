@@ -228,7 +228,7 @@ This produces a `.zip` in `dist\` that the user installs via Edit > Preferences 
 | `extension build` command | Available | Available |
 | Schema version | `1.0.0` | `1.0.0` |
 
-The Extensions Platform shipped in Blender 4.2. Migrations done now will work on 4.2+ and 5.x without further changes. Code targeting 4.0 or earlier still needs the `bl_info`-only path.
+The Extensions Platform shipped in Blender 4.2. Migrations done now will work on 4.2+ and 5.x without further changes. Code targeting 4.1 or earlier still needs the `bl_info` path.
 
 ## See also
 
