@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.10] - 2026-10-05
+
+### Fixes
+
+- fix(gallery): render inline code in callouts; add the asset-sheet gate to the example prompt (#422) ([`ca5fd97`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ca5fd97905c74cd35a031dfb5cb58a91282dd28d))
+
+[Release v0.143.10](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.10)
+
 ## [0.143.9] - 2026-10-05
 
 ### Fixes
