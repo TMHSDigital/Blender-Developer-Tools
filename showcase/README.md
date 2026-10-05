@@ -2,6 +2,14 @@
 
 Budget-conformance props. **Not examples.**
 
+**Why it is here:** examples prove one API contract each; the showcase proves
+the contracts compose. Every piece is one headless Python script that models
+a game prop and runs it through the pipeline the skills teach
+(`ai-mesh-cleanup`, `bake-high-to-low`, LOD decimation, a convex collider,
+`engine-export-presets`), then asserts measured budgets on 4.5 LTS, 5.1 and
+5.2 LTS. Advice that breaks under real use tends to surface here first
+(the non-manifold collider in #386 did).
+
 An example witnesses one API contract and carries a falsifier that makes a
 real assertion fail. A recognizable crate witnesses no API contract.
 Forcing one into `examples/` produces a vacuous check. Showcase pieces
