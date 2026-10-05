@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.7] - 2026-10-05
+
+### Fixes
+
+- fix(snippets): export Y-up, meter glTF for Godot and Unreal too (#417) ([`74813ec`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/74813ecc93683910997a14a3f3413f42472fc872))
+
+[Release v0.143.7](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.7)
+
 ## [0.143.6] - 2026-10-05
 
 ### Fixes
