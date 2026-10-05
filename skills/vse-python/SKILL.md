@@ -147,7 +147,7 @@ A lone COLOR strip **does** honor `transform.scale_*` on 5.2. The break is media
 
 - Example [`examples/vse-cut-list/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list) — accessor rename, `new_effect` kwargs, save/reload, and the 5.2 COLOR size bake (`--check-pixels` asserts `A.width, A.height == render size` on 5.2+).
 - Example [`examples/vse-gamma-cross/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-gamma-cross) — `GAMMA_CROSS` blend curve.
-- Audit log: `docs/technical-audit.md` § Findings the release notes did not list.
+- Audit log: [`docs/technical-audit.md`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/docs/technical-audit.md) § Findings the release notes did not list.
 
 ## References
 

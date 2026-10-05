@@ -19,3 +19,7 @@ jobs:
         with:
           mode: self
           format: gh-summary
+          # The action checks out and runs the meta-repo's Python at this ref.
+          # Its default is the floating `v1` tag, so pin the same commit as the
+          # action itself (v1 and v1.19.2 both resolve to it).
+          meta-repo-ref: 7886cbe6ef93d57cc73c020b98268fa0dc0bdc98

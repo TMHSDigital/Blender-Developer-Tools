@@ -142,7 +142,9 @@ jobs:
         with:
           plugin-version: ${{ steps.new.outputs.version }}
           previous-version: ${{ steps.current.outputs.version }}
-          meta-repo-ref: v1.15.1
+          # A SHA, not a tag: this job holds contents:write and runs the
+          # meta-repo's Python at this ref. 9be79799 is tag v1.15.1.
+          meta-repo-ref: 9be79799df00ed42a0c4cff39e74a383a493296c
 
       - name: Write release notes (CHANGELOG entry and release body)
         # release-doc-sync prepends a "See release notes ... for details." stub;
