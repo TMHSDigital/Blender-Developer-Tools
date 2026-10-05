@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.144.2] - 2026-10-05
+
+### Fixes
+
+- fix(rules): allow BMesh ownership transfer; make the handoff sites leak-proof (#438) ([`6d9c75a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6d9c75ada25f4037fd01c4c14bc5f77d2fa22159))
+- fix(showcase): hull only the points so showcase colliders come out closed (#437) ([`fd832c5`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/fd832c55167a151577c4ac0796a544e8317808c2))
+
+[Release v0.144.2](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.144.2)
+
 ## [0.144.1] - 2026-10-05
 
 ### Fixes
