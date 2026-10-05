@@ -52,12 +52,34 @@ Examples, the showcase and the gallery live on `main`.
 
 Cursor: clone this branch into `~/.cursor/plugins/local/blender-developer-tools`
 and reload the window (Customize then lists the 16 skills and 9 rules).
+
+Skills reference bundled files as `${CLAUDE_PLUGIN_ROOT}/snippets/...`, which
+Claude Code expands to this plugin's install directory. In Cursor, read it as
+the root of this clone. Other repo links are pinned to the release tag.
 """
 
 
-# The release rewrites only "version" values in the manifests, so a build whose
-# fingerprint matches the published branch carries no new plugin content.
+REPO_URL = "https://github.com/TMHSDigital/Blender-Developer-Tools"
+# Skills Claude Code loads get links into the installed plugin instead of main,
+# so a pinned install reads the snippet it shipped with, offline (#394).
+# Claude Code substitutes ${CLAUDE_PLUGIN_ROOT} in plugin skill content.
+_LOCAL_LINK = re.compile(re.escape(REPO_URL) + r"/(?:blob|tree)/main/((?:snippets|templates|rules|claude|skills)(?:/[^\s)`\"'#]*)?)")
+_MAIN_LINK = re.compile(re.escape(REPO_URL) + r"/(blob|tree)/main/")
+_LOCAL_REF = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s)`\"'#]+)")
+TEXT_SUFFIXES = {".md", ".mdc", ".py", ".toml"}
+
+# The release rewrites only "version" values in the manifests and the release
+# tag in pinned links, so a build whose fingerprint matches the published
+# branch carries no new plugin content.
 _VERSION = re.compile(rb'("version"\s*:\s*")[^"]*(")')
+_TAG = re.compile(rb"(/(?:blob|tree)/)v\d+\.\d+\.\d+/")
+
+
+def rewrite_links(text: str, tag: str, local: bool) -> str:
+    """Point repo links at the installed plugin (`local`) or at the release tag."""
+    if local:
+        text = _LOCAL_LINK.sub(r"${CLAUDE_PLUGIN_ROOT}/\1", text)
+    return _MAIN_LINK.sub(lambda m: f"{REPO_URL}/{m.group(1)}/{tag}/", text)
 
 
 def fingerprint(tree: Path) -> str:
@@ -69,6 +91,8 @@ def fingerprint(tree: Path) -> str:
         data = p.read_bytes().replace(b"\r\n", b"\n")
         if p.suffix == ".json":
             data = _VERSION.sub(rb"\1\2", data)
+        elif p.suffix in TEXT_SUFFIXES:
+            data = _TAG.sub(rb"\1", data)
         h.update(p.relative_to(tree).as_posix().encode() + b"\0" + data + b"\0")
     return h.hexdigest()
 
@@ -107,6 +131,13 @@ def build(out: Path) -> int:
     (out / ".claude-plugin" / "marketplace.json").write_text(
         json.dumps(market, indent=2) + "\n", encoding="utf-8", newline="\n")
     (out / "README.md").write_text(DIST_README, encoding="utf-8", newline="\n")
+    tag = "v" + (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    for p in out.rglob("*"):
+        if p.is_file() and p.suffix in TEXT_SUFFIXES:
+            text = p.read_text(encoding="utf-8")
+            new = rewrite_links(text, tag, local=p.name == "SKILL.md")
+            if new != text:
+                p.write_text(new, encoding="utf-8", newline="")
     return sum(p.stat().st_size for p in out.rglob("*") if p.is_file())
 
 
@@ -124,6 +155,16 @@ def verify(out: Path, size: int) -> list[str]:
         for rel in cursor.get(key, []):
             if not (out / rel).is_file():
                 errors.append(f"Cursor manifest {key} path {rel} missing from the dist")
+    for p in out.rglob("*"):
+        if not (p.is_file() and p.suffix in TEXT_SUFFIXES):
+            continue
+        text = p.read_text(encoding="utf-8")
+        rel = p.relative_to(out).as_posix()
+        for target in _LOCAL_REF.findall(text):
+            if not (out / target.rstrip(".,;:")).exists():
+                errors.append(f"{rel} links ${{CLAUDE_PLUGIN_ROOT}}/{target}, which is not in the dist")
+        if _MAIN_LINK.search(text):
+            errors.append(f"{rel} still links the repo's main branch")
     if size > MAX_BYTES:
         errors.append(f"dist is {size} bytes, over the {MAX_BYTES} budget")
     return errors
