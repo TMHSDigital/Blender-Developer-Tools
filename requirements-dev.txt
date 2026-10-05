@@ -3,6 +3,6 @@
 # propose bumps (#364). Blender itself is not a pip package; see CLAUDE.md
 # "Blender Runtime Discovery" for the smoke tests.
 -r scripts/site/requirements.txt
-PyYAML==6.0.2
-numpy==2.2.6
-Pillow==11.3.0
+PyYAML==6.0.3
+numpy==2.5.3
+Pillow==12.3.0
