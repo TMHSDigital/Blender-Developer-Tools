@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.14] - 2026-10-05
+
+### Fixes
+
+- fix(examples): make the examples follow the rules they teach, and lint it (#431) ([`7ca0fdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/7ca0fdc31bc4b3e290c6271491aaac170be0b97a))
+- fix(ci): ship plugin content whenever it changes, and only when it changes (#430) ([`5177e24`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5177e24419fb51cc5e6277dca169fea27d27481e))
+
+### Other
+
+- docs(showcase): say what the showcase proves, not only what it is not (#436) ([`4b3b787`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4b3b787bf21618ac2f51fa16ed758f00479aac1b))
+- docs(contributing): open with a five-minute first contribution (#434) ([`6937fa3`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6937fa3266db5d613400cc109c138a2f05c4f989))
+- docs(readme): lead with what the pack does for an AI agent, and how to install it (#427) ([`3bc4949`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/3bc4949dafa78c584624c9dcbafde74dce4cc657))
+
+[Release v0.143.14](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.14)
+
 ## [0.143.13] - 2026-10-05
 
 ### Fixes
