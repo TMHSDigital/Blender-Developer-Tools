@@ -11,6 +11,7 @@ as a self-contained marketplace (its marketplace.json points at "./"):
     python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
     python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
     python scripts/build_plugin_dist.py --check       # build to a temp dir, verify, report size
+    python scripts/build_plugin_dist.py --fingerprint DIR   # content hash, versions ignored
 
 release.yml force-pushes the built tree as a single orphan commit to
 `plugin-dist` on every release, so the branch never accumulates history.
@@ -19,7 +20,9 @@ Users add it with `/plugin marketplace add TMHSDigital/Blender-Developer-Tools@p
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -50,6 +53,24 @@ Examples, the showcase and the gallery live on `main`.
 Cursor: clone this branch into `~/.cursor/plugins/local/blender-developer-tools`
 and reload the window (Customize then lists the 16 skills and 9 rules).
 """
+
+
+# The release rewrites only "version" values in the manifests, so a build whose
+# fingerprint matches the published branch carries no new plugin content.
+_VERSION = re.compile(rb'("version"\s*:\s*")[^"]*(")')
+
+
+def fingerprint(tree: Path) -> str:
+    """sha256 over every file's path and bytes, with manifest versions blanked
+    and line endings normalized. Equal fingerprints mean a release would
+    publish nothing new to plugin users (#350)."""
+    h = hashlib.sha256()
+    for p in sorted(q for q in tree.rglob("*") if q.is_file() and ".git" not in q.parts):
+        data = p.read_bytes().replace(b"\r\n", b"\n")
+        if p.suffix == ".json":
+            data = _VERSION.sub(rb"\1\2", data)
+        h.update(p.relative_to(tree).as_posix().encode() + b"\0" + data + b"\0")
+    return h.hexdigest()
 
 
 def unsafe_out(out: Path, force: bool) -> str | None:
@@ -114,7 +135,12 @@ def main(argv=None) -> int:
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="replace a non-empty --out directory")
+    ap.add_argument("--fingerprint", type=Path, metavar="DIR",
+                    help="print the content fingerprint of a built tree and exit")
     a = ap.parse_args(argv)
+    if a.fingerprint:
+        print(fingerprint(a.fingerprint))
+        return 0
     if not a.out and not a.check:
         ap.error("give --out DIR or --check")
     if a.out:

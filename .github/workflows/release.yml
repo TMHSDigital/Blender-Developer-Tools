@@ -81,6 +81,12 @@ jobs:
             release="true"
           elif [ "$kind" != "none" ]; then
             bump="$kind"; release="true"
+          elif bash .github/scripts/plugin-content-changed.sh "$last_tag"; then
+            # No feat/fix subject, but skills/rules/snippets/templates/claude
+            # changed: ship a patch so a docs: correction still reaches plugin
+            # users instead of waiting for the next feat/fix (#350).
+            echo "Plugin content changed since $last_tag with no feat/fix subject; releasing a patch"
+            bump="patch"; release="true"
           fi
 
           echo "bump=$bump" >> "$GITHUB_OUTPUT"
@@ -262,6 +268,23 @@ jobs:
           set -euo pipefail
           dist="$RUNNER_TEMP/plugin-dist"
           python3 scripts/build_plugin_dist.py --out "$dist"
+          # Republish only when what plugin users load changed. A release cut for
+          # the gallery or site would otherwise bump the plugin version with
+          # identical content and prompt every user to update (#350). The
+          # fingerprint ignores the manifest "version" values.
+          new_fp=$(python3 scripts/build_plugin_dist.py --fingerprint "$dist")
+          old_fp=""
+          if git fetch -q --depth 1 origin plugin-dist; then
+            published="$RUNNER_TEMP/plugin-dist-published"
+            mkdir -p "$published"
+            git archive FETCH_HEAD | tar -x -C "$published"
+            old_fp=$(python3 scripts/build_plugin_dist.py --fingerprint "$published")
+          fi
+          echo "plugin-dist fingerprint: built=$new_fp published=${old_fp:-<none>}"
+          if [ "$new_fp" = "$old_fp" ]; then
+            echo "Plugin content unchanged; plugin-dist stays at its published version."
+            exit 0
+          fi
           cd "$dist"
           git init -q -b plugin-dist
           git config user.name "github-actions[bot]"
