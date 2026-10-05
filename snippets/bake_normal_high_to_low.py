@@ -2,6 +2,8 @@
 # normal map. Cycles CPU only. High must be selected; low must be active.
 # Operator RNA is `type`, not `bake_type`. cage_object is a string name.
 # Identifiers match on 4.5 LTS, 5.1, and 5.2 LTS — no version shim.
+# A missing UV layer raises, but a material with no Image Texture node
+# returns {'CANCELLED'} without raising, so check the result.
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy.ops.object.html#bpy.ops.object.bake
@@ -18,7 +20,7 @@ def bake_normal_high_to_low(high, low, cage_extrusion=0.20, margin=16):
     high.select_set(True)
     low.select_set(True)
     bpy.context.view_layer.objects.active = low
-    return bpy.ops.object.bake(
+    result = bpy.ops.object.bake(
         type="NORMAL",
         use_selected_to_active=True,
         cage_extrusion=cage_extrusion,
@@ -29,3 +31,6 @@ def bake_normal_high_to_low(high, low, cage_extrusion=0.20, margin=16):
         use_clear=True,
         target="IMAGE_TEXTURES",
     )
+    if result != {"FINISHED"}:
+        raise RuntimeError(f"bake did not finish: {result}")
+    return result

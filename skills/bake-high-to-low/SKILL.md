@@ -19,7 +19,15 @@ This skill is the bake step. It composes `ai-mesh-cleanup` (identity scale, appl
 
 ## The core misunderstanding
 
-Baking is not a render. EEVEE has no bake path. The operator writes into the **active Image Texture node** of the **active** object's material, not into a file and not into "the selected image datablock." A missing UV layer, the wrong object active, or a node that is not `nodes.active` finishes without error and leaves a blank or unchanged image.
+Baking is not a render. EEVEE has no bake path. The operator writes into an **Image Texture node** in the **active** object's material (the active one, `nodes.active`, when the material has several), not into a file and not into "the selected image datablock." The failure modes are not equally loud. Measured on 4.5.11 LTS and 5.2.1 LTS:
+
+| Setup mistake | What `bpy.ops.object.bake` does |
+| --- | --- |
+| Target mesh has no UV layer | Raises `RuntimeError: No active UV layer found in the object "Low"` |
+| Target material has no Image Texture node | Returns `{'CANCELLED'}`, **raises nothing**, writes nothing |
+| The only Image Texture node is not `nodes.active` | Bakes into it anyway (`{'FINISHED'}`) |
+
+So a headless job must check the returned set: `{'CANCELLED'}` is the silent one. With several Image Texture nodes, set `nodes.active` to the one you mean.
 
 The pass type RNA is `type`, not `bake_type`. `bake_type` is not on `bpy.ops.object.bake`. Passing it is a TypeError.
 
@@ -104,6 +112,9 @@ result = bpy.ops.object.bake(
     use_clear=True,
     target="IMAGE_TEXTURES",
 )
+if result != {'FINISHED'}:
+    # {'CANCELLED'} raises nothing: e.g. no Image Texture node in the material.
+    raise RuntimeError(f"bake did not finish: {result}")
 ```
 
 `cage_extrusion` inflates the active object along its normals so rays hit the high mesh. It must clear the high-frequency amplitude (ribs at 0.10 need extrusion > 0.10; 0.20 is the worked value). If extrusion alone skims past concavities, set `use_cage=True` and `cage_object="CageName"` (the object's `.name`). Do not pass the Object.
