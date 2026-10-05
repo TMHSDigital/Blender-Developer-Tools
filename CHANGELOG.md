@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.145.0] - 2026-10-05
+
+### Features
+
+- feat(skills): link every skill to the examples that prove it (#444) ([`f80411b`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f80411b5ee3ee8d52eb0ec26dfc5a4e91bc9afc5))
+
+[Release v0.145.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.145.0)
+
 ## [0.144.3] - 2026-10-05
 
 ### Fixes
