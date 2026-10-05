@@ -32,10 +32,15 @@ to `pipeline.py` as `sys.argv`.
 
 Optional `--draco` enables glTF Draco compression on export.
 
-`--preset` is one of `unity` (Y-up glTF), `godot` (Z-up glTF), `unreal`
-(centimeter glTF: 100x bake then `export_yup=True`). FBX for Unreal lives
-in `snippets/export_preset_unreal.py`; this template emits GLB so a CI
-job can check the `glTF` magic bytes the same way for every preset.
+`--preset` is one of `unity`, `godot`, `unreal`. All three write the same
+spec-compliant glTF: +Y up, meters, transforms applied. glTF fixes its
+axes and units, Godot imports it as-is, and Unreal's glTF importer converts
+meters to centimeters itself, so no preset changes `export_yup` or bakes a
+scale. The flag is kept as the hook for engine-specific import hints (for
+example Godot's `-convcolonly` collider name suffix). FBX for Unreal, which
+does need axis and scale kwargs, lives in `snippets/export_preset_unreal.py`;
+this template emits GLB so a CI job can check the `glTF` magic bytes the
+same way for every preset.
 
 ## What it does
 
@@ -86,9 +91,6 @@ as `export-preset-axis` number their own checks independently.
 - **Running without `--background`**. The script still works, but
   Blender opens a UI window and stays open after the script finishes.
   Use `--background` for unattended runs.
-- **Unreal mutates selected meshes** (100x scale bake). Each export
-  selects one object. Do not re-export the same object as Unity afterward
-  without restoring scale.
 - **Operators that need a 3D Viewport context**. Some operators only
   work when a `VIEW_3D` area exists. In headless mode, none does.
   Either rewrite using `bpy.data.*`, or fabricate a window+area via

@@ -1,10 +1,12 @@
-# Godot glTF preset: Z-up (Blender-native), meter scale, selected objects only.
-# export_yup=False writes raw Z-up POSITION. glTF RNA has no axis_forward /
-# axis_up. Draco is opt-in; see snippets/gltf_draco_export.py for the
-# compression-only helper this does not duplicate.
+# Godot glTF preset: +Y up, meter scale, selected objects only.
+# Godot is right-handed Y-up and reads glTF per the spec (+Y up, meters), so
+# the export is the same call as the Unity preset: export_yup=True. A Z-up
+# file (export_yup=False) imports rotated -90 deg about X.
+# Godot-specific behaviour is set by node-name import hints instead: name a
+# collider "<name>-convcolonly" (convex shape, no mesh) or "-colonly".
+# Draco is opt-in; see snippets/gltf_draco_export.py.
 #
-# Assumption: scene units are meters (scale_length == 1.0). This preset is
-# the Z-up interop path; it is intentionally not the Unity Y-up kwargs.
+# Assumption: scene units are meters (scale_length == 1.0).
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.gltf
@@ -33,7 +35,7 @@ def export_preset_godot(filepath, selected_only=True, draco=False):
         filepath=filepath,
         export_format="GLB",
         use_selection=selected_only,
-        export_yup=False,
+        export_yup=True,
         export_apply=True,
         export_draco_mesh_compression_enable=draco,
         export_animations=False,

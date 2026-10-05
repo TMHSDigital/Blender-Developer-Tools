@@ -1,30 +1,37 @@
 # Export Preset Axis
 
-A runnable example that exports the same radio-mast mesh under the Unity
-and Godot glTF presets from
-[`engine-export-presets`](../../skills/engine-export-presets/SKILL.md) and
-re-imports both files. The check is on coordinates, not a screenshot: Unity
-(`export_yup=True`) stands; Godot (`export_yup=False`) lies.
+A runnable example that exports the same radio-mast mesh twice: once with
+the engine glTF preset from
+[`engine-export-presets`](../../skills/engine-export-presets/SKILL.md)
+(`export_yup=True`, the call Unity, Godot and Unreal all share), and once
+naively with `export_yup=False`. It re-imports both files. The check is on
+coordinates, not a screenshot: the preset copy stands; the Z-up copy lies.
 
-**What it witnesses:** named engine presets are not comments on the same
-kwargs. glTF axis RNA is `export_yup`, not FBX `axis_forward` / `axis_up`.
+**What it witnesses:** glTF is +Y up by spec, so `export_yup=False` is not
+an engine preset, it is a bug every engine shows the same way. glTF axis RNA
+is `export_yup`, not FBX `axis_forward` / `axis_up`.
 
-- **Disk POSITION follows the closed form.** Unity bakes
-  `(x, y, z) -> (x, z, -y)` with no node rotation. Godot writes raw Z-up
-  `(x, y, z)`. The check reads accessor min/max from the `.gltf` JSON.
-- **Re-import proves the conversion.** Blender's importer always treats the
-  file as Y-up: `blender = (gltf.x, -gltf.z, gltf.y)`. Unity restores the
-  source. Godot permutes again, so the mast lies along `-Y`.
-- **The two reimports differ.** Unity `z_span` matches source height; Godot
-  `y_span` matches that height. `--same-axis` exports both with
-  `export_yup=True`; both stand and the differ check exits 9.
+- **Disk POSITION follows the closed form.** The preset bakes
+  `(x, y, z) -> (x, z, -y)` with no node rotation. The naive export writes
+  raw Z-up `(x, y, z)`. The check reads accessor min/max from the `.gltf`
+  JSON.
+- **Re-import proves the conversion.** Blender's importer, like Unity's,
+  Godot's and Unreal's, treats the file as Y-up:
+  `blender = (gltf.x, -gltf.z, gltf.y)`. The preset restores the source. The
+  Z-up file permutes again, so the mast lies along `-Y`.
+- **The two reimports differ.** The preset's `z_span` matches source
+  height; the Z-up file's `y_span` matches that height. `--same-axis`
+  exports both with `export_yup=True`; both stand and the differ check
+  exits 9.
 - **Exporter RNA is guarded.** Every kwarg passed must still exist on
   `bpy.ops.export_scene.gltf`.
 
 Neighbor of [`gltf-export-roundtrip`](../gltf-export-roundtrip/) (Y-up bake
 vs Z-up on disk for one file) and [`unapplied-scale-gltf`](../unapplied-scale-gltf/)
-(`export_apply` is modifiers, not object scale). This example names the
-Unity vs Godot presets and asserts the re-imported orientations diverge.
+(`export_apply` is modifiers, not object scale). Until 0.143.x this example
+called the Z-up export the "Godot preset". That was wrong: Godot is Y-up and
+imports glTF per the spec, so the lying mast is what a Godot user would have
+seen (#346).
 
 The subject is a radio mast chosen because "up" is unmistakable on it: a
 stepped concrete footing, a bolted base flange, a tapered mast in red and
@@ -33,18 +40,17 @@ shrouded microwave dish on a raked arm, an equipment cabinet, and a red
 obstruction lamp under a lightning rod. The rod's point is the witnessed tip
 vertex.
 
-The still stages the two re-imports side by side: the Unity copy standing on
-the left, the Godot copy lying along the floor on the right. Beside each sits
+The still stages the two re-imports side by side: the preset copy standing on
+the left, the Z-up copy lying along the floor on the right. Beside each sits
 a modelled X/Y/Z axis gizmo (red, green, blue) showing that re-import's
 frame. The gizmo is measured, not placed: the render path tries all 24
 axis-aligned rotations and keeps the one that maps the source vertices onto
 the re-imported vertices (worst nearest-vertex distance, printed as
-`fit_err`; exit 12 if it exceeds 1 mm). The Unity gizmo comes out as the
-identity, blue Z up. The Godot gizmo comes out as `Y -> +Z, Z -> -Y`: green
+`fit_err`; exit 12 if it exceeds 1 mm). The preset gizmo comes out as the
+identity, blue Z up. The Z-up gizmo comes out as `Y -> +Z, Z -> -Y`: green
 Y points up and blue Z runs along the lying mast. The mast didn't fall over.
-The Godot file stores Z-up coordinates, and the importer reads them as
-Y-up. If `export_yup` were the same on both, the two copies and both gizmos
-would match.
+The Z-up file stores Z-up coordinates, and the importer reads them as
+Y-up, as every glTF consumer does.
 
 ## Run
 
@@ -52,7 +58,7 @@ would match.
 # Cheap correctness check (no render) - the CI check:
 blender --background --python export_preset_axis.py --
 
-# Falsifier: both presets Y-up. Must exit non-zero.
+# Falsifier: both exports Y-up. Must exit non-zero.
 blender --background --python export_preset_axis.py -- --same-axis
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -73,10 +79,10 @@ the shared asset-quality helper.
 | 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
 | 3 | Source mast is not Z-dominant, or tip drifted |
 | 4 | glTF reimport produced no mesh |
-| 5 | Unity disk POSITION is not `(x, z, -y)`, or Unity node has rotation |
-| 6 | Godot disk POSITION is not raw Z-up; also `--output` produced no file |
-| 7 | Unity reimport is not standing |
-| 8 | Godot reimport is not lying along Y, or reimported tip mismatch |
+| 5 | Preset disk POSITION is not `(x, z, -y)`, or preset node has rotation |
+| 6 | Z-up disk POSITION is not raw Z-up; also `--output` produced no file |
+| 7 | Preset reimport is not standing |
+| 8 | Z-up reimport is not lying along Y, or reimported tip mismatch |
 | 9 | Reimported orientations did not differ (`--same-axis` lands here) |
 | 10 | Gallery framing violation |
 | 11 | `--same-axis` did not collapse the axis difference; also asset-quality floor violation (render path) |

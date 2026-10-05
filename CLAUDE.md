@@ -37,7 +37,7 @@ VERSION                        - Source of truth for the repo version
 | addon-scaffolding | Extensions Platform manifest, file layout, register/unregister symmetry |
 | ai-mesh-cleanup | Ordered cleanup for imported generated meshes: units, transform apply, origin, normals, budget, collider |
 | bake-high-to-low | Cycles cage-bake of high-poly detail onto a low-poly target as a tangent-space normal map |
-| engine-export-presets | Unity Y-up, Godot Z-up, and Unreal centimeter glTF/FBX presets; glTF uses export_yup, FBX uses axis_forward/axis_up |
+| engine-export-presets | Unity, Godot and Unreal presets: glTF is +Y up and meters for every engine (export_yup=True; Unreal converts to cm on import), FBX uses axis_forward/axis_up plus centimeter scale |
 | operators | `bpy.types.Operator` lifecycle, `bl_idname`, redo, defensive context handling |
 | ui-panels | `bpy.types.Panel` declarative `draw()`, layout primitives, conditional UI |
 | custom-properties | `bpy.props` annotations, PropertyGroup, PointerProperty, storage tradeoffs |

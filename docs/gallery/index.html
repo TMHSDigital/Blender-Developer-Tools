@@ -449,15 +449,15 @@
           <span class="card-link" aria-hidden="true">View example &rarr;</span>
         </div>
       </article>
-      <article class="card" data-tags="export" data-kind="examples" data-name="export-preset-axis" data-search="export preset axis export-preset-axis a radio mast exported under unity and godot gltf presets and re-imported, proving the two files have different vertex orientation export ">
+      <article class="card" data-tags="export" data-kind="examples" data-name="export-preset-axis" data-search="export preset axis export-preset-axis a radio mast exported once with the engine gltf preset (export_yup=true, shared by unity, godot and unreal) and once naively z-up, then re-imported: the z-up file lies on its back export ">
         <div class="card-media">
-          <img src="assets/export-preset-axis-hero-640.webp" srcset="assets/export-preset-axis-hero-640.webp 640w, assets/export-preset-axis-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" loading="lazy" decoding="async" />
+          <img src="assets/export-preset-axis-hero-640.webp" srcset="assets/export-preset-axis-hero-640.webp 640w, assets/export-preset-axis-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the engine-preset copy stands with blue Z up, the naive Z-up copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" loading="lazy" decoding="async" />
         </div>
         <div class="card-body">
           <h2><a class="stretch" href="export-preset-axis/">Export Preset Axis</a></h2>
           <p class="slug">export-preset-axis</p>
-          <p class="teaches">A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Unity export_yup=True round-trips standing (x,y,z); Godot export_yup=False reimports lying along -Y as (x,-z,y); --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly</p>
+          <p class="teaches">A radio mast exported once with the engine glTF preset (export_yup=True, shared by Unity, Godot and Unreal) and once naively Z-up, then re-imported: the Z-up file lies on its back</p>
+          <p class="witnesses"><span class="tag">witnesses</span> The engine preset (export_yup=True) round-trips standing (x,y,z); a naive export_yup=False file reimports lying along -Y as (x,-z,y), as it would in any glTF engine; --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly</p>
           <span class="card-link" aria-hidden="true">View example &rarr;</span>
         </div>
       </article>

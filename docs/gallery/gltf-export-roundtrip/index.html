@@ -115,11 +115,11 @@ blender --background --python gltf_export_roundtrip.py -- --output crate.png --e
         </article>
         <article class="card mini">
           <div class="card-media">
-            <img src="../assets/export-preset-axis-hero-640.webp" srcset="../assets/export-preset-axis-hero-640.webp 640w, ../assets/export-preset-axis-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" loading="lazy" decoding="async" />
+            <img src="../assets/export-preset-axis-hero-640.webp" srcset="../assets/export-preset-axis-hero-640.webp 640w, ../assets/export-preset-axis-hero.webp 1280w" sizes="(min-width: 560px) 340px, 100vw" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the engine-preset copy stands with blue Z up, the naive Z-up copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" loading="lazy" decoding="async" />
           </div>
           <div class="card-body">
             <h3><a class="stretch" href="../export-preset-axis/">Export Preset Axis</a></h3>
-            <p>A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation</p>
+            <p>A radio mast exported once with the engine glTF preset (export_yup=True, shared by Unity, Godot and Unreal) and once naively Z-up, then re-imported: the Z-up file lies on its back</p>
           </div>
         </article>
       </div>

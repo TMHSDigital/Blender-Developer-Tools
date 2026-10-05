@@ -68,11 +68,13 @@ bpy.ops.export_scene.fbx(
 
 ## Why it matters
 
-Unity vs Godot vs Unreal is not one export with different comments. glTF
-Y-up bakes `(x, y, z) -> (x, z, -y)` into POSITION. Z-up glTF writes the
-Blender coords. FBX uses a different axis pair and can scale to
-centimeters without mutating the mesh. Getting the RNA names wrong ships
-the default axis and looks like "the engine importer is broken".
+glTF is +Y up and meters by spec, so the right glTF call is the same for
+Unity, Godot and Unreal: `export_yup=True` bakes `(x, y, z) -> (x, z, -y)`
+into POSITION, and `export_yup=False` writes Blender's Z-up coords that
+every engine imports lying on their back. FBX uses a different axis pair
+and can scale to centimeters without mutating the mesh. Getting the RNA
+names wrong ships the default axis and looks like "the engine importer is
+broken".
 
 ## Related
 
