@@ -234,10 +234,7 @@ def _mat(name, rgb, rough, metal=0.0, coat=0.0):
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metal
     if coat:
-        try:
-            b.inputs["Coat Weight"].default_value = coat
-        except KeyError:
-            pass
+        b.inputs["Coat Weight"].default_value = coat
     return m
 
 
@@ -354,10 +351,7 @@ def render_still(obj, path, engine):
     if engine == 'cycles':
         scene.cycles.samples = 32
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'

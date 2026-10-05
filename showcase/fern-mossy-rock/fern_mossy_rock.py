@@ -3235,10 +3235,7 @@ def render_still(low, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "WEBP" if path.lower().endswith(".webp") else "PNG"

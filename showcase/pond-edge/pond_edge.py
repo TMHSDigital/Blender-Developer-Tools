@@ -1495,10 +1495,7 @@ def water_material():
     nt.links.new(rough, bsdf.inputs["Roughness"])
     bsdf.inputs["IOR"].default_value = 1.33
     # a pond is not a mirror: under a bright sky the sheet should not blow out
-    try:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.32
-    except KeyError:
-        pass
+    bsdf.inputs["Specular IOR Level"].default_value = 0.32
     ruffle = noise(nt, mapping(nt, coord, scale=(1.0, 2.5, 1.0)), 38.0, 2.0, 0.5)
     bump(nt, bsdf, ruffle, 0.06, 0.002)
     return mat
@@ -1623,10 +1620,7 @@ def flower_material():
     col = mix_color(nt, col, (0.78, 0.52, 0.05), remap(nt, zone, 2.5, 3.0, 0.0, 1.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.45
-    try:
-        bsdf.inputs["Subsurface Weight"].default_value = 0.15
-    except KeyError:
-        pass
+    bsdf.inputs["Subsurface Weight"].default_value = 0.15
     return mat
 
 
@@ -2385,10 +2379,7 @@ def render_still(low, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
         # screen-traced reflections, so the reeds show in the water
         try:
             scene.eevee.use_raytracing = True

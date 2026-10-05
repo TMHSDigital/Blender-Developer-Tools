@@ -394,10 +394,7 @@ def render_still(orb, lamps, path, engine):
         scene.cycles.samples = 64
         scene.cycles.use_denoising = True
     else:
-        try:
-            scene.eevee.taa_render_samples = 96
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 96
 
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720

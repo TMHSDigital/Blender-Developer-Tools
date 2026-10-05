@@ -1981,10 +1981,7 @@ def render_still(low, target, tex, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
         # the lacquered lane reflects the pins
         try:
             scene.eevee.use_raytracing = True

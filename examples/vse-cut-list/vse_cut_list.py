@@ -424,10 +424,7 @@ def render_frame(sc, path, engine, w, h):
         sc.cycles.samples = 64 if w >= RENDER_W else 1
         sc.cycles.use_denoising = False
     else:
-        try:
-            sc.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = w
     sc.render.resolution_y = h
     sc.render.resolution_percentage = 100
@@ -659,10 +656,7 @@ def render_bay(sc, path, engine, w, h):
         sc.cycles.samples = 64
         sc.cycles.use_denoising = False
     else:
-        try:
-            sc.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = w
     sc.render.resolution_y = h
     sc.render.resolution_percentage = 100

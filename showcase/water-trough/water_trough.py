@@ -1773,10 +1773,7 @@ def render_still(low, wood, tex, path, engine):
         scene.cycles.samples = 32
         scene.cycles.device = "CPU"
     else:
-        try:
-            scene.eevee.taa_render_samples = 64
-        except AttributeError:
-            pass
+        scene.eevee.taa_render_samples = 64
         # screen-space raytracing lets the water mirror the staves above it,
         # which is what makes a dark surface read as liquid (EEVEE Next, 4.2+)
         if hasattr(scene.eevee, "use_raytracing"):

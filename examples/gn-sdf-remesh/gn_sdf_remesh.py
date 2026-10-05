@@ -121,10 +121,7 @@ def render_still(obj, path, engine):
     g = glaze.node_tree.nodes.get('Principled BSDF')
     g.inputs['Base Color'].default_value = (0.03, 0.16, 0.30, 1)   # cobalt glaze
     g.inputs['Roughness'].default_value = 0.12
-    try:
-        g.inputs['Coat Weight'].default_value = 0.6
-    except KeyError:
-        pass
+    g.inputs['Coat Weight'].default_value = 0.6
     fused = bpy.data.objects.new("VaseFused", kit.data.copy())
     bpy.context.collection.objects.link(fused)
     # Same builder, finer voxels than the check's 0.1 so the fused shell
@@ -225,8 +222,7 @@ def render_still(obj, path, engine):
         try: sc.cycles.samples = 32
         except Exception: pass
     else:
-        try: sc.eevee.taa_render_samples = 64
-        except Exception: pass
+        sc.eevee.taa_render_samples = 64
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
     # Blender resolves a relative filepath against the blend-file directory, which
     # for a --background run with no .blend is the drive root, not the cwd.
