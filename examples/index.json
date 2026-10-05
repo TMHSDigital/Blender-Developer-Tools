@@ -1,0 +1,2236 @@
+[
+  {
+    "name": "armature-bend",
+    "path": "examples/armature-bend/",
+    "script": "examples/armature-bend/armature_bend.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/armature-bend/armature_bend.py",
+    "summary": "Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation.",
+    "falsifiers": [
+      {
+        "args": [
+          "--zero-curl"
+        ],
+        "expect_exit": 8
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`edit_bones` populated in object mode",
+      "4": "Edit-mode bone chain off closed form",
+      "5": "Evaluated vertex count changed",
+      "6": "Evaluated mesh off closed-form LBS",
+      "7": "Root ring moved",
+      "8": "Tip did not deflect (`--zero-curl` lands here)",
+      "9": "`--output` produced no file",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "attribute-domain-shear",
+    "path": "examples/attribute-domain-shear/",
+    "script": "examples/attribute-domain-shear/attribute_domain_shear.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/attribute-domain-shear/attribute_domain_shear.py",
+    "summary": "POINT vs CORNER color-attribute domains on a shared-vertex fan: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-overwrite"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "CORNER or POINT attribute size wrong",
+      "4": "CORNER hub corners off wedge color",
+      "5": "POINT hub is not last-write (`--no-overwrite` lands here)",
+      "6": "Outer ring verts off last-write order",
+      "7": "Measured shear off palette closed form, or ~0",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "11": "Asset-quality floor violation (render path only)"
+    }
+  },
+  {
+    "name": "bake-normal-high-to-low",
+    "path": "examples/bake-normal-high-to-low/",
+    "script": "examples/bake-normal-high-to-low/bake_normal_high_to_low.py",
+    "skills": [
+      "bake-high-to-low"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/bake-normal-high-to-low/bake_normal_high_to_low.py",
+    "summary": "A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source",
+    "falsifiers": [
+      {
+        "args": [
+          "--flat-source"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Missing UV layer on the target",
+      "4": "Bake did not `FINISHED` or image `has_data` is false",
+      "5": "Detail deviant-pixel fraction below 0.40 (`--flat-source` lands here)",
+      "6": "Detail MAD below 0.05",
+      "7": "Flat control above 0.05 frac / 0.03 MAD",
+      "8": "Monotonic gap below 0.30",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation"
+    }
+  },
+  {
+    "name": "bmesh-gear",
+    "path": "examples/bmesh-gear/",
+    "script": "examples/bmesh-gear/bmesh_gear.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/bmesh-gear/bmesh_gear.py",
+    "summary": "A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-extrude"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Topology ≠ closed form (`--no-extrude` lands here)",
+      "4": "Non-manifold edges",
+      "6": "`--output` produced no file",
+      "10": "`--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`)"
+    }
+  },
+  {
+    "name": "boolean-exact-volume",
+    "path": "examples/boolean-exact-volume/",
+    "script": "examples/boolean-exact-volume/boolean_exact_volume.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py",
+    "summary": "The Boolean modifier on the EXACT solver.",
+    "falsifiers": [
+      {
+        "args": [
+          "--float-solver"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "A result's volume is off its closed form (`--float-solver` lands here)",
+      "4": "A result is not a closed 2-manifold (an edge without exactly two faces, or loose geometry)",
+      "5": "A result's volume is within 0.5 m³ of operand A's (the witness would pass vacuously)",
+      "6": "`--output` produced no file",
+      "10": "`--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`)"
+    }
+  },
+  {
+    "name": "car-mirror-symmetry",
+    "path": "examples/car-mirror-symmetry/",
+    "script": "examples/car-mirror-symmetry/car_mirror_symmetry.py",
+    "skills": [
+      "depsgraph-and-evaluated-data"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/car-mirror-symmetry/car_mirror_symmetry.py",
+    "summary": "A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-mirror"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Body datablock is not the authored half",
+      "4": "Authored centerline vert count ≠ 28",
+      "5": "Evaluated verts ≠ `2n − c` (`--no-mirror` lands here)",
+      "6": "Evaluated on-plane verts ≠ centerline; also `--output` produced no file",
+      "7": "Evaluated Euler characteristic ≠ 2",
+      "8": "Non-manifold edges in the evaluated shell",
+      "9": "Evaluated verts lack a mirrored partner",
+      "10": "Mirror partner deviation above tolerance",
+      "11": "Evaluated bbox not symmetric about X",
+      "12": "Mirrored-part origin off the plane",
+      "13": "Mirrored-part datablock is not the authored half (verts, faces, on-plane verts)",
+      "14": "Mirrored-part evaluated counts ≠ `2n − weld` / `2f`, or on-plane verts ≠ weld",
+      "15": "Mirrored-part partner check failed",
+      "16": "Mirrored-part evaluated mesh stayed on one side",
+      "17": "Gallery framing violation (`--output` path only; `gallery_framing` returns 10, remapped)",
+      "18": "Asset-quality floor violation (`--output` path only; `gallery_asset_quality` returns 11, remapped)"
+    }
+  },
+  {
+    "name": "coincident-vert-weld",
+    "path": "examples/coincident-vert-weld/",
+    "script": "examples/coincident-vert-weld/coincident_vert_weld.py",
+    "skills": [
+      "ai-mesh-cleanup"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/coincident-vert-weld/coincident_vert_weld.py",
+    "summary": "Synthesizes two cubes occupying the same space as one mesh, then asserts the duplicates exist before asserting they cross glTF export.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-duplicate"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--weld"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "3": "Pathology missing: coincident shells (`--no-duplicate` lands here)",
+      "4": "glTF export handling failed (`--weld` lands here)"
+    }
+  },
+  {
+    "name": "collision-hull-proxy",
+    "path": "examples/collision-hull-proxy/",
+    "script": "examples/collision-hull-proxy/collision_hull_proxy.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/collision-hull-proxy/collision_hull_proxy.py",
+    "summary": "A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage.",
+    "falsifiers": [
+      {
+        "args": [
+          "--shrink-hull"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Render vertex escapes its hull (`--shrink-hull` lands here)",
+      "4": "Hull edge does not border exactly two faces",
+      "5": "Signed volume ≤ 0 (inverted winding)",
+      "6": "Hull vertex off its own face plane",
+      "7": "Euler characteristic ≠ 2",
+      "8": "Piece over the 255-face collision budget",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation (render path)",
+      "11": "Gallery asset-quality violation (render path)"
+    }
+  },
+  {
+    "name": "color-attribute-wheel",
+    "path": "examples/color-attribute-wheel/",
+    "script": "examples/color-attribute-wheel/color_attribute_wheel.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/color-attribute-wheel/color_attribute_wheel.py",
+    "summary": "The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain.",
+    "falsifiers": [
+      {
+        "args": [
+          "--point-domain"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Topology ≠ closed form",
+      "4": "Color attribute missing",
+      "5": "Domain/type ≠ CORNER/FLOAT_COLOR (`--point-domain` lands here)",
+      "6": "Attribute sized to verts, not loops",
+      "7": "`active_color` not set",
+      "8": "Probe loop color off HSV closed form",
+      "9": "`--output` produced no file",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "compositor-glare",
+    "path": "examples/compositor-glare/",
+    "script": "examples/compositor-glare/compositor_glare.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/compositor-glare/compositor_glare.py",
+    "summary": "Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers.",
+    "falsifiers": [
+      {
+        "args": [
+          "--threshold-high"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Compositor tree / Glare / Threshold / link-chain contract (`--threshold-high` lands here)",
+      "4": "Check render missing, tube dark, no halo, or halo does not fall off",
+      "5": "Halo present with compositing off",
+      "6": "`--output` produced no file",
+      "10": "Gallery framing violation (render path; checked before the beauty render)"
+    }
+  },
+  {
+    "name": "cross-version-property-delete",
+    "path": "examples/cross-version-property-delete/",
+    "script": "examples/cross-version-property-delete/cross_version_property_delete.py",
+    "skills": [
+      "custom-properties"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/cross-version-property-delete/cross_version_property_delete.py",
+    "summary": "Custom ID properties are removed with del, not property_unset.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-delete"
+        ],
+        "expect_exit": 7
+      },
+      {
+        "args": [
+          "--subscript-registered"
+        ],
+        "expect_exit": 8,
+        "min_version": "5.0"
+      },
+      {
+        "args": [
+          "--unset-instead"
+        ],
+        "expect_exit": 7
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also an active object existed after the data-API build",
+      "3": "Custom ID property did not land",
+      "4": "`property_unset` on a custom ID key did not TypeError, or it deleted the key",
+      "5": "`del` did not report removal",
+      "6": "Keep lamp lost the ID property",
+      "7": "Clear lamp still has the ID property (`--skip-delete` / `--unset-instead` land here)",
+      "8": "Registered-prop contract broke: attribute/`property_unset` failed, the prop sits on the wrong side of the 5.0 ID-property split, or `scene[\"name\"]` raised `KeyError` (`--subscript-registered` on 5.0+; exits 0 on 4.5, where subscript access still works)",
+      "10": "Gallery framing violation",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "curve-bevel-arc",
+    "path": "examples/curve-bevel-arc/",
+    "script": "examples/curve-bevel-arc/curve_bevel_arc.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/curve-bevel-arc/curve_bevel_arc.py",
+    "summary": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-caps"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Spline type is not BEZIER",
+      "4": "Bezier point count ≠ 8",
+      "5": "`bevel_depth` ≠ 0.15",
+      "6": "`use_fill_caps` is False (`--no-caps` lands here)",
+      "7": "Evaluated vert/face count off measured tessellation",
+      "8": "Tube does not rest on the floor",
+      "9": "Tube height ≠ 2 × bevel",
+      "10": "X span off closed form; also gallery framing violation",
+      "11": "`--output` produced no file; also asset-quality floor violation (`gallery_asset_quality`)"
+    }
+  },
+  {
+    "name": "custom-normals-shade",
+    "path": "examples/custom-normals-shade/",
+    "script": "examples/custom-normals-shade/custom_normals_shade.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/custom-normals-shade/custom_normals_shade.py",
+    "summary": "A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses.",
+    "falsifiers": [
+      {
+        "args": [
+          "--mismatch-angle"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Legacy shading API present, or modern path missing",
+      "4": "Non-manifold edges (dihedral test undefined)",
+      "5": "Sharp set ≠ independent dihedral (`--mismatch-angle` lands here)",
+      "6": "Evaluated loop normals not welded/split as the sharp set promises",
+      "7": "Custom split normals lost or dequantized in evaluation",
+      "8": "`shade_auto_smooth` operator behavior drifted from the version split",
+      "9": "`--output` produced no file",
+      "10": "Render path: Layer 1 framing violation (`gallery_framing`)",
+      "11": "Render path: asset-quality floor violation (`gallery_asset_quality`)"
+    }
+  },
+  {
+    "name": "damped-track-aim",
+    "path": "examples/damped-track-aim/",
+    "script": "examples/damped-track-aim/damped_track_aim.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/damped-track-aim/damped_track_aim.py",
+    "summary": "Aim constraints via the data API — Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop.",
+    "falsifiers": [
+      {
+        "args": [
+          "--mute"
+        ],
+        "expect_exit": 7
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Lamp count ≠ 12",
+      "4": "Lamp does not carry exactly one DAMPED_TRACK",
+      "5": "Constraint target is not Orb",
+      "6": "`track_axis` is not TRACK_Z",
+      "7": "Constraint muted or influence < 1 (`--mute` lands here)",
+      "8": "TRACK_TO still present",
+      "9": "Evaluated aim dot below 0.998",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "degenerate-bevel-weld",
+    "path": "examples/degenerate-bevel-weld/",
+    "script": "examples/degenerate-bevel-weld/degenerate_bevel_weld.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/degenerate-bevel-weld/degenerate_bevel_weld.py",
+    "summary": "Bevel offset >= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary.",
+    "falsifiers": [
+      {
+        "args": [
+          "--both-safe"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Safe bevel produced zero-area faces",
+      "4": "Degenerate bevel zero-area count ≠ closed form (`--both-safe` lands here)",
+      "5": "min_area collapse under 1e5×",
+      "6": "Coincident-position count off the closed form",
+      "7": "Safe GLB carries degenerate triangles",
+      "8": "Degenerate GLB triangle or position count drifted",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "11": "Asset-quality floor violation (render path only)"
+    }
+  },
+  {
+    "name": "depsgraph-export",
+    "path": "examples/depsgraph-export/",
+    "script": "examples/depsgraph-export/depsgraph_export.py",
+    "skills": [
+      "depsgraph-and-evaluated-data"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/depsgraph-export/depsgraph_export.py",
+    "summary": "The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.",
+    "falsifiers": [
+      {
+        "args": [
+          "--unevaluated"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Evaluated shell did not apply the modifier (evaluated count not above the cage)",
+      "4": "No OBJ written",
+      "5": "Export vert count ≠ evaluated (`--unevaluated` lands here)",
+      "6": "`--output` produced no file",
+      "7": "Evaluated shell count ≠ Catmull-Clark closed form",
+      "10": "Gallery framing violation",
+      "11": "Asset-quality floor violation (render path only)"
+    }
+  },
+  {
+    "name": "driver-wave",
+    "path": "examples/driver-wave/",
+    "script": "examples/driver-wave/driver_wave.py",
+    "skills": [
+      "drivers-and-app-handlers"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/driver-wave/driver_wave.py",
+    "summary": "A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated.",
+    "falsifiers": [
+      {
+        "args": [
+          "--flat-expr"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Evaluated Z scale ≠ `wave_scale` (`--flat-expr` lands here)",
+      "4": "Original datablock was not flushed",
+      "6": "`--output` produced no file",
+      "10": "Gallery framing violation"
+    }
+  },
+  {
+    "name": "eval-mesh-datablock-name",
+    "path": "examples/eval-mesh-datablock-name/",
+    "script": "examples/eval-mesh-datablock-name/eval_mesh_datablock_name.py",
+    "skills": [
+      "depsgraph-and-evaluated-data"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/eval-mesh-datablock-name/eval_mesh_datablock_name.py",
+    "summary": "Pathology witness for the 5.2 change in `Object.evaluated_get(depsgraph).data.name`.",
+    "falsifiers": [
+      {
+        "args": [
+          "--assume-distinct-names"
+        ],
+        "expect_exit": 6,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Source cube missing or not 8 verts",
+      "4": "SUBSURF did not produce a distinct evaluated mesh",
+      "5": "Source datablock name is not `SourceMesh`",
+      "6": "Evaluated datablock name wrong for this version (`--assume-distinct-names` on 5.2)",
+      "7": "`to_mesh().name` is not `SourceMesh`"
+    }
+  },
+  {
+    "name": "exit-pre-sidecar",
+    "path": "examples/exit-pre-sidecar/",
+    "script": "examples/exit-pre-sidecar/exit_pre_sidecar.py",
+    "skills": [
+      "drivers-and-app-handlers"
+    ],
+    "render": false,
+    "min_version": "5.1",
+    "run": "blender --background --python examples/exit-pre-sidecar/exit_pre_sidecar.py",
+    "summary": "`bpy.app.handlers.exit_pre` writes `$BDT_SMOKE_SIDECAR` as Blender dies.",
+    "falsifiers": [
+      {
+        "args": [
+          "--atexit-instead"
+        ],
+        "expect_sidecar_fail": true,
+        "min_version": "5.1"
+      },
+      {
+        "args": [
+          "--no-handler"
+        ],
+        "expect_sidecar_fail": true,
+        "min_version": "5.1"
+      },
+      {
+        "args": [
+          "--silent-handler"
+        ],
+        "expect_sidecar_fail": true,
+        "min_version": "5.1"
+      },
+      {
+        "args": [
+          "--wrong-text"
+        ],
+        "expect_sidecar_fail": true,
+        "min_version": "5.1"
+      },
+      {
+        "args": [
+          "--write-in-main"
+        ],
+        "expect_sidecar_fail": true,
+        "min_version": "5.1"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success (including `--silent-handler` / `--no-handler` / `--wrong-text` / `--write-in-main` / `--atexit-instead`, which the harness then fails)",
+      "1": "Uncaught exception (FATAL wrapper); also `$BDT_SMOKE_SIDECAR` unset",
+      "2": "argparse / usage; also `--force-run` on Blender &lt; 5.1 (`exit_pre` missing or unexpectedly present)",
+      "77": "`SMOKE_SKIP:` `exit_pre` requires Blender 5.1+"
+    }
+  },
+  {
+    "name": "export-preset-axis",
+    "path": "examples/export-preset-axis/",
+    "script": "examples/export-preset-axis/export_preset_axis.py",
+    "skills": [
+      "engine-export-presets"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/export-preset-axis/export_preset_axis.py",
+    "summary": "A radio mast exported once with the engine glTF preset (export_yup=True, shared by Unity, Godot and Unreal) and once naively Z-up, then re-imported: the Z-up file lies on its back",
+    "falsifiers": [
+      {
+        "args": [
+          "--same-axis"
+        ],
+        "expect_exit": 9
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "3": "Source mast is not Z-dominant, or tip drifted",
+      "4": "glTF reimport produced no mesh",
+      "5": "Preset disk POSITION is not `(x, z, -y)`, or preset node has rotation",
+      "6": "Z-up disk POSITION is not raw Z-up; also `--output` produced no file",
+      "7": "Preset reimport is not standing",
+      "8": "Z-up reimport is not lying along Y, or reimported tip mismatch",
+      "9": "Reimported orientations did not differ (`--same-axis` lands here)",
+      "10": "Gallery framing violation",
+      "11": "`--same-axis` did not collapse the axis difference; also asset-quality floor violation (render path)",
+      "12": "Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured"
+    }
+  },
+  {
+    "name": "gltf-export-roundtrip",
+    "path": "examples/gltf-export-roundtrip/",
+    "script": "examples/gltf-export-roundtrip/gltf_export_roundtrip.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "engine-export-presets",
+      "headless-batch-scripting"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gltf-export-roundtrip/gltf_export_roundtrip.py",
+    "summary": "A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-yup"
+        ],
+        "expect_exit": 9
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Exporter/importer RNA kwargs drifted",
+      "4": "Base cage drifted from its closed form",
+      "5": "Authored UVs drifted from the box-map closed form",
+      "6": "Bevel produced no evaluated geometry",
+      "7": "On-disk node/mesh/generator contract drifted",
+      "8": "On-disk primitive/material binding count drifted",
+      "9": "On-disk POSITION bounds ≠ axis-converted bbox (`--no-yup` lands here)",
+      "10": "On-disk POSITION count ≠ evaluated loop count",
+      "11": "On-disk UV V-flip failed",
+      "12": "Re-import did not produce exactly one mesh",
+      "13": "Re-imported object carries a transform",
+      "14": "Material names drifted on re-import",
+      "15": "Re-import vert count ≠ evaluated loop count",
+      "16": "Round-trip position drift",
+      "17": "Round-trip normal drift",
+      "18": "Round-trip UV drift",
+      "19": "Re-import triangle count drifted",
+      "20": "Per-triangle material bindings drifted",
+      "21": "`--output` produced no file",
+      "22": "Gallery framing violation (render path only; the helper's 10, remapped)",
+      "23": "Gallery asset-quality violation (render path only; the helper's 11, remapped)"
+    }
+  },
+  {
+    "name": "gltf-skin-roundtrip",
+    "path": "examples/gltf-skin-roundtrip/",
+    "script": "examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "engine-export-presets"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py",
+    "summary": "A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-skins"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Exporter RNA missing expected kwargs",
+      "4": "Vertex group count ≠ bone count",
+      "5": "Disk skins ≠ 1 (`--no-skins` lands here)",
+      "6": "Skin joints ≠ bone names",
+      "7": "Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch",
+      "8": "Disk weight sums off 1.0",
+      "9": "Disk verts exceed evaluated loops",
+      "10": "Armature count after import ≠ 1",
+      "11": "Bone count drifted",
+      "12": "Named bone lost",
+      "13": "Bone parent drifted",
+      "14": "Rest matrices drifted",
+      "15": "Skinned mesh count after import ≠ 1",
+      "16": "Re-import vert count ≠ disk",
+      "17": "Vertex group names drifted",
+      "18": "Weight round-trip drifted",
+      "19": "Deformation round-trip drifted",
+      "20": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "gn-bundle-roundtrip",
+    "path": "examples/gn-bundle-roundtrip/",
+    "script": "examples/gn-bundle-roundtrip/gn_bundle_roundtrip.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": false,
+    "min_version": "5.0",
+    "run": "blender --background --python examples/gn-bundle-roundtrip/gn_bundle_roundtrip.py",
+    "summary": "Combine Bundle / Separate Bundle packing a cube plus Scale, Offset, and Mark — witnessing `geometry-nodes-python` item-name round-trip, not tree structure.",
+    "falsifiers": [
+      {
+        "args": [
+          "--legacy-rna"
+        ],
+        "expect_exit": 7,
+        "min_version": "5.0"
+      },
+      {
+        "args": [
+          "--mismatch"
+        ],
+        "expect_exit": 3,
+        "min_version": "5.0"
+      },
+      {
+        "args": [
+          "--bypass"
+        ],
+        "expect_exit": 4,
+        "min_version": "5.0"
+      },
+      {
+        "args": [
+          "--mismatch-mark"
+        ],
+        "expect_exit": 5,
+        "min_version": "5.0"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper); `--force-run` on 4.5 lands here",
+      "2": "argparse / usage",
+      "3": "Evaluated vert/face count off closed form (`--mismatch`)",
+      "4": "Unpacked Scale/Offset x-extent off (`--bypass`, `--pack-scale 1`)",
+      "5": "`bundle_mark` missing or off closed form (`--mismatch-mark`)",
+      "6": "Carrier mesh rewritten",
+      "7": "`--legacy-rna`: 5.x RNA rejects `GeometryNodeCombineBundle` (the catalog falsifier)",
+      "8": "`--legacy-rna`: `GeometryNodeCombineBundle` was accepted (the rejection contract broke)",
+      "77": "`SMOKE_SKIP:` Bundles require Blender 5.0+"
+    }
+  },
+  {
+    "name": "gn-instance-grid",
+    "path": "examples/gn-instance-grid/",
+    "script": "examples/gn-instance-grid/gn_instance_grid.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-instance-grid/gn_instance_grid.py",
+    "summary": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material.",
+    "falsifiers": [
+      {
+        "args": [
+          "--one-cell"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Carrier vertex count ≠ 1",
+      "4": "Evaluated topology ≠ 1089 verts / 1089 faces (`--one-cell` lands here)",
+      "5": "Corner grid cell does not hold exactly one keycap (121 verts)",
+      "6": "Set Material did not carry `Keycap.PBT` and `Keycap.Accent`",
+      "7": "Corner keycap off its closed-form grid point or lift",
+      "8": "`--output` produced no file",
+      "9": "Accent selection did not cover exactly one keycap at the front-right point",
+      "10": "Render path: Layer 1 framing violation (`gallery_framing`)",
+      "11": "Render path: asset-quality floor violation (`gallery_asset_quality`)"
+    }
+  },
+  {
+    "name": "gn-modifier-inputs",
+    "path": "examples/gn-modifier-inputs/",
+    "script": "examples/gn-modifier-inputs/gn_modifier_inputs.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-modifier-inputs/gn_modifier_inputs.py",
+    "summary": "Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.",
+    "falsifiers": [
+      {
+        "args": [
+          "--same-height"
+        ],
+        "expect_exit": 7
+      },
+      {
+        "args": [
+          "--api",
+          "dict"
+        ],
+        "expect_exit": 5,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Height input identifier missing on the tree interface",
+      "4": "Modifiers do not share one node_group",
+      "5": "Version-path write raised (`--api dict` on 5.2, `--api rna` on 4.5)",
+      "6": "Version-path read raised",
+      "7": "Readback ≠ intended height (`--same-height` lands here)",
+      "8": "Evaluated Z-extent ≠ intended height",
+      "9": "Evaluated mesh not sitting on z=0",
+      "10": "Gallery framing violation",
+      "11": "Evaluated extents not distinct",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "gn-sdf-remesh",
+    "path": "examples/gn-sdf-remesh/",
+    "script": "examples/gn-sdf-remesh/gn_sdf_remesh.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-sdf-remesh/gn_sdf_remesh.py",
+    "summary": "A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-sdf"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "SDF remesh produced no/unchanged geometry (`--no-sdf` lands here)",
+      "4": "`--output` produced no file",
+      "5": "Wrong-era EEVEE engine id was accepted",
+      "6": "Input material dropped by remesh",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "gn-sim-fountain",
+    "path": "examples/gn-sim-fountain/",
+    "script": "examples/gn-sim-fountain/gn_sim_fountain.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-sim-fountain/gn_sim_fountain.py",
+    "summary": "A Simulation Zone only advances one step per consecutive frame_set.",
+    "falsifiers": [
+      {
+        "args": [
+          "--unpair"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--euler"
+        ],
+        "expect_exit": 4
+      },
+      {
+        "args": [
+          "--prebake-trap"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--calc-to-frame"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Point count or frame-start state off the launch data",
+      "4": "Stepped frames off the closed-form arc (position or velocity)",
+      "5": "Direct jump did not reproduce the one-step trap",
+      "6": "After the cache fill, random-access frames off the arc (or fill not `FINISHED`)",
+      "10": "Gallery framing violation",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "gn-socket-rename",
+    "path": "examples/gn-socket-rename/",
+    "script": "examples/gn-socket-rename/gn_socket_rename.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-socket-rename/gn_socket_rename.py",
+    "summary": "Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2",
+    "falsifiers": [
+      {
+        "args": [
+          "--legacy-ids"
+        ],
+        "expect_exit": 5,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "4": "Identifier inventory wrong for this Blender version",
+      "5": "Pre-5.2 identifier missing (`--legacy-ids` on 5.2)",
+      "6": "Enabled-name socket lookup failed",
+      "7": "Evaluated vert count off (Compare did not switch the column in)",
+      "8": "Evaluated zmax off closed form",
+      "9": "POINT `gauge_h` not 1.80 on eight column verts",
+      "10": "Gallery framing violation",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "gn-zone-iterate",
+    "path": "examples/gn-zone-iterate/",
+    "script": "examples/gn-zone-iterate/gn_zone_iterate.py",
+    "skills": [
+      "geometry-nodes-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gn-zone-iterate/gn_zone_iterate.py",
+    "summary": "Repeat Zone and For Each Element only iterate after pair_with_output.",
+    "falsifiers": [
+      {
+        "args": [
+          "--unpair-repeat"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--no-offset"
+        ],
+        "expect_exit": 4
+      },
+      {
+        "args": [
+          "--unpair-foreach"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--foreach-main"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also carrier mesh was rewritten",
+      "3": "Repeat evaluated vert/face count off closed form",
+      "4": "Repeat X-centers off closed form",
+      "5": "For Each evaluated vert/face count off closed form",
+      "6": "For Each Z-centers off closed form",
+      "10": "Gallery framing violation",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "gp-lineart-contour",
+    "path": "examples/gp-lineart-contour/",
+    "script": "examples/gp-lineart-contour/gp_lineart_contour.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/gp-lineart-contour/gp_lineart_contour.py",
+    "summary": "Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-contour"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also GPv3 collection address contract",
+      "3": "LINEART `thickness` / `radius` trap for this Blender",
+      "4": "LINEART type, source, or `use_contour` (`--no-contour` lands here)",
+      "5": "Evaluated drawing below the stroke/point gates",
+      "6": "Cleared `source_object` still produced strokes",
+      "7": "Every edge type off still produced strokes, or the rebuild did not recover the same counts",
+      "8": "`--output` produced no file",
+      "10": "Gallery framing violation"
+    }
+  },
+  {
+    "name": "grease-pencil-rosette",
+    "path": "examples/grease-pencil-rosette/",
+    "script": "examples/grease-pencil-rosette/grease_pencil_rosette.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py",
+    "summary": "Grease Pencil v3's attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.",
+    "falsifiers": [
+      {
+        "args": [
+          "--open-strokes"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "GPv3 address / legacy trap for this Blender",
+      "4": "Object type, layer count, or frame number",
+      "5": "Stroke topology or cyclic (`--open-strokes` lands here)",
+      "6": "Lazy attribute layers missing or wrong domain/type",
+      "7": "Position buffer length or closed-form round-trip",
+      "8": "Grease Pencil material missing gpencil settings",
+      "9": "`--output` produced no file",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "image-pixels-testcard",
+    "path": "examples/image-pixels-testcard/",
+    "script": "examples/image-pixels-testcard/image_pixels_testcard.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/image-pixels-testcard/image_pixels_testcard.py",
+    "summary": "The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats).",
+    "falsifiers": [
+      {
+        "args": [
+          "--wrong-origin"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Pixel buffer is not always RGBA",
+      "4": "Byte round-trip vs closed-form card (`--wrong-origin` lands here)",
+      "5": "Float-buffer round-trip failed",
+      "6": "`scale()` did not reallocate, or stale-size read succeeded",
+      "7": "`save()` source/buffer-drop contract drifted",
+      "8": "`save_render()` flipped source or disturbed the buffer",
+      "9": "Byte PNG save/reload error",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "lattice-deform",
+    "path": "examples/lattice-deform/",
+    "script": "examples/lattice-deform/lattice_deform.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/lattice-deform/lattice_deform.py",
+    "summary": "A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear).",
+    "falsifiers": [
+      {
+        "args": [
+          "--bspline"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Undeformed lattice moved the mesh (identity check)",
+      "4": "A vertex is off the trilinear closed form, or the vertex count changed (`--bspline` lands here)",
+      "5": "Max displacement below the floor (the witness would pass vacuously)",
+      "6": "`--output` produced no file",
+      "10": "`--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`)"
+    }
+  },
+  {
+    "name": "light-link-studio",
+    "path": "examples/light-link-studio/",
+    "script": "examples/light-link-studio/light_link_studio.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/light-link-studio/light_link_studio.py",
+    "summary": "One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-link"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Light datablock gained `light_linking`",
+      "4": "Light objects lost `light_linking`",
+      "5": "`receiver_collection` assignment did not read back (`--skip-link` lands here)",
+      "6": "Linked state: hero dark or hero/decoy ratio below gate",
+      "7": "Decoy rise below gate when unlinked",
+      "8": "Hero drifted across the unlink",
+      "9": "`--output` produced no file",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "lightmap-uv-channel",
+    "path": "examples/lightmap-uv-channel/",
+    "script": "examples/lightmap-uv-channel/lightmap_uv_channel.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py",
+    "summary": "A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.",
+    "falsifiers": [
+      {
+        "args": [
+          "--overlap-islands"
+        ],
+        "expect_exit": 7
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "UV layer names ≠ UV0 / UV1",
+      "4": "UVMap / UV1 render/clone flags wrong after re-assert",
+      "5": "Channel 0 (UV0) touched by the UV1 unwrap",
+      "6": "UV1 loops outside `[0,1]`",
+      "7": "SAT overlap self-test failed, or UV1 triangle pairs overlap (`--overlap-islands` lands here)",
+      "8": "Min island distance below margin",
+      "9": "Part is not watertight",
+      "10": "Gallery framing violation; also `--output` produced no file",
+      "11": "Gallery asset-quality violation"
+    }
+  },
+  {
+    "name": "lod-decimate-chain",
+    "path": "examples/lod-decimate-chain/",
+    "script": "examples/lod-decimate-chain/lod_decimate_chain.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/lod-decimate-chain/lod_decimate_chain.py",
+    "summary": "A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-decimate"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Base topology ≠ closed form",
+      "4": "Base bbox ≠ closed form",
+      "5": "LOD0 evaluated counts ≠ base",
+      "6": "Evaluated tris ≥ base (`--no-decimate` lands here)",
+      "7": "Original datablock mutated after evaluation",
+      "8": "LOD tris outside ratio bounds",
+      "9": "LOD bbox lost silhouette-critical dimensions",
+      "10": "`--output` framing outside the Layer 1 band (`gallery_framing`)",
+      "11": "`--output` asset below the quality floors (`gallery_asset_quality`)",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "mesh-automasking-settings",
+    "path": "examples/mesh-automasking-settings/",
+    "script": "examples/mesh-automasking-settings/mesh_automasking_settings.py",
+    "skills": [],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/mesh-automasking-settings/mesh_automasking_settings.py",
+    "summary": "Pathology witness for the 5.2 move of sculpt automasking RNA off `Brush` into `MeshAutomaskingSettings`.",
+    "falsifiers": [
+      {
+        "args": [
+          "--assume-brush-attrs"
+        ],
+        "expect_exit": 5,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "SCULPT brush was not created",
+      "4": "`MeshAutomaskingSettings` type presence wrong for this version",
+      "5": "Old Brush automasking attributes missing when required (`--assume-brush-attrs` on 5.2)",
+      "6": "Old Brush attributes still present, or mas is None, on 5.2+",
+      "7": "Current-location read raised or returned the wrong types"
+    }
+  },
+  {
+    "name": "mesh-hygiene-audit",
+    "path": "examples/mesh-hygiene-audit/",
+    "script": "examples/mesh-hygiene-audit/mesh_hygiene_audit.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py",
+    "summary": "Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting.",
+    "falsifiers": [
+      {
+        "args": [
+          "--inject",
+          "ngon"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Ngon present (`--inject ngon` lands here)",
+      "4": "Loose vertices",
+      "5": "Non-manifold or boundary edges",
+      "6": "Zero-area faces",
+      "7": "Winding seam edges, or signed volume ≤ 0",
+      "8": "Body casting Euler characteristic ≠ 2",
+      "9": "`--output` produced no file, or dirty staging lost a defect class",
+      "10": "Gallery framing violation",
+      "11": "Gallery asset-quality floor violation"
+    }
+  },
+  {
+    "name": "modular-kit-snap",
+    "path": "examples/modular-kit-snap/",
+    "script": "examples/modular-kit-snap/modular_kit_snap.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/modular-kit-snap/modular_kit_snap.py",
+    "summary": "A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.",
+    "falsifiers": [
+      {
+        "args": [
+          "--seam-gap"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Boundary vert count or end-plane membership",
+      "4": "End rings do not partition evenly, or opposing loops differ",
+      "5": "Tiled instances do not share boundary positions (`--seam-gap` lands here)",
+      "6": "Shell or whole-asset bbox off the declared tile",
+      "7": "Boundary edge count, non-manifold edges, or rim off the end planes",
+      "8": "Detail part not watertight",
+      "9": "Detail part reaches a tile boundary; also `--output` produced no file",
+      "10": "Framing deviation score exceeds cap (`--close-camera`)",
+      "11": "Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation"
+    }
+  },
+  {
+    "name": "ngon-triangulate",
+    "path": "examples/ngon-triangulate/",
+    "script": "examples/ngon-triangulate/ngon_triangulate.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/ngon-triangulate/ngon_triangulate.py",
+    "summary": "Synthesizes one hexagon by dissolving a cube edge, then asserts the hygiene / tangent contracts on that defective mesh.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-dissolve"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--skip-triangulate"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (the `__main__` wrapper prints `ERROR: <type>: <message>`)",
+      "2": "argparse / usage",
+      "3": "Pathology missing: n-gon count, loops, or face count (`--no-dissolve` lands here)",
+      "4": "`calc_tangents` / triangulate handling (`--skip-triangulate` lands here, via the real handling assertion)"
+    }
+  },
+  {
+    "name": "parent-inverse-orrery",
+    "path": "examples/parent-inverse-orrery/",
+    "script": "examples/parent-inverse-orrery/parent_inverse_orrery.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/parent-inverse-orrery/parent_inverse_orrery.py",
+    "summary": "Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-mpi"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Bare parenting did not jump",
+      "4": "Keep-world idiom off",
+      "5": "Stale `matrix_world` contract broken",
+      "6": "Planet off closed-form orbit (`--skip-mpi` lands here)",
+      "7": "Moon off closed-form orbit",
+      "8": "`--output` produced no file",
+      "10": "Gallery framing violation (render path only)"
+    }
+  },
+  {
+    "name": "png-exr-alpha",
+    "path": "examples/png-exr-alpha/",
+    "script": "examples/png-exr-alpha/png_exr_alpha.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/png-exr-alpha/png_exr_alpha.py",
+    "summary": "Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha.",
+    "falsifiers": [
+      {
+        "args": [
+          "--opaque-alpha"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also closed-form palette no longer stresses unpremul",
+      "3": "`float_buffer=True` image reports `is_float=False`",
+      "4": "Float→PNG IHDR is not RGBA16",
+      "5": "Float→PNG RGB error below floor (`--opaque-alpha` lands here)",
+      "6": "Float→PNG disagrees with closed-form false-unpremul model",
+      "7": "Float→EXR round-trip above tolerance",
+      "8": "`float_buffer=False` image reports `is_float=True`",
+      "9": "Byte→PNG IHDR is not RGBA8",
+      "10": "Byte→PNG disagrees with straight-alpha 8-bit model; also gallery framing violation",
+      "11": "Byte→PNG stress cell looks false-unpremul-mangled",
+      "12": "EXR `color_mode=RGB` alpha-drop contract",
+      "13": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "prop-origin-transform",
+    "path": "examples/prop-origin-transform/",
+    "script": "examples/prop-origin-transform/prop_origin_transform.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "operators"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/prop-origin-transform/prop_origin_transform.py",
+    "summary": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-mpi"
+        ],
+        "expect_exit": 8
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Stale `matrix_world` contract broken",
+      "4": "World bbox moved across bake",
+      "5": "Scale after bake is not (1,1,1)",
+      "6": "Origin not at local base center",
+      "7": "Bare parenting did not jump",
+      "8": "MPI did not restore world location (`--skip-mpi` lands here)",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "11": "Gallery asset-quality violation (render path only)"
+    }
+  },
+  {
+    "name": "ray-cast-space",
+    "path": "examples/ray-cast-space/",
+    "script": "examples/ray-cast-space/ray_cast_space.py",
+    "skills": [
+      "depsgraph-and-evaluated-data"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/ray-cast-space/ray_cast_space.py",
+    "summary": "Object.ray_cast is object-local while Scene.ray_cast is world space.",
+    "falsifiers": [
+      {
+        "args": [
+          "--world-to-object"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`Scene.ray_cast` missed, hit another object, or hit off the closed-form world point or normal",
+      "4": "`Object.ray_cast` missed, or its local hit mapped back by `matrix_world` disagrees with the world point, normal or polygon (`--world-to-object` lands here)",
+      "5": "The world-coordinate trap did not bite: world coords fed to `Object.ray_cast` landed within `TRAP_MIN` of a true hit",
+      "6": "`--output` produced no file",
+      "10": "`--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`)"
+    }
+  },
+  {
+    "name": "shader-node-group",
+    "path": "examples/shader-node-group/",
+    "script": "examples/shader-node-group/shader_node_group.py",
+    "skills": [
+      "procedural-materials-and-shaders"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/shader-node-group/shader_node_group.py",
+    "summary": "One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors.",
+    "falsifiers": [
+      {
+        "args": [
+          "--same-tint"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Interface sockets missing Tint / Roughness / Shader",
+      "4": "Group datablock `users` ≠ number of mug materials (5)",
+      "5": "Instance points at a different node tree",
+      "6": "Instance Tint values not pairwise distinct (`--same-tint` lands here)",
+      "7": "`--output` produced no file",
+      "10": "Gallery framing violation"
+    }
+  },
+  {
+    "name": "shape-key-blend",
+    "path": "examples/shape-key-blend/",
+    "script": "examples/shape-key-blend/shape_key_blend.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/shape-key-blend/shape_key_blend.py",
+    "summary": "A relative Tall shape key that turns a squat ceramic jar into a trumpet vase.",
+    "falsifiers": [
+      {
+        "args": [
+          "--zero-blend"
+        ],
+        "expect_exit": 5
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "No shape keys on mesh",
+      "4": "Key names ≠ Basis, Tall",
+      "5": "Tall.value ≠ 0.5 (`--zero-blend` lands here)",
+      "6": "Undeformed `mesh.vertices` not at Basis",
+      "7": "Evaluated vert off closed-form blend",
+      "8": "Evaluated Z span off closed form",
+      "9": "Rim radius (flare) off closed form",
+      "10": "Framing gate (`gallery_framing`, `--output` only)",
+      "11": "Asset-quality gate (`gallery_asset_quality`, `--output` only)",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "sky-texture-sun-elevation",
+    "path": "examples/sky-texture-sun-elevation/",
+    "script": "examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py",
+    "skills": [
+      "procedural-materials-and-shaders"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py",
+    "summary": "World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1.",
+    "falsifiers": [
+      {
+        "args": [
+          "--unlink-sky"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`sky_type` is not the identifier for this Blender",
+      "4": "`sun_elevation` round-trip failed",
+      "5": "`dust_density` / `aerosol_density` / `NISHITA` / `MULTIPLE_SCATTERING` trap",
+      "6": "Sky → Background → World Output links broken (`--unlink-sky` lands here)",
+      "7": "High-elevation zenith luma below floor",
+      "8": "Zenith luma did not rise with elevation",
+      "9": "`--output` produced no file",
+      "10": "`--output` framing violation (`gallery_framing`, per panel)",
+      "12": "`--output` still clips to white under Standard (> 0.05 % of pixels)"
+    }
+  },
+  {
+    "name": "soccer-ball-goldberg",
+    "path": "examples/soccer-ball-goldberg/",
+    "script": "examples/soccer-ball-goldberg/soccer_ball_goldberg.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py",
+    "summary": "A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count.",
+    "falsifiers": [
+      {
+        "args": [
+          "--invert-bind"
+        ],
+        "expect_exit": 13
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Topology ≠ 60/90/32",
+      "4": "Euler characteristic ≠ 2",
+      "5": "Face census ≠ 12 pentagons + 20 hexagons",
+      "6": "Vertex degree not uniform 3; also `--output` produced no file",
+      "7": "Non-manifold edges",
+      "8": "Edge lengths not uniform",
+      "9": "Face planarity off",
+      "10": "Centroid off origin",
+      "11": "Circumradius not uniform",
+      "12": "Panel material count ≠ 2",
+      "13": "Panel binding not by vertex count (`--invert-bind` lands here)",
+      "14": "Framing gate (`--output` path only; `gallery_framing` returns 10, remapped)"
+    }
+  },
+  {
+    "name": "socket-attach-points",
+    "path": "examples/socket-attach-points/",
+    "script": "examples/socket-attach-points/socket_attach_points.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/socket-attach-points/socket_attach_points.py",
+    "summary": "A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-mpi"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Socket world matrix, orthonormal basis, or determinant (`--skip-mpi` lands here)",
+      "4": "Socket pad normal, origin, or up-axis rule",
+      "5": "Module seating / mount axis / leftover local transform",
+      "6": "Population, namespace, default datablock name, SKT_ prefix, or skid plane",
+      "7": "Re-pose: socket or module lost the root",
+      "8": "Parent-inverse clear, child scale pushdown, or post-apply module drift",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "11": "Gallery asset-quality violation"
+    }
+  },
+  {
+    "name": "solidify-even-thickness",
+    "path": "examples/solidify-even-thickness/",
+    "script": "examples/solidify-even-thickness/solidify_even_thickness.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/solidify-even-thickness/solidify_even_thickness.py",
+    "summary": "Solidify's use_even_offset on a folded strip.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-even"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Evaluated topology is not the original surface plus one copy per vertex (2N verts, originals untouched)",
+      "4": "The even shell is not *t* thick at every fold, or its copies are off t / cos(φ/2) (`--no-even` lands here)",
+      "5": "The plain shell is off the t · cos(φ/2) closed form at a fold",
+      "6": "The plain shell thins by less than the floor (the witness would pass vacuously)",
+      "7": "`--output` produced no file",
+      "10": "`--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`)"
+    }
+  },
+  {
+    "name": "swatch-grid",
+    "path": "examples/swatch-grid/",
+    "script": "examples/swatch-grid/swatch_grid.py",
+    "skills": [
+      "procedural-materials-and-shaders"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/swatch-grid/swatch_grid.py",
+    "summary": "Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
+    "falsifiers": [
+      {
+        "args": [
+          "--same-base"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Distinct swatch colors ≠ 6 (`--same-base` lands here); also render not six distinct regions",
+      "4": "`--output` produced no file",
+      "5": "Wrong-era EEVEE engine id was accepted",
+      "10": "Gallery framing violation"
+    }
+  },
+  {
+    "name": "temp-override-join",
+    "path": "examples/temp-override-join/",
+    "script": "examples/temp-override-join/temp_override_join.py",
+    "skills": [
+      "headless-batch-scripting",
+      "operators"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/temp-override-join/temp_override_join.py",
+    "summary": "Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-override"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Mesh object count after join ≠ 1 (`--no-override` lands here)",
+      "4": "Joined target is not the sole remaining mesh",
+      "5": "Verts / faces ≠ the sum over the seven parts",
+      "6": "Source objects still present",
+      "7": "Local Z span ≠ [0, 2.303]: a part transform was not applied",
+      "8": "Material slots ≠ the five part materials, once each",
+      "9": "Faces per material ≠ what the parts brought (indices not remapped)",
+      "10": "`--output` framing gate (`gallery_framing`)",
+      "11": "`--output` asset-quality floors (`gallery_asset_quality`)",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "text-version-stamp",
+    "path": "examples/text-version-stamp/",
+    "script": "examples/text-version-stamp/text_version_stamp.py",
+    "skills": [],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/text-version-stamp/text_version_stamp.py",
+    "summary": "The TextCurve data API — curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion.",
+    "falsifiers": [
+      {
+        "args": [
+          "--wrong-body"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Not a FONT `TextCurve` with the built-in Bfont",
+      "4": "`body` is not the live `version_string` (`--wrong-body` lands here)",
+      "5": "Flat text is not a filled planar mesh",
+      "6": "Extrude / bevel closed form failed",
+      "7": "Appending characters did not widen the text",
+      "8": "Mesh survived `to_mesh_clear()`",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "13": "`--output`: bundled `datafiles/fonts/Inter.woff2` not found"
+    }
+  },
+  {
+    "name": "triangulate-tangents",
+    "path": "examples/triangulate-tangents/",
+    "script": "examples/triangulate-tangents/triangulate_tangents.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/triangulate-tangents/triangulate_tangents.py",
+    "summary": "A machined buckler verifying the tangent-space contract a game engine's normal mapping depends on.",
+    "falsifiers": [
+      {
+        "args": [
+          "--zero-uv"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Loop-triangle count ≠ closed form",
+      "4": "Re-fetched UV layer drifted from the polar field (`--zero-uv` lands here)",
+      "5": "Tangent basis not orthonormal",
+      "6": "Bitangent ≠ sign × (n × t)",
+      "7": "Tangents deviate from the edge/UV closed form",
+      "8": "Flipped tangent inside a clean triangle",
+      "10": "Gallery framing violation; also `--output` produced no file",
+      "11": "Asset-quality floor violation (`--output` only; shared helper)"
+    }
+  },
+  {
+    "name": "turntable",
+    "path": "examples/turntable/",
+    "script": "examples/turntable/turntable.py",
+    "skills": [
+      "slotted-actions-animation"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/turntable/turntable.py",
+    "summary": "A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).",
+    "falsifiers": [
+      {
+        "args": [
+          "--no-keys"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Rotation keys do not drive playback (`--no-keys` lands here)",
+      "4": "`--output` produced no file",
+      "5": "Wrong-era EEVEE engine id was accepted",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "unapplied-scale-gltf",
+    "path": "examples/unapplied-scale-gltf/",
+    "script": "examples/unapplied-scale-gltf/unapplied_scale_gltf.py",
+    "skills": [
+      "ai-mesh-cleanup",
+      "engine-export-presets"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/unapplied-scale-gltf/unapplied_scale_gltf.py",
+    "summary": "Synthesizes unapplied non-uniform object scale on a unit cube, then asserts the glTF exporter contract.",
+    "falsifiers": [
+      {
+        "args": [
+          "--identity"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--bake"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "3": "Pathology missing: unapplied non-uniform scale (`--identity` lands here)",
+      "4": "Export handling failed (`--bake` lands here)"
+    }
+  },
+  {
+    "name": "usd-export-evaluation-mode",
+    "path": "examples/usd-export-evaluation-mode/",
+    "script": "examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py",
+    "skills": [
+      "depsgraph-and-evaluated-data",
+      "headless-batch-scripting"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py",
+    "summary": "The USD exporter evaluation_mode chooses viewport versus render modifier quality.",
+    "falsifiers": [
+      {
+        "args": [
+          "--subdivision",
+          "BEST_MATCH"
+        ],
+        "expect_exit": 4
+      },
+      {
+        "args": [
+          "--evaluation-mode",
+          "VIEWPORT"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage; also base cube verts ≠ 8",
+      "3": "VIEWPORT TESSELLATE point/face count off closed form",
+      "4": "RENDER TESSELLATE point/face count or scheme off closed form",
+      "5": "BEST_MATCH cage point count or scheme off",
+      "6": "RENDER and VIEWPORT USDA point counts are identical (check), or the re-imported RENDER goblet is not denser than the VIEWPORT one (`--output`)",
+      "10": "Gallery framing violation",
+      "12": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "uv-layer-grid",
+    "path": "examples/uv-layer-grid/",
+    "script": "examples/uv-layer-grid/uv_layer_grid.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/uv-layer-grid/uv_layer_grid.py",
+    "summary": "The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",
+    "falsifiers": [
+      {
+        "args": [
+          "--precreate-on-hazard"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Silent-no-op hazard gone (`--precreate-on-hazard` lands here)",
+      "4": "Grid topology drifted",
+      "5": "Pre-create + calc_uvs did not persist one UV layer",
+      "6": "calc_uvs closed-form error",
+      "7": "Mesh UV round-trip error",
+      "8": "calc_uvs=False unexpectedly created a UV layer",
+      "9": "Explicit UV assignment error",
+      "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
+      "11": "Broken panel is not flat",
+      "12": "Broken panel is not texel-(0,0) teal",
+      "13": "Repaired panel is not a checker",
+      "14": "Broken and repaired panels render identically",
+      "15": "`--output` produced no file"
+    }
+  },
+  {
+    "name": "vertex-color-ao",
+    "path": "examples/vertex-color-ao/",
+    "script": "examples/vertex-color-ao/vertex_color_ao.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/vertex-color-ao/vertex_color_ao.py",
+    "summary": "A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.",
+    "falsifiers": [
+      {
+        "args": [
+          "--uniform-hemisphere"
+        ],
+        "expect_exit": 3
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Calibration AO off closed form (`--uniform-hemisphere` lands here)",
+      "4": "Unoccluded plate is not 1.0, or AO is not strictly increasing with distance",
+      "5": "Bake empty, out of range, or spread too small",
+      "6": "FLOAT_COLOR / BYTE_COLOR round-trip contract",
+      "7": "Colour attributes missing, retyped, or drifted under the depsgraph",
+      "8": "Asset part count, unapplied scale, namespace, render attribute, or ground plane",
+      "9": "`--output` produced no file",
+      "10": "Gallery framing violation",
+      "11": "Gallery asset-quality violation"
+    }
+  },
+  {
+    "name": "vertex-weight-limit",
+    "path": "examples/vertex-weight-limit/",
+    "script": "examples/vertex-weight-limit/vertex_weight_limit.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/vertex-weight-limit/vertex_weight_limit.py",
+    "summary": "A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-limit"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "Pre-limit max influences ≠ 5",
+      "4": "Vertex over the 4-influence cap (`--skip-limit` lands here)",
+      "5": "Limit changed nothing",
+      "6": "Weight sums off 1.0 after renormalize",
+      "7": "Pose damaged by pruning, or evaluated vert count changed",
+      "8": "Evaluated mesh off LBS over limited weights",
+      "9": "Root-weighted mount moved",
+      "10": "Gallery framing violation; also `--output` produced no file",
+      "11": "Asset-quality floor violation (`--output` only)"
+    }
+  },
+  {
+    "name": "vse-cut-list",
+    "path": "examples/vse-cut-list/",
+    "script": "examples/vse-cut-list/vse_cut_list.py",
+    "skills": [
+      "vse-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/vse-cut-list/vse_cut_list.py",
+    "summary": "The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*.",
+    "falsifiers": [
+      {
+        "args": [
+          "--swap-inputs"
+        ],
+        "expect_exit": 7
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`.sequences` accessor contract for this Blender",
+      "4": "Wrong-era `new_effect` end kwarg or TRANSFORM type did not TypeError",
+      "5": "Strip span or channel off closed form",
+      "6": "`frame_final_*` deprecation bridge for this Blender",
+      "7": "GC wiring or strip `.type` enum (`--swap-inputs` lands here)",
+      "8": "Scene strip span or Stage source",
+      "9": "Mosaic transform, compositing defaults, text body, or strip color",
+      "10": "Save/reload round-trip re-assert failed; also gallery framing violation",
+      "11": "`--output` produced no file",
+      "12": "`--check-pixels` compositing contract"
+    }
+  },
+  {
+    "name": "vse-gamma-cross",
+    "path": "examples/vse-gamma-cross/",
+    "script": "examples/vse-gamma-cross/vse_gamma_cross.py",
+    "skills": [
+      "vse-python"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py",
+    "summary": "The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp.",
+    "falsifiers": [
+      {
+        "args": [
+          "--swap-inputs"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "GC span off closed form",
+      "4": "GC inputs are not T1 → T2 (`--swap-inputs` lands here)",
+      "5": "Sample `t` convention drifted",
+      "6": "Cross sample off the gamma-0.5 closed form",
+      "7": "Mid-cross lerp deviation missing (naive mix)",
+      "8": "`--output` produced no file",
+      "9": "`--output` filmstrip guard: a frame not uniform, or a strip's mid frame off its closed form",
+      "10": "`--output` framing violation (`gallery_framing`)"
+    }
+  },
+  {
+    "name": "vse-linear-modifiers",
+    "path": "examples/vse-linear-modifiers/",
+    "script": "examples/vse-linear-modifiers/vse_linear_modifiers.py",
+    "skills": [
+      "vse-python"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/vse-linear-modifiers/vse_linear_modifiers.py",
+    "summary": "Pathology witness for the 5.2 removal of `Strip.use_linear_modifiers`.",
+    "falsifiers": [
+      {
+        "args": [
+          "--assume-present"
+        ],
+        "expect_exit": 4,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "COLOR strip was not created",
+      "4": "`use_linear_modifiers` missing when required (`--assume-present` on 5.2)",
+      "5": "Attribute still present or getattr silent on 5.2+",
+      "6": "setattr round-trip failed",
+      "7": "`hasattr`-guarded read raised"
+    }
+  },
+  {
+    "name": "wave-displace",
+    "path": "examples/wave-displace/",
+    "script": "examples/wave-displace/wave_displace.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": true,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/wave-displace/wave_displace.py",
+    "summary": "Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
+    "falsifiers": [
+      {
+        "args": [
+          "--flat"
+        ],
+        "expect_exit": 4
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "4": "Z-span not in the closed-form band (`--flat` lands here)",
+      "5": "A vertex is off the closed-form wave",
+      "6": "`--output` produced no file",
+      "10": "Gallery framing violation (`gallery_framing`)"
+    }
+  }
+]

@@ -66,6 +66,7 @@ def commands() -> list[tuple[str, list[str] | str]]:
         cmds.append((path.name, [py, str(path)]))
     cmds.append(("build_claude_rules --check", [py, str(ROOT / "scripts" / "build_claude_rules.py"), "--check"]))
     cmds.append(("build_plugin_dist --check", [py, str(ROOT / "scripts" / "build_plugin_dist.py"), "--check"]))
+    cmds.append(("build_examples_index --check", [py, str(ROOT / "scripts" / "build_examples_index.py"), "--check"]))
     cmds += inline_checks()
     return cmds
 
