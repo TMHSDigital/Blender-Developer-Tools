@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.5] - 2026-10-05
+
+### Fixes
+
+- fix(skills): correct measured-false claims across eight skills and two rules (#414) ([`040e994`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/040e994e91a2fe5adf4d3649950686d09f763b5c))
+
+[Release v0.143.5](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.5)
+
 ## [0.143.4] - 2026-10-05
 
 ### Fixes
