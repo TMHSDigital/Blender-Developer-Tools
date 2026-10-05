@@ -423,6 +423,9 @@ jobs:
       - name: Plugin-dist --out refuses destructive targets
         run: python3 tests/test_build_plugin_dist.py -v
 
+      - name: Exit-code gate resolves fail() helpers and tuple returns
+        run: python3 tests/test_exit_code_readme.py -v
+
       - name: Hero-drift tool exit-code tests
         run: |
           pip install numpy==2.2.6 Pillow==11.2.1
