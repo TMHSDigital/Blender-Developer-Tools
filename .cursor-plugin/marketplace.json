@@ -1,0 +1,16 @@
+{
+  "name": "blender-developer-tools",
+  "owner": {
+    "name": "TMHSDigital"
+  },
+  "metadata": {
+    "description": "Blender Python skills and rules for Cursor: correct bpy for Blender 5.2 LTS and 4.5 LTS."
+  },
+  "plugins": [
+    {
+      "name": "blender-developer-tools",
+      "source": "./",
+      "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development"
+    }
+  ]
+}

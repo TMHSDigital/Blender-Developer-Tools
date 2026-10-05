@@ -164,9 +164,10 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   examples, and showcase pieces) match filesystem reality. The counts language in `README.md`
   is load-bearing: the job greps for it.
 - `validate.yml` also runs a `validate-manifest` job that checks
-  `.cursor-plugin/plugin.json` against reality: every listed path must exist,
-  every skill, rule, snippet, template, example, and showcase piece on disk must be listed,
-  and the manifest `version` must equal `VERSION`. The release pipeline owns
+  `.cursor-plugin/plugin.json` against Cursor's plugin schema (no keys outside
+  it; Cursor rejects unknown ones) and against reality: every listed skill
+  and rule exists and every one on disk is listed, `marketplace.json` lists
+  this plugin, and the manifest `version` must equal `VERSION`. The release pipeline owns
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
 - `blender-smoke.yml` executes every shipped example (check-only, no render)
   plus snippet/template smoke tests inside REAL headless Blender, on

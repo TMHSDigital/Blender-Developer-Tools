@@ -60,7 +60,13 @@ The content is consumed by AI coding agents reading these files directly from a 
 git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 ```
 
-- **Cursor** — open your project with this checkout available and copy (or symlink) `rules/*.mdc` into your project's `.cursor/rules/`. The rules apply automatically by glob scope; skills are referenced by name in chat.
+- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 16 skills and 9 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
+
+  ```bash
+  git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
+  ```
+
+  (On Windows the folder is `%USERPROFILE%\.cursor\plugins\local\`. Cursor skips symlinks that point outside that folder, so clone or copy rather than link.) Teams can import the repository as a team marketplace instead; it carries `.cursor-plugin/marketplace.json`. For one project only, copy `skills/*` into the project's `.cursor/skills/` and `rules/*.mdc` into `.cursor/rules/` from a checkout. Copying only the rules gives you no skills.
 - **Claude Code** — install as a plugin, then run `/skills` to see all 16 skills plus `blender-rules`:
 
   ```text
@@ -83,7 +89,8 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 
 - **Claude Code plugin** — `/plugin marketplace update blender-developer-tools` refreshes the marketplace and its plugins (from a shell: `claude plugin update blender-developer-tools@blender-developer-tools`). Remove it with `/plugin uninstall blender-developer-tools`, then `/plugin marketplace remove blender-developer-tools`.
-- **Checkout** (Cursor rules, the optional always-on Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
+- **Cursor local plugin** — `git pull` in `~/.cursor/plugins/local/blender-developer-tools`, then reload the window. Remove that folder to uninstall.
+- **Checkout** (per-project Cursor copies, the optional always-on Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
 
 ## Supported Blender versions
 
