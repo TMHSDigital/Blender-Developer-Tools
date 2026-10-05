@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.147.0] - 2026-10-05
+
+### Features
+
+- feat(skills): timers-modal-and-threading skill, snippet and example (#446) ([`c906438`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/c9064382f27c5f43f732d808cd9500a882b2f5d6))
+
+[Release v0.147.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.147.0)
+
 ## [0.146.0] - 2026-10-05
 
 ### Features
