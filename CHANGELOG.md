@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.144.0] - 2026-10-05
+
+### Features
+
+- feat(site): publish llms.txt and llms-full.txt for agents that browse (#433) ([`93e9e8f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/93e9e8f65b70c5f6ec0b1b9007553b8e3b06c02c))
+
+### Fixes
+
+- fix(ci): one requirements file and one command for every local check (#432) ([`92d033b`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/92d033bbe504d1a6877fa5c9793a8d22ae473488))
+
+[Release v0.144.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.144.0)
+
 ## [0.143.14] - 2026-10-05
 
 ### Fixes
