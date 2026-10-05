@@ -16,6 +16,22 @@ branch.
 does **not** remove it. `del id_block[key]` does. After factory-empty, there is
 no `active_object`.
 
+It also witnesses the other half of the split: a **registered** `bpy.props`
+value (`Scene.bdt_counter = IntProperty()`) is not an ID property on 5.0+.
+Measured on 4.5.11, 5.1.2 and 5.2.1:
+
+| On a registered prop | 4.5 LTS | 5.0+ |
+| --- | --- | --- |
+| `scene.bdt_counter` | 5 | 5 |
+| `scene["bdt_counter"]` | 5 | `KeyError` |
+| `"bdt_counter" in scene.keys()` | True | False |
+| `del scene["bdt_counter"]` | resets it | `KeyError` |
+| `path_resolve('["bdt_counter"]')` (driver path) | 5 | `ValueError` |
+| `path_resolve("bdt_counter")`, `property_unset`, `is_property_set` | work | work |
+
+On 5.0+ the raw storage is `scene.bl_system_properties_get()`. A value saved
+by 4.5 still loads as the attribute on 5.2.
+
 **What failure each check would catch:**
 
 - exit 2 — someone set an active object; the snippet `__main__` would have
@@ -24,6 +40,9 @@ no `active_object`.
 - exit 4 — `property_unset` removed the key or failed to raise
 - exit 7 — `del` did not run (`--skip-delete` / `--unset-instead` falsify
   this: measured `clear_has=True`)
+- exit 8 — a registered prop was read or reset the 4.x way, or sits on the
+  wrong side of the ID-property split for this version
+  (`--subscript-registered` falsifies this on 5.0+)
 
 ## Staging
 
@@ -65,9 +84,10 @@ against it. `10` is the shared framing helper.
 | 5 | `del` did not report removal |
 | 6 | Keep lamp lost the ID property |
 | 7 | Clear lamp still has the ID property (`--skip-delete` / `--unset-instead` land here) |
+| 8 | Registered-prop contract broke: attribute/`property_unset` failed, the prop sits on the wrong side of the 5.0 ID-property split, or `scene["name"]` raised `KeyError` (`--subscript-registered` on 5.0+; exits 0 on 4.5, where subscript access still works) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--unset-instead`. Its catalog falsifier is `--skip-delete` (expects exit 7).
+Smoke does not pass `--output` or `--unset-instead`. Its catalog falsifiers are `--skip-delete` (expects exit 7); `--subscript-registered` (expects exit 8; 5.0+ only; SKIP on older Blender).

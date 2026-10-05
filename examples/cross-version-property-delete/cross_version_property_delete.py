@@ -9,6 +9,13 @@ is dark headless). Builds the ID through ``bpy.data.objects.new`` and asserts:
    the ID property — that RNA call resets a registered property to default.
 3. ``del obj["accession"]`` removes it. Same on 4.5 LTS and 5.x; no version
    branch.
+4. A *registered* ``bpy.props`` value is a different thing on 5.0+: it is no
+   longer an ID property, so ``scene["name"]``, ``"name" in scene.keys()``,
+   ``del scene["name"]`` and a driver path of ``'["name"]'`` all stop seeing
+   it. Attribute access, ``property_unset()``, ``is_property_set()`` and the
+   plain ``"name"`` path work on every version. ``--subscript-registered``
+   reads it the 4.x way and exits 8 on 5.0+ (exit 0 on 4.5, where it still
+   works).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -25,6 +32,7 @@ import gallery_framing
 
 KEY = "accession"
 VALUE = 42
+REG = "bdt_counter"  # registered bpy.props IntProperty on Scene
 
 
 def beveled_box(name, size, bevel, segments=2):
@@ -413,6 +421,52 @@ def render_still(keep, clear, path, engine):
     return 0
 
 
+def check_registered(subscript=False):
+    """Registered bpy.props vs ID properties: the 5.0 split (#354)."""
+    split = bpy.app.version >= (5, 0, 0)
+    bpy.types.Scene.bdt_counter = bpy.props.IntProperty(default=1)
+    try:
+        scene = bpy.context.scene
+        scene.bdt_counter = 5
+        if subscript:
+            # The 4.x idiom: worked when registered values were ID properties.
+            value = scene[REG]
+        else:
+            value = scene.bdt_counter
+        in_keys = REG in scene.keys()
+        sub_path = True
+        try:
+            scene.path_resolve(f'["{REG}"]')
+        except ValueError:
+            sub_path = False
+        print(f"registered value={value} in_keys={in_keys} "
+              f"subscript_path={sub_path} split={split}")
+        if value != 5 or not scene.is_property_set(REG):
+            print("ERROR: registered property did not read back by attribute",
+                  file=sys.stderr)
+            return 8
+        if in_keys == split or sub_path == split:
+            print(f"ERROR: expected registered props {'outside' if split else 'inside'} "
+                  f"the ID-property group on {bpy.app.version_string}", file=sys.stderr)
+            return 8
+        if scene.path_resolve(REG) != 5:
+            print("ERROR: plain data path did not resolve the registered prop",
+                  file=sys.stderr)
+            return 8
+        scene.property_unset(REG)
+        if scene.bdt_counter != 1 or scene.is_property_set(REG):
+            print("ERROR: property_unset did not reset the registered prop",
+                  file=sys.stderr)
+            return 8
+    except KeyError as exc:
+        print(f"ERROR: KeyError {exc}: on 5.0+ a registered bpy.props value is "
+              f"not an ID property; read it as scene.{REG}", file=sys.stderr)
+        return 8
+    finally:
+        del bpy.types.Scene.bdt_counter
+    return 0
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
@@ -426,6 +480,10 @@ def main():
         "--unset-instead", action="store_true",
         help="falsification: call property_unset instead of del",
     )
+    p.add_argument(
+        "--subscript-registered", action="store_true",
+        help="falsification: read a registered prop as scene['name'] (exit 8 on 5.0+)",
+    )
     args = p.parse_args(argv)
 
     keep, clear = build()
@@ -433,6 +491,9 @@ def main():
         keep, clear,
         skip_delete=args.skip_delete, unset_instead=args.unset_instead,
     )
+    if code:
+        return code
+    code = check_registered(subscript=args.subscript_registered)
     if code:
         return code
 

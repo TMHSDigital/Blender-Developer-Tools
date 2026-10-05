@@ -6,6 +6,10 @@
 # RNA property to its default value; it does not remove a custom ID property.
 # That is a different operation.
 #
+# The reverse also holds: a REGISTERED bpy.props value is not an ID property
+# on 5.0+, so `del id_block["my_prop"]` raises KeyError there (it reset the
+# value on 4.x). Reset those with id_block.property_unset("my_prop").
+#
 # Reference:
 #   https://docs.blender.org/api/current/bpy.types.bpy_struct.html
 

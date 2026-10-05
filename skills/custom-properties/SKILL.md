@@ -231,14 +231,35 @@ This is a frequent AI mistake when generating quick scripts. Always wrap state i
 
 6. **Confusing `subtype='FILE_PATH'` and `'DIR_PATH'`**. `'FILE_PATH'` lets the user pick a file, `'DIR_PATH'` a directory.
 
+7. **Reading a registered property as an ID property on 5.x**: `scene["my_prop"]`, `"my_prop" in scene.keys()`, `del scene["my_prop"]`, or a driver path of `'["my_prop"]'`. These worked on 4.x and raise `KeyError` / `ValueError` (or silently skip the prop) on 5.0+. Use `scene.my_prop`, `scene.property_unset("my_prop")`, `scene.is_property_set("my_prop")` and the plain `"my_prop"` path. See the compatibility section below.
+
 ## Compatibility paths (4.5 LTS vs 5.0+)
+
+### Registered properties are not ID properties on 5.0+
+
+On 4.x a value assigned to a registered `bpy.props` property was stored as an ID property, so dict-style access reached it. On 5.0+ it lives in a separate system-property group. Measured with `bpy.types.Scene.my_prop = IntProperty(default=1)` and `scene.my_prop = 5`:
+
+| Access | 4.5 LTS | 5.0+ (5.1.2, 5.2.1) |
+| --- | --- | --- |
+| `scene.my_prop` | 5 | 5 |
+| `scene["my_prop"]` | 5 | `KeyError` |
+| `scene.get("my_prop")` | 5 | `None` |
+| `"my_prop" in scene.keys()` | True | False |
+| `del scene["my_prop"]` | resets to default | `KeyError` |
+| `scene.path_resolve('["my_prop"]')` (driver / keyframe path) | 5 | `ValueError` |
+| `scene.path_resolve("my_prop")` | 5 | 5 |
+| `scene.property_unset("my_prop")`, `scene.is_property_set("my_prop")` | work | work |
+
+So the cross-version code needs no branch: use attribute access to read and write, `property_unset()` to reset, `is_property_set()` to test, and the plain `"my_prop"` path for drivers and keyframes. `keys()` lists only user custom properties on 5.0+; the raw storage is `id.bl_system_properties_get()` (5.0+ only), which you should rarely need. A value saved by 4.5 still loads as the attribute on 5.2. Witness: [`examples/cross-version-property-delete/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete) (exit 8, falsifier `--subscript-registered`).
+
+### Deleting
 
 Two distinct operations, both version-stable via `del`:
 
 - **Unbind a type-level property** (e.g. a `PointerProperty` bound to `bpy.types.Scene`): `del bpy.types.Scene.my_addon`. Same on 4.5 LTS and 5.0+.
 - **Remove a custom ID property** (the dict-style `obj["key"]`): `del obj["key"]`. Same on 4.5 LTS and 5.0+. The snippet `cross-version-property-delete.py` shows this.
 
-Do not reach for `property_unset()` here. It resets a registered RNA property to its default, which is neither unbinding a type property nor removing an ID property.
+Do not reach for `property_unset()` here. It resets a registered RNA property to its default, which is neither unbinding a type property nor removing an ID property. Conversely, `del id["name"]` is not a way to reset a *registered* property: it raises `KeyError` on 5.0+.
 
 ## Related
 
