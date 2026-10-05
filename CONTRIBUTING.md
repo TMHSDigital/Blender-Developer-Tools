@@ -2,6 +2,23 @@
 
 Thanks for helping improve this repository. This document describes how to set up locally, extend skills, rules, snippets, templates, examples, and showcase pieces, and submit changes.
 
+## Your first contribution
+
+The fastest useful contributions are small and need no Blender run:
+
+- **Fix a skill or rule.** If a skill tells an agent something that is wrong
+  for Blender 5.2 or 4.5, edit `skills/<name>/SKILL.md` or `rules/<name>.mdc`,
+  say in the PR how you know (a docs link, or a short `blender --background`
+  script and its output), and run the checks below.
+- **Improve a snippet.** `snippets/*.py` are short standalone patterns (MIT).
+- **Pick up a starter issue:** issues labelled
+  [`good first issue`](https://github.com/TMHSDigital/Blender-Developer-Tools/labels/good%20first%20issue).
+
+Then: fork, branch, `pip install -r requirements-dev.txt`,
+`python tests/run_all.py`, and open a PR with a DCO sign-off (`git commit -s`;
+see the end of this file). Examples and showcase pieces have more gates
+(falsifiers, exit-code tables, renders); read their sections first.
+
 ## Getting Started
 
 1. **Fork** the repository on GitHub.
@@ -159,73 +176,10 @@ Default PR smoke is Blender 5.2 and 4.5 (`.github/workflows/blender-smoke.yml`).
 
 ## Branch protection on `main`
 
-`main` carries the repository ruleset **`main-integrity`** (branch target
-`~DEFAULT_BRANCH`, enforcement `active`, **no bypass actors**). Three rules:
-
-- `deletion` — the branch cannot be deleted
-- `non_fast_forward` — force-push is refused for every actor, owner included
-- `required_linear_history` — merge commits are refused, matching the
-  squash-merge convention
-
-Verify with `gh api repos/TMHSDigital/Blender-Developer-Tools/rules/branches/main`.
-The classic `/branches/main/protection` endpoint returns 404 by design: this
-is a ruleset, not classic branch protection, and the two are separate APIs.
-
-**Required status checks are deliberately absent, and a pull request is not
-required.** A PR whose smoke jobs are red can still be merged. Merge-on-green
-is convention here, not enforcement — see
-[#192](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/192).
-
-The reason is structural. A required-status-check rule blocks *direct pushes*
-to the branch for any actor without a bypass, not only PR merges.
-`release.yml` pushes its version-bump commit straight to `main` as
-`github-actions[bot]` using `secrets.GITHUB_TOKEN`, so the rule would break
-every release. On a user-owned repository GitHub rejects the only bypass
-actor that would cover it:
-
-```
-422 Validation Failed
-"Actor GitHub Actions integration must be part of the ruleset source or owner organization"
-```
-
-A role-based bypass does not substitute: `RepositoryRole:Write` covers the
-repository owner (admin inherits write) and never covers the bot — backwards
-from what is needed, and it would re-open admin merges of red PRs, which is
-the hole the protection exists to close.
-
-The three rules that *are* active were chosen because a fast-forward,
-single-parent push does not violate any of them, so `release.yml` keeps
-working untouched: the bump commit lands, the tag push proceeds (a branch
-ruleset does not target tags), the GitHub release is cut, and the
-`gh workflow run pages.yml --ref main` dispatch fires.
-
-### If required checks become enforceable
-
-Should the repository move to an organization, or `release.yml` stop pushing
-to `main`, these are the checks that run unconditionally on every PR and are
-therefore the required-check set:
-
-- `Blender 4.5 smoke`
-- `Blender 5.2 smoke`
-- `Ecosystem drift check`
-- `Validate content counts`
-- `Validate plugin manifest`
-- `Validate smoke harness protocol`
-- `Validate structure and frontmatter`
-
-Three checks that appear on PRs are deliberately **excluded**:
-
-- **`Blender 5.1 smoke` is label-gated.** It only runs when `needs-5.1` is
-  applied. As a required check it would block every unlabeled PR forever on
-  a job that never reports.
-- **`Auto-label by path`** — `label-sync.yml` triggers on `opened` and
-  `synchronize` only. A reopened PR with no new push never reports it.
-- **`Resolve smoke matrix`** — skipped on label events other than
-  `needs-5.1`, and it is plumbing rather than a gate; its failure already
-  blocks the two smoke jobs that depend on it.
-
-The two `Socket Security` checks come from a third-party GitHub App. An
-outage or an uninstall would deadlock merges, so they are advisory.
+What `main` enforces today, why required status checks cannot be added on a
+user-owned repository, and what changes if that becomes possible: see
+[AGENTS.md § Branch protection on `main`](AGENTS.md#branch-protection-on-main).
+Contributors only need to know that PRs merge on green CI.
 
 ## Falsifiers must fail the budget they target
 
