@@ -1,6 +1,6 @@
 ---
 name: engine-export-presets
-description: Unity, Godot, and Unreal glTF/FBX export presets. glTF uses export_yup; FBX uses axis_forward/axis_up plus centimeter scale. Targets 5.2 LTS with 4.5 LTS fallback.
+description: Unity, Godot, and Unreal glTF/FBX export presets. glTF is engine-neutral by spec (+Y up, meters, export_yup=True for every engine; Unreal converts to cm on import); FBX uses axis_forward/axis_up plus centimeter scale. Targets 5.2 LTS with 4.5 LTS fallback.
 standards-version: 1.10.0
 ---
 
@@ -46,6 +46,10 @@ def apply_selected_mesh_transforms():
 
 `use_selection=True` on every preset. Draco is opt-in on glTF; do not copy `gltf_draco_export.py` wholesale.
 
+## glTF is the same for every engine
+
+The glTF 2.0 spec fixes the coordinate system: **+Y up, right-handed, units in meters**. Unity, Godot and Unreal all import glTF against that spec, so the correct glTF export is the same call for all three: `export_yup=True`, meters, transforms applied. The engines differ in what they do on import (Unreal converts meters to centimeters itself; Godot reads node-name import hints), not in the file you should write.
+
 ## Unity (Y-up, meters, glTF)
 
 ```python
@@ -64,29 +68,19 @@ bpy.ops.export_scene.gltf(
 
 Snippet: [`snippets/export_preset_unity.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unity.py).
 
-## Godot (Z-up glTF, meters)
+## Godot (Y-up glTF, meters)
 
-```python
-bpy.ops.export_scene.gltf(
-    filepath=path,
-    export_format="GLB",
-    use_selection=True,
-    export_yup=False,
-    export_apply=True,
-    export_draco_mesh_compression_enable=draco,
-    export_animations=False,
-)
-```
+Godot is right-handed and Y-up, and its importer reads glTF as the spec says. The export is the Unity call: `export_yup=True`, meters, `.glb`. What is Godot-specific happens on import, through **node-name suffixes** the importer reads as hints: a mesh named `Crate-convcolonly` becomes a convex collision shape with no visible mesh, `-colonly` a trimesh collision shape, `-col` / `-convcol` add collision to a visible mesh, and `-rigid` makes a rigid body. Name the collider object accordingly before export instead of changing axes. See Godot's [node type customization](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/node_type_customization.html) docs.
 
-`export_yup=False` writes Blender Z-up POSITION. This preset is the Z-up interop path. It is not the Unity kwargs; if both used `export_yup=True` the files would match and the axis contract would be untestable.
+`export_yup=False` is **wrong for Godot**, as for every glTF consumer: it writes Blender's Z-up POSITION into a file the importer reads as Y-up, so the model arrives rotated -90° about X (lying on its back). [`examples/export-preset-axis/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis) measures exactly that.
 
 Snippet: [`snippets/export_preset_godot.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_godot.py).
 
 ## Unreal (centimeters)
 
-glTF has no `global_scale`. Bake 100x (1 m -> 100 cm) onto the selected meshes, apply, then `export_yup=True`. That mutates the objects; copy first if the source must stay in meters.
+Unreal works in centimeters, but **do not bake 100x into a glTF**. glTF units are meters by spec, and Unreal's glTF importer (Interchange) applies its own meters-to-centimeters conversion (`import_scale`, default 100). A 1 m crate exported with a 100x bake imports 100 m wide. Export Unreal glTF exactly like Unity: `export_yup=True`, meters.
 
-FBX keeps the meter mesh and scales on the way out:
+FBX is where Unreal needs explicit axis and scale kwargs. It keeps the meter mesh and scales on the way out:
 
 ```python
 bpy.ops.export_scene.fbx(
@@ -110,8 +104,9 @@ Snippet: [`snippets/export_preset_unreal.py`](https://github.com/TMHSDigital/Ble
 1. **`export_scene.gltf(..., axis_forward="-Z", axis_up="Y")`.** Those names are FBX. Rule `use-correct-axis-rna-per-exporter`.
 2. **`export_scene.fbx(..., export_yup=True)`.** Same rule, other direction.
 3. **Skipping `transform_apply`.** `export_apply` is modifiers, not object scale. [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
-4. **Unity and Godot as the same kwargs.** They differ on `export_yup`. [`examples/export-preset-axis/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis) asserts the re-imported orientations diverge.
-5. **Unreal glTF without the 100x bake.** glTF has no `global_scale`.
+4. **`export_yup=False` for any engine.** glTF is Y-up by spec; a Z-up file imports lying on its back in Unity, Godot and Unreal alike. [`examples/export-preset-axis/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis) re-imports both and measures the -90° tilt.
+5. **Baking 100x into an Unreal glTF.** glTF is meters by spec and Unreal's glTF importer already scales by 100 on import, so a baked file lands 100x too large. The 100x belongs on the FBX path (`global_scale`).
+6. **Changing axes to express engine differences.** Engine-specific behaviour for glTF lives in import settings and node names (Godot `-convcolonly`, `-rigid`), not in `export_yup`.
 
 ## Version correctness
 

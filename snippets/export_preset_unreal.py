@@ -1,11 +1,12 @@
-# Unreal presets: centimeter scale. glTF has no global_scale and no
-# axis_forward / axis_up; bake 100x then export_yup=True. FBX uses
-# global_scale=100.0 plus axis_forward='-Z' and axis_up='Y'. That RNA
-# split is the contract. glTF bake mutates selected mesh objects
-# (scale and location both multiplied by 100).
+# Unreal presets. Unreal works in centimeters, but glTF is meters by spec
+# and Unreal's glTF importer applies its own x100 (Interchange import_scale,
+# default 100), so the glTF export stays in meters, +Y up (no bake; a baked
+# file imports 100x too large). FBX is where the scale lives:
+# global_scale=100.0 plus axis_forward='-Z' and axis_up='Y'. glTF and FBX
+# do not share axis RNA; that split is the contract.
 # Draco is glTF-only and opt-in; see snippets/gltf_draco_export.py.
 #
-# Assumption: scene units are meters before the 100x bake / FBX scale.
+# Assumption: scene units are meters (scale_length == 1.0).
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.gltf
@@ -30,14 +31,7 @@ def apply_selected_mesh_transforms():
 
 
 def export_preset_unreal_gltf(filepath, selected_only=True, draco=False):
-    # Scale location with scale so inter-object spacing grows with the
-    # geometry. Assumes unparented objects; parented ones need the parent
-    # chain baked first.
-    for obj in list(bpy.context.selected_objects):
-        if obj.type != "MESH":
-            continue
-        obj.location = (obj.location[0] * 100.0, obj.location[1] * 100.0, obj.location[2] * 100.0)
-        obj.scale = (obj.scale[0] * 100.0, obj.scale[1] * 100.0, obj.scale[2] * 100.0)
+    # Meters, like every glTF; Unreal converts to cm on import.
     apply_selected_mesh_transforms()
     bpy.ops.export_scene.gltf(
         filepath=filepath,

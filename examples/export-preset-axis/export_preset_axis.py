@@ -1,10 +1,13 @@
-"""Unity vs Godot glTF presets: a runnable example.
+"""Engine glTF preset vs a naive Z-up export: a runnable example.
 
-Same source mesh, two presets. Unity is Y-up (`export_yup=True`). Godot in this
-repo is Z-up glTF (`export_yup=False`). Re-importing each file through Blender's
-Y-up glTF importer proves the axis conversion actually happened: Unity stands
-(mast along +Z, original coords), Godot lies (mast along -Y). The check is on
-re-imported coordinates, not a screenshot.
+Same source mesh, two exports. The engine preset is +Y up
+(`export_yup=True`), which glTF 2.0 requires and which Unity, Godot and Unreal
+all share (snippets/export_preset_{preset,zup,unreal}.py). The naive export
+passes `export_yup=False` and writes Blender's raw Z-up coordinates.
+Re-importing each file through Blender's glTF importer, which reads every file
+as Y-up the way the engines do, proves what the flag did: the preset copy
+stands (mast along +Z, original coords), the Z-up copy lies on its back (mast
+along -Y). The check is on re-imported coordinates, not a screenshot.
 
 The source is a radio mast: a stepped concrete footing, a bolted base flange,
 a tapered red-and-white aviation-banded mast with steel collars, three sector
@@ -18,7 +21,8 @@ Closed form (Blender Z-up source `(x, y, z)`):
 * `export_yup=False` disk POSITION: `(x, y, z)`
 * Blender importer always treats the file as Y-up:
   `blender = (gltf.x, -gltf.z, gltf.y)`
-  so Unity round-trips to `(x, y, z)` and Godot becomes `(x, -z, y)`.
+  so the preset round-trips to `(x, y, z)` and the Z-up file becomes
+  `(x, -z, y)`.
 
 `--same-axis` exports both with `export_yup=True`. Both reimports stand, the
 "orientations differ" check exits 9. That is the falsifier.
@@ -67,7 +71,7 @@ BANDS = 7
 ROD_Z0 = 2.24
 TIP = Vector((0.0, 0.0, 2.46))   # lightning-rod point: the witnessed tip vertex
 
-UNITY_KWARGS = dict(
+PRESET_KWARGS = dict(
     export_format="GLTF_SEPARATE",
     use_selection=True,
     export_yup=True,
@@ -78,8 +82,8 @@ UNITY_KWARGS = dict(
     export_animations=False,
     export_image_format="NONE",
 )
-GODOT_KWARGS = dict(UNITY_KWARGS)
-GODOT_KWARGS["export_yup"] = False
+ZUP_KWARGS = dict(PRESET_KWARGS)
+ZUP_KWARGS["export_yup"] = False
 
 
 def eevee_engine_id():
@@ -354,7 +358,7 @@ def check(src, same_axis):
     exp_props = {
         p.identifier for p in bpy.ops.export_scene.gltf.get_rna_type().properties
     }
-    missing = [k for k in UNITY_KWARGS if k not in exp_props]
+    missing = [k for k in PRESET_KWARGS if k not in exp_props]
     if missing:
         print(f"ERROR: exporter RNA drifted, missing {missing}", file=sys.stderr)
         return 2, None, None
@@ -379,23 +383,23 @@ def check(src, same_axis):
         return 3, None, None
 
     tmp = tempfile.mkdtemp(prefix="export_preset_axis_")
-    unity_path = os.path.join(tmp, "unity.gltf").replace("\\", "/")
-    godot_path = os.path.join(tmp, "godot.gltf").replace("\\", "/")
-    godot_kwargs = dict(GODOT_KWARGS)
+    preset_path = os.path.join(tmp, "preset.gltf").replace("\\", "/")
+    zup_path = os.path.join(tmp, "zup.gltf").replace("\\", "/")
+    zup_kwargs = dict(ZUP_KWARGS)
     if same_axis:
-        godot_kwargs["export_yup"] = True
+        zup_kwargs["export_yup"] = True
 
     src.select_set(True)
     bpy.context.view_layer.objects.active = src
-    export_selected(unity_path, UNITY_KWARGS)
-    export_selected(godot_path, godot_kwargs)
+    export_selected(preset_path, PRESET_KWARGS)
+    export_selected(zup_path, zup_kwargs)
 
-    _ug, u_min, u_max, u_node = position_minmax(unity_path)
-    _gg, g_min, g_max, g_node = position_minmax(godot_path)
-    print(f"unity_disk min={u_min} max={u_max} node_rot={u_node.get('rotation')}")
-    print(f"godot_disk min={g_min} max={g_max} node_rot={g_node.get('rotation')}")
+    _ug, u_min, u_max, u_node = position_minmax(preset_path)
+    _gg, g_min, g_max, g_node = position_minmax(zup_path)
+    print(f"preset_disk min={u_min} max={u_max} node_rot={u_node.get('rotation')}")
+    print(f"zup_disk min={g_min} max={g_max} node_rot={g_node.get('rotation')}")
 
-    # Unity disk Y is source Z; disk Z is -source Y.
+    # Preset disk Y is source Z; disk Z is -source Y.
     if not (
         near(u_min[1], sz[0])
         and near(u_max[1], sz[1])
@@ -403,40 +407,40 @@ def check(src, same_axis):
         and near(u_max[2], -sy[0])
     ):
         print(
-            f"ERROR: Unity disk POSITION is not (x, z, -y) "
+            f"ERROR: preset disk POSITION is not (x, z, -y) "
             f"u_min={u_min} u_max={u_max} source_z={sz} source_y={sy}",
             file=sys.stderr,
         )
         return 5, None, None
     if node_has_rotation(u_node):
-        print(f"ERROR: Unity node has rotation {u_node.get('rotation')}", file=sys.stderr)
+        print(f"ERROR: preset node has rotation {u_node.get('rotation')}", file=sys.stderr)
         return 5, None, None
 
     if not same_axis:
         if not (near(g_min[2], sz[0]) and near(g_max[2], sz[1])):
             print(
-                f"ERROR: Godot disk POSITION is not raw Z-up "
+                f"ERROR: Z-up disk POSITION is not raw Z-up "
                 f"g_min={g_min} g_max={g_max} source_z={sz}",
                 file=sys.stderr,
             )
             return 6, None, None
 
-    unity_objs = import_gltf_meshes(unity_path)
-    godot_objs = import_gltf_meshes(godot_path)
-    if unity_objs is None or godot_objs is None:
+    preset_objs = import_gltf_meshes(preset_path)
+    zup_objs = import_gltf_meshes(zup_path)
+    if preset_objs is None or zup_objs is None:
         print("ERROR: expected a mesh per glTF import", file=sys.stderr)
         return 4, None, None
 
-    u_pts = all_world_points(unity_objs)
-    g_pts = all_world_points(godot_objs)
+    u_pts = all_world_points(preset_objs)
+    g_pts = all_world_points(zup_objs)
     ux, uy, uz = aabb_of(u_pts)
     gx, gy, gz = aabb_of(g_pts)
     print(
-        f"unity_reimport x={ux[0]:.4f}..{ux[1]:.4f} "
+        f"preset_reimport x={ux[0]:.4f}..{ux[1]:.4f} "
         f"y={uy[0]:.4f}..{uy[1]:.4f} z={uz[0]:.4f}..{uz[1]:.4f}"
     )
     print(
-        f"godot_reimport x={gx[0]:.4f}..{gx[1]:.4f} "
+        f"zup_reimport x={gx[0]:.4f}..{gx[1]:.4f} "
         f"y={gy[0]:.4f}..{gy[1]:.4f} z={gz[0]:.4f}..{gz[1]:.4f}"
     )
 
@@ -446,13 +450,13 @@ def check(src, same_axis):
         and span(uz) > span(uy) + SPAN_GAP
     ):
         print(
-            f"ERROR: Unity reimport is not standing "
+            f"ERROR: preset reimport is not standing "
             f"z_span={span(uz):.4f} y_span={span(uy):.4f} source_z={z_span:.4f}",
             file=sys.stderr,
         )
-        return 7, unity_objs, godot_objs
+        return 7, preset_objs, zup_objs
 
-    godot_lying = (
+    zup_lying = (
         near(span(gy), z_span)
         and near(span(gz), y_span)
         and span(gy) > span(gz) + SPAN_GAP
@@ -467,39 +471,39 @@ def check(src, same_axis):
                 "ERROR: --same-axis did not collapse the axis difference",
                 file=sys.stderr,
             )
-            return 11, unity_objs, godot_objs
+            return 11, preset_objs, zup_objs
         print("ERROR: orientations did not differ", file=sys.stderr)
-        return 9, unity_objs, godot_objs
+        return 9, preset_objs, zup_objs
 
-    if not godot_lying:
+    if not zup_lying:
         print(
-            f"ERROR: Godot reimport is not lying along Y "
+            f"ERROR: Z-up reimport is not lying along Y "
             f"y_span={span(gy):.4f} z_span={span(gz):.4f} source_z={z_span:.4f}",
             file=sys.stderr,
         )
-        return 8, unity_objs, godot_objs
+        return 8, preset_objs, zup_objs
 
-    expected_godot_tip = Vector((TIP.x, -TIP.z, TIP.y))
-    godot_tip_err = min((p - expected_godot_tip).length for p in g_pts)
-    unity_tip_err = min((p - TIP).length for p in u_pts)
-    print(f"unity_tip_err={unity_tip_err:.3e} godot_tip_err={godot_tip_err:.3e}")
-    if unity_tip_err > 5e-4 or godot_tip_err > 5e-4:
+    expected_zup_tip = Vector((TIP.x, -TIP.z, TIP.y))
+    zup_tip_err = min((p - expected_zup_tip).length for p in g_pts)
+    preset_tip_err = min((p - TIP).length for p in u_pts)
+    print(f"preset_tip_err={preset_tip_err:.3e} zup_tip_err={zup_tip_err:.3e}")
+    if preset_tip_err > 5e-4 or zup_tip_err > 5e-4:
         print(
-            f"ERROR: reimported tip mismatch unity={unity_tip_err:.3e} "
-            f"godot={godot_tip_err:.3e} expected_godot={tuple(expected_godot_tip)}",
+            f"ERROR: reimported tip mismatch preset={preset_tip_err:.3e} "
+            f"zup={zup_tip_err:.3e} expected_zup={tuple(expected_zup_tip)}",
             file=sys.stderr,
         )
-        return 8, unity_objs, godot_objs
+        return 8, preset_objs, zup_objs
 
     if not orientations_differ:
         print(
             f"ERROR: reimported orientations did not differ "
-            f"unity_z={span(uz):.4f} godot_z={span(gz):.4f}",
+            f"preset_z={span(uz):.4f} zup_z={span(gz):.4f}",
             file=sys.stderr,
         )
-        return 9, unity_objs, godot_objs
+        return 9, preset_objs, zup_objs
 
-    return 0, unity_objs, godot_objs
+    return 0, preset_objs, zup_objs
 
 
 # --------------------------------------------------------------------------
@@ -597,14 +601,14 @@ def build_gizmo(scene, name, origin, rot, mats, length=0.72):
     return ob
 
 
-def render_still(source, unity_objs, godot_objs, path, engine):
+def render_still(source, preset_objs, zup_objs, path, engine):
     scene = bpy.context.scene
     source.hide_render = True
     source.hide_viewport = True
 
     # Measure each re-import's frame before moving anything.
     frames = {}
-    for key, objs in (("Unity", unity_objs), ("Godot", godot_objs)):
+    for key, objs in (("Preset", preset_objs), ("ZUp", zup_objs)):
         worst, rot = fitted_rotation(source, objs)
         cols = ["".join(f"{v:+.0f}" for v in (rot[0][i], rot[1][i], rot[2][i]))
                 for i in range(3)]
@@ -619,9 +623,9 @@ def render_still(source, unity_objs, godot_objs, path, engine):
             ob.name = f"RadioMast.{key}" + (f".{i}" if i else "")
 
     # The camera looks along +X, so the pair sits side by side along Y and the
-    # lying Godot mast (along -Y) shows its full length across the frame.
-    sit_on_floor(unity_objs, 0.35, 1.45)
-    sit_on_floor(godot_objs, -0.05, -1.15)
+    # lying Z-up mast (along -Y) shows its full length across the frame.
+    sit_on_floor(preset_objs, 0.35, 1.45)
+    sit_on_floor(zup_objs, -0.05, -1.15)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -644,8 +648,8 @@ def render_still(source, unity_objs, godot_objs, path, engine):
         gizmo_material("AxisZ", (0.06, 0.32, 1.0, 1.0)),
         principled("AxisHub", (0.8, 0.8, 0.78, 1.0), 0.0, 0.4),
     )
-    giz_u = build_gizmo(scene, "Gizmo.Unity", (-0.85, 2.0, 0.09), frames["Unity"], gmats)
-    giz_g = build_gizmo(scene, "Gizmo.Godot", (-0.9, -0.95, 0.09), frames["Godot"], gmats)
+    giz_u = build_gizmo(scene, "Gizmo.Preset", (-0.85, 2.0, 0.09), frames["Preset"], gmats)
+    giz_g = build_gizmo(scene, "Gizmo.ZUp", (-0.9, -0.95, 0.09), frames["ZUp"], gmats)
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
@@ -693,7 +697,7 @@ def render_still(source, unity_objs, godot_objs, path, engine):
     # Standard, not AgX: AgX pales the aviation red and lifts the stage.
     scene.view_settings.view_transform = "Standard"
 
-    hero = unity_objs + godot_objs
+    hero = preset_objs + zup_objs
     fcode = gallery_framing.check_framing(
         scene,
         cam,
@@ -704,7 +708,7 @@ def render_still(source, unity_objs, godot_objs, path, engine):
     if fcode:
         return fcode
     aqcode = gallery_asset_quality.check_asset_quality(
-        scene, cam, hero=unity_objs, stage=[floor, wall])
+        scene, cam, hero=preset_objs, stage=[floor, wall])
     if aqcode:
         return aqcode
     bpy.ops.render.render(write_still=True)
@@ -732,13 +736,13 @@ def main():
     args = p.parse_args(argv)
 
     src = build()
-    code, unity_objs, godot_objs = check(src, args.same_axis)
+    code, preset_objs, zup_objs = check(src, args.same_axis)
     if code:
         return code
 
     if args.output:
         rcode = render_still(
-            src, unity_objs, godot_objs, os.path.abspath(args.output), args.engine
+            src, preset_objs, zup_objs, os.path.abspath(args.output), args.engine
         )
         if rcode:
             return rcode

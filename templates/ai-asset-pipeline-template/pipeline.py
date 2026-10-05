@@ -275,45 +275,10 @@ def select_only(obj):
 
 
 def export_preset(filepath, preset, draco):
-    apply_selected_mesh_transforms()
-    if preset == "unity":
-        bpy.ops.export_scene.gltf(
-            filepath=filepath,
-            export_format="GLB",
-            use_selection=True,
-            export_yup=True,
-            export_apply=True,
-            export_draco_mesh_compression_enable=draco,
-            export_animations=False,
-        )
-        return
-    if preset == "godot":
-        bpy.ops.export_scene.gltf(
-            filepath=filepath,
-            export_format="GLB",
-            use_selection=True,
-            export_yup=False,
-            export_apply=True,
-            export_draco_mesh_compression_enable=draco,
-            export_animations=False,
-        )
-        return
-    # Unreal: centimeters. Scale location with scale (as in
-    # snippets/export_preset_unreal.py) so node translations are in cm too;
-    # origin_to_base() leaves location.z off zero, so this always matters.
-    for obj in list(bpy.context.selected_objects):
-        if obj.type != "MESH":
-            continue
-        obj.location = (
-            obj.location[0] * 100.0,
-            obj.location[1] * 100.0,
-            obj.location[2] * 100.0,
-        )
-        obj.scale = (
-            obj.scale[0] * 100.0,
-            obj.scale[1] * 100.0,
-            obj.scale[2] * 100.0,
-        )
+    # glTF is +Y up and meters by spec, and Unity, Godot and Unreal all import
+    # it that way (Unreal converts to centimeters itself), so every preset is
+    # the same export. `preset` stays as the hook for engine-specific import
+    # hints, such as Godot's "-convcolonly" collider name suffix.
     apply_selected_mesh_transforms()
     bpy.ops.export_scene.gltf(
         filepath=filepath,
