@@ -136,6 +136,20 @@ def check_alts(entries: list) -> None:
         if len(alt) > ALT_MAX:
             raise SystemExit(f"gallery entry {e['name']!r} alt is {len(alt)} chars "
                              f"(max {ALT_MAX}); describe the still in one sentence")
+        if "`" in alt:
+            # An attribute cannot carry <code>, so a backtick would be read
+            # aloud and shown literally; teaches/witnessesFix render it (#368).
+            raise SystemExit(f"gallery entry {e['name']!r} alt contains a backtick; "
+                             "alt text is plain prose")
+
+
+def inline_code(text: str) -> str:
+    """Escape text and render its `backtick` spans as <code>, as the landing
+    page does. Unbalanced backticks stay literal."""
+    parts = html.escape(text).split("`")
+    if len(parts) % 2 == 0:
+        return "`".join(parts)
+    return "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
 
 
 def check_categories(entries: list) -> None:
@@ -1446,7 +1460,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
                  f'<li aria-current="page">{html.escape(name)}</li></ol></nav>')
     parts.append(f'    <h1>{html.escape(display_title(ex))}</h1>')
     parts.append(f'    <p class="slug">{html.escape(ex["dir"])}/</p>')
-    parts.append(f'    <p>{html.escape(ex["teaches"])}</p>')
+    parts.append(f'    <p>{inline_code(ex["teaches"])}</p>')
     parts.append("  </header>")
     parts.append('  <main id="main">')
     parts.append(pager_html(prev, nxt, idx + 1, len(peers), noun))
@@ -1454,7 +1468,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" width="1280" height="720" fetchpriority="high" />')
     parts.append("    </button>")
     parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself. Select it to enlarge.</p>')
-    parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
+    parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {inline_code(ex["witnessesFix"])}</div>')
     cat = ex.get("category")
     if cat:
         parts.append(f'    <p class="taglist"><span class="tag">category</span> '
@@ -1523,7 +1537,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
                 .replace("__SIZES__", MINI_SIZES)
                 .replace("__ALT__", html.escape(r["alt"], quote=True))
                 .replace("__TITLE__", html.escape(display_title(r)))
-                .replace("__TEACHES__", html.escape(r["teaches"])))
+                .replace("__TEACHES__", inline_code(r["teaches"])))
         parts.append("      </div>")
         parts.append("    </section>")
 
@@ -1673,8 +1687,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
             .replace("__CATATTR__", f' data-category="{html.escape(ex["category"], quote=True)}"'
                      if ex.get("category") else "")
             .replace("__KIND__", kind_noun(ex))
-            .replace("__TEACHES__", html.escape(ex["teaches"]))
-            .replace("__WITNESSES__", html.escape(ex["witnessesFix"]))
+            .replace("__TEACHES__", inline_code(ex["teaches"]))
+            .replace("__WITNESSES__", inline_code(ex["witnessesFix"]))
         )
 
     content = (
