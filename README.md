@@ -55,7 +55,7 @@ The content is consumed by AI coding agents reading these files directly from a 
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 27 small standalone Python files demonstrating canonical patterns |
 | **Examples** | Runnable headless scripts under [`examples/`](examples/). Each asserts an API contract and exits non-zero on failure. |
-| **Showcase** | Budget-conformance props under [`showcase/`](showcase/). Not examples. Conventions: [`showcase/README.md`](showcase/README.md) |
+| **Showcase** | Proof that the skills compose: each piece under [`showcase/`](showcase/) is one headless Python script that builds a game prop and runs the whole asset pipeline (cleanup, high-to-low bake, LODs, convex collider, engine export), asserting measured budgets on every LTS. Not API examples. Conventions: [`showcase/README.md`](showcase/README.md) |
 
 ## Quick start
 
@@ -133,7 +133,7 @@ per-script exit-code model, are in
 
 ## Examples and showcase
 
-**64 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **76 showcase pieces** in [`showcase/`](showcase/) are game props held to measured budgets (triangle counts, colliders, materials, real-world size); they are not examples. Conventions: [`showcase/README.md`](showcase/README.md).
+**64 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **76 showcase pieces** in [`showcase/`](showcase/) exist to show the skills working together at production scale: each is a single headless script that models a game prop, then runs it through the same cleanup, bake, LOD, collider and export steps the skills teach, and fails if a measured budget (triangle counts, colliders, materials, real-world size) is missed. They are not API examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 Browse both, with filters, full-size renders and each script's README, in the **[gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**.
 
