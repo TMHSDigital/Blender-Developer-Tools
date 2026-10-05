@@ -502,6 +502,72 @@ def write_sitemap(repo_root: Path, out_dir: Path, canonical: str) -> None:
     print(f"Wrote {out_dir / 'sitemap.xml'} ({len(urls)} URLs)")
 
 
+
+RAW = "https://raw.githubusercontent.com/TMHSDigital/Blender-Developer-Tools/main/"
+TREE = "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/"
+
+
+def _description(path: Path) -> str:
+    meta, _ = parse_frontmatter(path.read_text(encoding="utf-8", errors="replace"))
+    desc = meta.get("description", "").strip()
+    if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in "\"'":
+        desc = desc[1:-1].replace('\\"', '"')
+    return " ".join(desc.split())
+
+
+def write_llms_txt(repo_root: Path, out_dir: Path, site: dict) -> None:
+    """llms.txt (llmstxt.org index) and llms-full.txt (every skill plus the rules
+    summary) so an agent that browses the site can load the pack without
+    installing the plugin (#384). Links point at raw files on main."""
+    canonical = (site.get("canonical") or "").rstrip("/") + "/"
+    lines = [
+        "# Blender Developer Tools",
+        "",
+        f"> {site.get('description', '').strip()}",
+        "",
+        "Targets Blender 5.2 LTS with a 4.5 LTS fallback. Install as a Claude Code plugin with "
+        "`/plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist`, or as a Cursor "
+        "local plugin from the `plugin-dist` branch. Every skill below is plain Markdown you can read "
+        f"directly. Full text of all skills and rules: {canonical}llms-full.txt",
+        "",
+        "## Skills",
+        "",
+    ]
+    skills = sorted((repo_root / "skills").glob("*/SKILL.md"))
+    for p in skills:
+        name = p.parent.name
+        lines.append(f"- [{name}]({RAW}skills/{name}/SKILL.md): {_description(p)}")
+    lines += ["", "## Rules", ""]
+    for p in sorted((repo_root / "rules").glob("*.mdc")):
+        lines.append(f"- [{p.stem}]({RAW}rules/{p.name}): {_description(p)}")
+    lines += [
+        "",
+        "## Examples",
+        "",
+        f"- [Examples gallery]({canonical}gallery/): runnable headless scripts, each asserting one "
+        "API contract and exiting non-zero when it breaks, smoke-tested on 5.2 LTS and 4.5 LTS",
+        f"- [examples/]({TREE}examples): source of every example",
+        "",
+        "## Optional",
+        "",
+        f"- [snippets/]({TREE}snippets): small standalone patterns",
+        f"- [templates/]({TREE}templates): add-on, headless batch and asset-pipeline starters",
+        f"- [Rules summary for Claude Code]({RAW}claude/blender-rules.md)",
+        "",
+    ]
+    (out_dir / "llms.txt").write_text("\n".join(lines), encoding="utf-8", newline="\n")
+
+    full = ["# Blender Developer Tools: all skills and rules", ""]
+    for p in skills:
+        _, body = parse_frontmatter(p.read_text(encoding="utf-8", errors="replace"))
+        full += [f"<!-- skills/{p.parent.name}/SKILL.md -->", body.strip(), ""]
+    rules_md = repo_root / "claude" / "blender-rules.md"
+    if rules_md.is_file():
+        full += ["<!-- claude/blender-rules.md -->", rules_md.read_text(encoding="utf-8").strip(), ""]
+    (out_dir / "llms-full.txt").write_text("\n".join(full), encoding="utf-8", newline="\n")
+    print(f"Wrote {out_dir / 'llms.txt'} ({len(skills)} skills) and llms-full.txt")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -621,6 +687,7 @@ def main():
     print(f"Wrote {out_dir / '404.html'}")
 
     write_sitemap(repo_root, out_dir, site.get("canonical", ""))
+    write_llms_txt(repo_root, out_dir, site)
 
     fonts_src = template_dir / "fonts"
     fonts_dst = out_dir / "fonts"
