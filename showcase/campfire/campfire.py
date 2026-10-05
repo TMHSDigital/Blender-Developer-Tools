@@ -442,8 +442,7 @@ def build_campfire_mesh(
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        for poly in me.polygons:
-            poly.use_smooth = poly.material_index == WOOD_IDX
+        me.polygons.foreach_set("use_smooth", [poly.material_index == WOOD_IDX for poly in me.polygons])
     finally:
         bm.free()
     obj = bpy.data.objects.new(name, me)
@@ -1178,8 +1177,10 @@ def check(
     if stray_vert:
         add_stray_vert(low.data)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
         bpy.context.view_layer.update()
 

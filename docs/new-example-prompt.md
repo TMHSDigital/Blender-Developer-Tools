@@ -136,6 +136,12 @@ intentional, important geometry is not clipped, highlights are not blown out,
 lights or helper objects are not visible unintentionally, and materials, lighting,
 background, and camera feel designed rather than left at Blender defaults.
 
+The example must follow the repo's own rules, not just teach them:
+`tests/check_example_rules.py` (run by Validate) rejects a per-element write
+in a loop over `mesh.polygons` / `mesh.vertices` (use `foreach_set`) and an
+`active_object` read with no `None` guard. A loop that really needs per-element
+logic carries `# foreach-exempt: <why>` on or just above its `for` line.
+
 Contact-sheet gate (required before shipping the still): build a composite placing
 the new hero beside the pinned calibration set—canonical membership is in
 `CLAUDE.md` § Quality Gates for Example Runs—and compare stage darkness, wedge

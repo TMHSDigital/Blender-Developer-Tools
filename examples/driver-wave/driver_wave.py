@@ -83,8 +83,7 @@ def build_columns(flat_expr=False):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     me.set_sharp_from_angle(angle=math.radians(50.0))
 
     objs = []
@@ -238,8 +237,7 @@ def render_still(objs, path, engine):
             bm.to_mesh(fin_me)
         finally:
             bm.free()
-        for poly in fin_me.polygons:
-            poly.use_smooth = True
+        fin_me.polygons.foreach_set("use_smooth", [True] * len(fin_me.polygons))
         fin_me.materials.append(brass)
         fin = bpy.data.objects.new(fin_me.name, fin_me)
         fin.location = (tx, 0.18, 1.06 + 3.40)
@@ -258,8 +256,7 @@ def render_still(objs, path, engine):
         bm.to_mesh(foot_me)
     finally:
         bm.free()
-    for poly in foot_me.polygons:
-        poly.use_smooth = True
+    foot_me.polygons.foreach_set("use_smooth", [True] * len(foot_me.polygons))
     foot_me.materials.append(brass)
     dg = bpy.context.evaluated_depsgraph_get()
     for obj in objs:

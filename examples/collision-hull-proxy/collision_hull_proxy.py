@@ -223,6 +223,7 @@ def build_hydrant():
     body = lathe_object("Body", BODY_PROFILE, SEGMENTS)
     body.data.materials.append(red)
     body.data.materials.append(yellow)
+    # foreach-exempt: conditional per-face material by face height
     for p in body.data.polygons:  # the bonnet dome is the yellow profile tail
         if p.center.z > 1.09:
             p.material_index = 1
@@ -384,8 +385,7 @@ def render_still(groups, pieces, path, engine):
     scene = bpy.context.scene
     for g in groups:
         for o in g["render"]:
-            for p in o.data.polygons:
-                p.use_smooth = True
+            o.data.polygons.foreach_set("use_smooth", [True] * len(o.data.polygons))
     for g in groups:  # cages exist only to build hulls; never rendered
         for o in g["cage"]:
             o.hide_render = True
@@ -415,8 +415,7 @@ def render_still(groups, pieces, path, engine):
 
     for name, hull, _ in pieces:
         hull.data.materials.append(shell)
-        for p in hull.data.polygons:
-            p.use_smooth = False                # facets must read as facets
+        hull.data.polygons.foreach_set("use_smooth", [False] * len(hull.data.polygons))  # facets must read as facets
         hull.data.materials.append(wire_mat)
         wire = bpy.data.objects.new(f"{name}Wire", hull.data)
         mod = wire.modifiers.new("Wire", 'WIREFRAME')
@@ -521,8 +520,9 @@ def main():
     for g in groups:
         hull = build_hull(f"{g['name']}Hull", collect_points(g["cage"]))
         if args.shrink_hull:
-            for v in hull.data.vertices:
-                v.co *= 0.5
+            co = [0.0] * (len(hull.data.vertices) * 3)
+            hull.data.vertices.foreach_get("co", co)
+            hull.data.vertices.foreach_set("co", [c * 0.5 for c in co])
             hull.data.update()
         pieces.append((g["name"], hull, collect_points(g["render"])))
     code = check(pieces)

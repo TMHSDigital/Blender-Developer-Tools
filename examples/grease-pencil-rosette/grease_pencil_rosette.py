@@ -217,8 +217,7 @@ def _box(name, dims, loc, mat, bevel=0.0, segments=3):
         bm.to_mesh(me)
     finally:
         bm.free()
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
     ob.location = loc
@@ -292,6 +291,8 @@ def render_still(obj, path, engine):
                                                           SIGN_Z + sz * (BH / 2 - 0.25)),
                                                 rotation=(math.radians(90), 0, 0))
             cap = bpy.context.active_object
+            if cap is None:
+                raise RuntimeError("the add operator left no active object")
             cap.data.materials.append(brass)
             caps.append(cap)
     # a brass plate under the tubes, a mains cable dropping to the floor
@@ -300,6 +301,8 @@ def render_still(obj, path, engine):
     bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.018, depth=SIGN_Z - BH / 2 - fw,
                                         location=(1.35, 0.28, (SIGN_Z - BH / 2 - fw) / 2))
     cable = bpy.context.active_object
+    if cable is None:
+        raise RuntimeError("the add operator left no active object")
     cable.data.materials.append(cable_mat)
     sign = [board, plate, cable] + frame + caps
 

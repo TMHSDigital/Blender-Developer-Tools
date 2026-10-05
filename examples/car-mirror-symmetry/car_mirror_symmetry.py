@@ -396,6 +396,7 @@ def _assign_body_materials(body):
     are glass exactly where the cabin factor ramps (windshield, hatch)."""
     PAINT, GLASS, TRIM, CHROME = (MATERIALS.index(m)
                                   for m in ("Paint", "Glass", "Trim", "Chrome"))
+    # foreach-exempt: per-face material from the face's ring/station index
     for poly in body.data.polygons:
         i, k = divmod(poly.index, RING - 1)
         if i >= N_ST - 1:            # cap ngons (front/rear fascia)

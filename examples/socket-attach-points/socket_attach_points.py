@@ -1070,8 +1070,7 @@ def render_still(path, engine, falsify=False):
     # smooth across its loft bands, while box edges stay crisp. Positions are
     # untouched, so nothing the socket checks measure changes.
     hull = next(ob for ob in hero if ob.data.name.endswith("Hull"))
-    for poly in hull.data.polygons:
-        poly.use_smooth = True
+    hull.data.polygons.foreach_set("use_smooth", [True] * len(hull.data.polygons))
     hull.data.set_sharp_from_angle(angle=math.radians(38.0))
     floor, wall = build_studio(sc)
 

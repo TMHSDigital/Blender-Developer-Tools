@@ -79,6 +79,9 @@ jobs:
       - name: Showcase helper drift (warn-only report)
         run: python3 tests/check_helper_drift.py
 
+      - name: Examples and showcase follow the repo's own rules
+        run: python3 tests/check_example_rules.py
+
       - name: Check asset_sheet.py can render every showcase piece and reference
         run: python3 tests/check_asset_sheet_select.py
 

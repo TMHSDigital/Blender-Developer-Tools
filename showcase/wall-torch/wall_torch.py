@@ -471,10 +471,7 @@ def build_torch_mesh(
         me.update()
         # Turned iron, the haft, the wrap and the flame are smooth; dressed
         # stone keeps its chamfer facets. Fan caps stay flat.
-        for poly in me.polygons:
-            poly.use_smooth = (
-                poly.material_index != STONE_IDX and len(poly.vertices) == 4
-            ) or poly.material_index == FLAME_IDX
+        me.polygons.foreach_set("use_smooth", [poly.material_index != STONE_IDX and len(poly.vertices) == 4 or poly.material_index == FLAME_IDX for poly in me.polygons])
     finally:
         bm.free()
     obj = bpy.data.objects.new(name, me)
@@ -1092,8 +1089,10 @@ def check(
     if stray_vert:
         add_stray_vert(low.data)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:

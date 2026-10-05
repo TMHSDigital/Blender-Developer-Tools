@@ -1244,8 +1244,10 @@ def check(skip_decimate, lift_z=False, stand_posts=False, turn_posts=False,
     assign_slots(low, stone, wood, metal)
     assign_slots(high, stone, wood, metal)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
     if float_stone:
         float_one_stone(low.data, FLOAT_STONE_Z)

@@ -238,8 +238,7 @@ def rod(name, a, b, radius, mat, segs=16):
     finally:
         bm.free()
     me.materials.append(mat)
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
     ob.location = (a + b) / 2
@@ -256,8 +255,7 @@ def sphere(name, at, radius, mat):
     finally:
         bm.free()
     me.materials.append(mat)
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
     ob.location = at
@@ -349,8 +347,7 @@ def render_still(obj, path, engine):
     finally:
         bm.free()
     pme.materials.append(plinth_mat)
-    for poly in pme.polygons:
-        poly.use_smooth = True
+    pme.polygons.foreach_set("use_smooth", [True] * len(pme.polygons))
     plinth = bpy.data.objects.new("Plinth", pme)
     scene.collection.objects.link(plinth)
     plinth.location = (TARGET_LOC[0], TARGET_LOC[1], 0.0)

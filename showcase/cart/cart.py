@@ -1454,8 +1454,10 @@ def check(skip_decimate, lift_z=False, flush_tyre=False, sink_tyre=False,
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if lift_z:
-        for v in low.data.vertices:
-            v.co.z += LIFT_Z
+        _co = [0.0] * (len(low.data.vertices) * 3)
+        low.data.vertices.foreach_get("co", _co)
+        _co[2::3] = [z + LIFT_Z for z in _co[2::3]]
+        low.data.vertices.foreach_set("co", _co)
         low.data.update()
     if flush_tyre:
         break_tyre_seat(low.data, 0.0)

@@ -51,8 +51,9 @@ def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.mesh.primitive_torus_add(location=(0, 0, 0.55), major_radius=1.2, minor_radius=0.5)
     obj = bpy.context.active_object
-    for p in obj.data.polygons:
-        p.use_smooth = True
+    if obj is None:
+        raise RuntimeError("the add operator left no active object")
+    obj.data.polygons.foreach_set("use_smooth", [True] * len(obj.data.polygons))
     mat = bpy.data.materials.new("Ceramic"); mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
     b.inputs['Base Color'].default_value = (0.45, 0.025, 0.05, 1)  # crimson ceramic
@@ -82,9 +83,10 @@ def build_vase_kit(name):
     def add(op, mat_i, **kw):
         op(**kw)
         ob = bpy.context.active_object
+        if ob is None:
+            raise RuntimeError("the add operator left no active object")
         ob.data.materials.append(mats[mat_i])
-        for poly in ob.data.polygons:
-            poly.use_smooth = True
+        ob.data.polygons.foreach_set("use_smooth", [True] * len(ob.data.polygons))
         parts.append(ob)
         return ob
 
@@ -145,8 +147,7 @@ def render_still(obj, path, engine):
     cm.inputs['Roughness'].default_value = 0.6
     cage = bpy.data.objects.new("VaseKitCage", kit.data.copy())
     cage.data.materials.clear(); cage.data.materials.append(cage_mat)
-    for poly in cage.data.polygons:
-        poly.material_index = 0
+    cage.data.polygons.foreach_set("material_index", [0] * len(cage.data.polygons))
     cage.location = kit.location
     wire = cage.modifiers.new("cage", 'WIREFRAME')
     wire.thickness = 0.005; wire.offset = 1.0; wire.use_even_offset = True
@@ -172,6 +173,8 @@ def render_still(obj, path, engine):
         bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.95, depth=0.12,
                                             location=(x, 0, 0.06))
         bat = bpy.context.active_object
+        if bat is None:
+            raise RuntimeError("the add operator left no active object")
         bat.data.materials.append(wood)
         bev = bat.modifiers.new("bev", 'BEVEL'); bev.width = 0.025; bev.segments = 3
         bats.append(bat)

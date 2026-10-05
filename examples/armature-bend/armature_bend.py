@@ -120,8 +120,7 @@ def build_tube():
         bm.to_mesh(me)
     finally:
         bm.free()
-    for poly in me.polygons:
-        poly.use_smooth = True
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
     # collars keep crisp machined steps; the rubber ribs stay smooth
     me.set_sharp_from_angle(angle=math.radians(50.0))
     obj = bpy.data.objects.new("Tube", me)

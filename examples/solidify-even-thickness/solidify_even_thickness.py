@@ -377,8 +377,7 @@ def render_still(even_obj, plain_obj, path, engine):
                     bm.to_mesh(rod)
                 finally:
                     bm.free()
-                for poly in rod.polygons:
-                    poly.use_smooth = True
+                rod.polygons.foreach_set("use_smooth", [True] * len(rod.polygons))
                 rod.materials.append(brass)
                 ob = bpy.data.objects.new("Dowel", rod)
                 scene.collection.objects.link(ob)

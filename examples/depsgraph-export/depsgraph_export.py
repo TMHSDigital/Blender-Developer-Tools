@@ -474,8 +474,7 @@ def render_still(shell, path, engine):
     cage_me.name = "Cage.Shell"
     cage_me.materials.clear()
     cage_me.materials.append(ghost("Cage.Ghost", (0.02, 0.12, 0.55, 1.0), 0.30))
-    for p in cage_me.polygons:
-        p.material_index = 0
+    cage_me.polygons.foreach_set("material_index", [0] * len(cage_me.polygons))
     cage_me.shade_flat()
     cage_shell = bpy.data.objects.new("Cage.Shell", cage_me)
     wire = bpy.data.objects.new("Cage.Wire", shell.data.copy())
