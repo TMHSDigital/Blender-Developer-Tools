@@ -10,7 +10,8 @@
 #
 # Env: GH_TOKEN, SHA, GITHUB_REPOSITORY. Optional: BEFORE (the push's previous
 # head, to diff the whole push), GATE_EVENT (default push), GATE_TIMEOUT seconds
-# for Validate (default 1500), SMOKE_TIMEOUT seconds (default 3600), GATE_POLL
+# for Validate (default 1500), SMOKE_TIMEOUT seconds (default 5400: the smoke
+# job's 75-minute timeout-minutes plus 15 minutes for queueing), GATE_POLL
 # seconds (default 20).
 set -euo pipefail
 
@@ -45,7 +46,10 @@ wait_green() {
 
 # smoke_applies: 0 when some changed file falls outside blender-smoke.yml's
 # paths-ignore ("**.md", "docs/**", "assets/**"). Unreadable file lists count
-# as "applies" so the gate fails toward waiting, not toward skipping.
+# as "applies" so the gate fails toward waiting, not toward skipping. So do
+# lists of 300 or more: the compare and commit APIs return at most 300 files,
+# in path order, so a big docs/gallery regeneration can hide the code change
+# that follows it alphabetically (#365).
 smoke_applies() {
   local files
   if [ -n "${BEFORE:-}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
@@ -54,6 +58,7 @@ smoke_applies() {
     files=$(gh api "repos/$repo/commits/$sha" --jq '.files[].filename' 2>/dev/null) || return 0
   fi
   [ -n "$files" ] || return 0
+  [ "$(printf '%s\n' "$files" | wc -l)" -lt 300 ] || return 0
   while IFS= read -r f; do
     case "$f" in
       *.md|docs/*|assets/*) ;;
@@ -68,7 +73,7 @@ wait_green validate.yml Validate "${GATE_TIMEOUT:-1500}"
 pr=$(gh api "repos/$repo/commits/$sha/pulls" --jq '.[0].number // empty')
 if [ -z "$pr" ]; then
   if smoke_applies; then
-    wait_green blender-smoke.yml "Blender Smoke" "${SMOKE_TIMEOUT:-3600}"
+    wait_green blender-smoke.yml "Blender Smoke" "${SMOKE_TIMEOUT:-5400}"
   else
     echo "Direct push changed only smoke-ignored paths; Validate alone gates this release"
   fi

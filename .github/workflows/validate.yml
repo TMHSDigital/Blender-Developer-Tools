@@ -79,6 +79,9 @@ jobs:
       - name: Showcase helper drift (warn-only report)
         run: python3 tests/check_helper_drift.py
 
+      - name: Check asset_sheet.py can render every showcase piece and reference
+        run: python3 tests/check_asset_sheet_select.py
+
       - name: Check falsifiers declare the budget they target
         run: python3 tests/check_falsifier_targets.py
 
@@ -285,6 +288,15 @@ jobs:
           if [ -n "$bad" ]; then
             echo "$bad"
             echo "::error::pin these actions to a full commit SHA with a trailing '# vX.Y' comment (#306)"
+            exit 1
+          fi
+          # Composite actions that check out another repo's code at an input ref
+          # must get a SHA too, or the pin above stops at the first hop (#363).
+          refs=$(grep -rnE '^\s*meta-repo-ref:' .github/workflows \
+            | grep -vE 'meta-repo-ref:\s+[0-9a-f]{40}(\s|$)' || true)
+          if [ -n "$refs" ]; then
+            echo "$refs"
+            echo "::error::pass meta-repo-ref as a full commit SHA, not a tag (#363)"
             exit 1
           fi
 

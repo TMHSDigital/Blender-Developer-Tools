@@ -32,6 +32,9 @@ from urllib.parse import unquote, urlparse
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"
+# Tags whose href/src load or link a resource. iframe/video/audio/source/embed
+# were once skipped, so a missing embedded file passed (#366).
+REF_TAGS = ("a", "img", "link", "script", "iframe", "video", "audio", "source", "embed")
 
 
 class PageScan(HTMLParser):
@@ -50,7 +53,7 @@ class PageScan(HTMLParser):
         if tag == "a" and a.get("name"):
             self.ids.add(a["name"])
         for key in ("href", "src"):
-            if a.get(key) and tag in ("a", "img", "link", "script"):
+            if a.get(key) and tag in REF_TAGS:
                 self.refs.append((line, key, a[key]))
         # Each srcset candidate is "URL [descriptor]"; every URL must resolve.
         if a.get("srcset") and tag in ("img", "source"):
@@ -131,6 +134,12 @@ def main(argv: list[str] | None = None) -> int:
             if target is None:
                 continue
             n_refs += 1
+            if DOCS not in target.parents and target != DOCS:
+                # A relative path that climbs out of the site resolves to a repo
+                # file locally (CI builds _site/ inside the checkout) but 404s
+                # once deployed (#366).
+                failures.append(f"{rel}:{line}: {key}={url!r} -> escapes the site root")
+                continue
             if not target.is_file():
                 failures.append(f"{rel}:{line}: {key}={url!r} -> missing {target}")
                 continue

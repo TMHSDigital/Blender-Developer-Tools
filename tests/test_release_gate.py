@@ -86,6 +86,20 @@ class ReleaseGate(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("only smoke-ignored paths", out)
 
+    def test_truncated_file_list_waits_for_smoke(self):
+        # 300 docs paths is the API's cap: a code change may sort after them.
+        many = r"\n".join(f"docs/gallery/p{i:03d}.html" for i in range(300))
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", SMOKE_TIMEOUT="0",
+                              FAKE_FILES=many)
+        self.assertEqual(code, 1)
+        self.assertIn("Blender Smoke did not finish", out)
+
+    def test_299_docs_files_still_skip_smoke(self):
+        many = r"\n".join(f"docs/gallery/p{i:03d}.html" for i in range(299))
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", FAKE_FILES=many)
+        self.assertEqual(code, 0, out)
+        self.assertIn("only smoke-ignored paths", out)
+
     def test_red_validate_blocks(self):
         code, out = self.gate(FAKE_RUN="completed failure")
         self.assertEqual(code, 1)
