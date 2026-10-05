@@ -102,5 +102,6 @@ Measured on 4.5.11 / 5.0.1 / 5.1.2 / 5.2.1:
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the
 weekly cron, the `needs-5.1` PR label, or manual dispatch) and skips on 4.5
-LTS. Its catalog falsifier is `--legacy-rna` (expects exit 7). Smoke does
-not pass `--bypass`, `--mismatch`, `--mismatch-mark`, or `--force-run`.
+LTS. Its catalog falsifiers are `--legacy-rna` (expects exit 7), `--mismatch`
+(expects exit 3), `--bypass` (expects exit 4) and `--mismatch-mark` (expects
+exit 5). Smoke does not pass `--force-run`.

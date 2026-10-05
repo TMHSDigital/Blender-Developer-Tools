@@ -96,4 +96,6 @@ against it. `77` is the smoke skip protocol, not a product check.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the
 weekly cron, the `needs-5.1` PR label, or manual dispatch) and skips on 4.5
-LTS. Smoke does not pass the falsifier flags.
+LTS. Every falsifier in the table above is a catalog falsifier: the harness
+must fail the sidecar for `--atexit-instead`, `--no-handler`, `--silent-handler`,
+`--wrong-text` and `--write-in-main`. Smoke does not pass `--force-run`.

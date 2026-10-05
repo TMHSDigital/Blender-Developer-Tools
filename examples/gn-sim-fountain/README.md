@@ -106,4 +106,4 @@ Per-script sequential checks. `10` is the shared framing helper.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or any falsifier.
+Smoke does not pass `--output`. Its catalog falsifiers are the three in the table above: `--euler` (expects exit 4), `--prebake-trap` (expects exit 5) and `--calc-to-frame` (expects exit 6).
