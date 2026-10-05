@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.143.11] - 2026-10-05
+
+### Fixes
+
+- fix(distribution): make the Cursor plugin installable and document the install (#424) ([`cf76bff`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/cf76bff37c825492114bee770f39180b4db0c15a))
+- fix(skills): put trigger phrasing in every skill description (#418) ([`5e0299c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5e0299ca5f5af5f017e5e46ad06670ec2c686fb8))
+
+[Release v0.143.11](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.143.11)
+
 ## [0.143.10] - 2026-10-05
 
 ### Fixes
