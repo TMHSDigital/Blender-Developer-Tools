@@ -5,4 +5,4 @@
 -r scripts/site/requirements.txt
 PyYAML==6.0.2
 numpy==2.2.6
-Pillow==11.3.0
+Pillow==12.3.0
