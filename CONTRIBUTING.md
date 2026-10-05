@@ -113,7 +113,7 @@ budget conformance, never an API contract.
 1. Add `showcase/<kebab-name>/` with a script, a README that includes an
    exit-code table, and a falsifier that breaks one pipeline stage so a
    **named** budget fails.
-2. List the directory in `.cursor-plugin/plugin.json` `"showcase"` and add a
+2. Add a
    `tests/smoke/catalog.json` row with at least one entry in `falsifiers`
    (`{"args": ["--your-flag"], "expect_exit": N}`, matching the README
    falsifier table). The runner takes opaque script paths.

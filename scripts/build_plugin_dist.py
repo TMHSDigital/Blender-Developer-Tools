@@ -6,7 +6,7 @@ plugin needs ~1 MB of it. This copies only what the plugin uses into --out,
 as a self-contained marketplace (its marketplace.json points at "./"):
 
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
-    .claude-plugin/plugin.json + marketplace.json, and a short README
+    .claude-plugin/ and .cursor-plugin/ manifests, and a short README
 
     python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
     python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
@@ -27,7 +27,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DIRS = ("skills", "claude", "rules", "snippets", "templates")
-FILES = ("LICENSE", ".claude-plugin/plugin.json")
+# The Cursor manifest ships too, so Cursor users can install the same slim
+# tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
+FILES = ("LICENSE", ".claude-plugin/plugin.json",
+         ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json")
 MAX_BYTES = 2_000_000
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc")
 
@@ -43,6 +46,9 @@ Examples, the showcase and the gallery live on `main`.
 /plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist
 /plugin install blender-developer-tools@blender-developer-tools
 ```
+
+Cursor: clone this branch into `~/.cursor/plugins/local/blender-developer-tools`
+and reload the window (Customize then lists the 16 skills and 9 rules).
 """
 
 
@@ -92,6 +98,11 @@ def verify(out: Path, size: int) -> list[str]:
             errors.append(f"{d.relative_to(out)} has no SKILL.md")
     if not (out / "claude" / "skills" / "blender-rules" / "SKILL.md").is_file():
         errors.append("blender-rules skill missing")
+    cursor = json.loads((out / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    for key in ("skills", "rules"):
+        for rel in cursor.get(key, []):
+            if not (out / rel).is_file():
+                errors.append(f"Cursor manifest {key} path {rel} missing from the dist")
     if size > MAX_BYTES:
         errors.append(f"dist is {size} bytes, over the {MAX_BYTES} budget")
     return errors

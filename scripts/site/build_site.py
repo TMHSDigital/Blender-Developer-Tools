@@ -407,6 +407,16 @@ def _clean_repo_url(url: str) -> str:
     return url
 
 
+def content_dirs(repo_root: Path, top: str) -> list[str]:
+    """Shipped content directories under ``top`` (``examples/<name>``, ...),
+    ignoring caches and private helpers."""
+    base = repo_root / top
+    if not base.is_dir():
+        return []
+    return sorted(f"{top}/{d.name}" for d in base.iterdir()
+                  if d.is_dir() and not d.name.startswith((".", "_")))
+
+
 def load_plugin_meta(repo_root: Path, site: dict) -> dict:
     """Return the plugin metadata the template needs.
 
@@ -533,6 +543,11 @@ def main():
     for ex in examples:
         ex.setdefault("kind", "example")
     recent = recent_additions(repo_root, examples + showcase)
+    # Read from disk, not the Cursor manifest: Cursor's plugin schema rejects
+    # inventory keys such as "snippets" and "templates" (#347).
+    snippet_paths = sorted(p.relative_to(repo_root).as_posix()
+                           for p in (repo_root / "snippets").glob("*.py"))
+    template_paths = content_dirs(repo_root, "templates")
 
     context = {
         "plugin": plugin,
@@ -543,24 +558,24 @@ def main():
         "rule_count": len(rules),
         "examples": examples,
         "example_count": len(examples),
-        # gallery.json lists rendered examples only; plugin.json lists every
-        # shipped example, check-only ones included (the README's count).
-        "example_total": len(plugin.get("examples", [])) or len(examples),
+        # gallery.json lists rendered examples only; the directory count
+        # includes check-only ones (the README's count).
+        "example_total": len(content_dirs(repo_root, "examples")) or len(examples),
         "featured_examples": featured,
         "featured_count": len(featured),
         "showcase": showcase,
         "showcase_count": len(showcase),
         "featured_showcase": pick_featured(showcase),
-        "snippet_count": len(plugin.get("snippets", [])),
-        "template_count": len(plugin.get("templates", [])),
+        "snippet_count": len(snippet_paths),
+        "template_count": len(template_paths),
         # basenames for display: snippets/foo-bar.py -> foo-bar
         "snippets": [
             {"name": p.split("/")[-1].removesuffix(".py"), "path": p}
-            for p in plugin.get("snippets", [])
+            for p in snippet_paths
         ],
         "templates": [
             {"name": p.split("/")[-1], "path": p}
-            for p in plugin.get("templates", [])
+            for p in template_paths
         ],
         "mcp_tools": mcp_tools,
         "mcp_tool_count": len(mcp_tools),
