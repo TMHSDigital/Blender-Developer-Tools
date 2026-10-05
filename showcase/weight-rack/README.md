@@ -70,8 +70,8 @@ export file.
 | Materials | exactly 12 distinct; ≥4420 powder coat, ≥2820 bore, ≥3900 zinc, ≥3110 chrome, ≥235 knurl, ≥1230 rubber, ≥96 UHMW, ≥2890 numeral, ≥800 blue, ≥530 yellow, ≥530 green, ≥2080 cast-iron faces | 12 slots; 4758 / 3036 / 4196 / 3348 / 256 / 1328 / 104 / 3112 / 864 / 576 / 576 / 2240 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.200, 1.636, 2.092) m ± 0.01 | (2.2000, 1.6364, 2.0920), zmin 0 |
-| Collider tris | ≤ 640 | 598 |
-| Export | written, size > 0, removed after measuring | 3303420 bytes |
+| Collider tris | ≤ 640 | 472 |
+| Export | written, size > 0, removed after measuring | 3295024 / 3295024 / 3295016 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider is the convex hull of the whole set. Its count is carried by
 the plates' rims and the dumbbell heads, which are the hull's outline.

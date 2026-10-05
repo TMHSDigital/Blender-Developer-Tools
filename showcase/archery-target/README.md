@@ -61,8 +61,8 @@ export file.
 | Materials | exactly 16 distinct; ≥4490 straw, ≥1760 twine, ≥1030 pine, ≥5970 steel, ≥495 white, ≥775 black, ≥120 blue, ≥120 red, ≥240 gold, ≥310 carbon, ≥475 vane, ≥285 cock vane, ≥1020 nock, ≥4960 grass, ≥270 soil, ≥730 leather faces | 16 slots; 4732 / 1856 / 1086 / 6288 / 522 / 816 / 128 / 128 / 254 / 326 / 500 / 300 / 1076 / 5230 / 286 / 768 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.0071, 2.6887, 2.0538) m ± 0.01 | (2.0071, 2.6887, 2.0538), zmin 0 |
-| Collider tris | ≤ 1150 | 1083 |
-| Export | written, size > 0, removed after measuring | 3288248 bytes |
+| Collider tris | ≤ 1150 | 634 |
+| Export | written, size > 0, removed after measuring | 3259388 / 3259388 / 3259380 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider is the convex hull of the whole piece; its count is carried by
 the 96-segment turf outline.

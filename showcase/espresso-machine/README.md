@@ -110,8 +110,8 @@ export file.
 | Materials | exactly 14 distinct; face floors ≥4400 stainless, ≥6700 chrome, ≥870 bakelite, ≥580 wood, ≥5330 ceramic, ≥1140 rubber, ≥580 glass, ≥1510 dial, ≥58 ink, ≥32 needle, ≥84 stone, ≥24 paint, ≥415 coffee, ≥106 lamp | 14 slots; 4788 / 7284 / 948 / 632 / 5800 / 1244 / 632 / 1642 / 64 / 36 / 91 / 26 / 452 / 116 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.670, 0.655, 0.4755) m ± 0.01 | (0.6700, 0.6550, 0.4755), zmin 0 |
-| Collider tris | ≤ 520 | 447 |
-| Export | written, size > 0, removed after measuring | 3229536 bytes |
+| Collider tris | ≤ 520 | 346 |
+| Export | written, size > 0, removed after measuring | 3222244 / 3222244 / 3222236 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the topology, so every one of them measures the
 default's 43636 triangles. Every one keeps the default's AABB except

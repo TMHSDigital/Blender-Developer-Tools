@@ -33,8 +33,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct; ≥900 wood, ≥600 metal faces | 2 slots; 1170 / 904 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.146, 0.726, 0.612) m ± 0.015 | (1.1460, 0.7260, 0.6120), zmin 0 |
-| Collider tris | ≤ 220 | 116 |
-| Export | written, size > 0 | 274624 (4.5.11) / 274680 (5.2.1) bytes |
+| Collider tris | ≤ 220 | 100 |
+| Export | written, size > 0 | 273124 / 273196 / 273188 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **624 to 2508** in the quality pass: the old
 beveled cube with glued-on slats became a post-and-slat crate with

@@ -59,7 +59,7 @@ for the 4.5.11 / 5.1.2 figures.
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
 | Outer AABB | 0.658 × 0.524 × 0.704 m ± 0.020 | 0.6583 × 0.5235 × 0.7040 |
 | Crate body footprint | 0.588 × 0.428 m ± 0.015, in the crate's own frame | 0.5882 × 0.4282 (all three) |
-| Collider triangles | ≤ 260 | 230 |
+| Collider triangles | ≤ 260 | 204 |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
 | glTF export | file written, non-empty | ~490 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0 |
@@ -215,7 +215,7 @@ Smoke runs the check-only path. It does not pass `--output` or any falsifier.
 | LOD1 tris / ratio | 3030 / 0.5000 | 3030 / 0.5000 | 3030 / 0.5000 |
 | LOD2 tris / ratio | 1332 / 0.2198 | 1332 / 0.2198 | 1332 / 0.2198 |
 | Outer AABB | 0.6583 × 0.5235 × 0.7040 | same | same |
-| Collider tris | 230 | 230 | 230 |
+| Collider tris | 204 | 204 | 204 |
 | Yaws (rad) | 0.0943, −0.1093, 0.0681 | same | same |
 | Seat gap | 0.00000 | 0.00000 | 0.00000 |
 | Nails / bite / proud | 48 / 0.60 mm / 1.80 mm | same | same |

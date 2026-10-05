@@ -91,8 +91,8 @@ export file.
 | Materials | exactly 10 distinct; ≥3490 livery, ≥5365 composite, ≥5525 gunmetal, ≥1200 rubber, ≥1620 leather, ≥490 light, ≥460 glass, ≥2565 anodised, ≥1235 carbon, ≥1215 chrome faces | 10 slots; 3796 / 5832 / 6008 / 1304 / 1760 / 532 / 476 / 2788 / 1344 / 1320 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.234, 0.660, 1.112) m ± 0.01 | (2.2338, 0.6598, 1.1124), zmin 0 |
-| Collider tris | ≤ 1990 | 1890 |
-| Export | written, size > 0, removed after measuring | 3504016 bytes |
+| Collider tris | ≤ 1990 | 1246 |
+| Export | written, size > 0, removed after measuring | 3472164 / 3472164 / 3472160 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider is the convex hull of the whole bike. Its count is carried by
 the two 72-segment shroud lips, which are the hull's outline in plan.

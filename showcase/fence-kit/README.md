@@ -58,8 +58,8 @@ mesh, materials, UVs, evaluated LOD, collider or export file.
 | Materials | exactly 2 distinct, ≥48 metal, ≥48 wood | 2 slots, 116 metal / 390 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.596, 0.134, 1.232) m ± 0.015 | (1.5960, 0.1340, 1.2320), zmin 0 |
-| Collider tris | ≤ 180 | 24 |
-| Export | written, size > 0 | 75900 / 75900 / 75888 bytes |
+| Collider tris | ≤ 180 | 20 |
+| Export | written, size > 0 | 74952 / 74952 / 74944 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles dropped from **1092 to 1012** in the second quality pass. Each
 band became one mitred shell instead of three or four separate plates, and

@@ -35,8 +35,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct; ≥80 wood, ≥200 metal faces | 2 slots; 144 / 2116 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.987, 0.961, 0.860) m ± 0.015 | (0.9866, 0.9605, 0.8600), zmin 0 |
-| Collider tris | ≤ 280 | 252 |
-| Export | written, size > 0 | 324056 / 324056 / 324044 bytes |
+| Collider tris | ≤ 280 | 196 |
+| Export | written, size > 0 | 320368 / 320368 / 320364 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **3388 to 3664** in the quality pass: coaxial
 ferrule cups and a dual-wall lathe with a rolled rim replaced the old

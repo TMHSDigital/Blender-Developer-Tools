@@ -76,8 +76,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 3 distinct; ≥200 metal, ≥8 glass, ≥24 brass | 3 slots; 2162 / 24 / 341 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.300, 0.786, 1.287) m ± 0.01 | (0.3000, 0.7860, 1.2874), zmin 0 |
-| Collider tris | ≤ 120 | 108 |
-| Export | written, size > 0, removed after measuring | 355288 / 355272 bytes |
+| Collider tris | ≤ 120 | 86 |
+| Export | written, size > 0, removed after measuring | 353488 / 353488 / 353480 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles dropped from **3520 to 3338** in the first quality pass
 (closed square-pyramid roof, unshared cage crossings, pane rebate), then

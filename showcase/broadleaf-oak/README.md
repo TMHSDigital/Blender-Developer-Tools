@@ -118,7 +118,7 @@ export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (11.529, 11.716, 8.958) m ± 0.01 | (11.5288, 11.7164, 8.9575), zmin 0 |
 | Collider tris (bole hull) | ≤ 60 | 54 |
-| Export | written, size > 0, removed after measuring | 10351880 bytes |
+| Export | written, size > 0, removed after measuring | 10351900 / 10351900 / 10351880 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count (4.5.11 and

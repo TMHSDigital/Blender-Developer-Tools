@@ -94,7 +94,7 @@ Intended size: 5.2 × 6.6 m court pad; 1.83 × 1.05 m board with its bottom
 2.90 m above the court; pole axis 1.22 m behind the board face. The outer
 AABB is 5.200 × 6.600 × 4.050 m; the pad sets the footprint, and the pole
 cap on the 100 mm slab sets the height. The convex collider wraps the pad
-and the hoop together (58 tris).
+and the hoop together (44 tris).
 
 ## Budgets
 
@@ -110,8 +110,8 @@ export file.
 | Materials | exactly 12 distinct; face floors ≥2200 steel, ≥45 board, ≥28 board paint, ≥850 rim, ≥2400 net, ≥330 pad, ≥120 aluminium, ≥90 concrete, ≥440 court line, ≥12 key, ≥900 ball, ≥2000 seam | 12 slots; 2546 / 54 / 32 / 970 / 2784 / 382 / 144 / 108 / 504 / 12 / 1024 / 2310 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (5.200, 6.600, 4.050) m ± 0.01 | (5.2000, 6.6000, 4.0500), zmin 0 |
-| Collider tris | ≤ 220 | 58 |
-| Export | written, size > 0, removed after measuring | 1456228 bytes |
+| Collider tris | ≤ 220 | 44 |
+| Export | written, size > 0, removed after measuring | 1454192 / 1454192 / 1454180 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels

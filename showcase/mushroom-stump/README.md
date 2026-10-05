@@ -109,8 +109,8 @@ export file.
 | Materials | exactly 12 distinct; ≥4000 bark, ≥1530 wood, ≥2770 moss, ≥1440 bracket, ≥600 agaric, ≥1640 honey, ≥3640 flesh, ≥1580 soil, ≥1100 litter, ≥16100 fern, ≥345 stone, ≥190 twig faces | 12 slots; 4441 / 1702 / 3080 / 1596 / 672 / 1820 / 4050 / 1758 / 1232 / 17884 / 384 / 210 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.9351, 1.6283, 0.6888) m ± 0.01 | (1.9351, 1.6283, 0.6888), zmin 0 |
-| Collider tris (stump hull) | ≤ 75 | 66 |
-| Export | written, size > 0, removed after measuring | 5733424 bytes |
+| Collider tris (stump hull) | ≤ 75 | 52 |
+| Export | written, size > 0, removed after measuring | 5733356 / 5733356 / 5733340 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the triangle count, and only `--tall-hinge` moves the
 envelope, 7.2 mm up against the 10 mm tolerance: they move parts or

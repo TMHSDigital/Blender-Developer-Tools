@@ -45,8 +45,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | **Horseshoe seat** | exactly 1; back bites the post face 0.0005–0.004 m, face ≥ 0.004 m proud | 1, 0.00150, 0.00750 |
 | **Brace seat** | exactly 2 knee braces, each housed in the post and in the rail (triangle overlap ≥ 1 with each); exactly 2 end caps, each gripping the rail | 2 braces, worst post 12 / rail 16; 2 caps, worst 12 |
 | Wood–metal gap | BVH surface < 0.008 m | 0.00075 |
-| Collider tris | ≤ 280 | 72 |
-| Export | written, size > 0 | 160548 / 160532 bytes |
+| Collider tris | ≤ 280 | 44 |
+| Export | written, size > 0 | 158568 / 158568 / 158560 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **1598 to 1680**. The old rings were faceted
 tori clipped into the arm; the new eyes, shanks, and 24-segment hung

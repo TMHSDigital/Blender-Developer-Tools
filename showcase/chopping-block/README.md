@@ -54,8 +54,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 4 distinct; ≥160 bark, ≥90 grain, ≥170 metal, ≥150 haft faces | 4 slots; 180 / 216 / 412 / 176 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.526, 0.526, 1.006) m ± 0.012 | (0.5264, 0.5264, 1.0064) |
-| Collider tris | ≤ 560 | 538 |
-| Export | written, size > 0 | 181676 / 181676 / 181660 bytes |
+| Collider tris | ≤ 560 | 398 |
+| Export | written, size > 0 | 174020 / 174020 / 174020 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The triangle band, the outer AABB and the collider ceiling were re-fitted
 in the quality pass that added the lap, the rivets and the 16-segment

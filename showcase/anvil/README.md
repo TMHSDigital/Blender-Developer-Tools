@@ -34,8 +34,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct; ≥400 wood, ≥400 metal faces | 2 slots; 1040 / 912 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.621, 0.414, 0.569) m ± 0.015 | (0.6210, 0.4137, 0.5690), zmin 0 |
-| Collider tris | ≤ 280 | 134 |
-| Export | written, size > 0 | 257068 / 257068 / 257052 bytes |
+| Collider tris | ≤ 280 | 130 |
+| Export | written, size > 0 | 258408 / 258408 / 258400 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles dropped from **6616 to 2988** in the quality pass:
 overlapping face boxes and a beveled superellipse horn became one

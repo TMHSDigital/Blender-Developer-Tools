@@ -43,8 +43,8 @@ mesh, materials, UVs, evaluated LOD, collider or export file.
 | Materials | exactly 2 distinct, ≥48 metal, ≥24 wood | 2 slots, 1008 metal / 756 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.295, 0.632, 0.887) m ± 0.015 | (1.2945, 0.6316, 0.8870), zmin 0 |
-| Collider tris | ≤ 180 | 64 |
-| Export | written, size > 0 | 245620 / 245620 / 245604 bytes |
+| Collider tris | ≤ 180 | 60 |
+| Export | written, size > 0 | 244056 / 244056 / 244048 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **2520 to 3272** in the second quality pass. The
 square posts and 6-gon scroll tubes became 8-gon round bar swept along each

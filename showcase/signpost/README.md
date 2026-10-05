@@ -40,8 +40,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 3 distinct, ≥24 metal, ≥12 board, ≥12 wood | 3 slots, 126 metal, 33 board, 60 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.260, 0.142, 1.551) m ± 0.015 | (1.2600, 0.1420, 1.5510), zmin 0 |
-| Collider tris | ≤ 180 | 56 |
-| Export | written, size > 0 | 41168 / 41232 bytes |
+| Collider tris | ≤ 180 | 44 |
+| Export | written, size > 0 | 38668 / 38740 / 38740 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles dropped from **504 to 376** in the quality pass: glued
 diamond cubes and a solid shoe block became wedges and a four-plate

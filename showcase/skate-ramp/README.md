@@ -69,8 +69,8 @@ export file.
 | Materials | exactly 9 distinct; ≥3100 plywood, ≥1400 framing, ≥1030 steel, ≥6940 hardware, ≥1045 maple, ≥855 grip, ≥1460 urethane, ≥850 alloy, ≥440 bushing faces | 9 slots; 3268 / 1479 / 1086 / 7304 / 1100 / 900 / 1536 / 892 / 464 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.529, 2.440, 1.339) m ± 0.01, read off the vertices | (2.5293, 2.4400, 1.3389), zmin 0 |
-| Collider tris | ≤ 380 | 350 |
-| Export | written, size > 0, removed after measuring | 2376604 bytes |
+| Collider tris | ≤ 380 | 306 |
+| Export | written, size > 0, removed after measuring | 2373684 / 2373684 / 2373676 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels

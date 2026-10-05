@@ -65,8 +65,8 @@ export file.
 | Materials | exactly 11 distinct; ≥330 maple, ≥330 pin deck, ≥12800 pin white, ≥1190 pin red, ≥1450 ball, ≥480 bore, ≥235 gutter/kick plate, ≥130 kickback laminate, ≥160 aluminium/steel, ≥1110 inlay, ≥350 sleeper faces | 11 slots; 358 / 358 / 13720 / 1280 / 1649 / 562 / 254 / 142 / 176 / 1197 / 380 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.640, 2.301, 0.523) m ± 0.01, read off the vertices | (1.6400, 2.3014, 0.5234), zmin 0 |
-| Collider tris | ≤ 300 | 277 |
-| Export | written, size > 0, removed after measuring | 2730012 bytes |
+| Collider tris | ≤ 300 | 200 |
+| Export | written, size > 0, removed after measuring | 2722544 / 2722544 / 2722540 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 37078 and the envelope at
 (1.6400, 2.3014, 0.5234): they move or resize parts, never add or remove

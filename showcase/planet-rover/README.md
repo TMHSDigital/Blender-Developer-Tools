@@ -84,8 +84,8 @@ export file.
 | Materials | exactly 9 distinct; ≥2260 paint, ≥1140 foil, ≥5820 aluminium, ≥8390 anodised, ≥2150 titanium, ≥600 glass, ≥870 harness, ≥2260 regolith, ≥550 rock faces | 9 slots; 2512 / 1276 / 6476 / 9330 / 2392 / 672 / 970 / 2516 / 620 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (4.857, 3.709, 2.200) m ± 0.01 | (4.8568, 3.7091, 2.1999), zmin 0 |
-| Collider tris | ≤ 1160 | 1120 |
-| Export | written, size > 0, removed after measuring | 3563808 bytes |
+| Collider tris | ≤ 1160 | 742 |
+| Export | written, size > 0, removed after measuring | 3541092 / 3541092 / 3541084 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 46096: they move parts, never
 add or remove them. DECIMATE COLLAPSE triangle counts are not identical

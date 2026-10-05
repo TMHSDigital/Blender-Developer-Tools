@@ -81,8 +81,8 @@ export file.
 | Materials | exactly 10 distinct; ≥2550 paint, ≥560 hazard, ≥2900 chrome, ≥14300 steel, ≥2550 rubber, ≥440 seat vinyl, ≥590 harness webbing, ≥235 beacon, ≥140 work-light, ≥480 crate paint faces | 10 slots; 2736 / 608 / 3128 / 15328 / 2740 / 480 / 640 / 256 / 152 / 516 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.827, 1.689, 2.974) m ± 0.01 | (2.8272, 1.6890, 2.9740), zmin 0 |
-| Collider tris | ≤ 760 | 710 |
-| Export | written, size > 0, removed after measuring | 3461604 bytes |
+| Collider tris | ≤ 760 | 532 |
+| Export | written, size > 0, removed after measuring | 3450636 / 3450636 / 3450628 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider is the convex hull of the whole loader; the power pack, the
 beacon, the shoulder pins and the tine tips carry its outline.

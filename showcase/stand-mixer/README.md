@@ -98,8 +98,8 @@ export file.
 | Materials | exactly 8 distinct; ≥3980 enamel, ≥2410 chrome, ≥5110 stainless, ≥84 stone, ≥1080 rubber, ≥745 ceramic, ≥700 egg, ≥515 beater faces | 8 slots; 4328 / 2626 / 5560 / 91 / 1174 / 812 / 760 / 562 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.470, 0.570, 0.389) m ± 0.01 | (0.4700, 0.5700, 0.3890), zmin 0 |
-| Collider tris | ≤ 2450 | 2329 |
-| Export | written, size > 0, removed after measuring | 2337532 bytes |
+| Collider tris | ≤ 2450 | 1308 |
+| Export | written, size > 0, removed after measuring | 2283036 / 2283036 / 2283032 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the topology, so every one of them measures the
 default's 29620 triangles and the default's AABB. `--shallow-bowl` keeps

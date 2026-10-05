@@ -42,8 +42,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct, ≥48 metal, ≥24 wood | 2 slots, 1134 metal / 332 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.610, 0.521, 1.055) m ± 0.015 | (0.6100, 0.5210, 1.0545), zmin 0 |
-| Collider tris | ≤ 220 (source turns the bucket at 8 staves, no hoops) | 205 |
-| Export | written, size > 0 | 202576 bytes (5.2.1) |
+| Collider tris | ≤ 220 (source turns the bucket at 8 staves, no hoops) | 146 |
+| Export | written, size > 0 | 200352 / 200352 / 200348 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The model pass took the pump from **1064 to 2412** triangles and raised
 the ceiling **2200 → 2600**. Two lighting-and-paint passes had left it the

@@ -44,8 +44,8 @@ mesh, materials, UVs, evaluated LOD, collider or export file.
 | Materials | exactly 5 distinct; ≥24 stone, ≥24 metal, ≥8 flame, ≥10 pitch | 5 slots; 540 stone, 318 metal, 50 wood, 180 flame, 60 pitch |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.304, 0.322, 0.485) m ± 0.015 | (0.3040, 0.3218, 0.4845), zmin 0 |
-| Collider tris | ≤ 180 | 116 |
-| Export | written, size > 0 | 164408 / 164408 / 164384 bytes |
+| Collider tris | ≤ 180 | 90 |
+| Export | written, size > 0 | 163468 / 163468 / 163460 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **1528 to 2004** in the second quality pass, and the
 band moved from 1400–1700 to 1800–2250. The solid cup became an open, walled

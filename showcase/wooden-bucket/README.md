@@ -39,7 +39,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.396, 0.346, 0.534) m ± 0.015 | (0.3957, 0.3462, 0.5338), zmin 0 |
 | Collider tris | ≤ 420 | 276 |
-| Export | written, size > 0 | 420984 / 420984 / 420976 bytes |
+| Export | written, size > 0 | 422992 / 422992 / 422984 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **4272 to 4872** in the quality pass: overlapping
 identical staves, circular hoops, and a 12-box bail became 16 jittered

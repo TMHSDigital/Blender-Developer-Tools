@@ -110,8 +110,8 @@ build time; every position, depth, angle and mass is read off the mesh.
 | Materials | exactly 14 distinct; ≥1330 fabric, ≥1450 mesh, ≥3260 shell, ≥4100 nylon, ≥3950 aluminium, ≥1370 chrome, ≥1820 tread, ≥1600 leatherette, ≥510 steel, ≥1060 border, ≥790 mat, ≥750 ceramic, ≥220 soil, ≥715 leaf faces | 14 slots; 1402 / 1534 / 3440 / 4322 / 4167 / 1450 / 1920 / 1688 / 538 / 1118 / 836 / 796 / 236 / 756 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.635, 1.480, 1.317) m ± 0.01 | (1.6350, 1.4800, 1.3169), zmin 0 |
-| Collider tris | ≤ 580 | 551 |
-| Export | written, size > 0, removed after measuring | 3294736 bytes |
+| Collider tris | ≤ 580 | 374 |
+| Export | written, size > 0, removed after measuring | 3283660 / 3283660 / 3283652 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 No falsifier changes the triangle count, so the band is narrow and
 centred on the measurement. DECIMATE COLLAPSE triangle counts are not

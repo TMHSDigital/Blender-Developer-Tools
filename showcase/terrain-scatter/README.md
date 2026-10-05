@@ -50,7 +50,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.800, 1.800, 0.570) m ± 0.015 | (1.8000, 1.8008, 0.5700), zmin 0 |
 | Collider tris | ≤ 120 | 36 |
-| Export | written, size > 0 | 199496 / 199496 / 199480 bytes |
+| Export | written, size > 0 | 198908 / 198908 / 198900 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **1194 to 1758** in the first quality pass: 9-vert hill
 became a 21-vert grid, and bevelled cubes became subdiv-2 icospheres.

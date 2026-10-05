@@ -85,8 +85,8 @@ value is read from their vertices.
 | Materials | exactly 14 distinct; ≥2910 frame paint, ≥6430 chrome, ≥7530 rubber, ≥3410 bodywork, ≥1420 seat, ≥11650 aluminium, ≥1760 engine casting, ≥3790 steel, ≥1550 black plastic, ≥158 fuel tank, ≥154 lead, ≥590 asphalt, ≥115 kerb paint, ≥114 number plate faces | 14 slots; 3168 / 6994 / 8188 / 3708 / 1548 / 12666 / 1920 / 4130 / 1686 / 172 / 168 / 646 / 126 / 124 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.8950, 1.7738, 0.6397) m ± 0.01, read off the vertices | (1.8950, 1.7738, 0.6397), zmin 0 |
-| Collider tris | ≤ 900 | 816 |
-| Export | written, size > 0, removed after measuring | 6084452 bytes |
+| Collider tris | ≤ 900 | 598 |
+| Export | written, size > 0, removed after measuring | 6072672 / 6072672 / 6072664 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Every falsifier leaves the triangle count at 81854 and the envelope at
 (1.8950, 1.7738, 0.6397): they move parts, never add or remove them.

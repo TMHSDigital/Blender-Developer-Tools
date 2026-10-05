@@ -85,8 +85,8 @@ export file.
 | Materials | exactly 9 distinct; ≥6440 paint, ≥4350 chrome, ≥3250 rubber, ≥1030 oxblood vinyl, ≥265 cream vinyl, ≥495 glass, ≥170 tail lens, ≥3620 alloy, ≥2060 black enamel faces | 9 slots; 7156 / 4638 / 3608 / 1147 / 297 / 550 / 188 / 4020 / 2292 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.790, 0.730, 1.244) m ± 0.01 | (1.7901, 0.7300, 1.2435), zmin 0 |
-| Collider tris | ≤ 1850 | 1678 |
-| Export | written, size > 0, removed after measuring | 3374040 bytes |
+| Collider tris | ≤ 1850 | 1132 |
+| Export | written, size > 0, removed after measuring | 3347780 / 3347780 / 3347776 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 The collider is the convex hull of the whole scooter; the mudguard, the
 mirrors and the tail carry its outline.

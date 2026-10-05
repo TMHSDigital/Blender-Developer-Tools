@@ -36,9 +36,9 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct, metal ≥ 800, wood ≥ 1200 faces | 2 slots; 1196 metal, 1694 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.580, 0.842, 0.640) m ± 0.01 | (1.5800, 0.8420, 0.6400) |
-| Collider tris | ≤ 360 | 192 |
+| Collider tris | ≤ 360 | 164 |
 | Bake texels | smallest UV cell ≥ 12 px at the baked resolution | 17.45 px at 1024 px |
-| Export | written, size > 0, removed after measuring | 403176 / 403176 / 403160 bytes |
+| Export | written, size > 0, removed after measuring | 402904 / 402904 / 402900 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 ### Hygiene, supports and joints
 

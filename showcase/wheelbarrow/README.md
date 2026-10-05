@@ -37,8 +37,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Materials | exactly 2 distinct; ≥700 wood, ≥180 metal faces | 2 slots; 1085 / 214 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.563, 0.594, 0.577) m ± 0.015 | (1.5630, 0.5938, 0.5773), zmin 0 |
-| Collider tris | ≤ 220 | 80 |
-| Export | written, size > 0 | 185652 / 185652 / 185636 bytes |
+| Collider tris | ≤ 220 | 64 |
+| Export | written, size > 0 | 183984 / 183984 / 183976 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 ### Hygiene
 

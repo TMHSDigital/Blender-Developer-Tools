@@ -42,7 +42,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.111, 0.552, 0.512) m ± 0.01 | (1.1112, 0.5520, 0.5123), zmin 0 |
 | Collider tris | ≤ 80 | 76 |
-| Export | written, size > 0 | 355404 / 355388 bytes |
+| Export | written, size > 0 | 354444 / 354444 / 354436 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **2484 to 3700** in the first quality pass: box
 end slabs and a single extruded U became ten jittered staves, U end-caps,

@@ -65,7 +65,7 @@ the end.
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
 | Outer AABB | 1.644 × 0.510 × 2.057 m ± 0.020 | 1.6440 × 0.5100 × 2.0568 |
 | Clear opening | 1.200 m ± 0.015, measured between the pier faces | 1.2033 |
-| Collider triangles | ≤ 260 | 168 |
+| Collider triangles | ≤ 260 | 132 |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
 | glTF export | file written, non-empty | ~100 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0 |
@@ -229,7 +229,7 @@ Smoke runs the check-only path. It does not pass `--output` or any falsifier.
 | LOD2 tris / ratio | 250 / 0.2193 | 250 / 0.2193 | 244 / 0.2140 |
 | Face counts (ashlar / dressed / mortar) | 364 / 182 / 108 | same | same |
 | Outer AABB | 1.6440 × 0.5100 × 2.0568 | same | same |
-| Collider tris | 168 | 168 | 168 |
+| Collider tris | 132 | 132 | 132 |
 | Intrados deviation | 0.00097 | 0.00097 | 0.00097 |
 | Mortar joints | all 0.00970 | all 0.00970 | all 0.00970 |
 | Mortar contact | 18 × 2 stones | same | same |

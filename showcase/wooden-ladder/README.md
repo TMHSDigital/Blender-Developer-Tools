@@ -57,8 +57,8 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Shoe bite / cover | bite ≥ 0.010 m, cover ≥ 0.016 m | 0.02000 / 0.03800 |
 | **Rung pitch** | 6 rungs; every rung-to-rung gap within 0.002 m of the mean | 6; 0.00000 |
 | **Tie-rod seat** | 2 rods, 4 washers, 4 nuts; washer into stile and nut into washer 0.0002–0.002 m; on the rod axis within 0.0015 m; thread ≥ 0.003 m proud of each nut | 2 / 4 / 4; bite 0.00049–0.00051; axis 0; thread 0.00450 |
-| Collider tris | ≤ 180 | 92 |
-| Export | written, size > 0 | 230268 bytes (5.2.1) |
+| Collider tris | ≤ 180 | 68 |
+| Export | written, size > 0 | 228568 / 228568 / 228560 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **936 to 2536**. The previous mesh was two
 boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon
