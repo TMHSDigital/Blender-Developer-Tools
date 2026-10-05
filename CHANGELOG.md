@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.146.0] - 2026-10-05
+
+### Features
+
+- feat(skills): extension-runtime-and-packaging skill, snippet and example (#445) ([`d2cb9e9`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d2cb9e9dc8de08fdbdaac446f908ca947748cfc0))
+
+[Release v0.146.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.146.0)
+
 ## [0.145.0] - 2026-10-05
 
 ### Features
