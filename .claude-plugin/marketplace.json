@@ -1,0 +1,15 @@
+{
+  "name": "blender-developer-tools",
+  "owner": {
+    "name": "TMHSDigital",
+    "url": "https://github.com/TMHSDigital"
+  },
+  "plugins": [
+    {
+      "name": "blender-developer-tools",
+      "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
+      "source": "./",
+      "version": "0.148.0"
+    }
+  ]
+}

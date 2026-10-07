@@ -1,0 +1,53 @@
+{
+  "name": "blender-developer-tools",
+  "displayName": "Blender Developer Tools",
+  "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
+  "version": "0.148.0",
+  "author": {
+    "name": "TMHSDigital"
+  },
+  "homepage": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
+  "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
+  "license": "CC-BY-NC-ND-4.0 AND MIT",
+  "logo": "assets/favicon.svg",
+  "keywords": [
+    "cursor-plugin",
+    "claude-code",
+    "developer-tools",
+    "blender",
+    "bpy",
+    "blender-addon",
+    "blender-python"
+  ],
+  "skills": [
+    "skills/addon-scaffolding/SKILL.md",
+    "skills/ai-mesh-cleanup/SKILL.md",
+    "skills/bake-high-to-low/SKILL.md",
+    "skills/engine-export-presets/SKILL.md",
+    "skills/extension-runtime-and-packaging/SKILL.md",
+    "skills/timers-modal-and-threading/SKILL.md",
+    "skills/operators/SKILL.md",
+    "skills/ui-panels/SKILL.md",
+    "skills/custom-properties/SKILL.md",
+    "skills/mesh-editing-and-bmesh/SKILL.md",
+    "skills/headless-batch-scripting/SKILL.md",
+    "skills/slotted-actions-animation/SKILL.md",
+    "skills/geometry-nodes-python/SKILL.md",
+    "skills/procedural-materials-and-shaders/SKILL.md",
+    "skills/depsgraph-and-evaluated-data/SKILL.md",
+    "skills/drivers-and-app-handlers/SKILL.md",
+    "skills/bl-info-migration/SKILL.md",
+    "skills/vse-python/SKILL.md"
+  ],
+  "rules": [
+    "rules/prefer-data-over-ops-in-loops.mdc",
+    "rules/always-free-bmesh.mdc",
+    "rules/target-extensions-platform-format.mdc",
+    "rules/type-annotate-props-and-defend-context.mdc",
+    "rules/prefer-temp-override-over-context-copy.mdc",
+    "rules/use-foreach-set-for-bulk-data.mdc",
+    "rules/validate-imported-mesh-scale.mdc",
+    "rules/no-unapplied-modifiers-on-export.mdc",
+    "rules/use-correct-axis-rna-per-exporter.mdc"
+  ]
+}

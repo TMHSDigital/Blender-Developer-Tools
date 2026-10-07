@@ -1,0 +1,104 @@
+---
+description: Flag an export call on objects that still carry unapplied modifiers when the export arguments do not request evaluated geometry. The engine then receives the authored cage, not the modifier result.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No unapplied modifiers on export
+
+`obj.data` is the authored mesh. DECIMATE, subdivision, and geometry nodes
+live in the depsgraph. An export that does not ask for evaluated geometry
+writes the cage: the LOD modifier is dropped, the engine gets the dense
+mesh, and the script still exits 0.
+
+Each exporter has its own switch (defaults measured on 4.5 LTS and 5.2 LTS):
+
+- glTF: `export_apply` defaults to `False`. Pass `export_apply=True`
+  (applies modifiers excluding armatures).
+- FBX: `use_mesh_modifiers` defaults to `True`. Only an explicit `False`
+  drops them.
+- USD: modifiers are evaluated by default (`evaluation_mode` defaults to
+  `'RENDER'`), so DECIMATE ships with no extra argument. **Subdivision is the
+  exception:** under the default `export_subdivision='BEST_MATCH'` a SUBSURF
+  modifier is written as the cage plus a `subdivisionScheme`, whatever
+  `evaluation_mode` says. Pass `export_subdivision='TESSELLATE'` to ship the
+  subdivided mesh.
+
+`export_apply` is not "apply object transforms". Apply object scale first.
+See rule `validate-imported-mesh-scale`.
+
+## What this rule flags
+
+In a file that adds modifiers (`modifiers.new`) and never applies them
+(`modifier_apply`):
+
+- a `bpy.ops.export_scene.gltf` call without `export_apply=True`;
+- a `bpy.ops.export_scene.fbx` call with `use_mesh_modifiers=False`;
+- a `bpy.ops.wm.usd_export` call without `export_subdivision='TESSELLATE'`
+  when one of the modifiers is SUBSURF.
+
+```python
+# WRONG: DECIMATE on the object, glTF without export_apply
+mod = obj.modifiers.new("Lod", "DECIMATE")
+mod.decimate_type = "COLLAPSE"
+mod.ratio = 0.25
+bpy.ops.export_scene.gltf(filepath=path, use_selection=True)
+```
+
+```python
+# WRONG: evaluation_mode does not help here; default BEST_MATCH writes the
+# 8-point cube cage plus subdivisionScheme, not the subdivided mesh
+obj.modifiers.new("ss", "SUBSURF").levels = 2
+bpy.ops.wm.usd_export(filepath=path, evaluation_mode="RENDER")
+```
+
+## The required pattern
+
+```python
+import bpy
+
+mod = obj.modifiers.new("DecimateBudget", "DECIMATE")
+mod.decimate_type = "COLLAPSE"
+mod.ratio = 0.25
+
+bpy.ops.export_scene.gltf(
+    filepath=path,
+    use_selection=True,
+    export_apply=True,
+    export_yup=True,
+)
+```
+
+USD with subdivision (`evaluation_mode` picks render vs viewport levels:
+a cube at levels 1 / render_levels 2 ships 26 points with `'VIEWPORT'`, 98
+with the default `'RENDER'`):
+
+```python
+bpy.ops.wm.usd_export(
+    filepath=path,
+    evaluation_mode="RENDER",
+    export_subdivision="TESSELLATE",
+)
+```
+
+Alternatively apply the modifier before export with `temp_override` and
+`bpy.ops.object.modifier_apply`. Either path is valid; omitting both is not.
+
+## Why it matters
+
+A live DECIMATE that never ships is the usual LOD bug: Blender's viewport
+shows the reduced mesh, the glTF still has the source triangle count, and
+the engine budget check fails in production. `examples/lod-decimate-chain/`
+shows the modifier is non-destructive on `obj.data`; export must opt in to
+the evaluated result.
+
+## Related
+
+- Skill `ai-mesh-cleanup`
+- Skill `depsgraph-and-evaluated-data`
+- Snippet `gltf_draco_export.py`
+- Snippet `usd-export-evaluation-mode.py`
+- Example `lod-decimate-chain`
+- `bpy.ops.export_scene.gltf`: https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.gltf
