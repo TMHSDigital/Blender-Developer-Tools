@@ -49,7 +49,9 @@ sys.path.insert(0, str(REPO / "scripts" / "site"))
 import chrome  # noqa: E402
 
 SITE_TITLE = "Blender Developer Tools"
-LICENSE = "CC-BY-NC-ND-4.0"
+# One license string for every footer: the landing build reads the same
+# manifest field, so the two cannot disagree (#454).
+LICENSE = json.loads((REPO / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))["license"]
 
 # Slug words that a plain .capitalize() would mangle in a display title.
 TITLE_WORDS = {
@@ -261,6 +263,16 @@ __CHROME__
     header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
     header.hero p { color: var(--text-dim); max-width: 62ch; margin: 0.7rem auto 0; font-size: 1rem; }
+    /* Check-only examples: the line that explains the rendered vs total gap.
+       Summary centered with the header; the list inside is left for reading. */
+    .check-only { max-width: 62ch; margin: 0.8rem auto 0; font-size: 0.9rem; color: var(--text-dim); }
+    .check-only summary { cursor: pointer; width: fit-content; margin: 0 auto; }
+    .check-only summary:hover { color: var(--text); }
+    .check-only > div { text-align: left; margin-top: 0.6rem; }
+    .check-only ul { margin: 0.5rem 0 0 1.1rem; }
+    .check-only li { margin: 0.25rem 0; }
+    .check-only a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; font-family: var(--font-mono); font-size: 0.85rem; }
+    .check-only code { font-family: var(--font-mono); font-size: 0.85em; }
 
     /* ---- index: filter bar ----
        Wide: one pinned row (search | kind | sort | card density), then a
@@ -942,6 +954,9 @@ INDEX_JS = """
 
       // Restore state from the URL hash; density falls back to localStorage.
       function restore() {
+        // #check-only (the landing page links it) is an anchor, not filter state.
+        var co = document.getElementById('check-only');
+        if (co && location.hash === '#check-only') co.open = true;
         var h = parseHash();
         state.q = h.q || '';
         state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';
@@ -1590,6 +1605,50 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
     )
 
 
+# Terminal punctuation followed by whitespace and a capital or backtick; a
+# dotted API path (`Object.evaluated_get`) never ends a sentence (see #68).
+_SENTENCE_END = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)[.!?](?=\s+[A-Z`(])")
+
+
+def first_sentence(text: str) -> str:
+    m = _SENTENCE_END.search(text)
+    return text[:m.end()] if m else text
+
+
+def check_only_examples() -> list[dict]:
+    """Examples with no render (``render: false`` in examples/index.json):
+    their witness is a data fact, so they have no gallery card (#453)."""
+    path = REPO / "examples" / "index.json"
+    if not path.is_file():
+        return []
+    return [e for e in json.loads(path.read_text(encoding="utf-8")) if not e.get("render")]
+
+
+def check_only_html(rendered: int, repo_root_url: str) -> str:
+    """One header line explaining why the gallery shows fewer examples than
+    the repo has, expanding to the list of check-only examples."""
+    items = check_only_examples()
+    if not items:
+        return ""
+    lis = "\n".join(
+        f'          <li><a href="{html.escape(repo_root_url + "/tree/main/" + e["path"], quote=True)}">'
+        f'{html.escape(e["name"])}</a>: {inline_code(first_sentence(e.get("summary", "")))}</li>'
+        for e in items
+    )
+    return (
+        '    <details class="check-only" id="check-only">\n'
+        f"      <summary>{rendered} rendered &middot; {len(items)} check-only examples "
+        "(data contracts with nothing to see)</summary>\n"
+        "      <div>\n"
+        "        A check-only example asserts a fact no render can show, such as a datablock name,\n"
+        "        an RNA attribute, a post-exit sidecar or a topology count. It runs in the same\n"
+        "        smoke workflow on every PR, with its own falsifier; its source is on GitHub.\n"
+        f"        <ul>\n{lis}\n        </ul>\n"
+        "      </div>\n"
+        "    </details>\n"
+    )
+
+
 def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: str) -> str:
     examples = data["examples"]
     title = data.get("title", "Examples and Showcase")
@@ -1717,7 +1776,8 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str, css_v: 
         '<li aria-current="page">Gallery</li></ol></nav>\n'
         f"    <h1>{html.escape(title)}</h1>\n"
         f"    <p>{html.escape(desc)}</p>\n"
-        "  </header>\n"
+        + check_only_html(example_total, repo_root_url)
+        + "  </header>\n"
         + controls
         + '  <main id="main">\n    <div class="grid" id="grid">\n'
         + "\n".join(cards)

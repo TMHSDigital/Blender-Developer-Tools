@@ -21,8 +21,8 @@ classifies it as a `cursor-plugin`. This is content the AI loads when the user
 asks Blender questions or works on Blender add-ons in Cursor or Claude Code.
 
 The content base is 18 skills, 9 rules, 3 templates, 29 snippets, 66
-examples, and 76 showcase pieces (counts are CI-enforced against README.md)
-and the manifest). The full inventory tables and per-item purposes live in
+examples, and 76 showcase pieces (counts are CI-enforced across README.md, the agent docs, ROADMAP.md,
+`site.json` and the site templates). The full inventory tables and per-item purposes live in
 `CLAUDE.md`. Example anatomy and authoring rules: copy `examples/bmesh-gear/`;
 showcase conventions: `showcase/README.md`. The render look is specified
 in `docs/VISUAL-STYLE.md`; the canonical run prompt is
@@ -35,8 +35,8 @@ Blender-Developer-Tools/
   skills/<skill-name>/SKILL.md   # 18 skill files
   rules/<rule-name>.mdc          # 9 rule files
   templates/<template-name>/     # 3 starter templates
-  snippets/<snippet-name>.py     # 27 standalone Python snippets
-  examples/<name>/               # 64 runnable smoke-gated examples (+ gallery.json)
+  snippets/<snippet-name>.py     # 29 standalone Python snippets
+  examples/<name>/               # 66 runnable smoke-gated examples (+ gallery.json)
   examples/gallery_framing.py    # shared Layer 1 framing measurement (render path only)
   showcase/<name>/               # budget-conformance props (sibling of examples/)
   showcase/gallery.json          # this tree's gallery index; merged into docs/gallery/
@@ -177,6 +177,10 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   and rule exists and every one on disk is listed, `marketplace.json` lists
   this plugin, and the manifest `version` must equal `VERSION`. The release pipeline owns
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
+  `tests/check_manifest_meta.py` (same job) keeps the Cursor and Claude Code
+  manifests in step: one description, the site as `homepage`, one license
+  string (also the gallery footer's), the same keywords, and a Cursor `logo`
+  that the plugin-dist build ships.
 - `blender-smoke.yml` executes every shipped example (check-only, no render)
   plus snippet/template smoke tests inside REAL headless Blender, on
   5.2 LTS and 4.5 LTS for every PR. 5.1 is weekly cron, the opt-in
@@ -204,6 +208,20 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json` and
   `.claude-plugin/marketplace.json`, and force-pushes the slim plugin build
   to the `plugin-dist` branch.
+- **Release notes and the commit-type policy.** `.github/scripts/release_notes.py`
+  writes the GitHub release body and the CHANGELOG entry in two parts: **For
+  agents and users** lists the commits that touched what the plugin ships
+  (`skills/`, `rules/`, `snippets/`, `templates/`, `claude/`), grouped
+  Features / Fixes / Other, and leads; everything else (CI, tests, the site
+  and gallery, examples, showcase, docs) goes in a collapsed **Maintenance**
+  `<details>` block. A release with no plugin change says so in one line above
+  that block. Every release emails watchers, so pick the commit type by who
+  receives the change: use `feat:`/`fix:` for changes to plugin content or
+  to what a user runs; use `ci:`, `test:`, `docs:`, `style:` or `chore:` (not
+  `fix(ci)`, `fix(tests)` or `fix(site)`) for maintenance, so it does not cut
+  a release on its own. Pages still deploys from those commits (`pages.yml`
+  runs on its own path filter), and the next release lists them under
+  Maintenance. `tests/test_release_notes.py` covers the split.
 - `label-sync.yml` creates any missing label and applies path-based labels
   to same-repo PRs.
 - `pages.yml` builds the landing page from the **locally vendored** template

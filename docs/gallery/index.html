@@ -27,7 +27,7 @@
   <link rel="preload" href="../fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../fonts/jetbrains-mono-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="gallery.css?v=64acd552f3" />
+  <link rel="stylesheet" href="gallery.css?v=93d4ba9a34" />
   <script>document.documentElement.classList.add('js');</script>
   <script>
     (function () {
@@ -61,6 +61,26 @@
     <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../">Home</a></li><li aria-current="page">Gallery</li></ol></nav>
     <h1>Examples and Showcase</h1>
     <p>Runnable Blender Python examples, each run headless on Blender 5.2 LTS and 4.5 LTS in CI, so every render reflects code that actually runs — shown beside budget-conformance showcase props.</p>
+    <details class="check-only" id="check-only">
+      <summary>56 rendered &middot; 10 check-only examples (data contracts with nothing to see)</summary>
+      <div>
+        A check-only example asserts a fact no render can show, such as a datablock name,
+        an RNA attribute, a post-exit sidecar or a topology count. It runs in the same
+        smoke workflow on every PR, with its own falsifier; its source is on GitHub.
+        <ul>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/coincident-vert-weld/">coincident-vert-weld</a>: Synthesizes two cubes occupying the same space as one mesh, then asserts the duplicates exist before asserting they cross glTF export.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/eval-mesh-datablock-name/">eval-mesh-datablock-name</a>: Pathology witness for the 5.2 change in <code>Object.evaluated_get(depsgraph).data.name</code>.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/exit-pre-sidecar/">exit-pre-sidecar</a>: <code>bpy.app.handlers.exit_pre</code> writes <code>$BDT_SMOKE_SIDECAR</code> as Blender dies.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle/">extension-package-lifecycle</a>: Takes templates/extension-addon-template through what an extension meets after its first run.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-bundle-roundtrip/">gn-bundle-roundtrip</a>: Combine Bundle / Separate Bundle packing a cube plus Scale, Offset, and Mark — witnessing <code>geometry-nodes-python</code> item-name round-trip, not tree structure.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-automasking-settings/">mesh-automasking-settings</a>: Pathology witness for the 5.2 move of sculpt automasking RNA off <code>Brush</code> into <code>MeshAutomaskingSettings</code>.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate/">ngon-triangulate</a>: Synthesizes one hexagon by dissolving a cube edge, then asserts the hygiene / tangent contracts on that defective mesh.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading/">timers-modal-threading</a>: Proves the event-loop contracts behind long-running add-on work.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf/">unapplied-scale-gltf</a>: Synthesizes unapplied non-uniform object scale on a unit cube, then asserts the glTF exporter contract.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-linear-modifiers/">vse-linear-modifiers</a>: Pathology witness for the 5.2 removal of <code>Strip.use_linear_modifiers</code>.</li>
+        </ul>
+      </div>
+    </details>
   </header>
   <div class="controls">
     <div class="controls-inner">
@@ -1741,7 +1761,7 @@
   <footer class="site-footer">
     <div class="site-footer-inner">
       <a href="../">Blender Developer Tools</a>
-      <span>CC-BY-NC-ND-4.0</span>
+      <span>CC-BY-NC-ND-4.0 AND MIT</span>
       <span>generated from <code>examples/gallery.json</code> + <code>showcase/gallery.json</code></span>
       <span class="ok">exit 0</span>
       <span class="links"><a href="../gallery/">Gallery</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/releases">Releases</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a><a href="https://github.com/sponsors/TMHSDigital">Sponsor</a><a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">All tools</a></span>
@@ -2117,6 +2137,9 @@
 
       // Restore state from the URL hash; density falls back to localStorage.
       function restore() {
+        // #check-only (the landing page links it) is an anchor, not filter state.
+        var co = document.getElementById('check-only');
+        if (co && location.hash === '#check-only') co.open = true;
         var h = parseHash();
         state.q = h.q || '';
         state.kind = KINDS.indexOf(h.k) !== -1 ? h.k : '';

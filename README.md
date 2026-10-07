@@ -46,22 +46,20 @@
 
 This repository ships **18 skills, 9 rules, 3 templates, 29 snippets, 66 examples, and 76 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Both agents install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
+The content is consumed by AI coding agents, installed as a plugin or read from a checkout — **there is no MCP server in this repository, and none is required**. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, engine export presets |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
-| **Snippets** | 27 small standalone Python files demonstrating canonical patterns |
+| **Snippets** | 29 small standalone Python files demonstrating canonical patterns, 5 to 75 lines each |
 | **Examples** | Runnable headless scripts under [`examples/`](examples/). Each asserts an API contract and exits non-zero on failure. |
 | **Showcase** | Proof that the skills compose: each piece under [`showcase/`](showcase/) is one headless Python script that builds a game prop and runs the whole asset pipeline (cleanup, high-to-low bake, LODs, convex collider, engine export), asserting measured budgets on every LTS. Not API examples. Conventions: [`showcase/README.md`](showcase/README.md) |
 
 ## Quick start
 
-```bash
-git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
-```
+Neither agent needs a clone of `main`: both install the slim `plugin-dist` build. Clone the full repository only to [run the examples or contribute](#run-the-examples-or-contribute).
 
 - **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 18 skills and 9 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
 
@@ -69,7 +67,7 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
   git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
   ```
 
-  (On Windows the folder is `%USERPROFILE%\.cursor\plugins\local\`. Cursor skips symlinks that point outside that folder, so clone or copy rather than link.) Teams can import the repository as a team marketplace instead; it carries `.cursor-plugin/marketplace.json`. For one project only, copy `skills/*` into the project's `.cursor/skills/` and `rules/*.mdc` into `.cursor/rules/` from a checkout. Copying only the rules gives you no skills.
+  (On Windows the folder is `%USERPROFILE%\.cursor\plugins\local\`. Cursor skips symlinks that point outside that folder, so clone or copy rather than link.) Teams can import the repository as a team marketplace instead; it carries `.cursor-plugin/marketplace.json`. The plugin already applies the rules, so there is nothing to copy. Only to scope the pack to one project without the plugin, copy `skills/*` into that project's `.cursor/skills/` and `rules/*.mdc` into `.cursor/rules/` from a checkout; copying only the rules gives you no skills.
 - **Claude Code** — install as a plugin, then run `/skills` to see all 18 skills plus `blender-rules`:
 
   ```text
@@ -80,6 +78,15 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
   `@plugin-dist` is a generated branch holding only what the plugin loads (about 0.3 MB, rebuilt on every release), so the add does not clone the gallery renders, showcase props and history on `main`. Adding the repo without `@plugin-dist` still works; the plugin itself installs from `plugin-dist` either way.
 
   Claude Code does not read Cursor `.mdc` rules, so the plugin ships them as the `blender-rules` skill (generated from `rules/`), which Claude loads when it writes or reviews bpy code. No second clone is needed. To keep the rules in context all the time instead, add `@/path/to/Blender-Developer-Tools/claude/blender-rules.md` to your project's `CLAUDE.md` from a checkout. Without the plugin, copy `skills/*` and `claude/skills/*` into your project's `.claude/skills/`.
+
+### Run the examples or contribute
+
+The examples, the showcase and the gallery live on `main` (about 30 MB with the renders), so clone it only to run them or to send a change:
+
+```bash
+git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
+```
+
 - **Get Blender** — download **5.2 LTS** (primary target) or **4.5 LTS** (supported fallback) from [blender.org/download/lts](https://www.blender.org/download/lts/); current stable lives at [blender.org/download](https://www.blender.org/download/). The `blender` command below is that binary — on macOS it is inside the app bundle at `/Applications/Blender.app/Contents/MacOS/Blender`.
 - **Run an example** — every example is a self-checking headless script (exit non-zero on failure, no GPU needed for the check):
 
@@ -162,7 +169,7 @@ claude/                  - generated Claude Code copies of the rules (blender-ru
 
 ## Using rules in Cursor
 
-The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The nine rules are:
+With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The nine rules are:
 
 - `prefer-data-over-ops-in-loops`: flags `bpy.ops.*` calls inside object iteration
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
@@ -174,7 +181,7 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 - `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
 
-Cursor: copy `rules/*.mdc` into `.cursor/rules/`. Claude Code: install the plugin (see [Quick start](#quick-start)); it ships the rules as the `blender-rules` skill.
+Cursor: the plugin covers the rules (see [Quick start](#quick-start)); copying `rules/*.mdc` into a project's `.cursor/rules/` is only the per-project alternative without the plugin. Claude Code: the plugin ships the rules as the `blender-rules` skill.
 
 ## Using the templates
 
