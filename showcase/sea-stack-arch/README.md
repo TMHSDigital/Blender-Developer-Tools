@@ -1,6 +1,6 @@
 # Sea stack and arch
 
-A showcase piece, not an example, and the tenth in the `nature` category.
+A showcase piece, not an example, in the `terrain` category.
 It builds a procedural game-ready coastal diorama tile, 2.84 × 1.96 m across
 and 1.46 m high: a fragment of a bedded sandstone headland at the sea's edge,
 with a natural arch through it and a sea stack standing in the water beside

@@ -94,6 +94,7 @@ CATEGORIES = {
     "nature": "Nature",
     "household": "Household",
     "vehicles": "Vehicles",
+    "terrain": "Terrain",
 }
 
 
