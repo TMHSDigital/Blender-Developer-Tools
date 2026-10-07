@@ -307,9 +307,9 @@
       "name": "wall-torch",
       "dir": "showcase/wall-torch",
       "category": "village",
-      "teaches": "A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice.",
-      "witnessesFix": "Recomputed: 2004 tris, five materials with 540 stone, 318 metal, 50 wood, 180 flame and 60 pitch faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.322×0.485 m at zmin 0, LOD ratios in band, convex collider 90 tris, non-empty glTF. Hygiene all zero. Arm level 0.000°, plate 13 mm proud of the stones and 3 mm into them, arm-to-cup gap 0.07 mm, plaque width 0.280 m, bake 27.7 texels per UV cell. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19; --droop-arm 20; --sink-plate 21; --low-bake 22.",
+      "teaches": "A procedural wall-mounted torch sconce: a forged plate bolted to six hand-laid stone courses, a level arm and braced cup holding a leaning haft whose pitch rag burns with graded flame tongues, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A wall torch on warm-lit stone: a black iron plate, level arm and curved brace hold a cup, from which a leaning charred haft rises to a cluster of orange flame tongues.",
+      "witnessesFix": "Recomputed: 3912 tris, five materials with 864 stone, 582 metal, 96 wood, 480 flame and 120 pitch faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.328×0.524 m at zmin 0, LOD ratios in band, convex collider 90 tris, non-empty glTF. Hygiene all zero. Arm level 0.000°, plate 13 mm proud of the stones and 3 mm into them, arm-to-cup gap 0.07 mm, plaque width 0.280 m, bake 20.0 texels per UV cell. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19; --droop-arm 20; --sink-plate 21; --low-bake 22.",
       "hero": "docs/gallery/assets/wall-torch-hero.webp",
       "preview": "showcase/wall-torch/preview.webp",
       "tags": [

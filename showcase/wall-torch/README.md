@@ -1,19 +1,34 @@
 # Wall torch
 
-A showcase piece, not an example. A procedural wall-mounted torch sconce: a
-running-bond dressed-stone plaque with dark mortar joints, an iron wall
-plate bolted to the stones, a level iron arm, an open iron cup, a leaning
-wooden haft with a pitch wrap, and upright emissive flames. Then the shipped
-pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a
-convex collider and a Unity glTF export.
+A showcase piece, not an example. A procedural wall-mounted torch sconce: six
+irregular courses of hand-laid stone on a dark mortar slab, a forged iron
+plate bolted to the stones, a level iron arm with a round-bar brace under
+it, an open beaded iron cup, a leaning wooden haft with a wound pitch rag,
+and six graded flame tongues. Then the shipped pipeline: unique-cell UVs, a
+Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity
+glTF export.
 
-The plaque back sits on the wall plane Y=0 with zmin at 0. The plate's seat
+The plaque back sits on the wall plane Y=0 with zmin at 0. Each stone is set
+back up to 3 mm from the face and turned up to 1.2° in the wall plane
+(seeded); the stones behind the plate stay on the face. The plate's seat
 comes from the face of the facing stones (`stone_face_y()`), a named bite
 into it. The cup's mid-height is the arm's height, so the arm is level by
-construction. It runs from inside the plate into the cup's wall. The cup
-sits on the haft's axis, which leans 15° out from the wall. The haft stands
-on the cup's floor and runs up into the wrap. The flames stand upright from
-the wrap, whatever the haft does.
+construction. It runs from the plate's mid-plane into the cup's wall. The
+brace leaves the plate below the arm, sags, and rises into the cup's drip
+boss. The cup sits on the haft's axis, which leans 15° out from the wall.
+The haft stands on the cup's floor and runs up into the wrap. The flames
+stand upright from the wrap, whatever the haft does: each tongue is a tube
+along a curved spine (`lathe_spine`) that swells from a buried root, drifts
+out and curls back to a point.
+
+A `Heat` vertex layer (0..1 along each part) drives the shaders: the flame
+grades from a pale core at the root to deep red at the tips and toward the
+rim, whose alpha fades to nothing; embers wake in the top turns of the rag;
+the haft chars toward the wrap. Stones carry a per-stone tint from cool grey
+to warm buff and a soot smudge on the upper courses. The render adds a small
+warm point light between the flame and the stones, so the torch lights its
+own wall (the `street-lantern` and `campfire` precedent); the house key is
+turned down to let it lead.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -27,9 +42,9 @@ witness an API contract. "It rendered without error" is not a check.
 Hygiene combinatorics match `examples/mesh-hygiene-audit` (copied, not
 imported).
 
-Intended size: a 0.28 m wide, 0.40 m tall plaque; the cup centre 0.24 m out
-from the wall; the flame tip 0.48 m above the floor. Outer AABB
-0.304 × 0.322 × 0.485 m.
+Intended size: a 0.28 m wide, 0.50 m tall plaque; the cup centre 0.24 m out
+from the wall; the flame tip 0.52 m above the floor, in front of the top
+courses. Outer AABB 0.304 × 0.328 × 0.524 m.
 
 ## Budgets
 
@@ -38,14 +53,25 @@ mesh, materials, UVs, evaluated LOD, collider or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1800–2250 | 2004 / 2004 / 2004 |
+| Base triangles | 3600–4300 | 3912 / 3912 / 3912 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 |
-| Materials | exactly 5 distinct; ≥24 stone, ≥24 metal, ≥8 flame, ≥10 pitch | 5 slots; 540 stone, 318 metal, 50 wood, 180 flame, 60 pitch |
+| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
+| Materials | exactly 5 distinct; ≥24 stone, ≥24 metal, ≥8 flame, ≥10 pitch | 5 slots; 864 stone, 582 metal, 96 wood, 480 flame, 120 pitch |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.304, 0.322, 0.485) m ± 0.015 | (0.3040, 0.3218, 0.4845), zmin 0 |
+| Outer AABB | (0.304, 0.328, 0.524) m ± 0.015 | (0.3040, 0.3278, 0.5240), zmin 0 |
 | Collider tris | ≤ 180 | 90 |
-| Export | written, size > 0 | 163468 / 163468 / 163460 bytes (4.5.11 / 5.1.2 / 5.2.1) |
+| Export | written, size > 0 | 299868 / 299868 / 299860 bytes (4.5.11 / 5.1.2 / 5.2.1) |
+
+Base triangles rose from **2004 to 3912** in the third quality pass, and the
+band moved from 1800–2250 to 3600–4300. The hero read as programmer art: a
+grey tile slab with the flame above it, three clipped yellow cones, a smooth
+orange dowel and a copper-looking cup. The plaque grew from four courses to
+six irregular ones (0.40 m to 0.50 m tall) so the flame burns in front of
+the stones instead of above them. The flame became six graded,
+alpha-fading tongues (480 faces, was 180). The plate gained a stepped boss
+and dome bolts, the cup a rolled bead, the haft a wandering girth, the
+wrap bulging turns, and a brace now carries the cup. The envelope grew to
+0.328 m deep and 0.524 m tall.
 
 Base triangles rose from **1528 to 2004** in the second quality pass, and the
 band moved from 1400–1700 to 1800–2250. The solid cup became an open, walled
@@ -58,8 +84,8 @@ DECIMATE COLLAPSE triangle counts are **not** identical across series. The
 gate is a ratio band, not an exact count. Bake pixels are stochastic; the
 gate is `has_data` plus operator `FINISHED`, not byte-identity. Construction
 is closed-form and stone tones are seeded, so repeated runs on one binary
-print identical measurements. Export byte counts differ by 24 B on 5.2.1
-(glTF serializer), not a gated axis.
+print identical measurements. Export byte counts differ by a few bytes
+across series (glTF serializer), not a gated axis.
 
 ### Hygiene
 
@@ -80,11 +106,11 @@ Recomputed from the generated mesh, not asserted about the script.
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
 | Arm-to-cup BVH gap | ≤ 0.008 m | 0.00007 |
-| Plate-to-stone BVH gap | ≤ 0.008 m | 0.00057 |
+| Plate-to-stone BVH gap | ≤ 0.008 m | 0.00000 |
 | Plaque width vs `WALL_W` | ± 0.04 m | 0.2800 vs 0.280 |
 | Arm level (exit 20): the arm shell's long axis against horizontal | ≤ 1.0° | 0.000° |
 | Plate seat (exit 21): plate front proud of the facing stones / plate back into their face | ≥ 0.008 m / 0.001–0.005 m | 0.01300 / 0.00300 |
-| Bake texel density (exit 22): smallest UV cell in baked texels | ≥ 12 px | 27.71 px (1024 px bake) |
+| Bake texel density (exit 22): smallest UV cell in baked texels | ≥ 12 px | 20.04 px (1024 px bake) |
 
 The plate-to-stone gap is measured to any stone shell. The plate is bolted to
 the face of the stones, not to the backing slab behind them, as it was in the
@@ -103,9 +129,9 @@ returned the same code on each.
 | `--float-arm` | arm-to-cup BVH gap | 17 |
 | `--float-plate` | plate-to-stone BVH gap (measured 0.07700) | 18 |
 | `--skinny-plaque` | plaque width vs `WALL_W` | 19 |
-| `--droop-arm` | arm level (the old 20 mm drop; measured 9.580°) | 20 |
+| `--droop-arm` | arm level (the old 20 mm drop; measured 9.908°) | 20 |
 | `--sink-plate` | plate seat (the first build's seat; measured proud −0.00400, seat 0.02000) | 21 |
-| `--low-bake` | bake texel density (256 px bake; measured 6.93 px) | 22 |
+| `--low-bake` | bake texel density (256 px bake; measured 5.01 px) | 22 |
 
 `--float-arm` shortens the tube to 55 % of the plate-to-cup station vector,
 and the cup stays put. `--float-plate` moves only the plate off the stones;
