@@ -9,6 +9,11 @@ assert byte-identity across 4.5 / 5.1 / 5.2. The contract is statistical.
 2. The same bake from an undisplaced source does not.
 3. ``--flat-source`` skips the ribs and rivets and still runs the *detail* gates, so the
    assertion fails. That is the falsifier (``--same-axis`` in export-preset-axis).
+4. The bake target is the material's active Image Texture node and, on 5.0 and
+   later, it must also be selected. ``--unselect-target`` clears ``tex.select``
+   after setup: 5.x returns ``{'CANCELLED'}`` ("No active and selected image
+   texture node found") and the run exits 4. 4.5 LTS ignores selection, bakes,
+   and exits 0, so the catalog falsifier carries ``min_version`` 5.0.
 
 Operator RNA is ``type='NORMAL'``, not ``bake_type``. Identifiers match on
 4.5.11, 5.1.2, and 5.2.1 — no shim.
@@ -18,6 +23,7 @@ check. Pass --output to also render a still:
 
     blender --background --python bake_normal_high_to_low.py --
     blender --background --python bake_normal_high_to_low.py -- --flat-source
+    blender --background --python bake_normal_high_to_low.py -- --unselect-target
     blender --background --python bake_normal_high_to_low.py -- --output p.png
 """
 import argparse
@@ -256,7 +262,7 @@ def new_image(name, size=BAKE_RES):
     return img
 
 
-def check(flat_source):
+def check(flat_source, unselect_target=False):
     base = make_hatch("BakeBase")
     if not base.data.uv_layers:
         return fail("base mesh has no UV layer", 3), None, None, None, None
@@ -274,10 +280,13 @@ def check(flat_source):
     img_detail, mat, tex = setup_bake_target(low, "BakeNrmDetail")
     if img_detail is None:
         return fail("low mesh has no UV layer", 3), None, None, None, None
+    if unselect_target:
+        tex.select = False  # still nodes.active; 5.x needs it selected too
 
     result = bake_normal(high_detail, low)
     if result != {"FINISHED"}:
-        return fail(f"detail bake returned {result}", 4), None, None, None, None
+        return fail(f"detail bake returned {result} (target node active={mat.node_tree.nodes.active == tex} "
+                    f"selected={tex.select})", 4), None, None, None, None
     if not img_detail.has_data:
         return fail("detail bake image has_data is False", 4), None, None, None, None
 
@@ -608,10 +617,15 @@ def main():
         action="store_true",
         help="bake from undisplaced high; detail gates must fail",
     )
+    p.add_argument(
+        "--unselect-target",
+        action="store_true",
+        help="deselect the active bake-target node; 5.x bake must cancel (exit 4)",
+    )
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code, high, low, img, mat = check(args.flat_source)
+    code, high, low, img, mat = check(args.flat_source, args.unselect_target)
     if code:
         return code
 

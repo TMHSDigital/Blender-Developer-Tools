@@ -31,6 +31,15 @@ tuned-until-green.
 - **`--flat-source` is the falsifier.** Skips the ribs and still runs the
   detail gates. Must exit 5. Analogous to `--same-axis` in
   [`export-preset-axis`](../export-preset-axis/).
+- **The target node must be selected (5.0 and later).** The bake writes into
+  the material's active Image Texture node, and on 5.x only if that node is
+  also selected. `--unselect-target` keeps `nodes.active = tex` but sets
+  `tex.select = False`. Measured: 5.0.1, 5.1.2 and 5.2.1 return
+  `{'CANCELLED'}` with Info "No active and selected image texture node
+  found" and leave the pixels untouched, so the run exits 4. On 4.5.11 the
+  bake ignores selection, finishes, and the run **exits 0**. The catalog
+  falsifier therefore carries `"min_version": "5.0"` and is recorded as SKIP
+  on 4.5.
 
 Neighbor of [`lod-decimate-chain`](../lod-decimate-chain/) (the LOD is the
 cage target; collapse keeps UVs) and [`image-pixels-testcard`](../image-pixels-testcard/)
@@ -68,6 +77,9 @@ blender --background --python bake_normal_high_to_low.py --
 # Falsifier: undisplaced high. Must exit non-zero (detail frac gate).
 blender --background --python bake_normal_high_to_low.py -- --flat-source
 
+# Falsifier: active but deselected target node. Exits 4 on 5.x, 0 on 4.5 LTS.
+blender --background --python bake_normal_high_to_low.py -- --unselect-target
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python bake_normal_high_to_low.py -- --output hatch.png
 blender --background --python bake_normal_high_to_low.py -- --output hatch.png --engine cycles
@@ -84,7 +96,7 @@ against it. `10` is the shared framing helper.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Missing UV layer on the target |
-| 4 | Bake did not `FINISHED` or image `has_data` is false |
+| 4 | Bake did not `FINISHED` or image `has_data` is false (`--unselect-target` lands here on 5.x) |
 | 5 | Detail deviant-pixel fraction below 0.40 (`--flat-source` lands here) |
 | 6 | Detail MAD below 0.05 |
 | 7 | Flat control above 0.05 frac / 0.03 MAD |

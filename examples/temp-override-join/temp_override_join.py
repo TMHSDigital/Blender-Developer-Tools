@@ -24,11 +24,21 @@ the single `Lantern` object an engine wants. The check asserts:
 operator raises, that is caught and the existing object-count check still
 runs. That is the falsifier (``--same-axis`` in export-preset-axis).
 
+Before the join, the check also asserts why the override has to pass the
+selection explicitly: active and selected are independent. With the target
+made active and every part selected, ``select_all(action='DESELECT')``
+leaves ``context.active_object`` set to the target while
+``selected_objects`` is empty, so an ``if obj is None`` guard passes on a
+selection that is gone. The scene state is then reset to no active object
+and nothing selected, as before. ``--clear-active-on-deselect`` models the
+wrong belief (deselect clears the active object) and exits 13.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python temp_override_join.py --                 # check only
     blender --background --python temp_override_join.py -- --no-override   # must fail
+    blender --background --python temp_override_join.py -- --clear-active-on-deselect  # 13
     blender --background --python temp_override_join.py -- --output j.png  # + render
 """
 import argparse
@@ -362,6 +372,33 @@ def join_with_temp_override(target, sources):
     return target
 
 
+def check_active_survives_deselect(objs, clear_active=False):
+    """Active and selected are independent: deselect-all keeps the active object."""
+    view_layer = bpy.context.view_layer
+    view_layer.objects.active = objs[0]
+    for ob in objs:
+        ob.select_set(True)
+    bpy.ops.object.select_all(action='DESELECT')
+    if clear_active:
+        view_layer.objects.active = None  # the wrong mental model, made true
+    active = bpy.context.active_object
+    if active is None:
+        active_name = None  # what the wrong mental model predicts
+    else:
+        active_name = active.name
+    selected = list(bpy.context.selected_objects)
+    unselected_active = active is objs[0] and not objs[0].select_get()
+    # restore the build state: nothing active, nothing selected
+    view_layer.objects.active = None
+    if not unselected_active or selected:
+        print(f"ERROR: after select_all(DESELECT) active={active_name} "
+              f"selected={[o.name for o in selected]}; expected active={objs[0].name} "
+              f"(unselected) and no selection", file=sys.stderr)
+        return 13
+    print(f"after deselect-all: active={objs[0].name} select_get=False selected=0")
+    return 0
+
+
 def check(joined, source_names, expect):
     mesh_objs = [o for o in bpy.data.objects if o.type == 'MESH']
     if len(mesh_objs) != 1:
@@ -528,6 +565,8 @@ def main():
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--no-override", action="store_true",
                    help="join without temp_override (must fail)")
+    p.add_argument("--clear-active-on-deselect", action="store_true",
+                   help="clear the active object after deselect-all (must fail, exit 13)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -539,6 +578,9 @@ def main():
         "faces": sum(len(o.data.polygons) for o in objs),
         "mat_faces": material_faces(objs),
     }
+    code = check_active_survives_deselect(objs, args.clear_active_on_deselect)
+    if code:
+        return code
     if args.no_override:
         try:
             bpy.ops.object.join()

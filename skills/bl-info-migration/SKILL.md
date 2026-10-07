@@ -105,6 +105,34 @@ operators = importlib.import_module(f"{__package__}.operators")
 
 Both forms are stable across the legacy and Extensions Platform load paths.
 
+### Step 4: Replace hard-coded add-on names with `__package__`
+
+Imports are not the only place the old module name hides. Any string literal that names the add-on breaks the same way after migration, because the module is now `bl_ext.<repo>.<id>`:
+
+```python
+# Before: breaks once installed as an extension
+prefs = context.preferences.addons["my_addon"].preferences  # KeyError
+
+class MyAddonPrefs(bpy.types.AddonPreferences):
+    bl_idname = __name__  # wrong when this class lives in a submodule
+```
+
+```python
+# After: __package__ carries the full runtime name
+prefs = context.preferences.addons[__package__].preferences
+
+class MyAddonPrefs(bpy.types.AddonPreferences):
+    bl_idname = __package__
+```
+
+Measured on 5.2.1 LTS with an installed test extension (`bl_ext.user_default.probe_good`):
+
+- `context.preferences.addons["probe_good"]` raises `KeyError`. The add-on is listed only under `bl_ext.user_default.probe_good`.
+- In a submodule `prefs.py`, `__name__` is `bl_ext.user_default.probe_good.prefs` and `__package__` is `bl_ext.user_default.probe_good`.
+- An `AddonPreferences` subclass with `bl_idname = __name__` in that submodule still registers without an error, but `addons[pkg].preferences` is `None`. The preferences silently disappear. With `bl_idname = __package__` it returns the class instance.
+
+`__package__` names the root only one level down. In a deeper module such as `ui/panels.py` it is `bl_ext.<repo>.<id>.ui`. Take the root name from the top-level `__init__.py` (where `__package__ == __name__`) and pass it down, rather than slicing strings. Grep the add-on for its old name in quotes (`"my_addon"`, `'my_addon'`) and for `bl_idname = __name__`. The [`custom-properties`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/skills/custom-properties/SKILL.md) skill shows the `AddonPreferences` pattern with `__package__`.
+
 ## Worked example: before and after
 
 ### Before (legacy, single file `__init__.py`)

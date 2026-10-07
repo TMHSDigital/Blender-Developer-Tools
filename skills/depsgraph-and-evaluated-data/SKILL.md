@@ -62,7 +62,7 @@ Three steps:
 
 ## The lifetime rule (critical)
 
-Every `to_mesh()` must be paired with a `to_mesh_clear()`. The evaluated object owns **one** temporary mesh: a second `to_mesh()` on the same object returns that same mesh (measured on 4.5.11 and 5.2.1), so a missing clear does not multiply per call. If you skip the clear:
+Every `to_mesh()` must be paired with a `to_mesh_clear()`. One temporary mesh is held per evaluated object until `to_mesh_clear()` or re-evaluation. A second `to_mesh()` on the same object frees the previous temporary mesh and returns a fresh one, so the earlier Python reference raises `ReferenceError` (measured on 4.5.11 and 5.2.1). A missing clear therefore does not multiply per call on one object. Looping over *many objects* without clearing holds one per object. If you skip the clear:
 
 - That temporary mesh stays allocated until the object is re-evaluated or freed, once per evaluated object you touched (a whole-scene exporter holds a full copy of every mesh)
 - Code that keeps using the mesh after the next depsgraph update reads freed data; clearing at a known point makes the lifetime explicit
@@ -184,7 +184,7 @@ When you build your own exporter on top of `evaluated_depsgraph_get()`, the deps
 - **Calling `evaluated_get` without the depsgraph argument**. The signature is `obj.evaluated_get(depsgraph)`; passing nothing raises a `TypeError`.
 - **Treating `obj.data` as identical to `obj_eval.data`**. They are different mesh datablocks. The first is the source; the second is post-evaluation.
 - **Using the raw object's `matrix_world` after evaluating**. `obj.matrix_world` and `obj_eval.matrix_world` may differ (parent constraints evaluate during depsgraph). Use `obj_eval.matrix_world` for world-space positions.
-- **Calling `to_mesh()` inside a tight loop without clearing**. Each iteration leaks a temp mesh. Even with the right intent, this exhausts memory fast.
+- **Looping over many objects with `to_mesh()` and no clear**. One temporary mesh is held per evaluated object until `to_mesh_clear()` or re-evaluation, so a scene-wide loop ends up holding an evaluated copy of every mesh at once. Repeated calls on the *same* object do not stack; each frees the previous one.
 - **USD `evaluation_mode` without `export_subdivision='TESSELLATE'`**. Default `BEST_MATCH` writes the cage plus `subdivisionScheme = catmullClark`, so RENDER and VIEWPORT files match and the mode looks like a no-op.
 - **`export_apply=True` as "apply object transforms".** RNA is "Apply modifiers (excluding Armatures) to mesh objects". Unapplied non-uniform object scale lands on the glTF node, Y-up permuted `(sx, sz, sy)`; POSITION stays local. Witness: [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
 

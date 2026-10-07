@@ -174,7 +174,7 @@ finally:
     eval_obj.to_mesh_clear()
 ```
 
-`to_mesh()` returns a temporary mesh datablock. `to_mesh_clear()` releases it. Skipping the cleanup leaks like skipping `bm.free()`.
+`to_mesh()` returns a temporary mesh datablock. `to_mesh_clear()` releases it. One temporary mesh is held per evaluated object until `to_mesh_clear()` or re-evaluation. Looping over *many objects* without clearing holds one per object. A repeated call on the same object frees the previous one. See `depsgraph-and-evaluated-data` for the measured lifetime.
 
 This is the only way to:
 - Read the post-subdivision-surface vertex count and positions
@@ -249,7 +249,7 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 
 2. **Forgetting `bm.free()`**. Crashes Blender after enough runs. Use the `try`/`finally` form unconditionally.
 
-3. **Forgetting `to_mesh_clear()`**. Leaks evaluated meshes. Same `try`/`finally` discipline applies.
+3. **Forgetting `to_mesh_clear()`**. Holds one evaluated mesh per object until re-evaluation. Same `try`/`finally` discipline applies.
 
 4. **Reading `obj.data` and expecting modifiers**:
 

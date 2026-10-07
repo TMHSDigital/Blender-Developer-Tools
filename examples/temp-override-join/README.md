@@ -23,6 +23,15 @@ foot (0) to the top of the grip (closed form 2.303), which proves the part trans
 applied. A no-op override (the 5.x failure mode of the old dict-pass path) leaves seven
 objects.
 
+**Why the override passes the selection explicitly.** Before the join, the check makes the
+target active, selects every part, and runs `select_all(action='DESELECT')`. The target is
+still `context.active_object` while `selected_objects` is empty and
+`target.select_get()` is `False`. Active and selected are independent, so an
+`if obj is None` guard passes on a selection that is gone (see the
+[`operators`](../../skills/operators/SKILL.md) skill, Defensive context handling). The scene
+is then reset to no active object before the join. `--clear-active-on-deselect` models the
+wrong belief that deselecting clears the active object, and exits 13.
+
 **The render is the joined object.** Everything in the still is one mesh object. It shows
 five materials because the slots merged and the per-face indices were remapped. If they had
 not been, the lantern would render in the target's red enamel from grip to foot. A shadowless
@@ -36,6 +45,9 @@ blender --background --python temp_override_join.py --
 
 # Falsifier: join without temp_override. Must exit non-zero.
 blender --background --python temp_override_join.py -- --no-override
+
+# Falsifier: pretend deselect-all clears the active object. Must exit 13.
+blender --background --python temp_override_join.py -- --clear-active-on-deselect
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python temp_override_join.py -- --output join.png
@@ -62,8 +74,9 @@ against it.
 | 10 | `--output` framing gate (`gallery_framing`) |
 | 11 | `--output` asset-quality floors (`gallery_asset_quality`) |
 | 12 | `--output` produced no file |
+| 13 | After deselect-all the target is not still active-but-unselected, or something is still selected (`--clear-active-on-deselect` lands here) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--no-override` (expects exit 3).
+Smoke does not pass `--output`. Its catalog falsifiers are `--no-override` (expects exit 3) and `--clear-active-on-deselect` (exit 13).
 

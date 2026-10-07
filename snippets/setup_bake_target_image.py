@@ -1,7 +1,8 @@
 # Target setup for bpy.ops.object.bake: generated image, Non-Color,
-# a material whose Image Texture node is nodes.active, UV layer present.
-# The texture does not need a link into Principled. If it is not active,
-# the bake finishes and writes nowhere.
+# a material whose Image Texture node is nodes.active AND selected, UV layer
+# present. The texture does not need a link into Principled. On 5.0+ an
+# active but deselected node makes the bake return {'CANCELLED'} ("No active
+# and selected image texture node found"); 4.5 LTS ignores selection.
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy.ops.object.html#bpy.ops.object.bake
@@ -23,7 +24,7 @@ def setup_bake_target_image(obj, name="BakeNrm", size=128):
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = img
     nodes.active = tex
-    tex.select = True
+    tex.select = True  # required on 5.x; do not drop as redundant
     if obj.data.materials:
         obj.data.materials[0] = mat
     else:

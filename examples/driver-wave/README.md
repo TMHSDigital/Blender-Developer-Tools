@@ -15,6 +15,24 @@ Note for real add-ons: `driver_namespace` entries do **not** persist in `.blend`
 re-register them from a `load_post` handler, or every driver that calls them fails on file
 open. Headless, registering before driver creation (as here) is enough.
 
+Two more facts are asserted:
+
+- **The custom-function driver is not a simple expression.** Every column's
+  `driver.is_simple_expression` must be `False`. Only the
+  [simple-expression subset](https://docs.blender.org/manual/en/latest/animation/drivers/troubleshooting.html)
+  runs with Python auto-execution off, which is the default
+  (`preferences.filepaths.use_scripts_auto_execute` is `False` on 4.5.11 and
+  5.2.1). A shared `.blend` with these drivers goes dead in a GUI session
+  unless the file is trusted or Auto Run Python Scripts is on. `--background`
+  runs do not hit that block, so this check reads the flag instead of
+  observing a dead driver. `--simple-expr` writes the same profile inline as
+  `1.4 + sin(i * 0.6)`. The heights still match, but the drivers are now
+  simple, so the run exits 5.
+- **Pre handlers get no depsgraph.** `frame_change_pre` and
+  `depsgraph_update_pre` are called with `(scene, None)`. `frame_change_post`
+  and `depsgraph_update_post` get `(scene, Depsgraph)`. Measured on 4.5.11 and
+  5.2.1. `--swap-handlers` hangs each probe on the opposite list, so the run exits 7.
+
 ## Staging
 
 The sixteen driven objects are the speaking pipes of a small organ facade. They share one
@@ -35,6 +53,12 @@ blender --background --python driver_wave.py --
 # Falsifier: constant 1.0 expression. Must exit non-zero.
 blender --background --python driver_wave.py -- --flat-expr
 
+# Falsifier: same profile as a simple expression. Must exit 5.
+blender --background --python driver_wave.py -- --simple-expr
+
+# Falsifier: pre-handler probes on the post lists. Must exit 7.
+blender --background --python driver_wave.py -- --swap-handlers
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python driver_wave.py -- --output driver.png
 blender --background --python driver_wave.py -- --output driver.png --engine cycles
@@ -52,10 +76,12 @@ against it. `10` is the shared framing helper.
 | 2 | argparse / usage |
 | 3 | Evaluated Z scale ≠ `wave_scale` (`--flat-expr` lands here) |
 | 4 | Original datablock was not flushed |
+| 5 | A driver reports `is_simple_expression=True` (`--simple-expr` lands here) |
+| 7 | Handler argument types wrong: a `_pre` handler got a depsgraph or a `_post` one did not (`--swap-handlers` lands here) |
 | 6 | `--output` produced no file |
 | 10 | Gallery framing violation |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--flat-expr` (expects exit 3).
+Smoke does not pass `--output`. Its catalog falsifiers are `--flat-expr` (expects exit 3), `--simple-expr` (exit 5) and `--swap-handlers` (exit 7).
 
