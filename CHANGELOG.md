@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.147.1] - 2026-10-07
+
+### Fixes
+
+- fix(skills): correct driver autoexec, handler args, active-vs-selected, bake target and migration claims (#476) ([`4636c25`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4636c2560526867c0bb0aeacad2bfcf37d71ca7b))
+
+### Other
+
+- chore(deps): Bump the dev-tools group with 3 updates (#441) ([`e7b3e95`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e7b3e951da3602c3469e80c47a961ea9cd0e1e60))
+
+[Release v0.147.1](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.147.1)
+
 ## [0.147.0] - 2026-10-05
 
 ### Features
