@@ -29,9 +29,18 @@ decoded PNG.
 
 - *Buffer geometry* — an API change to per-image channel counts, or code assuming an
   RGB stride (falsified: a `W*H*3` write raises and the check exits 3).
-- *Byte/float round-trip vs the closed-form card* — any stride, orientation, or
-  packing bug in the bulk path; a one-pixel shift was deliberately introduced once and
-  the check exited 4 with measured error 0.97 against tolerance 0.00196.
+- *Byte/float round-trip* — a stride or packing bug in the bulk path; a one-pixel
+  shift was deliberately introduced once and the check exited 4 with measured error
+  0.97 against tolerance 0.00196. A `foreach_set` → `foreach_get` round trip reads
+  back the order it wrote, so it cannot see row order; that is the next check's job.
+- *Row order through a real PNG* — the byte image is saved with `Image.save()` and
+  the file's rows are decoded with `zlib` + `struct` alone, no `bpy`. PNG stores the
+  top row first, so a bottom-left origin puts pixel (0, 0) — the origin marker — in
+  the file's **last** row, and every PNG row `k` must match card row `H-1-k` at
+  quantization tolerance. Measured: the marker sits in PNG rows 247..287 of 0..287
+  and the rows match at 0.0019608 (tolerance 0.0019618). `--wrong-origin` writes the
+  card top-down through Blender: the marker lands in PNG rows 0..40, the row error
+  is 0.9216, and the check exits 13.
 - *Quantization floor* — `byte_err > 0` proves 8-bit storage really quantizes;
   byte and float images swapping behavior cannot hide.
 - *Reallocation* — `scale()` no longer reallocating (stale-size read succeeding).
@@ -57,7 +66,7 @@ and the screen renders as one flat color. The render path creates the layer expl
 # Cheap correctness check (no render) — the CI check:
 blender --background --python image_pixels_testcard.py --
 
-# Falsifier: write the card top-down. Must exit non-zero (byte round-trip).
+# Falsifier: write the card top-down. Must exit 13 (PNG row order).
 blender --background --python image_pixels_testcard.py -- --wrong-origin
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -76,7 +85,7 @@ against it.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Pixel buffer is not always RGBA |
-| 4 | Byte round-trip vs closed-form card (`--wrong-origin` lands here) |
+| 4 | Byte round-trip error or no quantization |
 | 5 | Float-buffer round-trip failed |
 | 6 | `scale()` did not reallocate, or stale-size read succeeded |
 | 7 | `save()` source/buffer-drop contract drifted |
@@ -84,10 +93,11 @@ against it.
 | 9 | Byte PNG save/reload error |
 | 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 | 12 | `--output` produced no file |
+| 13 | Saved PNG rows do not put pixel (0, 0) at the bottom-left (`--wrong-origin` lands here) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--wrong-origin` (expects exit 4).
+Smoke does not pass `--output`. Its catalog falsifier is `--wrong-origin` (expects exit 13).
 
 In the render, `Closest` interpolation keeps the pixel grid honest —
 the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the

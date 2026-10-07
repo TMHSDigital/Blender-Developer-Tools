@@ -36,10 +36,12 @@ Scaffolding matches [`eval-mesh-datablock-name`](../eval-mesh-datablock-name/)
 **What failure each check would catch:**
 
 - exit 3 — the template stopped validating or building, or the zip lost its manifest
-- exit 4 — a package whose wheel does not exist passed the release gate
-  (`--validate-only` lands here: it gates on `validate` alone); also exit 4 if
-  `validate` starts rejecting the missing wheel, because the trap this example
-  names would then be gone
+- exit 4 — `build` accepted the package whose manifest names a wheel it does
+  not ship, so nothing between `validate` and a release would catch it
+  (`--ship-wheel` lands here: it creates the named wheel, so `build` exits 0
+  and writes a zip, proving the rejection comes from the missing file); also
+  exit 4 if `validate` starts rejecting the package, because the trap this
+  example names would then be gone
 - exit 5 — `server-generate` wrote no listing, or the listing does not name the package
 - exit 6 — install, import, upgrade or remove failed, or `__package__` is not
   `bl_ext.user_default.example_addon`
@@ -60,7 +62,8 @@ Scaffolding matches [`eval-mesh-datablock-name`](../eval-mesh-datablock-name/)
 | user data after `remove` | deleted | deleted | deleted |
 | `online_access` default / `--online-mode` | False / True | False / True | False / True |
 | default exit | 0 | 0 | 0 |
-| `--validate-only` / `--data-next-to-file` exit | 4 / 7 | 4 / 7 | 4 / 7 |
+| `--ship-wheel` / `--data-next-to-file` exit | 4 / 7 | not re-run / 7 | 4 / 7 |
+| validate / build, wheel shipped (`--ship-wheel`) | 0 / 0, zip written | not re-run | 0 / 0, zip written |
 
 ## API reference
 
@@ -73,7 +76,7 @@ Scaffolding matches [`eval-mesh-datablock-name`](../eval-mesh-datablock-name/)
 
 ```bash
 blender --background --python extension_package_lifecycle.py --
-blender --background --python extension_package_lifecycle.py -- --validate-only
+blender --background --python extension_package_lifecycle.py -- --ship-wheel
 blender --background --python extension_package_lifecycle.py -- --data-next-to-file
 ```
 
@@ -88,7 +91,7 @@ than most examples.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Template does not validate or build, or the zip lacks its manifest |
-| 4 | Missing-wheel package passed the release gate (`--validate-only` lands here) |
+| 4 | `build` accepted the missing-wheel package, or `validate` rejected it (`--ship-wheel` lands here) |
 | 5 | `server-generate` listing missing or wrong |
 | 6 | Install, import, upgrade or remove failed, or `__package__` wrong |
 | 7 | User data inside the install tree, lost on upgrade, or kept after removal (`--data-next-to-file` lands here) |
@@ -97,4 +100,4 @@ than most examples.
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
 Smoke passes no extra flags on the happy path. Its catalog falsifiers are
-`--validate-only` (expects exit 4) and `--data-next-to-file` (expects exit 7).
+`--ship-wheel` (expects exit 4) and `--data-next-to-file` (expects exit 7).

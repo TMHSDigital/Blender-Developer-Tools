@@ -18,9 +18,14 @@ with a different image and reading the imposter's pixels back through the
 original datablock. `save_render()` writes the same PNG but leaves
 `source` == 'GENERATED' and the buffer intact and exact.
 
-``--wrong-origin`` writes the card top-down and still compares against
-the bottom-left closed form, so the byte round-trip fails. That is the
-falsifier (``--same-axis`` in export-preset-axis).
+Row order is witnessed outside Blender: the byte image is saved as a PNG
+and its rows are decoded with zlib + struct alone. PNG stores the top row
+first, so a bottom-left origin puts pixel (0, 0) — the origin marker — in
+the file's LAST row. A foreach_set -> foreach_get round trip cannot see row
+order; it reads back the order it wrote. ``--wrong-origin`` writes the card
+top-down through Blender, so the saved PNG has the marker on top and the
+row check exits 13. That is the falsifier (``--same-axis`` in
+export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -29,7 +34,7 @@ check. Pass --output to also render a still:
     blender --background --python image_pixels_testcard.py -- --wrong-origin  # must fail
     blender --background --python image_pixels_testcard.py -- --output t.png  # + render
 """
-import bpy, sys, os, math, argparse, tempfile
+import bpy, sys, os, math, argparse, tempfile, struct, zlib
 
 # Shared Layer 1 framing measurement (render path only) — see
 # gallery_framing.py for the __file__-relative import shim this relies on.
@@ -89,6 +94,59 @@ def flat_pattern(flip_origin=False):
     return buf
 
 
+def read_png_rows(path):
+    """Decode an 8-bit RGB/RGBA PNG with zlib + struct alone — no bpy, so
+    Blender cannot vouch for itself. Returns (width, height, rows); rows[0] is
+    the file's first (TOP) row, each row a list of per-pixel float tuples."""
+    with open(path, "rb") as fh:
+        data = fh.read()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError(f"{path} is not a PNG")
+    pos, idat, ihdr = 8, [], None
+    while pos < len(data):
+        n, kind = struct.unpack(">I4s", data[pos:pos + 8])
+        body = data[pos + 8:pos + 8 + n]
+        pos += 12 + n
+        if kind == b"IHDR":
+            ihdr = struct.unpack(">IIBBBBB", body)
+        elif kind == b"IDAT":
+            idat.append(body)
+        elif kind == b"IEND":
+            break
+    w, h, depth, ctype, _, _, interlace = ihdr
+    if depth != 8 or ctype not in (2, 6) or interlace:
+        raise ValueError(f"unsupported PNG layout depth={depth} color={ctype} interlace={interlace}")
+    ch = 3 if ctype == 2 else 4
+    raw = zlib.decompress(b"".join(idat))
+    stride = w * ch
+    rows, prev, i = [], bytearray(stride), 0
+    for _ in range(h):
+        f, line = raw[i], bytearray(raw[i + 1:i + 1 + stride])
+        i += 1 + stride
+        for x in range(stride):  # undo the per-row filter (PNG spec section 9)
+            a = line[x - ch] if x >= ch else 0
+            b, c = prev[x], (prev[x - ch] if x >= ch else 0)
+            if f == 1:
+                line[x] = (line[x] + a) & 255
+            elif f == 2:
+                line[x] = (line[x] + b) & 255
+            elif f == 3:
+                line[x] = (line[x] + ((a + b) >> 1)) & 255
+            elif f == 4:
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                line[x] = (line[x] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 255
+        prev = line
+        rows.append([tuple(v / 255.0 for v in line[x * ch:x * ch + ch]) for x in range(w)])
+    return w, h, rows
+
+
+def is_marker_row(row):
+    """The PLUGE row: bright origin marker at x=0, dark block at x=100 (the
+    top bar row is bright at x=0 too, but yellow at x=100)."""
+    return row[0][0] > 0.85 and row[100][0] < 0.2
+
+
 def fail(msg, code):
     print(f"ERROR: {msg}", file=sys.stderr)
     return code
@@ -111,16 +169,40 @@ def check(wrong_origin=False):
         pass
 
     # -- byte image: one bulk write, quantized round-trip --------------------
+    # A foreach_set -> foreach_get round trip is blind to row order (it reads
+    # back the same flat order it wrote), so it witnesses quantization only.
     img.pixels.foreach_set(written)
     got = [0.0] * (W * H * 4)
     img.pixels.foreach_get(got)
-    byte_err = max(abs(a - b) for a, b in zip(expected, got))
+    byte_err = max(abs(a - b) for a, b in zip(written, got))
     if byte_err > BYTE_TOL:
-        return fail(f"byte round-trip error {byte_err:.7f} > {BYTE_TOL:.7f} "
-                    f"(stride/orientation bug cannot hide at 512x288)", 4)
+        return fail(f"byte round-trip error {byte_err:.7f} > {BYTE_TOL:.7f}", 4)
     if byte_err <= 0.0:
         return fail("byte image round-tripped exactly — storage is not 8-bit, "
                     "the quantization contract is broken", 4)
+
+    # -- row order, through Blender's PNG encoder and an independent decoder --
+    # PNG stores the TOP row first. If pixels[0] is the bottom-left pixel, the
+    # file's last row is buffer row 0 and carries the origin marker.
+    tmpdir = tempfile.mkdtemp()
+    img.filepath_raw = os.path.join(tmpdir, "orient.png")
+    img.file_format = 'PNG'
+    img.save()
+    pw, ph, rows = read_png_rows(img.filepath_raw)
+    if (pw, ph) != (W, H):
+        return fail(f"saved PNG is {pw}x{ph}, expected {W}x{H}", 13)
+    marker_rows = [k for k, row in enumerate(rows) if is_marker_row(row)]
+    row_err = 0.0
+    for k, row in enumerate(rows):
+        base = (H - 1 - k) * W * 4  # PNG row k (top first) is buffer row H-1-k
+        for x in range(W):
+            for c in range(3):
+                row_err = max(row_err, abs(row[x][c] - expected[base + x * 4 + c]))
+    span = f"{marker_rows[0]}..{marker_rows[-1]}" if marker_rows else "none"
+    if row_err > BYTE_TOL or not is_marker_row(rows[-1]):
+        return fail(f"PNG rows do not put pixel (0, 0) at the bottom-left: max error "
+                    f"{row_err:.4f} vs the bottom-up card (tol {BYTE_TOL:.5f}), origin "
+                    f"marker in PNG rows {span} of 0..{H - 1}", 13)
 
     # -- float image: same write, float32-exact round-trip -------------------
     fimg = bpy.data.images.new("TestCardF", W, H, alpha=True, float_buffer=True)
@@ -147,7 +229,6 @@ def check(wrong_origin=False):
         pass
 
     # -- the save() trap: source flips to FILE and pixels re-source from disk --
-    tmpdir = tempfile.mkdtemp()
     trap = bpy.data.images.new("Trap", W, H, alpha=True, float_buffer=True)
     trap.pixels.foreach_set(expected)
     trap.filepath_raw = os.path.join(tmpdir, "trap.png")
@@ -198,7 +279,8 @@ def check(wrong_origin=False):
         return fail(f"byte PNG save/reload error {disk_err:.7f} > {BYTE_TOL:.7f}", 9)
 
     print(f"byte round-trip max err {byte_err:.7f} (tol {BYTE_TOL:.7f}, must be > 0), "
-          f"float {float_err:.2e} (tol {FLOAT_TOL:.0e}), post-save() imposter read "
+          f"PNG rows vs bottom-up card {row_err:.7f}, origin marker in PNG rows "
+          f"{span} of 0..{H - 1}, float {float_err:.2e} (tol {FLOAT_TOL:.0e}), post-save() imposter read "
           f"max dev {trap_err:.7f} (buffer really dropped), save_render() "
           f"{keep_err:.2e}, byte PNG reload {disk_err:.7f}")
     return 0

@@ -41,7 +41,7 @@ bpy.app.timers.register(poll, first_interval=0.5)
 ```
 
 - `None` unregisters; a float re-runs after that many seconds. Measured in a windowed child: a `None` timer ran once, and one returning `0.05` until its third call ran exactly three times. Afterwards `is_registered` was `False` for both.
-- Returning `0.0` does not mean "stop": it re-runs on the next event-loop pass. A timer meant to run once that returns `0.0` ran 5 times before a file load removed it.
+- Returning `0.0` does not mean "stop": it re-runs on the next event-loop pass. A timer meant to run once that returns `0.0` ran 21 times on 4.5.11 and 30 on 5.2.1 before a file load removed it.
 - `first_interval` is keyword-only: `register(poll, 0.5)` raises `TypeError: register() takes exactly 1 positional argument (2 given)` on 4.5.11, 5.1.2 and 5.2.1.
 - **A file load drops every timer not registered with `persistent=True`.** Measured: after `wm.read_factory_settings` inside a timer, the persistent timer was still registered and the plain one was not. Add-on services that must outlive File → Open need `persistent=True`. Per-file work should be plain, so it does not leak into the next file.
 - Unregister in `unregister()`: `if bpy.app.timers.is_registered(poll): bpy.app.timers.unregister(poll)`.
@@ -56,24 +56,42 @@ import threading
 import bpy
 
 results = queue.Queue()
+pending = 0                        # jobs started, not yet drained (main thread only)
 
 def worker(url):
-    data = download(url)           # no bpy here
-    results.put(data)
+    try:
+        results.put((True, download(url)))   # no bpy here
+    except BaseException as e:
+        results.put((False, e))    # always put, or the drain waits forever
 
 def drain():
-    try:
-        data = results.get_nowait()
-    except queue.Empty:
-        return 0.1                 # nothing yet; look again
-    apply_to_scene(data)           # bpy, on the main thread
-    return None
+    global pending
+    while True:                    # take everything that landed this tick
+        try:
+            ok, value = results.get_nowait()
+        except queue.Empty:
+            break
+        pending -= 1
+        if ok:
+            apply_to_scene(value)  # bpy, on the main thread
+        else:
+            print(f"download failed: {value!r}")
+    return 0.1 if pending else None  # stop only when every job is in
 
-threading.Thread(target=worker, args=(URL,), daemon=True).start()
-bpy.app.timers.register(drain, first_interval=0.1)
+def start(url):
+    global pending
+    pending += 1
+    threading.Thread(target=worker, args=(url,), daemon=True).start()
+    if not bpy.app.timers.is_registered(drain):
+        bpy.app.timers.register(drain, first_interval=0.1)
 ```
 
-Measured: the drain timer ran with `threading.current_thread() is threading.main_thread()` true, and created a mesh from the worker's result. Use `daemon=True` so a hung worker cannot keep Blender from quitting. For network work, check `bpy.app.online_access` first (see `extension-runtime-and-packaging`).
+Two traps in the one-shot version (`get_nowait()` once, then `return None`):
+
+- **Stranded results.** With two jobs in flight, the drain stops after the first result and the second sits in the queue with no timer to read it. Measured: with the drain returning `None` after one result, one of two results was applied. Count pending jobs and unregister only at 0.
+- **Endless polling.** A worker whose job raises dies without `put()`. Measured: the pending count stayed at 1 and the drain was still registered seconds later, and no error was reported anywhere but the thread's traceback. Wrap the job and put the exception, so the main thread can report it.
+
+Measured with three concurrent jobs, one raising `ValueError`: both results were applied, the error was reported, the pending count reached 0, and the drain unregistered itself. Every result was handled on the script's main-thread `threading.get_ident()`, which no worker shared. Compare idents to prove that: `threading.current_thread() is threading.main_thread()` checked inside a timer is always true, because timers only run on the main thread. Use `daemon=True` so a hung worker cannot keep Blender from quitting. For network work, check `bpy.app.online_access` first (see `extension-runtime-and-packaging`).
 
 ## Modal operators: `event_timer_add` plus `modal()`
 
@@ -143,7 +161,7 @@ The behaviour above was measured identically on 4.5 LTS, 5.1 and 5.2 LTS. The on
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
-- [`timers-modal-threading`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading): Proves the event-loop contracts behind long-running add-on work. Falsify: `--return-zero-once` (exit 5).
+- [`timers-modal-threading`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading): Proves the event-loop contracts behind long-running add-on work. Falsify: `--windowed-background-child` (exit 3).
 
 <!-- examples:end -->
 

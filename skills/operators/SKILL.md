@@ -219,7 +219,7 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`prop-origin-transform`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform): Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow. Falsify: `--skip-mpi` (exit 8).
 - [`temp-override-join`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join): Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form. Falsify: `--no-override` (exit 3).
-- [`timers-modal-threading`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading): Proves the event-loop contracts behind long-running add-on work. Falsify: `--return-zero-once` (exit 5).
+- [`timers-modal-threading`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading): Proves the event-loop contracts behind long-running add-on work. Falsify: `--windowed-background-child` (exit 3).
 
 <!-- examples:end -->
 
