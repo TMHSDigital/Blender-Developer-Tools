@@ -78,13 +78,14 @@ against it. `10` is the shared framing helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also an active object existed after the data-API build |
+| 2 | argparse / usage |
 | 3 | Custom ID property did not land |
 | 4 | `property_unset` on a custom ID key did not TypeError, or it deleted the key |
 | 5 | `del` did not report removal |
 | 6 | Keep lamp lost the ID property |
 | 7 | Clear lamp still has the ID property (`--skip-delete` / `--unset-instead` land here) |
 | 8 | Registered-prop contract broke: attribute/`property_unset` failed, the prop sits on the wrong side of the 5.0 ID-property split, or `scene["name"]` raised `KeyError` (`--subscript-registered` on 5.0+; exits 0 on 4.5, where subscript access still works) |
+| 9 | An active object existed after the data-API build (checked first) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 

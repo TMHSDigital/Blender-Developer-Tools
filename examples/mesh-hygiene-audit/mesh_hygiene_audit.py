@@ -700,8 +700,7 @@ def main():
     if args.inject:
         target = bpy.data.objects.get(args.inject_part)
         if target is None or target not in parts:
-            print(f"ERROR: no part named {args.inject_part!r}", file=sys.stderr)
-            return 2
+            p.error(f"no part named {args.inject_part!r}")  # argparse's usage exit, 2
         inject_defect(target.data, args.inject)
         print(f"injected {args.inject} into {args.inject_part}")
     code = check_valve(parts)

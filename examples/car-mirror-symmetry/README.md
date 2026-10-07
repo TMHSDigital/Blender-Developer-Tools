@@ -124,15 +124,15 @@ against it.
 | 7 | Evaluated Euler characteristic ≠ 2 |
 | 8 | Non-manifold edges in the evaluated shell |
 | 9 | Evaluated verts lack a mirrored partner |
-| 10 | Mirror partner deviation above tolerance |
-| 11 | Evaluated bbox not symmetric about X |
+| 10 | Gallery framing violation (`--output` path only; `gallery_framing`) |
+| 11 | Asset-quality floor violation (`--output` path only; `gallery_asset_quality`) |
 | 12 | Mirrored-part origin off the plane |
 | 13 | Mirrored-part datablock is not the authored half (verts, faces, on-plane verts) |
 | 14 | Mirrored-part evaluated counts ≠ `2n − weld` / `2f`, or on-plane verts ≠ weld |
 | 15 | Mirrored-part partner check failed |
 | 16 | Mirrored-part evaluated mesh stayed on one side |
-| 17 | Gallery framing violation (`--output` path only; `gallery_framing` returns 10, remapped) |
-| 18 | Asset-quality floor violation (`--output` path only; `gallery_asset_quality` returns 11, remapped) |
+| 17 | Mirror partner deviation above tolerance |
+| 18 | Evaluated bbox not symmetric about X |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

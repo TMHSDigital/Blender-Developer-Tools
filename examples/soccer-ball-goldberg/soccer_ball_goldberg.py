@@ -40,7 +40,6 @@ TOL_RADIUS = 3.0e-5         # circumsphere uniformity
 TOL_CENTER = 1.0e-6         # centroid at origin
 SEAM_WIDTH = 0.018          # render only: stitched seam width on the ball
 SEAM_LIFT = 0.002           # render only: seam sits this far proud of the ball
-FRAMING_EXIT = 14           # render only: gallery_framing returns 10, taken here
 TURF_SIZE = (16.0, 14.0)    # render only: pitch turf footprint (x, y)
 TURF_H = 0.22               # render only: sod sample thickness
 TURF_STRIPE = 0.6           # render only: mowing stripe width
@@ -254,7 +253,7 @@ def check(obj):
     if center_off > TOL_CENTER:
         print(f"ERROR: centroid off origin by {center_off:.3e} (tol {TOL_CENTER:.1e})",
               file=sys.stderr)
-        return 10
+        return 14
     radii = [math.sqrt((v.co.x - cx) ** 2 + (v.co.y - cy) ** 2 + (v.co.z - cz) ** 2)
              for v in me.vertices]
     r_mean = sum(radii) / len(radii)
@@ -262,7 +261,7 @@ def check(obj):
     if r_dev > TOL_RADIUS:
         print(f"ERROR: circumradius deviates {r_dev:.3e} from {r_mean:.6f} "
               f"(tol {TOL_RADIUS:.1e}) — vertices not on one sphere", file=sys.stderr)
-        return 11
+        return 15
 
     if len(me.materials) != 2:
         print(f"ERROR: expected 2 panel materials, found {len(me.materials)}",
@@ -567,7 +566,7 @@ def render_still(obj, path, engine):
     scene.view_settings.view_transform = 'Standard'
     if gallery_framing.check_framing(scene, cam, hero=[obj], elements=[obj],
                                      stage=[floor, wall, turf]):
-        return FRAMING_EXIT
+        return gallery_framing.EXIT_FRAMING
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)

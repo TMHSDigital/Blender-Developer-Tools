@@ -18,9 +18,10 @@ shares the same group datablock (users == number of mugs), each instance
 points at that tree, and the instance-level Tint values are pairwise
 distinct — the whole point of grouping.
 
-``--same-tint`` copies the first mug's Tint onto every instance and still
-asserts the values differ. That is the falsifier (``--same-axis`` in
-export-preset-axis).
+``--same-tint`` copies the first mug's Tint onto every instance. That is the
+falsifier: a tiny Cycles probe render of the five mugs (a throwaway scene,
+so the still is untouched) finds the glazes no longer distinct and exits 8,
+before the socket-value comparison runs.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -29,8 +30,9 @@ check. Pass --output to also render a still:
     blender --background --python shader_node_group.py -- --same-tint     # must fail
     blender --background --python shader_node_group.py -- --output m.png  # + render
 """
-import bpy, bmesh, sys, os, math, argparse
+import bpy, bmesh, sys, os, math, argparse, shutil, tempfile
 from mathutils import Vector
+from bpy_extras.object_utils import world_to_camera_view
 
 # Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -255,12 +257,103 @@ def check(tree, objs):
             print(f"ERROR: {obj.name} instance points at a different tree", file=sys.stderr)
             return 5
         tints.append(tuple(round(c, 3) for c in node.inputs["Tint"].default_value))
+
+    # The behavioral contract: the shared group renders a different glaze per
+    # instance. `--same-tint` lands here on rendered pixels (exit 8); the
+    # socket read-back below runs after it as a diagnostic (#469).
+    code = check_rendered_tints(objs)
+    if code:
+        return code
+
     if len(set(tints)) != len(tints):
         print(f"ERROR: instance Tint values not pairwise distinct {tints} — parameters "
               "leaked into the group instead of the instance", file=sys.stderr)
         return 6
 
     print(f"group={tree.name} users={tree.users} instance_tints={tints}")
+    return 0
+
+
+# Rendered-tint probe: a throwaway scene holding the same mug objects, so the
+# main scene (and the --output still) is untouched. Flat white world, ortho
+# front camera, a tiny Cycles render; each mug's glazed upper body is sampled.
+PROBE_W, PROBE_H = 240, 80
+PROBE_SAMPLES = 16
+PROBE_Z = 0.62            # local height on the glazed wall, below the rim break
+PROBE_HALF = 2            # sample a (2*PROBE_HALF+1)^2 pixel patch
+MIN_TINT_SEP = 0.04       # min pairwise max-channel distance between mugs
+
+
+def check_rendered_tints(objs):
+    probe = bpy.data.scenes.new("TintProbe")
+    world = bpy.data.worlds.new("TintProbeWorld")
+    world.use_nodes = True
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
+    probe.world = world
+    for obj in objs:
+        probe.collection.objects.link(obj)
+    cam_data = bpy.data.cameras.new("TintProbeCam")
+    cam_data.type = 'ORTHO'
+    cam_data.ortho_scale = 5.6
+    cam = bpy.data.objects.new("TintProbeCam", cam_data)
+    cam.location = (0.0, -8.0, 0.75)
+    cam.rotation_euler = (math.radians(90.0), 0.0, 0.0)
+    probe.collection.objects.link(cam)
+    probe.camera = cam
+    r = probe.render
+    r.engine = 'CYCLES'
+    probe.cycles.samples = PROBE_SAMPLES
+    probe.cycles.use_denoising = False
+    r.resolution_x, r.resolution_y, r.resolution_percentage = PROBE_W, PROBE_H, 100
+    r.image_settings.file_format = 'PNG'
+    probe.view_settings.view_transform = 'Standard'
+    tmp = tempfile.mkdtemp(prefix="shader_node_group_")
+    path = os.path.join(tmp, "tints.png")
+    r.filepath = path
+    try:
+        bpy.ops.render.render(write_still=True, scene=probe.name)
+        probe.view_layers[0].update()  # the probe camera's matrix_world is stale until evaluated
+        if not (os.path.exists(path) and os.path.getsize(path) > 0):
+            print("ERROR: tint probe render produced no file", file=sys.stderr)
+            return 8
+        img = bpy.data.images.load(path)
+        try:
+            w, h = img.size
+            px = img.pixels[:]
+            means = []
+            for obj in objs:
+                co = obj.matrix_basis @ Vector((0.0, 0.0, PROBE_Z))
+                ndc = world_to_camera_view(probe, cam, co)
+                cx, cy = int(ndc.x * w), int(ndc.y * h)
+                acc = [0.0, 0.0, 0.0]
+                n = 0
+                for y in range(cy - PROBE_HALF, cy + PROBE_HALF + 1):
+                    for x in range(cx - PROBE_HALF, cx + PROBE_HALF + 1):
+                        i = (max(0, min(h - 1, y)) * w + max(0, min(w - 1, x))) * 4
+                        for c in range(3):
+                            acc[c] += px[i + c]
+                        n += 1
+                means.append(tuple(a / n for a in acc))
+        finally:
+            bpy.data.images.remove(img)
+    finally:
+        bpy.data.scenes.remove(probe)
+        bpy.data.objects.remove(cam)
+        bpy.data.cameras.remove(cam_data)
+        bpy.data.worlds.remove(world)
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    sep = min(
+        max(abs(a[c] - b[c]) for c in range(3))
+        for i, a in enumerate(means) for b in means[i + 1:]
+    )
+    shown = ", ".join("(" + ",".join(f"{v:.3f}" for v in m) + ")" for m in means)
+    print(f"rendered_tints={shown} min_pairwise_sep={sep:.3f} (gate>={MIN_TINT_SEP})")
+    if sep < MIN_TINT_SEP:
+        print(f"ERROR: rendered mug glazes not distinct (min pairwise {sep:.3f} < "
+              f"{MIN_TINT_SEP}) — the instances do not carry their own Tint",
+              file=sys.stderr)
+        return 8
     return 0
 
 
@@ -383,7 +476,7 @@ def main():
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--same-tint", action="store_true",
-                   help="falsifier: identical instance Tints, still assert they differ")
+                   help="falsifier: identical instance Tints; the rendered probe must fail")
     args = p.parse_args(argv)
 
     tree, objs = build_scene(same_tint=args.same_tint)

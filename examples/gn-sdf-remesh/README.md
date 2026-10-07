@@ -36,6 +36,9 @@ blender --background --python gn_sdf_remesh.py --
 # Falsifier: no SDF modifier. Must exit non-zero (evaluated == base).
 blender --background --python gn_sdf_remesh.py -- --no-sdf
 
+# Falsifier: no Set Material node in the tree. Must exit non-zero (exit 6).
+blender --background --python gn_sdf_remesh.py -- --no-set-material
+
 # Also render the remeshed result (EEVEE on a GPU host; --engine cycles on GPU-less hosts):
 blender --background --python gn_sdf_remesh.py -- --output remesh.png
 blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine cycles
@@ -54,9 +57,9 @@ against it.
 | 3 | SDF remesh produced no/unchanged geometry (`--no-sdf` lands here) |
 | 4 | `--output` produced no file |
 | 5 | Wrong-era EEVEE engine id was accepted |
-| 6 | Input material dropped by remesh |
+| 6 | Input material dropped by remesh (`--no-set-material` lands here) |
 | 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--no-sdf` (expects exit 3).
+Smoke does not pass `--output`. Its catalog falsifiers are `--no-sdf` (expects exit 3) and `--no-set-material` (expects exit 6).

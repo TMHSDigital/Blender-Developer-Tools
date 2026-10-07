@@ -205,9 +205,9 @@ Almost everything you want to do with materials has a `bpy.data` path. The two n
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
-- [`shader-node-group`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shader-node-group): One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors. Falsify: `--same-tint` (exit 6).
-- [`sky-texture-sun-elevation`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation): World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. Falsify: `--unlink-sky` (exit 6).
-- [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--same-base` (exit 3).
+- [`shader-node-group`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shader-node-group): One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors. Falsify: `--same-tint` (exit 8).
+- [`sky-texture-sun-elevation`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation): World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. Falsify: `--unlink-sky` (exit 7).
+- [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--same-base` (exit 6).
 
 <!-- examples:end -->
 

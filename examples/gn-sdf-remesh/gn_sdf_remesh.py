@@ -12,6 +12,7 @@ both builds.
 
     blender --background --python gn_sdf_remesh.py --                  # correctness check only
     blender --background --python gn_sdf_remesh.py -- --no-sdf         # must fail
+    blender --background --python gn_sdf_remesh.py -- --no-set-material  # must fail (exit 6)
     blender --background --python gn_sdf_remesh.py -- --output r.png   # also render the result
     blender --background --python gn_sdf_remesh.py -- --output r.png --engine cycles  # GPU-less
 """
@@ -250,6 +251,8 @@ def main():
     p.add_argument("--engine", choices=["auto", "cycles"], default="auto")
     p.add_argument("--no-sdf", action="store_true",
                    help="skip attaching the SDF remesh modifier (must fail)")
+    p.add_argument("--no-set-material", action="store_true",
+                   help="build the tree without the Set Material node (must fail, exit 6)")
     args = p.parse_args(argv)
 
     # EEVEE-id inversion witnessed for real: the OTHER era's id must be
@@ -266,7 +269,8 @@ def main():
     obj = build()
     base = len(obj.data.vertices)
     src_mat = obj.data.materials[0] if obj.data.materials else None
-    tree, link_valid = build_remesh_via_sdf(material=src_mat)
+    tree, link_valid = build_remesh_via_sdf(
+        material=None if args.no_set_material else src_mat)
     if not args.no_sdf:
         obj.modifiers.new("sdf", 'NODES').node_group = tree
     dg = bpy.context.evaluated_depsgraph_get(); ev = obj.evaluated_get(dg)

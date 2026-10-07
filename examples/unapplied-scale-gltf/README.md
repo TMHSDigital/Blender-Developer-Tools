@@ -86,9 +86,10 @@ against it.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+| 2 | argparse / usage |
 | 3 | Pathology missing: unapplied non-uniform scale (`--identity` lands here) |
 | 4 | Export handling failed (`--bake` lands here) |
+| 5 | Exporter RNA missing expected glTF kwargs (checked first) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

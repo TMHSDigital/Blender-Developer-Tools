@@ -17,9 +17,10 @@ constantly:
   the ring silhouette, falls off strictly with distance, and vanishes entirely
   when `scene.render.use_compositing` is off.
 
-``--threshold-high`` sets the shared ``Threshold`` input to 10.0 and still
-asserts it equals 1.0. That is the falsifier (``--same-axis`` in
-export-preset-axis). The 4.x/5.x Type-menu shim is untouched.
+``--threshold-high`` sets the shared ``Threshold`` input to 1000.0, above the brightest ring's
+emission (18). That is the falsifier: nothing re-reads the socket, so the
+rings stop blooming and the halo pixel check exits 4. The 4.x/5.x Type-menu
+shim is untouched.
 
 By default it runs only the correctness check (two 96x54 single-sample Cycles
 renders, compositor on vs off) — the CI smoke check. Pass --output to also
@@ -187,9 +188,8 @@ def check_structure(scene, tree, glare):
         if not (glare.glare_type == 'FOG_GLOW' and glare.quality == 'HIGH' and glare.size == 6):
             print("ERROR: 4.x Glare legacy properties not as configured", file=sys.stderr)
             return 3
-    if glare.inputs['Threshold'].default_value != 1.0:
-        print("ERROR: Glare Threshold input != 1.0", file=sys.stderr)
-        return 3
+    # No Threshold read-back: `--threshold-high` must be caught by the halo
+    # pixels in check_pixels, not by re-reading the value it just wrote (#469).
     if not link_chain_ok(tree, glare, out_node):
         print("ERROR: Render Layers -> Glare -> output link chain broken", file=sys.stderr)
         return 3
@@ -363,12 +363,12 @@ def main():
     p.add_argument("--samples", type=int, default=32, help="--output sample count")
     p.add_argument("--width", type=int, default=1280, help="--output width; height is width*9/16")
     p.add_argument("--threshold-high", action="store_true",
-                   help="falsifier: Threshold=10.0, still assert Threshold==1.0")
+                   help="falsifier: Threshold=1000.0 (above every ring's emission); the halo pixel check must fail")
     args = p.parse_args(argv)
 
     scene, tree, glare = build_scene()
     if args.threshold_high:
-        glare.inputs['Threshold'].default_value = 10.0
+        glare.inputs['Threshold'].default_value = 1000.0
 
     code = check_structure(scene, tree, glare)
     if code:

@@ -68,7 +68,7 @@
 <pre tabindex="0"><code># Cheap correctness check (two tiny renders) — the CI check:
 blender --background --python compositor_glare.py --
 
-# Falsifier: Threshold=10.0. Must exit non-zero (Threshold==1.0).
+# Falsifier: Threshold=1000.0, above the brightest ring (18). Must exit non-zero (no halo pixels, exit 4).
 blender --background --python compositor_glare.py -- --threshold-high
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -76,8 +76,8 @@ blender --background --python compositor_glare.py -- --output rings.png
 blender --background --python compositor_glare.py -- --output rings.png --engine cycles</code></pre>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Compositor tree / Glare / Threshold / link-chain contract (<code>--threshold-high</code> lands here)</td></tr><tr><td>4</td><td>Check render missing, tube dark, no halo, or halo does not fall off</td></tr><tr><td>5</td><td>Halo present with compositing off</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (render path; checked before the beauty render)</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>. Its catalog falsifier is <code>--threshold-high</code> (expects exit 3).</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Compositor tree / Glare / link-chain contract</td></tr><tr><td>4</td><td>Check render missing, tube dark, no halo, or halo does not fall off (<code>--threshold-high</code> lands here)</td></tr><tr><td>5</td><td>Halo present with compositing off</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (render path; checked before the beauty render)</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>. Its catalog falsifier is <code>--threshold-high</code> (expects exit 4).</p>
     </section>
     <section class="detail-section src" id="source">
       <h2>Source</h2>

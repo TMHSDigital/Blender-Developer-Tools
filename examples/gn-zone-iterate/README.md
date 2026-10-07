@@ -59,11 +59,12 @@ against it. `10` is the shared framing helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also carrier mesh was rewritten |
+| 2 | argparse / usage |
 | 3 | Repeat evaluated vert/face count off closed form |
 | 4 | Repeat X-centers off closed form |
 | 5 | For Each evaluated vert/face count off closed form |
 | 6 | For Each Z-centers off closed form |
+| 7 | Carrier mesh was rewritten (checked first) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 

@@ -95,8 +95,9 @@ code. `11` is the shared asset-quality helper.
 | 7 | Pose damaged by pruning, or evaluated vert count changed |
 | 8 | Evaluated mesh off LBS over limited weights |
 | 9 | Root-weighted mount moved |
-| 10 | Gallery framing violation; also `--output` produced no file |
+| 10 | Gallery framing violation (`--output` only; `gallery_framing`) |
 | 11 | Asset-quality floor violation (`--output` only) |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

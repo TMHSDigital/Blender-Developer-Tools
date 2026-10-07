@@ -128,7 +128,7 @@ def check(ob, weld):
     missing = [k for k in EXPORT_KWARGS if k not in props]
     if missing:
         print(f"ERROR: exporter RNA drifted, missing {missing}", file=sys.stderr)
-        return 2
+        return 5
     me = ob.data
     uniq = unique_count(me)
     valence = edge_valence(me)

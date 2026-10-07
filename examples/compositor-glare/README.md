@@ -29,7 +29,7 @@ absence of any EEVEE bloom toggle.
 # Cheap correctness check (two tiny renders) — the CI check:
 blender --background --python compositor_glare.py --
 
-# Falsifier: Threshold=10.0. Must exit non-zero (Threshold==1.0).
+# Falsifier: Threshold=1000.0, above the brightest ring (18). Must exit non-zero (no halo pixels, exit 4).
 blender --background --python compositor_glare.py -- --threshold-high
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -47,12 +47,12 @@ against it.
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Compositor tree / Glare / Threshold / link-chain contract (`--threshold-high` lands here) |
-| 4 | Check render missing, tube dark, no halo, or halo does not fall off |
+| 3 | Compositor tree / Glare / link-chain contract |
+| 4 | Check render missing, tube dark, no halo, or halo does not fall off (`--threshold-high` lands here) |
 | 5 | Halo present with compositing off |
 | 6 | `--output` produced no file |
 | 10 | Gallery framing violation (render path; checked before the beauty render) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--threshold-high` (expects exit 3).
+Smoke does not pass `--output`. Its catalog falsifier is `--threshold-high` (expects exit 4).

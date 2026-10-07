@@ -128,12 +128,12 @@ def main():
             bpy.app.handlers.exit_pre.append(on_exit_write)
         except AttributeError as exc:
             print(f"ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
-            return 2
+            return 3
         print("ERROR: exit_pre existed on this Blender; 4.5 should AttributeError", file=sys.stderr)
-        return 2
+        return 4
 
     if sidecar_path() is None:
-        return 1
+        return 5
 
     if args.write_in_main:
         write_sidecar(MAIN_MARKER)

@@ -238,7 +238,7 @@ def build(repeat_n, foreach_p, pair_repeat, pair_foreach, offset_repeat, foreach
 def check(rpt, fee, expect_n, expect_p):
     if len(rpt.data.vertices) != 1 or len(fee.data.vertices) != 1:
         print("ERROR: carrier mesh was rewritten; zones must not apply in-place", file=sys.stderr)
-        return 2
+        return 7
 
     r_coords, r_faces = eval_mesh(rpt)
     f_coords, f_faces = eval_mesh(fee)

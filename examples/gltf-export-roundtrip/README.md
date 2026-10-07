@@ -70,8 +70,8 @@ roughness. The exported file only ever carried the flat Principled values.
 
 The render path gates framing through `gallery_framing.check_framing` and the
 asset floors through `gallery_asset_quality.check_asset_quality` on the
-authored crate. Both helpers' codes (10, 11) are already check codes here, so
-the call site remaps them to 22 and 23.
+authored crate. Both return their reserved codes (10, 11) directly; the
+POSITION-count and UV V-flip checks use 22 and 23.
 
 ## Run
 
@@ -104,8 +104,8 @@ against it.
 | 7 | On-disk node/mesh/generator contract drifted |
 | 8 | On-disk primitive/material binding count drifted |
 | 9 | On-disk POSITION bounds ≠ axis-converted bbox (`--no-yup` lands here) |
-| 10 | On-disk POSITION count ≠ evaluated loop count |
-| 11 | On-disk UV V-flip failed |
+| 10 | Gallery framing violation (render path only; `gallery_framing`) |
+| 11 | Gallery asset-quality violation (render path only; `gallery_asset_quality`) |
 | 12 | Re-import did not produce exactly one mesh |
 | 13 | Re-imported object carries a transform |
 | 14 | Material names drifted on re-import |
@@ -116,8 +116,8 @@ against it.
 | 19 | Re-import triangle count drifted |
 | 20 | Per-triangle material bindings drifted |
 | 21 | `--output` produced no file |
-| 22 | Gallery framing violation (render path only; the helper's 10, remapped) |
-| 23 | Gallery asset-quality violation (render path only; the helper's 11, remapped) |
+| 22 | On-disk POSITION count ≠ evaluated loop count |
+| 23 | On-disk UV V-flip failed |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

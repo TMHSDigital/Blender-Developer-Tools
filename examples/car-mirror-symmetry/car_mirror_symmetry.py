@@ -529,14 +529,14 @@ def check(objs, no_mirror=False):
     if dev > TOL_SYMM:
         print(f"ERROR: mirror partner deviation {dev:.3e} > tol {TOL_SYMM:.1e}",
               file=sys.stderr)
-        return 10
+        return 17
     xmin = min(v.x for v in verts)
     xmax = max(v.x for v in verts)
     bbox_asym = abs(xmin + xmax)
     if bbox_asym > TOL_BBOX:
         print(f"ERROR: evaluated bbox asymmetric by {bbox_asym:.3e} "
               f"(tol {TOL_BBOX:.1e})", file=sys.stderr)
-        return 11
+        return 18
 
     # 4. mirrored parts (wheels, lamps, grille, mirrors, handles): each mirrored
     # about an object origin that sits ON the plane — the data is offset,
@@ -850,10 +850,10 @@ def render_still(objs, path, engine):
 
     if gallery_framing.check_framing(scene, cam, hero=parts, elements=parts,
                                      stage=[floor, wall]):
-        return 17   # the helper's 10, remapped: 10 is the partner-deviation check
+        return gallery_framing.EXIT_FRAMING
     if gallery_asset_quality.check_asset_quality(scene, cam, hero=parts,
                                                  stage=[floor, wall]):
-        return 18   # the helper's 11, remapped: 11 is the bbox check
+        return gallery_asset_quality.EXIT_ASSET_QUALITY
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)

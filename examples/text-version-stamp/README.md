@@ -66,7 +66,7 @@ against it. `10` is the shared framing helper.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Not a FONT `TextCurve` with the built-in Bfont |
-| 4 | `body` is not the live `version_string` (`--wrong-body` lands here) |
+| 4 | Evaluated glyph mesh does not match a reference `TextCurve` of the live `version_string` (`--wrong-body` lands here) |
 | 5 | Flat text is not a filled planar mesh |
 | 6 | Extrude / bevel closed form failed |
 | 7 | Appending characters did not widen the text |
@@ -74,6 +74,7 @@ against it. `10` is the shared framing helper.
 | 9 | `--output` produced no file |
 | 10 | Gallery framing violation |
 | 13 | `--output`: bundled `datafiles/fonts/Inter.woff2` not found |
+| 14 | `version_string` does not start with the dotted `bpy.app.version` tuple |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

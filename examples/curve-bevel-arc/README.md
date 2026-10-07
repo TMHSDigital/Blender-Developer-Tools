@@ -6,9 +6,9 @@ curve data API — `splines.new('BEZIER')`, per-point `bezier_points`,
 a prior mesh conversion.
 
 **What it witnesses:** renderable curve tubes are curve datablocks, not meshes.
-The check asserts eight Bezier points, `bevel_depth == 0.15`, `use_fill_caps`,
-and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts,
-1028 faces for these resolution settings) with a Z span that rests on the floor
+The check asserts eight Bezier points and `bevel_depth == 0.15`, then that the
+depsgraph-evaluated mesh has the deterministic topology (1044 verts, 1028 faces
+for these resolution settings, the `use_fill_caps` cap faces included) with a Z span that rests on the floor
 (`[0, 2 × bevel]`) and an X span of `2 × radius + 2 × bevel`.
 
 Staging: the checked curve is presented as what a capped, beveled Bezier
@@ -32,7 +32,7 @@ runs before any staging.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python curve_bevel_arc.py --
 
-# Falsifier: uncapped tube. Must exit non-zero (use_fill_caps).
+# Falsifier: uncapped tube. Must exit non-zero (cap faces missing from the evaluated mesh).
 blender --background --python curve_bevel_arc.py -- --no-caps
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -53,13 +53,14 @@ against it. `10` is also the shared framing helper.
 | 3 | Spline type is not BEZIER |
 | 4 | Bezier point count ≠ 8 |
 | 5 | `bevel_depth` ≠ 0.15 |
-| 6 | `use_fill_caps` is False (`--no-caps` lands here) |
-| 7 | Evaluated vert/face count off measured tessellation |
+| 7 | Evaluated vert/face count off measured tessellation (`--no-caps` lands here: the caps are faces) |
 | 8 | Tube does not rest on the floor |
 | 9 | Tube height ≠ 2 × bevel |
-| 10 | X span off closed form; also gallery framing violation |
-| 11 | `--output` produced no file; also asset-quality floor violation (`gallery_asset_quality`) |
+| 10 | Gallery framing violation (render path) |
+| 11 | Asset-quality floor violation (`gallery_asset_quality`, render path) |
+| 12 | X span off closed form |
+| 13 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--no-caps` (expects exit 6).
+Smoke does not pass `--output`. Its catalog falsifier is `--no-caps` (expects exit 7).

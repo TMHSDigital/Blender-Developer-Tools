@@ -585,7 +585,7 @@ def render_still(obj, path, engine):
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
-        return 10
+        return 12
     return 0
 
 
@@ -603,8 +603,7 @@ def main():
     obj, n_dome = build_buckler()
     if args.zero_uv:
         uv = obj.data.uv_layers["UVMap"]
-        for loop in uv.data:
-            loop.uv = (0.0, 0.0)
+        uv.data.foreach_set("uv", [0.0] * (2 * len(uv.data)))
     code = check(obj, n_dome)
     if code:
         return code

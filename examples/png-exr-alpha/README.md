@@ -82,7 +82,7 @@ against it. `10` is also the shared framing helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also closed-form palette no longer stresses unpremul |
+| 2 | argparse / usage |
 | 3 | `float_buffer=True` image reports `is_float=False` |
 | 4 | Float→PNG IHDR is not RGBA16 |
 | 5 | Float→PNG RGB error below floor (`--opaque-alpha` lands here) |
@@ -90,10 +90,12 @@ against it. `10` is also the shared framing helper.
 | 7 | Float→EXR round-trip above tolerance |
 | 8 | `float_buffer=False` image reports `is_float=True` |
 | 9 | Byte→PNG IHDR is not RGBA8 |
-| 10 | Byte→PNG disagrees with straight-alpha 8-bit model; also gallery framing violation |
-| 11 | Byte→PNG stress cell looks false-unpremul-mangled |
+| 10 | Gallery framing violation (`--output` only; `gallery_framing`) |
 | 12 | EXR `color_mode=RGB` alpha-drop contract |
 | 13 | `--output` produced no file |
+| 14 | Closed-form palette no longer stresses unpremul (checked first) |
+| 15 | Byte→PNG disagrees with straight-alpha 8-bit model |
+| 16 | Byte→PNG stress cell looks false-unpremul-mangled |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

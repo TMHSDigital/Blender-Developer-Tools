@@ -116,8 +116,9 @@ helper.
 | 7 | SAT overlap self-test failed, or UV1 triangle pairs overlap (`--overlap-islands` lands here) |
 | 8 | Min island distance below margin |
 | 9 | Part is not watertight |
-| 10 | Gallery framing violation; also `--output` produced no file |
+| 10 | Gallery framing violation (`--output` only; `gallery_framing`) |
 | 11 | Gallery asset-quality violation |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

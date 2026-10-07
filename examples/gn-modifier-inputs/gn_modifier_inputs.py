@@ -17,9 +17,9 @@ the replacement is ``mod.properties.inputs.<identifier>.value``.
 ``--api dict`` / ``--api rna`` force one side of the 5.1/5.2 split — they
 fail on the *other* series, not on every binary. ``--same-height`` writes
 1.0 to every modifier and still asserts 1 / 2 / 3, so the second
-staircase's readback fails on all three. That is the portable falsifier
-(``--same-axis`` in export-preset-axis). ``--same-scale`` is kept as an
-alias for the pre-staircase flag name.
+staircase's evaluated Z-extent fails on all three (exit 8). That is the
+portable falsifier. ``--same-scale`` is kept as an alias for the
+pre-staircase flag name.
 
     blender --background --python gn_modifier_inputs.py --
     blender --background --python gn_modifier_inputs.py -- --same-height
@@ -408,13 +408,10 @@ def check(tree, objs, mods, api, same_height=False):
                 file=sys.stderr,
             )
             return 6
-        if abs(got - height) > READBACK_EPS:
-            print(
-                f"ERROR: readback {got} != written {height} on {obj.name}",
-                file=sys.stderr,
-            )
-            return 7
 
+        # The evaluated geometry is the contract; `--same-height` lands on it
+        # (exit 8). The readback comparison runs after it as a diagnostic, so
+        # deleting the extent check makes the falsifier fail (#469).
         zmin, zmax, nverts = evaluated_z_extent(obj)
         extent = zmax - zmin
         if abs(extent - height) > EXTENT_EPS:
@@ -431,6 +428,12 @@ def check(tree, objs, mods, api, same_height=False):
                 file=sys.stderr,
             )
             return 9
+        if abs(got - height) > READBACK_EPS:
+            print(
+                f"ERROR: readback {got} != written {height} on {obj.name}",
+                file=sys.stderr,
+            )
+            return 7
         print(
             f"{obj.name} height={height} readback={got:.6f} "
             f"z_extent={extent:.6f} zmin={zmin:.6f} verts={nverts}"
@@ -446,7 +449,7 @@ def check(tree, objs, mods, api, same_height=False):
             "per-modifier copies did not land",
             file=sys.stderr,
         )
-        return 11
+        return 13
     return 0
 
 

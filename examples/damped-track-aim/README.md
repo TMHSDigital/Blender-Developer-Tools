@@ -50,12 +50,12 @@ against it.
 | 4 | Lamp does not carry exactly one DAMPED_TRACK |
 | 5 | Constraint target is not Orb |
 | 6 | `track_axis` is not TRACK_Z |
-| 7 | Constraint muted or influence < 1 (`--mute` lands here) |
+| 7 | Constraint muted or influence < 1 while the evaluated aim still holds (diagnostic, after check 9) |
 | 8 | TRACK_TO still present |
-| 9 | Evaluated aim dot below 0.998 |
+| 9 | Evaluated aim dot below 0.998 (`--mute` lands here) |
 | 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
 | 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--mute` (expects exit 7).
+Smoke does not pass `--output`. Its catalog falsifier is `--mute` (expects exit 9).

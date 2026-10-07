@@ -29,10 +29,10 @@ often gets wrong.
 - **GPv3 address** matches `grease-pencil-rosette`: `grease_pencils_v3` on 4.5,
   `grease_pencils` on 5.x.
 
-**What each check catches on failure:** wrong GPv3 collection (exit 2),
+**What each check catches on failure:** wrong GPv3 collection (exit 9),
 `thickness` present/absent on the wrong side of 5.0 (exit 3), lost
-`source_object` assignment or `use_contour` (exit 4), drawing below the gates
-(exit 5), source clear not zeroing strokes (exit 6), flags-off not zeroing
+`source_object` assignment (exit 4), drawing below the gates
+(exit 5; `use_contour` off lands here), source clear not zeroing strokes (exit 6), flags-off not zeroing
 strokes or a rebuild not recovering the same counts (exit 7).
 
 **Version witness:** stroke counts match on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS
@@ -58,7 +58,7 @@ which is EEVEE-only, so `--engine cycles` does not render the look.
 # Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
 
-# Falsifier: use_contour off. Must exit non-zero.
+# Falsifier: use_contour off. Must exit non-zero (evaluated strokes below the gates, exit 5).
 blender --background --python gp_lineart_contour.py -- --no-contour
 
 # Also render the gallery still:
@@ -74,15 +74,16 @@ against it. `10` is the shared framing helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also GPv3 collection address contract |
+| 2 | argparse / usage |
 | 3 | LINEART `thickness` / `radius` trap for this Blender |
-| 4 | LINEART type, source, or `use_contour` (`--no-contour` lands here) |
-| 5 | Evaluated drawing below the stroke/point gates |
+| 4 | LINEART type or source |
+| 5 | Evaluated drawing below the stroke/point gates (`--no-contour` lands here) |
 | 6 | Cleared `source_object` still produced strokes |
 | 7 | Every edge type off still produced strokes, or the rebuild did not recover the same counts |
 | 8 | `--output` produced no file |
+| 9 | GPv3 collection address contract (checked first) |
 | 10 | Gallery framing violation |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--no-contour` (expects exit 4).
+Smoke does not pass `--output`. Its catalog falsifier is `--no-contour` (expects exit 5).

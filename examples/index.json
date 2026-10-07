@@ -196,15 +196,15 @@
       "7": "Evaluated Euler characteristic ≠ 2",
       "8": "Non-manifold edges in the evaluated shell",
       "9": "Evaluated verts lack a mirrored partner",
-      "10": "Mirror partner deviation above tolerance",
-      "11": "Evaluated bbox not symmetric about X",
+      "10": "Gallery framing violation (`--output` path only; `gallery_framing`)",
+      "11": "Asset-quality floor violation (`--output` path only; `gallery_asset_quality`)",
       "12": "Mirrored-part origin off the plane",
       "13": "Mirrored-part datablock is not the authored half (verts, faces, on-plane verts)",
       "14": "Mirrored-part evaluated counts ≠ `2n − weld` / `2f`, or on-plane verts ≠ weld",
       "15": "Mirrored-part partner check failed",
       "16": "Mirrored-part evaluated mesh stayed on one side",
-      "17": "Gallery framing violation (`--output` path only; `gallery_framing` returns 10, remapped)",
-      "18": "Asset-quality floor violation (`--output` path only; `gallery_asset_quality` returns 11, remapped)"
+      "17": "Mirror partner deviation above tolerance",
+      "18": "Evaluated bbox not symmetric about X"
     }
   },
   {
@@ -235,9 +235,10 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "2": "argparse / usage",
       "3": "Pathology missing: coincident shells (`--no-duplicate` lands here)",
-      "4": "glTF export handling failed (`--weld` lands here)"
+      "4": "glTF export handling failed (`--weld` lands here)",
+      "5": "Exporter RNA missing expected glTF kwargs (checked first)"
     }
   },
   {
@@ -291,7 +292,7 @@
         "args": [
           "--point-domain"
         ],
-        "expect_exit": 5
+        "expect_exit": 6
       }
     ],
     "exit_codes": {
@@ -300,8 +301,8 @@
       "2": "argparse / usage",
       "3": "Topology ≠ closed form",
       "4": "Color attribute missing",
-      "5": "Domain/type ≠ CORNER/FLOAT_COLOR (`--point-domain` lands here)",
-      "6": "Attribute sized to verts, not loops",
+      "5": "Domain/type ≠ CORNER/FLOAT_COLOR (diagnostic, checked last)",
+      "6": "Attribute sized to verts, not loops (`--point-domain` lands here)",
       "7": "`active_color` not set",
       "8": "Probe loop color off HSV closed form",
       "9": "`--output` produced no file",
@@ -322,15 +323,15 @@
         "args": [
           "--threshold-high"
         ],
-        "expect_exit": 3
+        "expect_exit": 4
       }
     ],
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
-      "3": "Compositor tree / Glare / Threshold / link-chain contract (`--threshold-high` lands here)",
-      "4": "Check render missing, tube dark, no halo, or halo does not fall off",
+      "3": "Compositor tree / Glare / link-chain contract",
+      "4": "Check render missing, tube dark, no halo, or halo does not fall off (`--threshold-high` lands here)",
       "5": "Halo present with compositing off",
       "6": "`--output` produced no file",
       "10": "Gallery framing violation (render path; checked before the beauty render)"
@@ -371,13 +372,14 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also an active object existed after the data-API build",
+      "2": "argparse / usage",
       "3": "Custom ID property did not land",
       "4": "`property_unset` on a custom ID key did not TypeError, or it deleted the key",
       "5": "`del` did not report removal",
       "6": "Keep lamp lost the ID property",
       "7": "Clear lamp still has the ID property (`--skip-delete` / `--unset-instead` land here)",
       "8": "Registered-prop contract broke: attribute/`property_unset` failed, the prop sits on the wrong side of the 5.0 ID-property split, or `scene[\"name\"]` raised `KeyError` (`--subscript-registered` on 5.0+; exits 0 on 4.5, where subscript access still works)",
+      "9": "An active object existed after the data-API build (checked first)",
       "10": "Gallery framing violation",
       "12": "`--output` produced no file"
     }
@@ -396,7 +398,7 @@
         "args": [
           "--no-caps"
         ],
-        "expect_exit": 6
+        "expect_exit": 7
       }
     ],
     "exit_codes": {
@@ -406,12 +408,13 @@
       "3": "Spline type is not BEZIER",
       "4": "Bezier point count ≠ 8",
       "5": "`bevel_depth` ≠ 0.15",
-      "6": "`use_fill_caps` is False (`--no-caps` lands here)",
-      "7": "Evaluated vert/face count off measured tessellation",
+      "7": "Evaluated vert/face count off measured tessellation (`--no-caps` lands here: the caps are faces)",
       "8": "Tube does not rest on the floor",
       "9": "Tube height ≠ 2 × bevel",
-      "10": "X span off closed form; also gallery framing violation",
-      "11": "`--output` produced no file; also asset-quality floor violation (`gallery_asset_quality`)"
+      "10": "Gallery framing violation (render path)",
+      "11": "Asset-quality floor violation (`gallery_asset_quality`, render path)",
+      "12": "X span off closed form",
+      "13": "`--output` produced no file"
     }
   },
   {
@@ -462,7 +465,7 @@
         "args": [
           "--mute"
         ],
-        "expect_exit": 7
+        "expect_exit": 9
       }
     ],
     "exit_codes": {
@@ -473,9 +476,9 @@
       "4": "Lamp does not carry exactly one DAMPED_TRACK",
       "5": "Constraint target is not Orb",
       "6": "`track_axis` is not TRACK_Z",
-      "7": "Constraint muted or influence < 1 (`--mute` lands here)",
+      "7": "Constraint muted or influence < 1 while the evaluated aim still holds (diagnostic, after check 9)",
       "8": "TRACK_TO still present",
-      "9": "Evaluated aim dot below 0.998",
+      "9": "Evaluated aim dot below 0.998 (`--mute` lands here)",
       "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
       "12": "`--output` produced no file"
     }
@@ -671,8 +674,11 @@
     ],
     "exit_codes": {
       "0": "Success (including `--silent-handler` / `--no-handler` / `--wrong-text` / `--write-in-main` / `--atexit-instead`, which the harness then fails)",
-      "1": "Uncaught exception (FATAL wrapper); also `$BDT_SMOKE_SIDECAR` unset",
-      "2": "argparse / usage; also `--force-run` on Blender &lt; 5.1 (`exit_pre` missing or unexpectedly present)",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`--force-run` below 5.1: `exit_pre` is absent (`AttributeError`), the expected 4.5 outcome",
+      "4": "`--force-run` below 5.1: `exit_pre` unexpectedly present, so the 5.1 floor and the skip are wrong",
+      "5": "`$BDT_SMOKE_SIDECAR` unset (run outside the harness)",
       "77": "`SMOKE_SKIP:` `exit_pre` requires Blender 5.1+"
     }
   },
@@ -698,17 +704,19 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "2": "argparse / usage",
       "3": "Source mast is not Z-dominant, or tip drifted",
       "4": "glTF reimport produced no mesh",
       "5": "Preset disk POSITION is not `(x, z, -y)`, or preset node has rotation",
-      "6": "Z-up disk POSITION is not raw Z-up; also `--output` produced no file",
+      "6": "Z-up disk POSITION is not raw Z-up (checked after the re-import checks)",
       "7": "Preset reimport is not standing",
       "8": "Z-up reimport is not lying along Y, or reimported tip mismatch",
-      "9": "Reimported orientations did not differ (`--same-axis` lands here)",
-      "10": "Gallery framing violation",
-      "11": "`--same-axis` did not collapse the axis difference; also asset-quality floor violation (render path)",
-      "12": "Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured"
+      "9": "Reimported orientations did not differ (`--same-axis` lands here; checked right after the preset stands)",
+      "10": "Gallery framing violation (render path)",
+      "11": "Asset-quality floor violation (render path)",
+      "12": "Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured",
+      "13": "Exporter RNA missing expected glTF kwargs (checked first)",
+      "14": "`--output` produced no file"
     }
   },
   {
@@ -781,8 +789,8 @@
       "7": "On-disk node/mesh/generator contract drifted",
       "8": "On-disk primitive/material binding count drifted",
       "9": "On-disk POSITION bounds ≠ axis-converted bbox (`--no-yup` lands here)",
-      "10": "On-disk POSITION count ≠ evaluated loop count",
-      "11": "On-disk UV V-flip failed",
+      "10": "Gallery framing violation (render path only; `gallery_framing`)",
+      "11": "Gallery asset-quality violation (render path only; `gallery_asset_quality`)",
       "12": "Re-import did not produce exactly one mesh",
       "13": "Re-imported object carries a transform",
       "14": "Material names drifted on re-import",
@@ -793,8 +801,8 @@
       "19": "Re-import triangle count drifted",
       "20": "Per-triangle material bindings drifted",
       "21": "`--output` produced no file",
-      "22": "Gallery framing violation (render path only; the helper's 10, remapped)",
-      "23": "Gallery asset-quality violation (render path only; the helper's 11, remapped)"
+      "22": "On-disk POSITION count ≠ evaluated loop count",
+      "23": "On-disk UV V-flip failed"
     }
   },
   {
@@ -828,8 +836,8 @@
       "7": "Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch",
       "8": "Disk weight sums off 1.0",
       "9": "Disk verts exceed evaluated loops",
-      "10": "Armature count after import ≠ 1",
-      "11": "Bone count drifted",
+      "10": "Gallery framing violation (render path only; `gallery_framing`)",
+      "11": "Gallery asset-quality violation (render path only; `gallery_asset_quality`)",
       "12": "Named bone lost",
       "13": "Bone parent drifted",
       "14": "Rest matrices drifted",
@@ -838,7 +846,9 @@
       "17": "Vertex group names drifted",
       "18": "Weight round-trip drifted",
       "19": "Deformation round-trip drifted",
-      "20": "`--output` produced no file"
+      "20": "`--output` produced no file",
+      "21": "Armature count after import ≠ 1",
+      "22": "Bone count drifted"
     }
   },
   {
@@ -945,7 +955,7 @@
         "args": [
           "--same-height"
         ],
-        "expect_exit": 7
+        "expect_exit": 8
       },
       {
         "args": [
@@ -964,12 +974,12 @@
       "4": "Modifiers do not share one node_group",
       "5": "Version-path write raised (`--api dict` on 5.2, `--api rna` on 4.5)",
       "6": "Version-path read raised",
-      "7": "Readback ≠ intended height (`--same-height` lands here)",
-      "8": "Evaluated Z-extent ≠ intended height",
+      "7": "Readback ≠ intended height (diagnostic, after the evaluated checks)",
+      "8": "Evaluated Z-extent ≠ intended height (`--same-height` lands here)",
       "9": "Evaluated mesh not sitting on z=0",
       "10": "Gallery framing violation",
-      "11": "Evaluated extents not distinct",
-      "12": "`--output` produced no file"
+      "12": "`--output` produced no file",
+      "13": "Evaluated extents not distinct"
     }
   },
   {
@@ -989,6 +999,12 @@
           "--no-sdf"
         ],
         "expect_exit": 3
+      },
+      {
+        "args": [
+          "--no-set-material"
+        ],
+        "expect_exit": 6
       }
     ],
     "exit_codes": {
@@ -998,7 +1014,7 @@
       "3": "SDF remesh produced no/unchanged geometry (`--no-sdf` lands here)",
       "4": "`--output` produced no file",
       "5": "Wrong-era EEVEE engine id was accepted",
-      "6": "Input material dropped by remesh",
+      "6": "Input material dropped by remesh (`--no-set-material` lands here)",
       "10": "Framing gate violation on the `--output` path (`gallery_framing`)"
     }
   },
@@ -1125,11 +1141,12 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also carrier mesh was rewritten",
+      "2": "argparse / usage",
       "3": "Repeat evaluated vert/face count off closed form",
       "4": "Repeat X-centers off closed form",
       "5": "For Each evaluated vert/face count off closed form",
       "6": "For Each Z-centers off closed form",
+      "7": "Carrier mesh was rewritten (checked first)",
       "10": "Gallery framing violation",
       "12": "`--output` produced no file"
     }
@@ -1148,19 +1165,20 @@
         "args": [
           "--no-contour"
         ],
-        "expect_exit": 4
+        "expect_exit": 5
       }
     ],
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also GPv3 collection address contract",
+      "2": "argparse / usage",
       "3": "LINEART `thickness` / `radius` trap for this Blender",
-      "4": "LINEART type, source, or `use_contour` (`--no-contour` lands here)",
-      "5": "Evaluated drawing below the stroke/point gates",
+      "4": "LINEART type or source",
+      "5": "Evaluated drawing below the stroke/point gates (`--no-contour` lands here)",
       "6": "Cleared `source_object` still produced strokes",
       "7": "Every edge type off still produced strokes, or the rebuild did not recover the same counts",
       "8": "`--output` produced no file",
+      "9": "GPv3 collection address contract (checked first)",
       "10": "Gallery framing violation"
     }
   },
@@ -1273,7 +1291,7 @@
         "args": [
           "--skip-link"
         ],
-        "expect_exit": 5
+        "expect_exit": 6
       }
     ],
     "exit_codes": {
@@ -1282,8 +1300,7 @@
       "2": "argparse / usage",
       "3": "Light datablock gained `light_linking`",
       "4": "Light objects lost `light_linking`",
-      "5": "`receiver_collection` assignment did not read back (`--skip-link` lands here)",
-      "6": "Linked state: hero dark or hero/decoy ratio below gate",
+      "6": "Linked state: hero dark or hero/decoy ratio below gate (`--skip-link` lands here)",
       "7": "Decoy rise below gate when unlinked",
       "8": "Hero drifted across the unlink",
       "9": "`--output` produced no file",
@@ -1320,8 +1337,9 @@
       "7": "SAT overlap self-test failed, or UV1 triangle pairs overlap (`--overlap-islands` lands here)",
       "8": "Min island distance below margin",
       "9": "Part is not watertight",
-      "10": "Gallery framing violation; also `--output` produced no file",
-      "11": "Gallery asset-quality violation"
+      "10": "Gallery framing violation (`--output` only; `gallery_framing`)",
+      "11": "Gallery asset-quality violation",
+      "12": "`--output` produced no file"
     }
   },
   {
@@ -1457,8 +1475,9 @@
       "7": "Boundary edge count, non-manifold edges, or rim off the end planes",
       "8": "Detail part not watertight",
       "9": "Detail part reaches a tile boundary; also `--output` produced no file",
-      "10": "Framing deviation score exceeds cap (`--close-camera`)",
-      "11": "Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation"
+      "10": "Framing deviation score exceeds cap (`--close-camera`; `gallery_framing.measure_framing_deviation`)",
+      "11": "Gallery asset-quality violation (`--output` only)",
+      "12": "Kit part count, unapplied scale, namespace, or origin"
     }
   },
   {
@@ -1545,7 +1564,7 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also closed-form palette no longer stresses unpremul",
+      "2": "argparse / usage",
       "3": "`float_buffer=True` image reports `is_float=False`",
       "4": "Float→PNG IHDR is not RGBA16",
       "5": "Float→PNG RGB error below floor (`--opaque-alpha` lands here)",
@@ -1553,10 +1572,12 @@
       "7": "Float→EXR round-trip above tolerance",
       "8": "`float_buffer=False` image reports `is_float=True`",
       "9": "Byte→PNG IHDR is not RGBA8",
-      "10": "Byte→PNG disagrees with straight-alpha 8-bit model; also gallery framing violation",
-      "11": "Byte→PNG stress cell looks false-unpremul-mangled",
+      "10": "Gallery framing violation (`--output` only; `gallery_framing`)",
       "12": "EXR `color_mode=RGB` alpha-drop contract",
-      "13": "`--output` produced no file"
+      "13": "`--output` produced no file",
+      "14": "Closed-form palette no longer stresses unpremul (checked first)",
+      "15": "Byte→PNG disagrees with straight-alpha 8-bit model",
+      "16": "Byte→PNG stress cell looks false-unpremul-mangled"
     }
   },
   {
@@ -1640,7 +1661,7 @@
         "args": [
           "--same-tint"
         ],
-        "expect_exit": 6
+        "expect_exit": 8
       }
     ],
     "exit_codes": {
@@ -1650,8 +1671,9 @@
       "3": "Interface sockets missing Tint / Roughness / Shader",
       "4": "Group datablock `users` ≠ number of mug materials (5)",
       "5": "Instance points at a different node tree",
-      "6": "Instance Tint values not pairwise distinct (`--same-tint` lands here)",
+      "6": "Instance Tint socket values not pairwise distinct (diagnostic, after check 8)",
       "7": "`--output` produced no file",
+      "8": "Rendered probe: the five mug glazes are not pairwise distinct, or the probe render produced no file (`--same-tint` lands here)",
       "10": "Gallery framing violation"
     }
   },
@@ -1706,7 +1728,7 @@
         "args": [
           "--unlink-sky"
         ],
-        "expect_exit": 6
+        "expect_exit": 7
       }
     ],
     "exit_codes": {
@@ -1716,8 +1738,8 @@
       "3": "`sky_type` is not the identifier for this Blender",
       "4": "`sun_elevation` round-trip failed",
       "5": "`dust_density` / `aerosol_density` / `NISHITA` / `MULTIPLE_SCATTERING` trap",
-      "6": "Sky → Background → World Output links broken (`--unlink-sky` lands here)",
-      "7": "High-elevation zenith luma below floor",
+      "6": "Sky → Background → World Output links broken (diagnostic, after the zenith probes)",
+      "7": "High-elevation zenith luma below floor (`--unlink-sky` lands here)",
       "8": "Zenith luma did not rise with elevation",
       "9": "`--output` produced no file",
       "10": "`--output` framing violation (`gallery_framing`, per panel)",
@@ -1755,11 +1777,11 @@
       "7": "Non-manifold edges",
       "8": "Edge lengths not uniform",
       "9": "Face planarity off",
-      "10": "Centroid off origin",
-      "11": "Circumradius not uniform",
+      "10": "Framing gate (`--output` path only; `gallery_framing`)",
       "12": "Panel material count ≠ 2",
       "13": "Panel binding not by vertex count (`--invert-bind` lands here)",
-      "14": "Framing gate (`--output` path only; `gallery_framing` returns 10, remapped)"
+      "14": "Centroid off origin",
+      "15": "Circumradius not uniform"
     }
   },
   {
@@ -1842,16 +1864,30 @@
         "args": [
           "--same-base"
         ],
-        "expect_exit": 3
+        "expect_exit": 6
+      },
+      {
+        "args": [
+          "--invert-engine-id"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--no-specular-shim"
+        ],
+        "expect_exit": 7
       }
     ],
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
-      "3": "Distinct swatch colors ≠ 6 (`--same-base` lands here); also render not six distinct regions",
+      "3": "Distinct swatch material colors ≠ 6 (check-only path; with `--output` a diagnostic after check 6)",
       "4": "`--output` produced no file",
-      "5": "Wrong-era EEVEE engine id was accepted",
+      "5": "Wrong-era EEVEE engine id was accepted (`--invert-engine-id` lands here)",
+      "6": "Rendered still is black or not six distinct swatch regions (`--same-base` lands here)",
+      "7": "`set_specular` did not resolve `Specular IOR Level` or the value did not land (`--no-specular-shim` lands here)",
       "10": "Gallery framing violation"
     }
   },
@@ -1920,14 +1956,15 @@
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
       "3": "Not a FONT `TextCurve` with the built-in Bfont",
-      "4": "`body` is not the live `version_string` (`--wrong-body` lands here)",
+      "4": "Evaluated glyph mesh does not match a reference `TextCurve` of the live `version_string` (`--wrong-body` lands here)",
       "5": "Flat text is not a filled planar mesh",
       "6": "Extrude / bevel closed form failed",
       "7": "Appending characters did not widen the text",
       "8": "Mesh survived `to_mesh_clear()`",
       "9": "`--output` produced no file",
       "10": "Gallery framing violation",
-      "13": "`--output`: bundled `datafiles/fonts/Inter.woff2` not found"
+      "13": "`--output`: bundled `datafiles/fonts/Inter.woff2` not found",
+      "14": "`version_string` does not start with the dotted `bpy.app.version` tuple"
     }
   },
   {
@@ -2035,8 +2072,9 @@
       "6": "Bitangent ≠ sign × (n × t)",
       "7": "Tangents deviate from the edge/UV closed form",
       "8": "Flipped tangent inside a clean triangle",
-      "10": "Gallery framing violation; also `--output` produced no file",
-      "11": "Asset-quality floor violation (`--output` only; shared helper)"
+      "10": "Gallery framing violation (`--output` only; `gallery_framing`)",
+      "11": "Asset-quality floor violation (`--output` only; shared helper)",
+      "12": "`--output` produced no file"
     }
   },
   {
@@ -2097,9 +2135,10 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also exporter RNA missing expected glTF kwargs",
+      "2": "argparse / usage",
       "3": "Pathology missing: unapplied non-uniform scale (`--identity` lands here)",
-      "4": "Export handling failed (`--bake` lands here)"
+      "4": "Export handling failed (`--bake` lands here)",
+      "5": "Exporter RNA missing expected glTF kwargs (checked first)"
     }
   },
   {
@@ -2133,11 +2172,12 @@
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
-      "2": "argparse / usage; also base cube verts ≠ 8",
+      "2": "argparse / usage",
       "3": "VIEWPORT TESSELLATE point/face count off closed form",
       "4": "RENDER TESSELLATE point/face count or scheme off closed form",
       "5": "BEST_MATCH cage point count or scheme off",
       "6": "RENDER and VIEWPORT USDA point counts are identical (check), or the re-imported RENDER goblet is not denser than the VIEWPORT one (`--output`)",
+      "7": "Base cube verts ≠ 8 (checked first)",
       "10": "Gallery framing violation",
       "12": "`--output` produced no file"
     }
@@ -2173,11 +2213,11 @@
       "8": "calc_uvs=False unexpectedly created a UV layer",
       "9": "Explicit UV assignment error",
       "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
-      "11": "Broken panel is not flat",
       "12": "Broken panel is not texel-(0,0) teal",
       "13": "Repaired panel is not a checker",
       "14": "Broken and repaired panels render identically",
-      "15": "`--output` produced no file"
+      "15": "`--output` produced no file",
+      "16": "Broken panel is not flat"
     }
   },
   {
@@ -2244,8 +2284,9 @@
       "7": "Pose damaged by pruning, or evaluated vert count changed",
       "8": "Evaluated mesh off LBS over limited weights",
       "9": "Root-weighted mount moved",
-      "10": "Gallery framing violation; also `--output` produced no file",
-      "11": "Asset-quality floor violation (`--output` only)"
+      "10": "Gallery framing violation (`--output` only; `gallery_framing`)",
+      "11": "Asset-quality floor violation (`--output` only)",
+      "12": "`--output` produced no file"
     }
   },
   {
@@ -2278,9 +2319,10 @@
       "7": "GC wiring or strip `.type` enum (`--swap-inputs` lands here)",
       "8": "Scene strip span or Stage source",
       "9": "Mosaic transform, compositing defaults, text body, or strip color",
-      "10": "Save/reload round-trip re-assert failed; also gallery framing violation",
-      "11": "`--output` produced no file",
-      "12": "`--check-pixels` compositing contract"
+      "10": "Gallery framing violation (`--output` only; `gallery_framing`)",
+      "12": "`--check-pixels` compositing contract",
+      "13": "Save/reload round-trip re-assert failed",
+      "14": "`--output` produced no file"
     }
   },
   {

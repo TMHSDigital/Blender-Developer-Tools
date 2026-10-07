@@ -20,8 +20,9 @@ deterministic tiny-sample CPU renders. The API is stable between Blender
 4.5 LTS and 5.1 (ObjectLightLinking with
 receiver_collection/blocker_collection on both).
 
-``--skip-link`` leaves ``receiver_collection`` unset and still asserts the
-hero collection. That is the falsifier (``--same-axis`` in export-preset-axis).
+``--skip-link`` leaves ``receiver_collection`` unset. That is the falsifier:
+nothing re-reads the property, so the linked render lights the decoy and the
+hero/decoy ratio check exits 6.
 
 By default it runs the two-render correctness check (no gallery still) — the
 CI smoke check. Pass --output to also render a still:
@@ -306,12 +307,9 @@ def check(sc, key, hero_c, hero, decoy, skip_link=False):
         print("ERROR: light objects lost light_linking", file=sys.stderr)
         return 4
 
-    # contract 1 (assignment round-trip through the API itself)
+    # contract 1: the assignment. No read-back of the value just written:
+    # `--skip-link` must be caught by the rendered pixels below (#469).
     key.light_linking.receiver_collection = None if skip_link else hero_c
-    if key.light_linking.receiver_collection != hero_c:
-        print("ERROR: receiver_collection assignment did not read back",
-              file=sys.stderr)
-        return 5
 
     setup_render(sc, PXW, PXH, 8)
     tmp = tempfile.mkdtemp(prefix="light_link_")
@@ -494,7 +492,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--skip-link", action="store_true",
-                   help="falsifier: leave receiver_collection unset, still assert hero_c")
+                   help="falsifier: leave receiver_collection unset; the linked render must fail")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
