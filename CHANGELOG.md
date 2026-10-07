@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.147.3] - 2026-10-07
+
+### For agents and users
+
+**Fixes**
+
+- fix(examples): handle N jobs and job errors in thread-queue-timer; make three checks falsifiable (#478) ([`4aeb805`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4aeb80570657cfb62310137662bdc1be65ef0aac))
+
+[Release v0.147.3](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.147.3)
+
 ## [0.147.2] - 2026-10-07
 
 ### For agents and users
