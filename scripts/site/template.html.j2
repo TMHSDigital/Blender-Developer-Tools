@@ -153,6 +153,8 @@
     .panel-body > .lede { color: var(--dim); max-width: 66ch; margin: 0 auto 1.5rem; text-align: center; }
     .panel-body > .lede a { color: var(--select); }
     .panel-body > .lede a:hover { text-decoration: underline; }
+    .panel-body > .lede-note { margin-top: -0.75rem; font-size: var(--fs-md); }
+    .panel-body > .lede-note a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
 
     /* examples: selection-outline cards (Blender's selected-object orange) */
     .render-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -211,6 +213,13 @@
     .recent-grid .when-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     .recent-grid .when { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--dim);
       text-transform: uppercase; letter-spacing: 0.04em; }
+    .recent-grid .when.kind { color: var(--text); border: 1px solid var(--border); border-radius: 3px; padding: 0 0.35rem; }
+    .text-card .tc-body { display: flex; flex-direction: column; justify-content: center; gap: 0.45rem;
+      aspect-ratio: 16 / 9; padding: 0.9rem 1rem; background: var(--bg2); border-bottom: 1px solid var(--border); overflow: hidden; }
+    .text-card .tc-path { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--dim); overflow-wrap: anywhere; }
+    .text-card .tc-desc { color: var(--text); font-size: var(--fs-sm); line-height: 1.45; overflow: hidden;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; }
+    .text-card .tc-desc code { font-family: var(--font-mono); font-size: 0.85em; }
     .rules-table .r-scope { font-family: var(--font-mono); font-size: var(--fs-xs); white-space: nowrap; }
 
     /* snippets */
@@ -324,12 +333,15 @@
           <a class="btn-ghost btn-lg" href="gallery/">Browse the gallery</a>
         </div>
         <div class="clone-row">
-          {# site.heroCommand: the one command most visitors need (this repo: the
-             Claude Code marketplace add). <wbr> after each slash lets a phone
-             wrap there, not mid-word. #}
-          {% set hero_cmd = site.heroCommand or ('git clone ' ~ repo) %}
-          <pre id="cloneCmd"><span class="p">{{ site.heroPrompt or '$' }}</span> {% for part in hero_cmd.split('/') %}{{ part }}{% if not loop.last %}/<wbr>{% endif %}{% endfor %}</pre>
-          <button class="copy-btn" type="button" data-copy="{{ hero_cmd }}">copy</button>
+          {# site.heroCommand: the command(s) most visitors need (this repo: the
+             Claude Code marketplace add, then the install). Several lines are
+             numbered and the button copies them all. <wbr> after each slash
+             lets a phone wrap there, not mid-word. #}
+          {% set multi = hero_commands | length > 1 %}
+          <pre id="cloneCmd">{% if multi %}<span class="p">{{ site.heroPrompt or '$' }}</span>
+{% endif %}{% for cmd in hero_commands %}{% if multi %}<span class="p">{{ loop.index }}</span> {% else %}<span class="p">{{ site.heroPrompt or '$' }}</span> {% endif %}{% for part in cmd.split('/') %}{{ part }}{% if not loop.last %}/<wbr>{% endif %}{% endfor %}{% if not loop.last %}
+{% endif %}{% endfor %}</pre>
+          <button class="copy-btn" type="button" data-copy="{{ hero_copy }}" aria-label="Copy {{ 'both commands' if hero_commands | length == 2 else 'the command' if not multi else 'the commands' }}">copy</button>
         </div>
       </div>
     </section>
@@ -350,6 +362,10 @@
       <p class="lede">These aren't mockups. Each example runs headless on Blender {{ bl_primary }} and {{ bl_fallback }} in the
         smoke workflow, asserts its own correctness, and exits non-zero if the API drifted. Each still was
         rendered by that same script.</p>
+      {% if check_only %}
+      <p class="lede lede-note">{{ example_total }} examples: {{ example_count }} rendered &middot; {{ check_only | length }} check-only
+        (data contracts with nothing to see). <a href="gallery/#check-only">List the check-only examples</a></p>
+      {% endif %}
       <p class="cta-row"><a class="btn-cta" href="gallery/">Open the full gallery &rarr;</a></p>
       <div class="render-grid">
         {% for ex in shown %}
@@ -418,7 +434,7 @@
       {% if latest_release %}<span class="hud count">v{{ latest_release.version }}</span>{% endif %}
     </div>
     <div class="panel-body">
-      <h2>Fresh off the render farm.</h2>
+      <h2>Recently shipped.</h2>
       {% if latest_release %}
       <p class="release-line">
         <span>Latest release <span class="ver">v{{ latest_release.version }}</span>{% if latest_release.date %} &middot; {{ latest_release.date }}{% endif %}</span>
@@ -429,14 +445,27 @@
       {% if recent %}
       <div class="recent-grid">
         {% for ex in recent %}
+        {% if ex.href %}
+        {# No render (skill, rule, snippet, check-only example): a text card
+           with the same 16:9 footprint, linking to the file on GitHub. #}
+        <a class="render-card text-card" href="{{ ex.href }}">
+          <span class="tc-body"><span class="tc-path">{{ ex.dir }}</span><span class="tc-desc">{{ ex.desc | inline_code }}</span></span>
+          <div class="render-meta">
+            <span class="name">{{ ex.name }}</span>
+            <span class="when-row"><span class="when kind">{{ ex.kind }}{% if ex.checkOnly %} &middot; check-only{% endif %}</span>
+            <span class="when">added {{ ex.added }}</span></span>
+          </div>
+        </a>
+        {% else %}
         <a class="render-card" href="gallery/{{ ex.name }}/">
           <img src="{{ ex.thumbSite }}" srcset="{{ ex.thumbSite }} 640w, {{ ex.heroSite }} 1280w" sizes="(min-width: 821px) 330px, 50vw" alt="{{ ex.alt | default(ex.name ~ ' render', true) }}" loading="lazy" decoding="async" width="1280" height="720" />
           <div class="render-meta">
             <span class="name">{{ ex.name }}</span>
-            <span class="when-row"><span class="when">{{ 'showcase' if ex.kind == 'showcase' else 'example' }}</span>
+            <span class="when-row"><span class="when kind">{{ 'showcase' if ex.kind == 'showcase' else 'example' }}</span>
             <span class="when">added {{ ex.added }}</span></span>
           </div>
         </a>
+        {% endif %}
         {% endfor %}
       </div>
       {% endif %}
@@ -512,7 +541,7 @@
       <span class="hud count">{{ snippet_count }} patterns</span>
     </div>
     <div class="panel-body">
-      <h2>Canonical patterns, five to fifty lines.</h2>
+      <h2>Canonical patterns, five to seventy-five lines.</h2>
       <p class="lede">Standalone, paste-ready answers to the questions that come up every session:
         the right way to create and delete objects, read bulk vertex data, bind properties, bridge
         the 4.x/5.x API boundary.</p>

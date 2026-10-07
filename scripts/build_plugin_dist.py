@@ -6,7 +6,7 @@ plugin needs ~1 MB of it. This copies only what the plugin uses into --out,
 as a self-contained marketplace (its marketplace.json points at "./"):
 
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
-    .claude-plugin/ and .cursor-plugin/ manifests, and a short README
+    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo, and a short README
 
     python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
     python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
@@ -32,8 +32,10 @@ ROOT = Path(__file__).resolve().parent.parent
 DIRS = ("skills", "claude", "rules", "snippets", "templates")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
+# assets/favicon.svg is the Cursor manifest's "logo".
 FILES = ("LICENSE", ".claude-plugin/plugin.json",
-         ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json")
+         ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json",
+         "assets/favicon.svg")
 MAX_BYTES = 2_000_000
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc")
 

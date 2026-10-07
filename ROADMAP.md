@@ -4,6 +4,20 @@
 
 **Current:** v0.147.1
 
+## Next for agents
+
+The skill, rule and example work planned for what the plugin teaches, separate from the
+showcase pool further down. Each item is an open issue; nothing here is pinned to a version.
+
+- **New skills:** `porting-to-blender-5`, one index of every 4.x to 5.x break the pack covers ([#466](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/466)); `gpu-drawing` plus a no-`bgl` rule, since `bgl` is gone in 5.x ([#465](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/465)); teach the API contracts that shipped examples prove but no skill covers yet, such as Grease Pencil v3, the 5.x compositor, constraints and image pixels ([#456](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/456))
+- **Skill corrections:** the full Principled BSDF v2 socket rename table in `procedural-materials-and-shaders` ([#382](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/382))
+- **New rules:** flag the mesh-normals APIs removed in 4.1 (`use_auto_smooth`, `calc_normals_split`, `free_normals_split`) ([#379](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/379))
+- **Examples for skills that have none:** check-only examples for `operators`, `ui-panels`, `addon-scaffolding` and `bl-info-migration` ([#378](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/378)); a skill-to-example index and one machine-readable examples manifest with version support ([#377](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/377))
+- **Verification:** run the shipped snippets and SKILL.md code blocks in CI instead of frozen copies ([#447](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/447)); a weekly, non-gating smoke run against Blender daily builds to catch API breaks before a release ([#457](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/457))
+- **More agents:** first-class support for Codex, Copilot, Windsurf and Gemini through `.agents/skills` and an AGENTS.md rules export ([#376](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/376))
+
+## Themes
+
 Themes are listed in order. Shipped themes note the release they landed in (for reference,
 not a commitment); upcoming themes are intentionally **not** pinned to a version number, so
 shipping another example or skill never forces a roadmap renumber. The release pipeline
@@ -17,11 +31,13 @@ derives the actual version from conventional-commit types.
 | More examples (turntable, SDF remesh) | 12 | 6 | 2 | 17 | Shipped (v0.4.0) |
 | 5.2 LTS targeting, GN modifier inputs | 12 | 6 | 2 | 17 | Shipped |
 | VSE COLOR strip intrinsic size (undocumented 5.2) | 13 | 6 | 2 | 17 | Shipped |
-| Skills: modal operators, USD pipelines, mathutils | — | — | — | — | Upcoming (the USD `evaluation_mode` example shipped; the skill has not) |
+| Skills: USD pipelines, mathutils | — | — | — | — | Upcoming (the USD `evaluation_mode` example shipped; the skill has not. Modal operators shipped in `timers-modal-and-threading`) |
 | AI asset pipeline: post-generation cleanup | 14 | 8 | 2 | 21 | Shipped (v0.54.0) |
 | AI asset pipeline: engine export presets | 15 | 9 | 2 | 24 | Shipped |
 | AI asset pipeline: headless template | 15 | 9 | 3 | 24 | Shipped |
 | AI asset pipeline: high-to-low bake | 16 | 9 | 3 | 27 | Shipped |
+| Extension runtime and packaging | 17 | 9 | 3 | 28 | Shipped (v0.146.0) |
+| Timers, modal operators and threading | 18 | 9 | 3 | 29 | Shipped (v0.147.0) |
 | AI asset pipeline: live-session bridge (spike) | - | - | - | - | Upcoming |
 | Stable (1.0) | — | — | — | — | Upcoming; criteria below |
 
@@ -121,7 +137,7 @@ Provider-agnostic GLB-in / engine-ready-out. This repo does not generate meshes.
 
 Not committed; open subjects only. Remove a subject when it ships (CLAUDE.md § Example-Run Process); what shipped, and when, is in the CHANGELOG and git history.
 
-- Library rolling ladder (hooked top rollers riding a round rail, raked stiles, treads, floor wheels) as a game-prop showcase piece — the unbuilt half of the item above: a hook riding a round rail is a curved-on-curved contact that neither the trolley's flat backrests nor the yoke's hung ring exercise
+- Library rolling ladder (hooked top rollers riding a round rail, raked stiles, treads, floor wheels) as a game-prop showcase piece — a hook riding a round rail is a curved-on-curved contact that neither the shipped `book-trolley`'s flat backrests nor the `wooden-yoke`'s hung ring exercise
 - Ox cart tongue or plough beam that hitches to the yoke's ring as a game-prop showcase piece — a hitch is a ring-on-hook contact the yoke's hung ring only tests against a fixed bar
 - Mooring bollard with a coiled rope as a game-prop showcase piece — rope turns laid as stacked helices around the barrel: each turn resting on the one below (not interpenetrating, not floating), measured turn-to-turn off the mesh
 - Tiered stone fountain as a game-prop showcase piece — concentric basins on a column: every basin coaxial, each upper basin's lip overhanging the one below by a stated band so the overflow line lands inside the next basin
@@ -169,7 +185,6 @@ Not committed; open subjects only. Remove a subject when it ships (CLAUDE.md § 
 - Tighten inverted smoke canaries: assert the expected `[FAIL]` marker text (`skipped on ... should run` / `missing post-exit sidecar`) alongside wrapper exit 1, so a canary that dies for the wrong reason does not satisfy the gate
 - Overlapping / mirrored UV islands as a *shipped* pathology (not lightmap `--falsify`): SAT hits matching a constructed overlap, then glTF TEXCOORD survival. Deferred — `lightmap-uv-channel` already owns the zero-overlap gate.
 - Vendor CC0 asset fixtures (Kenney, Quaternius, ambientCG only — no aggregators) as `.glb` not `.blend`, with per-fixture provenance records mirroring the Free-Game-Dev-Assets frontmatter schema. Permitted only where the assertion is an invariant over the fixture rather than a measurement of it. Deferred pending a decision on repo weight and CI fetch policy.
-- `modal-operators` skill -- `invoke` returning `RUNNING_MODAL`, the `modal()` event handler, modal cancellation patterns
 - `usd-pipelines` skill -- USD export options, `evaluation_mode`, instancing, the USD vs glTF tradeoffs
 - `mathutils-patterns` skill -- `mathutils.Vector`, `Matrix`, `Quaternion`, common transforms, the `@` operator
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions

@@ -239,6 +239,9 @@ jobs:
           print(f'Manifest verified at v{version}: {counts}')
           PYEOF
 
+      - name: Check both plugin manifests share description, homepage, license, keywords and logo
+        run: python3 tests/check_manifest_meta.py
+
   validate-claude-packaging:
     name: Validate Claude Code packaging
     runs-on: ubuntu-latest

@@ -116,6 +116,16 @@
     header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
       font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
     header.hero p { color: var(--text-dim); max-width: 62ch; margin: 0.7rem auto 0; font-size: 1rem; }
+    /* Check-only examples: the line that explains the rendered vs total gap.
+       Summary centered with the header; the list inside is left for reading. */
+    .check-only { max-width: 62ch; margin: 0.8rem auto 0; font-size: 0.9rem; color: var(--text-dim); }
+    .check-only summary { cursor: pointer; width: fit-content; margin: 0 auto; }
+    .check-only summary:hover { color: var(--text); }
+    .check-only > div { text-align: left; margin-top: 0.6rem; }
+    .check-only ul { margin: 0.5rem 0 0 1.1rem; }
+    .check-only li { margin: 0.25rem 0; }
+    .check-only a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; font-family: var(--font-mono); font-size: 0.85rem; }
+    .check-only code { font-family: var(--font-mono); font-size: 0.85em; }
 
     /* ---- index: filter bar ----
        Wide: one pinned row (search | kind | sort | card density), then a

@@ -1,7 +1,7 @@
 {
   "name": "blender-developer-tools",
   "displayName": "Blender Developer Tools",
-  "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
+  "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
   "version": "0.147.1",
   "author": {
     "name": "TMHSDigital"
@@ -9,6 +9,7 @@
   "homepage": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
   "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
   "license": "CC-BY-NC-ND-4.0 AND MIT",
+  "logo": "assets/favicon.svg",
   "keywords": [
     "cursor-plugin",
     "claude-code",

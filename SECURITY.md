@@ -37,8 +37,14 @@ backports.
 | Any earlier release | No |
 
 A confirmed fix lands on `main` and ships in the next release cut by
-`release.yml`. Consumers pin by tag or track `main`; the remedy in both cases
-is to move to the current release. Nothing older is patched in place.
+`release.yml`. Most consumers install the plugin, which comes from the
+`plugin-dist` branch: release.yml force-pushes that branch as a single orphan
+commit on each release that changes plugin content, and the branch carries no
+tags, so a plugin install cannot be pinned to an older release. The remedy is to
+update the plugin (Claude Code: `/plugin marketplace update
+blender-developer-tools`; Cursor local plugin: `git pull` in its folder). A
+checkout of `main` pins by release tag (`vX.Y.Z`) or tracks `main`, and its
+remedy is to move to the current release. Nothing older is patched in place.
 
 ## Response Timeline
 

@@ -348,12 +348,60 @@ def pick_featured(examples: list[dict]) -> list[dict]:
     )
 
 
-def recent_additions(repo_root: Path, entries: list[dict], limit: int = 6) -> list[dict]:
-    """The *limit* entries whose directory entered the repo most recently.
+def _first_comment_sentence(path: Path) -> str:
+    """The opening sentence of a snippet's leading ``#`` comment block."""
+    words: list[str] = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        s = line.strip()
+        if not s.startswith("#") or s == "#":
+            break
+        words.append(s.lstrip("#").strip())
+    text = " ".join(words)
+    m = _SENTENCE_END.search(text)
+    return text[:m.end()] if m else text
 
-    Gallery JSON order is not add order, so the first commit that added a file
-    under each entry's ``dir`` decides. A shallow clone has no history to ask
-    (every entry would look added today), so it yields [] and the section hides.
+
+# Kinds the "What's new" strip can show; on a tie (one commit adding a skill,
+# its snippet and its example together) the earlier kind leads.
+RECENT_KIND_ORDER = ("skill", "rule", "snippet", "example", "showcase")
+
+
+def text_entries(repo_root: Path, gallery_dirs: set[str]) -> list[dict]:
+    """Recent-strip entries for content with no gallery render: skills, rules,
+    snippets and the check-only examples. Each carries ``dir`` (the path whose
+    first add dates it), ``kind``, ``desc`` and ``href`` (its GitHub path,
+    filled in by the caller)."""
+    out: list[dict] = []
+    for p in sorted((repo_root / "skills").glob("*/SKILL.md")):
+        out.append({"name": p.parent.name, "dir": f"skills/{p.parent.name}", "kind": "skill",
+                    "desc": _summarize(_description(p), 150), "tree": True})
+    for p in sorted((repo_root / "rules").glob("*.mdc")):
+        out.append({"name": p.stem, "dir": f"rules/{p.name}", "kind": "rule",
+                    "desc": _summarize(_description(p), 150), "tree": False})
+    for p in sorted((repo_root / "snippets").glob("*.py")):
+        out.append({"name": p.stem, "dir": f"snippets/{p.name}", "kind": "snippet",
+                    "desc": _summarize(_first_comment_sentence(p), 150), "tree": False})
+    index = repo_root / "examples" / "index.json"
+    summaries = ({e["path"].rstrip("/"): e.get("summary", "") for e in load_json(index)}
+                 if index.is_file() else {})
+    for d in content_dirs(repo_root, "examples"):
+        if d not in gallery_dirs and (repo_root / d / "README.md").is_file():
+            out.append({"name": d.split("/", 1)[1], "dir": d, "kind": "example",
+                        "checkOnly": True, "desc": _summarize(summaries.get(d, ""), 150),
+                        "tree": True})
+    return out
+
+
+def recent_additions(repo_root: Path, entries: list[dict], limit: int = 6) -> list[dict]:
+    """The *limit* entries whose path entered the repo most recently.
+
+    *entries* mixes gallery items (``dir`` is ``examples/<name>`` or
+    ``showcase/<name>``) and text entries from :func:`text_entries`
+    (``skills/<name>``, ``rules/<file>``, ``snippets/<file>``, check-only
+    ``examples/<name>``). Gallery JSON order is not add order, so the first
+    commit that added a file under each entry's ``dir`` decides. A shallow
+    clone has no history to ask (every entry would look added today), so it
+    yields [] and the section hides.
     """
     def git(*args: str) -> str:
         return subprocess.run(["git", "-C", str(repo_root), *args], capture_output=True,
@@ -362,7 +410,7 @@ def recent_additions(repo_root: Path, entries: list[dict], limit: int = 6) -> li
         if git("rev-parse", "--is-shallow-repository").strip() != "false":
             return []
         log = git("log", "--diff-filter=A", "--format=%x00%cs", "--name-only",
-                  "--", "examples", "showcase")
+                  "--", "examples", "showcase", "skills", "rules", "snippets")
     except (OSError, subprocess.CalledProcessError):
         return []
 
@@ -374,7 +422,13 @@ def recent_additions(repo_root: Path, entries: list[dict], limit: int = 6) -> li
             d = "/".join(f.split("/")[:2])
             if d in by_dir:
                 added[d] = (ordinal, date.strip())  # keep overwriting: the oldest add wins
-    newest = sorted(added.items(), key=lambda kv: kv[1][0])[:limit]
+
+    def rank(kv: tuple[str, tuple[int, str]]) -> tuple[int, int, str]:
+        kind = by_dir[kv[0]].get("kind", "example")
+        order = RECENT_KIND_ORDER.index(kind) if kind in RECENT_KIND_ORDER else len(RECENT_KIND_ORDER)
+        return kv[1][0], order, kv[0]
+
+    newest = sorted(added.items(), key=rank)[:limit]
     return [dict(by_dir[d], added=date) for d, (_, date) in newest]
 
 
@@ -608,7 +662,17 @@ def main():
         piece["kind"] = "showcase"
     for ex in examples:
         ex.setdefault("kind", "example")
-    recent = recent_additions(repo_root, examples + showcase)
+    repo_url = (site.get("links") or {}).get("github") or plugin.get("repository", "")
+    gallery_dirs = {e.get("dir", "").rstrip("/") for e in examples}
+    texts = text_entries(repo_root, gallery_dirs)
+    for t in texts:
+        t["href"] = f"{repo_url}/{'tree' if t['tree'] else 'blob'}/main/{t['dir']}"
+    recent = recent_additions(repo_root, examples + showcase + texts)
+    check_only = [t for t in texts if t.get("checkOnly")]
+    # site.heroCommand: one string or a list of lines (rendered one per line,
+    # copied together newline-separated).
+    hero = site.get("heroCommand") or f"git clone {repo_url}"
+    hero_commands = [hero] if isinstance(hero, str) else list(hero)
     # Read from disk, not the Cursor manifest: Cursor's plugin schema rejects
     # inventory keys such as "snippets" and "templates" (#347).
     snippet_paths = sorted(p.relative_to(repo_root).as_posix()
@@ -650,6 +714,9 @@ def main():
         "has_changelog": len(changelog) > 0,
         "latest_release": changelog[0] if changelog else None,
         "recent": recent,
+        "check_only": check_only,
+        "hero_commands": hero_commands,
+        "hero_copy": "\n".join(hero_commands),
         "blender": site.get("blender") or {},
         "build_date": datetime.date.today().isoformat(),
     }
