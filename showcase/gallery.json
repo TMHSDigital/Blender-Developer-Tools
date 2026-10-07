@@ -1076,6 +1076,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "hex-island-tile",
+      "dir": "showcase/hex-island-tile",
+      "category": "terrain",
+      "teaches": "A procedural strategy-game hex map tile — a flat-topped hexagon 2.60 m across whose six edges share one canonical profile, a mountain island in the middle of it: two peaks furrowed by gullies with fractured rock, old snow and conifer forest; a river falling from a tarn in a cirque over a cascade and down its valley to a sandy estuary; a hill cut into seven level paddy and grain terraces behind dry-stone walls traced on its contours; broadleaf trees, crags and boulders; the sea out to the rim on every side with foam at the waterline — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A hexagonal map tile seen from above: a mountain island with snowy peaks, conifer forest, a river falling from a tarn to a sandy estuary, and stone-walled terraced fields, in turquoise sea.",
+      "witnessesFix": "Recomputed: 103936 tris, nine materials with 53344 ground, 5666 fields, 15981 sea, 2101 foam, 2404 river, 2268 granite, 718 bark, 6018 foliage and 9452 plinth faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.600×2.252×0.7025 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, the rim on the hexagon and all six edges on one canonical height to 0.0000 m (104 vertices each), the river never rising from row to row over 134 rows and a 0.089 m fall, its mouth 0.0029 m under the sea's level, seven consecutive terraces level to 0.044° with every riser 0.030 m, the sea at 0.1500 m with a 0.0024 m ripple and the tarn flat, the ground over every water rim 0.0084 m (sea), 0.0050 m (tarn) and 0.0034 m (river banks), the foam within 0.0043 m of the waterline with its land edge 0.0046 m under the beach, all 21 crags and boulders sealed in every sector (worst 0.0050 m) and none overlapping, all 44 trunks' feet 0.010–0.013 m in the ground, LOD ratios in band, seven-hull collider 320 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --warp-edge 17; --uphill-river 18; --tilt-terrace 19; --flat-sea 20; --short-sea 21; --lift-foam 22; --perch-rock 23; --pile-rocks 24; --float-trees 25.",
+      "hero": "docs/gallery/assets/hex-island-tile-hero.webp",
+      "preview": "showcase/hex-island-tile/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

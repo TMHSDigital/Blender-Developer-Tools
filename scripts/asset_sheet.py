@@ -100,6 +100,7 @@ SELECT = {
     "farm-tractor": (r"^TractorLow$", None),
     "fern-mossy-rock": (r"^FernRockLow$", None),
     "sea-stack-arch": (r"^SeaStackLow$", None),
+    "hex-island-tile": (r"^HexIslandLow$", None),
     "mushroom-stump": (r"^StumpLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),

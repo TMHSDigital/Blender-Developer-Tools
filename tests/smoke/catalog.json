@@ -165,5 +165,6 @@
   {"name": "mine-cart", "script": "showcase/mine-cart/mine_cart.py", "falsifiers": [{"args": ["--float-wheel"], "expect_exit": 18}]},
   {"name": "garden-gate", "script": "showcase/garden-gate/garden_gate.py", "falsifiers": [{"args": ["--offset-knuckle"], "expect_exit": 17}]},
   {"name": "ships-wheel", "script": "showcase/ships-wheel/ships_wheel.py", "falsifiers": [{"args": ["--offset-hub"], "expect_exit": 17}]},
-  {"name": "sawhorse-plank", "script": "showcase/sawhorse-plank/sawhorse_plank.py", "falsifiers": [{"args": ["--loose-leg"], "expect_exit": 17}]}
+  {"name": "sawhorse-plank", "script": "showcase/sawhorse-plank/sawhorse_plank.py", "falsifiers": [{"args": ["--loose-leg"], "expect_exit": 17}]},
+  {"name": "hex-island-tile", "script": "showcase/hex-island-tile/hex_island_tile.py", "falsifiers": [{"args": ["--uphill-river"], "expect_exit": 18}]}
 ]
