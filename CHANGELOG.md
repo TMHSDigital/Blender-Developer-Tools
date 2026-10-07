@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.148.0] - 2026-10-07
+
+### For agents and users
+
+**Fixes**
+
+- fix(examples): reserve exits 2/10/11 and make falsifiers reach behavioral checks (#479) ([`dccca5d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/dccca5d356ecd6499ae0279c63674e49c69429be))
+
+<details>
+<summary>Maintenance (2 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- feat(showcase): add terrain category; move terrain-scatter and sea-stack-arch into it ([`c7e6727`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/c7e6727ee14cb1d8a3c28ff9041fbc1ae5c732de))
+- fix(showcase): rebuild wall-torch so it reads as a lit torch, not programmer art ([`5f398ec`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5f398ece70a0e266ce11a20a32d77c963d835d2b))
+
+</details>
+
+[Release v0.148.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.148.0)
+
 ## [0.147.3] - 2026-10-07
 
 ### For agents and users
