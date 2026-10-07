@@ -33,16 +33,26 @@ Before any preset: meters in the scene (`scale_length == 1.0`), identity object 
 ```python
 def apply_selected_mesh_transforms():
     # One operator call for the whole selection. transform_apply reads
-    # selected_editable_objects, so that is the key to override; overriding
-    # selected_objects alone does not narrow it.
+    # selected_editable_objects, so that is the key to override. It refuses
+    # shared (glTF-instanced) mesh data, so copy it per object first, and
+    # unparent keeping the world placement, or a rotated root stays on the node.
     meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
     if not meshes:
         return
+    for o in meshes:
+        if o.data.users > 1:
+            o.data = o.data.copy()
+        if o.parent is not None:
+            world = o.matrix_world.copy()
+            o.parent = None
+            o.matrix_world = world
     with bpy.context.temp_override(
         object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
     ):
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 ```
+
+The two guards are for ordinary imports. Instanced glTF nodes come back as several objects sharing one Mesh, and `transform_apply` then raises `Cannot apply to a multi user` (4.5.11 and 5.2.1). A mesh under a rotated root has an identity `matrix_basis`. Applying it leaves the root's rotation in `matrix_world`, and `use_selection=True` writes that rotation onto the exported node. Copying the data means instances no longer share one mesh. That is the cost of baking transforms into vertices.
 
 `use_selection=True` on every preset. Draco is opt-in on glTF; do not copy `gltf_draco_export.py` wholesale.
 

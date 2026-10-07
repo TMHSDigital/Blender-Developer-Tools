@@ -307,9 +307,11 @@ def principled(name, color, metallic, roughness):
 
 
 def apply_selected_mesh_transforms():
-    # Same body as snippets/export_preset_unity.py: one operator call for the
+    # Core of snippets/export_preset_unity.py: one operator call for the
     # whole selection. transform_apply acts on selected_editable_objects, so
     # that is the key to override; selected_objects alone does not narrow it.
+    # The snippet's shared-mesh / parent prelude is left out: this scene
+    # builds single-user, unparented meshes.
     meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
     if not meshes:
         return

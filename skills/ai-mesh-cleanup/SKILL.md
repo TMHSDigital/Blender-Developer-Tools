@@ -41,11 +41,34 @@ def scene_units_are_meters(scene):
     return abs(units.scale_length - 1.0) < 1e-6
 
 
+def isolate_mesh_data(objs):
+    # glTF instancing imports as several objects sharing one Mesh (users > 1).
+    # transform_apply refuses multi-user data, and origin_to_base() on shared
+    # data moves every other instance. One copy per object; the last user
+    # keeps the original.
+    for obj in objs:
+        if obj.data.users > 1:
+            obj.data = obj.data.copy()
+
+
+def clear_parent_keep_transform(objs):
+    # glTF node trees import meshes under a root empty that is often rotated
+    # or scaled. Applying the child's own rotation leaves the root's in
+    # matrix_world, so local Z is still not world Z.
+    for obj in objs:
+        if obj.parent is not None:
+            world = obj.matrix_world.copy()
+            obj.parent = None
+            obj.matrix_world = world
+    bpy.context.view_layer.update()
+
+
 def rot_scale_is_identity(obj, tol=1e-6):
     # Rotation and scale both: origin_to_base() shifts along local Z, which is
     # world Z only once rotation is applied. A GLB node often carries a
-    # rotation with identity scale.
-    m = obj.matrix_basis.to_3x3()
+    # rotation with identity scale. Read matrix_world, not matrix_basis: a
+    # child of a rotated root has an identity basis.
+    m = obj.matrix_world.to_3x3()
     return all(
         abs(m[i][j] - (1.0 if i == j else 0.0)) < tol
         for i in range(3)
@@ -68,7 +91,8 @@ def apply_transforms(objs):
 
 
 def origin_to_base(obj):
-    # Precondition: rotation and scale applied (local Z == world Z).
+    # Precondition: unparented, rotation and scale applied (local Z == world
+    # Z), and single-user data (isolate_mesh_data), or other instances move.
     mesh = obj.data
     n = len(mesh.vertices)
     flat = [0.0] * (n * 3)
@@ -120,8 +144,13 @@ if not scene_units_are_meters(scene):
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.scale_length = 1.0
 
-apply_transforms([o for o in imported_meshes() if not rot_scale_is_identity(o)])
+meshes = imported_meshes()
+isolate_mesh_data(meshes)
+clear_parent_keep_transform(meshes)
+apply_transforms([o for o in meshes if not rot_scale_is_identity(o)])
 ```
+
+The scene check above only catches a scene someone changed. A fresh or factory scene is always metric at 1.0, so it cannot see a prop written in centimeters as meters. Also check the geometry: after the apply, the largest bounding-box extent of a prop should be within a plausible range (the pipeline template uses 0.01 m to 100 m and exits non-zero outside it).
 
 `export_apply=True` on glTF applies **modifiers**, not object scale. Unapplied object scale lands on the glTF node. Witness: [`examples/unapplied-scale-gltf/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf).
 
@@ -130,6 +159,11 @@ apply_transforms([o for o in imported_meshes() if not rot_scale_is_identity(o)])
 `transform_apply` needs a real object in context. Use `temp_override`, not `bpy.context.copy()`. After apply, `obj.scale` is `(1, 1, 1)`, rotation is zero, and `obj.data` vertex positions hold the world size and orientation.
 
 Gate the apply on rotation **and** scale (`rot_scale_is_identity`). Imported glTF nodes often carry a rotation with identity scale; skipping the apply then makes step 4 ground the mesh along its local Z, which moves it in world space (a cube rotated 90° on X at z=5 shifted by −1 in Y and Z).
+
+Two import shapes break a naive apply, and both are ordinary glTF:
+
+- **Shared mesh data.** Instanced nodes import as several objects on one Mesh (`users == 2` after a round trip). `transform_apply` raises `RuntimeError: Cannot apply to a multi user` on both 4.5.11 and 5.2.1. Run `isolate_mesh_data` first. `transform_apply(isolate_users=True)` also exists on both lines (measured on 4.5.11 and 5.2.1), but it only helps the apply. `origin_to_base` rewrites vertices and still needs single-user data.
+- **Parented meshes.** A child of a rotated or scaled root has an identity `matrix_basis`, so a basis check skips it and the root's rotation stays in `matrix_world`. Unparent with the world matrix kept, then test `matrix_world`. Measured with the pipeline template's parented smoke fixture on 4.5.11 and 5.2.1 (a root rotated 90° on X and scaled 2x at z=3). With the unparent step removed, LOD0 exported with its origin at z=3.0 while the geometry's minimum was z=2.0.
 
 ### 4. Set origin
 
@@ -182,6 +216,7 @@ Draco, selected-only, explicit `export_yup`, and `export_apply=True` so the deci
 5. **`bm.normal_update()` for flipped faces.** Use `recalc_face_normals`.
 6. **Import then `bpy.ops.mesh.*` with no scale check.** Rule `validate-imported-mesh-scale`.
 7. **Export with a live DECIMATE and `export_apply=False`.** The engine gets the dense mesh. Rule `no-unapplied-modifiers-on-export`.
+8. **Assuming one imported object, single-user and unparented.** Picking the largest mesh drops every other part. Applying shared data raises, and testing `matrix_basis` misses a rotated parent. Isolate the data, unparent, apply, then join if the engine wants one asset.
 
 ## Version correctness
 

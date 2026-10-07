@@ -30,10 +30,12 @@ it is forwarded to `script.py` as `sys.argv`.
 
 1. Parses script-side args after `--`.
 2. Iterates every mesh object in the loaded `.blend`.
-3. If `--apply-modifier` was passed, adds that modifier and applies it
-   in place. The application step uses `bpy.context.temp_override`
-   rather than the deprecated context-dict-passing form, so the script
-   works on Blender 4.5 LTS and 5.x.
+3. If `--apply-modifier` was passed, appends that modifier to the end of
+   each mesh's stack. It then bakes the **whole** stack in stack order
+   through the data API: `bpy.data.meshes.new_from_object` on the
+   evaluated object, one depsgraph evaluation for every mesh, with no
+   operator per object. The new modifier runs after any existing ones.
+   Every modifier on the object is applied, not only the new one.
 4. Exports the scene to a `.glb` at the given output path.
 5. Returns explicit exit codes (0 success, 2-4 different failure modes)
    so a CI pipeline can detect failures.
@@ -71,10 +73,18 @@ is legal; argparse usage is `2`). Not a repo-wide table.
   work when a `VIEW_3D` area exists. In headless mode, none does.
   Either rewrite using `bpy.data.*`, or fabricate a window+area via
   `temp_override` (advanced; see the `headless-batch-scripting` skill).
-- **Modifier application order**. The script adds modifiers at the end
-  of the existing modifier stack and applies them, so they run after
-  any pre-existing modifiers. If the input file already has modifiers,
-  this may not produce what you expect.
+- **Modifier application order**. Do not swap the bake for
+  `bpy.ops.object.modifier_apply(modifier=new.name)`. When the new
+  modifier is not first in the stack, that operator evaluates it against
+  the **base** mesh, prints only `Info: Applied modifier was not first,
+  result may not be as expected`, and leaves the earlier modifiers live.
+  `export_apply=True` then runs those afterwards, so the order is
+  reversed. Measured on 4.5.11 and 5.2.1 with a cube carrying a live
+  SUBSURF (levels 1) and `--apply-modifier TRIANGULATE`, the operator
+  path exported 72 triangles, which is TRIANGULATE first and then
+  SUBSURF. The stack bake gives 26 verts and 48 triangles, which is
+  SUBSURF first and then TRIANGULATE. CI checks this case
+  (`tests/smoke/check_glb_tris.py`).
 
 ## Extending the template
 

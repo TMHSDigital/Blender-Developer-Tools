@@ -3,7 +3,8 @@
 
 Agents copy these scripts (bmesh-gear is the anatomy every new example
 starts from), so a script that breaks a rule teaches the anti-pattern. Two
-rules are checked statically over examples/ and showcase/:
+rules are checked statically over examples/, showcase/ and templates/
+(templates also get prefer-data-over-ops-in-loops, see below):
 
 - use-foreach-set-for-bulk-data: a `for x in <...>.polygons` or
   `for x in <...>.vertices` loop that assigns to an attribute of `x`. Those two
@@ -31,7 +32,79 @@ MARKER = "# foreach-exempt:"
 
 
 def scripts(root: Path) -> list[Path]:
-    return sorted([*root.glob("examples/*/*.py"), *root.glob("showcase/*/*.py")])
+    return sorted([*root.glob("examples/*/*.py"), *root.glob("showcase/*/*.py"),
+                   *template_scripts(root)])
+
+
+# --- templates/ scan and prefer-data-over-ops-in-loops (#468) ---------------
+#
+# Templates are copy-paste starters, so they get the two rules above plus
+# prefer-data-over-ops-in-loops: a `for` loop whose body reaches a
+# bpy.ops.object.* call, directly or through functions defined in the same
+# file. The headless template applied a modifier per object that way. Examples
+# are not held to it: some loop per part over operators with no data-API
+# equivalent (uv.smart_project). Exempt a loop with a marker on the `for` line
+# or the line above:
+#
+#     # ops-loop-exempt: one export per LOD file; export has no data API
+
+OPS_MARKER = "# ops-loop-exempt:"
+OBJECT_OPS = "bpy.ops.object."
+
+
+def template_scripts(root: Path) -> list[Path]:
+    return sorted(root.glob("templates/*/*.py"))
+
+
+def _object_ops_calls(node: ast.AST) -> list[str]:
+    return [ast.unparse(c.func) for c in ast.walk(node)
+            if isinstance(c, ast.Call) and ast.unparse(c.func).startswith(OBJECT_OPS)]
+
+
+def _reaches_object_ops(tree: ast.Module) -> dict[str, str]:
+    """Same-file function name -> the bpy.ops.object call it reaches."""
+    funcs = {f.name: f for f in ast.walk(tree) if isinstance(f, ast.FunctionDef)}
+    reach: dict[str, str] = {}
+    changed = True
+    while changed:
+        changed = False
+        for name, fn in funcs.items():
+            if name in reach:
+                continue
+            direct = _object_ops_calls(fn)
+            hit = direct[0] if direct else next(
+                (reach[c.func.id] for c in ast.walk(fn) if isinstance(c, ast.Call)
+                 and isinstance(c.func, ast.Name) and c.func.id in reach), None)
+            if hit:
+                reach[name] = hit
+                changed = True
+    return reach
+
+
+def check_ops_in_loops(path: Path, root: Path) -> list[str]:
+    rel = path.relative_to(root).as_posix()
+    src = path.read_text(encoding="utf-8")
+    lines = src.split("\n")
+    tree = ast.parse(src)
+    reach = _reaches_object_ops(tree)
+    errors = []
+    for loop in ast.walk(tree):
+        if not isinstance(loop, ast.For):
+            continue
+        here = lines[loop.lineno - 1]
+        above = lines[loop.lineno - 2] if loop.lineno >= 2 else ""
+        if OPS_MARKER in here or above.strip().startswith(OPS_MARKER):
+            continue
+        body = ast.Module(body=loop.body, type_ignores=[])
+        hits = _object_ops_calls(body) + [
+            f"{c.func.id}() -> {reach[c.func.id]}" for c in ast.walk(body)
+            if isinstance(c, ast.Call) and isinstance(c.func, ast.Name) and c.func.id in reach]
+        if hits:
+            errors.append(f"{rel}:{loop.lineno}: loop over {ast.unparse(loop.iter)} calls "
+                          f"{hits[0]} per iteration; use bpy.data / bmesh or one "
+                          f"operator call for the whole set (rule "
+                          f"prefer-data-over-ops-in-loops) or mark '{OPS_MARKER} <why>'")
+    return errors
 
 
 def writes_loop_var(loop: ast.For) -> bool:
@@ -89,6 +162,8 @@ def check(root: Path = ROOT) -> list[str]:
     errors = []
     for path in scripts(root):
         errors += check_file(path, root)
+    for path in template_scripts(root):
+        errors += check_ops_in_loops(path, root)
     return errors
 
 
@@ -98,7 +173,8 @@ def main() -> int:
         print(f"::error::{e}", file=sys.stderr)
     if not errors:
         print(f"example rules: {len(scripts(ROOT))} scripts follow use-foreach-set and "
-              "active_object guards")
+              f"active_object guards; {len(template_scripts(ROOT))} templates have no "
+              "object operator in a loop")
     return 1 if errors else 0
 
 
