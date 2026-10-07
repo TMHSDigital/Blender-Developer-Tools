@@ -20,7 +20,7 @@ its first run, each step in a throwaway Blender user directory
 Check-only: no gallery still. The witnesses are exit codes and paths.
 
     blender --background --python extension_package_lifecycle.py --
-    blender --background --python extension_package_lifecycle.py -- --validate-only
+    blender --background --python extension_package_lifecycle.py -- --ship-wheel
     blender --background --python extension_package_lifecycle.py -- --data-next-to-file
 """
 import argparse
@@ -92,24 +92,32 @@ def check_build(work):
     return 0, dist
 
 
-def check_wheel_trap(work, validate_only):
+def check_wheel_trap(work, ship_wheel):
     """validate parses the manifest; only build opens the files it names."""
     src = copy_template(os.path.join(work, "wheel_src"))
     manifest = os.path.join(src, "blender_manifest.toml")
     with open(manifest, "a", encoding="utf-8") as fh:
         fh.write(f'\nwheels = ["{MISSING_WHEEL}"]\n')
+    if ship_wheel:  # falsification: the named wheel exists, so build has nothing to reject
+        wheel = os.path.normpath(os.path.join(src, MISSING_WHEEL))
+        os.makedirs(os.path.dirname(wheel))
+        with zipfile.ZipFile(wheel, "w") as z:
+            z.writestr("not_shipped/__init__.py", "")
+            z.writestr("not_shipped-1.0.dist-info/METADATA",
+                       "Metadata-Version: 2.1\nName: not_shipped\nVersion: 1.0\n")
     out_dir = os.path.join(work, "wheel_dist")
     os.makedirs(out_dir)
     v_code, _ = blender(["--command", "extension", "validate", src])
     b_code, b_out = blender(["--command", "extension", "build", "--source-dir", src, "--output-dir", out_dir])
     shipped = os.listdir(out_dir)
-    print(f"missing wheel: validate exit {v_code}, build exit {b_code}, output {shipped}")
+    print(f"{'shipped' if ship_wheel else 'missing'} wheel: validate exit {v_code}, "
+          f"build exit {b_code}, output {shipped}")
     if v_code != 0:
-        return fail("validate now rejects a missing wheel; the trap this example names is gone", 4)
-    gate_passed = v_code == 0 if validate_only else (b_code == 0 and bool(shipped))
-    if gate_passed:
-        return fail("a package whose wheel does not exist passed the release gate "
-                    f"({'validate only' if validate_only else 'build'})", 4)
+        return fail("validate rejects the package; the validate-is-not-a-gate trap this "
+                    "example names is gone", 4)
+    if b_code == 0 or shipped:
+        return fail(f"build accepted the package (exit {b_code}, output {shipped}); "
+                    "only build can reject a wheel the manifest names but the source lacks", 4)
     return 0
 
 
@@ -222,8 +230,8 @@ def check_online(user_dir):
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
-    p.add_argument("--validate-only", action="store_true",
-                   help="falsification: gate the release on validate alone")
+    p.add_argument("--ship-wheel", action="store_true",
+                   help="falsification: create the wheel the manifest names, so build succeeds")
     p.add_argument("--data-next-to-file", action="store_true",
                    help="falsification: store user data beside __file__")
     args = p.parse_args(argv)
@@ -235,7 +243,7 @@ def main():
         code, dist = check_build(work)
         if code:
             return code
-        code = check_wheel_trap(work, args.validate_only)
+        code = check_wheel_trap(work, args.ship_wheel)
         if code:
             return code
         code = check_listing(dist)

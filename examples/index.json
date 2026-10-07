@@ -726,7 +726,7 @@
     "falsifiers": [
       {
         "args": [
-          "--validate-only"
+          "--ship-wheel"
         ],
         "expect_exit": 4
       },
@@ -742,7 +742,7 @@
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
       "3": "Template does not validate or build, or the zip lacks its manifest",
-      "4": "Missing-wheel package passed the release gate (`--validate-only` lands here)",
+      "4": "`build` accepted the missing-wheel package, or `validate` rejected it (`--ship-wheel` lands here)",
       "5": "`server-generate` listing missing or wrong",
       "6": "Install, import, upgrade or remove failed, or `__package__` wrong",
       "7": "User data inside the install tree, lost on upgrade, or kept after removal (`--data-next-to-file` lands here)",
@@ -1209,7 +1209,7 @@
         "args": [
           "--wrong-origin"
         ],
-        "expect_exit": 4
+        "expect_exit": 13
       }
     ],
     "exit_codes": {
@@ -1217,14 +1217,15 @@
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
       "3": "Pixel buffer is not always RGBA",
-      "4": "Byte round-trip vs closed-form card (`--wrong-origin` lands here)",
+      "4": "Byte round-trip error or no quantization",
       "5": "Float-buffer round-trip failed",
       "6": "`scale()` did not reallocate, or stale-size read succeeded",
       "7": "`save()` source/buffer-drop contract drifted",
       "8": "`save_render()` flipped source or disturbed the buffer",
       "9": "Byte PNG save/reload error",
       "10": "Framing gate violation on the `--output` path (`gallery_framing`)",
-      "12": "`--output` produced no file"
+      "12": "`--output` produced no file",
+      "13": "Saved PNG rows do not put pixel (0, 0) at the bottom-left (`--wrong-origin` lands here)"
     }
   },
   {
@@ -1944,27 +1945,65 @@
     "falsifiers": [
       {
         "args": [
+          "--windowed-background-child"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
           "--return-zero-once"
         ],
         "expect_exit": 5
       },
       {
         "args": [
+          "--return-late-once"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--apply-in-worker"
+        ],
+        "expect_exit": 6
+      },
+      {
+        "args": [
+          "--no-event-timer"
+        ],
+        "expect_exit": 7
+      },
+      {
+        "args": [
           "--non-persistent"
         ],
         "expect_exit": 8
+      },
+      {
+        "args": [
+          "--stop-after-first"
+        ],
+        "expect_exit": 9
+      },
+      {
+        "args": [
+          "--no-catch"
+        ],
+        "expect_exit": 12
       }
     ],
     "exit_codes": {
       "0": "Success",
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
-      "3": "`--background` child failed, or its timer ran",
+      "3": "`--background` child failed, or its timer ran (`--windowed-background-child` lands here)",
       "4": "Windowed child wrote no result",
-      "5": "Timer return values not honoured (`--return-zero-once` lands here)",
-      "6": "Worker result not applied once on the main thread",
-      "7": "Modal operator did not finish and remove its timer",
-      "8": "File load did not keep only the persistent timer (`--non-persistent` lands here)"
+      "5": "Timer return values not honoured (`--return-zero-once`, `--return-late-once` land here)",
+      "6": "A worker result or error was handled off the main thread (`--apply-in-worker` lands here)",
+      "7": "Modal operator did not finish and remove its timer (`--no-event-timer` lands here)",
+      "8": "File load did not keep only the persistent timer (`--non-persistent` lands here)",
+      "9": "Not every concurrent job's result was applied (`--stop-after-first` lands here)",
+      "12": "Raising job not reported, or the drain kept polling (`--no-catch` lands here)"
     }
   },
   {

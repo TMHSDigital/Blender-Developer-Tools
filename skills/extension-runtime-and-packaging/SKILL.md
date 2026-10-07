@@ -141,7 +141,7 @@ The `--command extension` subcommands, `extension_path_user`, `online_access`, t
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
-- [`extension-package-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle): Takes templates/extension-addon-template through what an extension meets after its first run. Falsify: `--validate-only` (exit 4).
+- [`extension-package-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle): Takes templates/extension-addon-template through what an extension meets after its first run. Falsify: `--ship-wheel` (exit 4).
 
 <!-- examples:end -->
 
