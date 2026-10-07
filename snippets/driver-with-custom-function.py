@@ -1,6 +1,13 @@
 # Driver expression calling a custom Python function via driver_namespace.
-# Driver expressions block arbitrary Python by default; the namespace is the
-# whitelisted escape hatch.
+# The namespace makes the name resolvable; it does NOT make the call trusted.
+# Any call into driver_namespace is not a simple expression
+# (driver.is_simple_expression is False), so it runs only with Python
+# auto-execution on. Blender ships with it off: in a GUI session the driver
+# is dead unless the file is opened as Trusted Source, Auto Run Python
+# Scripts is enabled, or Blender starts with -y / --enable-autoexec.
+# --background runs do not show this. For shared .blend files prefer
+# driver variables plus a simple expression.
+# Manual: docs.blender.org/manual/en/latest/animation/drivers/troubleshooting.html
 #
 # driver_namespace is reset on every file load. A driver that evaluates while
 # its function is missing raises NameError and is disabled (is_valid False),

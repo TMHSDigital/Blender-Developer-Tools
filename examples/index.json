@@ -83,6 +83,13 @@
           "--flat-source"
         ],
         "expect_exit": 5
+      },
+      {
+        "args": [
+          "--unselect-target"
+        ],
+        "expect_exit": 4,
+        "min_version": "5.0"
       }
     ],
     "exit_codes": {
@@ -90,7 +97,7 @@
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
       "3": "Missing UV layer on the target",
-      "4": "Bake did not `FINISHED` or image `has_data` is false",
+      "4": "Bake did not `FINISHED` or image `has_data` is false (`--unselect-target` lands here on 5.x)",
       "5": "Detail deviant-pixel fraction below 0.40 (`--flat-source` lands here)",
       "6": "Detail MAD below 0.05",
       "7": "Flat control above 0.05 frac / 0.03 MAD",
@@ -557,6 +564,18 @@
           "--flat-expr"
         ],
         "expect_exit": 3
+      },
+      {
+        "args": [
+          "--simple-expr"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--swap-handlers"
+        ],
+        "expect_exit": 7
       }
     ],
     "exit_codes": {
@@ -565,6 +584,8 @@
       "2": "argparse / usage",
       "3": "Evaluated Z scale ≠ `wave_scale` (`--flat-expr` lands here)",
       "4": "Original datablock was not flushed",
+      "5": "A driver reports `is_simple_expression=True` (`--simple-expr` lands here)",
+      "7": "Handler argument types wrong: a `_pre` handler got a depsgraph or a `_post` one did not (`--swap-handlers` lands here)",
       "6": "`--output` produced no file",
       "10": "Gallery framing violation"
     }
@@ -1851,6 +1872,12 @@
           "--no-override"
         ],
         "expect_exit": 3
+      },
+      {
+        "args": [
+          "--clear-active-on-deselect"
+        ],
+        "expect_exit": 13
       }
     ],
     "exit_codes": {
@@ -1866,7 +1893,8 @@
       "9": "Faces per material ≠ what the parts brought (indices not remapped)",
       "10": "`--output` framing gate (`gallery_framing`)",
       "11": "`--output` asset-quality floors (`gallery_asset_quality`)",
-      "12": "`--output` produced no file"
+      "12": "`--output` produced no file",
+      "13": "After deselect-all the target is not still active-but-unselected, or something is still selected (`--clear-active-on-deselect` lands here)"
     }
   },
   {

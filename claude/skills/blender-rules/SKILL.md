@@ -42,7 +42,7 @@ Applies to: `**/__init__.py`, `**/blender_manifest.toml`. Full rule: [`rules/tar
 
 ## type-annotate-props-and-defend-context
 
-Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None.
+Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None, or that assumes the active object is selected.
 
 Applies to: `**/*.py`. Full rule: [`rules/type-annotate-props-and-defend-context.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/type-annotate-props-and-defend-context.mdc).
 

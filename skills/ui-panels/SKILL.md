@@ -220,7 +220,7 @@ def unregister():
 
    The label comes from the property definition. Pass `text=` only to override or to suppress with `text=""`.
 
-3. **Mixing `bl_region_type='UI'` with no `bl_category`**. Blender will silently default it, hiding your panel under "View" or similar. Always set `bl_category`.
+3. **Mixing `bl_region_type='UI'` with no `bl_category`**. Blender silently files the panel under a fallback sidebar tab you did not choose, mixed in with other add-ons, where users will not look for it. Always set `bl_category`.
 
 4. **Using `bl_region_type='TOOLS'` for new add-ons**. The tools region was deprecated in 2.8 in favor of the UI region for sidebar panels. Stick to `'UI'`.
 

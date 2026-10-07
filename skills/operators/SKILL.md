@@ -95,11 +95,15 @@ class MESH_OT_offset_along_normals(bpy.types.Operator):
 
 ## Defensive context handling
 
-`context.active_object` returns `None` when the scene has no active object, which happens routinely:
+`context.active_object` returns `None` only when there is no active object:
 
-- Headless scripts via `blender --background --python script.py` start with no active object.
-- Empty selections after a deselect-all.
-- Some context overrides set the active object to `None` deliberately.
+- An empty scene, such as after `read_factory_settings(use_empty=True)`, or a file whose view layer never had one.
+- The active object was deleted.
+- A context override sets `active_object=None` deliberately.
+
+It is **not** `None` just because nothing is selected, and not just because Blender runs headless. Measured on 4.5.11 and 5.2.1 (`--background --factory-startup`): the startup scene's active object is `Cube`, and after `bpy.ops.object.select_all(action='DESELECT')` it is still `Cube`, with `selected_objects == []` and `Cube.select_get() == False`.
+
+**Active and selected are independent.** That is the real pitfall: an active object that is not selected, hidden, or not editable. A `None` guard does not catch it. Operators that act on the selection then run on nothing, or on the wrong set, without raising. Measured: `bpy.ops.object.delete()` with the Cube active but deselected returns `{'CANCELLED'}` and the Cube survives. When the operation needs selection, check `obj.select_get()` or work from `context.selected_objects`. Check `obj.visible_get()` before acting on what the user sees. Check `obj.library is None` (and `obj.override_library` if you edit overrides) before writing to linked data.
 
 **Always** guard before dereferencing:
 
@@ -111,6 +115,9 @@ def execute(self, context):
         return {'CANCELLED'}
     if obj.type != 'MESH':
         self.report({'ERROR'}, f"{obj.name} is a {obj.type}, expected MESH")
+        return {'CANCELLED'}
+    if not obj.select_get():  # active is not selected after a deselect-all
+        self.report({'ERROR'}, f"{obj.name} is active but not selected")
         return {'CANCELLED'}
     # ...
 ```

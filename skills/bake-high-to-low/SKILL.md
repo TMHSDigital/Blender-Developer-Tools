@@ -19,15 +19,19 @@ This skill is the bake step. It composes `ai-mesh-cleanup` (identity scale, appl
 
 ## The core misunderstanding
 
-Baking is not a render. EEVEE has no bake path. The operator writes into an **Image Texture node** in the **active** object's material (the active one, `nodes.active`, when the material has several), not into a file and not into "the selected image datablock." The failure modes are not equally loud. Measured on 4.5.11 LTS and 5.2.1 LTS:
+Baking is not a render. EEVEE has no bake path. The operator writes into an **Image Texture node** in the **active** object's material, not into a file and not into "the selected image datablock." The node it picks is the material's *active texture* node, and on 5.x that node must also be **selected**. The active-texture node is the Image Texture node most recently made `nodes.active`, or the first one created if none ever was. Making a non-texture node (Principled, Output) active later does not move it.
+
+The safe pattern sets both: `nodes.active = tex` and `tex.select = True`. The failure modes are not equally loud. Measured on 4.5.11 LTS and 5.2.1 LTS (the selection rows also on 5.0.1 and 5.1.2):
 
 | Setup mistake | What `bpy.ops.object.bake` does |
 | --- | --- |
 | Target mesh has no UV layer | Raises `RuntimeError: No active UV layer found in the object "Low"` |
 | Target material has no Image Texture node | Returns `{'CANCELLED'}`, **raises nothing**, writes nothing |
-| The only Image Texture node is not `nodes.active` | Bakes into it anyway (`{'FINISHED'}`) |
+| Image Texture node is active but `tex.select = False` | **5.0 and later:** `{'CANCELLED'}`, Info `No active and selected image texture node found in material ...`, pixels untouched. **4.5 LTS:** `{'FINISHED'}`, bakes into it anyway |
+| Two Image Texture nodes, the one you mean is selected but the *other* is the active texture | **5.0 and later:** `{'CANCELLED'}`, same Info. **4.5 LTS:** bakes into the active texture node, not the selected one |
+| The only Image Texture node is selected but `nodes.active` is Principled | Bakes into it (`{'FINISHED'}`); it is still the active texture node |
 
-So a headless job must check the returned set: `{'CANCELLED'}` is the silent one. With several Image Texture nodes, set `nodes.active` to the one you mean.
+So a headless job must check the returned set: `{'CANCELLED'}` is the silent one. Do not "clean up" a `tex.select = True` line that looks redundant: on 5.x it is what lets the bake find its target. With several Image Texture nodes, make the one you mean `nodes.active` and selected.
 
 The pass type RNA is `type`, not `bake_type`. `bake_type` is not on `bpy.ops.object.bake`. Passing it is a TypeError.
 
@@ -84,7 +88,7 @@ else:
     obj.data.materials.append(mat)
 ```
 
-The Image Texture does **not** need to be linked into Principled for the bake to land. It must be `nodes.active`. After the bake, wire `ShaderNodeNormalMap` for display or export; do not plug Image Texture Color into Principled Normal.
+The Image Texture does **not** need to be linked into Principled for the bake to land. It must be the active texture node (`nodes.active = tex`) and, on 5.x, selected (`tex.select = True`). A new node is created selected, but code that deselects nodes or edits the tree afterwards can clear that. After the bake, wire `ShaderNodeNormalMap` for display or export; do not plug Image Texture Color into Principled Normal.
 
 Snippet: [`snippets/setup_bake_target_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/setup_bake_target_image.py).
 
@@ -150,6 +154,7 @@ Snippet: [`snippets/save_baked_image.py`](https://github.com/TMHSDigital/Blender
 | GPU / default device in CI | `scene.cycles.device = 'CPU'` |
 | Low selected, high active | High selected, low **active** |
 | Image Texture present but not `nodes.active` | Set `nodes.active = tex` |
+| Image Texture active but deselected (5.x `CANCELLED`) | Also set `tex.select = True` |
 | No UV layer | Confirm `mesh.uv_layers` before bake |
 | `Image.save()` after bake | `Image.save_render(path)` |
 | Hash / byte-compare maps across versions | Fraction / MAD vs `(0.5, 0.5, 1.0)` plus a flat-source control |

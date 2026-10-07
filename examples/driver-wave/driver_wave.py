@@ -11,11 +11,25 @@ profile. Exits non-zero on failure.
 ``--flat-expr`` drives Z scale with ``1.0`` and still asserts ``wave_scale``.
 That is the falsifier (``--same-axis`` in export-preset-axis).
 
+Two more contracts ride along:
+
+- A driver that calls a ``driver_namespace`` function is NOT a simple
+  expression (``driver.is_simple_expression`` is False), so it only runs
+  where Python auto-execution is allowed; in a GUI session with Auto Run
+  Python Scripts off (the default) it goes dead. ``--simple-expr`` writes the
+  same profile inline as ``1.4 + sin(i * 0.6)``: values still match, but the
+  driver is now simple and the check exits 5.
+- ``frame_change_pre`` and ``depsgraph_update_pre`` receive ``(scene, None)``;
+  only the ``_post`` variants get a Depsgraph. ``--swap-handlers`` registers
+  the pre probe on the post lists (and vice versa) and the check exits 7.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python driver_wave.py --                 # check only
     blender --background --python driver_wave.py -- --flat-expr      # must fail
+    blender --background --python driver_wave.py -- --simple-expr    # must fail (5)
+    blender --background --python driver_wave.py -- --swap-handlers  # must fail (7)
     blender --background --python driver_wave.py -- --output d.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -65,7 +79,7 @@ def lathe(bm, profile, segs=32):
     return rings
 
 
-def build_columns(flat_expr=False):
+def build_columns(flat_expr=False, simple_expr=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     # driver_namespace entries do not persist in .blend files; real add-ons
     # re-register them from a load_post handler. Headless, registering before
@@ -94,7 +108,12 @@ def build_columns(flat_expr=False):
         obj.scale = (BASE, BASE, 1.0)
         fcu = obj.driver_add("scale", 2)
         fcu.driver.type = 'SCRIPTED'
-        fcu.driver.expression = "1.0" if flat_expr else f"wave_scale({i})"
+        if flat_expr:
+            fcu.driver.expression = "1.0"
+        elif simple_expr:
+            fcu.driver.expression = f"1.4 + sin({i} * 0.6)"  # same profile, inline
+        else:
+            fcu.driver.expression = f"wave_scale({i})"
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     return objs
@@ -115,9 +134,55 @@ def check(objs):
             print(f"ERROR: col {i} original scale {obj.scale[2]:.4f} not flushed "
                   f"(expected {expect:.4f})", file=sys.stderr)
             return 4
+    # a driver_namespace call is never a "simple expression": it needs Python
+    # auto-execution, which a GUI session has off by default
+    simple = [obj.animation_data.drivers[0].driver.is_simple_expression for obj in objs]
+    if any(simple):
+        print(f"ERROR: {sum(simple)}/{COUNT} drivers report is_simple_expression=True; "
+              "the custom-function driver must not be a simple expression", file=sys.stderr)
+        return 5
     lo = min(wave_scale(i) for i in range(COUNT))
     hi = max(wave_scale(i) for i in range(COUNT))
-    print(f"columns={COUNT} driven_range={lo:.3f}..{hi:.3f} flushed_to_original=True")
+    print(f"columns={COUNT} driven_range={lo:.3f}..{hi:.3f} flushed_to_original=True "
+          f"is_simple_expression=False")
+    return 0
+
+
+PRE_HANDLERS = ("frame_change_pre", "depsgraph_update_pre")
+POST_HANDLERS = ("frame_change_post", "depsgraph_update_post")
+
+
+def check_handler_args(objs, swap=False):
+    """The pre handlers get (scene, None); the post handlers get (scene, Depsgraph)."""
+    seen = {}
+
+    def probe(name):
+        def handler(scene, depsgraph=None):
+            seen.setdefault(name, (type(scene).__name__, type(depsgraph).__name__))
+        return handler
+
+    registered = []
+    for name in PRE_HANDLERS + POST_HANDLERS:
+        # --swap-handlers hangs each probe on its opposite list
+        target = name.replace("_pre", "_post") if name.endswith("_pre") else name.replace("_post", "_pre")
+        handler_list = getattr(bpy.app.handlers, target if swap else name)
+        h = probe(name)
+        handler_list.append(h)
+        registered.append((handler_list, h))
+    try:
+        scene = bpy.context.scene
+        scene.frame_set(scene.frame_current + 1)
+        objs[0].update_tag()  # a real edit, so the depsgraph_update pair fires too
+        bpy.context.view_layer.update()
+    finally:
+        for handler_list, h in registered:
+            handler_list.remove(h)
+    want = {n: ("Scene", "NoneType") for n in PRE_HANDLERS}
+    want.update({n: ("Scene", "Depsgraph") for n in POST_HANDLERS})
+    if seen != want:
+        print(f"ERROR: handler argument types {seen} != {want}", file=sys.stderr)
+        return 7
+    print("handler args: " + ", ".join(f"{n}={seen[n][1]}" for n in PRE_HANDLERS + POST_HANDLERS))
     return 0
 
 
@@ -366,10 +431,17 @@ def main():
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--flat-expr", action="store_true",
                    help="drive Z scale with 1.0 (must fail)")
+    p.add_argument("--simple-expr", action="store_true",
+                   help="inline the profile as a simple expression (must fail, exit 5)")
+    p.add_argument("--swap-handlers", action="store_true",
+                   help="register the pre-handler probes on the post lists (must fail, exit 7)")
     args = p.parse_args(argv)
 
-    objs = build_columns(flat_expr=args.flat_expr)
+    objs = build_columns(flat_expr=args.flat_expr, simple_expr=args.simple_expr)
     code = check(objs)
+    if code:
+        return code
+    code = check_handler_args(objs, swap=args.swap_handlers)
     if code:
         return code
 

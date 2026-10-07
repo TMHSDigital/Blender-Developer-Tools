@@ -76,13 +76,24 @@ Common variable types:
 
 ### The expression security model
 
-Driver expressions run on every depsgraph evaluation. Blender restricts what they can call:
+Driver expressions run on every depsgraph evaluation. A SCRIPTED expression is one of two kinds, and they are trusted differently:
 
-- Built-in math is allowed: `+`, `-`, `*`, `/`, `**`, `%`.
-- A whitelist of math functions: `sin`, `cos`, `sqrt`, `pi`, `radians`, etc. (see the docs for the full list).
-- **Arbitrary Python is blocked.** Function calls to user-defined functions are blocked unless the function is registered in `bpy.app.driver_namespace`.
+1. **Simple expressions always run.** Blender evaluates the documented simple subset (arithmetic, comparisons, driver variables, `frame`, and whitelisted math such as `sin`, `cos`, `sqrt`, `pi`, `radians`, `min`, `max`) without Python, so they run even with script auto-execution off.
+2. **Everything else needs Python auto-execution.** That includes **every call to a `bpy.app.driver_namespace` function** and any attribute access such as `bpy.context.scene.frame_current`. Blender ships with auto-execution off (`preferences.filepaths.use_scripts_auto_execute` is `False` on a factory 4.5.11 and 5.2.1). A user who opens your `.blend` in a normal GUI session gets dead drivers unless they open it as *Trusted Source*, enable *Preferences > Save & Load > Auto Run Python Scripts*, or launch with `--enable-autoexec` / `-y`. See the manual's [Drivers > Troubleshooting](https://docs.blender.org/manual/en/latest/animation/drivers/troubleshooting.html): a scripted expression outside the simple subset needs Trusted Source or Auto Run Python Scripts.
 
-This is intentional. Without the restriction, opening a malicious .blend would auto-execute Python.
+`driver_namespace` does not make a function safe or trusted. It only makes the name resolvable once Python is allowed to run. The gate is auto-execution.
+
+Check which kind you wrote with `driver.is_simple_expression`. Measured on 4.5.11 and 5.2.1:
+
+| Expression | `is_simple_expression` |
+| --- | --- |
+| `1.4 + sin(3 * 0.6)`, `frame / 10`, `max(1, 2)`, `1.0` | `True` |
+| `wave_scale(0)` (a `driver_namespace` function) | `False` |
+| `bpy.context.scene.frame_current` | `False` |
+
+**Prefer simple expressions and driver variables when the `.blend` will be shared.** Read data through variables (`SINGLE_PROP`, `TRANSFORMS`) and keep the expression in the simple subset. Reach for a namespace function only when the add-on that registers it will be installed wherever the file is opened, and tell the user the file needs Auto Run.
+
+Headless tests cannot see this failure. `--background` runs still evaluated a reopened file's namespace driver (so a save-and-reopen check passes). Assert `is_simple_expression` instead of trusting a background evaluation.
 
 ### The driver_namespace escape hatch
 
@@ -172,13 +183,15 @@ The handlers live as lists at `bpy.app.handlers.<event>`. To register, append; t
 | `save_post` | `(filepath: str)` | After the .blend is written. Same single filepath argument. |
 | `load_pre` | `(filepath: str)` | Before a .blend is loaded. The argument is the file being loaded. |
 | `load_post` | `(filepath: str)` | After a .blend is loaded. Use to validate or migrate add-on data. |
-| `depsgraph_update_pre` | `(scene, depsgraph)` | Before a depsgraph evaluation pass. |
+| `depsgraph_update_pre` | `(scene, None)` | Before a depsgraph evaluation pass. The second argument is `None`, not a Depsgraph. |
 | `depsgraph_update_post` | `(scene, depsgraph)` | After a depsgraph evaluation pass. Fires very frequently; must be O(1) or near-O(1). |
-| `frame_change_pre` | `(scene, depsgraph)` | Before frame is set. |
+| `frame_change_pre` | `(scene, None)` | Before frame is set. The second argument is `None`; the depsgraph is not available yet. |
 | `frame_change_post` | `(scene, depsgraph)` | After frame is set. |
-| `exit_pre` (new in 5.1) | `(*args)` | Before Blender shuts down. Use for resource cleanup, telemetry flush, etc. The argument is not a Scene; accept `*args`. |
+| `exit_pre` (new in 5.1) | `(interactive: bool)` | Before Blender shuts down. Use for resource cleanup, telemetry flush, etc. The argument is `True` for an interactive (GUI) exit and `False` in `--background`. A handler written as `(*args)` receives `(bool, None)`. |
 
-The save/load handlers (`save_pre`, `save_post`, `load_pre`, `load_post`) all receive the **file path as a string** as their single argument, **not** a Scene. (Verified empirically on 4.5.10 LTS and 5.1.1. The [`bpy.app.handlers`](https://docs.blender.org/api/current/bpy.app.handlers.html) docs type these as `Callable[[str], None]`; `save_pre` is described as "on saving a blend file (before). Accepts one argument: the file being saved, an empty string for the startup-file." — the load handlers use the same wording with "the file being loaded".) Only the depsgraph/frame-change handlers receive `(scene, depsgraph)`.
+The save/load handlers (`save_pre`, `save_post`, `load_pre`, `load_post`) all receive the **file path as a string** as their single argument, **not** a Scene. (Verified empirically on 4.5.10 LTS and 5.1.1. The [`bpy.app.handlers`](https://docs.blender.org/api/current/bpy.app.handlers.html) docs type these as `Callable[[str], None]`; `save_pre` is described as "on saving a blend file (before). Accepts one argument: the file being saved, an empty string for the startup-file." — the load handlers use the same wording with "the file being loaded".) Only the `_post` depsgraph/frame-change handlers receive `(scene, depsgraph)`. The `_pre` ones get `(scene, None)`, so a handler that calls `depsgraph.<anything>` there raises `AttributeError: 'NoneType' object has no attribute ...`. Measured on 4.5.11 and 5.2.1: `frame_change_pre` and `depsgraph_update_pre` get `['Scene', 'NoneType']`, the `_post` variants `['Scene', 'Depsgraph']`. If a pre handler truly needs evaluated data, call `bpy.context.evaluated_depsgraph_get()`, and not from inside a depsgraph handler, where it can trigger the evaluation the handler is part of. Usually the right fix is to move the work to the `_post` handler.
+
+`exit_pre` was measured on 5.2.1: a `--background` exit passes `False`, a windowed `wm.quit_blender()` passes `True`.
 
 The `exit_pre` handler in 5.1 is particularly useful for add-ons that need to release external resources (sockets, log files, child processes) deterministically before the process terminates.
 

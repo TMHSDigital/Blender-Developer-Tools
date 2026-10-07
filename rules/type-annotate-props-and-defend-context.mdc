@@ -1,5 +1,5 @@
 ---
-description: Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None.
+description: Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None, or that assumes the active object is selected.
 alwaysApply: false
 globs:
   - "**/*.py"
@@ -60,15 +60,29 @@ class MyOperator(bpy.types.Operator):
 
 ## Discipline 2: defend against None context
 
-`bpy.context.active_object` returns `None` when:
+`bpy.context.active_object` returns `None` when there is no active
+object:
 
-- The user has nothing selected.
-- The active scene has no objects.
-- Blender is running in `--background` mode without an active scene.
-- The user is in a context where the active object is hidden or
-  unavailable (some sub-areas).
+- The scene is empty (for example after
+  `read_factory_settings(use_empty=True)`).
+- The active object was deleted.
+- A context override passes `active_object=None`, or the current area
+  has no object context.
 
-`context.selected_objects` returns `[]` in similar situations.
+It is **not** `None` merely because nothing is selected or because
+Blender runs in `--background`. Measured on 4.5.11 and 5.2.1 with
+`--background --factory-startup`: the startup `Cube` is active, and it
+stays active after `select_all(action='DESELECT')` while
+`selected_objects` is `[]`.
+
+**Active and selected are independent.** The `None` guard below is
+necessary but not sufficient. An object can be active and unselected,
+hidden, or linked from a library. Operators that act on the selection
+then do nothing, or act on the wrong objects, without raising (measured:
+`bpy.ops.object.delete()` with an active but deselected Cube returns
+`{'CANCELLED'}`). When the operation needs selection, check
+`obj.select_get()` or iterate `context.selected_objects`. Check
+`obj.visible_get()`, and `obj.library is None` before writing to it.
 
 ```python
 # WRONG: AttributeError on None, often surfaces only in headless or
@@ -105,6 +119,9 @@ class MyOperator(bpy.types.Operator):
         obj = context.active_object
         if obj is None:
             self.report({'ERROR'}, "No active object")
+            return {'CANCELLED'}
+        if not obj.select_get():
+            self.report({'ERROR'}, f"{obj.name} is active but not selected")
             return {'CANCELLED'}
         obj.location.z += 1.0
         return {'FINISHED'}
