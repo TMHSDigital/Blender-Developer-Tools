@@ -9,7 +9,9 @@
 # Anything before `--` is consumed by Blender itself.
 #
 # This template demonstrates the safe headless batch pattern:
-#   - bpy.data.* for direct manipulation (no UI required)
+#   - bpy.data.* for direct manipulation (no UI required), including the
+#     modifier bake: Mesh.new_from_object on the evaluated object, not
+#     bpy.ops.object.modifier_apply per object in a loop
 #   - bpy.context.temp_override(...) only when an operator is genuinely needed
 #   - explicit exit codes so a CI pipeline can detect failures
 #
@@ -53,21 +55,39 @@ def parse_args(argv):
     return parser.parse_args(script_args)
 
 
-def add_and_apply_modifier(obj, modifier_type, subsurf_levels=2):
-    """Add a modifier to obj and apply it.
-
-    Modifier application is one of the few cases where bpy.ops is the
-    canonical path; bpy.data does not expose an apply method. We use
-    temp_override to set the active object cleanly, instead of the
-    deprecated context-dict-passing form.
-    """
+def add_modifier(obj, modifier_type, subsurf_levels=2):
+    """Append a modifier to the END of obj's stack, after any existing ones."""
     modifier = obj.modifiers.new(name=modifier_type, type=modifier_type)
     if modifier_type == "SUBSURF":
         modifier.levels = subsurf_levels
         modifier.render_levels = subsurf_levels
+    return modifier
 
-    with bpy.context.temp_override(object=obj, active_object=obj):
-        bpy.ops.object.modifier_apply(modifier=modifier.name)
+
+def bake_modifier_stack(objs):
+    """Replace each object's mesh with its evaluated stack, in stack order.
+
+    Not bpy.ops.object.modifier_apply: on a modifier that is not first in the
+    stack it evaluates that modifier against the BASE mesh and leaves the
+    earlier ones live ("Applied modifier was not first"), so export_apply then
+    runs them afterwards and the order is reversed. new_from_object on the
+    evaluated object bakes the whole stack in its real order, through the data
+    API, with one depsgraph evaluation for every object (no operator per
+    object in a loop). Each object gets its own new mesh, so shared mesh data
+    is never rewritten under another user.
+    """
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    for obj in objs:
+        baked = bpy.data.meshes.new_from_object(
+            obj.evaluated_get(depsgraph),
+            preserve_all_data_layers=True,
+            depsgraph=depsgraph,
+        )
+        old = obj.data
+        obj.modifiers.clear()
+        obj.data = baked
+        if old.users == 0:
+            bpy.data.meshes.remove(old)
 
 
 def main():
@@ -82,15 +102,20 @@ def main():
 
     if args.apply_modifier:
         for obj in mesh_objects:
-            try:
-                add_and_apply_modifier(obj, args.apply_modifier, args.subsurf_levels)
-                print(f"Applied {args.apply_modifier} to {obj.name}")
-            except RuntimeError as exc:
-                print(
-                    f"ERROR: failed to apply {args.apply_modifier} to {obj.name}: {exc}",
-                    file=sys.stderr,
-                )
-                return 3
+            add_modifier(obj, args.apply_modifier, args.subsurf_levels)
+        try:
+            bake_modifier_stack(mesh_objects)
+        except RuntimeError as exc:
+            print(
+                f"ERROR: failed to apply {args.apply_modifier}: {exc}",
+                file=sys.stderr,
+            )
+            return 3
+        for obj in mesh_objects:
+            print(
+                f"Applied {args.apply_modifier} to {obj.name}: "
+                f"{len(obj.data.vertices)} verts, {len(obj.data.polygons)} faces"
+            )
 
     try:
         bpy.ops.export_scene.gltf(

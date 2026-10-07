@@ -218,6 +218,18 @@ jobs:
           [ "$code" -eq 2 ] || { echo "::error::expected exit 2 for no-mesh input, got $code"; exit 1; }
           echo "no-mesh exit code = $code (correct)"
 
+      - name: Headless template applies the new modifier after the existing stack (#468)
+        run: |
+          set -euo pipefail
+          # stack.blend: a cube with a live SUBSURF (levels 1). SUBSURF then
+          # TRIANGULATE is 48 tris; the reversed order a non-first
+          # modifier_apply produces is 72.
+          xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/stack.blend" \
+            --python-exit-code 1 --python templates/headless-batch-script-template/script.py -- \
+            --output "$RUNNER_TEMP/out/stack.glb" --apply-modifier TRIANGULATE
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python tests/smoke/check_glb_tris.py -- \
+            "$RUNNER_TEMP/out/stack.glb" 48
+
       - name: Extension template passes Blender's own manifest validator
         run: |
           set -euo pipefail
@@ -255,6 +267,39 @@ jobs:
           set -e
           [ "$code" -eq 2 ] || { echo "::error::expected exit 2 for missing input, got $code"; exit 1; }
           echo "missing-input exit code = $code (correct)"
+
+      - name: Pipeline template keeps every part of a shared-mesh, parented GLB (#462, #467)
+        run: |
+          set -euo pipefail
+          # Root rotated 90 deg on X, scaled 2x, at z=3; Body plus two wheels
+          # sharing one mesh. lod0 must hold every part (world bbox == source),
+          # grounded on its world minimum Z, with no node rotation or scale.
+          mkdir -p "$RUNNER_TEMP/out/pipeline_parented"
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python tests/smoke/make_pipeline_glb.py -- \
+            "$RUNNER_TEMP/out/parented_src.glb" --parented
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python templates/ai-asset-pipeline-template/pipeline.py -- \
+            --input "$RUNNER_TEMP/out/parented_src.glb" \
+            --outdir "$RUNNER_TEMP/out/pipeline_parented" \
+            --preset unity \
+            --lod-budgets 1024,256,64 \
+            --collider convex
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python tests/smoke/check_pipeline_glb.py -- \
+            "$RUNNER_TEMP/out/parented_src.glb" "$RUNNER_TEMP/out/pipeline_parented/lod0.glb"
+
+      - name: Falsifier - pipeline template rejects a 2 km asset with exit 8
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python tests/smoke/make_pipeline_glb.py -- \
+            "$RUNNER_TEMP/out/huge_src.glb" --radius 1000
+          set +e
+          xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python templates/ai-asset-pipeline-template/pipeline.py -- \
+            --input "$RUNNER_TEMP/out/huge_src.glb" \
+            --outdir "$RUNNER_TEMP/out/pipeline" \
+            --preset unity
+          code=$?
+          set -e
+          [ "$code" -eq 8 ] || { echo "::error::expected exit 8 for out-of-range extent, got $code"; exit 1; }
+          echo "out-of-range extent exit code = $code (correct)"
 
       - name: Headless render template runs (exit 0, PNG produced)
         run: |

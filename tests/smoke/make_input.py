@@ -23,3 +23,14 @@ empty = out.replace("input.blend","empty.blend")
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.wm.save_as_mainfile(filepath=empty)
 print(f"saved empty {empty}")
+# a cube with a LIVE SUBSURF (levels 1) for the modifier-order path (#468):
+# --apply-modifier TRIANGULATE must run after it (26 verts, 48 tris), not
+# before it (38 verts, 36 quads -> 72 tris once glTF triangulates)
+stack = out.replace("input.blend","stack.blend")
+bpy.ops.wm.read_factory_settings(use_empty=True)
+me = bpy.data.meshes.new("Cube"); bm = bmesh.new()
+bmesh.ops.create_cube(bm, size=2.0); bm.to_mesh(me); bm.free()
+o = bpy.data.objects.new("Cube", me); bpy.context.collection.objects.link(o)
+o.modifiers.new("Subsurf", "SUBSURF").levels = 1
+bpy.ops.wm.save_as_mainfile(filepath=stack)
+print(f"saved stack {stack}")

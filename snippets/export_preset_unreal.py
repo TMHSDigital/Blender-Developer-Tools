@@ -19,11 +19,19 @@ import bpy
 
 def apply_selected_mesh_transforms():
     # One operator call for the whole selection. transform_apply reads
-    # selected_editable_objects, so that is the key to override; overriding
-    # selected_objects alone does not narrow it.
+    # selected_editable_objects, so that is the key to override. It refuses
+    # shared (glTF-instanced) mesh data, so copy it per object first, and
+    # unparent keeping the world placement, or a rotated root stays on the node.
     meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
     if not meshes:
         return
+    for o in meshes:
+        if o.data.users > 1:
+            o.data = o.data.copy()
+        if o.parent is not None:
+            world = o.matrix_world.copy()
+            o.parent = None
+            o.matrix_world = world
     with bpy.context.temp_override(
         object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
     ):

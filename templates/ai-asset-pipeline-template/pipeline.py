@@ -18,7 +18,9 @@
 #   snippets/lod_chain.py           (make_lod_chain; itself duplicates the above)
 #   snippets/convex_hull_collider.py
 #   snippets/export_preset_unity.py / export_preset_godot.py / export_preset_unreal.py
-# Cleanup order follows skills/ai-mesh-cleanup/SKILL.md.
+# Cleanup order follows skills/ai-mesh-cleanup/SKILL.md. Every mesh in the
+# input is kept: parts are made single-user, unparented, applied and joined
+# into one object before the LOD chain, so nothing is dropped.
 # Exit codes follow templates/headless-batch-script-template/script.py:
 #   0 success, 2+ distinct failure modes, argparse usage also exits 2.
 #
@@ -96,18 +98,43 @@ def parse_budgets(text):
     return budgets
 
 
-def scene_units_are_meters(scene):
-    units = scene.unit_settings
-    if units.system not in {"METRIC", "NONE"}:
-        return False
-    return abs(units.scale_length - 1.0) < 1e-6
+# Sanity range for the asset's largest world extent, in meters. A generated
+# prop written in centimeters as meters lands ~100x too large; one written in
+# meters as centimeters lands ~100x too small. read_factory_settings always
+# leaves the scene metric at scale 1.0, so the scene settings cannot reveal
+# this; only the imported geometry can.
+MIN_EXTENT_M = 0.01
+MAX_EXTENT_M = 100.0
+
+
+def isolate_mesh_data(objs):
+    # glTF instancing imports as several objects sharing one Mesh. transform_apply
+    # refuses multi-user data ("Cannot apply to a multi user"), and rewriting
+    # shared vertices (origin_to_base) moves every other instance. Give each
+    # object its own copy; the last user keeps the original.
+    for obj in objs:
+        if obj.data.users > 1:
+            obj.data = obj.data.copy()
+
+
+def clear_parent_keep_transform(objs):
+    # A glTF hierarchy imports its meshes under a root empty that may be
+    # rotated or scaled. Applying the child's own rotation leaves the root's in
+    # matrix_world, so local Z is still not world Z. Unparent, keeping the
+    # world placement, before applying.
+    for obj in objs:
+        if obj.parent is not None:
+            world = obj.matrix_world.copy()
+            obj.parent = None
+            obj.matrix_world = world
+    bpy.context.view_layer.update()
 
 
 def rot_scale_is_identity(obj, tol=1e-6):
-    # Rotation and scale both: origin_to_base() shifts along local Z, which is
-    # world Z only once rotation is applied. A GLB node often carries a
-    # rotation with identity scale.
-    m = obj.matrix_basis.to_3x3()
+    # Rotation and scale both, read from matrix_world: matrix_basis is identity
+    # on a child of a rotated root, which would skip the apply. origin_to_base()
+    # shifts along local Z, which is world Z only once this holds.
+    m = obj.matrix_world.to_3x3()
     return all(
         abs(m[i][j] - (1.0 if i == j else 0.0)) < tol
         for i in range(3)
@@ -115,15 +142,48 @@ def rot_scale_is_identity(obj, tol=1e-6):
     )
 
 
-def apply_object_transform(obj):
+def apply_transforms(objs):
+    # One operator call for the whole list. transform_apply acts on
+    # selected_editable_objects, so that is the key to override.
+    if not objs:
+        return
     with bpy.context.temp_override(
-        object=obj, active_object=obj, selected_editable_objects=[obj]
+        object=objs[0], active_object=objs[0], selected_editable_objects=list(objs)
     ):
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 
+def join_meshes(objs):
+    # Every part ships: one object.join folds the parts into objs[0], baking
+    # each part's world placement relative to it and keeping material slots.
+    if len(objs) == 1:
+        return objs[0]
+    active = objs[0]
+    with bpy.context.temp_override(
+        object=active,
+        active_object=active,
+        selected_objects=list(objs),
+        selected_editable_objects=list(objs),
+    ):
+        bpy.ops.object.join()
+    return active
+
+
+def largest_extent_m(obj, scene):
+    # Precondition: rotation and scale applied, so local extents are world ones.
+    mesh = obj.data
+    n = len(mesh.vertices)
+    if n == 0:
+        return 0.0
+    flat = [0.0] * (n * 3)
+    mesh.vertices.foreach_get("co", flat)
+    extent = max(max(flat[a::3]) - min(flat[a::3]) for a in range(3))
+    return extent * scene.unit_settings.scale_length
+
+
 def origin_to_base(obj):
-    # Precondition: rotation and scale applied (local Z == world Z).
+    # Precondition: rotation and scale applied (local Z == world Z) and the
+    # mesh single-user (isolate_mesh_data), or other instances move.
     mesh = obj.data
     n = len(mesh.vertices)
     if n == 0:
@@ -254,19 +314,6 @@ def box_collider(obj, name=None):
     return collider
 
 
-def apply_selected_mesh_transforms():
-    # Duplicated from snippets/export_preset_unity.py. One operator call for
-    # the whole selection; transform_apply reads selected_editable_objects,
-    # so that is the key to override (selected_objects alone does not narrow it).
-    meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
-    if not meshes:
-        return
-    with bpy.context.temp_override(
-        object=meshes[0], active_object=meshes[0], selected_editable_objects=meshes
-    ):
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-
 def select_only(obj):
     for other in bpy.data.objects:
         other.select_set(False)
@@ -279,7 +326,9 @@ def export_preset(filepath, preset, draco):
     # it that way (Unreal converts to centimeters itself), so every preset is
     # the same export. `preset` stays as the hook for engine-specific import
     # hints, such as Godot's "-convcolonly" collider name suffix.
-    apply_selected_mesh_transforms()
+    # The snippets' apply_selected_mesh_transforms() prelude is not repeated
+    # here: main() already isolated, unparented and applied every part, and
+    # the LODs and collider copy that identity matrix_world.
     bpy.ops.export_scene.gltf(
         filepath=filepath,
         export_format="GLB",
@@ -336,16 +385,29 @@ def main():
 
     print(f"Found {len(meshes)} mesh object(s): {[o.name for o in meshes]}")
 
-    scene = bpy.context.scene
-    if not scene_units_are_meters(scene):
-        scene.unit_settings.system = "METRIC"
-        scene.unit_settings.scale_length = 1.0
-        print("Set scene units to metric meters")
+    # Shared mesh data and parent hierarchies are how glTF instancing and node
+    # trees import; both must be resolved before any transform is applied.
+    isolate_mesh_data(meshes)
+    clear_parent_keep_transform(meshes)
+    try:
+        apply_transforms([o for o in meshes if not rot_scale_is_identity(o)])
+        hero = join_meshes(meshes)
+    except RuntimeError as exc:
+        print(f"ERROR: transform apply or join failed: {exc}", file=sys.stderr)
+        return 12
+    print(f"Joined {len(meshes)} part(s) into {hero.name}")
 
-    hero = max(meshes, key=evaluated_triangle_count)
-    if not rot_scale_is_identity(hero):
-        apply_object_transform(hero)
-        print(f"Applied object scale/rotation on {hero.name}")
+    scene = bpy.context.scene
+    extent = largest_extent_m(hero, scene)
+    print(f"largest_extent_m={extent:.4f}")
+    if not MIN_EXTENT_M <= extent <= MAX_EXTENT_M:
+        print(
+            f"ERROR: largest extent {extent:.4f} m is outside "
+            f"[{MIN_EXTENT_M}, {MAX_EXTENT_M}] m; check the source units",
+            file=sys.stderr,
+        )
+        return 8
+
     origin_to_base(hero)
     recalc_normals(hero)
     src_tris = evaluated_triangle_count(hero)
@@ -353,9 +415,14 @@ def main():
 
     lods = make_lod_chain(hero, budgets)
     for lod, budget in zip(lods, budgets):
-        print(
-            f"{lod.name} budget={budget} evaluated_tris={evaluated_triangle_count(lod)}"
-        )
+        tris = evaluated_triangle_count(lod)
+        print(f"{lod.name} budget={budget} evaluated_tris={tris}")
+        if tris > budget:
+            print(
+                f"ERROR: {lod.name} has {tris} triangles, over its budget of {budget}",
+                file=sys.stderr,
+            )
+            return 9
 
     collider = None
     if args.collider == "convex":
