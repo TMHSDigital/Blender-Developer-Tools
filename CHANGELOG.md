@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.147.2] - 2026-10-07
+
+### For agents and users
+
+**Fixes**
+
+- fix(templates): keep every mesh, handle shared and parented imports, bake modifier stacks in order (#477) ([`f59ff3f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f59ff3f041fe173010a32b7befc77dda84f8c58e))
+
+<details>
+<summary>Maintenance (1 commit): CI, tests, site, examples, showcase, docs</summary>
+
+- fix: make install copy, counts, manifests and release notes tell one story (#475) ([`89ec30a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/89ec30a733dc30c2ec20140c96dab3a8c83c382f))
+
+</details>
+
+[Release v0.147.2](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.147.2)
+
 ## [0.147.1] - 2026-10-07
 
 ### Fixes

@@ -2,7 +2,7 @@
 
 # Roadmap
 
-**Current:** v0.147.1
+**Current:** v0.147.2
 
 ## Next for agents
 
