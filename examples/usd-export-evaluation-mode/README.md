@@ -61,11 +61,12 @@ against it. `10` is the shared framing helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also base cube verts ≠ 8 |
+| 2 | argparse / usage |
 | 3 | VIEWPORT TESSELLATE point/face count off closed form |
 | 4 | RENDER TESSELLATE point/face count or scheme off closed form |
 | 5 | BEST_MATCH cage point count or scheme off |
 | 6 | RENDER and VIEWPORT USDA point counts are identical (check), or the re-imported RENDER goblet is not denser than the VIEWPORT one (`--output`) |
+| 7 | Base cube verts ≠ 8 (checked first) |
 | 10 | Gallery framing violation |
 | 12 | `--output` produced no file |
 

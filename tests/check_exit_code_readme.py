@@ -340,6 +340,90 @@ def readme_table_codes(text):
     return codes
 
 
+# --- reserved codes in examples/ (#473) --------------------------------------
+# 2 is argparse's usage exit; 10 and 11 are the shared render gates
+# (gallery_framing.EXIT_FRAMING, gallery_asset_quality.EXIT_ASSET_QUALITY).
+# An example may not spend them on its own checks: an overloaded code makes a
+# falsifier impossible to target (2 is banned as one) or misattributes it.
+RESERVED = {
+    2: (re.compile(r"argparse|usage", re.I), "argparse / usage"),
+    10: (re.compile(r"framing", re.I), "the gallery framing gate"),
+    11: (re.compile(r"asset[- ]quality|quality floor", re.I), "the asset-quality gate"),
+}
+ALSO_RE = re.compile(r"\balso\b", re.I)
+TABLE_TEXT_RE = re.compile(r"^\|\s*`?(\d+)`?\s*\|(.*)\|\s*$")
+
+
+def readme_table_rows(text):
+    """{code: meaning text} for the Exit codes table."""
+    rows = {}
+    in_section = False
+    for line in text.splitlines():
+        if EXIT_HEADING_RE.match(line):
+            in_section = True
+            continue
+        if in_section and HEADING_RE.match(line):
+            break
+        if in_section:
+            match = TABLE_TEXT_RE.match(line)
+            if match:
+                rows[int(match.group(1))] = match.group(2).strip()
+    return rows
+
+
+def reserved_row_errors(rows, readme_rel):
+    errors = []
+    for code, (pattern, meaning) in RESERVED.items():
+        text = rows.get(code)
+        if text is None:
+            continue
+        if not pattern.search(text) or ALSO_RE.search(text):
+            errors.append(
+                f"{readme_rel}: exit {code} is reserved for {meaning} in examples/; "
+                f"the row reads {text!r} (renumber the example's own check)"
+            )
+    return errors
+
+
+def literal_reserved_sites(tree, helpers):
+    """(lineno, code) for a bare integer 2/10/11 at an exit site. The gates'
+    codes must come from the helper (its constant or its check call), so a
+    literal 10 or 11 is an example spending a reserved code on its own check."""
+    def literal_of(node):
+        code = int_literal(node)
+        if code is not None:
+            return code
+        if isinstance(node, ast.Tuple) and node.elts:
+            return literal_of(node.elts[0])
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add) \
+                and isinstance(node.left, ast.Tuple):
+            return literal_of(node.left)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) \
+                and node.func.id in helpers:
+            index, name = helpers[node.func.id]
+            for kw in node.keywords:
+                if kw.arg == name:
+                    return literal_of(kw.value)
+            if index < len(node.args):
+                return literal_of(node.args[index])
+        return None
+
+    sites = []
+    for node in ast.walk(tree):
+        expr = None
+        if isinstance(node, ast.Return) and node.value is not None:
+            expr = node.value
+        elif isinstance(node, ast.Call) and _dotted(node.func) == ("sys", "exit") \
+                and len(node.args) == 1:
+            expr = node.args[0]
+        if expr is None:
+            continue
+        code = literal_of(expr)
+        if code in RESERVED:
+            sites.append((node.lineno, code))
+    return sites
+
+
 def iter_py():
     for scope in SCOPES:
         base = os.path.join(ROOT, scope)
@@ -373,6 +457,18 @@ def check_file(path):
 
     if not has_dunder_main(tree):
         return errors
+
+    if rel.startswith("examples/"):
+        for lineno, code in literal_reserved_sites(tree, passthrough_helpers(tree)):
+            errors.append(
+                f"{rel}:{lineno}: literal exit {code} is reserved in examples/ "
+                f"({RESERVED[code][1]}); renumber the check, or return the "
+                f"helper's constant / check call for a gate"
+            )
+        readme = os.path.join(os.path.dirname(path), "README.md")
+        if os.path.isfile(readme):
+            rows = readme_table_rows(open(readme, encoding="utf-8").read())
+            errors.extend(reserved_row_errors(rows, relpath(readme)))
 
     nonzero = {}
     for code, lineno in visitor.literals:

@@ -57,8 +57,8 @@ against it.
 | 2 | argparse / usage |
 | 3 | Topology ≠ closed form |
 | 4 | Color attribute missing |
-| 5 | Domain/type ≠ CORNER/FLOAT_COLOR (`--point-domain` lands here) |
-| 6 | Attribute sized to verts, not loops |
+| 5 | Domain/type ≠ CORNER/FLOAT_COLOR (diagnostic, checked last) |
+| 6 | Attribute sized to verts, not loops (`--point-domain` lands here) |
 | 7 | `active_color` not set |
 | 8 | Probe loop color off HSV closed form |
 | 9 | `--output` produced no file |
@@ -66,5 +66,5 @@ against it.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--point-domain` (expects exit 5).
+Smoke does not pass `--output`. Its catalog falsifier is `--point-domain` (expects exit 6).
 

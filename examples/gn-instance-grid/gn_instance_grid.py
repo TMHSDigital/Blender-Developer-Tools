@@ -135,10 +135,15 @@ def build_keycap_mesh():
         bm.free()
     # the hidden underside must not bend the skirt's smooth normals: the foot
     # ring (the first RING_VERTS verts created) is marked sharp
-    for e in me.edges:
-        a, b = e.vertices
-        if a < RING_VERTS and b < RING_VERTS:
-            e.use_edge_sharp = True
+    n_edges = len(me.edges)
+    ev = [0] * (2 * n_edges)
+    me.edges.foreach_get("vertices", ev)
+    sharp = [False] * n_edges
+    me.edges.foreach_get("use_edge_sharp", sharp)
+    for i in range(n_edges):
+        if ev[2 * i] < RING_VERTS and ev[2 * i + 1] < RING_VERTS:
+            sharp[i] = True
+    me.edges.foreach_set("use_edge_sharp", sharp)
     return me
 
 

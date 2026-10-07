@@ -58,7 +58,7 @@ matte check spheres do. The still's render path gates framing through
 # Two-render correctness check (tiny Cycles CPU renders) — the CI check:
 blender --background --python light_link_studio.py --
 
-# Falsifier: receiver_collection unset. Must exit non-zero (assignment).
+# Falsifier: receiver_collection unset. Must exit non-zero (linked render: decoy lit).
 blender --background --python light_link_studio.py -- --skip-link
 
 # Also render the gallery still (Cycles, deterministic samples):
@@ -77,8 +77,7 @@ against it.
 | 2 | argparse / usage |
 | 3 | Light datablock gained `light_linking` |
 | 4 | Light objects lost `light_linking` |
-| 5 | `receiver_collection` assignment did not read back (`--skip-link` lands here) |
-| 6 | Linked state: hero dark or hero/decoy ratio below gate |
+| 6 | Linked state: hero dark or hero/decoy ratio below gate (`--skip-link` lands here) |
 | 7 | Decoy rise below gate when unlinked |
 | 8 | Hero drifted across the unlink |
 | 9 | `--output` produced no file |
@@ -86,4 +85,4 @@ against it.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--skip-link` (expects exit 5).
+Smoke does not pass `--output`. Its catalog falsifier is `--skip-link` (expects exit 6).

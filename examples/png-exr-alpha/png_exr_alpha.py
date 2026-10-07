@@ -191,7 +191,7 @@ def check(opaque_alpha=False):
         return fail(
             f"closed-form palette worst {model_worst:.7f} < floor "
             f"{PNG_ERR_FLOOR} — probe colors no longer stress false unpremul",
-            2,
+            14,
         )
     print(
         f"closed-form float→PNG worst RGB err {model_worst:.7f} "
@@ -237,25 +237,13 @@ def check(opaque_alpha=False):
     )
 
     # --- 2. Same float buffer → OpenEXR: float-precision round-trip --------
+    # Image.save() writes in the IMAGE's own `file_format`; it ignores the
+    # scene's render.image_settings entirely, so none are set here. To write
+    # with explicit settings (color_mode, color_depth), use save_render with a
+    # scene whose image_settings carry them — section 4 does exactly that.
     img_f2 = new_float_image("FloatExrSrc")
     fill_pattern(img_f2)
-    scene = bpy.context.scene
-    scene.render.image_settings.file_format = "OPEN_EXR"
-    scene.render.image_settings.color_mode = "RGBA"
-    try:
-        scene.render.image_settings.color_depth = "32"
-    except TypeError:
-        pass
-
-    td = tempfile.mkdtemp(prefix="png_exr_alpha_exr_")
-    exr_path = os.path.join(td, "probe.exr")
-    img_f2.filepath_raw = exr_path
-    img_f2.file_format = "OPEN_EXR"
-    img_f2.save()
-    exr_loaded = bpy.data.images.load(exr_path)
-    exr_loaded.colorspace_settings.name = "Non-Color"
-    exr_got = [0.0] * (W * H * 4)
-    exr_loaded.pixels.foreach_get(exr_got)
+    exr_got, _exr_path = save_and_reload(img_f2, "OPEN_EXR", "exr")
 
     exr_err = max_channel_err(orig, exr_got, channels=4)
     if exr_err > EXR_TOL:
@@ -284,7 +272,7 @@ def check(opaque_alpha=False):
         return fail(
             f"byte→PNG disagrees with straight-alpha 8-bit model by "
             f"{byte_model_err:.7f} (tol {BYTE_TOL:.7f}); worst={byte_worst}",
-            10,
+            15,
         )
     # Stress cell: authored (0.02,0.02,0.02,a=1/255). False unpremul → ~1.0;
     # byte straight path must stay near 0.02.
@@ -294,7 +282,7 @@ def check(opaque_alpha=False):
             f"byte→PNG stress cell RGB=({stress[0]:.5f},{stress[1]:.5f},"
             f"{stress[2]:.5f}) looks false-unpremul-mangled (expected ~0.02) "
             f"— byte/float storage contract flipped",
-            11,
+            16,
         )
     print(
         f"byte→PNG IHDR bit_depth={bit_b}; model residual {byte_model_err:.7f} "
@@ -303,8 +291,10 @@ def check(opaque_alpha=False):
     )
 
     # --- 4. OPEN_EXR color_mode='RGB' drops alpha --------------------------
+    # save_render (unlike save) DOES honor the scene's image_settings.
     img_f3 = new_float_image("FloatExrRgb")
     fill_pattern(img_f3)
+    scene = bpy.context.scene
     scene.render.image_settings.file_format = "OPEN_EXR"
     scene.render.image_settings.color_mode = "RGB"
     td3 = tempfile.mkdtemp(prefix="png_exr_alpha_rgb_")

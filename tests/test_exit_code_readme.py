@@ -60,5 +60,43 @@ class Resolution(unittest.TestCase):
         self.assertEqual(c.passthrough_helpers(tree), {})
 
 
+class ReservedCodes(unittest.TestCase):
+    """2 / 10 / 11 are argparse / framing / asset-quality in examples/ (#473)."""
+
+    def rows(self, table):
+        return c.readme_table_rows("## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n"
+                                   + textwrap.dedent(table))
+
+    def test_overloaded_rows_rejected(self):
+        bad = self.rows("""\
+            | 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+            | 10 | X span off closed form; also gallery framing violation |
+            | 11 | Evaluated bbox not symmetric about X |
+        """)
+        self.assertEqual(len(c.reserved_row_errors(bad, "R")), 3)
+
+    def test_reserved_rows_accepted(self):
+        good = self.rows("""\
+            | 2 | argparse / usage |
+            | 10 | Gallery framing violation (render path; `gallery_framing`) |
+            | 11 | Asset-quality floor violation (`--output` only) |
+        """)
+        self.assertEqual(c.reserved_row_errors(good, "R"), [])
+
+    def test_literal_reserved_sites(self):
+        tree = ast.parse(textwrap.dedent("""
+            def fail(msg, code):
+                return code
+            def check():
+                if a: return 2
+                if b: return fail("x", 11), None
+                if c: return gallery_framing.EXIT_FRAMING
+                if d: return gallery_framing.check_framing(s)
+                return 12
+        """))
+        sites = c.literal_reserved_sites(tree, c.passthrough_helpers(tree))
+        self.assertEqual(sorted(code for _, code in sites), [2, 11])
+
+
 if __name__ == "__main__":
     unittest.main()

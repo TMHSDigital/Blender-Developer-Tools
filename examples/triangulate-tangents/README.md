@@ -99,8 +99,9 @@ helper.
 | 6 | Bitangent ≠ sign × (n × t) |
 | 7 | Tangents deviate from the edge/UV closed form |
 | 8 | Flipped tangent inside a clean triangle |
-| 10 | Gallery framing violation; also `--output` produced no file |
+| 10 | Gallery framing violation (`--output` only; `gallery_framing`) |
 | 11 | Asset-quality floor violation (`--output` only; shared helper) |
+| 12 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

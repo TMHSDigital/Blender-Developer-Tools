@@ -152,7 +152,7 @@ def check(keep_plate, clear_plate, skip_delete=False, unset_instead=False):
             "the snippet __main__ would have been dark for the same reason",
             file=sys.stderr,
         )
-        return 2
+        return 9
 
     keep_plate[KEY] = VALUE
     clear_plate[KEY] = VALUE

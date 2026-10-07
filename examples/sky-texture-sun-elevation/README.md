@@ -22,10 +22,10 @@ often gets wrong across the 4.5 LTS → 5.1 window.
   luminance at 8° vs 55°. Measured rise **2.25x** on 5.1.2 and **1.50x** on
   4.5.11 LTS (gate ≥ 1.25).
 
-**What each check catches on failure:** broken Sky→Background link (exit 6),
+**What each check catches on failure:** broken Sky→Background link (exit 6, checked after the renders),
 wrong `sky_type` for the running version (exit 3), lost `sun_elevation`
 round-trip (exit 4), `dust_density` / `NISHITA` present on the wrong side of
-5.0 (exit 5), a non-working sky (zenith floor, exit 7), and an elevation that
+5.0 (exit 5), a non-working sky (zenith floor, exit 7 — where `--unlink-sky` lands), and an elevation that
 does not brighten zenith (exit 8 — rise below 1.25).
 
 **Version witness:** `sky_type` and the dust/aerosol rename are the divergence;
@@ -75,7 +75,7 @@ bottom 0.044, top 0.161. The ground, plaza and meridian inlay are stage.
 # Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
 blender --background --python sky_texture_sun_elevation.py --
 
-# Falsifier: Sky→Background unlinked. Must exit non-zero (world links).
+# Falsifier: Sky→Background unlinked. Must exit non-zero (zenith probe: no sky).
 blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
 
 # Also render the gallery diptych (Cycles; framing gate exit 10, clip gate exit 12):
@@ -95,8 +95,8 @@ against it.
 | 3 | `sky_type` is not the identifier for this Blender |
 | 4 | `sun_elevation` round-trip failed |
 | 5 | `dust_density` / `aerosol_density` / `NISHITA` / `MULTIPLE_SCATTERING` trap |
-| 6 | Sky → Background → World Output links broken (`--unlink-sky` lands here) |
-| 7 | High-elevation zenith luma below floor |
+| 6 | Sky → Background → World Output links broken (diagnostic, after the zenith probes) |
+| 7 | High-elevation zenith luma below floor (`--unlink-sky` lands here) |
 | 8 | Zenith luma did not rise with elevation |
 | 9 | `--output` produced no file |
 | 10 | `--output` framing violation (`gallery_framing`, per panel) |
@@ -105,4 +105,4 @@ against it.
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
 Smoke does not pass `--output`, so exits 10 and 12 are render-path only.
-Its catalog falsifier is `--unlink-sky` (expects exit 6).
+Its catalog falsifier is `--unlink-sky` (expects exit 7).

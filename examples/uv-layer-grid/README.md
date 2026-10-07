@@ -91,11 +91,11 @@ missing-render-file check.
 | 8 | calc_uvs=False unexpectedly created a UV layer |
 | 9 | Explicit UV assignment error |
 | 10 | Framing gate violation on the `--output` path (`gallery_framing`) |
-| 11 | Broken panel is not flat |
 | 12 | Broken panel is not texel-(0,0) teal |
 | 13 | Repaired panel is not a checker |
 | 14 | Broken and repaired panels render identically |
 | 15 | `--output` produced no file |
+| 16 | Broken panel is not flat |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

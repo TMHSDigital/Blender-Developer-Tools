@@ -24,8 +24,10 @@ that mapping fails the example, not just the docs.
 # Cheap correctness check (materials + engine-id witness, no render):
 blender --background --python swatch_grid.py --
 
-# Falsifier: same RGB on every swatch. Must exit non-zero.
-blender --background --python swatch_grid.py -- --same-base
+# Falsifiers (smoke runs them with --output; see the exit table):
+blender --background --python swatch_grid.py -- --output s.png --engine cycles --same-base
+blender --background --python swatch_grid.py -- --invert-engine-id
+blender --background --python swatch_grid.py -- --no-specular-shim
 
 # Render and pixel-verify with the build's EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
@@ -77,9 +79,11 @@ against it. `10` is the shared framing helper.
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Distinct swatch colors ≠ 6 (`--same-base` lands here); also render not six distinct regions |
+| 3 | Distinct swatch material colors ≠ 6 (check-only path; with `--output` a diagnostic after check 6) |
 | 4 | `--output` produced no file |
-| 5 | Wrong-era EEVEE engine id was accepted |
+| 5 | Wrong-era EEVEE engine id was accepted (`--invert-engine-id` lands here) |
+| 6 | Rendered still is black or not six distinct swatch regions (`--same-base` lands here) |
+| 7 | `set_specular` did not resolve `Specular IOR Level` or the value did not land (`--no-specular-shim` lands here) |
 | 10 | Gallery framing violation |
 
 `--no-verify` was a skip-flag and has been removed. Pixel verification always
@@ -87,7 +91,7 @@ runs when `--output` is passed.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--same-base` (expects exit 3).
+Smoke passes `--output` (Cycles, 8 samples, 640 px) so the pixel check runs. Its catalog falsifiers are `--same-base` (expects exit 6, the rendered regions), `--invert-engine-id` (expects exit 5) and `--no-specular-shim` (expects exit 7).
 
 ## Verified
 

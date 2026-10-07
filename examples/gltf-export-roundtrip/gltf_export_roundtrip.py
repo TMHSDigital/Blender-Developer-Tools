@@ -331,7 +331,7 @@ def check(crate, export_kwargs):
                   f"count {len(snap['loops'])} — the file's vertex split drifted "
                   "from the evaluated mesh (export_apply / export_normals contract)",
                   file=sys.stderr)
-            return 10
+            return 22
 
         xs = [v[0] for v in snap["verts"]]
         ys = [v[1] for v in snap["verts"]]
@@ -367,11 +367,11 @@ def check(crate, export_kwargs):
             print(f"ERROR: prim0 TEXCOORD_0 count {len(disk_uv)} != POSITION "
                   f"count {len(disk_pos)} - the UV attribute does not cover "
                   "the primitive", file=sys.stderr)
-            return 11
+            return 23
         if len(disk_pos) < UV_SAMPLE:
             print(f"ERROR: prim0 carries only {len(disk_pos)} loops, fewer than "
                   f"the {UV_SAMPLE} the V-flip check samples", file=sys.stderr)
-            return 11
+            return 23
         flip_err = 0.0
         sampled = 0
         for pd, (u, v) in zip(disk_pos[:UV_SAMPLE], disk_uv[:UV_SAMPLE]):
@@ -383,11 +383,11 @@ def check(crate, export_kwargs):
         if sampled != UV_SAMPLE:
             print(f"ERROR: V-flip check compared {sampled} loops, expected "
                   f"{UV_SAMPLE}", file=sys.stderr)
-            return 11
+            return 23
         if flip_err > UV_TOL:
             print(f"ERROR: on-disk UVs deviate {flip_err:.3e} from the V-flipped "
                   "authored layout (glTF texture origin is top-left)", file=sys.stderr)
-            return 11
+            return 23
 
         # wipe the file, then re-import: names must survive exactly
         bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -667,18 +667,18 @@ def render_still(authored, roundtrip, path, engine):
     scene.view_settings.view_transform = 'Standard'
     bpy.context.view_layer.update()
     # Layer 1 framing gate (silhouette matte), before the beauty render so a
-    # defective composition ships no artifact. The helper returns 10, which is
-    # a check code here (POSITION count), so the call site remaps it to 22.
+    # defective composition ships no artifact. Exit 10 is reserved for this
+    # gate in every example, so the POSITION-count check above uses 22.
     fcode = gallery_framing.check_framing(
         scene, cam, hero=[authored], elements=[authored, roundtrip],
         stage=[floor, wall])
     if fcode:
-        return 22
-    # asset-quality floors on the authored crate; its 11 is also a check
-    # code here (UV V-flip), so the call site remaps it to 23
+        return gallery_framing.EXIT_FRAMING
+    # asset-quality floors on the authored crate (exit 11, reserved; the UV
+    # V-flip check above uses 23)
     if gallery_asset_quality.check_asset_quality(scene, cam, hero=[authored],
                                                  stage=[floor, wall]):
-        return 23
+        return gallery_asset_quality.EXIT_ASSET_QUALITY
     bpy.ops.render.render(write_still=True)
     return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 21
 

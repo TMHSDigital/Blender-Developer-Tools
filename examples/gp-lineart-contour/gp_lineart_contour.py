@@ -20,9 +20,9 @@ inked illustration. The check evaluates the modifier through the depsgraph
 (no bake required) from the same camera the still renders from and asserts
 stroke/point lower bounds against the known failure modes above.
 
-``--no-contour`` clears ``use_contour`` after the modifier is built and
-still asserts it is True. That is the falsifier (``--same-axis`` in
-export-preset-axis). The GPv3 address shim and the thickness/radius trap
+``--no-contour`` clears ``use_contour`` after the modifier is built. That is
+the falsifier: the check never re-reads the flag, so it is caught by the
+evaluated stroke counts. The GPv3 address shim and the thickness/radius trap
 are untouched.
 
 By default it runs the correctness check only. Pass --output to render:
@@ -78,20 +78,20 @@ def check_gp_version_gate():
     if bpy.app.version >= (5, 0, 0):
         if not hasattr(bpy.data, "grease_pencils"):
             print("ERROR: grease_pencils missing on 5.x", file=sys.stderr)
-            return 2
+            return 9
         if hasattr(bpy.data, "grease_pencils_v3"):
             print("ERROR: grease_pencils_v3 should be gone on 5.x", file=sys.stderr)
-            return 2
+            return 9
         print("5.x contract: grease_pencils is GPv3; _v3 alias gone")
     else:
         if not hasattr(bpy.data, "grease_pencils_v3"):
             print("ERROR: grease_pencils_v3 missing on 4.5", file=sys.stderr)
-            return 2
+            return 9
         legacy = bpy.data.grease_pencils.new("LegacyProbe")
         lframe = legacy.layers.new("L").frames.new(1)
         if hasattr(lframe, "drawing") or not hasattr(lframe, "strokes"):
             print("ERROR: 4.5 grease_pencils is not legacy GPencil", file=sys.stderr)
-            return 2
+            return 9
         bpy.data.grease_pencils.remove(legacy)
         print("4.5 contract: grease_pencils is legacy; GPv3 lives at _v3")
     return 0
@@ -519,9 +519,8 @@ def check(sc, source, la_ob, mod):
     if mod.source_object != source:
         print("ERROR: source_object round-trip failed", file=sys.stderr)
         return 4
-    if not mod.use_contour:
-        print("ERROR: use_contour should be True", file=sys.stderr)
-        return 4
+    # No `use_contour` read-back here: `--no-contour` must be caught by the
+    # evaluated strokes below, not by re-reading the flag it just wrote (#469).
 
     # Happy path: contours present
     n_s, n_p = eval_stroke_counts(la_ob)

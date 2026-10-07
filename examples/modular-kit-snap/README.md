@@ -49,7 +49,7 @@ y-nudge on two verts): boundary verts off the end planes, worst **3.000e-03 m**
 gap/overlap (exit 5); bbox off the declared tile by **3.000e-03** (exit 6);
 boundary edges torn off the rim (exit 7); non-watertight detail (exit 8);
 detail escaping the tile (exit 9); unapplied transforms, default names, or
-wandering origins (exit 11).
+wandering origins (exit 12).
 
 **Version witness:** check output is byte-identical on Blender 4.5.11 LTS
 and 5.1.2 — same counts, same zero measured deviations.
@@ -108,8 +108,9 @@ the shared Layer 1 helper). `11` is the shared asset-quality helper.
 | 7 | Boundary edge count, non-manifold edges, or rim off the end planes |
 | 8 | Detail part not watertight |
 | 9 | Detail part reaches a tile boundary; also `--output` produced no file |
-| 10 | Framing deviation score exceeds cap (`--close-camera`) |
-| 11 | Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation |
+| 10 | Framing deviation score exceeds cap (`--close-camera`; `gallery_framing.measure_framing_deviation`) |
+| 11 | Gallery asset-quality violation (`--output` only) |
+| 12 | Kit part count, unapplied scale, namespace, or origin |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

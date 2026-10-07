@@ -531,7 +531,7 @@ def verify_still(path):
         return fail(
             f"broken panel is not flat (spread {b_spread:.4f} > 0.02) — "
             f"the hazard did not render as one color",
-            11,
+            16,
         )
     if not (b_mean[2] > b_mean[1] > b_mean[0]):
         return fail(

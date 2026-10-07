@@ -9,7 +9,10 @@ rules are checked statically over examples/, showcase/ and templates/
 - use-foreach-set-for-bulk-data: a `for x in <...>.polygons` or
   `for x in <...>.vertices` loop that assigns to an attribute of `x`. Those two
   collection names exist only on Mesh (BMesh uses faces/verts), so a hit is a
-  per-element RNA write, never bmesh code. Use foreach_set instead.
+  per-element RNA write, never bmesh code. Use foreach_set instead. The same
+  rule also covers loops over `.loops`, `.edges` and `.data` when the
+  iterated expression is a Mesh collection or an attribute/UV/color layer
+  (see check_widened_bulk_writes; #474).
 - type-annotate-props-and-defend-context: `name = bpy.context.active_object`
   (or `context.active_object`) not followed directly by `if name is None`.
 
@@ -158,10 +161,81 @@ def check_file(path: Path, root: Path) -> list[str]:
     return errors
 
 
+# --- widened bulk-write rule (#474) -----------------------------------------
+# `.polygons` / `.vertices` are Mesh-only, so check_file flags any loop over
+# them. `.loops`, `.edges` and `.data` also exist on BMesh (bm.edges, f.loops)
+# or on unrelated objects, so they are flagged only when the iterated
+# expression is provably a Mesh collection or an attribute/UV/color layer:
+# its text (or the text its root name was last assigned from) names
+# `.data.` (Object.data is the Mesh), a mesh/attribute layer, or `to_mesh()`,
+# and nothing in it came from bmesh.
+LAYER_HINTS = ("uv_layers", "attributes", "color_attributes", "vertex_colors",
+               ".data.", "to_mesh(", "meshes")
+WIDENED = {"loops", "edges", "data"}
+
+
+def _assignments(tree: ast.AST) -> dict[str, str]:
+    """name -> source text of its (last) simple assignment, file-wide."""
+    out: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for tgt in node.targets:
+                if isinstance(tgt, ast.Name):
+                    out[tgt.id] = ast.unparse(node.value)
+        elif isinstance(node, ast.For) and isinstance(node.target, ast.Name):
+            out[node.target.id] = ast.unparse(node.iter)
+    return out
+
+
+def _root_name(node: ast.AST) -> str | None:
+    while isinstance(node, (ast.Attribute, ast.Subscript, ast.Call)):
+        node = node.func if isinstance(node, ast.Call) else node.value
+    return node.id if isinstance(node, ast.Name) else None
+
+
+def _is_mesh_layer(expr: ast.AST, assigns: dict[str, str]) -> bool:
+    text = ast.unparse(expr)
+    seen = set()
+    root = _root_name(expr)
+    # follow the root name back through its assignments (bounded)
+    while root and root in assigns and root not in seen and len(seen) < 6:
+        seen.add(root)
+        text += " " + assigns[root]
+        try:
+            root = _root_name(ast.parse(assigns[root], mode="eval").body)
+        except SyntaxError:
+            break
+    if "bmesh" in text or any(n == "bm" or n.startswith("bm_") for n in seen | {root or ""}):
+        return False
+    if isinstance(expr, ast.Attribute) and expr.attr == "data" and "uv_layers" not in text \
+            and "attributes" not in text and "vertex_colors" not in text:
+        return False  # `.data` of anything but a layer (Object.data, ...) is not bulk storage
+    return any(h in text for h in LAYER_HINTS)
+
+
+def check_widened_bulk_writes(path: Path, root: Path) -> list[str]:
+    rel = path.relative_to(root).as_posix()
+    src = path.read_text(encoding="utf-8")
+    lines = src.split("\n")
+    tree = ast.parse(src)
+    assigns = _assignments(tree)
+    errors = []
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.For) and isinstance(node.iter, ast.Attribute)
+                and node.iter.attr in WIDENED and isinstance(node.target, ast.Name)
+                and writes_loop_var(node) and _is_mesh_layer(node.iter, assigns)
+                and not exempt(lines, node.lineno)):
+            errors.append(f"{rel}:{node.lineno}: per-element write in a loop over "
+                          f"{ast.unparse(node.iter)}; use foreach_set "
+                          f"(rule use-foreach-set-for-bulk-data) or mark '{MARKER} <why>'")
+    return errors
+
+
 def check(root: Path = ROOT) -> list[str]:
     errors = []
     for path in scripts(root):
         errors += check_file(path, root)
+        errors += check_widened_bulk_writes(path, root)
     for path in template_scripts(root):
         errors += check_ops_in_loops(path, root)
     return errors

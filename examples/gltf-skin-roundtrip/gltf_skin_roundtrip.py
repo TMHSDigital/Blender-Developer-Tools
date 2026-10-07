@@ -692,12 +692,12 @@ def check(obj, arm, no_skins=False):
     if len(arms) != 1:
         print(f"ERROR: {len(arms)} armatures after import, expected 1",
               file=sys.stderr)
-        return 10
+        return 21
     ri_arm = arms[0]
     if len(ri_arm.data.bones) != len(BONES):
         print(f"ERROR: {len(ri_arm.data.bones)} bones != {len(BONES)}",
               file=sys.stderr)
-        return 11
+        return 22
     rest_err = 0.0
     for name in BONES:
         b1 = ri_arm.data.bones.get(name)

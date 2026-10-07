@@ -70,9 +70,10 @@ def read_gltf(path):
 
 
 def local_extent(me):
-    xs = [v.co.x for v in me.vertices]
-    ys = [v.co.y for v in me.vertices]
-    zs = [v.co.z for v in me.vertices]
+    """Per-axis (min, max) of the mesh's local coordinates, read in bulk."""
+    co = [0.0] * (3 * len(me.vertices))
+    me.vertices.foreach_get("co", co)
+    xs, ys, zs = co[0::3], co[1::3], co[2::3]
     return (
         (min(xs), max(xs)),
         (min(ys), max(ys)),
@@ -117,7 +118,7 @@ def check(ob, bake):
     missing = [k for k in EXPORT_KWARGS if k not in props]
     if missing:
         print(f"ERROR: exporter RNA drifted, missing {missing}", file=sys.stderr)
-        return 2
+        return 5
     me = ob.data
     got = tuple(float(c) for c in ob.scale)
     non_uniform = len({round(c, 6) for c in got}) > 1

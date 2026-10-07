@@ -127,7 +127,7 @@ def check(obj, mod, out_dir, force_mode=None, force_subdiv=None):
     base = len(obj.data.vertices)
     if base != 8:
         print(f"ERROR: base cube verts {base} != 8", file=sys.stderr)
-        return 2
+        return 7
 
     mode = force_mode or "RENDER"
     subdiv = force_subdiv or "TESSELLATE"

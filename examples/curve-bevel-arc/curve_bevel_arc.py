@@ -9,8 +9,9 @@ evaluated vert/face counts as a MEASURED regression gate — curve tessellation
 has no simple closed form, so those two constants pin today's behavior (see
 EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 
-``--no-caps`` leaves ``use_fill_caps`` False and still asserts the ends are
-capped. That is the falsifier (``--same-axis`` in export-preset-axis).
+``--no-caps`` leaves ``use_fill_caps`` False. That is the falsifier: the check
+never re-reads the flag, so the missing cap faces fail the evaluated
+tessellation count (exit 7).
 
 The still stages the checked curve as a round-bar horseshoe magnet: its two
 filled caps are the ground-steel pole faces, turned to the camera, with
@@ -83,9 +84,9 @@ def check(obj):
     if abs(curve.bevel_depth - BEVEL) > 1e-6:
         print(f"ERROR: bevel_depth {curve.bevel_depth} != {BEVEL}", file=sys.stderr)
         return 5
-    if not curve.use_fill_caps:
-        print("ERROR: use_fill_caps is False — ends should be capped", file=sys.stderr)
-        return 6
+    # No `use_fill_caps` read-back: `--no-caps` must be caught by the
+    # evaluated tessellation below (the caps are faces), not by re-reading the
+    # flag it just wrote (#469).
 
     bpy.context.view_layer.update()
     dg = bpy.context.evaluated_depsgraph_get()
@@ -120,7 +121,7 @@ def check(obj):
     expect_x_span = 2 * RADIUS + 2 * BEVEL
     if abs(x_span - expect_x_span) > 0.05:
         print(f"ERROR: x span {x_span:.4f} != {expect_x_span:.4f}", file=sys.stderr)
-        return 10
+        return 12
 
     print(f"points={n} bevel={BEVEL} caps=True eval_verts={got_v} "
           f"eval_faces={got_f} z={z_lo:.3f}..{z_hi:.3f} x_span={x_span:.3f}")
@@ -508,7 +509,7 @@ def render_still(obj, path, engine):
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
-        return 11
+        return 13
     return 0
 
 
@@ -519,7 +520,7 @@ def main():
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--no-caps", action="store_true",
-                   help="falsifier: use_fill_caps=False, still assert caps")
+                   help="falsifier: use_fill_caps=False; the evaluated tessellation must fail")
     args = p.parse_args(argv)
 
     obj = build(no_caps=args.no_caps)

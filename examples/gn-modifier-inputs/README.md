@@ -66,16 +66,16 @@ against it. `10` is the shared framing helper.
 | 4 | Modifiers do not share one node_group |
 | 5 | Version-path write raised (`--api dict` on 5.2, `--api rna` on 4.5) |
 | 6 | Version-path read raised |
-| 7 | Readback ≠ intended height (`--same-height` lands here) |
-| 8 | Evaluated Z-extent ≠ intended height |
+| 7 | Readback ≠ intended height (diagnostic, after the evaluated checks) |
+| 8 | Evaluated Z-extent ≠ intended height (`--same-height` lands here) |
 | 9 | Evaluated mesh not sitting on z=0 |
 | 10 | Gallery framing violation |
-| 11 | Evaluated extents not distinct |
 | 12 | `--output` produced no file |
+| 13 | Evaluated extents not distinct |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Forcing the RNA path is not smoke-tested (it raises on 4.5 and is the default on 5.2). Its catalog falsifiers are `--same-height` (expects exit 7) and `--api dict` (expects exit 5; 5.2+ only, where the dict write raises; SKIP on older Blender, where it exits 0).
+Smoke does not pass `--output`. Forcing the RNA path is not smoke-tested (it raises on 4.5 and is the default on 5.2). Its catalog falsifiers are `--same-height` (expects exit 8) and `--api dict` (expects exit 5; 5.2+ only, where the dict write raises; SKIP on older Blender, where it exits 0).
 
 ## Falsification
 
@@ -85,6 +85,6 @@ Smoke does not pass `--output`. Forcing the RNA path is not smoke-tested (it rai
 | `--api rna` | 4.5.11 LTS | exit 5, `AttributeError: 'NodesModifier' object has no attribute 'properties'` |
 | `--api dict` | 5.1.2 | exit 0 (5.1 still takes the dict form) |
 | `--api rna` | 5.1.2 | exit 5, `AttributeError: 'NodesModifier' object has no attribute 'properties'` |
-| `--same-height` | 5.2.1, 5.1.2, 4.5.11 | exit 7, `readback 1.0 != written 2.0 on SpiralStair.H2` |
+| `--same-height` | 5.2.1 | exit 8, `evaluated Z-extent 1.000000 != height 2.0 on SpiralStair.H2` (the readback, exit 7, now runs after it) |
 | `RAIL_H = -0.5` (treads climb past the post) | 5.2.1, 4.5.11 | exit 8, `evaluated Z-extent 1.934334 != height 1.0` |
 | `--api auto` | 5.2.1, 5.1.2, 4.5.11 | exit 0, extents 1.000 / 2.000 / 3.000 |

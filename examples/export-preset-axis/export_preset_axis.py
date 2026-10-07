@@ -24,8 +24,9 @@ Closed form (Blender Z-up source `(x, y, z)`):
   so the preset round-trips to `(x, y, z)` and the Z-up file becomes
   `(x, -z, y)`.
 
-`--same-axis` exports both with `export_yup=True`. Both reimports stand, the
-"orientations differ" check exits 9. That is the falsifier.
+`--same-axis` exports both with `export_yup=True`. Both reimports stand, so
+the measured "orientations differ" check exits 9. That is the falsifier; the
+check does not branch on the flag.
 
 By default it runs only the correctness check (no render) - the CI smoke
 check. Pass --output to also render a still:
@@ -363,7 +364,7 @@ def check(src, same_axis):
     missing = [k for k in PRESET_KWARGS if k not in exp_props]
     if missing:
         print(f"ERROR: exporter RNA drifted, missing {missing}", file=sys.stderr)
-        return 2, None, None
+        return 13, None, None
 
     pts = world_points(src)
     sx, sy, sz = aabb_of(pts)
@@ -418,15 +419,6 @@ def check(src, same_axis):
         print(f"ERROR: preset node has rotation {u_node.get('rotation')}", file=sys.stderr)
         return 5, None, None
 
-    if not same_axis:
-        if not (near(g_min[2], sz[0]) and near(g_max[2], sz[1])):
-            print(
-                f"ERROR: Z-up disk POSITION is not raw Z-up "
-                f"g_min={g_min} g_max={g_max} source_z={sz}",
-                file=sys.stderr,
-            )
-            return 6, None, None
-
     preset_objs = import_gltf_meshes(preset_path)
     zup_objs = import_gltf_meshes(zup_path)
     if preset_objs is None or zup_objs is None:
@@ -467,14 +459,15 @@ def check(src, same_axis):
         span(uy) - span(gy)
     ) > SPAN_GAP
 
-    if same_axis:
-        if orientations_differ:
-            print(
-                "ERROR: --same-axis did not collapse the axis difference",
-                file=sys.stderr,
-            )
-            return 11, preset_objs, zup_objs
-        print("ERROR: orientations did not differ", file=sys.stderr)
+    # The behavioral contract first: the two re-imports must stand differently.
+    # `--same-axis` lands here on the measured re-import spans; the check knows
+    # nothing about the flag, so deleting it makes the falsifier fail (#469).
+    if not orientations_differ:
+        print(
+            f"ERROR: reimported orientations did not differ "
+            f"preset_z={span(uz):.4f} zup_z={span(gz):.4f}",
+            file=sys.stderr,
+        )
         return 9, preset_objs, zup_objs
 
     if not zup_lying:
@@ -497,13 +490,13 @@ def check(src, same_axis):
         )
         return 8, preset_objs, zup_objs
 
-    if not orientations_differ:
+    if not (near(g_min[2], sz[0]) and near(g_max[2], sz[1])):
         print(
-            f"ERROR: reimported orientations did not differ "
-            f"preset_z={span(uz):.4f} zup_z={span(gz):.4f}",
+            f"ERROR: Z-up disk POSITION is not raw Z-up "
+            f"g_min={g_min} g_max={g_max} source_z={sz}",
             file=sys.stderr,
         )
-        return 9, preset_objs, zup_objs
+        return 6, preset_objs, zup_objs
 
     return 0, preset_objs, zup_objs
 
@@ -713,7 +706,7 @@ def render_still(source, preset_objs, zup_objs, path, engine):
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
-        return 6
+        return 14
     return 0
 
 

@@ -12,8 +12,9 @@ gets wrong across the 4.5 LTS → 5.1 window:
 4. ``sun_elevation`` is load-bearing: raising it brightens zenith luminance
    — proven with two tiny Cycles EXR probes (straight-up camera) in one check.
 
-``--unlink-sky`` drops the Sky → Background Color link and still asserts
-the chain. That is the falsifier (``--same-axis`` in export-preset-axis).
+``--unlink-sky`` drops the Sky → Background Color link. That is the
+falsifier: the zenith probe renders catch it (the world stops being a sky),
+before the link check, which now runs last as a diagnostic.
 The sky_type / dust_density version traps are untouched.
 
 By default it runs the correctness check (tiny Cycles CPU renders, no gallery
@@ -486,9 +487,9 @@ def check(sc, world, sky, bg, unlink_sky=False):
         for link in list(nt.links):
             if link.from_node == sky and link.to_node.name == "Background":
                 nt.links.remove(link)
-    code = check_links(world)
-    if code:
-        return code
+    # The link check runs after the zenith probe renders, as a diagnostic:
+    # `--unlink-sky` must be caught by the rendered sky pixels, not by
+    # re-reading the link it just removed (#469).
     code = check_api(sky)
     if code:
         return code
@@ -530,6 +531,10 @@ def check(sc, world, sky, bg, unlink_sky=False):
             file=sys.stderr,
         )
         return 8
+
+    code = check_links(world)
+    if code:
+        return code
 
     print(
         f"sun_elevation low={math.degrees(ELEV_LOW):.1f}deg zenith_L={z_lo:.4f}"

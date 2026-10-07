@@ -334,7 +334,7 @@ def run_checks(swap_inputs=False):
         return code
     code = check_roundtrip()
     if code != 0:
-        return fail(f"round-trip re-assert failed (exit {code})", 10)
+        return fail(f"round-trip re-assert failed (exit {code})", 13)
     print(
         f"accessor: {'strips only (.sequences removed)' if IS_5X else '.sequences bridged to .strips'}; "
         f"end kwarg: {'length' if IS_5X else 'frame_end'} (wrong kwarg TypeErrors); "
@@ -683,7 +683,7 @@ def render_bay(sc, path, engine, w, h):
     bpy.ops.render.render(write_still=True, scene=sc.name)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
-        return 11
+        return 14
     return 0
 
 
@@ -702,7 +702,7 @@ def render_still(path, engine):
     try:
         frame_path = os.path.join(tmp, "program.png")
         if not render_frame(sc, frame_path, engine, RENDER_W, RENDER_H):
-            return 11
+            return 14
         bay = bpy.data.scenes.new("Bay")
         build_stage(bay)          # the house dark studio, lights included
         build_bay(bay, frame_path, coll)
@@ -828,8 +828,8 @@ def main():
         # The round-trip reloaded a .blend; start clean for the still.
         bpy.ops.wm.read_factory_settings(use_empty=True)
         rcode = render_still(os.path.abspath(args.output), args.engine)
-        if rcode == 11:
-            return fail(f"render produced no file at {args.output}", 11)
+        if rcode == 14:
+            return fail(f"render produced no file at {args.output}", 14)
         if rcode:
             return rcode
         print(f"wrote {args.output}")

@@ -9,7 +9,9 @@ and the [`shader-node-group`](../../snippets/shader-node-group.py) snippet.
 **What it witnesses:** the grouping contract. Sockets declared on the interface appear on
 every group-node instance; all five materials share ONE group datablock (`users == 5`); and
 the per-material Tint lives on the group **node**, not inside the group — set it inside the
-tree and every mug changes at once.
+tree and every mug changes at once. The check proves the last part with pixels: a
+240×80 Cycles probe of the five mugs, rendered in a throwaway scene so the still is
+untouched, must show five pairwise-distinct glazes.
 
 **The render is the proof.** The group is a dipped stoneware glaze: bare buff clay at the
 foot, a wavy dip line, iron speckle through clay and glaze alike, and a glaze that breaks
@@ -56,10 +58,11 @@ against it. `10` is the shared framing helper.
 | 3 | Interface sockets missing Tint / Roughness / Shader |
 | 4 | Group datablock `users` ≠ number of mug materials (5) |
 | 5 | Instance points at a different node tree |
-| 6 | Instance Tint values not pairwise distinct (`--same-tint` lands here) |
+| 6 | Instance Tint socket values not pairwise distinct (diagnostic, after check 8) |
 | 7 | `--output` produced no file |
+| 8 | Rendered probe: the five mug glazes are not pairwise distinct, or the probe render produced no file (`--same-tint` lands here) |
 | 10 | Gallery framing violation |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output`. Its catalog falsifier is `--same-tint` (expects exit 6).
+Smoke does not pass `--output`. Its catalog falsifier is `--same-tint` (expects exit 8).

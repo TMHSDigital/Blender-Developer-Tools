@@ -268,7 +268,7 @@ def check(seam_gap=False):
         fails.append(code)
 
     if len(meshes) != EXPECT_PARTS:
-        fail(11, f"kit built {len(meshes)} parts, expected {EXPECT_PARTS} - the "
+        fail(12, f"kit built {len(meshes)} parts, expected {EXPECT_PARTS} - the "
                  f"per-part loops below would iterate over the wrong set")
         return fails[0]
 
@@ -382,11 +382,11 @@ def check(seam_gap=False):
     bpy.context.view_layer.update()
     for ob in parts_obs:
         if max(abs(s - 1.0) for s in ob.scale) > 0.0:
-            fail(11, f"{ob.name} scale {tuple(ob.scale)} not applied")
+            fail(12, f"{ob.name} scale {tuple(ob.scale)} not applied")
         if not ob.name.startswith("Kit.CorridorSeg."):
-            fail(11, f"datablock name {ob.name!r} outside the kit namespace")
+            fail(12, f"datablock name {ob.name!r} outside the kit namespace")
         if max(abs(c) for c in ob.location) > 0.0:
-            fail(11, f"{ob.name} origin off the pivot {tuple(ob.location)}")
+            fail(12, f"{ob.name} origin off the pivot {tuple(ob.location)}")
     print(f"hygiene parts={len(parts_obs)} identity_scale=True origins_at_pivot=True")
 
     if fails:
@@ -718,7 +718,7 @@ def render_still(path, engine, falsify=False, close_camera=False):
             "(--close-camera is the designed fail)",
             file=sys.stderr,
         )
-        return 10
+        return gallery_framing.EXIT_FRAMING
     aqcode = gallery_asset_quality.check_asset_quality(
         sc, cam, hero=aq_hero, stage=[floor, wall])
     if aqcode:

@@ -9,8 +9,11 @@ on 4.2-4.5, and the chosen id is asserted against the build before rendering.
 
 By default it runs only the correctness check (no render) — the CI smoke check.
 Pass --output to also render and pixel-verify a still. ``--same-base`` writes
-the same RGB to every swatch and still asserts six distinct colors, so the
-count fails. That is the falsifier (``--same-axis`` in export-preset-axis).
+the same RGB to every swatch. That is the falsifier: with --output (as smoke
+runs it) the rendered six-region check fails (exit 6) before any read-back of
+the colors; without --output the material-value check is all there is (exit 3).
+``--invert-engine-id`` (exit 5) and ``--no-specular-shim`` (exit 7) falsify the
+engine-id and set_specular witnesses.
 
     blender --background --python swatch_grid.py --                       # check only
     blender --background --python swatch_grid.py -- --same-base            # must fail
@@ -56,7 +59,17 @@ def set_specular(bsdf, value):
     return None
 
 
-def make_principled(name, base_color, metallic, roughness, specular=None):
+def naive_set_specular(bsdf, value):
+    """The pre-4.0 habit ``--no-specular-shim`` models: write the legacy
+    ``Specular`` socket when it exists, otherwise silently do nothing."""
+    if 'Specular' in bsdf.inputs:
+        bsdf.inputs['Specular'].default_value = value
+        return 'Specular'
+    return None
+
+
+def make_principled(name, base_color, metallic, roughness, specular=None,
+                    setter=set_specular):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -65,7 +78,7 @@ def make_principled(name, base_color, metallic, roughness, specular=None):
     bsdf.inputs['Base Color'].default_value = base_color
     bsdf.inputs['Metallic'].default_value = metallic
     bsdf.inputs['Roughness'].default_value = roughness
-    resolved = set_specular(bsdf, specular) if specular is not None else None
+    resolved = setter(bsdf, specular) if specular is not None else None
     out = nt.nodes.new('ShaderNodeOutputMaterial')
     nt.links.new(bsdf.outputs['BSDF'], out.inputs['Surface'])
     return mat, resolved
@@ -105,7 +118,7 @@ def make_emissive(name, color, strength, shell_color=None):
     return mat
 
 
-def build_materials():
+def build_materials(setter=set_specular):
     """Return a list of (material, label) covering metal, dielectric, emissive, and the
     set_specular shim. The list order maps left-to-right, top-to-bottom across the grid."""
     mats, specular_socket = [], None
@@ -116,17 +129,20 @@ def build_materials():
     mats.append(m)
     m, _ = make_principled("Copper", (0.92, 0.47, 0.36, 1), 1.0, 0.62)
     mats.append(m)
-    m, sr = make_principled("RedPlastic", (0.80, 0.05, 0.05, 1), 0.0, 0.40, specular=0.5)
+    m, sr = make_principled("RedPlastic", (0.80, 0.05, 0.05, 1), 0.0, 0.40, specular=0.5,
+                            setter=setter)
     mats.append(m)
     specular_socket = specular_socket or sr
-    m, _ = make_principled("BluePlastic", (0.05, 0.20, 0.80, 1), 0.0, 0.30, specular=0.5)
+    m, _ = make_principled("BluePlastic", (0.05, 0.20, 0.80, 1), 0.0, 0.30, specular=0.5,
+                           setter=setter)
     mats.append(m)
     # Standard does not compress highlights, so the core radiance stays under
     # 1.0 in every channel: at 1.4 the red channel clipped across the whole
     # face and the swatch read as a flat orange disk with no form
     mats.append(make_emissive("EmissiveOrange", (1.0, 0.35, 0.05, 1), 0.95,
                               shell_color=(0.22, 0.035, 0.006, 1)))
-    m, _ = make_principled("WhiteRough", (0.90, 0.90, 0.92, 1), 0.0, 0.70, specular=0.3)
+    m, _ = make_principled("WhiteRough", (0.90, 0.90, 0.92, 1), 0.0, 0.70, specular=0.3,
+                           setter=setter)
     mats.append(m)
     return mats, specular_socket
 
@@ -411,6 +427,25 @@ def flatten_swatch_colors(mats):
                 node.inputs["Color"].default_value = gray
 
 
+SPECULAR_SOCKET = 'Specular IOR Level'   # the 4.0+ name; 4.5 LTS is the floor
+WHITE_SPECULAR = 0.3                     # off the socket default (0.5)
+
+
+def check_specular(mats, specular_socket):
+    """The set_specular shim resolved the 4.0+ socket, and the value landed on
+    it: WhiteRough's 0.3 differs from the socket default, so a shim that wrote
+    nothing (``--no-specular-shim``) is caught on the material itself."""
+    white = next(m for m in mats if m.name == "WhiteRough")
+    bsdf = next(n for n in white.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    got = bsdf.inputs[SPECULAR_SOCKET].default_value
+    if specular_socket != SPECULAR_SOCKET or abs(got - WHITE_SPECULAR) > 1e-6:
+        print(f"ERROR: set_specular resolved {specular_socket!r} (want "
+              f"{SPECULAR_SOCKET!r}); WhiteRough {SPECULAR_SOCKET}={got:.3f} "
+              f"(want {WHITE_SPECULAR})", file=sys.stderr)
+        return 7
+    return 0
+
+
 def check_distinct_swatches(mats):
     colors = [swatch_rgb(m) for m in mats]
     if len(set(colors)) != MATERIAL_COUNT:
@@ -462,16 +497,22 @@ def main():
     p.add_argument("--width", type=int, default=1280)
     p.add_argument("--same-base", action="store_true",
                    help="write the same RGB to every swatch (must fail)")
+    p.add_argument("--invert-engine-id", action="store_true",
+                   help="falsifier: swap the version branch, so the 'wrong-era' id "
+                        "under test is this build's real one (must fail, exit 5)")
+    p.add_argument("--no-specular-shim", action="store_true",
+                   help="falsifier: write only the legacy 'Specular' socket (must fail, exit 7)")
     args = p.parse_args(argv)
 
     # Empty the factory file FIRST so the materials we create below survive.
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    mats, specular_socket = build_materials()
+    mats, specular_socket = build_materials(
+        naive_set_specular if args.no_specular_shim else set_specular)
+    scode = check_specular(mats, specular_socket)
+    if scode:
+        return scode
     if args.same_base:
         flatten_swatch_colors(mats)
-    dcode = check_distinct_swatches(mats)
-    if dcode:
-        return dcode
     swatches, stands, stage = build_scene(mats)
 
     sc = bpy.context.scene
@@ -480,6 +521,8 @@ def main():
     # by this build, and the helper's id must be accepted.
     eid = get_eevee_engine_id()
     wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'  # engine-id-exempt: the wrong-era id this example asserts is rejected
+    if args.invert_engine_id:
+        eid, wrong = wrong, eid
     try:
         sc.render.engine = wrong
         print(f"ERROR: wrong-era EEVEE id '{wrong}' was accepted by this build — "
@@ -492,6 +535,10 @@ def main():
           f"set_specular resolved '{specular_socket}'")
 
     if not args.output:
+        # No render to measure: the material values are all there is.
+        dcode = check_distinct_swatches(mats)
+        if dcode:
+            return dcode
         print("swatch-grid OK")
         return 0
 
@@ -534,7 +581,12 @@ def main():
           f"distinct_regions={regions} materials={MATERIAL_COUNT} ok={regions_ok}")
     if not (non_black and regions_ok):
         print("ERROR: render failed verification (black or wrong region count)", file=sys.stderr)
-        return 3
+        return 6
+    # Diagnostic after the pixels: `--same-base` lands on the rendered regions
+    # above (exit 6), not on this read-back of the colors it wrote (#469).
+    dcode = check_distinct_swatches(mats)
+    if dcode:
+        return dcode
     print("swatch-grid OK")
     return 0
 

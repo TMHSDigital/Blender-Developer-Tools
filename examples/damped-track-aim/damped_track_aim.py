@@ -15,8 +15,8 @@ depsgraph: local +Z must align with the world vector toward the orb within a
 tight angular epsilon. If the constraint is missing, muted, mistyped as
 TRACK_TO, or the axis is flipped, the dot product fails.
 
-``--mute`` mutes every DAMPED_TRACK and still asserts unmute. That is the
-falsifier (``--same-axis`` in export-preset-axis).
+``--mute`` mutes every DAMPED_TRACK. That is the falsifier: the evaluated
+aim dot catches it (exit 9), not a read-back of the ``mute`` flag.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -243,12 +243,6 @@ def check(orb, lamps):
                 file=sys.stderr,
             )
             return 6
-        if con.mute or con.influence < 0.999:
-            print(
-                f"ERROR: {ob.name} mute={con.mute} influence={con.influence}",
-                file=sys.stderr,
-            )
-            return 7
         if any(c.type == "TRACK_TO" for c in ob.constraints):
             print(
                 f"ERROR: {ob.name} still has TRACK_TO — use DAMPED_TRACK for aim",
@@ -271,12 +265,27 @@ def check(orb, lamps):
             worst_name = ob.name
         if dot < MIN_AIM_DOT:
             angle = math.degrees(math.acos(max(-1.0, min(1.0, dot))))
+            con = [c for c in ob.constraints if c.type == "DAMPED_TRACK"][0]
             print(
                 f"ERROR: {ob.name} aim dot={dot:.6f} ({angle:.2f}°) "
-                f"< {MIN_AIM_DOT} — constraint not evaluated or axis flipped",
+                f"< {MIN_AIM_DOT} — constraint not evaluated or axis flipped "
+                f"(mute={con.mute} influence={con.influence})",
                 file=sys.stderr,
             )
             return 9
+
+    # Diagnostic after the behavioral check: a muted or partial constraint
+    # whose lamps still aim means something other than the constraint did it.
+    # `--mute` never reaches this line; the evaluated aim above catches it
+    # (#469), so deleting the aim check makes the falsifier fail.
+    for ob in lamps:
+        con = [c for c in ob.constraints if c.type == "DAMPED_TRACK"][0]
+        if con.mute or con.influence < 0.999:
+            print(
+                f"ERROR: {ob.name} mute={con.mute} influence={con.influence}",
+                file=sys.stderr,
+            )
+            return 7
 
     print(
         f"OK: {N_LAMPS} DAMPED_TRACK lamp heads → Orb on TRACK_Z; "

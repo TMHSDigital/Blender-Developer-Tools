@@ -118,10 +118,9 @@ def check(obj, hsv):
     if attr is None:
         print(f"ERROR: color attribute '{ATTR_NAME}' missing", file=sys.stderr)
         return 4
-    if attr.domain != 'CORNER' or attr.data_type != 'FLOAT_COLOR':
-        print(f"ERROR: attribute domain/type = {attr.domain}/{attr.data_type}, "
-              f"expected CORNER/FLOAT_COLOR", file=sys.stderr)
-        return 5
+    # The storage size is the domain trap itself: `--point-domain` lands here
+    # on the layer's measured length, not on a read-back of `attr.domain`
+    # (that read-back runs last, as a diagnostic, #469).
     if len(attr.data) != len(me.loops) or len(attr.data) == len(me.vertices):
         print(f"ERROR: attribute is sized {len(attr.data)}, expected loop count "
               f"{len(me.loops)} and distinct from vertex count {len(me.vertices)} "
@@ -149,6 +148,11 @@ def check(obj, hsv):
             print(f"ERROR: loop {li} (vertex {vi}) color {(gr, gg, gb, ga)} != "
                   f"expected {(er, eg, eb, 1.0)}", file=sys.stderr)
             return 8
+
+    if attr.domain != 'CORNER' or attr.data_type != 'FLOAT_COLOR':
+        print(f"ERROR: attribute domain/type = {attr.domain}/{attr.data_type}, "
+              f"expected CORNER/FLOAT_COLOR", file=sys.stderr)
+        return 5
 
     print(f"verts={got[0]} faces={got[1]} loops={got[2]} attribute='{attr.name}' "
           f"domain={attr.domain} active=True probes_ok={len(probes)}")

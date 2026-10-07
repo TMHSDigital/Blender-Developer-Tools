@@ -157,9 +157,10 @@ against it. `10` is also the shared framing helper.
 | 7 | GC wiring or strip `.type` enum (`--swap-inputs` lands here) |
 | 8 | Scene strip span or Stage source |
 | 9 | Mosaic transform, compositing defaults, text body, or strip color |
-| 10 | Save/reload round-trip re-assert failed; also gallery framing violation |
-| 11 | `--output` produced no file |
+| 10 | Gallery framing violation (`--output` only; `gallery_framing`) |
 | 12 | `--check-pixels` compositing contract |
+| 13 | Save/reload round-trip re-assert failed |
+| 14 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check and the pixel witness on Blender
 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the `needs-5.1` PR label, or

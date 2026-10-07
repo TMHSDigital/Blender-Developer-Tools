@@ -83,8 +83,8 @@ None of this touches the checked mesh, its binding, or any check.
   turf, so the spot centres under the ball's origin.
 - **Framing gate.** The render path calls
   [`gallery_framing.check_framing`](../gallery_framing.py) before writing the
-  still. The helper returns 10, which this example already spends on the
-  centroid check, so the call site maps a violation to **14**. The larger,
+  still and returns its exit 10 directly (10 is reserved for this gate; the
+  centroid check uses 14). The larger,
   rounder ball touched the top edge at the old 55 mm lens; the lens is now
   50 mm, and a `TRACK_TO` aim sits 0.25 below the ball's centre.
 
@@ -126,11 +126,11 @@ against it.
 | 7 | Non-manifold edges |
 | 8 | Edge lengths not uniform |
 | 9 | Face planarity off |
-| 10 | Centroid off origin |
-| 11 | Circumradius not uniform |
+| 10 | Framing gate (`--output` path only; `gallery_framing`) |
 | 12 | Panel material count ≠ 2 |
 | 13 | Panel binding not by vertex count (`--invert-bind` lands here) |
-| 14 | Framing gate (`--output` path only; `gallery_framing` returns 10, remapped) |
+| 14 | Centroid off origin |
+| 15 | Circumradius not uniform |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

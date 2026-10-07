@@ -76,17 +76,19 @@ the shared asset-quality helper.
 | --- | --- |
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
-| 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+| 2 | argparse / usage |
 | 3 | Source mast is not Z-dominant, or tip drifted |
 | 4 | glTF reimport produced no mesh |
 | 5 | Preset disk POSITION is not `(x, z, -y)`, or preset node has rotation |
-| 6 | Z-up disk POSITION is not raw Z-up; also `--output` produced no file |
+| 6 | Z-up disk POSITION is not raw Z-up (checked after the re-import checks) |
 | 7 | Preset reimport is not standing |
 | 8 | Z-up reimport is not lying along Y, or reimported tip mismatch |
-| 9 | Reimported orientations did not differ (`--same-axis` lands here) |
-| 10 | Gallery framing violation |
-| 11 | `--same-axis` did not collapse the axis difference; also asset-quality floor violation (render path) |
+| 9 | Reimported orientations did not differ (`--same-axis` lands here; checked right after the preset stands) |
+| 10 | Gallery framing violation (render path) |
+| 11 | Asset-quality floor violation (render path) |
 | 12 | Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured |
+| 13 | Exporter RNA missing expected glTF kwargs (checked first) |
+| 14 | `--output` produced no file |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

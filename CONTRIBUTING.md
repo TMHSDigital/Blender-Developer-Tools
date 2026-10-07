@@ -240,6 +240,17 @@ file-local and are not portable. `no-mesh` is `2` in
 `templates/ai-asset-pipeline-template/`; both are correct. Copy a template's
 own table from that template, not from this paragraph.
 
+**Reserved in examples/.** Three codes mean one thing in every example. `2`
+is argparse's usage exit only, never a check. `10` is the gallery framing
+gate (`gallery_framing.EXIT_FRAMING`) and `11` is the asset-quality gate
+(`gallery_asset_quality.EXIT_ASSET_QUALITY`). An example returns the
+helper's constant or check call for those, and gives its own checks other
+numbers. A shared code makes a falsifier impossible to target (catalog
+falsifiers may not expect 2) or misattributes which check fired.
+`tests/check_exit_code_readme.py` rejects a literal 2, 10 or 11 at an
+example's exit site, and an Exit codes row for them that says anything
+else or adds "also".
+
 **FATAL wrapper.** `sys.exit(1)` on an uncaught exception in the `__main__`
 guard. Uniform across the examples. `1` means crashed, never a named check.
 

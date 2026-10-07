@@ -108,8 +108,8 @@ against it.
 | 7 | Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch |
 | 8 | Disk weight sums off 1.0 |
 | 9 | Disk verts exceed evaluated loops |
-| 10 | Armature count after import ≠ 1 |
-| 11 | Bone count drifted |
+| 10 | Gallery framing violation (render path only; `gallery_framing`) |
+| 11 | Gallery asset-quality violation (render path only; `gallery_asset_quality`) |
 | 12 | Named bone lost |
 | 13 | Bone parent drifted |
 | 14 | Rest matrices drifted |
@@ -119,6 +119,8 @@ against it.
 | 18 | Weight round-trip drifted |
 | 19 | Deformation round-trip drifted |
 | 20 | `--output` produced no file |
+| 21 | Armature count after import ≠ 1 |
+| 22 | Bone count drifted |
 
 On the `--output` path only, which runs after every check has passed, 10
 also means a `gallery_framing` violation and 11 a `gallery_asset_quality`

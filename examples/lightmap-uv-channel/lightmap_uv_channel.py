@@ -979,7 +979,7 @@ def render_still(path, engine, falsify=False):
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
-        return 10
+        return 12
     return 0
 
 

@@ -15,9 +15,10 @@ exact format. It also witnesses the depsgraph lifetime hazard: after
 `to_mesh_clear()` the returned Mesh reference is dead and any access raises
 ReferenceError.
 
-``--wrong-body`` assigns a string that is not ``version_string`` and still
-asserts the body is the live version. That is the falsifier (``--same-axis``
-in export-preset-axis).
+``--wrong-body`` assigns a string that is not ``version_string``. That is the
+falsifier: the stamp's evaluated glyph mesh no longer matches a reference
+TextCurve built from ``version_string`` (exit 4). The check never re-reads
+``body``.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -76,13 +77,13 @@ def check(obj):
               f"type={obj.type} font={txt.font}", file=sys.stderr)
         return 3
 
-    # body is the live version string, and version_string starts with the
-    # dotted version tuple on every supported release ("5.1.2", "4.5.11 LTS")
+    # version_string starts with the dotted version tuple on every supported
+    # release ("5.1.2", "4.5.11 LTS") — a fact about Blender, not the stamp
     dotted = "%d.%d.%d" % bpy.app.version
-    if txt.body != bpy.app.version_string or not bpy.app.version_string.startswith(dotted):
-        print(f"ERROR: body={txt.body!r} version_string={bpy.app.version_string!r} "
-              f"tuple={bpy.app.version}", file=sys.stderr)
-        return 4
+    if not bpy.app.version_string.startswith(dotted):
+        print(f"ERROR: version_string={bpy.app.version_string!r} does not start "
+              f"with tuple {bpy.app.version}", file=sys.stderr)
+        return 14
 
     deps = bpy.context.evaluated_depsgraph_get()
 
@@ -92,6 +93,26 @@ def check(obj):
         print(f"ERROR: flat text expected filled planar mesh, got faces={nf} "
               f"z-extent={z_flat}", file=sys.stderr)
         return 5
+
+    # the stamp's EVALUATED glyphs are the live version string: they match a
+    # fresh reference TextCurve built from version_string. `--wrong-body` lands
+    # here on evaluated geometry, not on a read-back of `body` (#469).
+    ref_cu = bpy.data.curves.new("VersionRef", type='FONT')
+    ref_cu.body = bpy.app.version_string
+    ref_cu.align_x, ref_cu.align_y = txt.align_x, txt.align_y
+    ref = bpy.data.objects.new("VersionRef", ref_cu)
+    bpy.context.collection.objects.link(ref)
+    try:
+        (rv, rf, rx, _), _ = eval_extents(ref, deps)
+    finally:
+        bpy.data.objects.remove(ref)
+        bpy.data.curves.remove(ref_cu)
+    if (nv, nf) != (rv, rf) or abs(x_flat - rx) > TOL:
+        print(f"ERROR: evaluated glyphs do not spell version_string "
+              f"{bpy.app.version_string!r}: verts/faces/x-extent "
+              f"{nv}/{nf}/{x_flat:.5f} != reference {rv}/{rf}/{rx:.5f}",
+              file=sys.stderr)
+        return 4
 
     # solidify: z-extent is exactly 2*(extrude+bevel), bevel widens x by 2*bevel
     txt.extrude = EXTRUDE

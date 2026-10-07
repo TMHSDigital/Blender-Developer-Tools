@@ -45,8 +45,10 @@ FAIL, so the skip cannot quietly spread to a version that should run.
 so a repo-wide skip cannot pass either.
 
 `--force-run` bypasses the skip so 4.5 proves the absence rather than
-assuming it: the run exits 2 on `AttributeError`, and also exits 2 if
-`exit_pre` turns out to exist on a version that should not have it.
+assuming it: the run exits 3 on `AttributeError` (the expected 4.5
+outcome) and exits 4 if `exit_pre` turns out to exist on a version that
+should not have it, so the two outcomes are told apart by code rather
+than both collapsing onto argparse's 2.
 
 ## Falsifiers
 
@@ -63,7 +65,7 @@ a post-exit contract can be falsified.
 | `--wrong-text` | handler writes `nope` | 0 | FAIL, contents mismatch |
 | `--write-in-main` | `from-main` written in `main`, no handler | 0 | FAIL, contents mismatch |
 | `--atexit-instead` | `atexit` writes `atexit-ok` instead of `exit_pre` | 0 | FAIL, contents mismatch |
-| `--force-run` on 4.5 | asserts `exit_pre` is genuinely absent | 2 | n/a |
+| `--force-run` on 4.5 | asserts `exit_pre` is genuinely absent | 3 (4 if it is present) | n/a |
 
 `--write-in-main` and `--atexit-instead` are the two that matter: both
 produce a file, so an existence-only check would pass them. They are why
@@ -90,8 +92,11 @@ against it. `77` is the smoke skip protocol, not a product check.
 | Code | Meaning |
 | --- | --- |
 | 0 | Success (including `--silent-handler` / `--no-handler` / `--wrong-text` / `--write-in-main` / `--atexit-instead`, which the harness then fails) |
-| 1 | Uncaught exception (FATAL wrapper); also `$BDT_SMOKE_SIDECAR` unset |
-| 2 | argparse / usage; also `--force-run` on Blender &lt; 5.1 (`exit_pre` missing or unexpectedly present) |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | `--force-run` below 5.1: `exit_pre` is absent (`AttributeError`), the expected 4.5 outcome |
+| 4 | `--force-run` below 5.1: `exit_pre` unexpectedly present, so the 5.1 floor and the skip are wrong |
+| 5 | `$BDT_SMOKE_SIDECAR` unset (run outside the harness) |
 | 77 | `SMOKE_SKIP:` `exit_pre` requires Blender 5.1+ |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the

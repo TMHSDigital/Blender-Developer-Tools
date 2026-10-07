@@ -68,8 +68,10 @@
 <pre tabindex="0"><code># Cheap correctness check (materials + engine-id witness, no render):
 blender --background --python swatch_grid.py --
 
-# Falsifier: same RGB on every swatch. Must exit non-zero.
-blender --background --python swatch_grid.py -- --same-base
+# Falsifiers (smoke runs them with --output; see the exit table):
+blender --background --python swatch_grid.py -- --output s.png --engine cycles --same-base
+blender --background --python swatch_grid.py -- --invert-engine-id
+blender --background --python swatch_grid.py -- --no-specular-shim
 
 # Render and pixel-verify with the build&#x27;s EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
@@ -84,9 +86,9 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 <p><code>verify_png</code> samples each swatch where the camera sees it: the sphere center is projected through the render camera (<code>world_to_camera_view</code>) rather than assumed to sit at the center of a third of the frame, so the six-region check follows the layout.</p>
 <h2 id="exit-codes">Exit codes<a class="anchor" href="#exit-codes" aria-label="Link to this section">#</a></h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Distinct swatch colors ≠ 6 (<code>--same-base</code> lands here); also render not six distinct regions</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Distinct swatch material colors ≠ 6 (check-only path; with <code>--output</code> a diagnostic after check 6)</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted (<code>--invert-engine-id</code> lands here)</td></tr><tr><td>6</td><td>Rendered still is black or not six distinct swatch regions (<code>--same-base</code> lands here)</td></tr><tr><td>7</td><td><code>set_specular</code> did not resolve <code>Specular IOR Level</code> or the value did not land (<code>--no-specular-shim</code> lands here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
 <p><code>--no-verify</code> was a skip-flag and has been removed. Pixel verification always runs when <code>--output</code> is passed.</p>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>. Its catalog falsifier is <code>--same-base</code> (expects exit 3).</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke passes <code>--output</code> (Cycles, 8 samples, 640 px) so the pixel check runs. Its catalog falsifiers are <code>--same-base</code> (expects exit 6, the rendered regions), <code>--invert-engine-id</code> (expects exit 5) and <code>--no-specular-shim</code> (expects exit 7).</p>
 <h2 id="verified">Verified<a class="anchor" href="#verified" aria-label="Link to this section">#</a></h2>
 <p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
