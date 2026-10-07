@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.149.0] - 2026-10-07
+
+No changes to the plugin content (skills, rules, snippets, templates) in this release.
+
+<details>
+<summary>Maintenance (1 commit): CI, tests, site, examples, showcase, docs</summary>
+
+- feat(showcase): add hex-island-tile (terrain) ([`b47798f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/b47798f7e9d14d26147250499f1c6f65d683ffbb))
+
+</details>
+
+[Release v0.149.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.149.0)
+
 ## [0.148.0] - 2026-10-07
 
 ### For agents and users
