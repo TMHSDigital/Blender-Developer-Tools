@@ -152,7 +152,7 @@ Not committed; open subjects only. Remove a subject when it ships (CLAUDE.md § 
   - **Nature:** (all candidates shipped)
   - **Household:** laundry basket
   - **Vehicles:** sci-fi supply crate
-  - **Terrain:** river delta tile; terraced paddy hillside
+  - **Terrain:** terraced paddy hillside
 - `persistent` app-handler witness — handlers registered without `@bpy.app.handlers.persistent` are dropped by `wm.read_homefile`/file load while persistent ones survive; assert the registered-handler set before and after a reload (silent loss AI code hits)
 - Link vs append witness — `bpy.data.libraries.load(link=True)` yields a linked, non-editable datablock (`library` set, `is_editable` False) while append yields a local copy; write a temp .blend with `bpy.data.libraries.write`, then assert both paths
 - Orphan purge witness — `bpy.data.orphans_purge(do_recursive=...)` removes exactly the zero-user datablocks computed independently beforehand, and `bpy.data.batch_remove` removes a given set in one call (counts closed-form)
