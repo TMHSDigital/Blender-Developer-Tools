@@ -109,9 +109,9 @@
       "name": "terrain-scatter",
       "dir": "showcase/terrain-scatter",
       "category": "terrain",
-      "teaches": "A Geometry Nodes hill tile with embedded, varied stone scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A square hill tile of patchy grass over dark earth with a rounded soil edge, nine faceted grey stones sunk across it among grass tufts and pebbles.",
-      "witnessesFix": "Recomputed: 2398 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800x1.800x0.570 m, grounded zmin, 9 stones of >=80 faces each sealed into the ground in 8/8 sectors, footprint ratio 9.8, rim tilt step 33.5 deg, no stone pairs overlapping, LOD ratios in band, convex collider 36 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19; --pile-rocks 20; --perch-rocks 21; --uniform-rocks 22; --sharp-rim 23.",
+      "teaches": "A Geometry Nodes hill tile with an embedded scatter of glacier-worn boulders of varied size through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A square meadow hillside tile in dense green grass, nine lichen-blotched granite boulders sunk among taller tufts, a bare-earth footpath with pebbles winding across it, drifts of daisies and pink and purple wildflowers, three round shrubs, one dotted with yellow gorse bloom, and a cut side showing a turf lip, dark humus, ochre clay, a cobble bed and grey bedrock.",
+      "witnessesFix": "Recomputed: 2986 tris, two materials with 654 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800x1.800x0.609 m, grounded zmin, 9 stones of >=54 faces each sealed into the ground in 8/8 sectors, footprint ratio 9.8, rim tilt step 33.5 deg, no stone pairs overlapping, LOD ratios in band, convex collider 54 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19; --pile-rocks 20; --perch-rocks 21; --uniform-rocks 22; --sharp-rim 23.",
       "hero": "docs/gallery/assets/terrain-scatter-hero.webp",
       "preview": "showcase/terrain-scatter/preview.webp",
       "tags": [

@@ -7,10 +7,15 @@ Unity glTF export.
 
 GN still builds the sine hill, with closed-form micro-relief, and the
 Index-jittered instance grid. The slab's rim is bevelled into its walls.
-Realized cubes are replaced with closed-form cleaved, faceted stones of
-varied size, relaxed apart so no two interpenetrate, sunk until the
-ground closes around each on every side, then clamped above the slab
-floor.
+Realized cubes are replaced with closed-form glacier-worn boulders of
+varied size (quad cube-sphere superellipsoids with lumps and a few shallow
+fracture cleaves, smooth-shaded with sharp fracture edges), relaxed apart
+so no two interpenetrate, sunk until the ground closes around each on
+every side, then clamped above the slab floor.
+
+The render path dresses the tile as a meadow diorama (turf, tall grass
+round the stones, wildflowers, shrubs, a worn path, a stratified soil
+section); that dressing is staging and is not part of the asset.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
@@ -61,9 +66,9 @@ ROCK_ZMIN = 0.012
 N_ROCKS = 9
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (1.800, 1.800, 0.570)
-BASE_TRIS_MIN = 1400
-BASE_TRIS_MAX = 2800
+OUTER_SIZE = (1.800, 1.800, 0.609)
+BASE_TRIS_MIN = 2000
+BASE_TRIS_MAX = 3800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -101,14 +106,28 @@ STONE_IDX = 1
 # Stones are ROCK_SCALE times the base ellipsoid: cleaving takes a third of
 # the volume off, and at 1.0 the cleaved stones read as pebbles on a slab.
 ROCK_SCALE = 1.35
-STONE_R_BOUND = ROCK_SCALE * (0.135 + 0.016 + 0.22 * 0.095)
+# Erratics are sub-rounded, blocky boulders: a superellipsoid of exponent
+# BLOCK_EXP squares the ellipsoid's shoulders by up to SHAPE_BULGE in plan
+# (2 ** (1/2 - 1/BLOCK_EXP)), and two closed-form lumps add up to LUMP_AMP.
+BLOCK_EXP = 2.6
+LUMP_AMP = 0.13
+SHAPE_BULGE = 2.0 ** (0.5 - 1.0 / BLOCK_EXP)
+STONE_R_BOUND = ROCK_SCALE * (0.135 * SHAPE_BULGE * (1.0 + LUMP_AMP) + 0.22 * 0.095)
 STONE_CLEAR = 0.02
 RELAX_ITERS = 40
 PILE_PULL = 0.40
-# Each rock is cleaved by a few planes through its ellipsoid, so it reads
-# as broken stone with flat faces rather than a smooth egg.
-N_CLEAVES = 5
-CLEAVE_DEPTH = 0.62
+# Each rock is cleaved by a few shallow planes, the flat fracture and
+# abrasion faces of a glacier-worn block, over its rounded body.
+N_CLEAVES = 4
+CLEAVE_DEPTH = 0.68
+# Stones are quad cube-spheres: CUBE_N_BIG segments a side for the
+# boulders (size factor >= CUBE_BIG_SIZE), CUBE_N_SMALL for the cobbles.
+CUBE_N_BIG = 4
+CUBE_N_SMALL = 3
+CUBE_BIG_SIZE = 0.9
+# Stones are smooth-shaded so the worn body reads round; edges folding more
+# than STONE_SHARP_DEG stay sharp, so the fracture faces keep a crisp arris.
+STONE_SHARP_DEG = 48.0
 
 # Stone sizes, one factor per scatter point. A tile of nine stones that are
 # all within 20% of each other reads as a planted grid; real scatter is a
@@ -489,6 +508,43 @@ def nearest_dirt_z(bm, x, y):
     return 0.0 if best_z is None else best_z
 
 
+_CUBE = {}
+
+
+def cube_sphere(n):
+    """Unit directions on a warped cube-sphere lattice and its quads
+    (outward winding): even quads, no poles, unlike a UV or ico sphere."""
+    if n in _CUBE:
+        return _CUBE[n]
+    index = {}
+    dirs = []
+
+    def vid(i, j, k):
+        key = (i, j, k)
+        if key not in index:
+            q = [math.tan(math.pi / 4.0 * (2.0 * c / n - 1.0)) for c in key]
+            index[key] = len(dirs)
+            dirs.append(Vector(q).normalized())
+        return index[key]
+
+    quads = []
+    for ax in range(3):
+        b, c = (ax + 1) % 3, (ax + 2) % 3
+        for side in (0, n):
+            for uu in range(n):
+                for vv in range(n):
+                    corners = []
+                    for du, dv in ((0, 0), (1, 0), (1, 1), (0, 1)):
+                        key = [0, 0, 0]
+                        key[ax] = side
+                        key[b] = uu + du
+                        key[c] = vv + dv
+                        corners.append(vid(*key))
+                    quads.append(corners if side else corners[::-1])
+    _CUBE[n] = (dirs, quads)
+    return _CUBE[n]
+
+
 def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up,
                      size=1.0, ground=None, perch=False):
     k = ROCK_SCALE * size
@@ -509,16 +565,23 @@ def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up,
         for v in verts:
             v.co = rot @ v.co
     else:
-        geo = bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
-        verts = geo["verts"]
-        for v in verts:
-            p = Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz))
-            if p.length > 1e-8:
-                bump = k * 0.016 * math.sin(p.x * 26.0 + cx * 5.0) * math.cos(
-                    p.y * 21.0 + cy * 4.0
-                )
-                p += p.normalized() * bump
-            v.co = rot @ p
+        dirs, quads = cube_sphere(CUBE_N_BIG if size >= CUBE_BIG_SIZE else CUBE_N_SMALL)
+        verts = []
+        # Two low-frequency lumps per stone, directions and phases from its
+        # centre, closed form: a worn block, not an egg.
+        w1 = Vector((math.sin(cx * 4.3 + 1.0), math.cos(cy * 3.7), 0.6)).normalized()
+        w2 = Vector((math.cos(cy * 5.1), 0.5, math.sin(cx * 2.9 + 0.4))).normalized()
+        ph1 = cx * 7.0 + cy * 3.0
+        ph2 = cy * 6.0 - cx * 2.0
+        for d in dirs:
+            sup = (abs(d.x) ** BLOCK_EXP + abs(d.y) ** BLOCK_EXP
+                   + abs(d.z) ** BLOCK_EXP) ** (-1.0 / BLOCK_EXP)
+            lump = 1.0 + LUMP_AMP * (0.65 * math.sin(2.6 * w1.dot(d) + ph1)
+                                     + 0.35 * math.sin(5.3 * w2.dot(d) + ph2))
+            p = Vector((d.x * sx, d.y * sy, d.z * sz)) * (sup * lump)
+            verts.append(bm.verts.new(rot @ p))
+        for q in quads:
+            bm.faces.new([verts[i] for i in q])
         # Cleave: project everything beyond each plane onto it. Plane
         # normals and depths come from the stone's own centre, closed form,
         # so every stone breaks differently but reproducibly.
@@ -712,14 +775,26 @@ def build_terrain_mesh(
             bmesh.ops.triangulate(bm, faces=ngons)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
-        # Broken rock is faceted; smooth shading made the cleaved stones
-        # read as eggs again, so stones stay flat. The hill and its rim
-        # chamfer are ground, and flat shading printed the 21x21 grid on
-        # them; they are smooth. The walls and underside stay flat (an edge
-        # is only smoothed when both of its faces are smooth).
-        smooth = [f.material_index == DIRT_IDX and f.normal.z > WALL_NZ for f in bm.faces]
+        # The hill and its rim chamfer are ground, and flat shading printed
+        # the 21x21 grid on them; they are smooth. The walls and underside
+        # stay flat (an edge is only smoothed when both of its faces are
+        # smooth). Stones are smooth over their worn body, with the folds
+        # into the cleaved fracture faces kept sharp: flat-shaded, the
+        # cube-sphere stones read as faceted low-poly placeholders.
+        smooth = [
+            f.material_index == STONE_IDX
+            or (f.material_index == DIRT_IDX and f.normal.z > WALL_NZ)
+            for f in bm.faces
+        ]
         for face, s in zip(bm.faces, smooth):
             face.smooth = s
+        sharp_ang = math.radians(STONE_SHARP_DEG)
+        for e in bm.edges:
+            lf = e.link_faces
+            if (len(lf) == 2 and lf[0].material_index == STONE_IDX
+                    and lf[1].material_index == STONE_IDX
+                    and e.calc_face_angle(0.0) > sharp_ang):
+                e.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
@@ -1425,168 +1500,796 @@ def check(
     return 0, low, high, dirt, tex, collider
 
 
-def wire_normal(mat, tex):
-    nt = mat.node_tree
-    bsdf = nt.nodes["Principled BSDF"]
-    nrm = nt.nodes.new("ShaderNodeNormalMap")
-    nrm.inputs["Strength"].default_value = 1.0
-    nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
+# ---------------------------------------------------------------------------
+# Render path. Everything below dresses the hero still: the check has already
+# measured and exported the asset, and nothing here feeds a budget.
+# ---------------------------------------------------------------------------
+
+# A worn foot path across the hillside, in the tile's object space. It runs
+# along the axis at PATH_ANGLE (u) and meanders across it (v):
+#     v = a + b * sin(PATH_FREQ * u + p) + PATH_WOBBLE * sin(2.7 * u + 1.3)
+# with a, b, p chosen at render time to thread between the stones.
+PATH_ANGLE_DEG = 38.0
+PATH_FREQ = 2.4
+PATH_WOBBLE = 0.035
+PATH_HALF = 0.085
+TURF_CLUMPS = 4200
+FLOWERS = 380
+PEBBLES = 70
+BUSHES = 3
 
 
-def grass_over(dirt):
-    """Render path: patchy grass on the up-facing ground, soil on the cut.
+def enabled_socket(sockets, name):
+    """The one enabled socket called ``name`` (Mix / Map Range carry one per
+    data type under one name; identifiers changed in 5.2)."""
+    for sock in sockets:
+        if sock.name == name and sock.enabled:
+            return sock
+    return sockets[name]
 
-    Grass holds where the surface faces up (geometry normal Z) and a coarse
-    patch noise lets bare soil through; the rounded rim and the slab sides
-    tip past the band, so the cut still reads as topsoil over subsoil.
-    """
-    nt = dirt.node_tree
-    bsdf = nt.nodes["Principled BSDF"]
-    link = bsdf.inputs["Base Color"].links[0]
-    soil = link.from_socket
-    nt.links.remove(link)
-    coord = nt.nodes.new("ShaderNodeTexCoord")
+
+def mapping(nt, vec, scale=(1.0, 1.0, 1.0)):
+    node = nt.nodes.new("ShaderNodeMapping")
+    node.inputs["Scale"].default_value = scale
+    nt.links.new(vec, node.inputs["Vector"])
+    return node.outputs["Vector"]
+
+
+def noise(nt, vec, scale, detail_, roughness):
+    node = nt.nodes.new("ShaderNodeTexNoise")
+    node.inputs["Scale"].default_value = scale
+    node.inputs["Detail"].default_value = detail_
+    node.inputs["Roughness"].default_value = roughness
+    nt.links.new(vec, node.inputs["Vector"])
+    return node.outputs["Fac"]
+
+
+def voronoi_node(nt, vec, scale, feature="F1"):
+    node = nt.nodes.new("ShaderNodeTexVoronoi")
+    node.feature = feature
+    node.inputs["Scale"].default_value = scale
+    nt.links.new(vec, node.inputs["Vector"])
+    return node
+
+
+def voronoi(nt, vec, scale, feature="F1"):
+    return voronoi_node(nt, vec, scale, feature).outputs["Distance"]
+
+
+def ramp(nt, fac, stops, constant=False):
+    node = nt.nodes.new("ShaderNodeValToRGB")
+    if constant:
+        node.color_ramp.interpolation = "CONSTANT"
+    els = node.color_ramp.elements
+    els[0].position = stops[0][0]
+    els[0].color = (*stops[0][1], 1.0)
+    els[1].position = stops[-1][0]
+    els[1].color = (*stops[-1][1], 1.0)
+    for pos, rgb in stops[1:-1]:
+        els.new(pos).color = (*rgb, 1.0)
+    nt.links.new(fac, node.inputs["Fac"])
+    return node.outputs["Color"]
+
+
+def remap(nt, value, from_lo, from_hi, to_lo, to_hi):
+    node = nt.nodes.new("ShaderNodeMapRange")
+    nt.links.new(value, enabled_socket(node.inputs, "Value"))
+    enabled_socket(node.inputs, "From Min").default_value = from_lo
+    enabled_socket(node.inputs, "From Max").default_value = from_hi
+    enabled_socket(node.inputs, "To Min").default_value = to_lo
+    enabled_socket(node.inputs, "To Max").default_value = to_hi
+    return enabled_socket(node.outputs, "Result")
+
+
+def math_node(nt, op, a, b=0.0):
+    node = nt.nodes.new("ShaderNodeMath")
+    node.operation = op
+    for i, value in enumerate((a, b)):
+        if isinstance(value, (int, float)):
+            node.inputs[i].default_value = value
+        else:
+            nt.links.new(value, node.inputs[i])
+    return node.outputs[0]
+
+
+def mul(nt, *vals):
+    out = vals[0]
+    for v in vals[1:]:
+        out = math_node(nt, "MULTIPLY", out, v)
+    return out
+
+
+def add(nt, *vals):
+    out = vals[0]
+    for v in vals[1:]:
+        out = math_node(nt, "ADD", out, v)
+    return out
+
+
+def mix_color(nt, a, b, fac):
+    node = nt.nodes.new("ShaderNodeMix")
+    node.data_type = "RGBA"
+    if isinstance(fac, (int, float)):
+        enabled_socket(node.inputs, "Factor").default_value = fac
+    else:
+        nt.links.new(fac, enabled_socket(node.inputs, "Factor"))
+    for nm, value in (("A", a), ("B", b)):
+        sock = enabled_socket(node.inputs, nm)
+        if isinstance(value, tuple):
+            sock.default_value = (*value, 1.0)
+        else:
+            nt.links.new(value, sock)
+    return enabled_socket(node.outputs, "Result")
+
+
+def attr(nt, name):
+    node = nt.nodes.new("ShaderNodeAttribute")
+    node.attribute_type = "GEOMETRY"
+    node.attribute_name = name
+    return node.outputs["Fac"]
+
+
+def coord_xyz(nt, coord):
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord, sep.inputs["Vector"])
+    return sep.outputs
+
+
+def normal_xyz(nt):
     geo = nt.nodes.new("ShaderNodeNewGeometry")
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
-    nt.links.new(geo.outputs["Normal"], sep.inputs[0])
-    up = nt.nodes.new("ShaderNodeMapRange")
-    up.inputs["From Min"].default_value = 0.80
-    up.inputs["From Max"].default_value = 0.95
-    nt.links.new(sep.outputs["Z"], up.inputs["Value"])
-    patch = nt.nodes.new("ShaderNodeTexNoise")
-    patch.inputs["Scale"].default_value = 3.2
-    patch.inputs["Detail"].default_value = 6.0
-    nt.links.new(coord.outputs["Object"], patch.inputs["Vector"])
-    cover = nt.nodes.new("ShaderNodeMapRange")
-    cover.inputs["From Min"].default_value = 0.40
-    cover.inputs["From Max"].default_value = 0.55
-    nt.links.new(patch.outputs["Fac"], cover.inputs["Value"])
-    amount = nt.nodes.new("ShaderNodeMath")
-    amount.operation = "MULTIPLY"
-    nt.links.new(up.outputs["Result"], amount.inputs[0])
-    nt.links.new(cover.outputs["Result"], amount.inputs[1])
-    blades = nt.nodes.new("ShaderNodeTexNoise")
-    blades.inputs["Scale"].default_value = 140.0
-    blades.inputs["Detail"].default_value = 2.0
-    nt.links.new(coord.outputs["Object"], blades.inputs["Vector"])
-    green = nt.nodes.new("ShaderNodeValToRGB")
-    green.color_ramp.elements[0].color = (0.030, 0.045, 0.012, 1.0)
-    green.color_ramp.elements[1].color = (0.105, 0.130, 0.035, 1.0)
-    nt.links.new(blades.outputs["Fac"], green.inputs["Fac"])
-    mix = nt.nodes.new("ShaderNodeMix")
-    mix.data_type = "RGBA"
-    nt.links.new(amount.outputs["Value"], _sock(mix.inputs, "Factor_Float"))
-    nt.links.new(soil, _sock(mix.inputs, "A_Color"))
-    nt.links.new(green.outputs["Color"], _sock(mix.inputs, "B_Color"))
-    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    nt.links.new(geo.outputs["Normal"], sep.inputs["Vector"])
+    return sep.outputs
 
 
-def ground_dressing(low, stone_mat, seed=11, n_tufts=120, n_pebbles=40):
-    """Render-only tufts and pebbles on the tile's up-facing dirt faces.
+def add_bump(nt, bsdf, height, strength, distance, normal=None):
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = strength
+    bump.inputs["Distance"].default_value = distance
+    nt.links.new(height, bump.inputs["Height"])
+    if normal is not None:
+        nt.links.new(normal, bump.inputs["Normal"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
 
-    Sites are dirt faces (material DIRT_IDX) facing up, drawn by area with
-    a fixed seed, so the dressing is the same every run. Pebbles sink a
-    third of their height; tufts are a few tapered blades each. Returned
-    objects are staging, parented to the tile, never part of its budgets.
-    """
+
+def translucent(nt, bsdf, rgb, amount):
+    out = nt.nodes["Material Output"]
+    tr = nt.nodes.new("ShaderNodeBsdfTranslucent")
+    tr.inputs["Color"].default_value = (*rgb, 1.0)
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = amount
+    nt.links.new(bsdf.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
+
+
+def warp(nt, vec, scale, amount):
+    """``vec`` pushed about by a noise field, so Voronoi cells come out as
+    irregular stones rather than discs."""
+    nn = nt.nodes.new("ShaderNodeTexNoise")
+    nn.inputs["Scale"].default_value = scale
+    nn.inputs["Detail"].default_value = 2.0
+    nt.links.new(vec, nn.inputs["Vector"])
+    sub = nt.nodes.new("ShaderNodeVectorMath")
+    sub.operation = "SUBTRACT"
+    nt.links.new(nn.outputs["Color"], sub.inputs[0])
+    sub.inputs[1].default_value = (0.5, 0.5, 0.5)
+    sc = nt.nodes.new("ShaderNodeVectorMath")
+    sc.operation = "SCALE"
+    nt.links.new(sub.outputs["Vector"], sc.inputs[0])
+    sc.inputs["Scale"].default_value = amount
+    out = nt.nodes.new("ShaderNodeVectorMath")
+    out.operation = "ADD"
+    nt.links.new(vec, out.inputs[0])
+    nt.links.new(sc.outputs["Vector"], out.inputs[1])
+    return out.outputs["Vector"]
+
+
+def fresh_nodes(mat, keep=()):
+    """Clear a material down to its output and Principled BSDF (and any
+    node in ``keep``); returns (tree, bsdf, object-space coordinate)."""
+    nt = mat.node_tree
+    for n in list(nt.nodes):
+        if n.type in ("OUTPUT_MATERIAL", "BSDF_PRINCIPLED") or n in keep:
+            continue
+        nt.nodes.remove(n)
+    bsdf = nt.nodes["Principled BSDF"]
+    bsdf.inputs["Metallic"].default_value = 0.0
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    return nt, bsdf, coord
+
+
+def new_surface(name):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    return (mat,) + fresh_nodes(mat)
+
+
+class FootPath:
+    """The worn path's centre line and half width, mirrored in the soil
+    shader so blades, flowers and bushes keep off what the shader paints."""
+
+    def __init__(self, a, b, p):
+        th = math.radians(PATH_ANGLE_DEG)
+        self.c, self.s = math.cos(th), math.sin(th)
+        self.a, self.b, self.p = a, b, p
+
+    def uv(self, x, y):
+        return x * self.c + y * self.s, -x * self.s + y * self.c
+
+    def centre(self, u):
+        return (self.a + self.b * math.sin(PATH_FREQ * u + self.p)
+                + PATH_WOBBLE * math.sin(2.7 * u + 1.3))
+
+    def half(self, u):
+        return PATH_HALF + 0.018 * math.sin(9.0 * u + 0.7)
+
+    def margin(self, x, y):
+        """Signed distance outside the path edge (negative on the path)."""
+        u, v = self.uv(x, y)
+        return abs(v - self.centre(u)) - self.half(u)
+
+
+def choose_path(stones):
+    """Thread the path between the stones: the candidate whose nearest stone
+    clears the path edge by the most, ties to the straighter, central one."""
+    best = None
+    for ai in range(-6, 7):
+        a = 0.05 * ai
+        for b in (0.08, 0.12, 0.16, 0.20):
+            for pi_ in range(12):
+                p = pi_ * math.pi / 6.0
+                fp = FootPath(a, b, p)
+                clear = min(fp.margin(cx, cy) - r for cx, cy, r, _top in stones)
+                # The path must actually cross the tile: its centre stays
+                # on the tile at both ends of the u range.
+                ends = [fp.centre(u) for u in (-0.85, 0.0, 0.85)]
+                if max(abs(e) for e in ends) > 0.55:
+                    continue
+                score = (round(clear, 3), -abs(a) - 0.2 * b)
+                if best is None or score > best[0]:
+                    best = (score, fp)
+    return best[1]
+
+
+def render_attributes(low):
+    """Render-only point attributes on the tile, for the shaders:
+    Depth (soil verts: metres below the ground surface over them, so the
+    cut sides layer turf, humus and subsoil down from the hill's own top),
+    Lift (stone verts: metres above the ground under them) and Tone (one
+    value per stone). Returns stones (cx, cy, r, top) and two samplers."""
     me = low.data
+    verts = [v.co.copy() for v in me.vertices]
+    polys = list(me.polygons)
+    mat_idx = [p.material_index for p in polys]
+    top_faces = [tuple(p.vertices) for p in polys
+                 if p.material_index == DIRT_IDX and p.normal.z > WALL_NZ]
+    top = BVHTree.FromPolygons(verts, top_faces)
+    full = BVHTree.FromPolygons(verts, [tuple(p.vertices) for p in polys])
+    inner = PATCH / 2.0 - RIM_BEVEL - 0.01
+
+    def ground(x, y):
+        loc, nrm, _i, _d = top.ray_cast((x, y, 10.0), (0.0, 0.0, -1.0))
+        return (loc.z, nrm) if loc is not None else (None, None)
+
+    def ground_in(x, y):
+        z, _n = ground(max(-inner, min(inner, x)), max(-inner, min(inner, y)))
+        return 0.0 if z is None else z
+
+    def on_stone(x, y):
+        loc, _n, i, _d = full.ray_cast((x, y, 10.0), (0.0, 0.0, -1.0))
+        return loc is not None and mat_idx[i] == STONE_IDX
+
+    n = len(verts)
+    depth, lift, tone = [0.0] * n, [0.0] * n, [0.0] * n
+    stones = []
+    k = 0
+    for g in shells(me):
+        if mat_of(me, g) != STONE_IDX:
+            for i in g:
+                depth[i] = max(0.0, ground_in(verts[i].x, verts[i].y) - verts[i].z)
+            continue
+        t = 0.5 + 0.5 * math.sin(k * 2.39 + 0.7)
+        k += 1
+        cx = sum(verts[i].x for i in g) / len(g)
+        cy = sum(verts[i].y for i in g) / len(g)
+        r = max(math.hypot(verts[i].x - cx, verts[i].y - cy) for i in g)
+        stones.append((cx, cy, r, max(verts[i].z for i in g)))
+        for i in g:
+            lift[i] = max(0.0, verts[i].z - ground_in(verts[i].x, verts[i].y))
+            tone[i] = t
+    for name, vals in (("Depth", depth), ("Lift", lift), ("Tone", tone)):
+        a = me.attributes.new(name, "FLOAT", "POINT")
+        a.data.foreach_set("value", vals)
+    me.update()
+    return stones, ground, on_stone
+
+
+class Dress:
+    """A render-only mesh: verts with per-vertex float attributes."""
+
+    def __init__(self, names):
+        self.names = names
+        self.v, self.f, self.a = [], [], []
+
+    def vert(self, co, *vals):
+        self.v.append(tuple(co))
+        self.a.append(vals)
+        return len(self.v) - 1
+
+    def face(self, *ids):
+        self.f.append(ids)
+
+    def build(self, name, mat, smooth=False):
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(self.v, [], self.f)
+        me.update()
+        for k, nm in enumerate(self.names):
+            at = me.attributes.new(nm, "FLOAT", "POINT")
+            at.data.foreach_set("value", [vals[k] for vals in self.a])
+        me.materials.append(mat)
+        if smooth:
+            me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
+        me.update()
+        return bpy.data.objects.new(name, me)
+
+
+def blade(D, root, ang, h, lean, w, tone, droop=0.0, twist=0.0):
+    """One curved, tapering grass blade: three rows and a tip, bowed along
+    ``ang`` by ``lean`` of its height, its tip dropping by ``droop``."""
+    d = Vector((math.cos(ang), math.sin(ang), 0.0))
+    sa = ang + math.pi / 2.0 + twist
+    side = Vector((math.cos(sa), math.sin(sa), 0.0))
+    rows = []
+    for t in (0.0, 0.38, 0.72):
+        c = root + d * (lean * h * t * t) + Vector((0.0, 0.0, h * t - droop * h * t * t))
+        hw = w * (1.0 - 0.7 * t)
+        rows.append((D.vert(c - side * hw, tone, t), D.vert(c + side * hw, tone, t)))
+    tip = D.vert(root + d * (lean * h) + Vector((0.0, 0.0, h * (1.0 - droop))), tone, 1.0)
+    for (a0, b0), (a1, b1) in zip(rows, rows[1:]):
+        D.face(a0, b0, b1, a1)
+    D.face(rows[-1][0], rows[-1][1], tip)
+    return root + d * (lean * h) + Vector((0.0, 0.0, h * (1.0 - droop)))
+
+
+def grass_material():
+    mat, nt, bsdf, coord = new_surface("MeadowGrass")
+    tone = attr(nt, "Tone")
+    tip = attr(nt, "Tip")
+    col = ramp(nt, tone, ((0.00, (0.030, 0.070, 0.016)), (0.30, (0.050, 0.120, 0.022)),
+                          (0.55, (0.090, 0.175, 0.030)), (0.75, (0.165, 0.230, 0.045)),
+                          (0.88, (0.28, 0.27, 0.085)), (1.00, (0.46, 0.38, 0.18))))
+    col = mix_color(nt, col, (0.022, 0.040, 0.012), remap(nt, tip, 0.0, 0.45, 0.55, 0.0))
+    col = mix_color(nt, col, (0.34, 0.36, 0.12), remap(nt, tip, 0.65, 1.0, 0.0, 0.30))
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.62
+    bsdf.inputs["Specular IOR Level"].default_value = 0.35
+    translucent(nt, bsdf, (0.16, 0.30, 0.05), 0.22)
+    return mat
+
+
+def flower_material():
+    mat, nt, bsdf, coord = new_surface("Wildflowers")
+    # four meadow flowers by Tone: ox-eye daisy white, buttercup yellow,
+    # knapweed purple and clover pink, each with its own coloured eye
+    tone = attr(nt, "Tone")
+    core = attr(nt, "Core")
+    petal = ramp(nt, tone, ((0.0, (0.80, 0.80, 0.74)), (0.25, (0.80, 0.56, 0.03)),
+                            (0.50, (0.36, 0.14, 0.50)), (0.75, (0.72, 0.30, 0.42))), constant=True)
+    eye = ramp(nt, tone, ((0.0, (0.85, 0.55, 0.03)), (0.25, (0.55, 0.40, 0.02)),
+                          (0.50, (0.25, 0.08, 0.30)), (0.75, (0.60, 0.22, 0.32))), constant=True)
+    col = mix_color(nt, petal, eye, remap(nt, core, 0.55, 0.75, 0.0, 1.0))
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.55
+    translucent(nt, bsdf, (0.6, 0.5, 0.3), 0.2)
+    return mat
+
+
+def foliage_material():
+    mat, nt, bsdf, coord = new_surface("ShrubFoliage")
+    # juniper (Tone < 0.4) blue-green and fine; hazel/bramble (0.4-0.8)
+    # yellow-green; gorse (> 0.8) dark with yellow bloom; leaf clumps by
+    # Voronoi, light on the tops, dark underneath
+    tone = attr(nt, "Tone")
+    nz = normal_xyz(nt)["Z"]
+    col = ramp(nt, tone, ((0.00, (0.022, 0.065, 0.045)), (0.38, (0.035, 0.090, 0.055)),
+                          (0.42, (0.075, 0.170, 0.030)), (0.78, (0.130, 0.240, 0.040)),
+                          (0.82, (0.040, 0.085, 0.022)), (1.00, (0.050, 0.100, 0.025))))
+    leaves = voronoi(nt, coord, 95.0)
+    col = mix_color(nt, col, (0.008, 0.022, 0.008), remap(nt, leaves, 0.25, 0.55, 0.0, 0.6))
+    col = mix_color(nt, col, (0.30, 0.42, 0.14), mul(nt, remap(nt, nz, 0.4, 0.9, 0.0, 0.3),
+                                                     remap(nt, leaves, 0.15, 0.02, 0.0, 0.6)))
+    bloom = mul(nt, remap(nt, voronoi(nt, coord, 60.0), 0.30, 0.16, 0.0, 1.0),
+                remap(nt, tone, 0.80, 0.84, 0.0, 1.0),
+                remap(nt, noise(nt, coord, 9.0, 2.0, 0.5), 0.40, 0.55, 0.3, 1.0))
+    col = mix_color(nt, col, (0.85, 0.62, 0.04), bloom)
+    col = mix_color(nt, col, (0.006, 0.016, 0.006), remap(nt, nz, -0.1, -0.7, 0.0, 0.6))
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.78
+    add_bump(nt, bsdf, leaves, 0.6, 0.006)
+    translucent(nt, bsdf, (0.10, 0.25, 0.04), 0.15)
+    return mat
+
+
+def soil_material_render(dirt, tex, path):
+    """The tile's ground, rebuilt on the render path: turf on top with a
+    worn path, and on the cut sides a soil section by Depth below the
+    hill's own surface (a turf lip, dark humus, roots) over horizons laid
+    level in object Z (banded clay subsoil, a gravel bed, stony base)."""
+    nt, bsdf, coord = fresh_nodes(dirt, keep=(tex,))
+    nrm_map = nt.nodes.new("ShaderNodeNormalMap")
+    nt.links.new(tex.outputs["Color"], nrm_map.inputs["Color"])
+    xyz = coord_xyz(nt, coord)
+    z = xyz["Z"]
+    nz = normal_xyz(nt)["Z"]
+    depth = attr(nt, "Depth")
+
+    # --- the section, bottom up, on wobbled level boundaries
+    zb = add(nt, z, mul(nt, noise(nt, coord, 3.0, 2.0, 0.5), 0.03))
+    bands = math_node(nt, "FRACT", add(nt, mul(nt, zb, 9.0),
+                                       mul(nt, noise(nt, coord, 7.0, 2.0, 0.5), 0.35)))
+    # subsoil: an ochre clay below, a paler loam above, faintly bedded
+    clay = ramp(nt, bands, ((0.00, (0.30, 0.165, 0.065)), (0.45, (0.38, 0.215, 0.085)),
+                            (0.60, (0.28, 0.150, 0.060)), (1.00, (0.33, 0.180, 0.070))))
+    loam = ramp(nt, bands, ((0.00, (0.20, 0.135, 0.080)), (0.50, (0.255, 0.175, 0.105)),
+                            (1.00, (0.21, 0.140, 0.082))))
+    sub = mix_color(nt, clay, loam, remap(nt, zb, 0.19, 0.24, 0.0, 1.0))
+    sub = mix_color(nt, sub, (0.15, 0.10, 0.06), remap(nt, noise(nt, coord, 18.0, 4.0, 0.6), 0.55, 0.75, 0.0, 0.5))
+    # the odd pebble in the subsoil; a cobble bed under it
+    cells = voronoi_node(nt, mapping(nt, warp(nt, coord, 30.0, 0.025), scale=(1.0, 1.0, 1.6)), 28.0)
+    cell_x = coord_xyz(nt, cells.outputs["Color"])["X"]
+    stone_pt = remap(nt, cells.outputs["Distance"], 0.36, 0.26, 0.0, 1.0)
+    pebble = ramp(nt, cell_x, ((0.0, (0.13, 0.115, 0.10)), (0.5, (0.23, 0.205, 0.175)),
+                               (1.0, (0.31, 0.28, 0.24))))
+    pebble = mix_color(nt, pebble, (0.08, 0.07, 0.06), remap(nt, cells.outputs["Distance"], 0.30, 0.36, 0.0, 0.7))
+    sparse = mul(nt, stone_pt, remap(nt, cell_x, 0.90, 0.93, 0.0, 1.0))
+    sub = mix_color(nt, sub, pebble, sparse)
+    gravel = mix_color(nt, (0.12, 0.085, 0.052), pebble, stone_pt)
+    rock = ramp(nt, noise(nt, coord, 6.0, 4.0, 0.6), ((0.3, (0.12, 0.115, 0.11)), (0.7, (0.22, 0.21, 0.195))))
+    joints = voronoi(nt, mapping(nt, coord, scale=(1.0, 1.0, 2.2)), 8.0, "DISTANCE_TO_EDGE")
+    rock = mix_color(nt, rock, (0.04, 0.038, 0.035), remap(nt, joints, 0.025, 0.0, 0.0, 0.85))
+    gravel_band = mul(nt, remap(nt, zb, 0.034, 0.044, 0.0, 1.0), remap(nt, zb, 0.095, 0.080, 0.0, 1.0))
+    strata = mix_color(nt, sub, gravel, gravel_band)
+    bed = remap(nt, zb, 0.042, 0.030, 0.0, 1.0)
+    strata = mix_color(nt, strata, rock, bed)
+    # humus and roots down from the top of the cut
+    humus = ramp(nt, noise(nt, coord, 26.0, 3.0, 0.6), ((0.3, (0.040, 0.026, 0.015)),
+                                                        (0.7, (0.085, 0.056, 0.030))))
+    roots = noise(nt, mapping(nt, coord, scale=(30.0, 30.0, 3.0)), 6.0, 3.0, 0.6)
+    humus = mix_color(nt, humus, (0.17, 0.12, 0.07), remap(nt, roots, 0.62, 0.72, 0.0, 0.6))
+    dj = add(nt, depth, mul(nt, noise(nt, coord, 8.0, 2.0, 0.5), 0.03))
+    strata = mix_color(nt, strata, (0.12, 0.075, 0.040), remap(nt, dj, 0.13, 0.085, 0.0, 0.85))
+    wall = mix_color(nt, strata, humus, remap(nt, dj, 0.085, 0.060, 0.0, 1.0))
+
+    # --- the turf on top
+    patch = noise(nt, coord, 2.6, 4.0, 0.55)
+    fine = noise(nt, coord, 70.0, 3.0, 0.6)
+    turf = ramp(nt, patch, ((0.30, (0.032, 0.052, 0.016)), (0.50, (0.048, 0.078, 0.022)),
+                            (0.68, (0.075, 0.100, 0.030)), (0.84, (0.13, 0.13, 0.050))))
+    turf = mix_color(nt, turf, (0.060, 0.042, 0.024), remap(nt, fine, 0.60, 0.74, 0.0, 0.65))
+    # the path: u along it, v across, the same closed form as FootPath
+    vm_u = nt.nodes.new("ShaderNodeVectorMath")
+    vm_u.operation = "DOT_PRODUCT"
+    nt.links.new(coord, vm_u.inputs[0])
+    vm_u.inputs[1].default_value = (path.c, path.s, 0.0)
+    vm_v = nt.nodes.new("ShaderNodeVectorMath")
+    vm_v.operation = "DOT_PRODUCT"
+    nt.links.new(coord, vm_v.inputs[0])
+    vm_v.inputs[1].default_value = (-path.s, path.c, 0.0)
+    u = vm_u.outputs["Value"]
+    v = vm_v.outputs["Value"]
+    centre = add(nt, path.a,
+                 mul(nt, math_node(nt, "SINE", add(nt, mul(nt, u, PATH_FREQ), path.p)), path.b),
+                 mul(nt, math_node(nt, "SINE", add(nt, mul(nt, u, 2.7), 1.3)), PATH_WOBBLE))
+    half = add(nt, PATH_HALF, mul(nt, math_node(nt, "SINE", add(nt, mul(nt, u, 9.0), 0.7)), 0.018))
+    ragged = mul(nt, math_node(nt, "SUBTRACT", noise(nt, coord, 11.0, 3.0, 0.6), 0.5), 0.07)
+    margin = math_node(nt, "SUBTRACT", add(nt, math_node(nt, "ABSOLUTE", math_node(nt, "SUBTRACT", v, centre)),
+                                           ragged), half)
+    on_path = remap(nt, margin, 0.0, -0.03, 0.0, 1.0)
+    worn = remap(nt, margin, 0.06, 0.0, 0.0, 1.0)
+    earth = ramp(nt, noise(nt, coord, 13.0, 4.0, 0.6), ((0.3, (0.130, 0.090, 0.052)),
+                                                        (0.7, (0.215, 0.155, 0.092))))
+    grit = voronoi_node(nt, coord, 120.0)
+    grit_m = remap(nt, grit.outputs["Distance"], 0.22, 0.10, 0.0, 1.0)
+    earth = mix_color(nt, earth, ramp(nt, coord_xyz(nt, grit.outputs["Color"])["X"],
+                                      ((0.0, (0.22, 0.20, 0.18)), (1.0, (0.45, 0.42, 0.37)))),
+                      mul(nt, grit_m, 0.8))
+    top = mix_color(nt, turf, (0.085, 0.062, 0.036), mul(nt, worn, 0.55))
+    top = mix_color(nt, top, earth, on_path)
+
+    grassy = math_node(nt, "MAXIMUM", remap(nt, nz, 0.35, 0.65, 0.0, 1.0),
+                       remap(nt, depth, 0.018, 0.008, 0.0, 1.0))
+    col = mix_color(nt, wall, top, grassy)
+    col = mix_color(nt, col, (0.03, 0.024, 0.018), remap(nt, nz, -0.5, -0.8, 0.0, 1.0))
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    rough = add(nt, 0.80, mul(nt, math_node(nt, "SUBTRACT", 1.0, grassy), 0.15),
+                mul(nt, on_path, grassy, -0.08))
+    nt.links.new(rough, bsdf.inputs["Roughness"])
+    bsdf.inputs["Specular IOR Level"].default_value = 0.3
+    wall_h = add(nt, mul(nt, math_node(nt, "MAXIMUM", sparse, mul(nt, stone_pt, gravel_band)), 0.8),
+                 mul(nt, bands, 0.2), mul(nt, roots, 0.3), mul(nt, joints, bed, -3.0))
+    top_h = add(nt, mul(nt, fine, 0.5), mul(nt, grit_m, on_path, 0.6))
+    height = add(nt, mul(nt, wall_h, math_node(nt, "SUBTRACT", 1.0, grassy)), mul(nt, top_h, grassy))
+    add_bump(nt, bsdf, height, 0.5, 0.006, normal=nrm_map.outputs["Normal"])
+
+
+def stone_material_render(stone):
+    """Weathered granite erratics: a grey per stone, three scales of noise,
+    feldspar and mica speckle, crustose lichen on the lit tops, moss and a
+    soil stain where the stone goes into the ground."""
+    nt, bsdf, coord = fresh_nodes(stone)
+    tone = attr(nt, "Tone")
+    lift = attr(nt, "Lift")
+    nz = normal_xyz(nt)["Z"]
+    col = ramp(nt, tone, ((0.0, (0.155, 0.150, 0.142)), (0.40, (0.215, 0.205, 0.190)),
+                          (0.75, (0.255, 0.235, 0.210)), (1.0, (0.190, 0.178, 0.168))))
+    big = noise(nt, coord, 2.4, 4.0, 0.55)
+    midn = noise(nt, coord, 9.0, 5.0, 0.6)
+    speck = noise(nt, coord, 210.0, 2.0, 0.5)
+    col = mix_color(nt, col, (0.085, 0.082, 0.078), remap(nt, big, 0.42, 0.66, 0.0, 0.65))
+    col = mix_color(nt, col, (0.33, 0.315, 0.29), remap(nt, midn, 0.52, 0.70, 0.0, 0.55))
+    col = mix_color(nt, col, (0.045, 0.043, 0.04), remap(nt, speck, 0.60, 0.70, 0.0, 0.6))
+    col = mix_color(nt, col, (0.46, 0.44, 0.41), remap(nt, speck, 0.34, 0.24, 0.0, 0.6))
+    # rain streaks down the flanks
+    streak = noise(nt, mapping(nt, coord, scale=(16.0, 16.0, 1.2)), 4.0, 3.0, 0.5)
+    col = mix_color(nt, col, (0.06, 0.058, 0.052), mul(nt, remap(nt, streak, 0.52, 0.68, 0.0, 0.55),
+                                                         remap(nt, nz, 0.6, 0.2, 0.0, 1.0)))
+    # crustose lichen: irregular blotches, pale grey-green and sulphur
+    # yellow-green, on the up-facing stone; sparse orange spots
+    up = remap(nt, nz, 0.05, 0.6, 0.0, 1.0)
+    blot = noise(nt, coord, 16.0, 6.0, 0.7)
+    where = remap(nt, noise(nt, coord, 3.5, 3.0, 0.55), 0.42, 0.56, 0.0, 1.0)
+    lich = mul(nt, remap(nt, blot, 0.52, 0.58, 0.0, 1.0), where, up)
+    lich_col = ramp(nt, noise(nt, coord, 6.0, 2.0, 0.5), ((0.35, (0.40, 0.43, 0.33)), (0.65, (0.46, 0.47, 0.20))))
+    lich_col = mix_color(nt, lich_col, (0.26, 0.28, 0.20), remap(nt, blot, 0.58, 0.66, 0.0, 0.6))
+    col = mix_color(nt, col, lich_col, mul(nt, lich, 0.9))
+    gold = mul(nt, remap(nt, noise(nt, coord, 40.0, 4.0, 0.7), 0.60, 0.66, 0.0, 1.0),
+               remap(nt, noise(nt, coord, 5.0, 2.0, 0.5), 0.56, 0.64, 0.0, 1.0), up)
+    col = mix_color(nt, col, (0.55, 0.30, 0.06), mul(nt, gold, 0.85))
+    # moss creeping up from the ground, highest in the shaded hollows
+    creep = add(nt, lift, mul(nt, math_node(nt, "SUBTRACT", noise(nt, coord, 8.0, 4.0, 0.6), 0.5), 0.10),
+                mul(nt, nz, 0.03))
+    moss = remap(nt, creep, 0.07, 0.035, 0.0, 1.0)
+    moss_col = ramp(nt, noise(nt, coord, 45.0, 3.0, 0.6), ((0.3, (0.045, 0.075, 0.016)),
+                                                           (0.7, (0.12, 0.16, 0.035))))
+    col = mix_color(nt, col, moss_col, moss)
+    col = mix_color(nt, col, (0.05, 0.038, 0.026), remap(nt, lift, 0.022, 0.0, 0.0, 0.85))
+    nt.links.new(col, bsdf.inputs["Base Color"])
+    nt.links.new(remap(nt, moss, 0.0, 1.0, 0.78, 0.95), bsdf.inputs["Roughness"])
+    bsdf.inputs["Specular IOR Level"].default_value = 0.3
+    height = add(nt, mul(nt, big, 1.4), mul(nt, midn, 0.7), mul(nt, speck, 0.12), mul(nt, lich, 0.2),
+                 mul(nt, moss, 0.3))
+    add_bump(nt, bsdf, height, 0.45, 0.02)
+
+
+def meadow_dressing(low, stones, ground, on_stone, path, stone_mat, seed=11):
+    """Render-only meadow on the tile's up-facing ground: short turf in
+    clumps of varied height and hue, taller grass ringing each stone where
+    grazing cannot reach, a turf lip combed over the cut edge, drifts of
+    wildflowers, three shrubs and pebbles along the path. Fixed seed;
+    staging parented to the tile, never part of its budgets or export."""
     rng = random.Random(seed)
-    sites = [p for p in me.polygons
-             if p.material_index == DIRT_IDX and p.normal.z > 0.9]
-    weights = [p.area for p in sites]
+    lim = PATCH / 2.0 - 0.012
+    G = Dress(("Tone", "Tip"))
+    H = Dress(("Tone", "Core"))
 
-    def site():
-        p = rng.choices(sites, weights)[0]
-        vs = [me.vertices[i].co for i in p.vertices]
-        w = [rng.random() for _ in vs]
-        s = sum(w)
-        return sum((v * (wi / s) for v, wi in zip(vs, w)), Vector()), p.normal
+    def site(x, y):
+        if abs(x) > lim or abs(y) > lim or on_stone(x, y):
+            return None
+        z, _n = ground(x, y)
+        return None if z is None else Vector((x, y, z - 0.004))
 
-    bm = bmesh.new()
-    try:
-        for _ in range(n_tufts):
-            base, _nrm = site()
-            for _b in range(rng.randint(9, 15)):
-                a = rng.uniform(0.0, 2 * math.pi)
-                h = rng.uniform(0.028, 0.062)
-                lean = rng.uniform(0.15, 0.55)
-                w = rng.uniform(0.004, 0.007)
-                d = Vector((math.cos(a), math.sin(a), 0.0))
-                side = Vector((-d.y, d.x, 0.0)) * w
-                base_b = base + Vector((rng.uniform(-0.012, 0.012), rng.uniform(-0.012, 0.012), 0.0))
-                root = base_b - Vector((0, 0, 0.004))
-                tip = base_b + d * (h * lean) + Vector((0.0, 0.0, h))
-                mid = base_b + d * (h * lean * 0.35) + Vector((0.0, 0.0, h * 0.55))
-                vs = [bm.verts.new(root - side), bm.verts.new(root + side),
-                      bm.verts.new(mid + side * 0.6), bm.verts.new(mid - side * 0.6),
-                      bm.verts.new(tip)]
-                bm.faces.new(vs[:4])
-                bm.faces.new((vs[3], vs[2], vs[4]))
-        tme = bpy.data.meshes.new("GrassTufts")
-        bm.to_mesh(tme)
-    finally:
-        bm.free()
-    gmat = bpy.data.materials.new("Tuft")
-    gmat.use_nodes = True
-    gb = gmat.node_tree.nodes["Principled BSDF"]
-    gb.inputs["Base Color"].default_value = (0.090, 0.118, 0.030, 1.0)
-    gb.inputs["Roughness"].default_value = 0.75
-    tme.materials.append(gmat)
-    tufts = bpy.data.objects.new("GrassTufts", tme)
+    def near_stone(x, y):
+        return min(math.hypot(x - cx, y - cy) - r for cx, cy, r, _t in stones)
 
-    bm = bmesh.new()
-    try:
-        for _ in range(n_pebbles):
-            base, _nrm = site()
-            r = rng.uniform(0.010, 0.026)
-            geo = bmesh.ops.create_icosphere(bm, subdivisions=1, radius=1.0)
-            sx, sy, sz = r * rng.uniform(0.8, 1.3), r * rng.uniform(0.8, 1.2), r * rng.uniform(0.45, 0.7)
-            rot = rng.uniform(0.0, 2 * math.pi)
-            c, s = math.cos(rot), math.sin(rot)
-            for v in geo["verts"]:
-                x, y, z = v.co.x * sx, v.co.y * sy, v.co.z * sz
-                v.co = Vector((c * x - s * y, s * x + c * y, z)) + base - Vector((0, 0, sz * 0.35))
-        pme = bpy.data.meshes.new("Pebbles")
-        bm.to_mesh(pme)
-    finally:
-        bm.free()
-    pme.materials.append(stone_mat)
-    pebbles = bpy.data.objects.new("Pebbles", pme)
-    for ob in (tufts, pebbles):
+    def clump(root, n, h0, h1, tone, lean=(0.15, 0.55), spread=0.016, w=(0.0020, 0.0036)):
+        for _ in range(n):
+            ang = rng.uniform(0.0, 2.0 * math.pi)
+            off = rng.uniform(0.0, spread)
+            base = root + Vector((math.cos(ang) * off, math.sin(ang) * off, 0.0))
+            tn = min(1.0, max(0.0, tone + rng.uniform(-0.12, 0.12)))
+            if rng.random() < 0.07:
+                tn = rng.uniform(0.9, 1.0)
+            blade(G, base, ang + rng.uniform(-0.6, 0.6), rng.uniform(h0, h1), rng.uniform(*lean),
+                  rng.uniform(*w), tn, twist=rng.uniform(-0.5, 0.5))
+
+    # short turf, everywhere off the path; tone drifts in broad patches
+    for _ in range(TURF_CLUMPS):
+        x, y = rng.uniform(-lim, lim), rng.uniform(-lim, lim)
+        m = path.margin(x, y)
+        if m < -0.02 + rng.uniform(-0.02, 0.02):
+            continue
+        root = site(x, y)
+        if root is None:
+            continue
+        patch = 0.5 + 0.5 * math.sin(3.1 * x + 0.7) * math.cos(2.6 * y - 0.4)
+        sparse = m < 0.04
+        clump(root, rng.randint(3, 6) if sparse else rng.randint(8, 14),
+              0.020, 0.040 if sparse else 0.065, 0.25 + 0.55 * patch)
+
+    # taller grass ringing every stone, where grazing and mowing miss
+    for cx, cy, r, _top in stones:
+        for _ in range(int(14 + 70 * r)):
+            ang = rng.uniform(0.0, 2.0 * math.pi)
+            rr = r * rng.uniform(0.80, 1.25)
+            x, y = cx + rr * math.cos(ang), cy + rr * math.sin(ang)
+            if path.margin(x, y) < 0.0:
+                continue
+            root = site(x, y)
+            if root is None:
+                continue
+            clump(root, rng.randint(5, 10), 0.05, 0.13, rng.uniform(0.35, 0.85),
+                  lean=(0.25, 0.6), spread=0.012, w=(0.0030, 0.0055))
+            if rng.random() < 0.25:  # a seed stalk
+                blade(G, root, ang, rng.uniform(0.12, 0.18), 0.12, 0.0016, 0.97)
+
+    # the turf lip: blades rooted on the rounded rim, combed out and down
+    # over the cut
+    edge = PATCH / 2.0
+    for sx, sy, ox, oy in ((1, 0, 0, -1), (1, 0, 0, 1), (0, 1, -1, 0), (0, 1, 1, 0)):
+        s = -edge + 0.01
+        while s < edge - 0.01:
+            s += rng.uniform(0.006, 0.014)
+            inset = rng.uniform(0.004, 0.030)
+            x = sx * s + ox * (edge - inset)
+            y = sy * s + oy * (edge - inset)
+            if path.margin(x, y) < -0.01:
+                continue
+            z, _n = ground(x, y)
+            if z is None:
+                continue
+            ang = math.atan2(oy, ox) + rng.uniform(-0.5, 0.5)
+            tn = rng.uniform(0.2, 0.8) if rng.random() > 0.06 else 0.95
+            blade(G, Vector((x, y, z - 0.003)), ang, rng.uniform(0.025, 0.060), rng.uniform(0.5, 1.0),
+                  rng.uniform(0.0028, 0.0045), tn, droop=rng.uniform(0.2, 0.7),
+                  twist=rng.uniform(-0.4, 0.4))
+
+    # wildflower drifts: one kind per drift, a few strays
+    placed = 0
+    tries = 0
+    while placed < FLOWERS and tries < FLOWERS * 30:
+        tries += 1
+        x, y = rng.uniform(-lim, lim), rng.uniform(-lim, lim)
+        drift = math.sin(5.1 * x + 0.3) * math.cos(4.3 * y + 1.1) + 0.5 * math.sin(9.0 * x - 7.0 * y)
+        if drift < 0.55 or path.margin(x, y) < 0.02 or near_stone(x, y) < 0.01:
+            continue
+        root = site(x, y)
+        if root is None:
+            continue
+        kind = int(2.0 + 2.0 * math.sin(2.3 * x - 1.7 * y + 0.5)) % 4
+        if rng.random() < 0.15:
+            kind = rng.randrange(4)
+        tone = 0.125 + 0.25 * kind
+        h = rng.uniform(0.05, 0.11)
+        head = blade(G, root, rng.uniform(0.0, 2.0 * math.pi), h, 0.12, 0.0016, 0.35)
+        r = rng.uniform(0.009, 0.014) * (1.25 if kind == 0 else 1.0)
+        tilt = Vector((rng.uniform(-0.35, 0.35), rng.uniform(-0.35, 0.35), 1.0)).normalized()
+        a_ax = tilt.orthogonal().normalized()
+        b_ax = tilt.cross(a_ax)
+        c = H.vert(head + tilt * 0.002, tone, 1.0)
+        petals = 10 if kind == 0 else 6
+        ring = []
+        for k in range(petals * 2):
+            th = math.pi * k / petals
+            rad = r if k % 2 == 0 else r * 0.45
+            p = head + (a_ax * math.cos(th) + b_ax * math.sin(th)) * rad
+            ring.append(H.vert(p, tone, 0.0 if k % 2 == 0 else 0.5))
+        for k in range(len(ring)):
+            H.face(c, ring[k], ring[(k + 1) % len(ring)])
+        placed += 1
+
+    # shrubs: three, where they clear the stones, the path and each other
+    S = Dress(("Tone",))
+    bushes = []
+    cands = [(rng.uniform(-0.70, 0.70), rng.uniform(-0.70, 0.70)) for _ in range(400)]
+    for _ in range(BUSHES):
+        best = None
+        for x, y in cands:
+            clear = min(near_stone(x, y), path.margin(x, y),
+                        min((math.hypot(x - bx, y - by) - 0.30 for bx, by in bushes), default=1.0))
+            if best is None or clear > best[0]:
+                best = (clear, x, y)
+        bushes.append((best[1], best[2]))
+    for n, (bx, by) in enumerate(bushes):
+        tone = (0.2, 0.6, 0.92)[n % 3]
+        R = 0.115 + 0.025 * n
+        zs = [ground(bx + R * math.cos(a), by + R * math.sin(a))[0] for a in (0.0, 2.1, 4.2)]
+        gz = min([z for z in zs if z is not None] + [ground(bx, by)[0]])
+        dirs, quads = cube_sphere(3)
+        # a dome of small leafy lumps, thinning toward the top
+        for k in range(30):
+            az = rng.uniform(0.0, 2.0 * math.pi)
+            el = math.asin(rng.uniform(0.05, 0.95))
+            d = Vector((math.cos(az) * math.cos(el), math.sin(az) * math.cos(el), math.sin(el)))
+            cen = Vector((bx, by, gz + R * 0.30)) + Vector((d.x * R * 0.80, d.y * R * 0.80, d.z * R * 0.85))
+            ax = R * rng.uniform(0.28, 0.42)
+            ph = rng.uniform(0.0, 6.0)
+            tk = min(1.0, max(0.0, tone + rng.uniform(-0.04, 0.04)))
+            ids = []
+            for q in dirs:
+                lump = (1.0 + 0.16 * math.sin(9.0 * q.x + 5.0 * q.y + ph) * math.cos(8.0 * q.z + ph)
+                        + 0.08 * math.sin(17.0 * q.y - 13.0 * q.z + 2.0 * ph))
+                ids.append(S.vert(cen + Vector((q.x * ax, q.y * ax, q.z * ax * 0.85)) * lump, tk))
+            for q in quads:
+                S.face(*[ids[i] for i in q])
+        # a ring of tall grass round the shrub's foot
+        for _ in range(16):
+            a = rng.uniform(0.0, 2.0 * math.pi)
+            root = site(bx + R * 1.15 * math.cos(a), by + R * 1.15 * math.sin(a))
+            if root is not None:
+                clump(root, rng.randint(4, 8), 0.05, 0.11, rng.uniform(0.3, 0.8))
+
+    # pebbles: most on and beside the path, some in the grass
+    P = Dress(("Tone", "Lift"))
+    for k in range(PEBBLES):
+        for _try in range(40):
+            x, y = rng.uniform(-lim, lim), rng.uniform(-lim, lim)
+            if k < PEBBLES * 0.7 and path.margin(x, y) > 0.015:
+                continue
+            root = site(x, y)
+            if root is not None:
+                break
+        else:
+            continue
+        r = rng.uniform(0.007, 0.022)
+        sx, sy, sz = r * rng.uniform(0.8, 1.3), r * rng.uniform(0.8, 1.2), r * rng.uniform(0.45, 0.7)
+        rot = rng.uniform(0.0, 2 * math.pi)
+        c, s = math.cos(rot), math.sin(rot)
+        tn = rng.random()
+        dirs, quads = cube_sphere(2)
+        ids = []
+        for d in dirs:
+            px, py, pz = d.x * sx, d.y * sy, d.z * sz
+            ids.append(P.vert(Vector((c * px - s * py, s * px + c * py, pz)) + root
+                              + Vector((0.0, 0.0, 0.004 - sz * 0.35)), tn, 0.05))
+        for q in quads:
+            P.face(*[ids[i] for i in q])
+
+    out = [G.build("MeadowGrass", grass_material()),
+           H.build("Wildflowers", flower_material()),
+           S.build("Shrubs", foliage_material(), smooth=True),
+           P.build("Pebbles", stone_mat, smooth=True)]
+    for ob in out:
         ob.parent = low
-    return [tufts, pebbles]
+    return out
 
 
 def render_still(low, dirt, tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(dirt, tex)
-    grass_over(dirt)
     for ob in list(scene.objects):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-28.0)
-    low.rotation_euler.x = math.radians(0.0)
-    dressing = ground_dressing(low, low.data.materials[STONE_IDX])
+    stones, ground, on_stone = render_attributes(low)
+    foot = choose_path(stones)
+    print(f"render path a={foot.a:.3f} b={foot.b:.3f} p={foot.p:.3f} "
+          f"clear={min(foot.margin(cx, cy) - r for cx, cy, r, _t in stones):.3f}")
+    soil_material_render(dirt, tex, foot)
+    stone_mat = low.data.materials[STONE_IDX]
+    stone_material_render(stone_mat)
+    dressing = meadow_dressing(low, stones, ground, on_stone, foot, stone_mat)
     for ob in dressing:
         scene.collection.objects.link(ob)
+    print("render dressing " + " ".join(f"{ob.name}={len(ob.data.polygons)}f" for ob in dressing))
+    low.rotation_euler.z = math.radians(HERO_YAW_DEG)
+    bpy.context.view_layer.update()
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=40.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Base Color"].default_value = (0.016, 0.017, 0.020, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
+    floor.location.z = -0.0005
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
     wall.location = (0.0, 8.5, 0.0)
@@ -1595,34 +2298,40 @@ def render_still(low, dirt, tex, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (
-        0.02, 0.021, 0.025, 1.0,
-    )
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
+    centre = Vector((0.0, 0.0, 0.18))
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, offset, energy, size, col, target=None, spread=None):
         ld = bpy.data.lights.new(name, "AREA")
         ld.energy = energy
         ld.size = size
         ld.color = col
+        if spread is not None:
+            ld.spread = math.radians(spread)
         ob = bpy.data.objects.new(name, ld)
-        ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        ob.location = centre + Vector(offset)
+        aim_at = centre if target is None else Vector(target)
+        ob.rotation_euler = (aim_at - ob.location).normalized().to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.6, -5.0, 5.8), 680.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
-    light("Fill", (5.0, -3.6, 2.6), 48.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
-    light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
+    # Late-afternoon key from camera-left, low enough that the boulders and
+    # grass throw shadows across the slope; cool fill from the right so no
+    # stone face goes black; a back rim to separate the grass tips and the
+    # turf lip; and the warm wedge on the backdrop behind.
+    light("Key", (-2.2, -2.9, 3.4), 430.0, 2.5, (1.0, 0.93, 0.80), spread=35.0)
+    light("Fill", (4.0, -2.2, 1.8), 130.0, 6.0, (0.72, 0.82, 1.0))
+    light("Rim", (-0.6, 3.4, 2.4), 220.0, 3.0, (0.80, 0.88, 1.0))
+    light("Wedge", (2.6, 3.6, 2.6), 420.0, 2.0, (1.0, 0.68, 0.40),
+          target=(3.2, 5.5, 0.0), spread=40.0)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    # Aimed at the tile's base and 10% closer than before: the old framing
-    # sat the tile low (top margin 0.27, bottom 0.03) at exactly 0.700 fill.
-    cam.location = (2.313, -3.159, 1.80)
+    cam.location = HERO_CAM
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.0)
+    aim.location = HERO_AIM
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1659,6 +2368,11 @@ def render_still(low, dirt, tex, path, engine):
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         return fail("render produced no file", 14)
     return 0
+
+
+HERO_YAW_DEG = -28.0
+HERO_CAM = (2.33, -3.19, 2.42)
+HERO_AIM = (0.0, 0.0, 0.05)
 
 
 def main():

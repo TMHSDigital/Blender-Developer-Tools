@@ -2,7 +2,7 @@
 
 A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid
 with an Index-jittered Instance-on-Points scatter, realized cubes
-replaced by closed-form cleaved, faceted stones seated on sampled dirt Z,
+replaced by closed-form, glacier-worn boulders seated on sampled dirt Z,
 then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal
 bake, LOD chain, convex collider, Unity glTF export.
 
@@ -25,16 +25,61 @@ imported as a package). Hygiene combinatorics match
 
 Intended size: 1.80 m square hill tile, ~0.16 m sine amplitude, nine
 embedded stones from cobble to boulder; outer AABB 1.800 × 1.800 ×
-0.570 m.
+0.609 m.
 
-**Hero.** On the render path, grass is blended into the dirt shader where
-the ground faces up (geometry normal Z), broken by a coarse patch noise so
-bare soil shows through. The rounded rim and the cut sides tip past the
-band, so the section still reads as topsoil over subsoil. A render-only
-dressing, drawn with a fixed seed from the up-facing dirt faces, adds 120
-clumped grass tufts and 40 sunk pebbles in the stone material. The dressing
-is staging, parented to the tile, and is not part of the asset, its budgets
-or its export. The asset sheet judges `TerrainLow` alone.
+**Hero.** The render path dresses the tile as a hand-made meadow diorama.
+None of it is part of the asset, its budgets or its export; the dressing
+is drawn with a fixed seed, parented to the tile, and the asset sheet
+judges `TerrainLow` alone.
+
+- **Soil section.** Render-only point attributes give each dirt vertex
+  its depth below the hill surface over it (exact on the vertical walls,
+  which are single quads). The cut sides layer down from the hill's own
+  top: a turf lip, dark humus with roots, then level horizons in object
+  Z on wobbled boundaries: banded ochre clay under a paler loam with the
+  odd stone, a cobble bed, and jointed grey bedrock at the foot.
+- **Boulders.** Weathered granite: a grey per stone, three scales of
+  noise, feldspar and mica speckle, rain streaks on the flanks, crustose
+  lichen blotches (grey-green and sulphur, sparse orange) on the
+  up-facing stone, moss and a soil stain where it meets the ground, read
+  from a render-only height-above-ground attribute.
+- **Ground cover.** About 37 000 curved, tapering blades in clumps of
+  varied height and hue (a few dry straw blades among the greens); taller
+  grass and seed stalks ring each stone, where grazing and mowing miss in
+  a real field; a turf lip is combed out and down over the cut edge;
+  drifts of ox-eye daisy, buttercup, knapweed and clover; three shrubs
+  (juniper, hazel, flowering gorse) placed where they clear the stones,
+  the path and each other.
+- **Worn path.** A bare-earth foot path with grit meanders across the
+  hill. Its closed-form centre line is chosen at render time from a fixed
+  candidate set as the one that threads furthest from every stone; the
+  soil shader and the dressing share it, so no blade grows on it and the
+  pebbles gather along it.
+- **Light.** A warm late-afternoon key from camera-left throws the
+  boulders' and the grass's shadows across the slope, a cool fill keeps
+  every stone face off black, a back rim lifts the grass tips and the
+  lip, and the warm wedge lands on the backdrop.
+
+### Why the stones are worn boulders now
+
+The third pass found the stones read as placeholders at 100%: faceted
+grey icosphere blobs, one with a pure-black flat face. Glacial erratics,
+the boulders strewn across upland meadows, are sub-rounded to
+sub-angular blocks of granite or gneiss, rounded by transport in the ice
+with a few flat fracture and abrasion faces, lichen on their tops and
+moss where they meet the turf.
+
+- **Shape.** Each stone is a quad cube-sphere (4 segments a side for the
+  boulders, size factor ≥ 0.9; 3 for the cobbles) pushed out to a
+  superellipsoid of exponent `BLOCK_EXP` = 2.6, which squares the
+  shoulders into a block, with two closed-form low-frequency lumps of up
+  to `LUMP_AMP` = 13% and four shallow cleaves (`CLEAVE_DEPTH` 0.68).
+  `STONE_R_BOUND` grows by the superellipsoid's plan bulge and the lump
+  amplitude, so the relaxation still spaces the stones by their real
+  reach.
+- **Shading.** Smooth over the worn body, with edges folding more than
+  `STONE_SHARP_DEG` = 48° kept sharp, so the fracture faces keep a crisp
+  arris. Flat-shaded, the same stones read as low-poly placeholders.
 
 ## Budgets
 
@@ -43,14 +88,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1400–2800 | 2398 / 2398 / 2398 |
-| LOD1 ratio | 0.32–0.62 of base | 0.4996 / 0.4996 / 0.4996 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2193 |
-| Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 720 stone |
+| Base triangles | 2000–3800 | 2986 / 2986 / 2986 |
+| LOD1 ratio | 0.32–0.62 of base | 0.4997 / 0.4997 / 0.4997 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2197 / 0.2197 / 0.2197 |
+| Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 654 stone |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.800, 1.800, 0.570) m ± 0.015 | (1.8000, 1.8008, 0.5700), zmin 0 |
-| Collider tris | ≤ 120 | 36 |
-| Export | written, size > 0 | 198908 / 198908 / 198900 bytes (4.5.11 / 5.1.2 / 5.2.1) |
+| Outer AABB | (1.800, 1.800, 0.609) m ± 0.015 | (1.8000, 1.8008, 0.6085), zmin 0 |
+| Collider tris | ≤ 120 | 54 |
+| Export | written, size > 0 | 218868 / 218868 / 218860 bytes (4.5.11 / 5.1.2 / 5.2.1) |
 
 Base triangles rose from **1194 to 1758** in the first quality pass: 9-vert hill
 became a 21-vert grid, and bevelled cubes became subdiv-2 icospheres.
@@ -64,6 +109,19 @@ declared size was re-fitted to match. The collider fell from 72 to 36
 triangles because it now hulls a coarse, unbevelled 9-vertex tile
 (`COLLIDER_GRID`): the chamfer and micro-relief are visual, and on the
 full-resolution tile they pushed the hull to 178, over its ceiling.
+
+The third pass took them from **2398 to 2986**, and the declared band
+was re-fitted from 1400–2800 to 2000–3800 around the new count, the same
+relative width. The 80-triangle icosphere stones became quad
+cube-spheres: 192 triangles for each of the four boulders, 108 for each
+of the five cobbles (1308 for the stones, against 720). At 80
+triangles a 0.4 m boulder's silhouette showed its facets, and smooth
+shading cannot hide a polygonal outline. The outer Z rose from 0.570 m
+to 0.609 m: the blocky superellipsoid keeps more of its height than the
+cleaved ellipsoid did, and the declared size was re-centred on the
+measured 0.6085 m (the ± 0.015 tolerance is unchanged). The collider
+rose from 36 to 54 triangles, still under its ceiling of 120, because
+the rounder stones put a few more vertices on the hull.
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh matched
@@ -87,12 +145,12 @@ Recomputed from the generated mesh, not asserted about the script.
 | Coplanar disjoint face pairs | 0 | 0 |
 | Grounded: `zmin` | within 1e-4 of 0 | 0.0000 |
 | Stone shells | 9 | 9 |
-| Per-stone faces | ≥ 40 | 80 |
-| Stone floor `zmin` | ≥ 0.012 m | 0.06946 |
-| Seat offset (`zmin` − dirt Z) | ≤ 0.02 m | −0.03326 |
+| Per-stone faces | ≥ 40 | 54 (cobbles) / 96 (boulders) |
+| Stone floor `zmin` | ≥ 0.012 m | 0.08305 |
+| Seat offset (`zmin` − dirt Z) | ≤ 0.02 m | −0.03775 |
 | Interpenetrating stone pairs (BVH overlap) | 0 | 0 |
 | Sealed sectors per stone (buried vertex in each of 8) | 8 / 8 | 8 / 8 |
-| Stone footprint ratio (largest / smallest) | ≥ 3.0 | 9.812 |
+| Stone footprint ratio (largest / smallest) | ≥ 3.0 | 9.757 |
 | Rim tilt step between adjacent dirt faces | ≤ 40° | 33.52° |
 
 ### Why the stones are cleaved, relaxed and faceted
@@ -105,8 +163,9 @@ also interpenetrated, because the GN scatter jitters by up to 0.22 m on a
 - **Cleaved.** Each ellipsoid is cut by `N_CLEAVES` planes whose normals
   and depths come from the stone's own centre, closed form. Every vertex
   beyond a plane is projected onto it, which leaves flat broken faces.
-  Stones are shaded flat, because broken rock is faceted; smooth shading
-  turned the cleaved stones back into eggs.
+  The first pass shaded them flat, because smooth shading turned the
+  cleaved ellipsoids back into eggs; the third pass replaced them with
+  blocky superellipsoids that hold their shape smooth-shaded (above).
 - **Scaled.** Cleaving takes about a third off each stone, and at the old
   size they read as pebbles, so every semi-axis is `ROCK_SCALE` = 1.35×.
 - **Relaxed.** Stone centres are pushed apart to
@@ -145,16 +204,16 @@ with pebbles dropped on it.
 - **Ground, not a sine.** Two closed-form relief terms, 14 mm and 7 mm,
   ride on the hill in the same GN tree. The hill and rim are
   smooth-shaded, because flat shading printed the 21×21 grid on the
-  ground; stones and walls stay flat.
+  ground; the walls stay flat (the stones were flat until the third pass).
 - **Materials.** Stones are mid-grey (they were near-white where the key
   hit them), and the dirt darkens toward a subsoil colour below the slab
   lift, in object space, without adding a material.
 
 `stone_overlap_audit` BVH-tests every stone pair. `--pile-rocks` skips
-the relaxation and draws the scatter in to 40% so neighbours collide: 7
-pairs interpenetrate, and the piece exits 20. Skipping the
-relaxation alone would prove nothing, because the cleaved stones miss
-each other unrelaxed.
+the relaxation and draws the scatter in to 40% so neighbours collide: 8
+pairs interpenetrate (7 with the second pass's stones), and the piece
+exits 20. Skipping the relaxation alone proved nothing in the second
+pass, because the cleaved stones missed each other unrelaxed.
 
 ### Falsifiers
 
@@ -170,8 +229,8 @@ and returned the same code on each.
 | `--float-rocks` | seat offset vs sampled dirt Z | 18 |
 | `--box-rocks` | per-stone face floor | 19 |
 | `--pile-rocks` | stone-to-stone interpenetration is 0 | 20 |
-| `--perch-rocks` | every stone sealed in 8/8 sectors (measures 3/8) | 21 |
-| `--uniform-rocks` | footprint ratio ≥ 3.0 (measures 1.851) | 22 |
+| `--perch-rocks` | every stone sealed in 8/8 sectors (measures 4/8) | 21 |
+| `--uniform-rocks` | footprint ratio ≥ 3.0 (measures 2.317) | 22 |
 | `--sharp-rim` | rim tilt step ≤ 40° (measures 88.50°) | 23 |
 
 ## Run
