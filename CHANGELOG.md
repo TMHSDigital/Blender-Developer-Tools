@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.152.0] - 2026-10-08
+
+No changes to the plugin content (skills, rules, snippets, templates) in this release.
+
+<details>
+<summary>Maintenance (2 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- fix(showcase): close river-delta-tile's boat ends with quads, not a sliver n-gon ([`0a995d2`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0a995d2a24845c433eea61cdc196555c25edab9c))
+- feat(showcase): add river-delta-tile (terrain) ([`981b740`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/981b740b76a0304fedd6b52b1d0c3e48ca36708e))
+
+</details>
+
+[Release v0.152.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.152.0)
+
 ## [0.151.0] - 2026-10-08
 
 No changes to the plugin content (skills, rules, snippets, templates) in this release.
