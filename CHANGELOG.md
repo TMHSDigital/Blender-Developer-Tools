@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.151.0] - 2026-10-08
+
+No changes to the plugin content (skills, rules, snippets, templates) in this release.
+
+<details>
+<summary>Maintenance (1 commit): CI, tests, site, examples, showcase, docs</summary>
+
+- feat(showcase): add caldera-island-tile (terrain) ([`12d0387`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/12d03870f8eeb16051a55ad0a056013a370e2599))
+
+</details>
+
+[Release v0.151.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.151.0)
+
 ## [0.150.0] - 2026-10-08
 
 No changes to the plugin content (skills, rules, snippets, templates) in this release.
