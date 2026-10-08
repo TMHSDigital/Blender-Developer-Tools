@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.152.1] - 2026-10-08
+
+No changes to the plugin content (skills, rules, snippets, templates) in this release.
+
+<details>
+<summary>Maintenance (5 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- fix(gallery): regenerate terrain pages after the quality pass; trim four alts under 200 chars ([`d13cd59`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d13cd59f2814386d77ff0fc6220adeddd88be6fb))
+- fix(showcase): sea-stack-arch quality pass — wave-cut platform, banded beds, seamless stage ([`7f1132a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/7f1132ad4632eb909c027eee1e9c09b780619383))
+- fix(showcase): terrain-scatter quality pass — weathered erratics on a meadow diorama ([`3a1af10`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/3a1af10d91796c79ece320e00a07f0627df43779))
+- fix(showcase): canyon-mesa-tile quality pass — horizontal strata, caprock, scree talus ([`2f91cbf`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2f91cbf5dbe84f712045ae21bf6cd08a68ab24e6))
+- fix(showcase): river-delta-tile quality pass — smooth sea depth, readable bars, hedged fields ([`cd90495`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/cd9049538d95bd3e7c1ff3f472a3e3e1017c0f59))
+
+</details>
+
+[Release v0.152.1](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.152.1)
+
 ## [0.152.0] - 2026-10-08
 
 No changes to the plugin content (skills, rules, snippets, templates) in this release.
