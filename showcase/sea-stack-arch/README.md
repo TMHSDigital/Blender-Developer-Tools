@@ -9,11 +9,18 @@ it.
 - **The tile.** A rounded square. The sea fills the right of it out to the
   edge, where the tile's rim stands 16 mm over the water and holds it, and
   runs through the arch to the back edge. The left is a wave-cut rock
-  platform, crossed by wandering joint cracks, with two tide pools, and a
-  shingle cove in front: grey and buff pebbles in dark sand, wet at the
-  water's edge. The seabed falls away from the shore, so the water darkens
-  with depth. The tile's skirt drops straight to a flat base, the beds in
-  section.
+  platform: the headland's own beds planed off, their edges outcropping as
+  low dark-lipped steps between buff and rust treads, crossed by wandering
+  joint cracks, with puddles, algal film, two tide pools, and weed and
+  barnacles toward the water. In front is a sandy cove, dark and wet at
+  the water and drying paler up the shore, with a bank of grey and buff
+  shingle at its head. Along the landward edge a low clifftop bank rises
+  70 mm over the platform on a raw soil-and-rock riser, turfed on top. The
+  seabed falls away from the shore, so the water deepens from pale
+  turquoise in the shallows to a deep blue-green. The tile's skirt drops
+  straight to a flat base: the beds in section, uneven buff, rust and grey
+  bands parted by thin dark shaly ones, pebbly in places, with soil and turf
+  over the bank.
 - **One eroded mass.** Eighteen level beds, hard sandstone beds of uneven
   thickness (65–132 mm) over thin soft ones (18–35 mm), at one set of heights
   in every column, so the strata run on from the legs into the roof and the
@@ -42,7 +49,9 @@ it.
   round the feet. A foam line lies at the waterline along the shore, rim to
   rim, and round each foot in the water, its land edge tucked under the
   shore or into the rock.
-- **Loose rock.** Five fallen blocks (bed fragments cut by fracture planes),
+- **Loose rock.** Five fallen blocks (bed fragments broken on fracture
+  planes cut well in, a corner or two knocked off, their top and foot at
+  their own slants, so none reads as a sawn box),
   six rounded boulders and 46 pebbles on the shingle, sealed all round and
   held apart, and clear of the feet and the pools.
 - **The tops.** A turf mat over the roof's top bed and the stack's, draped
@@ -50,11 +59,17 @@ it.
   back) and tucked into the stone, with tufts of sea grass and cushions of
   sea thrift (a mound of leaves, pink heads on short stalks).
 
-The littoral bands are in the materials: dark wet stone and green-black weed
-at the waterline, a barnacle crust over it, a black lichen band above, then
-orange and grey lichen high up, bird lime splashed on the high ledges and
-streaked down the seaward faces; each bed its own cast, so the strata band
-across the rock; overhangs stay dark and damp.
+The littoral bands are in the materials: olive wrack and green-black weed
+at the waterline over darkened wet stone, a pale barnacle crust over it, a
+black tar-lichen band above fraying out upward, then orange and grey lichen
+high up, bird lime splashed on the high ledges and streaked down the
+seaward faces. Each bed has its own cast (grey-green grit, pale cream,
+rust-red, buff, a dark iron-rich band) and grain, with pebbly lenses in the
+coarse beds, and the soft beds are dark plum-brown shale, so the strata band
+strongly across the rock; overhangs stay dark and damp. The beds stand
+proud or sit back from the face by a spread set-back (`PROUD_GAIN`, the
+seeded draws unchanged), so some form ledges and others shadowed bands,
+and the soft beds are cut back 34 mm (`NOTCH`) behind the hard ones.
 
 Every seeded draw comes from `random.Random(SEED)` in `plan_scene()`, before
 anything is built: each face's drift and set-backs, the weathering fields,
@@ -70,12 +85,14 @@ so the bites are exact; a leg's top soft bed is also cast against the roof's
 lowest bed from the leg's own centre. The piece is a stack of flat beds, a
 coplanar hazard: each bed's walls batter by their own degree or two, arrises
 carry a sub-millimetre wear ray by ray, a pass draws any soft-bed facet still
-in another bed's plane 1.5 mm toward its own centroid, and blades, stalks,
+in another bed's plane, or in the plane of the turf and cover draped over
+the top bed, 1.5 mm toward its own centroid, and blades, stalks,
 heads and cushions landing in another shell's plane turn 3° about their root.
 
 Rock is smooth-shaded with an 18° crease, so the arrises and fallen-out
 blocks stay crisp; grass and heads smooth. Eight materials: sandstone (the
-beds and fallen blocks), wave-cut shelf (platform, shingle, seabed, skirt),
+beds and fallen blocks), wave-cut shelf (platform, beach, clifftop bank,
+seabed, skirt),
 sea water, foam, cobble (boulders and pebbles), turf, grass (sea grass,
 thrift leaves and stalks), sea thrift.
 
@@ -106,15 +123,16 @@ export file.
 | Materials | exactly 8 distinct; face floors sandstone ≥45000, shelf ≥13000, water ≥5380, foam ≥1900, cobble ≥2770, turf ≥5370, grass ≥5170, thrift ≥3440 | 8 slots; 46448 / 13438 / 5546 / 1966 / 2856 / 5540 / 5331 / 3552 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.8400, 1.9600, 1.4649) m ± 0.01 | (2.8400, 1.9600, 1.4649), zmin 0 |
-| Collider tris (five hulls) | ≤ 270 | 244 |
-| Export | written, size > 0, removed after measuring | 9158084 bytes |
+| Collider tris (five hulls) | ≤ 270 | 252 |
+| Export | written, size > 0, removed after measuring | 9158708 bytes |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels
 are stochastic, so the bake gate is `has_data` plus operator `FINISHED`,
 not byte-identity. The plan is seeded and nothing else is random; two
 default runs print identical measurements, and 4.5.11 and 5.1.2 print the
-same measurements as 5.2.1.
+same measurements as 5.2.1 (the glTF's size aside: 9158716 bytes there, a
+few bytes of exporter metadata).
 
 ### Hygiene
 
@@ -149,18 +167,18 @@ measurement is then made on the shell's geometry.
 | Axis | Declared | Measured |
 | --- | --- | --- |
 | Beds bite: every soft bed's end ring, shallowest vertex inside the hard bed it runs into (ray-parity signed depth, majority of seven rays), the roof's lowest bed over each leg included | 0.001–0.030 m, 41 joints | 0.0019–0.0163; roof on the legs 0.0149, 0.0156 |
-| Stack plumb: the volume centroid of all its beds inside the convex footprint of its narrowest section (the foot notch's middle ring) | ≥ 0.100 m | 0.1276 |
+| Stack plumb: the volume centroid of all its beds inside the convex footprint of its narrowest section (the foot notch's middle ring) | ≥ 0.100 m | 0.1279 |
 | Feet sealed: for each leg and the stack, in each of 8 sectors round the lowest bed, its most-buried vertex under the ground straight above it | ≥ 0.020 m in 8 of 8 | worst 0.0307, 8 of 8 each |
-| Aperture: rays along +Y past every bed; clear height up the opening's centre line from the water, and the narrowest clear width over the 0.60 m above the water | width ≥ 0.22 m, height ≥ 0.68 m | width 0.2640, height 0.7570 |
+| Aperture: rays along +Y past every bed; clear height up the opening's centre line from the water, and the narrowest clear width over the 0.60 m above the water | width ≥ 0.22 m, height ≥ 0.68 m | width 0.2720, height 0.7570 |
 | Bedding level: a least-squares plane through every hard bed's top-cap vertices; its tilt, and per layer the spread of the fitted heights across the columns | tilt ≤ 0.8°, spread ≤ 0.004 m, 21 bed tops | tilt 0.0000°, spread 0.00000 |
-| Undercut: per soft bed, the median over its middle ring of how far the hard beds either side stand out past it, cast along its own outward normal at each host's face ring nearest it | 0.008–0.085 m, 22 soft beds | 0.0125–0.0786 |
+| Undercut: per soft bed, the median over its middle ring of how far the hard beds either side stand out past it, cast along its own outward normal at each host's face ring nearest it | 0.008–0.085 m, 22 soft beds | 0.0158–0.0789 |
 | Water: the median height of the sea's top sheet and its largest excursion from it; each pool's top flat | level 0.105 ± 0.0015 m; ripple 0.0015–0.0090 m; pools ≤ 0.0005 m | 0.10500; 0.00240; 0.0, 0.0 |
 | Water contained: the ground (the shore or the tile's rim) over every rim vertex and rim-edge midpoint of the sea's and each pool's top | ≥ 0.008 m, 544 points | 0.01007 |
 | Foam seated: every foam vertex off the water's level; its land edge's top under the ground or inside a foot | ≤ 0.006 m; ≥ 0.004 m, 3 lines | 0.00430; 0.00535 |
 | Loose rock sealed: per block, boulder and pebble, in each sector holding a vertex, its most-buried vertex under the ground | ≥ 0.003 m, 57 pieces | worst 0.0050 |
 | Loose rock apart: pairs of pieces whose BVH trees overlap | 0 | 0 |
 | Cover rooted: every blade's and stalk's base cap and every cushion's underside inside the turf or the top bed under it (the deeper of the two); every blade, stalk, head and cushion joined to its top | 0.004–0.050 m, 324 roots; none loose | 0.0075–0.0395; none loose |
-| Ragged: the share of the rock's walls (faces within 20° of vertical, by area) whose plan normal lies within 5° of its column's own axes | ≤ 0.25 | 0.1764 |
+| Ragged: the share of the rock's walls (faces within 20° of vertical, by area) whose plan normal lies within 5° of its column's own axes | ≤ 0.25 | 0.1763 |
 
 The feet are bedded against the ground as built: each lowest bed's foot is
 set 30 mm under the lowest ground point beneath its widest ring, and kept
@@ -172,8 +190,11 @@ a few millimetres of the soft bed's ring.
 ## Falsifiers
 
 Each falsifier violates one named budget. Every one was run on 5.2.1 and
-4.5.11 and exited its declared code. The envelope and the triangle count
-were unchanged in every run.
+exited its declared code (after the visual pass that added the clifftop bank,
+the broken blocks, the spread set-backs and the deeper soft-bed recess; the
+pass before it also ran them all on 4.5.11). The triangle count was
+unchanged in every run and the envelope stayed inside its 0.01 m tolerance
+(`--tidy-rock` lowers the top 6 mm). The measured values below are 5.2.1's.
 
 | Flag | Budget violated | Exit |
 | --- | --- | --- |
@@ -181,18 +202,18 @@ were unchanged in every run.
 | `--stray-vert` | loose vertex count is 0 (measured 1) | 15 |
 | `--lift-z` | bounding box `zmin` is 0 (measured 0.05000) | 16 |
 | `--gap-lintel` | beds bite (the left leg's top bed stopped 15 mm under the roof: −0.0150 m) | 17 |
-| `--lean-stack` | stack plumb (the stack sheared 0.50 m per metre of height toward the sea: 0.0571 m) | 19 |
+| `--lean-stack` | stack plumb (the stack sheared 0.50 m per metre of height toward the sea: 0.0595 m) | 19 |
 | `--cut-pillar` | feet sealed (the right leg's foot stopped 20 mm over the seabed: worst sector −0.0406 m, 0 of 8) | 20 |
-| `--close-arch` | aperture (the right leg's side of the opening narrowed to a tenth: width 0.2080 m) | 21 |
+| `--close-arch` | aperture (the right leg's side of the opening narrowed to a tenth: width 0.2160 m) | 21 |
 | `--tilt-beds` | bedding level (the interior bed boundaries turned 2.5° about a line across the fin: 2.530°) | 22 |
-| `--flush-beds` | undercut (every soft bed's middle rings 2 mm behind the hard beds, its bites unchanged: 0.0020–0.0065 m on the failing beds) | 23 |
+| `--flush-beds` | undercut (every soft bed's middle rings 2 mm behind the hard beds, its bites unchanged: 0.0014–0.0064 m on the failing beds) | 23 |
 | `--flat-sea` | water level and ripple (the sheet laid flat: ripple 0.00000 m) | 24 |
 | `--short-sea` | water contained (the rim stopped 50 mm short of the shoreline: −0.01925 m) | 25 |
 | `--lift-foam` | foam seated (the foam raised 20 mm: 0.02430 m off the water, land edge −0.01465 m) | 26 |
-| `--perch-talus` | loose rock sealed (each piece seated against the ground at its centre alone: −0.0420 m) | 27 |
+| `--perch-talus` | loose rock sealed (each piece seated against the ground at its centre alone: −0.0307 m) | 27 |
 | `--pile-talus` | loose rock apart (three blocks drawn together after the relaxation: 1 pair overlaps) | 28 |
 | `--float-cover` | cover rooted (every blade, stalk and cushion base raised 50 mm, its tip held: −0.0335 m, all 398 pieces loose) | 29 |
-| `--tidy-rock` | ragged (every bed squared to a box on its column's axes, leaning and battered as before but without weathering, fallen blocks, joints or the curved arch: 0.8314) | 31 |
+| `--tidy-rock` | ragged (every bed squared to a box on its column's axes, leaning and battered as before but without weathering, fallen blocks, joints or the curved arch: 0.8239) | 31 |
 
 The roof's grass and thrift are the top of the envelope, so `--float-cover`
 holds every tip where it was and moves the bases alone. `--lean-stack`
@@ -229,12 +250,16 @@ blender --background --python sea_stack_arch.py -- --output arch.png
 
 Smoke passes no flags.
 
-The hero does not turn the piece (`HERO_YAW_DEG` 0) and looks at the fin
-from the front, 13° to the left of the arch's axis and a little above the
-roof, so the opening reads against the warm wedge on the wall behind it and
-the stack stands clear to its right. Framing measures fill x 0.816, y 0.861,
-margins left 0.119, right 0.066, bottom 0.056, top 0.083; the asset-quality
-floors pass.
+The hero does not turn the piece (`HERO_YAW_DEG` 0) and looks down on it
+as on a game board, like its terrain siblings: from the front, 13° to the
+left of the arch's axis and about 28° down (`CAM_DIST` 5.5 m back,
+`CAM_RISE` 2.65 m up), so the sea shows through the opening, the stack
+stands clear to its right, and the floor is the whole backdrop: the default
+stage's wall (pushed back to `WALL_Y` 8 m) never enters the frame, and the
+warm wedge pools on the floor behind the arch's landward side. The floor
+takes the terrain siblings' darker `(0.013, 0.014, 0.017)`. Framing measures
+fill x 0.684, y 0.872, margins left 0.172, right 0.144, bottom 0.078, top
+0.050; the asset-quality floors pass.
 
 ## Exit codes
 

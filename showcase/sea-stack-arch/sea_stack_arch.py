@@ -8,7 +8,8 @@ Unity glTF export.
 A fragment of a bedded sandstone headland stands at the sea's edge on a
 square coastal tile. The sea fills the right of the tile out to its edge,
 where the tile's rim holds it, and runs through the arch to the back edge;
-a wave-cut rock platform and a shingle cove take the left. The headland is
+a wave-cut rock platform and a sandy cove with a shingle bank take the
+left, under a low turf-topped clifftop bank along the landward edge. The headland is
 one eroded mass of level beds: hard sandstone beds stand out as ledges over
 thin undercut soft ones, and every bed's outline is the headland's jointed
 faces, each leaning back with height and set back by the bed's own amount,
@@ -93,7 +94,13 @@ SHORE = ((-1.10, -0.40), (-0.98, -0.46), (-0.72, -0.63), (-0.42, -0.62), (-0.14,
          (0.12, -0.44), (0.46, -0.43), (0.76, -0.55), (0.98, -0.67), (1.10, -0.71))
 BEACH_Y = (0.30, 0.46)    # the beach fades in over -y in this band
 # tide pools: centre, radius, depth
-POOLS = (((-1.17, -0.19), 0.080, 0.028), ((-1.12, 0.80), 0.090, 0.030))
+POOLS = (((-1.00, -0.27), 0.080, 0.028), ((-0.84, 0.82), 0.085, 0.030))
+# the clifftop: a turf bank along the landward edge, its foot wandering
+# about this x, rising this high over this run
+BANK_X = -1.16
+BANK_H = 0.070
+BANK_RISE = 0.045
+BANK_TOP = 0.165 + 0.022 + BANK_H   # its top, give or take the platform's swells
 POOL_RAMP = 0.04
 POOL_FREE = 0.012         # a pool's level this far under the lowest point of its rim
 SEA_C = (0.55, -0.05)     # the water sheet's polar centre
@@ -123,7 +130,7 @@ HARD = tuple(k % 2 for k in range(len(BOUNDS)))
 # foot, a weathered round at the top
 HARD_PROFILE = ((0.0, 1.0), (0.12, 0.0), (0.84, 0.0), (0.94, 0.3), (1.0, 1.0))
 CH = 0.006                # a hard bed's weathered arris (tidy rock)
-NOTCH = 0.026             # a soft bed recessed this far behind the hard beds either side
+NOTCH = 0.034             # a soft bed recessed this far behind the hard beds either side
 NOTCH_END = 0.022         # its end rings at least this far inside them
 NOTCH_FOOT = 0.065        # the wave-cut notch at a foot
 BITE = 0.012              # a soft bed runs this far into the hard beds either side
@@ -150,6 +157,7 @@ ARCH_W = (0.30, 0.25)     # left and right half-widths at the springing
 ARCH_CROWN = (0.835, 0.825)   # the legs meet here, under the roof
 ARCH_P, ARCH_Q = 2.0, 0.5
 ARCH_OVER = 0.018         # over the crown the legs run this far into each other
+PROUD_GAIN = 1.8          # spreads the beds' set-backs (the draws are unchanged)
 SETBACK_MAX = 0.075       # a bed's relief never eats further into the mass than this
 ARCH_TURN = (7.0, 173.0)  # the legs' inner faces' bearings
 ARCH_CORNER = (38.0, 0.15)   # the hole's arrises cut at this turn, this far off the centre line
@@ -177,11 +185,11 @@ TILT_X0 = -0.33           # --tilt-beds turns the beds about this line
 # --- Loose rock ---------------------------------------------------------------
 # fallen blocks: plan centre, length, width, height
 TALUS = ((-0.86, -0.15, 0.22, 0.15, 0.11), (-0.58, -0.19, 0.14, 0.10, 0.08),
-         (-1.22, 0.76, 0.18, 0.12, 0.09), (0.30, -0.22, 0.13, 0.10, 0.08),
+         (-1.00, 0.74, 0.18, 0.12, 0.09), (0.30, -0.22, 0.13, 0.10, 0.08),
          (0.74, 0.46, 0.15, 0.11, 0.08))
 TALUS_M = 28
 # rounded boulders: plan centre, radius
-BOULDERS = ((-0.46, -0.27, 0.046), (-1.30, -0.33, 0.050), (-0.98, -0.32, 0.040),
+BOULDERS = ((-0.46, -0.27, 0.046), (-1.05, -0.50, 0.050), (-0.98, -0.32, 0.040),
             (-0.78, 0.80, 0.042), (0.06, -0.32, 0.034), (-0.30, -0.42, 0.030))
 N_PEBBLES = 46
 PEBBLE_R = (0.012, 0.030)
@@ -268,7 +276,9 @@ TIDY_ANG = 5.0
 TIDY_MAX = 0.25
 # Hero yaw about Z only (level on the stage).
 HERO_YAW_DEG = 0.0
-WALL_Y = 4.2
+WALL_Y = 8.0
+CAM_DIST = 5.5            # the hero camera this far back along the view, in plan
+CAM_RISE = 2.65           # and this far over the piece's centre
 
 ROCK_IDX = 0
 SHELF_IDX = 1
@@ -415,9 +425,16 @@ def pool_sdf(i, x, y):
     return math.hypot(dx, dy) - pool_radius(i, math.atan2(dy, dx))
 
 
+def bank_amount(x, y):
+    """1 on the clifftop bank's top, 0 off its foot."""
+    d = (BANK_X - x) + 0.030 * math.sin(6.3 * y + 0.9) + 0.016 * math.sin(15.1 * y + 2.3)
+    return smoothstep(d, 0.0, BANK_RISE)
+
+
 def shelf_height(x, y):
     return (SHELF_Z + 0.007 * math.sin(2.3 * x + 0.4) * math.cos(1.9 * y + 1.2)
-            + 0.004 * math.sin(5.1 * x - 3.7 * y + 0.8) + 0.022 * smoothstep(-x, 0.95, 1.40))
+            + 0.004 * math.sin(5.1 * x - 3.7 * y + 0.8) + 0.022 * smoothstep(-x, 0.95, 1.40)
+            + BANK_H * bank_amount(x, y))
 
 
 def raw_height(x, y):
@@ -963,7 +980,10 @@ def plan_scene():
             pockets = [(rng.random(), rng.uniform(0.02, 0.10), rng.uniform(0.03, 0.09))
                        for _ in range(n_pockets)]
             lp = {
-                "proud": rng.choice((0.0, 0.0, rng.uniform(0.004, 0.012), rng.uniform(0.012, 0.026))),
+                # how far a bed stands back from the face: the proud beds form
+                # ledges, the recessed ones shadowed bands, so no two read alike
+                # (the turfed top beds keep theirs, so the cover is unchanged)
+                "proud": (1.0 if layer == COLUMNS[key]["layers"][-1] else PROUD_GAIN) * rng.choice((0.0, 0.0, rng.uniform(0.004, 0.012), rng.uniform(0.012, 0.026))),
                 "amp": rng.uniform(0.004, 0.012),
                 "k": (rng.choice((3, 4, 5, 6)), rng.choice((7, 9, 11, 13))),
                 "ph": (rng.uniform(0.0, TAU), rng.uniform(0.0, TAU), rng.uniform(0.0, TAU), rng.uniform(0.0, TAU)),
@@ -1416,16 +1436,28 @@ def talus_local(tb):
     """A fallen block in its own frame: a bed fragment cut by fracture
     planes, with a hard bed's arrises, centred on the origin."""
     M = TALUS_M
-    local = resample_closed(superellipse(0.5 * tb["l"] + 0.02, 0.5 * tb["w"] + 0.02, 2.6), 64)
+    local = resample_closed(superellipse(0.5 * tb["l"] + 0.02, 0.5 * tb["w"] + 0.02, 2.2), 64)
+    # broken, not sawn: the fracture planes cut well in, a corner or two
+    # knocked off, and the block's top and foot are bedding and fracture
+    # faces at their own slants, so no two faces are square to each other
     planes = []
-    for ang, depth in tb["facets"]:
+    for j, (ang, depth) in enumerate(tb["facets"]):
         m = (math.cos(ang), math.sin(ang))
-        planes.append((m, max(px * m[0] + py * m[1] for px, py in local) - depth - 0.02))
+        deep = min(depth * (2.2 + 1.6 * hash01(tb["l"] * 97.0, tb["w"] * 61.0, j)), 0.28 * tb["w"])
+        planes.append((m, max(px * m[0] + py * m[1] for px, py in local) - deep - 0.02))
+    for j in range(2):
+        ang = TAU * hash01(tb["h"] * 83.0, tb["l"] * 29.0, 7 + j)
+        m = (math.cos(ang), math.sin(ang))
+        planes.append((m, max(px * m[0] + py * m[1] for px, py in local) - min(0.05 + 0.035 * hash01(tb["w"], j, 3), 0.30 * tb["w"])))
     ch = min(0.20 * tb["h"], 0.0035)
+    ka = 0.38 * (hash01(tb["l"] * 13.0, tb["h"] * 7.0, 1) - 0.5)
+    kb = 0.38 * (hash01(tb["w"] * 17.0, tb["h"] * 5.0, 2) - 0.5)
     rings = []
     for t, f in HARD_PROFILE:
         ring = ring_from(clip_poly(local, planes, ch * f), (0.0, 0.0), -0.5 * math.pi, M)
-        rings.append([Vector((x, y, (t - 0.5) * tb["h"])) for x, y in ring])
+        # the top tilts one way, the foot half as much the other
+        s = t if t > 0.5 else -0.5 * (1.0 - t)
+        rings.append([Vector((x, y, (t - 0.5) * tb["h"] + s * (ka * x + kb * y))) for x, y in ring])
     return rings
 
 
@@ -1870,7 +1902,8 @@ def break_bed_coplanar(B, passes=6):
     """A soft bed is built from the faces of the hard beds either side, so
     now and then one of its facets lands in the plane of theirs. Draw such
     a facet 1.5 mm further in toward its column's centre (further inside the
-    beds it bites) until none does."""
+    beds it bites) until none does. The turf and cover draped over a top bed
+    count too: a soft bed's facet can land in their planes as well."""
     bm = B.bm
     # each bed's own plan centroid (a sheared stack's beds stand off its axis)
     acc = {}
@@ -1884,9 +1917,11 @@ def break_bed_coplanar(B, passes=6):
     centres = {k: (a[0] / a[2], a[1] / a[2]) for k, a in acc.items()}
     for _ in range(passes):
         bm.normal_update()
-        faces = [f for f in bm.faces if f[B.part] == P_BED]
-        ident = [f[B.ident] for f in faces]
-        soft = [not f[B.hard] for f in faces]
+        draped = (P_TURF,) + COVER_PARTS
+        faces = [f for f in bm.faces if f[B.part] == P_BED or f[B.part] in draped]
+        # the turf and cover never share a bed's ident
+        ident = [f[B.ident] if f[B.part] == P_BED else -1000 * f[B.part] - f[B.ident] for f in faces]
+        soft = [f[B.part] == P_BED and not f[B.hard] for f in faces]
         cent = [f.calc_center_median() for f in faces]
         kd = KDTree(len(faces))
         for i, c in enumerate(cent):
@@ -2244,17 +2279,26 @@ def shore_zones(nt, col, coord, z, flat=False):
     rag = remap(nt, noise(nt, coord, 6.0, 4.0, 0.6), 0.3, 0.7, -0.05, 0.05)
     zz = math_node(nt, "ADD", z, math_node(nt, "MULTIPLY", rag, 0.25 if flat else 1.0))
     if not flat:
-        black = mul(nt, remap(nt, zz, wl + 0.36, wl + 0.22, 0.0, 0.85), remap(nt, zz, wl + 0.08, wl + 0.15, 0.0, 1.0))
-        col = mix_color(nt, col, (0.028, 0.027, 0.025), black)
+        # the splash zone: the black tar lichen (Verrucaria) band, sharp at
+        # its foot and fraying out above, with the wet stone darkened under it
+        black = mul(nt, remap(nt, zz, wl + 0.40, wl + 0.24, 0.0, 0.92), remap(nt, zz, wl + 0.10, wl + 0.16, 0.0, 1.0))
+        col = mix_color(nt, col, (0.022, 0.022, 0.021), black)
+        col = multiply_color(nt, col, ramp(nt, remap(nt, zz, wl + 0.02, wl + 0.20, 0.0, 1.0),
+                                           ((0.0, (0.45, 0.45, 0.45)), (1.0, (1.0, 1.0, 1.0)))))
     barn = (remap(nt, zz, wl + 0.035, wl + 0.012, 0.0, 1.0) if flat
-            else remap(nt, zz, wl + 0.16, wl + 0.07, 0.0, 1.0))
+            else mul(nt, remap(nt, zz, wl + 0.17, wl + 0.10, 0.0, 1.0), remap(nt, zz, wl + 0.035, wl + 0.06, 0.0, 1.0)))
     dots = voronoi(nt, coord, 170.0)
-    col = mix_color(nt, col, (0.046, 0.044, 0.040), math_node(nt, "MULTIPLY", barn, 0.80))
-    col = mix_color(nt, col, (0.30, 0.29, 0.26), mul(nt, barn, remap(nt, dots, 0.16, 0.08, 0.0, 0.6)))
+    col = mix_color(nt, col, (0.060, 0.058, 0.052), math_node(nt, "MULTIPLY", barn, 0.80))
+    col = mix_color(nt, col, (0.42, 0.41, 0.37), mul(nt, barn, remap(nt, dots, 0.18, 0.07, 0.0, 0.85)))
     weed = (remap(nt, zz, wl + 0.02, wl + 0.005, 0.0, 1.0) if flat
-            else remap(nt, zz, wl + 0.075, wl + 0.02, 0.0, 1.0))
+            else remap(nt, zz, wl + 0.085, wl + 0.035, 0.0, 1.0))
     wtex = remap(nt, noise(nt, coord, 22.0, 3.0, 0.6), 0.35, 0.65, 0.55, 1.0)
-    col = mix_color(nt, col, (0.030, 0.055, 0.016), mul(nt, weed, wtex, 0.95))
+    col = mix_color(nt, col, (0.034, 0.062, 0.014), mul(nt, weed, wtex, 0.97))
+    if not flat:
+        # wrack: olive-brown fronds draped over the lowest stone
+        wrack = mul(nt, remap(nt, zz, wl + 0.045, wl + 0.015, 0.0, 1.0),
+                    remap(nt, noise(nt, mapping(nt, coord, scale=(3.0, 3.0, 0.6)), 9.0, 3.0, 0.6), 0.48, 0.60, 0.0, 0.9))
+        col = mix_color(nt, col, (0.11, 0.085, 0.022), wrack)
     return col, math_node(nt, "MAXIMUM", barn, weed)
 
 
@@ -2283,14 +2327,19 @@ def rock_material():
     hard_col = ramp(nt, tone, ((0.0, (0.30, 0.215, 0.14)), (0.25, (0.40, 0.29, 0.18)),
                                (0.50, (0.46, 0.32, 0.19)), (0.75, (0.50, 0.39, 0.27)),
                                (1.0, (0.42, 0.25, 0.14))))
-    soft_col = ramp(nt, tone, ((0.0, (0.13, 0.088, 0.066)), (0.5, (0.18, 0.12, 0.088)),
-                               (1.0, (0.22, 0.155, 0.12))))
+    # the soft beds are shaly: dark plum-brown, a world away from the buff
+    soft_col = ramp(nt, tone, ((0.0, (0.085, 0.055, 0.050)), (0.5, (0.13, 0.078, 0.064)),
+                               (1.0, (0.17, 0.105, 0.080))))
     col = mix_color(nt, soft_col, hard_col, hard)
-    # each bed its own cast: greyer, redder or paler
-    tint = ramp(nt, math_node(nt, "FRACT", math_node(nt, "MULTIPLY", attr(nt, "Layer"), 0.37), 0.0),
-                ((0.0, (0.72, 0.76, 0.86)), (0.25, (1.02, 1.0, 0.98)), (0.5, (1.20, 0.90, 0.72)),
-                 (0.75, (1.20, 1.14, 1.04)), (1.0, (0.84, 0.78, 0.76))))
+    # each bed its own cast, strongly: grey-green grit, pale cream, rust-red,
+    # buff, a dark iron-rich band, so the strata read across the headland
+    layer = attr(nt, "Layer")
+    tint = ramp(nt, math_node(nt, "FRACT", math_node(nt, "MULTIPLY", layer, 0.37), 0.0),
+                ((0.0, (0.66, 0.70, 0.74)), (0.22, (1.22, 1.16, 1.06)), (0.42, (1.30, 0.82, 0.58)),
+                 (0.62, (1.08, 0.98, 0.86)), (0.82, (0.72, 0.58, 0.50)), (1.0, (1.14, 1.02, 0.90))))
     col = multiply_color(nt, col, tint)
+    # and a coarse-grained or fine-grained look per bed
+    bed_grain = remap(nt, math_node(nt, "FRACT", math_node(nt, "MULTIPLY", layer, 0.61), 0.0), 0.0, 1.0, 0.0, 1.0)
     mottle = noise(nt, coord, 3.0, 6.0, 0.62)
     col = mix_color(nt, col, (0.20, 0.13, 0.08), remap(nt, mottle, 0.35, 0.70, 0.40, 0.0))
     col = mix_color(nt, col, (0.62, 0.50, 0.36), remap(nt, mottle, 0.62, 0.78, 0.0, 0.25))
@@ -2304,7 +2353,14 @@ def rock_material():
                                           TAU * 36.0), 0.0)
     col = mix_color(nt, col, (0.16, 0.10, 0.06), remap(nt, lam, 0.6, 1.0, 0.0, 0.12))
     grain = noise(nt, coord, 140.0, 2.0, 0.5)
-    col = mix_color(nt, col, (0.10, 0.07, 0.045), remap(nt, grain, 0.40, 0.70, 0.40, 0.0))
+    col = mix_color(nt, col, (0.10, 0.07, 0.045), mul(nt, remap(nt, grain, 0.40, 0.70, 0.40, 0.0),
+                                                       remap(nt, bed_grain, 0.0, 1.0, 0.5, 1.4)))
+    # pebbly lenses in the coarse beds
+    clasts = voronoi_node(nt, coord, 55.0)
+    clast = mul(nt, remap(nt, clasts.outputs["Distance"], 0.22, 0.10, 0.0, 1.0),
+                remap(nt, bed_grain, 0.6, 0.8, 0.0, 0.7), hard)
+    col = mix_color(nt, col, ramp(nt, coord_xyz(nt, clasts.outputs["Color"])["X"],
+                                  ((0.0, (0.18, 0.16, 0.15)), (1.0, (0.55, 0.50, 0.42)))), clast)
     # tafoni: the honeycomb pitting of sea-weathered sandstone on the walls
     pits = voronoi(nt, coord, 38.0)
     side = remap(nt, nz, 0.55, 0.25, 0.0, 1.0)
@@ -2351,88 +2407,157 @@ def rock_material():
 
 def shelf_material():
     mat, nt, bsdf, coord = surface("WaveCutShelf")
-    # The wave-cut platform: the same sandstone scoured flat, dark and wet,
-    # with a network of joints, weed films and barnacles near the water; the
-    # cove's shingle, grey and buff pebbles in dark sand, wet at the water's
-    # edge; the beds in section down the tile's skirt.
+    # The wave-cut platform: the headland's own beds planed off by the sea,
+    # their edges outcropping as low steps across it, buff and rust between
+    # dark shaly partings, split by the same joints, weedy and barnacled
+    # toward the water, with puddles standing on it. The cove's beach: wet
+    # sand at the water, drying paler up the shore, a shingle bank of grey
+    # and buff pebbles at its head. The clifftop on the landward side: a
+    # turf bank over a raw soil-and-rock riser. The skirt: the beds in
+    # section, uneven hard bands over thin soft ones, soil and turf on top.
     xyz = coord_xyz(nt, coord)
+    z = xyz["Z"]
     nz = normal_xyz(nt)["Z"]
+    top = remap(nt, nz, 0.75, 0.92, 0.0, 1.0)
     mottle = noise(nt, coord, 3.5, 6.0, 0.6)
-    col = ramp(nt, mottle, ((0.30, (0.074, 0.068, 0.060)), (0.55, (0.112, 0.102, 0.090)),
-                            (0.80, (0.160, 0.142, 0.120))))
-    # the same two joint sets that split the headland, running on across the shelf
-    # they wander, fade in and out, and open wider in places
+    # the outcropping beds: a strike across the platform, warped, each band
+    # a step whose edge is dark and whose tread is buff or rust
+    sdot = nt.nodes.new("ShaderNodeVectorMath")
+    sdot.operation = "DOT_PRODUCT"
+    nt.links.new(coord, sdot.inputs[0])
+    sdot.inputs[1].default_value = (math.cos(0.42), math.sin(0.42), 0.0)
+    strike = math_node(nt, "ADD", sdot.outputs["Value"],
+                       math_node(nt, "MULTIPLY", noise(nt, coord, 1.4, 3.0, 0.55), 0.22))
+    beds = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", strike, 7.5), 0.0)
+    which = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(nt, "FLOOR", math_node(
+        nt, "MULTIPLY", strike, 7.5), 0.0), 0.37), 0.0)
+    tread = ramp(nt, which, ((0.0, (0.25, 0.18, 0.12)), (0.3, (0.34, 0.25, 0.165)),
+                             (0.55, (0.30, 0.17, 0.10)), (0.8, (0.38, 0.30, 0.21)), (1.0, (0.24, 0.20, 0.16))))
+    col = mix_color(nt, tread, (0.075, 0.052, 0.040), remap(nt, beds, 0.82, 0.90, 0.0, 0.85))
+    col = mix_color(nt, col, (0.13, 0.10, 0.075), remap(nt, mottle, 0.35, 0.65, 0.45, 0.0))
+    col = mix_color(nt, col, (0.44, 0.36, 0.26), remap(nt, mottle, 0.62, 0.78, 0.0, 0.30))
+    grain = noise(nt, coord, 150.0, 2.0, 0.5)
+    col = mix_color(nt, col, (0.09, 0.07, 0.05), remap(nt, grain, 0.40, 0.70, 0.35, 0.0))
+    # the same two joint sets that split the headland, running on across the
+    # platform; they wander, fade in and out, and open wider in places
     warp = math_node(nt, "MULTIPLY", noise(nt, coord, 2.2, 4.0, 0.6), 0.12)
     crack = math_node(nt, "MAXIMUM", mul(nt, joint_lines(nt, coord, 0.12, 0.34, 0.035, warp),
                                          remap(nt, noise(nt, coord, 1.3, 2.0, 0.5), 0.42, 0.58, 0.0, 1.0)),
                       mul(nt, joint_lines(nt, coord, math.pi / 2 + 0.2, 0.47, 0.03, warp),
                           remap(nt, noise(nt, coord, 1.7, 2.0, 0.5), 0.45, 0.60, 0.0, 1.0)))
-    col = mix_color(nt, col, (0.034, 0.028, 0.021), mul(nt, crack, remap(nt, nz, 0.6, 0.9, 0.0, 0.70)))
+    col = mix_color(nt, col, (0.030, 0.024, 0.018), mul(nt, crack, remap(nt, nz, 0.6, 0.9, 0.0, 0.85)))
+    # green algal film in the hollows, puddles standing dark and glossy
     film = noise(nt, coord, 2.2, 4.0, 0.55)
-    top = remap(nt, nz, 0.75, 0.92, 0.0, 1.0)
-    col = mix_color(nt, col, (0.050, 0.075, 0.026), mul(nt, top, remap(nt, film, 0.52, 0.68, 0.0, 0.65)))
-    col = mix_color(nt, col, (0.20, 0.15, 0.10), mul(nt, top, remap(nt, film, 0.30, 0.18, 0.0, 0.35)))
-    puddle = remap(nt, noise(nt, coord, 9.0, 3.0, 0.6), 0.55, 0.75, 0.0, 1.0)
-    col = mix_color(nt, col, (0.07, 0.05, 0.035), math_node(nt, "MULTIPLY", puddle, 0.5))
-    col, wet = shore_zones(nt, col, coord, math_node(nt, "ADD", xyz["Z"], remap(nt, nz, 0.6, 0.3, 0.0, 1.0)),
+    col = mix_color(nt, col, (0.060, 0.085, 0.028), mul(nt, top, remap(nt, film, 0.56, 0.70, 0.0, 0.55),
+                                                        remap(nt, z, 0.215, 0.19, 0.0, 1.0)))
+    puddle = mul(nt, remap(nt, noise(nt, coord, 6.0, 3.0, 0.6), 0.60, 0.68, 0.0, 1.0), top,
+                 remap(nt, z, 0.215, 0.19, 0.0, 1.0))
+    col = mix_color(nt, col, (0.045, 0.040, 0.034), math_node(nt, "MULTIPLY", puddle, 0.75))
+    col, wet = shore_zones(nt, col, coord, math_node(nt, "ADD", z, remap(nt, nz, 0.6, 0.3, 0.0, 1.0)),
                            flat=True)
-    # the shingle: a rounded pebble on each Voronoi site, each its own
-    # stone, darkening to its rim, coarse sand between
+    # the beach: wet sand at the water drying pale up the shore, ripple
+    # marks in the wet, and the shingle bank at its head
     beach = attr(nt, "Beach")
-    cells = voronoi_node(nt, coord, 95.0)
+    dry = remap(nt, z, WATER_LEVEL + 0.004, WATER_LEVEL + 0.040, 0.0, 1.0)
+    sand = ramp(nt, noise(nt, coord, 24.0, 3.0, 0.5), ((0.3, (0.40, 0.33, 0.22)), (0.7, (0.50, 0.42, 0.29))))
+    sand = mix_color(nt, sand, (0.20, 0.16, 0.11), remap(nt, dry, 0.0, 0.6, 0.9, 0.0))
+    marks = math_node(nt, "SINE", math_node(nt, "MULTIPLY", math_node(
+        nt, "ADD", xyz["X"], math_node(nt, "MULTIPLY", noise(nt, coord, 3.0, 2.0, 0.5), 0.06)), 190.0), 0.0)
+    sand = mix_color(nt, sand, (0.15, 0.12, 0.085), mul(nt, remap(nt, marks, 0.3, 1.0, 0.0, 0.35),
+                                                        remap(nt, dry, 0.5, 0.1, 0.0, 1.0)))
+    cells = voronoi_node(nt, coord, 85.0)
     rnd = coord_xyz(nt, cells.outputs["Color"])["X"]
     f1 = cells.outputs["Distance"]
-    peb = ramp(nt, rnd, ((0.0, (0.085, 0.083, 0.080)), (0.35, (0.16, 0.148, 0.130)),
-                         (0.65, (0.24, 0.215, 0.18)), (1.0, (0.33, 0.30, 0.26))))
-    peb = mix_color(nt, peb, (0.06, 0.052, 0.042), remap(nt, f1, 0.28, 0.52, 0.0, 0.85))
-    grit = noise(nt, coord, 320.0, 2.0, 0.6)
-    peb = mix_color(nt, peb, (0.14, 0.12, 0.095), mul(nt, remap(nt, f1, 0.45, 0.60, 0.0, 1.0),
-                                                       remap(nt, grit, 0.35, 0.65, 0.3, 0.9)))
+    peb = ramp(nt, rnd, ((0.0, (0.10, 0.10, 0.105)), (0.35, (0.20, 0.19, 0.18)),
+                         (0.65, (0.36, 0.32, 0.26)), (1.0, (0.50, 0.46, 0.39))))
+    peb = mix_color(nt, peb, (0.08, 0.07, 0.055), remap(nt, f1, 0.30, 0.50, 0.0, 0.85))
+    shingle = mul(nt, remap(nt, z, WATER_LEVEL + 0.030, WATER_LEVEL + 0.055, 0.0, 1.0),
+                  remap(nt, noise(nt, coord, 5.0, 2.0, 0.5), 0.38, 0.52, 0.0, 1.0))
     edge = remap(nt, f1, 0.0, 0.6, 1.0, 0.0)
-    damp = remap(nt, xyz["Z"], WATER_LEVEL + 0.035, WATER_LEVEL + 0.004, 0.0, 0.65)
-    peb = mix_color(nt, peb, (0.045, 0.040, 0.034), damp)
-    col = mix_color(nt, col, peb, beach)
-    # the skirt: the beds in section, dry, no tide zones
+    shore = mix_color(nt, sand, peb, shingle)
+    col = mix_color(nt, col, shore, beach)
+    # the clifftop: a turf bank over a raw riser of soil and broken rock
+    rag = remap(nt, noise(nt, coord, 9.0, 3.0, 0.6), 0.3, 0.7, -0.012, 0.012)
+    zb = math_node(nt, "ADD", z, rag)
+    tuss = noise(nt, coord, 40.0, 4.0, 0.65)
+    turf = ramp(nt, noise(nt, coord, 6.0, 3.0, 0.5), ((0.3, (0.050, 0.095, 0.020)), (0.55, (0.085, 0.140, 0.030)),
+                                                       (0.80, (0.15, 0.16, 0.055))))
+    turf = mix_color(nt, turf, (0.018, 0.034, 0.008), remap(nt, tuss, 0.35, 0.50, 0.70, 0.0))
+    soil = ramp(nt, noise(nt, coord, 18.0, 3.0, 0.6), ((0.3, (0.075, 0.050, 0.032)), (0.7, (0.15, 0.11, 0.075))))
+    riser = remap(nt, zb, BANK_TOP - 0.050, BANK_TOP - 0.030, 0.0, 1.0)
+    col = mix_color(nt, col, soil, mul(nt, riser, remap(nt, top, 0.0, 1.0, 1.0, 0.4)))
+    grass = mul(nt, remap(nt, zb, BANK_TOP - 0.020, BANK_TOP - 0.008, 0.0, 1.0), remap(nt, nz, 0.55, 0.80, 0.0, 1.0))
+    col = mix_color(nt, col, turf, grass)
+    # the skirt: the beds in section, dry, no tide zones; uneven hard bands
+    # over thin soft partings, soil and turf on the bank's top
     skirt = remap(nt, nz, 0.30, 0.05, 0.0, 1.0)
-    bands = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
-        nt, "ADD", xyz["Z"], math_node(nt, "MULTIPLY", noise(nt, coord, 5.0, 2.0, 0.5), 0.010)), 14.0), 0.0)
-    band_col = ramp(nt, bands, ((0.0, (0.12, 0.088, 0.062)), (0.55, (0.14, 0.10, 0.07)),
-                                (0.62, (0.085, 0.062, 0.046)), (1.0, (0.095, 0.070, 0.052))))
+    sz = math_node(nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 4.0, 2.0, 0.5), 0.012))
+    strata = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", sz, 34.0), 0.0)
+    band_id = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(nt, "FLOOR", math_node(
+        nt, "MULTIPLY", sz, 34.0), 0.0), 0.43), 0.0)
+    hard_b = ramp(nt, band_id, ((0.0, (0.22, 0.155, 0.10)), (0.25, (0.30, 0.215, 0.14)),
+                                (0.5, (0.27, 0.15, 0.09)), (0.75, (0.34, 0.27, 0.19)), (1.0, (0.19, 0.16, 0.13))))
+    # a soft parting at the top of some bands only, so the beds come out uneven
+    parting = mul(nt, remap(nt, strata, 0.78, 0.86, 0.0, 1.0),
+                  remap(nt, math_node(nt, "FRACT", math_node(nt, "MULTIPLY", band_id, 3.7), 0.0), 0.35, 0.45, 0.0, 1.0))
+    band_col = mix_color(nt, hard_b, (0.07, 0.045, 0.038), parting)
+    pebs = voronoi_node(nt, coord, 70.0)
+    band_col = mix_color(nt, band_col, (0.36, 0.33, 0.29), mul(nt, remap(nt, pebs.outputs["Distance"], 0.16, 0.08, 0.0, 0.8),
+                                                                remap(nt, band_id, 0.55, 0.65, 0.0, 1.0)))
+    band_col = mix_color(nt, band_col, (0.10, 0.07, 0.05),
+                         remap(nt, math_node(nt, "SINE", math_node(nt, "MULTIPLY", sz, TAU * 70.0), 0.0),
+                               0.5, 1.0, 0.0, 0.25))
+    band_col = mix_color(nt, band_col, (0.11, 0.08, 0.055), remap(nt, grain, 0.40, 0.70, 0.35, 0.0))
+    # soil and roots under the turf where the bank meets the edge, darker at the foot
+    band_col = mix_color(nt, band_col, soil, riser)
+    band_col = mix_color(nt, band_col, turf, remap(nt, zb, BANK_TOP - 0.014, BANK_TOP - 0.004, 0.0, 1.0))
+    band_col = mix_color(nt, band_col, (0.05, 0.035, 0.025), remap(nt, z, 0.030, 0.0, 0.0, 0.6))
     col = mix_color(nt, col, band_col, skirt)
     nt.links.new(col, bsdf.inputs["Base Color"])
-    rough = math_node(nt, "SUBTRACT", 0.82, mul(nt, math_node(nt, "MAXIMUM", wet, puddle), 0.40))
-    rough = math_node(nt, "SUBTRACT", rough, mul(nt, beach, damp, 0.35))
+    rough = math_node(nt, "SUBTRACT", 0.84, mul(nt, math_node(nt, "MAXIMUM", wet, puddle), 0.50))
+    rough = math_node(nt, "SUBTRACT", rough, mul(nt, beach, remap(nt, dry, 0.0, 0.6, 1.0, 0.0), 0.40))
     nt.links.new(rough, bsdf.inputs["Roughness"])
-    add_bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "ADD", mottle, mul(nt, crack, top, -0.6)),
-                                 mul(nt, beach, edge, 1.4)), 0.45, 0.01)
+    height = math_node(nt, "ADD", math_node(nt, "MULTIPLY", mottle, 0.6), mul(nt, crack, top, -0.8))
+    height = math_node(nt, "ADD", height, mul(nt, remap(nt, beds, 0.80, 0.90, 0.0, -0.8), top,
+                                              math_node(nt, "SUBTRACT", 1.0, beach)))
+    height = math_node(nt, "ADD", height, mul(nt, beach, shingle, edge, 1.4))
+    height = math_node(nt, "ADD", height, mul(nt, grass, tuss, 1.2))
+    height = math_node(nt, "ADD", height, mul(nt, skirt, parting, -1.2))
+    add_bump(nt, bsdf, height, 0.45, 0.01)
     return mat
 
 
 def water_material():
     mat, nt, bsdf, coord = surface("SeaWater")
-    depth = remap(nt, attr(nt, "Depth"), 0.0, 0.065, 0.0, 1.0)
-    col = ramp(nt, depth, ((0.00, (0.085, 0.150, 0.125)), (0.22, (0.040, 0.115, 0.110)),
-                           (0.55, (0.016, 0.062, 0.072)), (1.00, (0.006, 0.026, 0.038))))
+    # clear sea over the sand: pale turquoise in the shallows by the shore,
+    # through teal to a deep blue-green out where the seabed falls away
+    depth = remap(nt, attr(nt, "Depth"), 0.0, 0.058, 0.0, 1.0)
+    col = ramp(nt, depth, ((0.00, (0.22, 0.50, 0.42)), (0.12, (0.075, 0.38, 0.40)),
+                           (0.35, (0.020, 0.20, 0.28)), (0.70, (0.008, 0.090, 0.17)),
+                           (1.00, (0.005, 0.050, 0.11))))
+    # the tide pools (Tone 0.8): still and dark over their weedy floors
+    col = mix_color(nt, col, (0.025, 0.075, 0.065), remap(nt, attr(nt, "Tone"), 0.6, 0.8, 0.0, 0.75))
     nt.links.new(col, bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.07
+    bsdf.inputs["Roughness"].default_value = 0.06
     bsdf.inputs["IOR"].default_value = 1.33
     bsdf.inputs["Specular IOR Level"].default_value = 0.45
-    ruffle = noise(nt, mapping(nt, coord, scale=(1.0, 1.8, 1.0)), 30.0, 3.0, 0.5)
-    add_bump(nt, bsdf, ruffle, 0.10, 0.002)
+    ruffle = noise(nt, mapping(nt, coord, scale=(1.0, 1.6, 1.0)), 28.0, 3.0, 0.5)
+    swell = noise(nt, mapping(nt, coord, scale=(1.0, 2.2, 1.0)), 7.0, 2.0, 0.5)
+    add_bump(nt, bsdf, math_node(nt, "ADD", ruffle, mul(nt, swell, 1.5)), 0.14, 0.002)
     return mat
 
 
 def foam_material():
     mat, nt, bsdf, coord = surface("Foam")
-    # lacy foam: white where it piles against the rock, breaking into
-    # cells and streaks out over the water
+    # lacy foam: white where it piles against the rock and breaks on the
+    # shore, into cells and streaks out over the water
     fx = attr(nt, "FoamX")
-    cells = voronoi(nt, coord, 55.0, "DISTANCE_TO_EDGE")
-    lace = remap(nt, cells, 0.004, 0.030, 1.0, 0.0)
-    body = remap(nt, fx, 0.05, 0.55, 0.95, 0.0)
-    amount = math_node(nt, "MAXIMUM", body, mul(nt, lace, remap(nt, fx, 0.3, 1.0, 0.85, 0.25)))
-    amount = math_node(nt, "MULTIPLY", amount, remap(nt, noise(nt, coord, 18.0, 3.0, 0.6), 0.30, 0.55, 0.45, 1.0))
-    col = mix_color(nt, (0.030, 0.095, 0.095), (0.70, 0.74, 0.72), amount)
+    cells = voronoi(nt, coord, 60.0, "DISTANCE_TO_EDGE")
+    lace = remap(nt, cells, 0.02, 0.10, 1.0, 0.0)
+    body = remap(nt, fx, 0.15, 0.70, 1.0, 0.0)
+    amount = math_node(nt, "MAXIMUM", body, mul(nt, lace, remap(nt, fx, 0.3, 1.0, 1.0, 0.45)))
+    amount = math_node(nt, "MULTIPLY", amount, remap(nt, noise(nt, coord, 16.0, 3.0, 0.6), 0.30, 0.55, 0.65, 1.0))
+    col = mix_color(nt, (0.10, 0.36, 0.38), (0.86, 0.90, 0.88), amount)
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.45
     add_bump(nt, bsdf, lace, 0.3, 0.002)
@@ -3475,7 +3600,7 @@ def render_still(low, path, engine):
     fmat = bpy.data.materials.new("Floor")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Base Color"].default_value = (0.013, 0.014, 0.017, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
@@ -3504,22 +3629,25 @@ def render_still(low, path, engine):
         ob.rotation_euler = (aim_at - ob.location).normalized().to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    # Key, fill, rim and the warm wedge. The wedge pools behind the arch so
-    # the opening reads against it.
-    light("Key", (-3.2, -4.0, 4.6), 285.0, 4.0, (1.0, 0.97, 0.93), spread=40.0)
-    light("Fill", (4.6, -3.0, 0.8), 44.0, 8.0, (0.72, 0.82, 1.0))
-    light("Rim", (-1.2, 3.0, 2.8), 130.0, 3.0, (0.62, 0.78, 1.0))
-    light("Wedge", (0.9, 2.5, 1.7), 240.0, 5.0, (1.0, 0.72, 0.44),
-          target=(-0.3, WALL_Y - 0.1, 1.1))
+    # Key high on the left so the beds throw their shadows down the right
+    # faces; fill, rim, and the warm wedge. The camera looks down on the tile
+    # as on a game board, like its terrain siblings, so the floor behind it
+    # is the backdrop and the wall never shows: the wedge drops a warm pool
+    # on the floor behind the arch, off to the left of the water.
+    light("Key", (-3.4, -3.2, 4.8), 300.0, 3.5, (1.0, 0.96, 0.90), spread=34.0)
+    light("Fill", (4.4, -3.0, 1.6), 50.0, 8.0, (0.72, 0.82, 1.0))
+    light("Rim", (0.6, 3.2, 2.6), 150.0, 3.0, (0.65, 0.80, 1.0))
+    light("Wedge", (-2.2, 2.0, 2.4), 260.0, 1.5, (1.0, 0.68, 0.40),
+          target=(-2.4, 2.3, 0.0), spread=38.0)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
     view = Vector((-0.22, -0.975, 0.0)).normalized()
-    cam.location = centre + view * 5.3 + Vector((0.0, 0.0, 0.80))
+    cam.location = centre + view * CAM_DIST + Vector((0.0, 0.0, CAM_RISE))
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = centre + Vector((0.0, 0.0, -0.17))
+    aim.location = centre + Vector((0.0, -0.10, -0.30))
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
