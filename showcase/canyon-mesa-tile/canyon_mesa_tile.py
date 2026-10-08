@@ -9,8 +9,8 @@ A square desert tile 2.40 m on a side, of Colorado Plateau character. Two
 mesas stand at the back with a canyon between them, a butte and a slender
 spire in front. Every one of them is cut from the same layer cake: a
 talus apron of shale and rubble at the angle of repose up to the cliffs'
-foot, a cliff of five horizontally bedded sandstone beds stepping back at
-each bedding plane, a crumbling slope of darker shale over it, and a hard
+foot, a cliff of five horizontally bedded sandstone beds, each its own
+colour and weathered back into a parting at every bedding plane, a crumbling slope of darker shale over it, and a hard
 caprock lid on top, flat and overhanging. The beds stand at one height on
 every formation, so they read straight across the canyon. A dry wash
 enters at the back edge, runs down the canyon and out across the valley,
@@ -94,18 +94,27 @@ DECHELLY = (0.120, 0.172, 0.236, 0.290, 0.346, 0.400)   # five beds, bottom to t
 # where a strong bed sits on a weak one
 BED_SB = (0.000, 0.006, 0.008, 0.010, 0.016)
 BATTER = 0.002            # each bed's face leans back this much bottom to top
+# each bedding plane weathers back into a parting this far behind the faces
+# either side of it (a softer seam between harder beds), so every bed stands
+# as its own rounded band; planes 1..5 (the cliff's top last)
+PARTING = (0.0026, 0.0036, 0.0023, 0.0032, 0.0000)
+BED_EDGE = 0.15           # a bed's face rounds into its partings over this share of its thickness
 MOENKOPI = ((0.400, 0.013), (0.418, 0.022), (0.437, 0.034), (0.455, 0.049))   # (h, setback)
 CAP_BASE = 0.455          # the caprock's underside, overhanging the slope
 CAP_TOP = 0.483
 CAP_SB = (0.037, 0.038, 0.042)   # underside, face top, the top's edge after its chamfer
 CHAMFER_H = 0.004
 SPIRE_TOP = 5             # the spire stands to the top of the cliff sandstone, its cap long gone
-SPIRE_TAPER = 0.36        # and narrows by this share of its girth to its top
+# and is worn to a totem: its girth (a share of its foot's) narrowing fast
+# off the talus, then slowly up a slender shaft, its hardest bed left as a
+# swelling knob under the top
+SPIRE_GIRTH = ((0.00, 1.00), (0.08, 0.80), (0.22, 0.58), (0.45, 0.50), (0.62, 0.41), (0.74, 0.47),
+               (0.84, 0.39), (0.93, 0.43), (1.00, 0.34))
 # bedding planes: k -> height; 1..4 inside the cliff, 5 cliff top, 6 cap base, 7 cap top
 BOUNDARY_H = {1: DECHELLY[1], 2: DECHELLY[2], 3: DECHELLY[3], 4: DECHELLY[4], 5: DECHELLY[5],
               6: CAP_BASE, 7: CAP_TOP}
 WOBBLE = 0.0011           # each ring's erosion, at most this proud or sunk
-JOINT_D = (0.006, 0.028)  # vertical joints cut into the cliffs this deep
+JOINT_D = (0.004, 0.018)  # vertical joints cut into the cliffs this deep
 JOINT_W = (0.012, 0.045)  # and this wide along the face
 
 # --- The talus aprons ------------------------------------------------------------
@@ -126,8 +135,8 @@ FORMS = (
      ((2, 0.045, 2.2), (3, 0.050, 0.7), (4, 0.020, 1.4), (6, 0.014, 0.3)), 280, 13, 1.0, "mesa"),
     ("Butte", (-0.46, -0.46), (0.140, 0.105), 35.0, 2.2,
      ((2, 0.040, 1.0), (3, 0.035, 2.8), (5, 0.018, 0.6)), 128, 6, 0.65, "butte"),
-    ("Spire", (0.50, -0.44), (0.056, 0.050), 25.0, 2.0,
-     ((2, 0.050, 0.3), (3, 0.040, 1.5)), 64, 4, 0.45, "spire"),
+    ("Spire", (0.50, -0.44), (0.072, 0.062), 25.0, 2.0,
+     ((2, 0.050, 0.3), (3, 0.040, 1.5)), 64, 4, 0.55, "spire"),
 )
 PERCH_BUTTE = 0.008       # --perch-butte stands the butte's foot this far over its bench, not in it
 TILT_BEDS = 0.040         # --tilt-beds dips the east mesa this much per metre
@@ -148,9 +157,9 @@ LANES = (-1.25, -0.6, 0.0, 0.6, 1.25)
 UPHILL = 0.020            # --uphill-wash raises the wash mid-course by this
 
 # --- Scatter ------------------------------------------------------------------------
-N_BLOCK = 34
+N_BLOCK = 60
 N_JUNIPER = (22, 18)      # on the floor, on the mesa tops
-N_SCRUB = (56, 34)
+N_SCRUB = (84, 34)
 N_COTTON = 6
 ROOT_D = 0.010            # a trunk starts this far under the ground
 FLOAT_PLANTS = 0.03
@@ -160,9 +169,9 @@ SECTORS = 8
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (2.4000, 2.4000, 0.6416)
-BASE_TRIS_MIN = 113300
-BASE_TRIS_MAX = 114500
+OUTER_SIZE = (2.4000, 2.4000, 0.6221)
+BASE_TRIS_MIN = 127100
+BASE_TRIS_MAX = 128300
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -176,7 +185,7 @@ COLLIDER_TRIS_MAX = 280
 BAKE_RES = 512
 CAGE_EXTRUSION = 0.01
 # per material: ground, sandstone, caprock, wash, blocks, bark, foliage, plinth
-FACE_FLOORS = (49660, 26390, 10300, 4280, 3560, 850, 13030, 1240)
+FACE_FLOORS = (49660, 33880, 10300, 4280, 6280, 850, 16200, 1240)
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -254,6 +263,18 @@ def perp_basis(d):
 
 def wrap(a):
     return (a + math.pi) % TAU - math.pi
+
+
+def spire_girth(h):
+    """The spire's girth at height ``h`` over the floor, a share of its foot's:
+    smooth through SPIRE_GIRTH's knots."""
+    t = min(max((h - APRON_TOP) / (DECHELLY[SPIRE_TOP] - APRON_TOP), 0.0), 1.0)
+    for (t0, g0), (t1, g1) in zip(SPIRE_GIRTH, SPIRE_GIRTH[1:]):
+        if t <= t1:
+            u = (t - t0) / (t1 - t0)
+            u = u * u * (3.0 - 2.0 * u)
+            return g0 + (g1 - g0) * u
+    return SPIRE_GIRTH[-1][1]
 
 
 def talus_drop(d, angles):
@@ -368,6 +389,12 @@ class Formation:
     def flute(self, th):
         return sum(d * math.exp(-(wrap(th - tj) / w) ** 2) for tj, d, w in self.joints)
 
+    def joint_share(self, h):
+        """How much of its joints' depth the face carries at height ``h``:
+        between 0.45 and 1, rising and falling up the cliff."""
+        ph = 1.7 * self.idx
+        return 0.725 + 0.275 * math.sin(TAU * h / 0.13 + ph) * math.cos(TAU * h / 0.047 + 0.5 * ph)
+
     def at(self, th, r):
         return self.c[0] + r * math.cos(th), self.c[1] + r * math.sin(th)
 
@@ -402,16 +429,22 @@ class Formation:
         for i in range(top_bed):
             hb, ht = DECHELLY[i], DECHELLY[i + 1]
             sb = BED_SB[i] * s
+            lo = PARTING[i - 1] * s if i else 0.0
+            hi = PARTING[i] * s
+            e = BED_EDGE * (ht - hb)
             # a bed flush with the one under it shares that bed's top ring
-            if not (out[-1][0] == hb and abs(out[-1][1] - sb) < 1e-9):
-                out.append((hb, sb, i if i else -1, 0.5 * WOBBLE))
-            out.append((0.5 * (hb + ht), sb + 0.5 * BATTER * s, -1, 1.8 * WOBBLE))
+            if not (out[-1][0] == hb and abs(out[-1][1] - (sb + lo)) < 1e-9):
+                out.append((hb, sb + lo, i if i else -1, 0.5 * WOBBLE))
+            # the bed's face: rounded out of the parting under it, standing
+            # proud, rounded back into the parting over it
+            out.append((hb + e, sb + 0.2 * BATTER * s, -1, 1.4 * WOBBLE))
+            out.append((ht - e, sb + 0.8 * BATTER * s, -1, 1.4 * WOBBLE))
             if self.kind == "spire" and i == top_bed - 1:
                 # the spire's top: a rounded shoulder to a flat at the bedding plane
-                out.append((ht - CHAMFER_H, sb + BATTER * s, -1, 0.5 * WOBBLE))
-                out.append((ht, sb + BATTER * s + 0.004, i + 1, 0.0))
+                out.append((ht - CHAMFER_H, sb + BATTER * s + 0.002, -1, 0.5 * WOBBLE))
+                out.append((ht, sb + BATTER * s + 0.006, i + 1, 0.0))
                 return out
-            out.append((ht, sb + BATTER * s, i + 1, 0.5 * WOBBLE))
+            out.append((ht, sb + BATTER * s + hi, i + 1, 0.5 * WOBBLE))
         for n, (h, sb) in enumerate(MOENKOPI):
             out.append((h, sb * s, 5 if n == 0 else (6 if n == len(MOENKOPI) - 1 else -1), 2.5 * WOBBLE))
         out.append((CAP_BASE, CAP_SB[0] * s, 6, 0.6 * WOBBLE))
@@ -537,7 +570,8 @@ def plan_scene(T):
         out = rng.uniform(0.0, 1.0)
         big = rng.uniform(0.0, 1.0)
         draws = [rng.uniform(0.0, 1.0) for _ in range(8)]
-        r = 0.010 + 0.016 * big ** 1.6 + 0.014 * (1.0 - out) * big
+        # the biggest blocks roll furthest, out to the toe
+        r = 0.008 + 0.014 * big ** 1.7 + 0.014 * out * big
         R = f.R(th)
         x, y = f.at(th, R + APRON_IN + 1.8 * r + 0.010 + out * (D_LIN + TOE_D + 0.03))
         if not inside(x, y, 0.06) or T.in_wash(x, y, r + 0.02) or not clear(x, y, r * 1.4):
@@ -582,7 +616,7 @@ def plan_scene(T):
             else:
                 x = rng.uniform(-HALF, HALF)
                 y = rng.uniform(-HALF, HALF)
-                r = 0.020 + 0.010 * size if kind == "juniper" else 0.009 + 0.006 * size
+                r = 0.020 + 0.010 * size if kind == "juniper" else 0.010 + 0.008 * size
                 if T.in_wash(x, y, r + 0.012):
                     continue
             if not inside(x, y, 0.05) or not clear(x, y, r):
@@ -726,14 +760,18 @@ def add_formation(B, f, detail_, flags):
         return z + tilt * (x - cx)
 
     ths = [TAU * j / M for j in range(M)]
-    base_r = [f.R(th) - f.flute(th) for th in ths]
+    plan_r = [f.R(th) for th in ths]
+    flutes = [f.flute(th) for th in ths]
     rings = []
     for ri, (h, sb, tag, amp) in enumerate(rows):
         ring = []
+        # the joints open and close up the face (one value per height, so
+        # two rings at a ledge agree), never quite shut
+        jk = f.joint_share(h)
         for j, th in enumerate(ths):
-            r = base_r[j] - sb - (f.wobble(ri, j, th, amp) if amp else 0.0)
+            r = plan_r[j] - jk * flutes[j] - sb - (f.wobble(ri, j, th, amp) if amp else 0.0)
             if f.kind == "spire":
-                r *= 1.0 - SPIRE_TAPER * max(0.0, h - APRON_TOP) / (DECHELLY[SPIRE_TOP] - APRON_TOP)
+                r *= spire_girth(h)
             x, y = f.at(th, r)
             v = B.vert((x, y, lifted(x, y, FLOOR_Z + h)))
             v[B.bed] = tag
@@ -905,9 +943,9 @@ def add_rocks(B, plan, G, flags):
         pts = []
         for d in dirs:
             q = Vector((d.x * ax.x, d.y * ax.y, d.z * ax.z))
-            q *= 1.0 + 0.06 * sum(a * math.sin(w.normalized().dot(d) * 3.0 + ph) for w, ph, a in it["waves"])
+            q *= 1.0 + 0.04 * sum(a * math.sin(w.normalized().dot(d) * 3.0 + ph) for w, ph, a in it["waves"])
             for k, cdir in enumerate(CUT_DIRS):
-                lim = (0.70 + 0.16 * hash01(n, k, 5)) * (ax.x * abs(cdir.x) + ax.y * abs(cdir.y) + ax.z * abs(cdir.z))
+                lim = (0.56 + 0.14 * hash01(n, k, 5)) * (ax.x * abs(cdir.x) + ax.y * abs(cdir.y) + ax.z * abs(cdir.z))
                 proj = q.dot(cdir)
                 if proj > lim:
                     q -= cdir * (proj - lim)
@@ -971,33 +1009,42 @@ def add_plants(B, plan, G, flags):
         spin = Matrix.Rotation(t["spin"], 3, "Z")
         if t["kind"] == "scrub":
             r = t["r"]
-            tone = 0.36 + 0.24 * t["tone"]
-            hv = lump_ball(B, Vector((x, y, 0.0)), Vector((r, r * (0.8 + 0.2 * t["size"]), r * 0.62)),
-                           spin, tone, ident, P_SCRUB, 2, 0.18)
+            # big sagebrush silver grey-green; on the floor about one cushion
+            # in three rubber rabbitbrush, olive going to gold
+            rabbit = t["top"] < 0 and hash01(n, 7, 3) < 0.33
+            tone = 0.62 + 0.05 * t["tone"] if rabbit else 0.36 + 0.22 * t["tone"]
+            hv = lump_ball(B, Vector((x, y, 0.0)), Vector((r, r * (0.75 + 0.2 * t["size"]), r * 0.50)),
+                           spin, tone, ident, P_SCRUB, 2, 0.30)
             # sunk in every sector, like a block, however the ground slopes
-            dz = seat([v.co for v in hv], G, REST_SINK, False) + lift
+            # (each a fraction of a millimetre deeper than the last, so two
+            # cushions on the level caprock never share their buried plane)
+            dz = seat([v.co for v in hv], G, REST_SINK, False) + lift - 0.0008 * hash01(n, 11, 2)
             for v in hv:
                 v.co.z += dz
             continue
         foot = Vector((x, y, g - ROOT_D + lift))
         if t["kind"] == "juniper":
-            h = 0.040 + 0.024 * t["size"]
-            lean = spin @ Vector((0.18 * h, 0.0, 0.0))
-            mid = foot + Vector((0.0, 0.0, ROOT_D + 0.30 * h)) + 0.5 * lean
-            top = foot + Vector((0.0, 0.0, ROOT_D + 0.55 * h)) + lean
-            tr = 0.0028 + 0.0012 * t["size"]
-            tube(B, (foot, mid, top), (tr * 1.2, tr, tr * 0.7), 6, BARK_IDX, t["tone"], P_TRUNK, ident)
+            # Utah juniper / pinyon: a short gnarled stem leaning out of the
+            # ground under a low, broad, lopsided crown of a few dense clumps
+            # that sweeps down nearly to the sand on one side
+            h = 0.026 + 0.016 * t["size"]
+            lean = spin @ Vector((0.30 * h, 0.0, 0.0))
+            mid = foot + Vector((0.0, 0.0, ROOT_D + 0.22 * h)) + 0.4 * lean
+            top = foot + Vector((0.0, 0.0, ROOT_D + 0.42 * h)) + lean
+            tr = 0.0024 + 0.0010 * t["size"]
+            tube(B, (foot, mid, top), (tr * 1.3, tr, tr * 0.7), 6, BARK_IDX, t["tone"], P_TRUNK, ident)
             tone = 0.04 + 0.24 * t["tone"]
-            rc = t["r"] * 0.80
-            for k, (ox, oy, oz, s) in enumerate(((0.0, 0.0, 0.55, 1.0), (0.65, 0.25, 0.20, 0.72),
-                                                 (-0.45, 0.50, 0.30, 0.66), (-0.15, -0.60, 0.10, 0.62))):
+            rc = t["r"] * 0.78
+            for k, (ox, oy, oz, s) in enumerate(((0.0, 0.0, 0.55, 0.95), (0.85, 0.30, 0.05, 0.70),
+                                                 (-0.60, 0.55, 0.20, 0.72), (-0.25, -0.75, 0.00, 0.62),
+                                                 (0.40, -0.35, 0.85, 0.55))):
                 c = top + spin @ Vector((ox * rc, oy * rc, oz * rc))
-                lump_ball(B, c, Vector((rc * s, rc * s * 0.9, rc * s * 0.78)),
-                          Matrix.Rotation(t["spin"] + 1.3 * k, 3, "Z"), tone, ident, P_CROWN, 2, 0.20)
+                lump_ball(B, c, Vector((rc * s * 1.15, rc * s, rc * s * 0.70)),
+                          Matrix.Rotation(t["spin"] + 1.3 * k, 3, "Z"), tone, ident, P_CROWN, 2, 0.24)
         else:
             h = 0.070 + 0.025 * t["size"]
             tr = 0.0045 + 0.0012 * t["size"]
-            fork = foot + Vector((0.0, 0.0, ROOT_D + 0.45 * h))
+            fork = foot + Vector((0.0, 0.0, ROOT_D + 0.32 * h))
             tube(B, (foot, fork), (tr * 1.15, tr), 6, BARK_IDX, t["tone"], P_TRUNK, ident)
             tone = 0.72 + 0.26 * t["tone"]
             rc = t["r"]
@@ -1012,8 +1059,8 @@ def add_plants(B, plan, G, flags):
 def break_coplanar(B, parts, passes=8):
     """Bough tiers, lumps and rocks are many small faces in every direction;
     now and then one lands in another shell's plane. Turn the shell's piece
-    a few degrees about the vertical through its lowest point until none
-    does."""
+    a few degrees about the vertical through its lowest point, and sink it
+    a third of a millimetre, until none does."""
     bm = B.bm
     for _ in range(passes):
         bm.normal_update()
@@ -1038,15 +1085,18 @@ def break_coplanar(B, parts, passes=8):
                     continue
                 if abs(f.normal.dot(cent[j] - cent[i])) > 4.0 * COPLANAR_PLANE_EPS:
                     continue
-                bad.add(key[i])
+                # move one of the pair only: moving both alike keeps them coplanar
+                bad.add(max(key[i], key[j]) if key[j][0] in parts else key[i])
         if not bad:
             return
         for k in sorted(bad):
             vs = {v for f, kk in zip(faces, key) if kk == k for v in f.verts}
             root = min(vs, key=lambda v: v.co.z).co.copy()
             R = Matrix.Rotation(math.radians(3.0), 3, "Z")
+            # and a third of a millimetre down, which a turn about the
+            # vertical cannot do for a level face
             for v in vs:
-                v.co = root + R @ (v.co - root)
+                v.co = root + R @ (v.co - root) - Vector((0.0, 0.0, 0.0003))
 
 
 def build_mesh(name, T, plan, detail_="low", **flags):
@@ -1068,7 +1118,7 @@ def build_mesh(name, T, plan, detail_="low", **flags):
         bm.normal_update()
         # Everything smooth-shaded, with every material boundary and every
         # fold sharper than its crease a hard edge.
-        crease = {GROUND_IDX: 50.0, SAND_IDX: 40.0, CAP_IDX: 40.0, BLOCK_IDX: 35.0, FOLIAGE_IDX: 70.0,
+        crease = {GROUND_IDX: 50.0, SAND_IDX: 40.0, CAP_IDX: 40.0, BLOCK_IDX: 24.0, FOLIAGE_IDX: 70.0,
                   PLINTH_IDX: 30.0, BARK_IDX: 70.0, WASH_IDX: 40.0}
         for face in bm.faces:
             face.smooth = True
@@ -1314,6 +1364,11 @@ def ground_material():
     sheet = noise(nt, mapping(nt, coord, scale=(2.2, 9.0, 1.0)), 2.0, 3.0, 0.5)
     sand = mix_color(nt, sand, (0.56, 0.31, 0.16), remap(nt, sheet, 0.52, 0.62, 0.0, 0.6))
     sand = mix_color(nt, sand, (0.20, 0.060, 0.025), remap(nt, fine, 0.30, 0.70, 0.30, 0.0))
+    # broad swings of the sand's colour across the tile: deep terracotta in
+    # the hollows, pale apricot where it is fresh-blown
+    swing = noise(nt, coord, 0.9, 2.0, 0.5)
+    sand = mix_color(nt, sand, (0.22, 0.060, 0.026), remap(nt, swing, 0.46, 0.36, 0.0, 0.55))
+    sand = mix_color(nt, sand, (0.60, 0.34, 0.18), remap(nt, swing, 0.56, 0.68, 0.0, 0.45))
     # wind ripples on the flats
     rd = nt.nodes.new("ShaderNodeVectorMath")
     rd.operation = "DOT_PRODUCT"
@@ -1322,7 +1377,7 @@ def ground_material():
     ripples = math_node(nt, "SINE", math_node(nt, "MULTIPLY", math_node(
         nt, "ADD", rd.outputs["Value"], math_node(nt, "MULTIPLY", noise(nt, coord, 8.0, 2.0, 0.5), 0.02)), 520.0), 0.0)
     flat = remap(nt, nz, 0.96, 0.99, 0.0, 1.0)
-    sand = mix_color(nt, sand, (0.58, 0.28, 0.12), mul(nt, remap(nt, ripples, 0.4, 1.0, 0.0, 0.22), flat,
+    sand = mix_color(nt, sand, (0.58, 0.28, 0.12), mul(nt, remap(nt, ripples, 0.4, 1.0, 0.0, 0.12), flat,
                                                       remap(nt, hard, 0.5, 0.0, 0.0, 1.0)))
     # desert pavement: dark varnished pebbles in patches; scrub litter
     peb = voronoi(nt, coord, 170.0)
@@ -1332,30 +1387,53 @@ def ground_material():
     litter = voronoi(nt, coord, 420.0)
     sand = mix_color(nt, sand, (0.06, 0.05, 0.03), mul(nt, remap(nt, litter, 0.10, 0.04, 0.0, 0.7),
                                                      remap(nt, noise(nt, coord, 6.0, 2.0, 0.5), 0.5, 0.6, 0.0, 1.0)))
-    # the aprons: shale under rubble, faintly bedded
-    bands = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
-        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 7.0, 2.0, 0.5), 0.012)), 45.0), 0.0)
-    shale = ramp(nt, bands, ((0.0, (0.25, 0.075, 0.036)), (0.40, (0.28, 0.085, 0.040)),
-                             (0.60, (0.24, 0.072, 0.036)), (0.85, (0.30, 0.10, 0.050)), (1.0, (0.25, 0.075, 0.036))))
-    cells = voronoi_node(nt, coord, 230.0)
+    # the aprons: scree, the cliffs' own sandstone broken small, in the
+    # cliffs' colours: angular fragments of every bed packed together with
+    # dark gaps between them, coarser pieces among the fine, a few grey
+    # caprock chips; chutes of finer, paler debris run down the fall line
+    # and the Organ Rock's red-brown shale shows through near the top
+    cells = voronoi_node(nt, coord, 130.0)
     ctone = coord_xyz(nt, cells.outputs["Color"])["X"]
-    rubble = ramp(nt, ctone, ((0.0, (0.07, 0.035, 0.024)), (0.30, (0.26, 0.10, 0.05)),
-                              (0.60, (0.36, 0.25, 0.16)), (0.80, (0.46, 0.17, 0.07)), (1.0, (0.30, 0.22, 0.15))))
-    rub = remap(nt, noise(nt, coord, 14.0, 3.0, 0.6), 0.42, 0.56, 0.25, 1.0)
-    apron = mix_color(nt, shale, rubble, mul(nt, rub, remap(nt, cells.outputs["Distance"], 0.45, 0.25, 0.3, 1.0)))
-    rills = noise(nt, mapping(nt, coord, scale=(40.0, 40.0, 2.5)), 4.0, 3.0, 0.5)
-    apron = mix_color(nt, apron, (0.10, 0.035, 0.020), remap(nt, rills, 0.56, 0.72, 0.0, 0.6))
-    apron = mix_color(nt, apron, (0.44, 0.17, 0.065), remap(nt, rills, 0.40, 0.28, 0.0, 0.4))
+    frag = ramp(nt, ctone, ((0.00, (0.30, 0.080, 0.030)), (0.30, (0.40, 0.11, 0.038)),
+                            (0.55, (0.48, 0.15, 0.050)), (0.75, (0.52, 0.20, 0.080)), (0.88, (0.36, 0.10, 0.035)),
+                            (0.95, (0.30, 0.24, 0.17)), (1.00, (0.46, 0.14, 0.045))))
+    gaps = voronoi(nt, coord, 130.0, "DISTANCE_TO_EDGE")
+    coarse = voronoi_node(nt, coord, 34.0)
+    frag = mix_color(nt, frag, ramp(nt, coord_xyz(nt, coarse.outputs["Color"])["Y"],
+                                    ((0.0, (0.36, 0.090, 0.032)), (0.5, (0.54, 0.19, 0.060)),
+                                     (1.0, (0.52, 0.24, 0.10)))),
+                     remap(nt, noise(nt, coord, 9.0, 2.0, 0.5), 0.50, 0.62, 0.0, 0.55))
+    frag = mix_color(nt, frag, (0.12, 0.040, 0.022), remap(nt, gaps, 0.08, 0.0, 0.0, 0.40))
+    chutes = noise(nt, mapping(nt, coord, scale=(34.0, 34.0, 1.5)), 3.0, 3.0, 0.5)
+    frag = mix_color(nt, frag, (0.20, 0.055, 0.025), 0.28)
+    apron = mix_color(nt, frag, (0.46, 0.17, 0.065), remap(nt, chutes, 0.56, 0.70, 0.0, 0.45))
+    apron = mix_color(nt, apron, (0.16, 0.050, 0.026), remap(nt, chutes, 0.38, 0.28, 0.0, 0.45))
+    bands = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
+        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 7.0, 2.0, 0.5), 0.006)), 70.0), 0.0)
+    shale = ramp(nt, bands, ((0.0, (0.26, 0.070, 0.034)), (0.45, (0.32, 0.090, 0.040)),
+                             (0.60, (0.22, 0.060, 0.030)), (0.85, (0.36, 0.13, 0.060)), (1.0, (0.26, 0.070, 0.034))))
+    apron = mix_color(nt, apron, shale, mul(nt, remap(nt, z, FLOOR_Z + APRON_TOP - 0.035, FLOOR_Z + APRON_TOP - 0.005,
+                                                       0.0, 0.75),
+                                            remap(nt, noise(nt, coord, 12.0, 2.0, 0.5), 0.40, 0.55, 0.3, 1.0)))
     slope = remap(nt, nz, 0.94, 0.82, 0.0, 1.0)
-    col = mix_color(nt, sand, apron, slope)
+    # only the aprons climb high enough to be scree; the wash's banks and
+    # the dunes' lee faces stay sand, the banks a darker red
+    rise = remap(nt, z, FLOOR_Z + 0.022, FLOOR_Z + 0.045, 0.0, 1.0)
+    col = mix_color(nt, sand, (0.25, 0.080, 0.036), mul(nt, slope, 0.45))
+    scree = mul(nt, remap(nt, nz, 0.97, 0.88, 0.0, 1.0), rise)
+    col = mix_color(nt, col, apron, scree)
     # sand washed down onto the aprons' toes
     col = mix_color(nt, col, (0.45, 0.16, 0.06), mul(nt, remap(nt, nz, 0.80, 0.94, 0.0, 1.0),
                                                     remap(nt, z, FLOOR_Z + 0.045, FLOOR_Z + 0.015, 0.0, 0.5)))
     nt.links.new(col, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.92
     bsdf.inputs["Specular IOR Level"].default_value = 0.2
-    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, ripples, flat, 0.25),
-                                 mul(nt, math_node(nt, "ADD", mul(nt, ctone, 0.8), fine), slope, 0.9)), 0.45, 0.004)
+    # relief: wind ripples on the flats; on the scree every fragment a
+    # little lump, the coarse pieces bigger ones
+    frag_h = math_node(nt, "ADD", mul(nt, remap(nt, gaps, 0.0, 0.25, 0.0, 1.0), 0.5),
+                       mul(nt, remap(nt, voronoi(nt, coord, 34.0, "DISTANCE_TO_EDGE"), 0.0, 0.2, 0.0, 1.0), 0.6))
+    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, ripples, flat, 0.12),
+                                 mul(nt, math_node(nt, "ADD", frag_h, mul(nt, fine, 0.4)), scree)), 0.50, 0.004)
     return mat
 
 
@@ -1369,40 +1447,66 @@ def sandstone_material():
     z = xyz["Z"]
     nz = normal_xyz(nt)["Z"]
     tone = noise(nt, coord, 5.0, 4.0, 0.55)
-    rock = ramp(nt, tone, ((0.38, (0.36, 0.060, 0.020)), (0.48, (0.48, 0.095, 0.028)),
-                           (0.57, (0.56, 0.15, 0.042)), (0.66, (0.60, 0.21, 0.07))))
-    lam = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
-        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 9.0, 2.0, 0.5), 0.0025)), 260.0), 0.0)
-    rock = mix_color(nt, rock, (0.22, 0.040, 0.016), remap(nt, lam, 0.82, 0.98, 0.0, 0.18))
-    xb = nt.nodes.new("ShaderNodeVectorMath")
-    xb.operation = "DOT_PRODUCT"
-    nt.links.new(coord, xb.inputs[0])
-    xb.inputs[1].default_value = (0.42, 0.30, 1.0)
-    cross = math_node(nt, "SINE", math_node(nt, "MULTIPLY", xb.outputs["Value"], 520.0), 0.0)
-    rock = mix_color(nt, rock, (0.56, 0.20, 0.08), remap(nt, cross, 0.6, 1.0, 0.0, 0.12))
-    # desert varnish: dark curtains hanging down the faces from the rim
-    streak = noise(nt, mapping(nt, coord, scale=(26.0, 26.0, 1.1)), 3.0, 4.0, 0.55)
+    # the strata: level bands of varied thickness bottom to top, each bed its
+    # own colour (maroon at the foot where it grades from the Organ Rock,
+    # red-orange, salmon, a pale cream bed, deep red, orange, a bleached
+    # top), a dark seam at every parting, a few thin pale laminae; the band
+    # edges wander a millimetre or two with the rock
+    zw = math_node(nt, "ADD", z, math_node(nt, "MULTIPLY", math_node(
+        nt, "SUBTRACT", noise(nt, coord, 7.0, 3.0, 0.55), 0.5), 0.004))
+    lo_z, hi_z = FLOOR_Z + APRON_TOP, FLOOR_Z + DECHELLY[-1]
+    tz = remap(nt, zw, lo_z, hi_z, 0.0, 1.0)
+
+    def at(h):
+        return (h - APRON_TOP) / (DECHELLY[-1] - APRON_TOP)
+
+    b1, b2, b3, b4 = (at(DECHELLY[k]) for k in (1, 2, 3, 4))
+    seam = (0.28, 0.068, 0.028)
+    strata = ramp(nt, tz, (
+        (0.000, (0.30, 0.075, 0.032)), (0.060, (0.36, 0.090, 0.034)), (0.075, (0.46, 0.20, 0.090)),
+        (0.090, (0.38, 0.095, 0.034)), (b1 - 0.012, (0.42, 0.110, 0.037)), (b1, seam),
+        (b1 + 0.012, (0.54, 0.17, 0.055)), (b1 + 0.09, (0.58, 0.20, 0.065)), (b1 + 0.12, (0.58, 0.25, 0.10)),
+        (b1 + 0.15, (0.53, 0.17, 0.055)), (b2 - 0.012, (0.50, 0.15, 0.048)), (b2, seam),
+        (b2 + 0.012, (0.60, 0.32, 0.15)), (b2 + 0.08, (0.58, 0.29, 0.13)), (b2 + 0.12, (0.56, 0.22, 0.080)),
+        (b3 - 0.012, (0.53, 0.19, 0.065)), (b3, seam), (b3 + 0.012, (0.44, 0.11, 0.036)),
+        (b3 + 0.10, (0.48, 0.13, 0.042)), (b3 + 0.13, (0.52, 0.22, 0.10)), (b3 + 0.15, (0.46, 0.12, 0.040)),
+        (b4 - 0.012, (0.43, 0.11, 0.036)), (b4, seam), (b4 + 0.012, (0.56, 0.19, 0.060)),
+        (0.93, (0.60, 0.23, 0.075)), (0.975, (0.60, 0.30, 0.14)), (1.000, (0.56, 0.27, 0.12))))
+    # the rock mottled within each bed, never so much as to blur the bands
+    rock = mix_color(nt, strata, (0.30, 0.070, 0.028), remap(nt, tone, 0.50, 0.30, 0.0, 0.35))
+    rock = mix_color(nt, rock, (0.60, 0.30, 0.14), remap(nt, tone, 0.58, 0.75, 0.0, 0.15))
+    lam = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", zw, 260.0), 0.0)
+    rock = mix_color(nt, rock, (0.22, 0.050, 0.020), remap(nt, lam, 0.85, 0.98, 0.0, 0.14))
+    # desert varnish: a few thin dark streaks hanging from the rim and the
+    # ledges, densest high on the cliff and fading down it
+    streak = noise(nt, mapping(nt, coord, scale=(70.0, 70.0, 2.0)), 2.0, 2.0, 0.5)
+    patchy = remap(nt, noise(nt, coord, 3.0, 2.0, 0.5), 0.45, 0.60, 0.0, 1.0)
     steep = remap(nt, nz, 0.55, 0.25, 0.0, 1.0)
-    hang = remap(nt, z, FLOOR_Z + 0.16, FLOOR_Z + 0.36, 0.45, 1.0)
-    var = mul(nt, remap(nt, streak, 0.47, 0.62, 0.0, 0.92), steep, hang)
-    rock = mix_color(nt, rock, (0.045, 0.022, 0.016), var)
+    hang = remap(nt, z, FLOOR_Z + 0.17, FLOOR_Z + 0.39, 0.0, 1.0)
+    var = mul(nt, remap(nt, streak, 0.60, 0.70, 0.0, 0.60), steep, hang, patchy)
+    rock = mix_color(nt, rock, (0.075, 0.035, 0.022), var)
     # a pale bleached band at the cliff's foot, where the talus sheds
-    rock = mix_color(nt, rock, (0.50, 0.24, 0.12), mul(nt, steep, remap(nt, z, FLOOR_Z + APRON_TOP + 0.03,
-                                                                          FLOOR_Z + APRON_TOP, 0.0, 0.35)))
-    # the Moenkopi slope: crumbling chocolate shale in thin beds
-    mb = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", z, 420.0), 0.0)
-    moen = ramp(nt, mb, ((0.0, (0.12, 0.036, 0.022)), (0.45, (0.19, 0.058, 0.032)),
-                         (0.70, (0.25, 0.11, 0.07)), (1.0, (0.15, 0.045, 0.026))))
-    moen = mix_color(nt, moen, (0.34, 0.27, 0.19), remap(nt, noise(nt, coord, 40.0, 3.0, 0.6), 0.62, 0.75, 0.0, 0.4))
+    rock = mix_color(nt, rock, (0.50, 0.24, 0.12), mul(nt, steep, remap(nt, z, FLOOR_Z + APRON_TOP + 0.02,
+                                                                          FLOOR_Z + APRON_TOP, 0.0, 0.30)))
+    # the Moenkopi slope: crumbling red-brown shale in thin beds, a few of
+    # them grey-green
+    mb = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", zw, 75.0), 0.0)
+    moen = ramp(nt, mb, ((0.0, (0.22, 0.065, 0.034)), (0.40, (0.28, 0.085, 0.042)),
+                         (0.60, (0.25, 0.078, 0.040)), (0.74, (0.30, 0.20, 0.13)), (0.82, (0.30, 0.10, 0.050)),
+                         (1.0, (0.22, 0.065, 0.034))))
+    moen = mix_color(nt, moen, (0.40, 0.20, 0.10), remap(nt, noise(nt, coord, 40.0, 3.0, 0.6), 0.60, 0.75, 0.0, 0.4))
     col = mix_color(nt, rock, moen, remap(nt, z, FLOOR_Z + DECHELLY[-1] + 0.002, FLOOR_Z + DECHELLY[-1] + 0.006,
                                           0.0, 1.0))
     # red dust on the ledges and the spire's top
     col = mix_color(nt, col, (0.24, 0.060, 0.024), mul(nt, remap(nt, nz, 0.70, 0.92, 0.0, 1.0),
                                                      remap(nt, noise(nt, coord, 30.0, 2.0, 0.5), 0.40, 0.60, 0.5, 0.9)))
     nt.links.new(col, bsdf.inputs["Base Color"])
-    nt.links.new(remap(nt, var, 0.0, 1.0, 0.86, 0.50), bsdf.inputs["Roughness"])
+    nt.links.new(remap(nt, var, 0.0, 1.0, 0.86, 0.60), bsdf.inputs["Roughness"])
     bsdf.inputs["Specular IOR Level"].default_value = 0.3
-    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, lam, 0.3), mul(nt, tone, 1.4)), 0.45, 0.004)
+    # relief: the laminae as fine horizontal ribs, the rock's grain over them
+    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, lam, 0.35),
+                                 mul(nt, noise(nt, mapping(nt, coord, scale=(1.0, 1.0, 4.0)), 18.0, 3.0, 0.55), 0.8)),
+             0.40, 0.004)
     return mat
 
 
@@ -1412,36 +1516,39 @@ def cap_material():
     # varnished near black, its top weathered red-brown under a skin of
     # blown sand, spotted with black lichen.
     nz = normal_xyz(nt)["Z"]
+    z = coord_xyz(nt, coord)["Z"]
     tone = noise(nt, coord, 8.0, 4.0, 0.55)
-    grit = ramp(nt, tone, ((0.25, (0.15, 0.10, 0.065)), (0.55, (0.24, 0.17, 0.11)), (0.80, (0.31, 0.24, 0.16))))
-    peb = voronoi_node(nt, coord, 240.0)
-    ptone = coord_xyz(nt, peb.outputs["Color"])["X"]
-    grit = mix_color(nt, grit, ramp(nt, ptone, ((0.0, (0.10, 0.07, 0.05)), (0.5, (0.40, 0.33, 0.25)),
-                                                (1.0, (0.26, 0.12, 0.06)))),
-                     remap(nt, peb.outputs["Distance"], 0.30, 0.18, 0.0, 0.7))
+    # the ledge: a dark grey-brown band of hard grit, thinly bedded, its
+    # varnish in short streaks under the lip
+    grit = ramp(nt, tone, ((0.30, (0.13, 0.085, 0.055)), (0.55, (0.21, 0.145, 0.095)), (0.80, (0.28, 0.21, 0.14))))
+    lam = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
+        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 12.0, 2.0, 0.5), 0.0015)), 330.0), 0.0)
+    grit = mix_color(nt, grit, (0.07, 0.048, 0.034), remap(nt, lam, 0.70, 0.95, 0.0, 0.45))
     face = remap(nt, nz, 0.45, 0.20, 0.0, 1.0)
-    streak = noise(nt, mapping(nt, coord, scale=(30.0, 30.0, 1.6)), 3.0, 3.0, 0.5)
-    grit = mix_color(nt, grit, (0.05, 0.035, 0.025), mul(nt, face, remap(nt, streak, 0.42, 0.62, 0.35, 0.9)))
+    streak = noise(nt, mapping(nt, coord, scale=(60.0, 60.0, 3.0)), 2.0, 2.0, 0.5)
+    grit = mix_color(nt, grit, (0.05, 0.035, 0.025), mul(nt, face, remap(nt, streak, 0.55, 0.68, 0.0, 0.7)))
     top = remap(nt, nz, 0.80, 0.95, 0.0, 1.0)
-    # the top: bare slabs parted by joints, red sand drifted in the hollows
-    slabs = voronoi_node(nt, mapping(nt, coord, scale=(1.0, 1.0, 0.2)), 16.0)
-    stone = ramp(nt, coord_xyz(nt, slabs.outputs["Color"])["X"],
-                 ((0.0, (0.085, 0.065, 0.050)), (0.5, (0.17, 0.125, 0.085)), (1.0, (0.25, 0.18, 0.12))))
-    stone = mix_color(nt, stone, grit, 0.35)
-    joints = voronoi(nt, mapping(nt, coord, scale=(1.0, 1.0, 0.2)), 16.0, "DISTANCE_TO_EDGE")
-    skin = ramp(nt, noise(nt, coord, 9.0, 3.0, 0.55), ((0.40, (0.26, 0.095, 0.040)), (0.60, (0.38, 0.16, 0.07))))
-    drift = remap(nt, math_node(nt, "ADD", noise(nt, coord, 4.0, 3.0, 0.55),
-                                mul(nt, remap(nt, joints, 0.0, 0.06, 0.25, 0.0), 1.0)), 0.50, 0.60, 0.0, 1.0)
-    topc = mix_color(nt, stone, skin, drift)
-    topc = mix_color(nt, topc, (0.03, 0.025, 0.02), mul(nt, remap(nt, joints, 0.012, 0.0, 0.0, 0.9),
-                                                       remap(nt, drift, 0.6, 0.0, 0.0, 1.0)))
+    # the top: weathered slickrock, pale grey-buff where it lies bare, a
+    # skin of red sand blown over most of it in soft-edged drifts, darker
+    # pans where rain stands, a fine grit over all of it
+    broad = noise(nt, coord, 3.2, 4.0, 0.60)
+    bare = remap(nt, broad, 0.46, 0.58, 0.0, 1.0)
+    rock = ramp(nt, noise(nt, coord, 14.0, 4.0, 0.6), ((0.30, (0.13, 0.095, 0.065)), (0.50, (0.21, 0.16, 0.11)),
+                                                      (0.70, (0.29, 0.23, 0.16))))
+    sand = ramp(nt, noise(nt, coord, 7.0, 3.0, 0.55), ((0.35, (0.34, 0.13, 0.055)), (0.55, (0.42, 0.18, 0.080)),
+                                                     (0.75, (0.48, 0.25, 0.12))))
+    topc = mix_color(nt, sand, rock, bare)
+    pans = remap(nt, noise(nt, coord, 11.0, 2.0, 0.5), 0.62, 0.70, 0.0, 0.45)
+    topc = mix_color(nt, topc, (0.13, 0.075, 0.045), mul(nt, pans, bare))
+    fine = noise(nt, coord, 160.0, 2.0, 0.6)
+    topc = mix_color(nt, topc, (0.16, 0.08, 0.045), remap(nt, fine, 0.55, 0.75, 0.0, 0.35))
     grit = mix_color(nt, grit, topc, top)
-    lich = mul(nt, remap(nt, voronoi(nt, coord, 70.0), 0.20, 0.08, 0.0, 1.0), top,
-               remap(nt, noise(nt, coord, 4.0, 2.0, 0.5), 0.50, 0.62, 0.0, 1.0))
-    grit = mix_color(nt, grit, (0.03, 0.028, 0.025), mul(nt, lich, 0.8))
     nt.links.new(grit, bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.88
-    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, peb.outputs["Distance"], -1.5), tone), 0.5, 0.003)
+    bsdf.inputs["Roughness"].default_value = 0.9
+    # relief: the bare rock standing a little proud of the sand, pitted
+    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, broad, 1.2),
+                                 math_node(nt, "ADD", mul(nt, lam, mul(nt, face, 0.4)), mul(nt, fine, 0.25))),
+             0.55, 0.006)
     return mat
 
 
@@ -1511,14 +1618,15 @@ def bark_material():
 
 def foliage_material():
     mat, nt, bsdf, coord = surface("Foliage")
-    # junipers (tone under 0.3) dark blue-green, sage scrub (0.36-0.6)
-    # silvery grey-green, cottonwoods (over 0.7) turning yellow and gold;
-    # leafy clumps by Voronoi
+    # junipers (tone under 0.3) dark blue-green, sage scrub (0.36-0.58)
+    # silvery grey-green, rabbitbrush (0.62-0.67) olive-gold, cottonwoods
+    # (over 0.7) turning yellow and gold; leafy clumps by Voronoi
     tone = attr(nt, "Tone")
     nz = normal_xyz(nt)["Z"]
     col = ramp(nt, tone, ((0.00, (0.018, 0.040, 0.028)), (0.15, (0.030, 0.058, 0.036)),
                           (0.28, (0.050, 0.075, 0.042)), (0.36, (0.16, 0.17, 0.10)),
-                          (0.48, (0.21, 0.22, 0.13)), (0.60, (0.26, 0.24, 0.14)),
+                          (0.48, (0.21, 0.22, 0.13)), (0.59, (0.25, 0.24, 0.14)),
+                          (0.62, (0.30, 0.27, 0.075)), (0.67, (0.42, 0.33, 0.060)),
                           (0.72, (0.28, 0.34, 0.035)), (0.85, (0.50, 0.42, 0.040)), (1.0, (0.62, 0.36, 0.035))))
     leaves = voronoi(nt, coord, 260.0)
     col = mix_color(nt, col, (0.010, 0.016, 0.010), remap(nt, leaves, 0.25, 0.55, 0.0, 0.55))
