@@ -122,7 +122,7 @@
           <button class="cat-btn" data-cat-filter="nature" type="button" aria-pressed="false">Nature <span aria-hidden="true">10</span></button>
           <button class="cat-btn" data-cat-filter="household" type="button" aria-pressed="false">Household <span aria-hidden="true">7</span></button>
           <button class="cat-btn" data-cat-filter="vehicles" type="button" aria-pressed="false">Vehicles <span aria-hidden="true">10</span></button>
-          <button class="cat-btn" data-cat-filter="terrain" type="button" aria-pressed="false">Terrain <span aria-hidden="true">3</span></button>
+          <button class="cat-btn" data-cat-filter="terrain" type="button" aria-pressed="false">Terrain <span aria-hidden="true">4</span></button>
         </div>
       </div>
       <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic (combine several)">
@@ -139,7 +139,7 @@
         <button class="chip" data-tag="curves" type="button" aria-pressed="false">curves <span class="n">2</span></button>
         <button class="chip" data-tag="depsgraph" type="button" aria-pressed="false">depsgraph <span class="n">10</span></button>
         <button class="chip" data-tag="drivers" type="button" aria-pressed="false">drivers <span class="n">1</span></button>
-        <button class="chip" data-tag="export" type="button" aria-pressed="false">export <span class="n">82</span></button>
+        <button class="chip" data-tag="export" type="button" aria-pressed="false">export <span class="n">83</span></button>
         <button class="chip" data-tag="game-pipeline" type="button" aria-pressed="false">game-pipeline <span class="n">7</span></button>
         <button class="chip" data-tag="geometry-nodes" type="button" aria-pressed="false">geometry-nodes <span class="n">6</span></button>
         <button class="chip" data-tag="grease-pencil" type="button" aria-pressed="false">grease-pencil <span class="n">2</span></button>
@@ -147,7 +147,7 @@
         <button class="chip" data-tag="instancing" type="button" aria-pressed="false">instancing <span class="n">3</span></button>
         <button class="chip" data-tag="line-art" type="button" aria-pressed="false">line-art <span class="n">1</span></button>
         <button class="chip" data-tag="materials" type="button" aria-pressed="false">materials <span class="n">5</span></button>
-        <button class="chip" data-tag="mesh" type="button" aria-pressed="false">mesh <span class="n">98</span></button>
+        <button class="chip" data-tag="mesh" type="button" aria-pressed="false">mesh <span class="n">99</span></button>
         <button class="chip" data-tag="modifiers" type="button" aria-pressed="false">modifiers <span class="n">6</span></button>
         <button class="chip" data-tag="node-groups" type="button" aria-pressed="false">node-groups <span class="n">1</span></button>
         <button class="chip" data-tag="objects" type="button" aria-pressed="false">objects <span class="n">3</span></button>
@@ -167,7 +167,7 @@
       </div>
     </div>
   </div>
-  <p class="count results" id="count" role="status" aria-live="polite">56 examples, 77 showcase pieces</p>
+  <p class="count results" id="count" role="status" aria-live="polite">56 examples, 78 showcase pieces</p>
   <main id="main">
     <div class="grid" id="grid">
       <article class="card" data-tags="materials rendering" data-kind="examples" data-name="swatch-grid" data-search="swatch grid swatch-grid procedural principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. materials rendering ">
@@ -1766,6 +1766,18 @@
           <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase" data-kind="showcase" data-category="terrain" data-name="canyon-mesa-tile" data-search="canyon mesa tile canyon-mesa-tile a procedural strategy-game desert map tile of colorado plateau character — a square 2.40 m on a side where two mesas, a butte and a slender spire are cut from one horizontal layer cake: talus aprons at the angle of repose up to the cliffs&#x27; foot, five bedded sandstone beds in varnished cliffs, a crumbling shale slope, a flat overhanging caprock; the beds at one height on every formation and straight across the canyon between the mesas; a dry wash falling from the back edge to the front, a dune field, fallen blocks, junipers, sage scrub and cottonwoods — through uvs, bake, lod, collider, and unity gltf, asserting recomputed budgets rather than an api contract. mesh export showcase terrain">
+        <div class="card-media">
+          <img src="assets/canyon-mesa-tile-hero-640.webp" srcset="assets/canyon-mesa-tile-hero-640.webp 640w, assets/canyon-mesa-tile-hero.webp 1280w" sizes="(min-width: 900px) 340px, (min-width: 560px) 50vw, 100vw" alt="A square desert map tile seen from above: two red sandstone mesas with a canyon between them, a butte and a spire on talus aprons, and a pale dry wash crossing the red floor." width="1280" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="card-body">
+          <h2><a class="stretch" href="canyon-mesa-tile/">Canyon Mesa Tile</a></h2>
+          <p class="slug">canyon-mesa-tile</p>
+          <p class="teaches">A procedural strategy-game desert map tile of Colorado Plateau character — a square 2.40 m on a side where two mesas, a butte and a slender spire are cut from one horizontal layer cake: talus aprons at the angle of repose up to the cliffs&#x27; foot, five bedded sandstone beds in varnished cliffs, a crumbling shale slope, a flat overhanging caprock; the beds at one height on every formation and straight across the canyon between the mesas; a dry wash falling from the back edge to the front, a dune field, fallen blocks, junipers, sage scrub and cottonwoods — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 113884 tris, eight materials with 51200 ground, 27212 sandstone, 10620 caprock, 4420 wash, 3672 block, 884 bark, 13440 foliage and 1280 plinth faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.400×2.400×0.6416 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four formations&#x27; feet 0.034 m in their aprons, all seven bedding planes at one height on every formation that carries them (spread 0.0000 m) with both canyon walls carrying every plane, the three caprock tops level to 0.0000 m, 6913 talus faces at 30.8–36.3° (repose band 30–37°), the wash never rising from row to row over 316 rows and a 0.0225 m fall, its ends 0.004 and 0.008 m in from the back and front edges and its edges 0.0033 m under the banks, all 34 blocks sealed in every sector (worst 0.0040 m) and none overlapping, all 46 trunks&#x27; feet 0.009–0.010 m in the ground and all 90 scrub cushions bedded, LOD ratios in band, five-hull collider 242 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --perch-butte 17; --tilt-beds 18; --dome-cap 19; --steep-talus 20; --uphill-wash 21; --perch-rock 22; --pile-rocks 23; --float-plants 24.</p>
+          <span class="card-link" aria-hidden="true">View showcase piece &rarr;</span>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear all filters</button></p>
@@ -1828,7 +1840,7 @@
       var filtersToggle = document.getElementById('filtersToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '56 examples, 77 showcase pieces';
+      var COUNT_LABEL = '56 examples, 78 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       // Read by detail pages: the Gallery crumb returns here, and the pager
       // walks the reader's filtered order instead of the full gallery.

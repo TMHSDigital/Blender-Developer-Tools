@@ -1090,6 +1090,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "canyon-mesa-tile",
+      "dir": "showcase/canyon-mesa-tile",
+      "category": "terrain",
+      "teaches": "A procedural strategy-game desert map tile of Colorado Plateau character — a square 2.40 m on a side where two mesas, a butte and a slender spire are cut from one horizontal layer cake: talus aprons at the angle of repose up to the cliffs' foot, five bedded sandstone beds in varnished cliffs, a crumbling shale slope, a flat overhanging caprock; the beds at one height on every formation and straight across the canyon between the mesas; a dry wash falling from the back edge to the front, a dune field, fallen blocks, junipers, sage scrub and cottonwoods — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A square desert map tile seen from above: two red sandstone mesas with a canyon between them, a butte and a spire on talus aprons, and a pale dry wash crossing the red floor.",
+      "witnessesFix": "Recomputed: 113884 tris, eight materials with 51200 ground, 27212 sandstone, 10620 caprock, 4420 wash, 3672 block, 884 bark, 13440 foliage and 1280 plinth faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.400×2.400×0.6416 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all four formations' feet 0.034 m in their aprons, all seven bedding planes at one height on every formation that carries them (spread 0.0000 m) with both canyon walls carrying every plane, the three caprock tops level to 0.0000 m, 6913 talus faces at 30.8–36.3° (repose band 30–37°), the wash never rising from row to row over 316 rows and a 0.0225 m fall, its ends 0.004 and 0.008 m in from the back and front edges and its edges 0.0033 m under the banks, all 34 blocks sealed in every sector (worst 0.0040 m) and none overlapping, all 46 trunks' feet 0.009–0.010 m in the ground and all 90 scrub cushions bedded, LOD ratios in band, five-hull collider 242 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --perch-butte 17; --tilt-beds 18; --dome-cap 19; --steep-talus 20; --uphill-wash 21; --perch-rock 22; --pile-rocks 23; --float-plants 24.",
+      "hero": "docs/gallery/assets/canyon-mesa-tile-hero.webp",
+      "preview": "showcase/canyon-mesa-tile/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
