@@ -98,7 +98,7 @@ EB = 0.022                # the bank's rise to the floodbasin
 SWELL = 0.0007
 OLD_H = 0.0050            # the older upper delta plain stands this much higher, behind
 OLD_R = (0.65, 1.35)      # ... easing down to the lower plain between these radii
-FARM_R = (1.02, 1.36)     # fields on the upper plain, giving out to marsh between these radii
+FARM_R = (1.25, 1.55)     # fields on the upper plain, giving out to marsh between these radii
 
 # --- The channels: (parent, control points, the parent's discharge share) --------
 PATH_STEP = 0.003
@@ -131,8 +131,9 @@ BREACH_S = (0.24, 0.36)
 
 # --- Bars, ponds -------------------------------------------------------------------
 BAR_MOUTHS = (3, 5, 6)    # middle-ground bars off these mouths
-BAR_A = (0.115, 0.095, 0.125)
-BAR_B = (0.050, 0.044, 0.052)
+BAR_A = (0.135, 0.115, 0.145)
+BAR_B = (0.072, 0.064, 0.074)
+BAR_SWEEP = 0.35         # the bars' flanks swept back downstream, per bar length at the flank
 BAR_TOP = 0.0048
 BAR_DROP = 0.0060
 DROWN = 0.0100            # --drown-islet lowers the first bar's crest this far
@@ -166,7 +167,7 @@ SECTORS = 8
 
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (2.4000, 2.4000, 0.2960)
+OUTER_SIZE = (2.4000, 2.4000, 0.2948)
 BASE_TRIS_MIN = 138000
 BASE_TRIS_MAX = 142500
 LOD1_RATIO_MIN = 0.32
@@ -515,18 +516,25 @@ class Terrain:
                 d *= 1.0 - 0.45 * math.exp(-((x - ex) ** 2 + (y - ey) ** 2) / 0.18 ** 2)
         return d * (1.0 + 0.08 * math.sin(3.1 * x + 1.3 * y) * math.cos(2.7 * y - 1.9 * x))
 
-    def bar_z(self, bar, x, y):
+    def bar_q2(self, bar, x, y):
+        """The bar's squared normalised radius: under 1 inside its outline."""
         cx, cy = bar["c"]
         ca, sa = math.cos(bar["ang"]), math.sin(bar["ang"])
         u = (x - cx) * ca + (y - cy) * sa
-        v = -(x - cx) * sa + (y - cy) * ca
-        # a teardrop: blunt upstream, drawn out downstream
-        a = bar["a"] * (0.75 if u < 0.0 else 1.15)
-        phi = math.atan2(v / bar["b"], u / a)
-        # a ragged outline, a flat top and steep sides
+        vn = (-(x - cx) * sa + (y - cy) * ca) / bar["b"]
+        # a middle-ground bar's arrowhead: its head blunt to the current,
+        # its flanks swept back downstream round the water it splits, as the
+        # Wax Lake and Mississippi mouth bars grow — not a hull-like teardrop
+        us = u - BAR_SWEEP * bar["a"] * vn * vn
+        a = bar["a"] * (0.62 if us < 0.0 else 1.0)
+        phi = math.atan2(vn, us / a)
+        # a ragged outline
         wob = 1.0 + 0.10 * math.sin(3.0 * phi + bar["ang"] * 5.0) + 0.06 * math.sin(7.0 * phi + 1.3)
-        q2 = ((u / a) ** 2 + (v / bar["b"]) ** 2) / (wob * wob)
-        return SEA_Z + bar["top"] - BAR_DROP * q2 ** 1.5
+        return ((us / a) ** 2 + vn * vn) / (wob * wob)
+
+    def bar_z(self, bar, x, y):
+        # a flat-topped crown, falling away round its margin into the shoal
+        return SEA_Z + bar["top"] - BAR_DROP * self.bar_q2(bar, x, y) ** 1.5
 
     def carve_fade(self, b, s):
         br = self.br[b]
@@ -680,9 +688,9 @@ def plan_scene(T):
     for x, y, _h in stakes:
         taken.append((x, y, 0.006))
 
-    # logs: three afloat, four stranded on the bars and the beaches
+    # logs: three afloat, four stranded up the beaches
     logs = []
-    floats = ((4, 0.10, 0.06, 0.6), (6, 0.16, -0.07, 2.3), (0, 0.55, 0.0, 0.12))
+    floats = ((4, 0.10, 0.06, 0.6), (6, 0.40, 0.0, 2.3), (0, 0.55, 0.0, 0.12))
     for b, past, side, yaw in floats:
         br = T.br[b]
         if br["mouth"]:
@@ -699,15 +707,11 @@ def plan_scene(T):
     for _ in range(3000):
         if got >= 4:
             break
-        if got < 2:
-            bar = T.bars[got + 1]
-            ang = rng.uniform(0.0, TAU)
-            x = bar["c"][0] + 0.42 * bar["a"] * math.cos(ang)
-            y = bar["c"][1] + 0.42 * bar["b"] * math.sin(ang)
-        else:
-            th = rng.uniform(-2.2, -0.9)
-            x = APEX[0] + (T.coast_r(th) - 0.032) * math.cos(th)
-            y = APEX[1] + (T.coast_r(th) - 0.032) * math.sin(th)
+        # all up the beaches, none on the bars: a bleached log across a bar
+        # reads, at a distance, as a boat's oar
+        th = rng.uniform(-2.2, -0.9)
+        x = APEX[0] + (T.coast_r(th) - 0.032) * math.cos(th)
+        y = APEX[1] + (T.coast_r(th) - 0.032) * math.sin(th)
         ln = rng.uniform(0.070, 0.110)
         draws = [rng.uniform(0.0, 1.0) for _ in range(4)]
         if sq_in(x, y) < 0.16 or not clear(x, y, 0.5 * ln):
@@ -807,6 +811,7 @@ def plan_scene(T):
         taken.append((x, y, REED_SPREAD))
         reeds.append({"x": x, "y": y, "n": 11 + int(8 * draws[4]), "h": draws[5], "seed": len(reeds)})
     plan["reeds"] = reeds
+
     return plan
 
 
@@ -864,10 +869,10 @@ def sand_of(T, info, x, y, z):
     shallows in front of them; silt and mud elsewhere."""
     sand = 0.0
     for bar in T.bars:
-        cx, cy = bar["c"]
-        d = math.hypot((x - cx) / (1.3 * bar["a"]), (y - cy) / (1.6 * bar["b"]))
-        # sandy round its margins, its crown grown over with marsh
-        sand = max(sand, smoothstep(d, 1.0, 0.6) * (1.0 - 0.85 * smoothstep(d, 0.42, 0.22)))
+        d = math.sqrt(T.bar_q2(bar, x, y))
+        # sandy round its margins and on the shoal round it, its crown grown
+        # over with marsh
+        sand = max(sand, smoothstep(d, 1.35, 0.85) * (1.0 - 0.85 * smoothstep(d, 0.62, 0.42)))
     lobe = max(math.exp(-((info["th"] - tm) / (1.4 * COAST_SIG)) ** 2) for tm in T.mouth_th)
     sand = max(sand, lobe * smoothstep(info["dc"], 0.09, 0.02) * smoothstep(info["dc"], -0.12, -0.02))
     return sand
@@ -881,6 +886,7 @@ def add_tile(B, T, n):
     on_ring = set(ring)
     verts = []
     chan = []
+    sea = []
     for k, (x, y) in enumerate(pts):
         info = {}
         z = T.ground(x, y, info=info)
@@ -896,11 +902,17 @@ def add_tile(B, T, n):
                      * (0.0 if info["pond"] >= 0 else 1.0) * smoothstep(sq_in(x, y), LIP_W + LIP_R, LIP_W + LIP_R + 0.03))
         verts.append(v)
         chan.append(info["e"] < 0.012 or z < info["wl"])
+        sea.append(info["dc"] < 0.0)
     for a, b, c in tris:
         va, vb, vc = verts[a], verts[b], verts[c]
         hin = min(sq_in(v.co.x, v.co.y) for v in (va, vb, vc))
         if hin < LIP_W + LIP_R + 0.005 and not (chan[a] or chan[b] or chan[c]) and \
                 min(v.co.z for v in (va, vb, vc)) > SEA_Z + 0.004:
+            mat = PLINTH_IDX
+        elif hin < LIP_W + LIP_R + 0.005 and sea[a] and sea[b] and sea[c] and \
+                max(v.co.z for v in (va, vb, vc)) > SEA_Z + 0.0005:
+            # the frame's slate runs down into the sea as a quay wall, with
+            # no strip of shore along it
             mat = PLINTH_IDX
         else:
             mat = TERRAIN_IDX
@@ -1036,8 +1048,10 @@ def add_water(B, T, plan, n, flags):
             z = level.get(i, inf["wl"])
             if i not in level:
                 if inf["dc"] < 0.0 and not flat:
-                    # calm in the lee of the shore and over the mouths' plumes
-                    z += ripple(plan, x, y) * smoothstep(-inf["dc"], 0.26, 0.45)
+                    # calm in the lee of the shore and over the mouths'
+                    # plumes, and round the bars, which shelter it
+                    calm = min(smoothstep(T.bar_q2(bar, x, y), 2.5, 5.0) for bar in T.bars)
+                    z += ripple(plan, x, y) * smoothstep(-inf["dc"], 0.26, 0.45) * calm
                 if flags.get("uphill_channel") and inf["nb"] == UPHILL_B and inf["dc"] > 0.0:
                     br = T.br[UPHILL_B]
                     z += UPHILL * math.exp(-((inf["s"] - 0.5 * br["len"]) / 0.07) ** 2)
@@ -1050,7 +1064,13 @@ def add_water(B, T, plan, n, flags):
             x = min(max(x, -HALF + EDGE_IN), HALF - EDGE_IN)
             y = min(max(y, -HALF + EDGE_IN), HALF - EDGE_IN)
             v = B.vert((x, y, z))
-            v[B.rel] = inf["g"] - inf["wl"]
+            # the colour reads the seabed as if the rim were not there: the
+            # sea runs deep right up to the frame's wall, as against a quay,
+            # not shoaling into a pale seam along it
+            g = inf["g"]
+            if sq_in(x, y) < LIP_W + LIP_R + 0.01:
+                g = min(g, T.ground(x, y, rim=False))
+            v[B.rel] = g - inf["wl"]
             v[B.silt] = 1.0 if i in level else silt_of(T, x, y, inf)
             v[B.open] = 2 if i in level else (1 if inf["dc"] < -0.45 else 0)
             top[i] = v
@@ -1454,6 +1474,16 @@ def add_built(B, T, plan, G, flags):
     # the weir's stakes
     for k, (x, y, h) in enumerate(plan["weir"]):
         post(x, y, SEA_Z + h, 0.0016, 0.20 + 0.3 * hash01(k, 1, 7))
+    # and the wattle hurdles woven along each arm between them, standing
+    # out of the water as one dark fence line: a V of bare stakes read as
+    # scattered debris
+    stakes = plan["weir"]
+    arm = len(stakes) // 2
+    for side in range(2):
+        (x0, y0, _h0), (x1, y1, _h1) = stakes[side * arm], stakes[side * arm + arm - 1]
+        ln = math.hypot(x1 - x0, y1 - y0)
+        box(B, (0.5 * (x0 + x1), 0.5 * (y0 + y1), SEA_Z + 0.0012 + lift), (0.5 * ln + 0.002, 0.0010, 0.0052),
+            math.atan2(y1 - y0, x1 - x0), TIMBER_IDX, 0.16, P_BUILT, 610 + side)
 
 
 def break_coplanar(B, parts, passes=10):
@@ -1830,38 +1860,80 @@ def terrain_material():
     col = mix_color(nt, col, (0.30, 0.25, 0.11), mul(nt, remap(nt, voronoi(nt, coord, 140.0), 0.08, 0.02, 0.0, 0.5),
                                                      wetland))
     col = mix_color(nt, col, (0.04, 0.07, 0.025), remap(nt, fine, 0.35, 0.65, 0.30, 0.0))
-    # the upper plain farmed: a patchwork of fields on a slanting grid, each
-    # its own crop — young green, ripe gold, olive, fresh-ploughed brown —
-    # parted by dark grassed dikes
+    # the upper plain farmed, as a lowland patchwork seen from the air:
+    # strips of fields on a slanting grid, the field lines staggered and the
+    # fields of uneven width strip by strip, each its own crop — winter
+    # wheat, young barley, ripe gold, pale stubble, fresh-ploughed brown,
+    # fallow — drilled in rows that run along or across it, its tone
+    # varying across it, and every field parted from the next by a
+    # hedgerow of dark bushes, gapped here and there
     xyz = coord_xyz(nt, coord)
     ca, sa = math.cos(0.38), math.sin(0.38)
     u = math_node(nt, "ADD", mul(nt, xyz["X"], ca), mul(nt, xyz["Y"], sa))
     v = math_node(nt, "SUBTRACT", mul(nt, xyz["Y"], ca), mul(nt, xyz["X"], sa))
-    fu = mul(nt, u, 1.0 / 0.115)
     fv = mul(nt, v, 1.0 / 0.080)
+    jv = math_node(nt, "FLOOR", fv, 0.0)
+
+    def white1(w):
+        node = nt.nodes.new("ShaderNodeTexWhiteNoise")
+        node.noise_dimensions = "1D"
+        nt.links.new(w, node.inputs["W"])
+        return node.outputs["Value"]
+
+    wdt = math_node(nt, "ADD", 0.080, mul(nt, white1(jv), 0.075))
+    shift = mul(nt, white1(math_node(nt, "ADD", jv, 17.3)), wdt)
+    fu = math_node(nt, "DIVIDE", math_node(nt, "ADD", u, shift), wdt)
+    iu = math_node(nt, "FLOOR", fu, 0.0)
     cell = nt.nodes.new("ShaderNodeCombineXYZ")
-    nt.links.new(math_node(nt, "FLOOR", fu, 0.0), cell.inputs["X"])
-    nt.links.new(math_node(nt, "FLOOR", fv, 0.0), cell.inputs["Y"])
+    nt.links.new(iu, cell.inputs["X"])
+    nt.links.new(jv, cell.inputs["Y"])
     wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
     wn.noise_dimensions = "3D"
     nt.links.new(cell.outputs["Vector"], wn.inputs["Vector"])
     pick = wn.outputs["Value"]
-    crop = ramp(nt, pick, ((0.00, (0.10, 0.17, 0.040)), (0.22, (0.15, 0.21, 0.050)), (0.40, (0.26, 0.23, 0.10)),
-                           (0.55, (0.11, 0.15, 0.050)), (0.70, (0.19, 0.14, 0.085)), (0.85, (0.21, 0.22, 0.075)),
-                           (1.00, (0.13, 0.19, 0.045))))
-    rows = math_node(nt, "SINE", mul(nt, v, TAU * 140.0), 0.0)
-    crop = mix_color(nt, crop, (0.06, 0.06, 0.03), mul(nt, remap(nt, rows, 0.5, 1.0, 0.0, 0.25),
-                                                       remap(nt, pick, 0.6, 0.75, 0.0, 1.0)))
-    edge_u = math_node(nt, "MINIMUM", math_node(nt, "FRACT", fu, 0.0),
-                       math_node(nt, "SUBTRACT", 1.0, math_node(nt, "FRACT", fu, 0.0)))
-    edge_v = math_node(nt, "MINIMUM", math_node(nt, "FRACT", fv, 0.0),
-                       math_node(nt, "SUBTRACT", 1.0, math_node(nt, "FRACT", fv, 0.0)))
-    dike = math_node(nt, "MAXIMUM", remap(nt, edge_u, 0.035, 0.015, 0.0, 1.0), remap(nt, edge_v, 0.05, 0.02, 0.0, 1.0))
-    crop = mix_color(nt, crop, (0.07, 0.11, 0.035), mul(nt, dike, 0.85))
+    crop = ramp(nt, pick, ((0.00, (0.060, 0.130, 0.030)), (0.13, (0.130, 0.220, 0.045)),
+                           (0.27, (0.200, 0.270, 0.060)), (0.40, (0.400, 0.320, 0.120)),
+                           (0.52, (0.420, 0.360, 0.200)), (0.63, (0.165, 0.100, 0.055)),
+                           (0.76, (0.200, 0.200, 0.090)), (0.88, (0.330, 0.300, 0.130)),
+                           (0.95, (0.100, 0.180, 0.040))))
+    crop.node.color_ramp.interpolation = "CONSTANT"
+    wn3 = nt.nodes.new("ShaderNodeTexWhiteNoise")
+    wn3.noise_dimensions = "3D"
+    nt.links.new(mapping(nt, cell.outputs["Vector"], scale=(2.3, 0.7, 1.0)), wn3.inputs["Vector"])
+    pick2 = wn3.outputs["Value"]
+    # the drill rows, along the strip or across it by field; deeper furrows
+    # in the ploughed ones
+    across = math_node(nt, "GREATER_THAN", pick2, 0.5)
+    rowc = math_node(nt, "ADD", u, mul(nt, across, math_node(nt, "SUBTRACT", v, u)))
+    rows = math_node(nt, "SINE", mul(nt, rowc, TAU * 95.0), 0.0)
+    plough = mul(nt, remap(nt, pick, 0.62, 0.64, 0.0, 1.0), remap(nt, pick, 0.76, 0.74, 0.0, 1.0))
+    crop = mix_color(nt, crop, (0.045, 0.040, 0.022), mul(nt, remap(nt, rows, 0.1, 1.0, 0.0, 1.0),
+                                                         math_node(nt, "ADD", 0.22, mul(nt, plough, 0.30))))
+    # each field's tone drifts across it, wetter and drier ground
+    drift = noise(nt, coord, 22.0, 3.0, 0.55)
+    crop = mix_color(nt, crop, (0.05, 0.075, 0.025), remap(nt, drift, 0.40, 0.70, 0.0, 0.30))
+    crop = mix_color(nt, crop, (0.44, 0.40, 0.22), remap(nt, drift, 0.40, 0.25, 0.0, 0.18))
+    # hedgerows: in metres off the field's edge, dark bushes in a line,
+    # gapped where a gate or a lane runs through
+    fr_u = math_node(nt, "FRACT", fu, 0.0)
+    edge_u = mul(nt, math_node(nt, "MINIMUM", fr_u, math_node(nt, "SUBTRACT", 1.0, fr_u)), wdt)
+    fr_v = math_node(nt, "FRACT", fv, 0.0)
+    edge_v = mul(nt, math_node(nt, "MINIMUM", fr_v, math_node(nt, "SUBTRACT", 1.0, fr_v)), 0.080)
+    bushes = voronoi(nt, coord, 190.0)
+    wob = mul(nt, bushes, 0.0040)
+    hedge = math_node(nt, "MAXIMUM", remap(nt, math_node(nt, "ADD", edge_u, wob), 0.0060, 0.0036, 0.0, 1.0),
+                      remap(nt, math_node(nt, "ADD", edge_v, wob), 0.0060, 0.0036, 0.0, 1.0))
+    hedge = mul(nt, hedge, remap(nt, noise(nt, coord, 14.0, 2.0, 0.5), 0.33, 0.39, 0.0, 1.0))
+    hedge_col = ramp(nt, bushes, ((0.05, (0.075, 0.130, 0.035)), (0.45, (0.030, 0.062, 0.018)),
+                                  (0.80, (0.012, 0.025, 0.008))))
+    # the crops a little muted toward the grass round them, as seen from
+    # height through haze, then the hedges over them
+    crop = mix_color(nt, crop, (0.17, 0.21, 0.07), 0.18)
+    crop = mix_color(nt, crop, hedge_col, hedge)
     # whole fields in or out: each field's own distance from the apex, a
     # little jittered, against the upper plain's reach
-    cu = mul(nt, math_node(nt, "ADD", math_node(nt, "FLOOR", fu, 0.0), 0.5), 0.115)
-    cv = mul(nt, math_node(nt, "ADD", math_node(nt, "FLOOR", fv, 0.0), 0.5), 0.080)
+    cu = math_node(nt, "SUBTRACT", mul(nt, math_node(nt, "ADD", iu, 0.5), wdt), shift)
+    cv = mul(nt, math_node(nt, "ADD", jv, 0.5), 0.080)
     cx = math_node(nt, "SUBTRACT", mul(nt, cu, ca), mul(nt, cv, sa))
     cy = math_node(nt, "ADD", mul(nt, cu, sa), mul(nt, cv, ca))
     rc_ = math_node(nt, "SQRT", math_node(nt, "ADD", math_node(nt, "POWER", math_node(nt, "SUBTRACT", cx, APEX[0]), 2.0),
@@ -1869,7 +1941,7 @@ def terrain_material():
     wn2 = nt.nodes.new("ShaderNodeTexWhiteNoise")
     wn2.noise_dimensions = "3D"
     nt.links.new(mapping(nt, cell.outputs["Vector"], scale=(1.7, 1.3, 1.0)), wn2.inputs["Vector"])
-    reach = math_node(nt, "SUBTRACT", math_node(nt, "ADD", FARM_R[0], mul(nt, wn2.outputs["Value"], 0.30)), rc_)
+    reach = math_node(nt, "SUBTRACT", math_node(nt, "ADD", FARM_R[0], mul(nt, wn2.outputs["Value"], 0.25)), rc_)
     farm = mul(nt, remap(nt, reach, -0.001, 0.001, 0.0, 1.0), remap(nt, attr(nt, "Farm"), 0.55, 0.75, 0.0, 1.0))
     col = mix_color(nt, col, crop, farm)
     # dark wet mud at the water's edge, glistening
@@ -1893,7 +1965,8 @@ def terrain_material():
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(remap(nt, mud, 0.0, 1.0, 0.92, 0.30), bsdf.inputs["Roughness"])
     bsdf.inputs["Specular IOR Level"].default_value = 0.30
-    add_bump(nt, bsdf, math_node(nt, "ADD", mul(nt, fine, 0.6), mul(nt, tuss, 0.5)), 0.35, 0.003)
+    add_bump(nt, bsdf, math_node(nt, "ADD", math_node(nt, "ADD", mul(nt, fine, 0.6), mul(nt, tuss, 0.5)),
+                                 mul(nt, hedge, farm, 1.5)), 0.35, 0.003)
     return mat
 
 
@@ -1903,25 +1976,33 @@ def water_material():
     # channels laden with silt, olive and darker where they run deep; their
     # load fanning out of the mouths in tan plumes that swirl and fade into
     # the sea; the ponds peaty and still.
-    depth = remap(nt, math_node(nt, "MULTIPLY", attr(nt, "Rel"), -1.0), 0.0, 0.032, 0.0, 1.0)
-    sea = ramp(nt, depth, ((0.00, (0.17, 0.42, 0.37)), (0.15, (0.07, 0.34, 0.37)),
-                           (0.40, (0.025, 0.21, 0.30)), (0.75, (0.010, 0.10, 0.20)), (1.00, (0.006, 0.060, 0.14))))
-    swirl = noise(nt, mapping(nt, coord, scale=(1.0, 1.0, 1.0)), 5.0, 4.0, 0.6)
-    silt = mul(nt, attr(nt, "Silt"), remap(nt, swirl, 0.25, 0.65, 0.60, 1.25))
-    silt = remap(nt, silt, 0.06, 0.95, 0.0, 1.0)
+    # The depth is read off the seabed smoothly, one long ramp from the
+    # turquoise over the sand to the deep blue offshore; the sheen is kept
+    # soft, so the swell's facets do not mirror the dark studio back as
+    # hard-edged blotches over it.
+    depth = remap(nt, math_node(nt, "MULTIPLY", attr(nt, "Rel"), -1.0), 0.0, 0.034, 0.0, 1.0)
+    sea = ramp(nt, depth, ((0.00, (0.22, 0.50, 0.42)), (0.12, (0.11, 0.42, 0.42)), (0.30, (0.045, 0.30, 0.36)),
+                           (0.55, (0.020, 0.18, 0.28)), (0.80, (0.010, 0.10, 0.20)), (1.00, (0.007, 0.065, 0.15))))
+    # the plume: a broad, soft-edged tongue, its load swirled a little
+    swirl = noise(nt, mapping(nt, coord, scale=(1.0, 1.0, 1.0)), 3.0, 2.0, 0.45)
+    load = attr(nt, "Silt")
+    silt = mul(nt, load, remap(nt, swirl, 0.30, 0.70, 0.82, 1.12))
     chan = ramp(nt, depth, ((0.0, (0.200, 0.190, 0.105)), (0.20, (0.120, 0.150, 0.090)),
                             (0.45, (0.065, 0.105, 0.075))))
-    plume = mix_color(nt, (0.27, 0.25, 0.14), chan, remap(nt, attr(nt, "Silt"), 0.92, 1.0, 0.0, 1.0))
-    col = mix_color(nt, sea, plume, remap(nt, silt, 0.0, 0.40, 0.0, 1.0))
+    # tan and opaque at the mouth, a milky jade where it thins over the sea
+    plume = mix_color(nt, (0.24, 0.31, 0.19), (0.29, 0.25, 0.13), remap(nt, silt, 0.20, 0.75, 0.0, 1.0))
+    plume = mix_color(nt, plume, chan, remap(nt, load, 0.92, 1.0, 0.0, 1.0))
+    fade = remap(nt, silt, 0.02, 0.50, 0.0, 1.0)
+    col = mix_color(nt, sea, plume, math_node(nt, "POWER", fade, 0.7))
     # the ponds dark and peaty, a little green
     col = mix_color(nt, col, (0.030, 0.055, 0.045), remap(nt, attr(nt, "Open"), 1.5, 1.9, 0.0, 1.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
     # the silty channels and ponds a little duller than the clear sea
-    nt.links.new(remap(nt, attr(nt, "Silt"), 0.5, 1.0, 0.07, 0.09), bsdf.inputs["Roughness"])
+    nt.links.new(remap(nt, load, 0.5, 1.0, 0.16, 0.20), bsdf.inputs["Roughness"])
     bsdf.inputs["IOR"].default_value = 1.33
-    nt.links.new(remap(nt, attr(nt, "Silt"), 0.5, 1.0, 0.35, 0.10), bsdf.inputs["Specular IOR Level"])
+    nt.links.new(remap(nt, load, 0.5, 1.0, 0.28, 0.12), bsdf.inputs["Specular IOR Level"])
     ruffle = noise(nt, mapping(nt, coord, scale=(1.0, 1.6, 1.0)), 34.0, 3.0, 0.5)
-    add_bump(nt, bsdf, ruffle, 0.10, 0.002)
+    add_bump(nt, bsdf, ruffle, 0.05, 0.002)
     return mat
 
 
@@ -2005,22 +2086,26 @@ def foliage_material():
 
 def plinth_material():
     mat, nt, bsdf, coord = surface("TilePlinth")
-    # the tile's frame: a dark slate band round the top, and the skirt the
-    # delta's ground in section, bedded silts and sands over older clay
+    # the tile's frame, as the terrain category's: a dark slate band round
+    # the top, and the skirt the delta's ground in section — a turf line,
+    # then bedded silts and sands in brown and grey-tan with a scatter of
+    # pebbles, over darker older clay at the foot
     xyz = coord_xyz(nt, coord)
     z = xyz["Z"]
     nz = normal_xyz(nt)["Z"]
     bands = math_node(nt, "FRACT", math_node(nt, "MULTIPLY", math_node(
-        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 6.0, 2.0, 0.5), 0.008)), 26.0), 0.0)
-    soil = ramp(nt, bands, ((0.0, (0.22, 0.17, 0.11)), (0.35, (0.31, 0.25, 0.16)),
-                            (0.55, (0.17, 0.14, 0.10)), (0.80, (0.40, 0.34, 0.23)), (1.0, (0.24, 0.19, 0.13))))
-    soil = mix_color(nt, soil, (0.08, 0.10, 0.04), remap(nt, z, RIM_Z - 0.022, RIM_Z - 0.008, 0.0, 1.0))
-    soil = mix_color(nt, soil, (0.08, 0.06, 0.045), remap(nt, z, 0.030, 0.0, 0.0, 0.7))
+        nt, "ADD", z, math_node(nt, "MULTIPLY", noise(nt, coord, 6.0, 2.0, 0.5), 0.012)), 18.0), 0.0)
+    soil = ramp(nt, bands, ((0.0, (0.20, 0.13, 0.075)), (0.40, (0.27, 0.18, 0.10)),
+                            (0.55, (0.15, 0.10, 0.065)), (0.80, (0.33, 0.25, 0.16)), (1.0, (0.22, 0.15, 0.09))))
+    pebbles = voronoi_node(nt, coord, 60.0)
+    soil = mix_color(nt, soil, (0.36, 0.33, 0.29), remap(nt, pebbles.outputs["Distance"], 0.18, 0.10, 0.0, 0.8))
+    soil = mix_color(nt, soil, (0.07, 0.10, 0.03), remap(nt, z, RIM_Z - 0.030, RIM_Z - 0.008, 0.0, 1.0))
+    soil = mix_color(nt, soil, (0.07, 0.05, 0.035), remap(nt, z, 0.030, 0.0, 0.0, 0.7))
     slate = ramp(nt, noise(nt, coord, 30.0, 3.0, 0.5), ((0.3, (0.050, 0.055, 0.060)), (0.7, (0.10, 0.105, 0.11))))
     col = mix_color(nt, soil, slate, remap(nt, nz, 0.30, 0.60, 0.0, 1.0))
     nt.links.new(col, bsdf.inputs["Base Color"])
     nt.links.new(remap(nt, nz, 0.3, 0.6, 0.90, 0.55), bsdf.inputs["Roughness"])
-    add_bump(nt, bsdf, noise(nt, coord, 80.0, 3.0, 0.5), 0.2, 0.002)
+    add_bump(nt, bsdf, pebbles.outputs["Distance"], 0.3, 0.003)
     return mat
 
 

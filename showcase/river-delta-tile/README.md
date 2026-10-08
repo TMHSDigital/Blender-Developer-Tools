@@ -33,26 +33,37 @@ front. The sea fills the tile out to its rim on the front and both sides.
   channel's margin, sloping down into the floodbasin behind
   ([Smith et al.](https://ftp.ems.psu.edu/pub/geosc/sling/PUBLICATIONS_SLINGERLAND/2001-2010/Smithetal2009.pdf)) —
   their crests a few millimetres over the water and over the marsh. The
-  older upper plain behind stands 5 mm higher and is farmed in a patchwork
-  of fields on a slanting grid, parted by dark dikes, given out field by
-  field toward the lower plain. The lower plain is wild: marsh in drifts of
+  older upper plain behind stands 5 mm higher and is farmed as a lowland
+  patchwork looks from the air: strips of fields on a slanting grid, the
+  field lines staggered and the widths uneven strip by strip, each field
+  its own crop — wheat, young barley, ripe gold, stubble, fresh plough,
+  fallow — drilled in rows along or across it, its tone drifting across
+  it, and every field hedged with a gapped line of dark bushes; the fields
+  give out one by one toward the lower plain. The lower plain is wild: marsh in drifts of
   rush, sedge and rusty patches, salt marsh near the sea, dark wet mud at
   every water's edge, an oxbow lake and two ponds in the floodbasins. The
   fan's coast is lobed out at each mouth and draws back along the flanks,
   so the sea wraps both sides.
-- **Bars and plumes.** Middle-ground bars stand off three mouths: sandy
-  round their margins, their crowns grown over with marsh and reeds. Each
-  mouth's silt fans out into the sea in a tan plume that swirls and fades
-  into the turquoise shallows, which deepen to blue toward the front.
+- **Bars and plumes.** Middle-ground bars stand off three mouths, shaped as
+  the Wax Lake and Mississippi mouth bars grow: an arrowhead blunt to the
+  current, its flanks swept back downstream round the water it splits,
+  sandy round its margin and on the shoal about it, its crown grown over
+  with marsh and reeds. Each mouth's silt fans out into the sea in a soft
+  tan plume that thins to a milky jade and fades into the turquoise
+  shallows; the sea's colour is one smooth ramp of its depth over the bed,
+  out to deep blue toward the front, and its sheen is kept soft so the
+  swell does not mirror the dark studio back as blotches. The sea is
+  calm in the lee of the bars. The frame's slate runs down into the sea
+  as a quay wall, and the sea runs deep right up to it.
 - **Life on it.** Reed beds — dense clumps of 11 to 18 blades — fringe the
   lower channels, the shore, the marsh and the bars. Weeping willows, each a
   lofted bell of foliage with a ragged hem of shoots, stand on the levees
   and the upper plain, and a row of poplars lines the trunk's levee. Drift
-  logs float in the sea and the river or lie stranded on the bars and the
-  beaches. In the bay between the two middle mouths a fisherman's hut stands
+  logs float in the sea and the river or lie stranded up the beaches. In the bay between the two middle mouths a fisherman's hut stands
   on six stilts at the end of a jetty, with a thatched roof, a dark doorway
-  and a window, a boat moored beside it, and a fish weir of stakes in the
-  shallows nearby.
+  and a window, a boat moored beside it, and a fish weir nearby: a V of
+  stakes with a wattle hurdle woven along each arm, one dark fence line
+  out of the water.
 
 Every seeded draw comes from `random.Random(SEED)` in `plan_scene()`, before
 anything is built: where each tree, reed clump, log and the hut stand and
@@ -68,8 +79,10 @@ lattice share no vertex and no plane.
 
 Seven materials: delta ground (marsh, meadow, fields, mud, sand, seabed),
 water (sea, channels, plumes, ponds), reed (the reeds and the hut's thatch),
-timber (the hut, jetty, posts, stakes, logs and boat), bark, foliage
-(willows and poplars), tile plinth (the slate rim and the skirt's section).
+timber (the hut, jetty, posts, stakes, hurdles, logs and boat), bark,
+foliage (willows and poplars), tile plinth (the slate rim, its quay wall
+into the sea, and the skirt's section — a turf line over bedded silts and
+sands with a scatter of pebbles, as the terrain category's).
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -93,20 +106,26 @@ export file.
 
 | Axis | Declared | Measured (5.2.1) |
 | --- | --- | --- |
-| Base triangles | 138000–142500 | 140150 |
+| Base triangles | 138000–142500 | 140062 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2200 |
-| Materials | exactly 7 distinct; face floors ground ≥51900, water ≥45300, reed ≥16880, timber ≥955, bark ≥627, foliage ≥5257, plinth ≥9560 | 7 slots; 53503 / 46711 / 17418 / 986 / 646 / 5420 / 9855 |
+| Materials | exactly 7 distinct; face floors ground ≥51900, water ≥45300, reed ≥16880, timber ≥955, bark ≥627, foliage ≥5257, plinth ≥9560 | 7 slots; 52606 / 46595 / 17414 / 998 / 646 / 5420 / 10752 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (2.4000, 2.4000, 0.2960) m ± 0.01 | (2.4000, 2.4000, 0.2960), zmin 0 |
+| Outer AABB | (2.4000, 2.4000, 0.2948) m ± 0.01 | (2.4000, 2.4000, 0.2948), zmin 0 |
 | Collider tris (eight hulls) | ≤ 360 | 174 |
-| Export | written, size > 0, removed after measuring | 14562248 bytes |
+| Export | written, size > 0, removed after measuring | 14545956 bytes |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels
 are stochastic, so the bake gate is `has_data` plus operator `FINISHED`,
 not byte-identity. The plan is seeded and nothing else is random; two
 default runs print identical measurements.
+
+The outer AABB's declared height is the tallest poplar's top. Moving the
+stranded logs off the bars and up the beaches changed how many draws the
+log loop takes, so the trees and reeds after it were drawn afresh; the
+declared height follows the new tallest tree (0.2960 to 0.2948 m) at the
+same ± 0.01 tolerance. No band was widened.
 
 ### Hygiene
 
@@ -140,15 +159,15 @@ and onto the ground, along and across the channels' courses.
 | Water falls: along every mouth's course from the back edge through its forks, the water's surface every 4 mm, the largest rise from one sample to the next | ≤ 1e-6 m | 2e-7 m over 2863 samples |
 | Width rule: at each fork, the wetted width across the parent 100 mm upstream and across each child 150 mm downstream, (sum of the children's widths squared) / the parent's squared | 0.88–1.12 | 0.960, 1.008, 0.991 |
 | Fork angle: the angle between the two children's courses, each found from the wetted span's middle at 70 and 190 mm | 58–82° | 73.3°, 73.6°, 74.0° |
-| Mouths reach the sea: along every course, water over the ground at every sample; the water at its end against the sea's level | no gap, ≥ 0.001 m deep; ≤ 0.002 m | no gap, 0.0034 m shallowest; −0.00004 m at all four |
+| Mouths reach the sea: along every course, water over the ground at every sample; the water at its end against the sea's level | no gap, ≥ 0.001 m deep; ≤ 0.002 m | no gap, 0.0034 m shallowest; 0.00000 m at all four |
 | Levees: every 25 mm along every channel, each bank's crest (the highest ground out to three crest-distances) over the water at the channel's middle, and over the marsh behind it | ≥ 0.004 m; ≥ 0.0018 m | 0.0078; 0.0021 (228 stations) |
-| Islands: the lowest ground over each island's core against the water round it — the sea for the three bars, the higher of the two channels either side for the three islands between forks | ≥ 0.0025 m | 0.0037–0.0050 |
-| Water level: the open sea's top, median and largest excursion; each pond's top | level 0.150 ± 0.0015 m; ripple 0.001–0.006 m; ponds flat within 0.0004 m | 0.15004; 0.00244; 0.0000 |
-| Water contained: the ground over every rim vertex and rim-edge midpoint of every water sheet (save the river's cut in the back edge) | ≥ 0.0015 m | 0.0025 over 2703 points; 19 at the cut |
-| Reeds rooted: every blade's foot (its bottom cap) under the ground | 0.002–0.030 m, 4351 blades | 0.0036–0.0059 |
-| Afloat: every floating log and the boat, the share of its height under the water; every stranded log sealed in the ground in each sector | 0.25–0.75; ≥ 0.0025 m | 0.33–0.55 (4); 0.0075–0.0095 (4) |
+| Islands: the lowest ground over each island's core against the water round it — the sea for the three bars, the higher of the two channels either side for the three islands between forks | ≥ 0.0025 m | 0.0040–0.0050 |
+| Water level: the open sea's top, median and largest excursion; each pond's top | level 0.150 ± 0.0015 m; ripple 0.001–0.006 m; ponds flat within 0.0004 m | 0.15000; 0.00240; 0.0000 |
+| Water contained: the ground over every rim vertex and rim-edge midpoint of every water sheet (save the river's cut in the back edge) | ≥ 0.0015 m | 0.0025 over 2719 points; 19 at the cut |
+| Reeds rooted: every blade's foot (its bottom cap) under the ground | 0.002–0.030 m, 4350 blades | 0.0037–0.0059 |
+| Afloat: every floating log and the boat, the share of its height under the water; every stranded log sealed in the ground in each sector | 0.25–0.75; ≥ 0.0025 m | 0.33–0.55 (4); 0.0070–0.0124 (4) |
 | Posts: every stilt, jetty post and weir stake, its foot under the bed and its top over the water | foot 0.004–0.050 m, top ≥ 0.003 m over | 0.0099–0.0155 (28); 0.0082 |
-| Trees rooted: every trunk's foot under the ground | 0.004–0.050 m, 35 trunks | 0.0094–0.0114 |
+| Trees rooted: every trunk's foot under the ground | 0.004–0.050 m, 35 trunks | 0.0094–0.0113 |
 
 ## Falsifiers
 
@@ -165,10 +184,10 @@ exited its declared code.
 | `--splay-fork` | fork angle (one channel swung out 30° about its fork: 104.3°) | 19 |
 | `--plug-mouth` | mouths reach the sea (a mouth dammed 6 mm over its water: 5 dry samples along its course) | 20 |
 | `--breach-levee` | levees (a crevasse cut in one bank: a crest 0.0015 m under the water) | 21 |
-| `--drown-islet` | islands (one bar's crest lowered 10 mm: 0.0059 m under the sea) | 22 |
+| `--drown-islet` | islands (one bar's crest lowered 10 mm: 0.0055 m under the sea) | 22 |
 | `--flat-sea` | water level (the sheet laid flat: ripple 0.00000 m) | 23 |
 | `--short-sea` | water contained (the sheet's shoreward rim drawn 50 mm out to sea: −0.0020 m) | 24 |
-| `--float-reeds` | reeds rooted (every reed raised 30 mm: feet −0.0264 m) | 25 |
+| `--float-reeds` | reeds rooted (every reed raised 30 mm: feet −0.0263 m) | 25 |
 | `--sink-logs` | afloat (the floating logs and the boat sunk 30 mm: 2.7–3.2 of their height under) | 26 |
 | `--lift-hut` | posts (the hut, the jetty and the weir raised 30 mm: feet −0.0201 m) | 27 |
 | `--float-trees` | trees rooted (the willows raised 40 mm: feet −0.0306 m) | 28 |
@@ -211,8 +230,8 @@ fan out toward the camera, and the sea, the plumes and the bars lie in
 front. Seen from this high, the floor behind the tile is the backdrop, so
 the warm wedge drops its pool on the floor off to the left, where it
 reaches no water to glare off, rather than on the back wall. Framing
-measures fill x 0.700, y 0.878, margins left 0.181, right 0.119, bottom
-0.061, top 0.061; the asset-quality floors pass.
+measures fill x 0.700, y 0.872, margins left 0.181, right 0.119, bottom
+0.061, top 0.067; the asset-quality floors pass.
 
 ## Exit codes
 
