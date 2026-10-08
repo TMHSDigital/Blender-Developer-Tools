@@ -1342,8 +1342,13 @@ def add_boat(B, plan, W, flags):
             # the inside (between the gunwales' inner edges) dark and worn
             tone = 0.12 if 3 <= j <= 8 else 0.36
             B.face((r0[j], r0[q], r1[q], r1[j]), TIMBER_IDX, tone, P_FLOAT, 400)
-    B.face(tuple(reversed(secs[0])), TIMBER_IDX, 0.36, P_FLOAT, 400, cap=1)
-    B.face(tuple(secs[-1]), TIMBER_IDX, 0.36, P_FLOAT, 400, cap=2)
+    # each end closed by quads across the hull's wall, outer to inner: the
+    # bow's section is a few millimetres wide, and as one n-gon its
+    # triangulation differs by Blender version (4.5 cuts a zero-area sliver)
+    wall = ((0, 1, 4, 5), (1, 2, 3, 4), (13, 0, 5, 6), (12, 13, 6, 7), (11, 12, 7, 8), (10, 11, 8, 9))
+    for q in wall:
+        B.face(tuple(secs[0][i] for i in reversed(q)), TIMBER_IDX, 0.36, P_FLOAT, 400, cap=1)
+        B.face(tuple(secs[-1][i] for i in q), TIMBER_IDX, 0.36, P_FLOAT, 400, cap=2)
     # a thwart across the middle, its ends let into the sides
     th = 0.5 * beam * 0.98 - 0.0012
     box(B, tuple(at(-0.02, 0.0, 0.70 * H)), (0.0045, th, 0.0009), bt["yaw"], TIMBER_IDX, 0.45, P_BUILT, 401)

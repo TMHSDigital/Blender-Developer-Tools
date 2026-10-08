@@ -96,11 +96,11 @@ export file.
 | Base triangles | 138000–142500 | 140150 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2200 |
-| Materials | exactly 7 distinct; face floors ground ≥51900, water ≥45300, reed ≥16880, timber ≥955, bark ≥627, foliage ≥5257, plinth ≥9560 | 7 slots; 53503 / 46711 / 17418 / 998 / 646 / 5420 / 9855 |
+| Materials | exactly 7 distinct; face floors ground ≥51900, water ≥45300, reed ≥16880, timber ≥955, bark ≥627, foliage ≥5257, plinth ≥9560 | 7 slots; 53503 / 46711 / 17418 / 986 / 646 / 5420 / 9855 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (2.4000, 2.4000, 0.2960) m ± 0.01 | (2.4000, 2.4000, 0.2960), zmin 0 |
 | Collider tris (eight hulls) | ≤ 360 | 174 |
-| Export | written, size > 0, removed after measuring | 14563016 bytes |
+| Export | written, size > 0, removed after measuring | 14562248 bytes |
 
 DECIMATE COLLAPSE triangle counts are not identical across Blender
 series, so the LOD gate is a ratio band, not an exact count. Bake pixels
