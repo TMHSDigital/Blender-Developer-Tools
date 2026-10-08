@@ -102,6 +102,7 @@ SELECT = {
     "sea-stack-arch": (r"^SeaStackLow$", None),
     "hex-island-tile": (r"^HexIslandLow$", None),
     "canyon-mesa-tile": (r"^CanyonMesaLow$", None),
+    "caldera-island-tile": (r"^CalderaIslandLow$", None),
     "mushroom-stump": (r"^StumpLow$", None),
     "anvil": (r"^AnvilLow$", None),
     "tavern-stool": (r"^StoolLow$", None),

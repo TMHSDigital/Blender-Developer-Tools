@@ -167,5 +167,6 @@
   {"name": "ships-wheel", "script": "showcase/ships-wheel/ships_wheel.py", "falsifiers": [{"args": ["--offset-hub"], "expect_exit": 17}]},
   {"name": "sawhorse-plank", "script": "showcase/sawhorse-plank/sawhorse_plank.py", "falsifiers": [{"args": ["--loose-leg"], "expect_exit": 17}]},
   {"name": "hex-island-tile", "script": "showcase/hex-island-tile/hex_island_tile.py", "falsifiers": [{"args": ["--uphill-river"], "expect_exit": 18}]},
-  {"name": "canyon-mesa-tile", "script": "showcase/canyon-mesa-tile/canyon_mesa_tile.py", "falsifiers": [{"args": ["--tilt-beds"], "expect_exit": 18}]}
+  {"name": "canyon-mesa-tile", "script": "showcase/canyon-mesa-tile/canyon_mesa_tile.py", "falsifiers": [{"args": ["--tilt-beds"], "expect_exit": 18}]},
+  {"name": "caldera-island-tile", "script": "showcase/caldera-island-tile/caldera_island_tile.py", "falsifiers": [{"args": ["--breach-rim"], "expect_exit": 18}]}
 ]

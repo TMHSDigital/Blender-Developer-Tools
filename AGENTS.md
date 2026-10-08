@@ -21,7 +21,7 @@ classifies it as a `cursor-plugin`. This is content the AI loads when the user
 asks Blender questions or works on Blender add-ons in Cursor or Claude Code.
 
 The content base is 18 skills, 9 rules, 3 templates, 29 snippets, 66
-examples, and 78 showcase pieces (counts are CI-enforced across README.md, the agent docs, ROADMAP.md,
+examples, and 79 showcase pieces (counts are CI-enforced across README.md, the agent docs, ROADMAP.md,
 `site.json` and the site templates). The full inventory tables and per-item purposes live in
 `CLAUDE.md`. Example anatomy and authoring rules: copy `examples/bmesh-gear/`;
 showcase conventions: `showcase/README.md`. The render look is specified

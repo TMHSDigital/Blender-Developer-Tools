@@ -1104,6 +1104,20 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "caldera-island-tile",
+      "dir": "showcase/caldera-island-tile",
+      "category": "terrain",
+      "teaches": "A procedural strategy-game map tile of a volcanic island — a disc 2.40 m across where a concave stratocone, furrowed by barrancos and ash rills, has collapsed into a caldera: a crater lake held by a rim that closes all the way round, the inner walls showing the cone's stacked lava and tuff beds; a wooded cinder cone standing in the lake, built to Porter's ratios with its crater on its axis and its flanks at the angle of repose; a channelled aa lava flow running down from a breached spatter cone between its levees, still glowing near the vent, out over its delta and under the sea beside a black-sand beach; forest, conifers, heath and bare ash zoned by height; the sea out to the rim — through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A round volcanic island map tile seen from above: a caldera holding a blue crater lake with a wooded cinder cone island, forested flanks, and a dark lava flow running down to a black beach.",
+      "witnessesFix": "Recomputed: 112874 tris, nine materials with 57624 ground, 2438 lava, 16834 sea, 2101 foam, 8523 lake, 3132 basalt, 1050 bark, 8622 foliage and 8518 plinth faces, UVs in 0..1 with zero AABB overlap, outer AABB 2.400×2.400×0.549 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, the rim on the circle at the canonical edge height (624 vertices, 0.0000 m off), the caldera's lowest pass 0.0733 m over the lake on 180 bearings (min 0.040) and the lake flat at 0.370 m, the cinder cone's crater 0.00067 m off its base's axis (max 0.004) and its flanks 30.9–31.8° on 36 bearings (band 29–34), the lava falling every one of 111 rows with each levee crest at least 0.0028 m over the channel and its toe 0.054 m under the sea, the sea at 0.1500 m with a 0.0024 m ripple, every sea and lake rim at least 0.009 m under the ground and the flow's foot 0.0038 m, the foam within 0.0058 m of the waterline with its land edge 0.0035 m under the shore, all 29 crags, bombs and boulders sealed in every sector and none overlapping, all 66 trunks 0.009–0.016 m in the ground, LOD ratios in band, seven-hull collider 344 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --warp-edge 17; --breach-rim 18; --tilt-lake 19; --skew-crater 20; --steep-cone 21; --uphill-flow 22; --breach-levee 23; --short-flow 24; --flat-sea 25; --short-sea 26; --lift-foam 27; --perch-rock 28; --pile-rocks 29; --float-trees 30.",
+      "hero": "docs/gallery/assets/caldera-island-tile-hero.webp",
+      "preview": "showcase/caldera-island-tile/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
