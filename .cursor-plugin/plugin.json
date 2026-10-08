@@ -2,7 +2,7 @@
   "name": "blender-developer-tools",
   "displayName": "Blender Developer Tools",
   "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
-  "version": "0.149.0",
+  "version": "0.150.0",
   "author": {
     "name": "TMHSDigital"
   },

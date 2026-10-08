@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.150.0] - 2026-10-08
+
+No changes to the plugin content (skills, rules, snippets, templates) in this release.
+
+<details>
+<summary>Maintenance (1 commit): CI, tests, site, examples, showcase, docs</summary>
+
+- feat(showcase): add canyon-mesa-tile (terrain) ([`1cde7d3`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/1cde7d3852ceaf1756a3185bcd420ab58294656a))
+
+</details>
+
+[Release v0.150.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.150.0)
+
 ## [0.149.0] - 2026-10-07
 
 No changes to the plugin content (skills, rules, snippets, templates) in this release.
