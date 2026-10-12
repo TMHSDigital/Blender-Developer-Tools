@@ -123,13 +123,28 @@ violation; never imported by a check-only path):
 - **Naming** — no default datablock names on hero parts (Cube, Sphere,
   Torus, Suzanne, …). A designed asset names its parts.
 - **Material variation** — a hero assembled from ≥ 2 parts carries ≥ 2
-  distinct materials. A single flat Principled slot across an entire prop
+  distinct materials **that faces actually use** (a mesh slot counts only
+  when some polygon's `material_index` points at it, so an unused second
+  slot cannot satisfy the floor; #472). A single flat Principled slot across an entire prop
   is this gallery's most reliable placeholder predictor. Single-part
   subjects are exempt: one honest material is their truth (a brass gear).
 - **Edge treatment** — at most **75 %** of a hero's manifold edges may be
   right angles (90° ± 2°). Unbroken 90° corners across the board means no
   bevel, no chamfer, no shading break. Honest machined teeth pass
-  (`bmesh-gear` measures 0.667); raw boxes (1.0) fail.
+  (`bmesh-gear` measures 0.667); raw boxes (1.0) fail. Measured on each
+  part's **evaluated** mesh, so modifiers count (a Bevel modifier rounds
+  corners, Solidify/Array/GN output is measured at all), and a hero with no
+  manifold edge at all fails: nothing was checked (#472).
+
+Re-measured for #472 on 5.2.1 with `BDT_AQ_SURVEY` (the helper's
+calibration hook: it records both measures and exits before the render)
+across all 102 heroes that call the floor: no hero fails either the old or
+the new measure, no material count changed, and edge90 moved on five heroes
+where modifier or geometry-nodes output is now counted
+(`car-mirror-symmetry` 3174 → 43570 measured edges, 0.035 → 0.005;
+`gn-instance-grid` 0.141 → 0.111). Highest new edge90: `signpost` 0.703.
+A plane with only a Solidify modifier, which used to pass with 0.0 from zero
+measured edges, now measures 1.0 and exits 11.
 
 Calibrated empirically against the gallery's own assets, exactly as the
 0.02 margin floor was. The four new reference rows were measured on the

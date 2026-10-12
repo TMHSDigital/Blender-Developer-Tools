@@ -34,6 +34,7 @@ directory to sys.path from their own __file__ and import this module. The
 check-only path of every example stays free of it, so smoke runtimes are
 unaffected.
 """
+import json
 import math
 import os
 import sys
@@ -124,16 +125,33 @@ def measure_parts(hero):
     return len(meshes), bad
 
 
-def measure_materials(hero):
-    """(distinct materials across all hero slots, names, dominant share,
-    dominant name). Distinct counts every slot; the dominant share counts
-    the first slot per part — the flat-single-material placeholder signal
-    on assembled assets."""
+def _used_slots(data):
+    """Material slot indices that faces actually use. A mesh reads its
+    polygons' material_index; a curve has no faces to read, so every
+    filled slot counts (its splines index them)."""
+    if isinstance(data, bpy.types.Mesh):
+        n = len(data.polygons)
+        if n == 0:
+            return set()
+        idx = [0] * n
+        data.polygons.foreach_get("material_index", idx)
+        return set(idx)
+    return set(range(len(data.materials)))
+
+
+def measure_materials(hero, used_only=True):
+    """(distinct materials across the hero, names, dominant share, dominant
+    name). With used_only (the gate, #472) a material counts only when faces
+    use its slot, so an unused second slot cannot satisfy the floor;
+    used_only=False counts every filled slot (the pre-#472 measure). The
+    dominant share counts the first slot per part — the
+    flat-single-material placeholder signal on assembled assets."""
     from collections import Counter
     distinct = set()
     primary = Counter()
     for _, me, _ in _hero_meshes(hero):
-        slots = [m for m in me.materials if m is not None]
+        used = _used_slots(me) if used_only else set(range(len(me.materials)))
+        slots = [m for i, m in enumerate(me.materials) if m is not None and i in used]
         for slot in slots:
             distinct.add(slot.name)
         primary[slots[0].name if slots else "<none>"] += 1
@@ -142,20 +160,25 @@ def measure_materials(hero):
     return len(distinct), sorted(distinct), dominant_n / total, dominant_name
 
 
-def measure_edge90(hero):
+def measure_edge90(hero, evaluated=True):
     """Fraction of two-face edges with dihedral angle in 90 ± EDGE90_DEG.
 
     Boundary edges (open kit ends, sheet rims) are excluded — they have no
     dihedral to treat. Angles are face-normal angles on manifold edges.
-    A curve part is measured on its depsgraph-evaluated tessellation (the
-    tube the renderer draws), freed with to_mesh_clear().
+    Every part is measured on its depsgraph-evaluated mesh, the geometry
+    the renderer draws, so modifiers count: a Bevel that rounds raw right
+    angles helps, and Solidify or Array output is measured at all (#472).
+    evaluated=False reads a MESH part's base data (the pre-#472 measure).
+    Evaluated meshes are freed with to_mesh_clear(). Returns frac None when
+    no manifold edge was measured: nothing was checked, which the gate
+    treats as a failure, not a pass.
     """
     total = 0
     right = 0
     degenerate = 0
     depsgraph = None
     for _, data, ob in _hero_meshes(hero):
-        if ob.type == "MESH":
+        if ob.type == "MESH" and not evaluated:
             t, r, d = _edge90_counts(data)
         else:
             if depsgraph is None:
@@ -169,7 +192,7 @@ def measure_edge90(hero):
         total += t
         right += r
         degenerate += d
-    return (right / total) if total else 0.0, right, total, degenerate
+    return (right / total) if total else None, right, total, degenerate
 
 
 def _matte_render(scene, camera, hide, path, width, height):
@@ -292,14 +315,15 @@ class AssetQualityResult:
         # (docs/VISUAL-STYLE.md § Asset quality) printed as information, so
         # it must not print FAIL next to a gate that passes.
         mat_ok = self.parts < 2 or self.materials >= MATERIALS_MIN
-        edge_ok = self.edge90 <= EDGE90_MAX_FRAC
+        edge_ok = self.edge90 is not None and self.edge90 <= EDGE90_MAX_FRAC
+        frac = "none" if self.edge90 is None else f"{self.edge90:.3f}"
         return "\n".join([
             f"aq_naming default_names={self.bad_names or 'none'} {mark(name_ok)}",
             f"aq_materials n={self.materials} floor={MATERIALS_MIN} "
             f"(applies at parts>=2, n={self.parts}) {mark(mat_ok)}; "
             f"dominant={self.dominant_name}@{self.dominant_share:.2f} "
             f"informational-only",
-            f"aq_edge90 frac={self.edge90:.3f} ({self.edge_right}/{self.edge_total}) "
+            f"aq_edge90 frac={frac} ({self.edge_right}/{self.edge_total}) "
             f"degenerate_faces={self.degenerate_faces} "
             f"ceiling={EDGE90_MAX_FRAC} {mark(edge_ok)}",
             f"aq_compactness {self.compactness:.1f} (perim={self.perimeter} "
@@ -333,6 +357,8 @@ def check_asset_quality(scene, camera, hero, stage=(), *,
     and printed but never gated (dropped: fails genuinely good simple
     subjects — see module docstring and docs/VISUAL-STYLE.md).
     """
+    if os.environ.get("BDT_AQ_SURVEY"):
+        _survey(hero, os.environ["BDT_AQ_SURVEY"])  # exits; calibration only
     res = measure_asset_quality(scene, camera, hero, stage=stage)
     print(res.report())
     failures = []
@@ -341,7 +367,9 @@ def check_asset_quality(scene, camera, hero, stage=(), *,
     if res.parts >= 2 and res.materials < materials_min:
         failures.append(f"materials {res.materials}<{materials_min} "
                         f"on a {res.parts}-part hero")
-    if res.edge90 > edge90_max:
+    if res.edge90 is None:
+        failures.append("edge90 measured no manifold edge: nothing was checked")
+    elif res.edge90 > edge90_max:
         failures.append(f"edge90 {res.edge90:.3f}>{edge90_max}")
     if failures:
         print("ERROR: asset-quality violation — " + "; ".join(failures),
@@ -349,3 +377,24 @@ def check_asset_quality(scene, camera, hero, stage=(), *,
         return EXIT_ASSET_QUALITY
     print("aq_ok")
     return 0
+
+
+def _survey(hero, path):
+    """Calibration hook, never used by CI: with BDT_AQ_SURVEY=<file>, append
+    the old (base mesh, every slot) and new (evaluated, used slots) floor
+    measurements for this hero as one JSON line, then exit 0 before the
+    gate and the render. Lets a floor change be measured across every
+    gallery hero without rendering any (#472)."""
+    hero = _as_list(hero)
+    parts, _ = measure_parts(hero)
+    row = {"script": os.path.relpath(sys.argv[sys.argv.index("--python") + 1])
+           if "--python" in sys.argv else "?", "parts": parts}
+    for tag, kw_m, kw_e in (("old", {"used_only": False}, {"evaluated": False}),
+                            ("new", {"used_only": True}, {"evaluated": True})):
+        n, _, _, _ = measure_materials(hero, **kw_m)
+        frac, right, total, _ = measure_edge90(hero, **kw_e)
+        row[tag] = {"materials": n, "edge90": frac, "edge_total": total}
+    with open(path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row) + "\n")
+    print(f"aq_survey {json.dumps(row)}", flush=True)
+    raise SystemExit(0)
