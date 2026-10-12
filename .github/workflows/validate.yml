@@ -438,6 +438,9 @@ jobs:
       - name: Exit-code gate resolves fail() helpers and tuple returns
         run: python3 tests/test_exit_code_readme.py -v
 
+      - name: Showcase falsifier sweep shards cover every piece once
+        run: python3 tests/test_falsifier_shard.py -v
+
       - name: Hero-drift tool exit-code tests
         run: |
           pip install -r requirements-dev.txt

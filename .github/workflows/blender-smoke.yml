@@ -30,6 +30,11 @@ on:
           - "5.1"
           - "4.5"
         default: "5.2"
+      sweep:
+        description: Also run the full showcase falsifier sweep (5.2, sharded)
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: "0 7 * * 1"   # weekly, Monday 07:00 UTC
   push:
@@ -391,17 +396,130 @@ jobs:
             --xvfb \
             --catalog tests/smoke/catalog.json
 
-      - name: Full showcase falsifier sweep (weekly, 5.2)
-        # The catalog runs one falsifier per row on every smoke run. The weekly
-        # cron also runs every falsifier in every showcase README table and
-        # asserts each lands on the exit it declares (~5 min).
-        if: ${{ github.event_name == 'schedule' && matrix.series == '5.2' }}
-        run: |
-          set -euo pipefail
-          python3 tests/check_falsifier_targets.py --run "$BLENDER"
-
       - name: Smoke summary
         if: ${{ always() && env.BLENDER != '' }}
         run: |
           set -euo pipefail
           python3 tests/smoke/summarize.py --status "$BDT_SMOKE_STATUS"
+
+  showcase-sweep:
+    # The catalog runs one falsifier per row on every smoke run. The weekly
+    # cron also runs every falsifier in every showcase README table and asserts
+    # each lands on the exit it declares. At 80 pieces / 800+ falsifiers one
+    # serial sweep no longer fit beside the happy paths in the smoke job's 75
+    # minutes (cancelled on 2026-10-12, #482), so it is its own job, fanned out
+    # over four jobs by piece (check_falsifier_targets.py --shard K/N).
+    name: Showcase falsifier sweep ${{ matrix.shard }}/4 (5.2)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.sweep)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]  # N is 4: keep the "/4" in the job name and the run step in step
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Blender runtime libraries
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
+            libxkbcommon0 libsm6 libice6
+
+      - name: Resolve Blender 5.2
+        id: resolve
+        run: |
+          set -euo pipefail
+          base="https://download.blender.org/release/Blender5.2/"
+          file=$(curl -fsSL "$base" \
+            | grep -oE "blender-5\.2\.[0-9]+-linux-x64\.tar\.xz" \
+            | sort -V | uniq | tail -1)
+          if [ -z "$file" ]; then
+            echo "::error::Could not resolve a linux-x64 build for Blender 5.2 at $base"
+            exit 1
+          fi
+          version="${file#blender-}"
+          version="${version%-linux-x64.tar.xz}"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Blender ${{ steps.resolve.outputs.version }} from cache
+        id: bl-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bl
+          key: blender-${{ steps.resolve.outputs.version }}-linux-x64
+
+      - name: Download Blender and verify its published sha256
+        if: steps.bl-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          base="${{ steps.resolve.outputs.base }}"
+          file="${{ steps.resolve.outputs.file }}"
+          version="${{ steps.resolve.outputs.version }}"
+          mkdir -p "$RUNNER_TEMP/bl"
+          curl -fSL --retry 3 -o "$RUNNER_TEMP/bl.tar.xz" "${base}${file}"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/bl.sha256" "${base}blender-${version}.sha256"
+          expected=$(grep -E "  ${file}$" "$RUNNER_TEMP/bl.sha256" | awk '{print $1}')
+          if [ -z "$expected" ]; then
+            echo "::error::no published sha256 for ${file}"
+            exit 1
+          fi
+          echo "${expected}  $RUNNER_TEMP/bl.tar.xz" | sha256sum -c - \
+            || { echo "::error::sha256 mismatch for ${file}; refusing to extract"; exit 1; }
+          tar -xf "$RUNNER_TEMP/bl.tar.xz" -C "$RUNNER_TEMP/bl"
+
+      - name: Locate Blender binary
+        run: |
+          set -euo pipefail
+          bl=$(find "$RUNNER_TEMP/bl" -maxdepth 2 -type f -name blender | head -1)
+          if [ -z "$bl" ]; then
+            echo "::error::blender binary not found"
+            exit 1
+          fi
+          "$bl" --version | head -1
+          echo "BLENDER=$bl" >> "$GITHUB_ENV"
+
+      - name: Run shard ${{ matrix.shard }}/4
+        run: |
+          set -euo pipefail
+          python3 tests/check_falsifier_targets.py --run "$BLENDER" --shard "${{ matrix.shard }}/4"
+
+  report-scheduled-failure:
+    # A red or cancelled weekly run used to go unnoticed (#482): open an issue,
+    # or comment on the one already open, so the cron is never silently red.
+    name: Report a failed weekly run
+    needs: [smoke, showcase-sweep]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SMOKE: ${{ needs.smoke.result }}
+          SWEEP: ${{ needs.showcase-sweep.result }}
+        run: |
+          set -euo pipefail
+          title="Weekly Blender smoke run failed"
+          body="Scheduled run: $RUN_URL
+          - smoke matrix: \`$SMOKE\`
+          - showcase falsifier sweep: \`$SWEEP\`
+
+          Opened by blender-smoke.yml (report-scheduled-failure). Close it once a weekly run is green."
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+            echo "commented on #$num"
+          else
+            gh issue create --title "$title" --body "$body" --label "bug,ci,priority: high"
+          fi

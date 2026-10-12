@@ -189,7 +189,9 @@ The host runner is `tests/smoke/run_example.py`. Shipped examples are listed in
   `run_catalog.py` runs each after the row's happy path; it passes only on
   exactly that exit. `tests/check_smoke_catalog.py` rejects a row without one
   and any unknown key. The weekly cron also runs the full showcase sweep
-  (`tests/check_falsifier_targets.py --run`).
+  (`tests/check_falsifier_targets.py --run --shard K/4`, four jobs; dispatch
+  with `sweep: true` to run it by hand), and a red or cancelled weekly run
+  opens or comments on a "Weekly Blender smoke run failed" issue.
 - **Summary:** `tests/smoke/summarize.py` prints passed/skipped/failed. Zero
   PASSes makes the job red even if every example skipped cleanly. Falsifier
   runs are tabled separately and never count toward that PASS.

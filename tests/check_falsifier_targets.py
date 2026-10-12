@@ -33,7 +33,11 @@ asserts they agree:
 falsifier tripping an earlier check. It costs one Blender launch per
 falsifier: measured at 276 s for the whole showcase tree on one version
 (160 falsifiers, 25 pieces, Blender 5.2.1). That is an authoring and cron
-tool, not a per-PR smoke step.
+tool, not a per-PR smoke step. At 80 pieces and 800+ falsifiers one serial
+sweep outgrew the smoke job's budget (#482), so ``--shard K/N`` runs only
+every N-th piece starting at K (0-based, sorted by name), and the weekly cron
+fans the sweep out across N jobs. Each run prints its wall time so the slow
+pieces are visible.
 
 Exit codes: 0 clean, 1 a mapping disagrees, 2 usage.
 """
@@ -46,6 +50,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOWCASE = os.path.join(ROOT, "showcase")
@@ -222,14 +227,32 @@ def check_static():
 RUN_TIMEOUT = 900  # seconds per Blender run, matching tests/smoke/run_example.py
 
 
-def check_runtime(blender, only=None):
+def parse_shard(text):
+    """'K/N' -> (K, N) with 0 <= K < N; argparse-friendly."""
+    try:
+        k, n = (int(x) for x in text.split("/"))
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"--shard wants K/N, got {text!r}")
+    if n < 1 or not 0 <= k < n:
+        raise argparse.ArgumentTypeError(f"--shard {text!r}: need 0 <= K < N")
+    return k, n
+
+
+def in_shard(index, shard):
+    return shard is None or index % shard[1] == shard[0]
+
+
+def check_runtime(blender, only=None, shard=None):
     failures, checked = [], 0
-    for name, readme, script in piece_paths():
+    for index, (name, readme, script) in enumerate(piece_paths()):
         if only and name not in only:
+            continue
+        if not in_shard(index, shard):
             continue
         falsifiers, _exits = parse_readme(readme)
         for flag, (want, _target) in sorted(falsifiers.items()):
             checked += 1
+            started = time.monotonic()
             try:
                 proc = subprocess.run(
                     [blender, "--background", "--python-exit-code", "1", "--python", script,
@@ -243,7 +266,9 @@ def check_runtime(blender, only=None):
                 # one hang cannot stall the weekly sweep.
                 got = f"timeout after {RUN_TIMEOUT}s"
             status = "ok" if got == want else "MISMATCH"
-            print(f"  {status:9} {name} {flag}: want {want}, got {got}")
+            secs = time.monotonic() - started
+            print(f"  {status:9} {name} {flag}: want {want}, got {got} ({secs:.0f}s)",
+                  flush=True)
             if got != want:
                 failures.append(
                     (name, f"{flag} declared exit {want} but exited {got}")
@@ -257,6 +282,8 @@ def main(argv=None):
                    help="also execute each falsifier with this Blender binary")
     p.add_argument("--only", action="append", default=None,
                    help="limit the runtime mode to these piece names")
+    p.add_argument("--shard", type=parse_shard, default=None, metavar="K/N",
+                   help="runtime mode: only every N-th piece, starting at K (0-based)")
     args = p.parse_args(argv)
 
     failures, undocumented, checked, pieces, skipped = check_static()
@@ -271,8 +298,10 @@ def main(argv=None):
         )
 
     if args.run:
-        print(f"runtime falsifier sweep with {args.run}")
-        rt_failures, rt_checked = check_runtime(args.run, set(args.only or []) or None)
+        shard = f" (shard {args.shard[0]}/{args.shard[1]})" if args.shard else ""
+        print(f"runtime falsifier sweep with {args.run}{shard}", flush=True)
+        rt_failures, rt_checked = check_runtime(args.run, set(args.only or []) or None,
+                                                args.shard)
         failures.extend(rt_failures)
         checked += rt_checked
 
