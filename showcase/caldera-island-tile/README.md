@@ -1,7 +1,8 @@
 # Caldera island tile
 
 A showcase piece, not an example, in the `terrain` category. It builds a
-procedural, game-ready strategy-game map tile: a disc 2.40 m across with a
+procedural strategy-game map tile at hero-diorama density (about 113k
+triangles at LOD0; the gated LOD2, about 25k, is the in-game asset): a disc 2.40 m across with a
 volcanic island in the middle and the sea out to its rim on every side. The
 island is a stratovolcano whose summit has collapsed into a caldera, with a
 crater lake in it and a young cinder cone standing in the lake as an island.

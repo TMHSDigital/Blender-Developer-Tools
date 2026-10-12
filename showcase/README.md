@@ -285,7 +285,12 @@ entry in `showcase/gallery.json`, and a rendered still.
   facing the key light renders as a hard white plate. `cart` went to 24
   and the chords disappeared. Re-fit the triangle band around the new
   measured count rather than leaving the old one — and prefer a band
-  *narrower* than the one it replaces, centred on the measurement.
+  *narrower* than the one it replaces, centred on the measurement. A
+  band centred on the measurement is a **regression detector**, not an
+  engine budget: it catches a model that changed by accident, never one
+  that is too heavy by design. So a README that calls a piece game-ready
+  names the asset that is (usually a gated LOD) and its triangle count,
+  rather than letting the base band read as the budget (#488).
 - **Material face floors.** Every declared material asserts a named
   minimum face count on the finished mesh, recomputed from
   `polygon.material_index`. This catches the slot-assignment wipe class:

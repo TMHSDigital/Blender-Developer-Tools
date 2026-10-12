@@ -1,7 +1,8 @@
 # River delta tile
 
 A showcase piece, not an example, in the `terrain` category. It builds a
-procedural, game-ready strategy-game map tile: a square 2.40 m on a side,
+procedural strategy-game map tile at hero-diorama density (about 140k
+triangles at LOD0; the gated LOD2, about 31k, is the in-game asset): a square 2.40 m on a side,
 low and flat, where a river comes in through the back edge and splits twice
 into four distributaries that fan out across a delta plain to the sea at the
 front. The sea fills the tile out to its rim on the front and both sides.

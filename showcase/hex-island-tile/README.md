@@ -1,8 +1,10 @@
 # Hex island tile
 
 A showcase piece, not an example, and the first piece built for the
-`terrain` category. It builds a procedural, game-ready strategy-game map
-tile: a flat-topped hexagon 2.60 m corner to corner (2.25 m flat to flat)
+`terrain` category. It builds a procedural strategy-game map tile at
+hero-diorama density: about 104k triangles at LOD0, for close renders;
+the gated LOD2 (0.22 of base, about 23k) is the in-game asset. The tile
+is a flat-topped hexagon 2.60 m corner to corner (2.25 m flat to flat)
 with a mountain island in the middle and the sea out to its rim on every
 side.
 

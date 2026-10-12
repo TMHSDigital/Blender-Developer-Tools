@@ -1,7 +1,9 @@
 # Canyon and mesa tile
 
 A showcase piece, not an example, and a `terrain` piece. It builds a
-procedural, game-ready strategy-game map tile of Colorado Plateau character:
+procedural strategy-game map tile of Colorado Plateau character, at
+hero-diorama density (about 128k triangles at LOD0; the gated LOD2, about
+28k, is the in-game asset):
 a square 2.40 m on a side with two mesas and a canyon between them at the
 back, a butte and a slender spire in front, and a dry wash crossing the tile
 from edge to edge.
