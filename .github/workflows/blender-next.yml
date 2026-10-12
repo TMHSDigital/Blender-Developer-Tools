@@ -1,0 +1,155 @@
+name: Blender next (daily builds)
+
+# Smokes the shipped examples against Blender's in-development daily builds
+# (beta and alpha, from builder.blender.org), so an API break in the next
+# release becomes a dated tracking issue before users hit it (#457).
+# Non-gating: nothing here blocks a PR or a release, and upstream instability
+# only updates the issue. When a version reaches release, the regular
+# blender-smoke.yml matrix takes it over (as 5.1 and 5.2 were).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 3"   # weekly, Wednesday 09:00 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blender-next
+  cancel-in-progress: true
+
+jobs:
+  resolve:
+    name: Resolve daily builds newer than the newest stable
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      builds: ${{ steps.pick.outputs.builds }}
+    steps:
+      - id: pick
+        run: |
+          set -euo pipefail
+          curl -fsSL -A "blender-developer-tools-ci" \
+            "https://builder.blender.org/download/daily/?format=json&v=1" -o daily.json
+          python3 - <<'PYEOF'
+          import json, os
+
+          def key(v):
+              return tuple(int(p) for p in v.split("."))
+
+          rows = [r for r in json.load(open("daily.json"))
+                  if r.get("platform") == "linux" and r.get("architecture") == "x86_64"
+                  and r.get("file_extension") == "xz"]
+          stable = max((key(r["version"]) for r in rows if r["risk_id"] == "stable"), default=(0,))
+          nxt = sorted((r for r in rows if r["risk_id"] != "stable" and key(r["version"]) > stable),
+                       key=lambda r: key(r["version"]))
+          builds = [{"version": r["version"], "risk": r["risk_id"],
+                     "series": ".".join(r["version"].split(".")[:2]), "url": r["url"]} for r in nxt]
+          print(f"newest stable {'.'.join(map(str, stable))}; next: "
+                f"{[b['version'] + '-' + b['risk'] for b in builds] or 'none'}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"builds={json.dumps(builds)}\n")
+          PYEOF
+
+  smoke:
+    name: Blender ${{ matrix.build.version }}-${{ matrix.build.risk }} smoke
+    needs: resolve
+    if: needs.resolve.outputs.builds != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        build: ${{ fromJSON(needs.resolve.outputs.builds) }}
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Blender runtime libraries
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
+            libxkbcommon0 libsm6 libice6
+
+      - name: Download the daily build and verify its sha256
+        env:
+          URL: ${{ matrix.build.url }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bl"
+          curl -fSL --retry 3 -A "blender-developer-tools-ci" -o "$RUNNER_TEMP/bl.tar.xz" "$URL"
+          expected=$(curl -fsSL --retry 3 -A "blender-developer-tools-ci" "$URL.sha256" | awk '{print $1}')
+          [ -n "$expected" ] || { echo "::error::no sha256 published for $URL"; exit 1; }
+          echo "${expected}  $RUNNER_TEMP/bl.tar.xz" | sha256sum -c - \
+            || { echo "::error::sha256 mismatch for $URL; refusing to extract"; exit 1; }
+          tar -xf "$RUNNER_TEMP/bl.tar.xz" -C "$RUNNER_TEMP/bl"
+          bl=$(find "$RUNNER_TEMP/bl" -maxdepth 2 -type f -name blender | head -1)
+          [ -n "$bl" ] || { echo "::error::blender binary not found"; exit 1; }
+          "$bl" --version | head -1
+          echo "BLENDER=$bl" >> "$GITHUB_ENV"
+          echo "BDT_SMOKE_STATUS=$RUNNER_TEMP/smoke-status.jsonl" >> "$GITHUB_ENV"
+          : > "$RUNNER_TEMP/smoke-status.jsonl"
+
+      - name: Shipped examples (happy paths and falsifiers)
+        id: catalog
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          python3 tests/smoke/run_catalog.py \
+            --blender "$BLENDER" \
+            --series "${{ matrix.build.series }}" \
+            --status "$BDT_SMOKE_STATUS" \
+            --out "$RUNNER_TEMP/out" \
+            --xvfb \
+            --catalog tests/smoke/catalog.json
+
+      - name: Summary
+        id: summary
+        continue-on-error: true
+        run: python3 tests/smoke/summarize.py --status "$BDT_SMOKE_STATUS"
+
+      - name: Update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ matrix.build.version }}
+          RISK: ${{ matrix.build.risk }}
+          SERIES: ${{ matrix.build.series }}
+          OUTCOME: ${{ steps.catalog.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          failed=$(python3 - <<'PYEOF'
+          import json, os
+          rows = [json.loads(l) for l in open(os.environ["BDT_SMOKE_STATUS"]) if l.strip()]
+          bad = [r for r in rows if r.get("status") == "FAIL"]
+          for r in bad:
+              kind = "falsifier" if r.get("falsifier") else "happy path"
+              print(f"- `{r['name']}` ({kind}): {str(r.get('detail', ''))[:200]}")
+          PYEOF
+          )
+          if [ -z "$failed" ] && [ "$OUTCOME" != "success" ]; then
+            failed="- the catalog run itself failed before recording a FAIL row; see the run log"
+          fi
+          title="Blender $SERIES compatibility (daily builds)"
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$failed" ]; then
+            body="Daily build **$VERSION-$RISK**, run: $RUN_URL
+
+          Failing catalog rows:
+          $failed
+
+          Non-gating; opened by blender-next.yml (#457). Fix the example or the skill when the change is intended upstream, or report it to Blender when it is a regression."
+            if [ -n "$num" ]; then gh issue comment "$num" --body "$body"
+            else gh issue create --title "$title" --body "$body" --label "ci,testing,priority: medium"; fi
+          elif [ -n "$num" ]; then
+            gh issue comment "$num" --body "Daily build **$VERSION-$RISK** is green again ($RUN_URL); closing."
+            gh issue close "$num"
+          fi
+          echo "catalog outcome: $OUTCOME"
