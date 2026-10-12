@@ -361,7 +361,7 @@ def main():
 
     if not os.path.isfile(args.input):
         print(f"ERROR: input file missing: {args.input}", file=sys.stderr)
-        return 2
+        return 13  # not 2: that is argparse's usage exit
 
     if not glb_magic_ok(args.input):
         print(f"ERROR: input is not a readable GLB: {args.input}", file=sys.stderr)

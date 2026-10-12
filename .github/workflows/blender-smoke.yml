@@ -213,14 +213,14 @@ jobs:
           test -s "$RUNNER_TEMP/out/out.glb" || { echo "::error::glTF output missing/empty"; exit 1; }
           head -c4 "$RUNNER_TEMP/out/out.glb" | grep -q "glTF" || { echo "::error::not a glTF binary"; exit 1; }
 
-      - name: Headless template no-mesh path returns exit 2
+      - name: Headless template no-mesh path returns exit 5
         run: |
           set +e
           xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/empty.blend" \
             --python-exit-code 1 --python templates/headless-batch-script-template/script.py -- --output "$RUNNER_TEMP/out/none.glb"
           code=$?
           set -e
-          [ "$code" -eq 2 ] || { echo "::error::expected exit 2 for no-mesh input, got $code"; exit 1; }
+          [ "$code" -eq 5 ] || { echo "::error::expected exit 5 for no-mesh input, got $code"; exit 1; }
           echo "no-mesh exit code = $code (correct)"
 
       - name: Headless template applies the new modifier after the existing stack (#468)
@@ -261,7 +261,7 @@ jobs:
           test -s "$RUNNER_TEMP/out/pipeline/collider.glb" || { echo "::error::collider missing/empty"; exit 1; }
           head -c4 "$RUNNER_TEMP/out/pipeline/lod0.glb" | grep -q "glTF" || { echo "::error::lod0 not a glTF binary"; exit 1; }
 
-      - name: Headless pipeline template missing input returns exit 2
+      - name: Headless pipeline template missing input returns exit 13
         run: |
           set +e
           xvfb-run -a "$BLENDER" --background --python-exit-code 1 --python templates/ai-asset-pipeline-template/pipeline.py -- \
@@ -270,7 +270,7 @@ jobs:
             --preset unity
           code=$?
           set -e
-          [ "$code" -eq 2 ] || { echo "::error::expected exit 2 for missing input, got $code"; exit 1; }
+          [ "$code" -eq 13 ] || { echo "::error::expected exit 13 for missing input, got $code"; exit 1; }
           echo "missing-input exit code = $code (correct)"
 
       - name: Pipeline template keeps every part of a shared-mesh, parented GLB (#462, #467)

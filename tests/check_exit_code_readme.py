@@ -371,9 +371,11 @@ def readme_table_rows(text):
     return rows
 
 
-def reserved_row_errors(rows, readme_rel):
+def reserved_row_errors(rows, readme_rel, codes=None):
     errors = []
     for code, (pattern, meaning) in RESERVED.items():
+        if codes is not None and code not in codes:
+            continue
         text = rows.get(code)
         if text is None:
             continue
@@ -469,6 +471,20 @@ def check_file(path):
         if os.path.isfile(readme):
             rows = readme_table_rows(open(readme, encoding="utf-8").read())
             errors.extend(reserved_row_errors(rows, relpath(readme)))
+    elif rel.startswith("templates/"):
+        # Templates are copied into CI pipelines, where exit 2 must mean a bad
+        # invocation and nothing else (#490). 10 and 11 are example-gallery
+        # gates, so only 2 is reserved here.
+        for lineno, code in literal_reserved_sites(tree, passthrough_helpers(tree)):
+            if code == 2:
+                errors.append(
+                    f"{rel}:{lineno}: literal exit 2 is argparse's usage exit; "
+                    "give this check its own code"
+                )
+        readme = os.path.join(os.path.dirname(path), "README.md")
+        if os.path.isfile(readme):
+            rows = readme_table_rows(open(readme, encoding="utf-8").read())
+            errors.extend(reserved_row_errors(rows, relpath(readme), codes={2}))
 
     nonzero = {}
     for code, lineno in visitor.literals:

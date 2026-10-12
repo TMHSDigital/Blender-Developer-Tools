@@ -48,9 +48,10 @@ is legal; argparse usage is `2`). Not a repo-wide table.
 | Code | Meaning |
 | --- | --- |
 | 0 | Success |
-| 2 | argparse rejected the flags, or no mesh objects in the input `.blend` |
+| 2 | argparse rejected the flags (usage error only) |
 | 3 | Modifier apply raised `RuntimeError` |
 | 4 | glTF export raised `RuntimeError` |
+| 5 | No mesh objects in the input `.blend` (same code as the pipeline template's no-mesh) |
 
 ## Expected environment
 
@@ -58,7 +59,7 @@ is legal; argparse usage is `2`). Not a repo-wide table.
 - Write access to the output directory. The script does not create
   parent directories; create them in your shell wrapper if needed.
 - Input `.blend` exists and contains at least one mesh object. With no
-  meshes the script returns exit code 2.
+  meshes the script returns exit code 5.
 
 ## Common gotchas
 

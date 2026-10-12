@@ -80,7 +80,7 @@ as `export-preset-axis` number their own checks independently.
 | Code | Meaning |
 | --- | --- |
 | 0 | Success |
-| 2 | Input file missing, or argparse rejected the flags (including an unsupported `--preset`) |
+| 2 | argparse rejected the flags, including an unsupported `--preset` (usage error only) |
 | 3 | Input is not a readable GLB (bad magic or import failure) |
 | 4 | `--lod-budgets` missing, non-positive, or not strictly decreasing |
 | 5 | Import produced no mesh |
@@ -89,6 +89,7 @@ as `export-preset-axis` number their own checks independently.
 | 8 | The joined asset's largest extent is outside 0.01 m to 100 m (wrong source units) |
 | 9 | An LOD's evaluated triangle count is over its `--lod-budgets` entry |
 | 12 | `transform_apply` or `object.join` raised `RuntimeError` (for example multi-user data that was not isolated) |
+| 13 | `--input` file does not exist |
 
 10 and 11 are skipped on purpose. The repo's shared render gates use them
 (framing and asset quality), so a template never reuses them.

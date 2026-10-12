@@ -235,10 +235,11 @@ code; there is no rule against it.
 **Per-script exits** (examples and headless templates). `0` success. `2`
 argument or usage error, matching argparse. `3` and above for that script's
 own sequential check failures, in the order the checks run. These codes are
-file-local and are not portable. `no-mesh` is `2` in
-`templates/headless-batch-script-template/` and `5` in
-`templates/ai-asset-pipeline-template/`; both are correct. Copy a template's
-own table from that template, not from this paragraph.
+file-local and are not portable, except that `2` is argparse's usage exit
+everywhere: no template or example spends it on a check, so a CI caller can
+tell a bad invocation from bad input (#490; `tests/check_exit_code_readme.py`
+enforces it). `no-mesh` is `5` in both templates. Copy a template's own table
+from that template, not from this paragraph.
 
 **Reserved in examples/.** Three codes mean one thing in every example. `2`
 is argparse's usage exit only, never a check. `10` is the gallery framing

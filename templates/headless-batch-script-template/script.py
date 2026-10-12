@@ -96,7 +96,7 @@ def main():
     mesh_objects = [obj for obj in bpy.data.objects if obj.type == "MESH"]
     if not mesh_objects:
         print("ERROR: no mesh objects in the input .blend", file=sys.stderr)
-        return 2
+        return 5  # not 2: that is argparse's usage exit
 
     print(f"Found {len(mesh_objects)} mesh object(s): {[o.name for o in mesh_objects]}")
 
