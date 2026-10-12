@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.155.0] - 2026-10-12
+
+### For agents and users
+
+**Features**
+
+- feat(distribution): rules and skills for Codex, Copilot, Windsurf and Gemini CLI ([`5a56f5e`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5a56f5e11375f24d3e17164fba3873a736c88ce2))
+- feat(skills): porting-to-blender-5 index of every 4.x to 5.x break the pack covers ([`ed48f75`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ed48f7545b75486dbe1144a147c007022c76dbf3))
+- feat(examples): addon-register-lifecycle covers scaffolding, bl_info migration, panels and props ([`96b6076`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/96b60768a128f3447de5678671370c257d3e60b5))
+- feat(rules): no-removed-normals-api rule and mesh-normals-after-41 example ([`f62501d`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f62501d6b8bac2493e8e1ac990ce5c3cd339bbe0))
+- feat(skills): gpu-drawing-and-overlays skill, no-bgl rule and gpu-offscreen-draw example ([`83b09cf`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/83b09cfa942169ee0cdbd457eb95be46f3d4bd43))
+
+**Fixes**
+
+- fix(distribution): move the rules exports out of agents/; check plugin installs in CI ([`0663419`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/066341995da26d3787720262a56537d42c78b371))
+- fix(skills): full Principled BSDF v2 socket table; drop dead 3.x socket fallbacks ([`ea56f39`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ea56f3922ca608e1f480ab90e5950efb5dd5e28b))
+
+<details>
+<summary>Maintenance (6 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- fix(examples): asset-quality floors measure evaluated meshes and used materials ([`b606f98`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/b606f98e5322be450b9c65ad22ae155965f25c1b))
+- docs(community): point questions and show-and-tell at Discussions ([`82d500a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/82d500ac29c395938342badfcb0703a32de226ad))
+- feat(release): guard skill and rule names across releases ([`4478a82`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4478a824aa9d2faddb778a66390773d13c0f6018))
+- fix(examples): gate every use_nodes = True on bpy.app.version < (5, 0, 0) ([`481183e`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/481183ed896d140c985e017073c2b32799a14069))
+- feat(ci): weekly non-gating smoke against Blender daily builds ([`b6c34d9`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/b6c34d95f46b075585abf7ccb6abcf73ed972f6c))
+- chore(deps): bump the Developer-Tools-Directory actions and their meta-repo pins to v1.20.0 ([`ba23e71`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ba23e715327c586fd57764e1e1a118fc723ba9a7))
+
+</details>
+
+[Release v0.155.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.155.0)
+
 ## [0.154.0] - 2026-10-12
 
 ### For agents and users
