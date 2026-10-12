@@ -252,7 +252,7 @@ The release pipeline is automated via `release.yml` on every push to `main`; it 
 When adding content to a future version:
 
 1. Add files under `skills/`, `rules/`, `snippets/`, `templates/`, or `examples/`.
-2. Update README.md aggregate counts (the `validate-counts` job enforces correctness).
+2. Update README.md aggregate counts (the `validate-counts` job enforces correctness). The GitHub repo description deliberately carries no counts: nothing can check it, and it went stale twice (#448, #486). Keep numbers out of it.
 3. Update ROADMAP.md candidate pool entries.
 4. Use `feat:` for new content, `fix:` for corrections.
 5. Push. The release pipeline handles VERSION, tags, CHANGELOG, the `**Version:**` line here, and the `**Current:**` line in ROADMAP.md.
