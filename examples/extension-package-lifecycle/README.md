@@ -39,9 +39,7 @@ Scaffolding matches [`eval-mesh-datablock-name`](../eval-mesh-datablock-name/)
 - exit 4 — `build` accepted the package whose manifest names a wheel it does
   not ship, so nothing between `validate` and a release would catch it
   (`--ship-wheel` lands here: it creates the named wheel, so `build` exits 0
-  and writes a zip, proving the rejection comes from the missing file); also
-  exit 4 if `validate` starts rejecting the package, because the trap this
-  example names would then be gone
+  and writes a zip, proving the rejection comes from the missing file)
 - exit 5 — `server-generate` wrote no listing, or the listing does not name the package
 - exit 6 — install, import, upgrade or remove failed, or `__package__` is not
   `bl_ext.user_default.example_addon`
@@ -49,6 +47,8 @@ Scaffolding matches [`eval-mesh-datablock-name`](../eval-mesh-datablock-name/)
   upgrade, or survived removal (`--data-next-to-file` lands here: it stores
   data beside `__file__`)
 - exit 8 — `online_access` is not `False` by default and `True` under `--online-mode`
+- exit 9 — `validate` rejected the missing-wheel package, so the trap this
+  example names is gone (its own code, so `--ship-wheel` can only land on 4)
 
 ## Re-verified
 
@@ -91,11 +91,12 @@ than most examples.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Template does not validate or build, or the zip lacks its manifest |
-| 4 | `build` accepted the missing-wheel package, or `validate` rejected it (`--ship-wheel` lands here) |
+| 4 | `build` accepted the missing-wheel package (`--ship-wheel` lands here) |
 | 5 | `server-generate` listing missing or wrong |
 | 6 | Install, import, upgrade or remove failed, or `__package__` wrong |
 | 7 | User data inside the install tree, lost on upgrade, or kept after removal (`--data-next-to-file` lands here) |
 | 8 | `online_access` default or `--online-mode` value wrong |
+| 9 | `validate` rejected the missing-wheel package: the validate-is-not-a-gate trap is gone |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

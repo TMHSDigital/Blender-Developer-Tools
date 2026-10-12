@@ -113,8 +113,10 @@ def check_wheel_trap(work, ship_wheel):
     print(f"{'shipped' if ship_wheel else 'missing'} wheel: validate exit {v_code}, "
           f"build exit {b_code}, output {shipped}")
     if v_code != 0:
+        # Its own code (#489): sharing 4 with the build check let --ship-wheel
+        # pass on either branch.
         return fail("validate rejects the package; the validate-is-not-a-gate trap this "
-                    "example names is gone", 4)
+                    "example names is gone", 9)
     if b_code == 0 or shipped:
         return fail(f"build accepted the package (exit {b_code}, output {shipped}); "
                     "only build can reject a wheel the manifest names but the source lacks", 4)

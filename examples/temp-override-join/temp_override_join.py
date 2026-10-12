@@ -30,15 +30,18 @@ made active and every part selected, ``select_all(action='DESELECT')``
 leaves ``context.active_object`` set to the target while
 ``selected_objects`` is empty, so an ``if obj is None`` guard passes on a
 selection that is gone. The scene state is then reset to no active object
-and nothing selected, as before. ``--clear-active-on-deselect`` models the
-wrong belief (deselect clears the active object) and exits 13.
+and nothing selected, as before. ``--clear-active-on-deselect`` is a
+self-check, not a falsifier: it clears the active object itself and shows
+that exit 13 reports it. No deselection Blender offers clears the active
+object (that is the contract), so the happy path is the witness: if Blender
+ever changed, the default run would exit 13 (#489).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python temp_override_join.py --                 # check only
     blender --background --python temp_override_join.py -- --no-override   # must fail
-    blender --background --python temp_override_join.py -- --clear-active-on-deselect  # 13
+    blender --background --python temp_override_join.py -- --clear-active-on-deselect  # 13, self-check
     blender --background --python temp_override_join.py -- --output j.png  # + render
 """
 import argparse
@@ -380,7 +383,7 @@ def check_active_survives_deselect(objs, clear_active=False):
         ob.select_set(True)
     bpy.ops.object.select_all(action='DESELECT')
     if clear_active:
-        view_layer.objects.active = None  # the wrong mental model, made true
+        view_layer.objects.active = None  # self-check of the exit-13 report, not Blender
     active = bpy.context.active_object
     if active is None:
         active_name = None  # what the wrong mental model predicts
@@ -566,7 +569,8 @@ def main():
     p.add_argument("--no-override", action="store_true",
                    help="join without temp_override (must fail)")
     p.add_argument("--clear-active-on-deselect", action="store_true",
-                   help="clear the active object after deselect-all (must fail, exit 13)")
+                   help="self-check: clear the active object after deselect-all "
+                        "and show exit 13 reports it (not a Blender falsifier)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
