@@ -9,7 +9,7 @@
 The skill, rule and example work planned for what the plugin teaches, separate from the
 showcase pool further down. Each item is an open issue; nothing here is pinned to a version.
 
-- **New skills:** `porting-to-blender-5`, one index of every 4.x to 5.x break the pack covers ([#466](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/466)); `gpu-drawing` plus a no-`bgl` rule, since `bgl` is gone in 5.x ([#465](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/465)); teach the API contracts that shipped examples prove but no skill covers yet, such as Grease Pencil v3, the 5.x compositor, constraints and image pixels ([#456](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/456))
+- **New skills:** `porting-to-blender-5`, one index of every 4.x to 5.x break the pack covers ([#466](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/466)); teach the API contracts that shipped examples prove but no skill covers yet, such as Grease Pencil v3, the 5.x compositor, constraints and image pixels ([#456](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/456))
 - **Skill corrections:** the full Principled BSDF v2 socket rename table in `procedural-materials-and-shaders` ([#382](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/382))
 - **New rules:** flag the mesh-normals APIs removed in 4.1 (`use_auto_smooth`, `calc_normals_split`, `free_normals_split`) ([#379](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/379))
 - **Examples for skills that have none:** check-only examples for `operators`, `ui-panels`, `addon-scaffolding` and `bl-info-migration` ([#378](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/378)); a skill-to-example index and one machine-readable examples manifest with version support ([#377](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/377))
@@ -38,7 +38,8 @@ derives the actual version from conventional-commit types.
 | AI asset pipeline: high-to-low bake | 16 | 9 | 3 | 27 | Shipped |
 | Extension runtime and packaging | 17 | 9 | 3 | 28 | Shipped (v0.146.0) |
 | Timers, modal operators and threading | 18 | 9 | 3 | 29 | Shipped (v0.147.0) |
-| AI asset pipeline: live-session bridge (spike) | - | - | - | - | Upcoming |
+| GPU drawing without `bgl` | 19 | 10 | 3 | 29 | Shipped |
+| Live-session bridge (opt-in `blender-live-session` plugin, upstream Blender Lab MCP) | - | - | - | - | Shipped |
 | Stable (1.0) | — | — | — | — | Upcoming; criteria below |
 
 ## What "Stable (1.0)" means

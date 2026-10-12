@@ -37,7 +37,8 @@
     "skills/depsgraph-and-evaluated-data/SKILL.md",
     "skills/drivers-and-app-handlers/SKILL.md",
     "skills/bl-info-migration/SKILL.md",
-    "skills/vse-python/SKILL.md"
+    "skills/vse-python/SKILL.md",
+    "skills/gpu-drawing-and-overlays/SKILL.md"
   ],
   "rules": [
     "rules/prefer-data-over-ops-in-loops.mdc",
@@ -48,6 +49,7 @@
     "rules/use-foreach-set-for-bulk-data.mdc",
     "rules/validate-imported-mesh-scale.mdc",
     "rules/no-unapplied-modifiers-on-export.mdc",
-    "rules/use-correct-axis-rna-per-exporter.mdc"
+    "rules/use-correct-axis-rna-per-exporter.mdc",
+    "rules/no-bgl.mdc"
   ]
 }

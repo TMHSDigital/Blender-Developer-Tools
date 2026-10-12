@@ -1184,6 +1184,52 @@
     }
   },
   {
+    "name": "gpu-offscreen-draw",
+    "path": "examples/gpu-offscreen-draw/",
+    "script": "examples/gpu-offscreen-draw/gpu_offscreen_draw.py",
+    "skills": [
+      "gpu-drawing-and-overlays"
+    ],
+    "render": false,
+    "min_version": "5.2",
+    "run": "blender --background --python examples/gpu-offscreen-draw/gpu_offscreen_draw.py",
+    "summary": "Check-only witness for drawing with the `gpu` module, the replacement for the `bgl` module that 5.x removed.",
+    "falsifiers": [
+      {
+        "args": [
+          "--skip-blend"
+        ],
+        "expect_exit": 5,
+        "min_version": "5.2"
+      },
+      {
+        "args": [
+          "--thin-line"
+        ],
+        "expect_exit": 6,
+        "min_version": "5.2"
+      },
+      {
+        "args": [
+          "--expect-bgl"
+        ],
+        "expect_exit": 7,
+        "min_version": "5.2"
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "`gpu.init()` raised under `--background`",
+      "4": "Opaque quad pixel coverage wrong",
+      "5": "Half-alpha draw did not blend (`--skip-blend`)",
+      "6": "Polyline thickness is not `lineWidth` ± 1 (`--thin-line`)",
+      "7": "`bgl` presence differs from the expectation (`--expect-bgl`)",
+      "77": "Smoke skip: Blender older than 5.2 has no `gpu.init`"
+    }
+  },
+  {
     "name": "grease-pencil-rosette",
     "path": "examples/grease-pencil-rosette/",
     "script": "examples/grease-pencil-rosette/grease_pencil_rosette.py",

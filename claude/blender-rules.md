@@ -11,6 +11,12 @@ Flag bmesh.new() calls without a paired bm.free() in a try/finally block. Blende
 
 Applies to: `**/*.py`. Full rule: [`rules/always-free-bmesh.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/always-free-bmesh.mdc).
 
+## no-bgl
+
+Flag `import bgl` and any `bgl.` call. The `bgl` OpenGL wrapper was deprecated in 3.x and is gone in Blender 5.x (`importlib.util.find_spec('bgl')` is `None` on 5.0, 5.1 and 5.2), so an add-on that imports it fails to register. Draw with the `gpu` module, `gpu.state` and `gpu_extras.batch` instead; see the gpu-drawing-and-overlays skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/no-bgl.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-bgl.mdc).
+
 ## no-unapplied-modifiers-on-export
 
 Flag an export call on objects that still carry unapplied modifiers when the export arguments do not request evaluated geometry. The engine then receives the authored cage, not the modifier result.

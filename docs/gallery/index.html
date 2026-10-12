@@ -62,7 +62,7 @@
     <h1>Examples and Showcase</h1>
     <p>Runnable Blender Python examples, each run headless on Blender 5.2 LTS and 4.5 LTS in CI, so every render reflects code that actually runs — shown beside budget-conformance showcase props.</p>
     <details class="check-only" id="check-only">
-      <summary>56 rendered &middot; 10 check-only examples (data contracts with nothing to see)</summary>
+      <summary>56 rendered &middot; 11 check-only examples (data contracts with nothing to see)</summary>
       <div>
         A check-only example asserts a fact no render can show, such as a datablock name,
         an RNA attribute, a post-exit sidecar or a topology count. It runs in the same
@@ -73,6 +73,7 @@
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/exit-pre-sidecar/">exit-pre-sidecar</a>: <code>bpy.app.handlers.exit_pre</code> writes <code>$BDT_SMOKE_SIDECAR</code> as Blender dies.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle/">extension-package-lifecycle</a>: Takes templates/extension-addon-template through what an extension meets after its first run.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-bundle-roundtrip/">gn-bundle-roundtrip</a>: Combine Bundle / Separate Bundle packing a cube plus Scale, Offset, and Mark — witnessing <code>geometry-nodes-python</code> item-name round-trip, not tree structure.</li>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gpu-offscreen-draw/">gpu-offscreen-draw</a>: Check-only witness for drawing with the <code>gpu</code> module, the replacement for the <code>bgl</code> module that 5.x removed.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-automasking-settings/">mesh-automasking-settings</a>: Pathology witness for the 5.2 move of sculpt automasking RNA off <code>Brush</code> into <code>MeshAutomaskingSettings</code>.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate/">ngon-triangulate</a>: Synthesizes one hexagon by dissolving a cube edge, then asserts the hygiene / tangent contracts on that defective mesh.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading/">timers-modal-threading</a>: Proves the event-loop contracts behind long-running add-on work.</li>
