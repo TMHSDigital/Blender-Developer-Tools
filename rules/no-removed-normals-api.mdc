@@ -1,0 +1,92 @@
+---
+description: Flag the mesh normals API removed in Blender 4.1 — `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()`, `free_normals_split()`, `create_normals_split()`. Each raises AttributeError on 4.5 LTS and 5.x. Use `Mesh.set_sharp_from_angle`, `object.shade_auto_smooth`, and `Mesh.corner_normals` (always current) instead.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No removed normals API (pre-4.1 auto smooth)
+
+Blender 4.1 removed auto smooth as a mesh setting and made normals always
+current. The old calls are among the most common errors in generated
+Blender code, because nearly every pre-4.1 import, cleanup and export
+script used them. On 4.5 LTS and 5.x each one raises:
+
+```text
+AttributeError: 'Mesh' object has no attribute 'use_auto_smooth'
+```
+
+Measured on 4.5.14 and 5.2.1: none of `use_auto_smooth`,
+`auto_smooth_angle`, `calc_normals_split`, `free_normals_split` and
+`create_normals_split` exists on `bpy.types.Mesh`.
+
+## What this rule flags
+
+- `.use_auto_smooth` (read or assignment)
+- `.auto_smooth_angle`
+- `.calc_normals_split(`, `.free_normals_split(`, `.create_normals_split(`
+- Reading `loop.normal` after a `calc_normals_split()` call, a pattern whose
+  first line already fails
+
+## Wrong
+
+```python
+import math
+import bpy
+
+me = obj.data
+me.use_auto_smooth = True
+me.auto_smooth_angle = math.radians(30)
+me.calc_normals_split()
+normals = [loop.normal.copy() for loop in me.loops]
+me.free_normals_split()
+```
+
+## Right
+
+```python
+import math
+import bpy
+
+me = obj.data
+# Destructive auto smooth: marks edges sharper than the angle as sharp
+# AND sets every face smooth (a flat mesh comes out smooth-shaded).
+me.set_sharp_from_angle(angle=math.radians(30))
+# Always current; no calc call, nothing to free.
+normals = [n.vector.copy() for n in me.corner_normals]
+```
+
+For a non-destructive equivalent, `bpy.ops.object.shade_auto_smooth(angle=...)`
+adds a "Smooth by Angle" geometry-nodes modifier (measured on 5.2.1). Under
+`--background --factory-startup` on 4.5.14 it returned `{'CANCELLED'}` and
+added nothing, so headless scripts that must also run on 4.5 should use
+`set_sharp_from_angle`.
+
+| Removed | Replacement |
+| --- | --- |
+| `mesh.use_auto_smooth = True` + `auto_smooth_angle` | `mesh.set_sharp_from_angle(angle=...)`, or the `shade_auto_smooth` operator |
+| `mesh.calc_normals_split()` then `loop.normal` | `mesh.corner_normals[i].vector` |
+| `mesh.free_normals_split()` | nothing: delete the call |
+| `mesh.create_normals_split()` | nothing; custom normals via `mesh.normals_split_custom_set(...)` |
+| face/vertex normal reads | `mesh.polygon_normals`, `mesh.vertex_normals` |
+
+`mesh.normals_domain` (`'POINT'`, `'FACE'` or `'CORNER'`) says which domain
+the normals actually vary on. Read it instead of tracking an auto-smooth
+flag.
+
+## Verified
+
+[`examples/mesh-normals-after-41/`](../examples/mesh-normals-after-41/), on
+4.5.14 and 5.2.1:
+
+- The pre-4.1 code raises `AttributeError`.
+- `set_sharp_from_angle(30°)` on a flat 16-sided cylinder marks the 32
+  cap-rim edges and smooths all 18 faces.
+- A rim vertex has two corner normals, and three once the faces are
+  flattened again, with no recompute call.
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.Mesh.html
+- https://docs.blender.org/api/4.5/bpy.types.Mesh.html

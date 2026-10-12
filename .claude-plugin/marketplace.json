@@ -1,0 +1,24 @@
+{
+  "name": "blender-developer-tools",
+  "owner": {
+    "name": "TMHSDigital",
+    "url": "https://github.com/TMHSDigital"
+  },
+  "metadata": {
+    "description": "Blender Python skills and rules for AI agents (blender-developer-tools), plus the opt-in Blender Lab MCP live session (blender-live-session)."
+  },
+  "plugins": [
+    {
+      "name": "blender-developer-tools",
+      "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
+      "source": "./",
+      "version": "0.155.0"
+    },
+    {
+      "name": "blender-live-session",
+      "description": "Opt-in companion to blender-developer-tools: registers the official Blender Lab MCP server so the agent can inspect and drive a running Blender 5.1+ (needs uv and the MCP add-on), plus a skill for reading the scene before mutating it and proving changes headless",
+      "source": "./live-session",
+      "version": "0.155.0"
+    }
+  ]
+}
