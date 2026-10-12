@@ -4,8 +4,10 @@ Run: python tests/test_plugin_content_changed.py -v
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -37,7 +39,8 @@ class PluginContentChanged(unittest.TestCase):
         self.tmp.cleanup()
 
     def changed(self):
-        return subprocess.run([BASH, SCRIPT.as_posix(), "v1"], cwd=self.repo).returncode == 0
+        env = {**os.environ, "PYTHON": Path(sys.executable).as_posix()}
+        return subprocess.run([BASH, SCRIPT.as_posix(), "v1"], cwd=self.repo, env=env).returncode == 0
 
     def commit(self, rel, text):
         path = self.repo / rel
@@ -57,6 +60,14 @@ class PluginContentChanged(unittest.TestCase):
     def test_skill_edit_is_content(self):
         self.commit("skills/a/SKILL.md", "two\n")
         self.assertTrue(self.changed())
+
+    def test_mcp_config_manifests_and_license_count(self):
+        # #494: v0.153.0 shipped the MCP registration as "no plugin changes".
+        for rel in ("mcp.json", ".claude-plugin/plugin.json", "LICENSE"):
+            with self.subTest(rel=rel):
+                git(self.repo, "reset", "-q", "--hard", "v1")
+                self.commit(rel, "{}\n")
+                self.assertTrue(self.changed())
 
     def test_rule_and_snippet_dirs_count(self):
         self.commit("snippets/x.py", "print(1)\n")

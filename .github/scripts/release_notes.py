@@ -7,7 +7,8 @@
 Splits the commits in two (#455):
 
 - **For agents and users**: commits that touched what the plugin ships
-  (skills/, rules/, snippets/, templates/, claude/), grouped Features, Fixes,
+  (scripts/build_plugin_dist.py DIRS + FILES: skills/, rules/, snippets/,
+  templates/, claude/, the manifests, mcp.json, LICENSE), grouped Features, Fixes,
   Other. This is what a plugin user gets from the update, so it leads.
 - **Maintenance**: everything else (CI, tests, the site and gallery,
   showcase pieces, examples, docs), in a collapsed <details> block.
@@ -24,6 +25,10 @@ import argparse
 import re
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))
+from build_plugin_dist import DIRS, FILES  # noqa: E402  (the one list of shipped paths)
 
 REPO_URL = "https://github.com/TMHSDigital/Blender-Developer-Tools"
 GROUPS = (
@@ -31,11 +36,13 @@ GROUPS = (
     ("Fixes", re.compile(r"^fix(\(.+?\))?!?:", re.I)),
 )
 SKIP = re.compile(r"^chore: bump version to ", re.I)
-# What the plugin ships (scripts/build_plugin_dist.py DIRS): a change here is
-# a change a plugin user receives.
-USER_PATHS = ("skills/", "rules/", "snippets/", "templates/", "claude/")
-NO_USER_CHANGES = ("No changes to the plugin content (skills, rules, snippets, templates) "
-                   "in this release.")
+# What the plugin ships (scripts/build_plugin_dist.py DIRS + FILES, #494): a
+# change here is a change a plugin user receives, including the manifests and
+# mcp.json.
+USER_DIRS = tuple(d + "/" for d in DIRS)
+USER_FILES = frozenset(FILES)
+NO_USER_CHANGES = ("No changes to the plugin content (skills, rules, snippets, templates, "
+                   "manifests, MCP config) in this release.")
 
 
 def commits(since: str | None) -> list[tuple[str, str, list[str]]]:
@@ -55,7 +62,7 @@ def commits(since: str | None) -> list[tuple[str, str, list[str]]]:
 
 
 def is_user_facing(files: list[str]) -> bool:
-    return any(f.startswith(USER_PATHS) for f in files)
+    return any(f.startswith(USER_DIRS) or f in USER_FILES for f in files)
 
 
 def _line(sha: str, subject: str) -> str:

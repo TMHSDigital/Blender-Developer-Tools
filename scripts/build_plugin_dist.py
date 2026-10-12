@@ -39,6 +39,10 @@ DIRS = ("skills", "claude", "rules", "snippets", "templates")
 FILES = ("LICENSE", ".claude-plugin/plugin.json",
          ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json",
          "assets/favicon.svg", "mcp.json")
+# Every repo path the plugin ships. release.yml's plugin-content-changed.sh and
+# release_notes.py read this (--list-paths), so a change to any shipped file,
+# manifests and mcp.json included, counts as a plugin change (#494).
+SHIPPED = DIRS + FILES
 MAX_BYTES = 2_000_000
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc")
 
@@ -189,7 +193,12 @@ def main(argv=None) -> int:
                     help="replace a non-empty --out directory")
     ap.add_argument("--fingerprint", type=Path, metavar="DIR",
                     help="print the content fingerprint of a built tree and exit")
+    ap.add_argument("--list-paths", action="store_true",
+                    help="print every repo path the plugin ships, one per line, and exit")
     a = ap.parse_args(argv)
+    if a.list_paths:
+        print("\n".join(SHIPPED))
+        return 0
     if a.fingerprint:
         print(fingerprint(a.fingerprint))
         return 0

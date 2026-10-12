@@ -62,10 +62,12 @@ class Render(unittest.TestCase):
 
     def test_plugin_paths(self):
         for path in ("skills/a/SKILL.md", "rules/a.mdc", "snippets/a.py", "templates/t/x.py",
-                     "claude/blender-rules.md"):
+                     "claude/blender-rules.md", "mcp.json", ".claude-plugin/plugin.json",
+                     ".cursor-plugin/plugin.json", "LICENSE"):
             self.assertTrue(rn.is_user_facing([path]), path)
         for path in ("examples/a/a.py", "showcase/a/README.md", "docs/gallery/index.html",
-                     "README.md", ".github/scripts/release_notes.py", "skillsfoo/x"):
+                     "README.md", ".github/scripts/release_notes.py", "skillsfoo/x",
+                     "mcp.json.bak", "examples/LICENSE"):
             self.assertFalse(rn.is_user_facing([path]), path)
 
     def test_bump_commits_are_skipped(self):
