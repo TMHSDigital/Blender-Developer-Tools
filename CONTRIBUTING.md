@@ -288,7 +288,7 @@ The drift-check workflow enforces these on every push and PR.
 
 ## Aggregate Counts
 
-`README.md` declares aggregate counts (e.g. "19 skills, 11 rules, 3 templates, 29 snippets, 68 examples, and 80 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
+`README.md` declares aggregate counts (e.g. "19 skills, 11 rules, 3 templates, 29 snippets, 69 examples, and 80 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
 
 ## Pull Request Process
 

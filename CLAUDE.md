@@ -21,7 +21,7 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 19 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 11 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 29 total
-examples/<name>/               - Runnable smoke-gated examples, 68 total (+ gallery.json)
+examples/<name>/               - Runnable smoke-gated examples, 69 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 80 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
 scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
@@ -112,13 +112,13 @@ AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lo
 
 Extensions runtime: `extension-user-data.py` (`extension_path_user` settings file and an `online_access` guard). Long-running work: `thread-queue-timer.py` (worker thread, `queue.Queue`, main-thread drain timer).
 
-## Examples (68)
+## Examples (69)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
 `--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
-**56 of the 68 ship a render in the site gallery** at `docs/gallery/`. The other
-twelve are **check-only**: they carry no `--output` path, no gallery entry, and no
+**56 of the 69 ship a render in the site gallery** at `docs/gallery/`. The other
+thirteen are **check-only**: they carry no `--output` path, no gallery entry, and no
 hero asset. The criterion is whether the contract is expressible in pixels. An
 example is check-only when its witness is a data or state fact that no scene
 redesign can make visible — a datablock name, an RNA attribute's presence, a

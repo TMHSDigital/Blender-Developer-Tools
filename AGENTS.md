@@ -36,7 +36,7 @@ Blender-Developer-Tools/
   rules/<rule-name>.mdc          # 11 rule files
   templates/<template-name>/     # 3 starter templates
   snippets/<snippet-name>.py     # 29 standalone Python snippets
-  examples/<name>/               # 68 runnable smoke-gated examples (+ gallery.json)
+  examples/<name>/               # 69 runnable smoke-gated examples (+ gallery.json)
   examples/gallery_framing.py    # shared Layer 1 framing measurement (render path only)
   showcase/<name>/               # budget-conformance props (sibling of examples/)
   showcase/gallery.json          # this tree's gallery index; merged into docs/gallery/

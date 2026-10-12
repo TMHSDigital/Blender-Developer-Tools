@@ -272,6 +272,7 @@ Do not reach for `property_unset()` here. It resets a registered RNA property to
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
+- [`addon-register-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/addon-register-lifecycle): Check-only witness for the first things every add-on author writes. Falsify: `--drop-manifest` (exit 3).
 - [`cross-version-property-delete`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete): Custom ID properties are removed with del, not property_unset. Falsify: `--skip-delete` (exit 7).
 
 <!-- examples:end -->

@@ -1,5 +1,6 @@
 {
   "_comment": "Which skills each example proves. Hand-edited; scripts/build_examples_index.py turns it into examples/index.json and each SKILL.md's Runnable examples section. An empty list means no skill covers the subject yet.",
+  "addon-register-lifecycle": ["addon-scaffolding", "bl-info-migration", "ui-panels", "custom-properties"],
   "armature-bend": ["depsgraph-and-evaluated-data", "mesh-editing-and-bmesh"],
   "attribute-domain-shear": ["mesh-editing-and-bmesh"],
   "bake-normal-high-to-low": ["bake-high-to-low"],

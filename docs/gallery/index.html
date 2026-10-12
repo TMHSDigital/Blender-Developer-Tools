@@ -62,12 +62,13 @@
     <h1>Examples and Showcase</h1>
     <p>Runnable Blender Python examples, each run headless on Blender 5.2 LTS and 4.5 LTS in CI, so every render reflects code that actually runs — shown beside budget-conformance showcase props.</p>
     <details class="check-only" id="check-only">
-      <summary>56 rendered &middot; 12 check-only examples (data contracts with nothing to see)</summary>
+      <summary>56 rendered &middot; 13 check-only examples (data contracts with nothing to see)</summary>
       <div>
         A check-only example asserts a fact no render can show, such as a datablock name,
         an RNA attribute, a post-exit sidecar or a topology count. It runs in the same
         smoke workflow on every PR, with its own falsifier; its source is on GitHub.
         <ul>
+          <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/addon-register-lifecycle/">addon-register-lifecycle</a>: Check-only witness for the first things every add-on author writes.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/coincident-vert-weld/">coincident-vert-weld</a>: Synthesizes two cubes occupying the same space as one mesh, then asserts the duplicates exist before asserting they cross glTF export.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/eval-mesh-datablock-name/">eval-mesh-datablock-name</a>: Pathology witness for the 5.2 change in <code>Object.evaluated_get(depsgraph).data.name</code>.</li>
           <li><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/exit-pre-sidecar/">exit-pre-sidecar</a>: <code>bpy.app.handlers.exit_pre</code> writes <code>$BDT_SMOKE_SIDECAR</code> as Blender dies.</li>
