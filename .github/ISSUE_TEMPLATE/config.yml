@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Question ("does skill X cover Y?")
+    url: https://github.com/TMHSDigital/Blender-Developer-Tools/discussions/categories/q-a
+    about: Ask in Discussions Q&A. Use an issue for a confirmed bug or a concrete content request.
+  - name: Show what your agent built
+    url: https://github.com/TMHSDigital/Blender-Developer-Tools/discussions/categories/show-and-tell
+    about: Share an add-on, script or render your agent produced with the pack.
   - name: Security vulnerability
     url: https://github.com/TMHSDigital/Blender-Developer-Tools/security/advisories/new
     about: Report a security issue privately via GitHub Security Advisory. Do not open a public issue for vulnerabilities.
