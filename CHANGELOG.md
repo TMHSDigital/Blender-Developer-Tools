@@ -4,14 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [0.153.0] - 2026-10-12
 
-No changes to the plugin content (skills, rules, snippets, templates) in this release.
+### For agents and users
 
-<details>
-<summary>Maintenance (1 commit): CI, tests, site, examples, showcase, docs</summary>
+**Features**
 
 - feat(plugin): register the Blender Lab MCP server for live sessions ([`4be2cea`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4be2cea9e2526482327502bdba15d9512c973f65))
 
-</details>
+_Corrected after release: this entry first said the release had no plugin content changes (#494)._
 
 [Release v0.153.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.153.0)
 
