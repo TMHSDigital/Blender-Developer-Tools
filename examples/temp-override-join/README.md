@@ -76,7 +76,7 @@ against it.
 | 10 | `--output` framing gate (`gallery_framing`) |
 | 11 | `--output` asset-quality floors (`gallery_asset_quality`) |
 | 12 | `--output` produced no file |
-| 13 | After deselect-all the target is not still active-but-unselected, or something is still selected (`--clear-active-on-deselect` lands here) |
+| 13 | After deselect-all the target is not still active-but-unselected, or something is still selected (the `--clear-active-on-deselect` self-check lands here) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

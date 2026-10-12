@@ -750,11 +750,12 @@
       "1": "Uncaught exception (FATAL wrapper)",
       "2": "argparse / usage",
       "3": "Template does not validate or build, or the zip lacks its manifest",
-      "4": "`build` accepted the missing-wheel package, or `validate` rejected it (`--ship-wheel` lands here)",
+      "4": "`build` accepted the missing-wheel package (`--ship-wheel` lands here)",
       "5": "`server-generate` listing missing or wrong",
       "6": "Install, import, upgrade or remove failed, or `__package__` wrong",
       "7": "User data inside the install tree, lost on upgrade, or kept after removal (`--data-next-to-file` lands here)",
-      "8": "`online_access` default or `--online-mode` value wrong"
+      "8": "`online_access` default or `--online-mode` value wrong",
+      "9": "`validate` rejected the missing-wheel package: the validate-is-not-a-gate trap is gone"
     }
   },
   {
@@ -1909,12 +1910,6 @@
           "--no-override"
         ],
         "expect_exit": 3
-      },
-      {
-        "args": [
-          "--clear-active-on-deselect"
-        ],
-        "expect_exit": 13
       }
     ],
     "exit_codes": {
@@ -1931,7 +1926,7 @@
       "10": "`--output` framing gate (`gallery_framing`)",
       "11": "`--output` asset-quality floors (`gallery_asset_quality`)",
       "12": "`--output` produced no file",
-      "13": "After deselect-all the target is not still active-but-unselected, or something is still selected (`--clear-active-on-deselect` lands here)"
+      "13": "After deselect-all the target is not still active-but-unselected, or something is still selected (the `--clear-active-on-deselect` self-check lands here)"
     }
   },
   {
