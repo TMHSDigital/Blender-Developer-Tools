@@ -85,7 +85,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 
 - `argparse` parsing of args after the `--` separator
 - Iteration over every mesh object via `bpy.data.objects`
-- Modifier application via `bpy.context.temp_override` (not the deprecated context-dict form)
+- Modifier stacks baked with `Mesh.new_from_object` on the evaluated object (no operator, so stack order holds); `bpy.context.temp_override` only where an operator is genuinely needed
 - glTF export via `bpy.ops.export_scene.gltf`
 - Explicit exit codes for CI integration
 

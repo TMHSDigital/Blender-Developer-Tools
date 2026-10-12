@@ -163,7 +163,7 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 ## References
 
 - `bpy.types.SequenceEditor`: https://docs.blender.org/api/current/bpy.types.SequenceEditor.html
-- `bpy.types.Strip` (5.x name of `Sequence`): https://docs.blender.org/api/current/bpy.types.Strip.html
-- 4.5 LTS `Sequence`: https://docs.blender.org/api/4.5/bpy.types.Sequence.html
+- `bpy.types.Strip` (the type was `Sequence` through 4.3; renamed in 4.4, so 4.5 LTS and 5.x both use `Strip`, and the real 4.5-vs-5.x split is `.sequences` vs `.strips`): https://docs.blender.org/api/current/bpy.types.Strip.html
+- 4.5 LTS `Strip`: https://docs.blender.org/api/4.5/bpy.types.Strip.html
 - 4.5 LTS `SequenceEditor`: https://docs.blender.org/api/4.5/bpy.types.SequenceEditor.html
 - 5.1 `SequenceEditor`: https://docs.blender.org/api/5.1/bpy.types.SequenceEditor.html
