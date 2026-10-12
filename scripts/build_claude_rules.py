@@ -10,9 +10,9 @@ Wrong/Right examples) to four places:
   second clone; Claude loads it when writing or reviewing bpy code.
 - claude/blender-rules.md: for always-on use, imported from a project's
   CLAUDE.md with ``@path/to/Blender-Developer-Tools/claude/blender-rules.md``.
-- agents/AGENTS.md: for agents that read AGENTS.md (Codex, Windsurf, Gemini
+- exports/AGENTS.md: for agents that read AGENTS.md (Codex, Windsurf, Gemini
   CLI, Copilot's coding agent); append it to a project's AGENTS.md (#376).
-- agents/copilot/blender-python.instructions.md: a GitHub Copilot path-scoped
+- exports/copilot/blender-python.instructions.md: a GitHub Copilot path-scoped
   instructions file (``applyTo: "**/*.py"``, the rules' own scope) for a
   project's .github/instructions/.
 
@@ -32,8 +32,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "claude" / "blender-rules.md"
 SKILL_OUT = REPO / "claude" / "skills" / "blender-rules" / "SKILL.md"
-AGENTS_OUT = REPO / "agents" / "AGENTS.md"
-COPILOT_OUT = REPO / "agents" / "copilot" / "blender-python.instructions.md"
+AGENTS_OUT = REPO / "exports" / "AGENTS.md"
+COPILOT_OUT = REPO / "exports" / "copilot" / "blender-python.instructions.md"
 COPILOT_FRONT = """---
 applyTo: "**/*.py"
 ---
@@ -102,7 +102,7 @@ def main() -> int:
             print(f"{', '.join(stale)} stale; run python scripts/build_claude_rules.py",
                   file=sys.stderr)
             return 1
-        print("rules exports (claude/, agents/AGENTS.md, agents/copilot/) are up to date")
+        print("rules exports (claude/, exports/AGENTS.md, exports/copilot/) are up to date")
         return 0
     for path, new in outputs().items():
         path.parent.mkdir(parents=True, exist_ok=True)

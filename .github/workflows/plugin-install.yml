@@ -1,0 +1,85 @@
+name: Plugin install check
+
+# ROADMAP 1.0 criterion: "Install paths that work and are tested" (#497).
+# Builds the plugin-dist tree, validates every manifest with Claude Code's own
+# validator in --strict mode, then installs both plugins into a throwaway
+# config directory and checks they are listed and enabled. On the weekly run
+# it also installs from the published plugin-dist branch, which is what users
+# actually add. No account or API key is involved: plugin commands are local.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * 3"   # weekly, Wednesday 10:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - ".claude-plugin/**"
+      - ".cursor-plugin/**"
+      - "live-session/**"
+      - "skills/**"
+      - "claude/**"
+      - "exports/**"
+      - "scripts/build_plugin_dist.py"
+      - ".github/workflows/plugin-install.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".claude-plugin/**"
+      - ".cursor-plugin/**"
+      - "live-session/**"
+      - "skills/**"
+      - "claude/**"
+      - "exports/**"
+      - "scripts/build_plugin_dist.py"
+      - ".github/workflows/plugin-install.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: Validate and install the plugins (Claude Code)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLAUDE_CODE_VERSION: "2.1.296"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install the Claude Code CLI (pinned)
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+
+      - name: Build plugin-dist and validate it strictly
+        run: |
+          set -euo pipefail
+          python3 scripts/build_plugin_dist.py --out "$RUNNER_TEMP/dist"
+          for target in "$RUNNER_TEMP/dist" "$RUNNER_TEMP/dist/live-session" \
+                        "$RUNNER_TEMP/dist/.claude-plugin/marketplace.json"; do
+            claude plugin validate --strict "$target"
+          done
+
+      - name: Install both plugins from the build into a clean profile
+        env:
+          CLAUDE_CONFIG_DIR: ${{ runner.temp }}/claude-cfg-local
+        run: |
+          set -euo pipefail
+          claude plugin marketplace add "$RUNNER_TEMP/dist"
+          claude plugin install blender-developer-tools@blender-developer-tools
+          claude plugin install blender-live-session@blender-developer-tools
+          list=$(claude plugin list)
+          echo "$list"
+          for p in blender-developer-tools@blender-developer-tools blender-live-session@blender-developer-tools; do
+            echo "$list" | grep -qF "$p" || { echo "::error::$p is not listed after install"; exit 1; }
+          done
+
+      - name: Install from the published plugin-dist branch (weekly)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          CLAUDE_CONFIG_DIR: ${{ runner.temp }}/claude-cfg-published
+        run: |
+          set -euo pipefail
+          claude plugin marketplace add "TMHSDigital/Blender-Developer-Tools@plugin-dist"
+          claude plugin install blender-developer-tools@blender-developer-tools
+          claude plugin install blender-live-session@blender-developer-tools
+          claude plugin list

@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # the Blender Lab MCP server (launched with uvx from a pinned upstream commit;
 # GPL, so referenced, never vendored) and its skill. It is opt-in, so the core
 # plugin starts no server (#483).
-DIRS = ("skills", "claude", "agents", "rules", "snippets", "templates", "live-session")
+DIRS = ("skills", "claude", "exports", "rules", "snippets", "templates", "live-session")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
 # assets/favicon.svg is the Cursor manifest's "logo".
@@ -168,8 +168,9 @@ def verify(out: Path, size: int) -> list[str]:
             errors.append(f"{d.relative_to(out)} has no SKILL.md")
     if not (out / "claude" / "skills" / "blender-rules" / "SKILL.md").is_file():
         errors.append("blender-rules skill missing")
-    # The README's "Other agents" commands copy these (#376).
-    for rel in ("agents/AGENTS.md", "agents/copilot/blender-python.instructions.md"):
+    # The README's "Other agents" commands copy these (#376). Not agents/:
+    # Claude Code would load every agents/*.md in the plugin as a subagent.
+    for rel in ("exports/AGENTS.md", "exports/copilot/blender-python.instructions.md"):
         if not (out / rel).is_file():
             errors.append(f"{rel} missing (the README's other-agents commands copy it)")
     cursor = json.loads((out / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))

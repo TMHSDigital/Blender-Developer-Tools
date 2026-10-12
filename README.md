@@ -85,12 +85,12 @@ Neither agent needs a clone of `main`: both install the slim `plugin-dist` build
   # Skills: agents that read .agents/skills/ (Codex, Cursor project skills)
   mkdir -p .agents/skills && cp -r bdt/skills/* .agents/skills/
   # Rules: agents that read AGENTS.md (Codex, Windsurf, Gemini CLI, Copilot's coding agent)
-  cat bdt/agents/AGENTS.md >> AGENTS.md
+  cat bdt/exports/AGENTS.md >> AGENTS.md
   # Rules: GitHub Copilot path-scoped instructions (applies to **/*.py)
-  mkdir -p .github/instructions && cp bdt/agents/copilot/blender-python.instructions.md .github/instructions/
+  mkdir -p .github/instructions && cp bdt/exports/copilot/blender-python.instructions.md .github/instructions/
   ```
 
-  `agents/AGENTS.md` and the Copilot file are generated from `rules/` by `scripts/build_claude_rules.py`, and CI fails if they fall out of date. The plugin-dist build fails if either file is missing. The layouts follow each agent's documented conventions; CI does not run the agents themselves.
+  `exports/AGENTS.md` and the Copilot file are generated from `rules/` by `scripts/build_claude_rules.py`, and CI fails if they fall out of date. The plugin-dist build fails if either file is missing. The layouts follow each agent's documented conventions; CI does not run the agents themselves.
 
 ### Live Blender session (MCP)
 

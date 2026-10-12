@@ -4,6 +4,9 @@
     "name": "TMHSDigital",
     "url": "https://github.com/TMHSDigital"
   },
+  "metadata": {
+    "description": "Blender Python skills and rules for AI agents (blender-developer-tools), plus the opt-in Blender Lab MCP live session (blender-live-session)."
+  },
   "plugins": [
     {
       "name": "blender-developer-tools",
