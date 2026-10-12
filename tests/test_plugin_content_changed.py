@@ -63,7 +63,7 @@ class PluginContentChanged(unittest.TestCase):
 
     def test_mcp_config_manifests_and_license_count(self):
         # #494: v0.153.0 shipped the MCP registration as "no plugin changes".
-        for rel in ("mcp.json", ".claude-plugin/plugin.json", "LICENSE"):
+        for rel in ("live-session/mcp.json", ".claude-plugin/plugin.json", "LICENSE"):
             with self.subTest(rel=rel):
                 git(self.repo, "reset", "-q", "--hard", "v1")
                 self.commit(rel, "{}\n")

@@ -1,0 +1,74 @@
+name: Pinned MCP server check
+
+# The opt-in blender-live-session plugin launches the Blender Lab MCP server
+# from live-session/mcp.json: uvx, a full commit pin, and --exclude-newer so
+# its dependencies resolve to what was reviewed with that pin (#484). This
+# runs that exact command and speaks MCP over stdio (initialize, tools/list).
+# No Blender is needed: listing tools does not call them. It goes red when the
+# pin stops resolving (upstream history rewrite, repo move) or the server stops
+# starting, before plugin users find out.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 2"   # weekly, Tuesday 08:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - "live-session/**"
+      - "tests/check_mcp_server.py"
+      - ".github/workflows/mcp-server.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "live-session/**"
+      - "tests/check_mcp_server.py"
+      - ".github/workflows/mcp-server.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  handshake:
+    name: Install the pinned server and list its tools
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: python -m pip install "uv==0.8.5"
+
+      - name: Handshake with the server from live-session/mcp.json
+        run: python tests/check_mcp_server.py --timeout 300
+
+  report-scheduled-failure:
+    name: Report a failed weekly check
+    needs: handshake
+    if: always() && github.event_name == 'schedule' && needs.handshake.result != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Pinned MCP server no longer installs or starts"
+          body="Scheduled run: $RUN_URL
+
+          live-session/mcp.json no longer answers tools/list. Check the upstream repo at the pinned SHA and the dependency resolution under --exclude-newer, then bump or fix the pin (CLAUDE.md, Live MCP vs Headless Harness)."
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body" --label "bug,ci,priority: high"
+          fi

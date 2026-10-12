@@ -12,9 +12,14 @@ drift apart again. Checks, with .cursor-plugin/plugin.json as the reference:
 - keywords: the same set, apart from the agent-specific "cursor-plugin"
 - logo: the Cursor manifest names one, it exists, and the plugin-dist build
   ships it (scripts/build_plugin_dist.py FILES)
-- mcpServers: the same path in both plugin.json files, and every server in
-  that file runs the Blender Lab MCP from a full 40-hex commit pin, so a plugin
-  install never floats to an unreviewed upstream head
+- mcpServers: the core plugin declares none (the live session is opt-in,
+  #483). live-session/ (the blender-live-session plugin) declares the same
+  file in both of its manifests, and every server in it runs the Blender Lab
+  MCP from a full 40-hex commit pin with --exclude-newer, so neither the
+  server nor its dependencies float to unreviewed releases (#484)
+- live-session manifests: same name, description, version, homepage and
+  license as each other, the marketplace entries, and (homepage, license) the
+  core plugin
 
 Run: python tests/check_manifest_meta.py      (exit 0 ok, 1 on mismatch)
 """
@@ -27,6 +32,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+EXCLUDE_NEWER = re.compile(r"^\d{4}-\d{2}-\d{2}(T[\d:]+Z)?$")
 PINNED_MCP = re.compile(r"^git\+https://projects\.blender\.org/lab/blender_mcp\.git@[0-9a-f]{40}#subdirectory=mcp$")
 
 
@@ -86,21 +92,51 @@ def check() -> list[str]:
             errors.append(f"logo {logo!r} is not shipped in the plugin-dist build "
                           "(scripts/build_plugin_dist.py FILES)")
 
-    mcp = cursor.get("mcpServers")
-    if claude.get("mcpServers") != mcp:
-        errors.append(f".claude-plugin/plugin.json mcpServers {claude.get('mcpServers')!r} != {mcp!r}")
-    if not isinstance(mcp, str) or not (root / mcp).is_file():
-        errors.append(f".cursor-plugin/plugin.json mcpServers {mcp!r} is not a file in the repo")
+    for name, manifest in ((".cursor-plugin/plugin.json", cursor), (".claude-plugin/plugin.json", claude)):
+        if "mcpServers" in manifest:
+            errors.append(f"{name} declares mcpServers; the MCP server belongs to the opt-in "
+                          "live-session/ plugin (#483)")
+
+    live_cursor = load("live-session/.cursor-plugin/plugin.json")
+    live_claude = load("live-session/.claude-plugin/plugin.json")
+    live_ref = live_cursor.get("description")
+    market_live = {
+        ".cursor-plugin/marketplace.json": cursor_market,
+        ".claude-plugin/marketplace.json": claude_market,
+    }
+    for where, market in market_live.items():
+        entry = next((e for e in market.get("plugins", []) if e.get("name") == live_cursor.get("name")), None)
+        if entry is None:
+            errors.append(f"{where} does not list {live_cursor.get('name')!r}")
+        elif entry.get("description") != live_ref:
+            errors.append(f"{where} {live_cursor.get('name')} description differs from "
+                          "live-session/.cursor-plugin/plugin.json")
+    for key in ("name", "description", "version", "homepage", "license", "mcpServers"):
+        if live_claude.get(key) != live_cursor.get(key):
+            errors.append(f"live-session manifests disagree on {key}: "
+                          f"{live_claude.get(key)!r} != {live_cursor.get(key)!r}")
+    for key in ("homepage", "license", "version"):
+        if live_cursor.get(key) != cursor.get(key):
+            errors.append(f"live-session {key} {live_cursor.get(key)!r} != core {cursor.get(key)!r}")
+
+    mcp = live_cursor.get("mcpServers")
+    if not isinstance(mcp, str) or not (root / "live-session" / mcp).is_file():
+        errors.append(f"live-session mcpServers {mcp!r} is not a file in live-session/")
     else:
-        servers = load(mcp).get("mcpServers") or {}
+        rel = f"live-session/{mcp.removeprefix('./')}"
+        servers = load(rel).get("mcpServers") or {}
         if not servers:
-            errors.append(f"{mcp} declares no mcpServers")
+            errors.append(f"{rel} declares no mcpServers")
         for name, server in servers.items():
             args = server.get("args", [])
             src = args[args.index("--from") + 1] if "--from" in args[:-1] else ""
             if server.get("command") != "uvx" or not PINNED_MCP.match(src):
-                errors.append(f"{mcp} server {name!r} must run uvx --from the Blender Lab repo "
+                errors.append(f"{rel} server {name!r} must run uvx --from the Blender Lab repo "
                               "pinned to a full commit SHA")
+            newer = args[args.index("--exclude-newer") + 1] if "--exclude-newer" in args[:-1] else ""
+            if not EXCLUDE_NEWER.match(newer):
+                errors.append(f"{rel} server {name!r} must pass --exclude-newer <date> so its "
+                              "dependencies resolve to what was reviewed with the pin (#484)")
     return errors
 
 
@@ -110,7 +146,8 @@ def main() -> int:
         print(f"::error::{e}", file=sys.stderr)
     if errors:
         return 1
-    print("Manifest metadata consistent: description, homepage, license, keywords, logo, mcpServers")
+    print("Manifest metadata consistent: description, homepage, license, keywords, logo, "
+          "live-session plugin and its pinned MCP server")
     return 0
 
 

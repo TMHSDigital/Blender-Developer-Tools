@@ -54,6 +54,11 @@ subprocess.run([sys.executable, "scripts/site/build_site.py", "--repo-root", "."
 """
 
 
+# Checks that install from the network (uv + the upstream MCP server); they
+# have their own workflow (mcp-server.yml) and stay out of the offline run.
+NEEDS_NETWORK = {"check_mcp_server.py"}
+
+
 def commands() -> list[tuple[str, list[str] | str]]:
     py = sys.executable
     cmds: list[tuple[str, list[str] | str]] = [
@@ -61,6 +66,8 @@ def commands() -> list[tuple[str, list[str] | str]]:
         ("committed gallery matches its generator", GALLERY_DRIFT),
     ]
     for path in sorted((ROOT / "tests").glob("check_*.py")):
+        if path.name in NEEDS_NETWORK:
+            continue
         cmds.append((path.name, [py, str(path)]))
     for path in [*sorted((ROOT / "tests").glob("test_*.py")), ROOT / "tests" / "smoke" / "test_harness.py"]:
         cmds.append((path.name, [py, str(path)]))

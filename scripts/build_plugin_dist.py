@@ -6,8 +6,9 @@ plugin needs ~1 MB of it. This copies only what the plugin uses into --out,
 as a self-contained marketplace (its marketplace.json points at "./"):
 
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
-    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo, mcp.json,
-    and a short README
+    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo,
+    live-session/ (the opt-in blender-live-session plugin: its manifests,
+    mcp.json and skill), and a short README
 
     python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
     python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
@@ -30,15 +31,19 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DIRS = ("skills", "claude", "rules", "snippets", "templates")
+# live-session/ is the second plugin in the marketplace, blender-live-session:
+# the Blender Lab MCP server (launched with uvx from a pinned upstream commit;
+# GPL, so referenced, never vendored) and its skill. It is opt-in, so the core
+# plugin starts no server (#483).
+DIRS = ("skills", "claude", "rules", "snippets", "templates", "live-session")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
-# assets/favicon.svg is the Cursor manifest's "logo". mcp.json is both
-# manifests' "mcpServers": the Blender Lab MCP server, launched with uvx from
-# a pinned upstream commit (GPL, so it is referenced, never vendored).
+# assets/favicon.svg is the Cursor manifest's "logo".
 FILES = ("LICENSE", ".claude-plugin/plugin.json",
          ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json",
-         "assets/favicon.svg", "mcp.json")
+         "assets/favicon.svg")
+# marketplace.json entry -> source inside the dist tree.
+DIST_SOURCES = {"blender-developer-tools": "./", "blender-live-session": "./live-session"}
 # Every repo path the plugin ships. release.yml's plugin-content-changed.sh and
 # release_notes.py read this (--list-paths), so a change to any shipped file,
 # manifests and mcp.json included, counts as a plugin change (#494).
@@ -51,14 +56,16 @@ DIST_README = """# Blender Developer Tools (Claude Code plugin build)
 Generated from https://github.com/TMHSDigital/Blender-Developer-Tools by
 `scripts/build_plugin_dist.py` on every release. Do not edit this branch; it
 is force-pushed. It carries only what the plugin loads: skills, the
-`blender-rules` skill generated from `rules/`, snippets, templates, licenses,
-and `mcp.json`, which registers the official Blender Lab MCP server (needs `uv`,
-and the MCP add-on enabled in a running Blender 5.1+).
+`blender-rules` skill generated from `rules/`, snippets, templates and
+licenses. `live-session/` is a second, opt-in plugin, `blender-live-session`:
+it registers the official Blender Lab MCP server (needs `uv`, and the MCP
+add-on enabled in a running Blender 5.1+) and adds a skill for using it safely.
 Examples, the showcase and the gallery live on `main`.
 
 ```text
 /plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist
 /plugin install blender-developer-tools@blender-developer-tools
+/plugin install blender-live-session@blender-developer-tools   # optional
 ```
 
 Cursor: clone this branch into `~/.cursor/plugins/local/blender-developer-tools`
@@ -138,7 +145,7 @@ def build(out: Path) -> int:
         shutil.copy2(ROOT / f, out / f)
     market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
     for entry in market["plugins"]:
-        entry["source"] = "./"
+        entry["source"] = DIST_SOURCES[entry["name"]]
     (out / ".claude-plugin" / "marketplace.json").write_text(
         json.dumps(market, indent=2) + "\n", encoding="utf-8", newline="\n")
     (out / "README.md").write_text(DIST_README, encoding="utf-8", newline="\n")
@@ -162,10 +169,25 @@ def verify(out: Path, size: int) -> list[str]:
     if not (out / "claude" / "skills" / "blender-rules" / "SKILL.md").is_file():
         errors.append("blender-rules skill missing")
     cursor = json.loads((out / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))
-    for name, manifest in (("Claude", plugin), ("Cursor", cursor)):
+    if "mcpServers" in plugin or "mcpServers" in cursor:
+        errors.append("the core plugin must not start an MCP server; that is "
+                      "blender-live-session's job (#483)")
+    live = out / "live-session"
+    for kind in (".claude-plugin", ".cursor-plugin"):
+        manifest = json.loads((live / kind / "plugin.json").read_text(encoding="utf-8"))
         mcp = manifest.get("mcpServers")
-        if isinstance(mcp, str) and not (out / mcp).is_file():
-            errors.append(f"{name} manifest mcpServers path {mcp} missing from the dist")
+        if not (isinstance(mcp, str) and (live / mcp).is_file()):
+            errors.append(f"live-session/{kind}/plugin.json mcpServers {mcp!r} missing from the dist")
+        for rel in manifest.get("skills", []):
+            if not (live / rel).is_file():
+                errors.append(f"live-session/{kind} skills path {rel} missing from the dist")
+    if not any((live / "skills").glob("*/SKILL.md")):
+        errors.append("live-session/skills has no SKILL.md")
+    for entry in json.loads((out / ".claude-plugin" / "marketplace.json")
+                            .read_text(encoding="utf-8"))["plugins"]:
+        src = entry["source"]
+        if not (out / src / ".claude-plugin" / "plugin.json").is_file():
+            errors.append(f"marketplace entry {entry['name']} source {src} has no plugin.json")
     for key in ("skills", "rules"):
         for rel in cursor.get(key, []):
             if not (out / rel).is_file():

@@ -19,7 +19,6 @@
     "blender-addon",
     "blender-python"
   ],
-  "mcpServers": "./mcp.json",
   "skills": [
     "skills/addon-scaffolding/SKILL.md",
     "skills/ai-mesh-cleanup/SKILL.md",

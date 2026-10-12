@@ -14,6 +14,17 @@
         "ref": "plugin-dist"
       },
       "version": "0.153.0"
+    },
+    {
+      "name": "blender-live-session",
+      "description": "Opt-in companion to blender-developer-tools: registers the official Blender Lab MCP server so the agent can inspect and drive a running Blender 5.1+ (needs uv and the MCP add-on), plus a skill for reading the scene before mutating it and proving changes headless",
+      "source": {
+        "source": "git-subdir",
+        "url": "TMHSDigital/Blender-Developer-Tools",
+        "path": "live-session",
+        "ref": "plugin-dist"
+      },
+      "version": "0.153.0"
     }
   ]
 }

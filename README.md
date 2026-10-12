@@ -46,7 +46,7 @@
 
 This repository ships **18 skills, 9 rules, 3 templates, 29 snippets, 66 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents, installed as a plugin or read from a checkout. The plugin also registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); it is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
+The content is consumed by AI coding agents, installed as a plugin or read from a checkout. An optional second plugin registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); the server is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
@@ -81,13 +81,18 @@ Neither agent needs a clone of `main`: both install the slim `plugin-dist` build
 
 ### Live Blender session (MCP)
 
-Both plugin manifests point at [`mcp.json`](mcp.json), which registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) as `blender`, so the agent can inspect and drive a running Blender: scene and object summaries, screenshots, viewport renders, `bpy` execution and bundled API docs. The plugin launches it with `uvx` from [projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp), pinned to a reviewed commit. The server is GPL-licensed and is not copied into this repository. To use it:
+A second, **opt-in** plugin in the same marketplace, `blender-live-session` ([`live-session/`](live-session/)), registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) as `blender`, so the agent can inspect and drive a running Blender: scene and object summaries, screenshots, viewport renders, `bpy` execution and bundled API docs. It also adds the `live-blender-session` skill, which has the agent read the scene before mutating it, save first, and hand back a script proven with `blender --background`. The core plugin starts no server, so installing it needs neither `uv` nor a running Blender.
+
+The plugin launches the server with `uvx` from [projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp), pinned to a reviewed commit, and passes `--exclude-newer` so the server's dependencies resolve to the versions reviewed with that pin. A weekly CI job installs that exact command and checks that it answers `tools/list`. The server is GPL-licensed and is not copied into this repository. To use it:
 
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) so `uvx` is on `PATH`. The first launch fetches and builds the server.
 2. In **Blender 5.1 or newer** (the add-on's minimum, so 4.5 LTS has no live session), install the MCP add-on: zip `addon/blender_mcp_addon/` from the upstream repository and use **Edit → Preferences → Get Extensions → Install from Disk**. Start its server from the add-on preferences, or turn on auto-start. It listens on `localhost:9876`.
-3. Optional: set `BLENDER_PATH` if `blender` is not on `PATH` (the `*_for_cli` tools use it to run background Blender), and `BLENDER_MCP_HOST`/`BLENDER_MCP_PORT` to move the socket.
+3. Install the plugin:
+   - Claude Code: `/plugin install blender-live-session@blender-developer-tools`
+   - Cursor: copy the `live-session/` folder of your `plugin-dist` clone to `~/.cursor/plugins/local/blender-live-session` and reload the window.
+4. Optional: set `BLENDER_PATH` if `blender` is not on `PATH` (the `*_for_cli` tools use it to run background Blender), and `BLENDER_MCP_HOST`/`BLENDER_MCP_PORT` to move the socket.
 
-The server runs whatever code the agent sends inside your Blender session, without guards, so attach it only to scenes you can afford to lose. Without the add-on running, the `blender` tools just report that they cannot connect; the skills and rules work the same either way. If you already registered the server yourself, remove one of the two entries so the tools are not listed twice.
+The server runs whatever code the agent sends inside your Blender session, without guards, so attach it only to scenes you can afford to lose. Without the add-on running, the `blender` tools just report that they cannot connect. If you already registered the server yourself, install either that or this plugin, not both, so the tools are not listed twice.
 
 ### Run the examples or contribute
 

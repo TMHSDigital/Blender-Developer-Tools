@@ -214,11 +214,24 @@ jobs:
           for key in sorted(set(market) - {'name', 'owner', 'metadata', 'plugins'}):
               errors.append(f'marketplace.json: {key!r} is not in the Cursor marketplace schema')
           entries = market.get('plugins') or []
-          if [e.get('name') for e in entries] != [manifest.get('name')]:
-              errors.append('marketplace.json: must list exactly this plugin by name')
+          live = json.load(open('live-session/.cursor-plugin/plugin.json'))
+          if [e.get('name') for e in entries] != [manifest.get('name'), live.get('name')]:
+              errors.append('marketplace.json: must list this plugin, then the opt-in live-session plugin')
           for e in entries:
               for key in sorted(set(e) - {'name', 'source', 'description', 'minClientVersions'}):
                   errors.append(f'marketplace.json plugin entry: {key!r} not allowed')
+          if len(entries) > 1 and entries[1].get('source') != './live-session':
+              errors.append('marketplace.json: the live-session entry source must be ./live-session')
+
+          # The opt-in live-session plugin (#483): same schema, same VERSION.
+          for key in sorted(set(live) - allowed):
+              errors.append(f'live-session plugin.json: {key!r} is not in the Cursor plugin schema')
+          if live.get('version') != version:
+              errors.append(f"live-session plugin.json version {live.get('version')!r} != VERSION {version!r}")
+          live_skills = sorted(p.replace('\\', '/').removeprefix('live-session/')
+                               for p in glob.glob('live-session/skills/*/SKILL.md'))
+          if sorted(live.get('skills', [])) != live_skills:
+              errors.append(f"live-session plugin.json skills {live.get('skills')} != on disk {live_skills}")
 
           # Every showcase piece names a category the gallery build knows.
           sys.path.insert(0, 'scripts')
@@ -265,14 +278,23 @@ jobs:
               errors.append(f"claude plugin.json version {plugin.get('version')!r} != VERSION {version!r}")
           if plugin.get('name') != 'blender-developer-tools':
               errors.append('claude plugin.json name must be blender-developer-tools')
+          live = json.load(open('live-session/.claude-plugin/plugin.json', encoding='utf-8'))
           entries = market.get('plugins', [])
-          if len(entries) != 1 or entries[0].get('name') != plugin.get('name'):
-              errors.append('marketplace.json must list exactly the one plugin from plugin.json')
-          elif entries[0].get('version') != version:
-              errors.append(f"marketplace.json plugin version {entries[0].get('version')!r} != VERSION {version!r}")
-          elif entries[0].get('source') != {'source': 'github', 'repo': 'TMHSDigital/Blender-Developer-Tools', 'ref': 'plugin-dist'}:
-              errors.append('marketplace.json plugin source must be the plugin-dist branch '
-                            '(github TMHSDigital/Blender-Developer-Tools, ref plugin-dist)')
+          if [e.get('name') for e in entries] != [plugin.get('name'), live.get('name')]:
+              errors.append('marketplace.json must list the core plugin, then blender-live-session')
+          else:
+              want_sources = (
+                  {'source': 'github', 'repo': 'TMHSDigital/Blender-Developer-Tools', 'ref': 'plugin-dist'},
+                  {'source': 'git-subdir', 'url': 'TMHSDigital/Blender-Developer-Tools',
+                   'path': 'live-session', 'ref': 'plugin-dist'},
+              )
+              for entry, want in zip(entries, want_sources):
+                  if entry.get('version') != version:
+                      errors.append(f"marketplace.json {entry['name']} version {entry.get('version')!r} != VERSION {version!r}")
+                  if entry.get('source') != want:
+                      errors.append(f"marketplace.json {entry['name']} source must be {want} (the plugin-dist branch)")
+          if live.get('version') != version:
+              errors.append(f"live-session claude plugin.json version {live.get('version')!r} != VERSION {version!r}")
 
           # Claude Code discovers skills/<name>/SKILL.md plus every extra
           # directory in plugin.json "skills" (the generated blender-rules

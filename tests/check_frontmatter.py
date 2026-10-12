@@ -44,7 +44,9 @@ SKILL_DESCRIPTION_MAX = 1024
 
 def check(root: Path) -> list[str]:
     errors: list[str] = []
-    for path in sorted((root / "skills").glob("*/SKILL.md")):
+    skill_paths = [*(root / "skills").glob("*/SKILL.md"),
+                   *(root / "live-session" / "skills").glob("*/SKILL.md")]
+    for path in sorted(skill_paths):
         label = path.relative_to(root).as_posix()
         data, why = front(path)
         if data is None:

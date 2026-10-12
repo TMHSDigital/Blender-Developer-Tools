@@ -5,9 +5,9 @@
 #
 # Plugin content is every path scripts/build_plugin_dist.py ships (its
 # --list-paths: skills/, claude/, rules/, snippets/, templates/, the manifests,
-# mcp.json, LICENSE), so the list has one owner (#494). release.yml cuts a
+# live-session/, LICENSE), so the list has one owner (#494). release.yml cuts a
 # patch release when this says yes even if no commit subject is feat:/fix:, so
-# a `docs:` correction to a skill or a pin bump in mcp.json still reaches
+# a `docs:` correction to a skill or an MCP pin bump in live-session/ reaches
 # plugin users (#350). Exit 2 if the path list cannot be read. PYTHON
 # overrides the interpreter (default python3).
 set -euo pipefail

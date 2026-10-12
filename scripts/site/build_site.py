@@ -607,6 +607,10 @@ def write_llms_txt(repo_root: Path, out_dir: Path, site: dict) -> None:
         f"- [snippets/]({TREE}snippets): small standalone patterns",
         f"- [templates/]({TREE}templates): add-on, headless batch and asset-pipeline starters",
         f"- [Rules summary for Claude Code]({RAW}claude/blender-rules.md)",
+        f"- [live-blender-session]({RAW}live-session/skills/live-blender-session/SKILL.md): "
+        "working against a running Blender through the official Blender Lab MCP server, "
+        "from the opt-in `blender-live-session` plugin "
+        "(`/plugin install blender-live-session@blender-developer-tools`)",
         "",
     ]
     (out_dir / "llms.txt").write_text("\n".join(lines), encoding="utf-8", newline="\n")

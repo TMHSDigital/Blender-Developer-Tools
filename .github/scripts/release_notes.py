@@ -8,7 +8,7 @@ Splits the commits in two (#455):
 
 - **For agents and users**: commits that touched what the plugin ships
   (scripts/build_plugin_dist.py DIRS + FILES: skills/, rules/, snippets/,
-  templates/, claude/, the manifests, mcp.json, LICENSE), grouped Features, Fixes,
+  templates/, claude/, live-session/, the manifests, LICENSE), grouped Features, Fixes,
   Other. This is what a plugin user gets from the update, so it leads.
 - **Maintenance**: everything else (CI, tests, the site and gallery,
   showcase pieces, examples, docs), in a collapsed <details> block.
@@ -38,7 +38,7 @@ GROUPS = (
 SKIP = re.compile(r"^chore: bump version to ", re.I)
 # What the plugin ships (scripts/build_plugin_dist.py DIRS + FILES, #494): a
 # change here is a change a plugin user receives, including the manifests and
-# mcp.json.
+# the opt-in live-session plugin.
 USER_DIRS = tuple(d + "/" for d in DIRS)
 USER_FILES = frozenset(FILES)
 NO_USER_CHANGES = ("No changes to the plugin content (skills, rules, snippets, templates, "
