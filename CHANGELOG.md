@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.154.0] - 2026-10-12
+
+### For agents and users
+
+**Features**
+
+- feat(plugin): make the live Blender session an opt-in second plugin ([`98b5a40`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/98b5a402cd440155c608b1e6178c0fd3f1dcb516))
+
+**Fixes**
+
+- fix(templates): keep exit 2 for argparse usage errors only ([`f8dd085`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f8dd08525ee1af6cea6b1743dc49600790589fc4))
+- fix(snippets): drop an old file's job results after File > Open in thread-queue-timer ([`f6d0439`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f6d04390fa61eee9328ac15859c01b86ece8bd38))
+- fix(skills): point vse-python at the 4.5 Strip page and date the rename to 4.4 ([`c415851`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/c4158517e2d6c312d49e1d968cbef78e35295dcc))
+
+<details>
+<summary>Maintenance (12 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- chore(deps): Bump markupsafe (#480) ([`56af5b0`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/56af5b0d79ec8fcf8ec06d65bbee1ef1654d6ea3))
+- fix(gallery): regenerate four terrain pieces' gate sheets; fail stale contact sheets ([`ad73a3f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ad73a3fbf571012a26ce7b911d133b3ddee1e5e3))
+- docs(showcase): stop calling 90k-140k-triangle terrain tiles game-ready at LOD0 ([`5bce786`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5bce7862299cbe50d501b8d2d3d4e1d6bd490911))
+- docs(readme): write down the Blender support policy ([`94aea05`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/94aea05cde31570710c98984eba0741a6b52b964))
+- fix(ci): bound every job, skip smoke on manifest-only pushes, deploy Pages once ([`6dd2233`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6dd223353725abca135141d062ee0a7ee1b2abd5))
+- fix(examples): regenerate the gallery page and examples index after #489 ([`dfcbd52`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/dfcbd52bb6616d231b4663ec9aa61f1b4f809679))
+- fix(examples): stop two falsifiers passing for the wrong reason ([`3c5490b`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/3c5490b2970a3811445692371fab02fc96390df5))
+- docs: keep inventory counts out of the GitHub repo description ([`6c1c77a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6c1c77ac171d9fe351623d97c2b5bdb17f545a2f))
+- docs(changelog): list the MCP registration as plugin content in 0.153.0 ([`4af289c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4af289c6730933872ed6138dc3114ccd591e7f9c))
+- fix(release): count manifests, mcp.json and LICENSE as plugin content ([`40ff87e`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/40ff87efca3678cc101c32d45b59aaa41f5c36c3))
+- fix(ci): shard the weekly showcase falsifier sweep and report a red cron ([`7228d81`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/7228d814539ea0997e5c129fdb47cf1984c26ae0))
+- chore(deps): let only the site-build group bump the site pins ([`d4824bb`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d4824bb618f29d6b24463b2fafd3ba2f1e0c95e9))
+
+</details>
+
+[Release v0.154.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.154.0)
+
 ## [0.153.0] - 2026-10-12
 
 ### For agents and users
