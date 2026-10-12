@@ -235,11 +235,11 @@ def make_material(name, rgb, rough=0.45, metallic=0.0, emit=None, estr=0.0,
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metallic
     if coat:
-        sock = b.inputs.get("Coat Weight") or b.inputs.get("Clearcoat")
+        sock = b.inputs["Coat Weight"]
         if sock is not None:
             sock.default_value = coat
     if emit is not None:
-        sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
+        sock = b.inputs["Emission Color"]
         sock.default_value = (*emit, 1.0)
         b.inputs["Emission Strength"].default_value = estr
     return mat
@@ -261,7 +261,7 @@ def add_backface_witness(mat, rgb=(0.85, 0.002, 0.004), strength=0.35):
     back = nt.nodes.new("ShaderNodeBsdfPrincipled")
     back.inputs["Base Color"].default_value = (*rgb, 1.0)
     back.inputs["Roughness"].default_value = 0.5
-    sock = back.inputs.get("Emission Color") or back.inputs["Emission"]
+    sock = back.inputs["Emission Color"]
     sock.default_value = (*rgb, 1.0)
     back.inputs["Emission Strength"].default_value = strength
     mix = nt.nodes.new("ShaderNodeMixShader")

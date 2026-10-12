@@ -295,7 +295,7 @@ def build_console(sc, screen_img, aspect):
         b.inputs["Metallic"].default_value = metallic
         b.inputs["Roughness"].default_value = rough
         if spec is not None:
-            s = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+            s = b.inputs["Specular IOR Level"]
             s.default_value = spec
         return mat
 

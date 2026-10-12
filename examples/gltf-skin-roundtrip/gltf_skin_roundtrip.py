@@ -803,7 +803,7 @@ def make_materials():
         b.inputs["Metallic"].default_value = metallic
         b.inputs["Roughness"].default_value = roughness
         if emission is not None:
-            sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
+            sock = b.inputs["Emission Color"]
             sock.default_value = (*emission, 1.0)
             b.inputs["Emission Strength"].default_value = strength
         return mat

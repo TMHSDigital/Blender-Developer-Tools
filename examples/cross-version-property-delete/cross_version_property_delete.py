@@ -215,7 +215,7 @@ def principled(name, color, metallic, roughness, emission=None, strength=4.5):
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
     if emission is not None:
-        sock = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+        sock = bsdf.inputs["Emission Color"]
         sock.default_value = emission
         bsdf.inputs["Emission Strength"].default_value = strength
     return mat

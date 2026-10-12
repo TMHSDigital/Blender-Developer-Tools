@@ -152,6 +152,7 @@ When the same subgraph appears across multiple materials, factor it into a `Shad
 ## Common AI mistakes
 
 - **Forgetting `mat.use_nodes = True` on 4.5 LTS**. There, a new material's `mat.node_tree` is `None` until nodes are enabled, and any node access raises `AttributeError`. On 5.x the tree exists from `materials.new()` and setting `use_nodes` only emits a `DeprecationWarning`, so gate the line on `bpy.app.version < (5, 0, 0)`.
+- **3.x socket names**. `inputs["Emission"]`, `["Clearcoat"]`, `["Subsurface"]`, `["Transmission"]`, `["Specular"]` raise `KeyError: 'bpy_prop_collection[key]: key "Emission" not found'` on 4.5 and 5.x. Use the table in Principled BSDF socket names below.
 - **Using indices for sockets**. `bsdf.inputs[0]` is fragile. The Principled BSDF input order has shifted across Blender releases. Always use string keys.
 - **Setting RGB without alpha**. Color sockets expect 4-tuples. `(0.5, 0.5, 0.5)` raises a length error.
 - **Targeting Layered Textures**. The Layered Textures roadmap is deferred to 2027. Do not generate code that imports from `bpy.types.LayeredTextureNode` or similar; these do not exist in 5.1 stable. Stick with classic `ShaderNodeTex*` (ShaderNodeTexImage, ShaderNodeTexNoise, etc.) for 5.1.
@@ -163,28 +164,53 @@ When the same subgraph appears across multiple materials, factor it into a `Shad
 
 | Topic | 4.5 LTS | 5.1 / 5.2 LTS | Notes |
 | --- | --- | --- | --- |
-| Principled BSDF | `ShaderNodeBsdfPrincipled` | Same | Inputs were renamed in 4.0 with the Principled v2 rewrite: `Specular` -> `Specular IOR Level` (see the 4.0 release notes, https://developer.blender.org/docs/release_notes/4.0/). Use string lookup with the 4.0+ name. |
+| Principled BSDF | `ShaderNodeBsdfPrincipled` | Same | Inputs were renamed in 4.0 with the Principled v2 rewrite (full table below; 4.0 release notes: https://developer.blender.org/docs/release_notes/4.0/). Both versions use the 4.0+ names; `Thin Wall` is 5.2+ only. |
 | Node group socket interface | `group.interface.new_socket` | `group.interface.new_socket` | Same API on every supported version. `group.inputs.new` / `outputs.new` were removed in 4.0; see snippet `shader-node-group.py`. |
 | EEVEE engine string | `'BLENDER_EEVEE_NEXT'` | `'BLENDER_EEVEE'` | Legacy EEVEE was removed in 4.2. EEVEE Next used the id `'BLENDER_EEVEE_NEXT'` on 4.2-4.5, then reclaimed the plain `'BLENDER_EEVEE'` id in 5.0. |
 | Layered Textures | Not present | Not present in 5.1 | Roadmap pushed to 2027. Do not generate code referencing it. |
 
 EEVEE Next stabilized in Blender 5.1 with material caching and feature parity improvements; most Principled BSDF graphs render identically across EEVEE Next and Cycles.
 
-## Cross-version socket-name shim
+## Principled BSDF socket names (v2, 4.0+)
 
-When writing code that must run on both 4.5 LTS and 5.x, look up sockets defensively:
+Principled v2 (Blender 4.0) renamed or removed most of the 3.x inputs. 4.5 LTS
+and 5.x share the 4.0+ names, so code for supported versions uses them
+directly: no fallback to the old name, which only adds a branch that never
+runs. Code from 3.x tutorials and models fails with
+
+```text
+KeyError: 'bpy_prop_collection[key]: key "Emission" not found'
+```
+
+(measured on 4.5.14 and 5.2.1).
+
+| 3.x input | 4.0+ input (4.5 LTS, 5.x) |
+| --- | --- |
+| `Emission` | `Emission Color` (with `Emission Strength`) |
+| `Subsurface` | `Subsurface Weight` |
+| `Subsurface Color` | removed: subsurface takes `Base Color` |
+| `Specular` | `Specular IOR Level` |
+| `Specular Tint` | same name, but now a color (`RGBA`, default white), not a float |
+| `Clearcoat` | `Coat Weight` |
+| `Clearcoat Roughness` | `Coat Roughness` |
+| `Clearcoat Normal` | `Coat Normal` |
+| `Sheen` | `Sheen Weight` |
+| `Sheen Tint` | same name, now a color (`RGBA`) |
+| `Transmission` | `Transmission Weight` |
+| `Transmission Roughness` | removed: transmission uses `Roughness` |
+
+New in v2, no 3.x counterpart: `Coat IOR`, `Coat Tint`, `Sheen Roughness`,
+`Subsurface Scale`, `Subsurface IOR`, `Subsurface Anisotropy`,
+`Diffuse Roughness`, `Thin Film Thickness`, `Thin Film IOR`. 5.2 adds
+`Thin Wall` (not on 4.5.14). Look a socket up by name only where it exists on
+every version you target:
 
 ```python
-def set_specular(bsdf, value):
-    """Specular socket renamed to 'Specular IOR Level' in Blender 4.0.
-
-    Every supported version (4.5 LTS, 5.x) has the new name; the fallback
-    branch only matters for files that must also run on 3.x.
-    """
-    if 'Specular IOR Level' in bsdf.inputs:
-        bsdf.inputs['Specular IOR Level'].default_value = value
-    elif 'Specular' in bsdf.inputs:
-        bsdf.inputs['Specular'].default_value = value
+bsdf.inputs["Emission Color"].default_value = (1.0, 0.5, 0.1, 1.0)
+bsdf.inputs["Emission Strength"].default_value = 3.0
+bsdf.inputs["Specular IOR Level"].default_value = 0.0   # was "Specular"
+if "Thin Wall" in bsdf.inputs:                          # 5.2+ only
+    bsdf.inputs["Thin Wall"].default_value = True
 ```
 
 ## When operators are unavoidable

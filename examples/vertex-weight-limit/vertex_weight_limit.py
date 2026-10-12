@@ -618,7 +618,7 @@ def make_materials():
     attr = nt.nodes.new("ShaderNodeAttribute")
     attr.attribute_name = "BoneBlend"
     nt.links.new(attr.outputs["Color"], b.inputs["Base Color"])
-    emit = b.inputs.get("Emission Color") or b.inputs["Emission"]
+    emit = b.inputs["Emission Color"]
     nt.links.new(attr.outputs["Color"], emit)
     b.inputs["Emission Strength"].default_value = 0.55
     b.inputs["Roughness"].default_value = 0.75

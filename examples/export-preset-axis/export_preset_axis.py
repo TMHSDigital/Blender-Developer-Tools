@@ -287,7 +287,7 @@ def build():
         principled("CabinetPaint", (0.20, 0.30, 0.25, 1.0), 0.0, 0.5),
     )
     bsdf = mats[MAT_LAMP].node_tree.nodes["Principled BSDF"]
-    sock = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+    sock = bsdf.inputs["Emission Color"]
     sock.default_value = (1.0, 0.012, 0.006, 1.0)
     bsdf.inputs["Emission Strength"].default_value = 3.0
     for m in mats:
@@ -566,7 +566,7 @@ def light(scene, name, loc, energy, size, col, target):
 def gizmo_material(name, color):
     mat = principled(name, color, 0.0, 0.35)
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    sock = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+    sock = bsdf.inputs["Emission Color"]
     sock.default_value = color
     bsdf.inputs["Emission Strength"].default_value = 0.25
     return mat

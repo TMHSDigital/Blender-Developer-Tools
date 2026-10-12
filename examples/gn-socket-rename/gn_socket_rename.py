@@ -249,7 +249,7 @@ def principled(name, color, metallic, roughness, emission=None):
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
     if emission is not None:
-        sock = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+        sock = bsdf.inputs["Emission Color"]
         sock.default_value = emission
         bsdf.inputs["Emission Strength"].default_value = 0.12
     return mat
@@ -405,7 +405,7 @@ def dress_gauge(copper, steel):
     enabled_sock(base, "inputs", "A").default_value = (0.93, 0.42, 0.08, 1.0)
     enabled_sock(base, "inputs", "B").default_value = (0.05, 0.018, 0.006, 1.0)
     nt.links.new(enabled_sock(base, "outputs", "Result"), bsdf.inputs["Base Color"])
-    emit = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+    emit = bsdf.inputs["Emission Color"]
     nt.links.new(enabled_sock(base, "outputs", "Result"), emit)
     # Brushed, the copper reflects less of the key and went brown at
     # thumbnail size; a little more of its own colour keeps it copper.

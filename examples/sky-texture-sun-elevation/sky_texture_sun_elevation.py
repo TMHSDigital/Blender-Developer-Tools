@@ -106,7 +106,7 @@ def _principled(name, rgb, rough, metallic=0.0, specular=0.5):
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metallic
     # Specular IOR Level renamed across versions — set if present
-    spec = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+    spec = b.inputs["Specular IOR Level"]
     if spec is not None and hasattr(spec, "default_value"):
         try:
             spec.default_value = specular
@@ -177,7 +177,7 @@ def _stone_material(name, dark, light, rough, scale):
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Roughness"].default_value = rough
-    spec = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+    spec = b.inputs["Specular IOR Level"]
     if spec is not None:
         spec.default_value = 0.3
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -202,7 +202,7 @@ def _paving_material():
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Roughness"].default_value = 0.82
-    spec = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+    spec = b.inputs["Specular IOR Level"]
     if spec is not None:
         spec.default_value = 0.2
     tc = nt.nodes.new("ShaderNodeTexCoord")

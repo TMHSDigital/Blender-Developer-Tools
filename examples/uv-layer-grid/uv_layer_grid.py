@@ -208,10 +208,7 @@ def make_uv_testcard(name, w=256, h=256):
 
 
 def specular_off(bsdf):
-    if "Specular IOR Level" in bsdf.inputs:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.0
-    elif "Specular" in bsdf.inputs:
-        bsdf.inputs["Specular"].default_value = 0.0
+    bsdf.inputs["Specular IOR Level"].default_value = 0.0  # "Specular" before 4.0
 
 
 def textured_plane(name, image, with_uvs):
