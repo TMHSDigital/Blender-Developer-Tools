@@ -109,6 +109,9 @@ jobs:
       - name: Check gallery hero and preview sizes
         run: python3 tests/check_gallery_images.py
 
+      - name: Check every contact sheet shows the hero that ships (#487)
+        run: python3 tests/check_contact_sheets.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."
