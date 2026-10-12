@@ -42,12 +42,15 @@ jobs:
   # release fails, redeploy by hand: Actions > Deploy GitHub Pages > Run workflow.
   gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       deploy: ${{ steps.decide.outputs.deploy }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          sparse-checkout: .github/scripts
+          sparse-checkout: |
+            .github/scripts
+            scripts/build_plugin_dist.py
       - id: decide
         env:
           EVENT: ${{ github.event_name }}
@@ -59,6 +62,22 @@ jobs:
               | bash .github/scripts/bump-kind.sh)" != "none" ]; then
             deploy=false
             echo "Release-worthy push: release.yml dispatches Pages after the version bump."
+          elif [ "$EVENT" = "push" ]; then
+            # A push that touches plugin content also releases (a patch, #350),
+            # and that release dispatches Pages too, so deploying here would be
+            # the duplicate (#495). Shipped paths come from the dist build.
+            shipped=$(python3 scripts/build_plugin_dist.py --list-paths)
+            while IFS= read -r f; do
+              f="${f%$'\r'}"
+              while IFS= read -r p; do
+                p="${p%$'\r'}"
+                case "$f" in "$p"|"$p"/*)
+                  deploy=false
+                  echo "Plugin content changed ($f): release.yml dispatches Pages after the patch release." ;;
+                esac
+              done <<< "$shipped"
+              [ "$deploy" = false ] && break
+            done < <(echo "$COMMITS" | jq -r '.[] | (.added + .modified + .removed)[]')
           fi
           echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
           echo "deploy=$deploy"
@@ -70,6 +89,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

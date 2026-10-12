@@ -20,6 +20,7 @@ jobs:
     # also waits for its own Blender Smoke push run, unless it changed only
     # smoke-ignored paths (see release-gate.sh).
     runs-on: ubuntu-latest
+    timeout-minutes: 125
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     permissions:
       contents: read
@@ -41,6 +42,7 @@ jobs:
     name: Bump version, tag, and release
     needs: gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     permissions:
       contents: write

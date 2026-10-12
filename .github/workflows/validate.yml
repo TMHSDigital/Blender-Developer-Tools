@@ -13,8 +13,12 @@ jobs:
   validate:
     name: Validate structure and frontmatter
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
       - name: Check referenced paths exist
         run: |
@@ -137,6 +141,7 @@ jobs:
     # The landing page is built only at deploy (docs/index.html is untracked),
     # so a template error or a dead link otherwise surfaces in production.
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -160,8 +165,12 @@ jobs:
   validate-manifest:
     name: Validate plugin manifest
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
       - name: Check plugin.json matches filesystem and VERSION
         run: |
@@ -258,8 +267,12 @@ jobs:
   validate-claude-packaging:
     name: Validate Claude Code packaging
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
       - name: Check .claude-plugin manifests match VERSION and the skills on disk
         run: |
@@ -363,8 +376,12 @@ jobs:
   validate-counts:
     name: Validate content counts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
       - name: Check content counts match the repo
         env:
@@ -436,8 +453,15 @@ jobs:
   validate-harness:
     name: Validate smoke harness protocol
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
+
+      - name: Install pinned dev requirements (the release-gate mirror test reads YAML)
+        run: pip install -r requirements-dev.txt
 
       - name: Harness unit tests
         run: python3 tests/smoke/test_harness.py -v
@@ -464,6 +488,4 @@ jobs:
         run: python3 tests/test_falsifier_shard.py -v
 
       - name: Hero-drift tool exit-code tests
-        run: |
-          pip install -r requirements-dev.txt
-          python3 tests/test_measure_hero_drift.py -v
+        run: python3 tests/test_measure_hero_drift.py -v

@@ -45,7 +45,9 @@ wait_green() {
 }
 
 # smoke_applies: 0 when some changed file falls outside blender-smoke.yml's
-# paths-ignore ("**.md", "docs/**", "assets/**"). Unreadable file lists count
+# paths-ignore ("**.md", "docs/**", "assets/**", the two plugin manifest dirs,
+# "live-session/**", ".github/ISSUE_TEMPLATE/**"; tests/test_release_gate.py
+# checks the two lists agree). Unreadable file lists count
 # as "applies" so the gate fails toward waiting, not toward skipping. So do
 # lists of 300 or more: the compare and commit APIs return at most 300 files,
 # in path order, so a big docs/gallery regeneration can hide the code change
@@ -61,7 +63,7 @@ smoke_applies() {
   [ "$(printf '%s\n' "$files" | wc -l)" -lt 300 ] || return 0
   while IFS= read -r f; do
     case "$f" in
-      *.md|docs/*|assets/*) ;;
+      *.md|docs/*|assets/*|.claude-plugin/*|.cursor-plugin/*|live-session/*|.github/ISSUE_TEMPLATE/*) ;;
       *) return 0 ;;
     esac
   done <<< "$files"

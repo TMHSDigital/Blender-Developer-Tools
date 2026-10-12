@@ -45,6 +45,10 @@ on:
       - "**.md"
       - "docs/**"
       - "assets/**"
+      - ".claude-plugin/**"
+      - ".cursor-plugin/**"
+      - "live-session/**"
+      - ".github/ISSUE_TEMPLATE/**"
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, labeled]
@@ -54,6 +58,10 @@ on:
       - "**.md"
       - "docs/**"
       - "assets/**"
+      - ".claude-plugin/**"
+      - ".cursor-plugin/**"
+      - "live-session/**"
+      - ".github/ISSUE_TEMPLATE/**"
 
 permissions:
   contents: read
@@ -70,6 +78,7 @@ jobs:
   resolve-matrix:
     name: Resolve smoke matrix
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.event.action != 'labeled' || github.event.label.name == 'needs-5.1'
     outputs:
       series: ${{ steps.set.outputs.series }}

@@ -86,6 +86,30 @@ class ReleaseGate(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("only smoke-ignored paths", out)
 
+    def test_manifest_and_mcp_only_direct_push_skips_smoke(self):
+        # #495: a manifest or live-session change runs no Blender code.
+        code, out = self.gate(
+            FAKE_PR="", FAKE_SMOKE="none none", SMOKE_TIMEOUT="0",
+            FAKE_FILES=r".claude-plugin/plugin.json\nlive-session/mcp.json\n.github/ISSUE_TEMPLATE/bug.yml",
+        )
+        self.assertEqual(code, 0, out)
+        self.assertIn("only smoke-ignored paths", out)
+
+    def test_gate_mirrors_smoke_paths_ignore(self):
+        # release-gate.sh decides "no smoke run to wait for" from its own copy
+        # of blender-smoke.yml's paths-ignore; the two must not drift.
+        import re
+        import yaml
+        wf = yaml.safe_load((REPO / ".github" / "workflows" / "blender-smoke.yml")
+                            .read_text(encoding="utf-8"))
+        on = wf.get("on", wf.get(True))
+        for event in ("push", "pull_request"):
+            globs = on[event]["paths-ignore"]
+            want = {g.replace("**.", "*.").replace("/**", "/*") for g in globs}
+            case = re.search(r"^\s*([^\n]*\*\.md\|[^\n]*)\) ;;", GATE.read_text(encoding="utf-8"), re.M)
+            self.assertIsNotNone(case, "release-gate.sh smoke-ignored case line not found")
+            self.assertEqual(set(case.group(1).split("|")), want, event)
+
     def test_truncated_file_list_waits_for_smoke(self):
         # 300 docs paths is the API's cap: a code change may sort after them.
         many = r"\n".join(f"docs/gallery/p{i:03d}.html" for i in range(300))
