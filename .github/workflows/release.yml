@@ -91,6 +91,21 @@ jobs:
             bump="patch"; release="true"
           fi
 
+          # Skill and rule names are what agents and docs cite: dropping one is
+          # breaking after 1.0 (ROADMAP "Stable (1.0)", #498). Before 1.0 a
+          # breaking marker would cut 1.0.0 by accident, so it only warns.
+          if [ -n "$last_tag" ] && [ "$release" = "true" ]; then
+            removed=$(python3 .github/scripts/removed_names.py "$last_tag")
+            if [ -n "$removed" ] && [ "$bump" != "major" ]; then
+              msg="skill/rule names removed since $last_tag without a breaking-change marker: $(echo "$removed" | paste -sd, -)"
+              if [ "$(cut -d. -f1 VERSION)" -ge 1 ]; then
+                echo "::error::$msg. Use feat!:/fix!: or a BREAKING CHANGE: footer"
+                exit 1
+              fi
+              echo "::warning::$msg (allowed before 1.0; from 1.0 this fails the release)"
+            fi
+          fi
+
           echo "bump=$bump" >> "$GITHUB_OUTPUT"
           echo "release=$release" >> "$GITHUB_OUTPUT"
           if [ "$release" = "true" ]; then
