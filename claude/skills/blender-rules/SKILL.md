@@ -1,6 +1,6 @@
 ---
 name: blender-rules
-description: Blender Python anti-pattern rules (bmesh leaks, bpy.ops in loops, deprecated context-copy overrides, bulk mesh writes, prop annotations and context guards, Extensions manifest, import scale, export modifiers, glTF/FBX axis RNA). Use when writing, reviewing or fixing any bpy / Blender add-on or script code.
+description: Blender Python anti-pattern rules (bmesh leaks, bpy.ops in loops, deprecated context-copy overrides, bulk mesh writes, prop annotations and context guards, Extensions manifest, import scale, export modifiers, glTF/FBX axis RNA, the removed bgl module, the normals API removed in 4.1). Use when writing, reviewing or fixing any bpy / Blender add-on or script code.
 ---
 
 # Blender Developer Tools rules (Claude Code)

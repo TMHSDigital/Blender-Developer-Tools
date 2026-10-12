@@ -364,7 +364,7 @@ jobs:
             exit 1
           fi
 
-      - name: Check claude/blender-rules.md and the rules skill are regenerated from rules/*.mdc
+      - name: Check the rules exports (claude/, agents/AGENTS.md, Copilot instructions) are regenerated from rules/*.mdc
         run: python3 scripts/build_claude_rules.py --check
 
       - name: Check examples/index.json and each skill's Runnable examples section are regenerated

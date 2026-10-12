@@ -78,6 +78,19 @@ Neither agent needs a clone of `main`: both install the slim `plugin-dist` build
   `@plugin-dist` is a generated branch holding only what the plugin loads (about 0.3 MB, rebuilt on every release), so the add does not clone the gallery renders, showcase props and history on `main`. Adding the repo without `@plugin-dist` still works; the plugin itself installs from `plugin-dist` either way.
 
   Claude Code does not read Cursor `.mdc` rules, so the plugin ships them as the `blender-rules` skill (generated from `rules/`), which Claude loads when it writes or reviews bpy code. No second clone is needed. To keep the rules in context all the time instead, add `@/path/to/Blender-Developer-Tools/claude/blender-rules.md` to your project's `CLAUDE.md` from a checkout. Without the plugin, copy `skills/*` and `claude/skills/*` into your project's `.claude/skills/`.
+- **Other agents (Codex, GitHub Copilot, Windsurf, Gemini CLI)** — clone the same slim build once, then copy into each project:
+
+  ```bash
+  git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git bdt
+  # Skills: agents that read .agents/skills/ (Codex, Cursor project skills)
+  mkdir -p .agents/skills && cp -r bdt/skills/* .agents/skills/
+  # Rules: agents that read AGENTS.md (Codex, Windsurf, Gemini CLI, Copilot's coding agent)
+  cat bdt/agents/AGENTS.md >> AGENTS.md
+  # Rules: GitHub Copilot path-scoped instructions (applies to **/*.py)
+  mkdir -p .github/instructions && cp bdt/agents/copilot/blender-python.instructions.md .github/instructions/
+  ```
+
+  `agents/AGENTS.md` and the Copilot file are generated from `rules/` by `scripts/build_claude_rules.py`, and CI fails if they fall out of date. The plugin-dist build fails if either file is missing. The layouts follow each agent's documented conventions; CI does not run the agents themselves.
 
 ### Live Blender session (MCP)
 
