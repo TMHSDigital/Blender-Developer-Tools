@@ -22,6 +22,12 @@ Flag `import bgl` and any `bgl.` call. The `bgl` OpenGL wrapper was deprecated i
 
 Applies to: `**/*.py`. Full rule: [`rules/no-bgl.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-bgl.mdc).
 
+## no-removed-normals-api
+
+Flag the mesh normals API removed in Blender 4.1 — `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()`, `free_normals_split()`, `create_normals_split()`. Each raises AttributeError on 4.5 LTS and 5.x. Use `Mesh.set_sharp_from_angle`, `object.shade_auto_smooth`, and `Mesh.corner_normals` (always current) instead.
+
+Applies to: `**/*.py`. Full rule: [`rules/no-removed-normals-api.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-removed-normals-api.mdc).
+
 ## no-unapplied-modifiers-on-export
 
 Flag an export call on objects that still carry unapplied modifiers when the export arguments do not request evaluated geometry. The engine then receives the authored cage, not the modifier result.

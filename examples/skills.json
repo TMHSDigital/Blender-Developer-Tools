@@ -39,6 +39,7 @@
   "lightmap-uv-channel": ["mesh-editing-and-bmesh"],
   "lod-decimate-chain": ["ai-mesh-cleanup", "depsgraph-and-evaluated-data", "mesh-editing-and-bmesh"],
   "mesh-automasking-settings": [],
+  "mesh-normals-after-41": ["mesh-editing-and-bmesh"],
   "mesh-hygiene-audit": ["ai-mesh-cleanup", "mesh-editing-and-bmesh"],
   "modular-kit-snap": ["ai-mesh-cleanup", "mesh-editing-and-bmesh"],
   "ngon-triangulate": ["ai-mesh-cleanup", "mesh-editing-and-bmesh"],

@@ -18,10 +18,10 @@ The **Blender Developer Tools** repository is at **v0.154.0**. It packages skill
 
 ```
 skills/<skill-name>/SKILL.md   - AI workflow definitions, 19 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 10 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 11 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 29 total
-examples/<name>/               - Runnable smoke-gated examples, 67 total (+ gallery.json)
+examples/<name>/               - Runnable smoke-gated examples, 68 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 80 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
 scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
@@ -54,7 +54,7 @@ VERSION                        - Source of truth for the repo version
 | timers-modal-and-threading | `bpy.app.timers` return values and `persistent`, modal operators on `event_timer_add`, worker thread + queue + main-thread drain, no timers in `--background` |
 | gpu-drawing-and-overlays | `gpu` instead of the removed `bgl`: `draw_handler_add`/`remove`, builtin shader names, `gpu.state` blending and depth, `POLYLINE_*` line width, `blf` text, `GPUOffScreen` with 5.2's `gpu.init()` headless |
 
-## Rules (10)
+## Rules (11)
 
 Every rule sets `alwaysApply: false`, so the Scope column below is the rule's
 actual load condition, not a description: a rule enters context only when a file
@@ -72,6 +72,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 | no-unapplied-modifiers-on-export | `*.py` | Export with live modifiers when the export does not request evaluated geometry |
 | use-correct-axis-rna-per-exporter | `*.py` | `export_scene.gltf` with FBX `axis_forward`/`axis_up`, or `export_scene.fbx` with glTF `export_yup` |
 | no-bgl | `*.py` | `import bgl` or any `bgl.` call (removed in 5.x; the add-on fails to register) |
+| no-removed-normals-api | `*.py` | `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()` and the other normals calls removed in 4.1 |
 
 ## Templates (3)
 
@@ -111,13 +112,13 @@ AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lo
 
 Extensions runtime: `extension-user-data.py` (`extension_path_user` settings file and an `online_access` guard). Long-running work: `thread-queue-timer.py` (worker thread, `queue.Queue`, main-thread drain timer).
 
-## Examples (67)
+## Examples (68)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
 `--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
-**56 of the 67 ship a render in the site gallery** at `docs/gallery/`. The other
-eleven are **check-only**: they carry no `--output` path, no gallery entry, and no
+**56 of the 68 ship a render in the site gallery** at `docs/gallery/`. The other
+twelve are **check-only**: they carry no `--output` path, no gallery entry, and no
 hero asset. The criterion is whether the contract is expressible in pixels. An
 example is check-only when its witness is a data or state fact that no scene
 redesign can make visible — a datablock name, an RNA attribute's presence, a

@@ -81,6 +81,7 @@
     "min_version": "5.2",
     "falsifiers": [{"args": ["--skip-blend"], "expect_exit": 5}, {"args": ["--thin-line"], "expect_exit": 6}, {"args": ["--expect-bgl"], "expect_exit": 7}]
   },
+  {"name": "mesh-normals-after-41", "script": "examples/mesh-normals-after-41/mesh_normals_after_41.py", "falsifiers": [{"args": ["--legacy-api"], "expect_exit": 3}, {"args": ["--sharp-angle", "10"], "expect_exit": 4}, {"args": ["--flatten-after"], "expect_exit": 5}, {"args": ["--skip-set-sharp"], "expect_exit": 6}]},
   {"name": "ngon-triangulate", "script": "examples/ngon-triangulate/ngon_triangulate.py", "falsifiers": [{"args": ["--no-dissolve"], "expect_exit": 3}, {"args": ["--skip-triangulate"], "expect_exit": 4}]},
   {"name": "unapplied-scale-gltf", "script": "examples/unapplied-scale-gltf/unapplied_scale_gltf.py", "falsifiers": [{"args": ["--identity"], "expect_exit": 3}, {"args": ["--bake"], "expect_exit": 4}]},
   {"name": "coincident-vert-weld", "script": "examples/coincident-vert-weld/coincident_vert_weld.py", "falsifiers": [{"args": ["--no-duplicate"], "expect_exit": 3}, {"args": ["--weld"], "expect_exit": 4}]},

@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <strong>19 skills</strong> &nbsp;&bull;&nbsp; <strong>10 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>29 snippets</strong> &nbsp;&bull;&nbsp; <strong>67 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
+  <strong>19 skills</strong> &nbsp;&bull;&nbsp; <strong>11 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>29 snippets</strong> &nbsp;&bull;&nbsp; <strong>68 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -44,7 +44,7 @@
 
 ## Overview
 
-This repository ships **19 skills, 10 rules, 3 templates, 29 snippets, 67 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **19 skills, 11 rules, 3 templates, 29 snippets, 68 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents, installed as a plugin or read from a checkout. An optional second plugin registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); the server is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -61,7 +61,7 @@ The content is consumed by AI coding agents, installed as a plugin or read from 
 
 Neither agent needs a clone of `main`: both install the slim `plugin-dist` build. Clone the full repository only to [run the examples or contribute](#run-the-examples-or-contribute).
 
-- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 19 skills and 10 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
+- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 19 skills and 11 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
 
   ```bash
   git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
@@ -129,7 +129,7 @@ Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 
 ## Falsifiers
 
-Every one of the 67 examples carries a **falsifier**: a flag that changes the
+Every one of the 68 examples carries a **falsifier**: a flag that changes the
 input so a real assertion fails. It never disables the assertion, skips the
 check, or short-circuits to an error — it feeds the script something the
 contract says must not pass, and the same check that guards the happy path
@@ -157,7 +157,7 @@ per-script exit-code model, are in
 
 ## Examples and showcase
 
-**67 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **80 showcase pieces** in [`showcase/`](showcase/) exist to show the skills working together at production scale: each is a single headless script that models a game prop, then runs it through the same cleanup, bake, LOD, collider and export steps the skills teach, and fails if a measured budget (triangle counts, colliders, materials, real-world size) is missed. They are not API examples. Conventions: [`showcase/README.md`](showcase/README.md).
+**68 examples** in [`examples/`](examples/) are runnable, self-checking scripts: each asserts one API contract, carries a falsifier, and runs headless on Blender 5.2 LTS and 4.5 LTS in the `blender-smoke` workflow (5.1 on the weekly cron or by manual dispatch). Those whose contract is visible also render a still. **80 showcase pieces** in [`showcase/`](showcase/) exist to show the skills working together at production scale: each is a single headless script that models a game prop, then runs it through the same cleanup, bake, LOD, collider and export steps the skills teach, and fails if a measured budget (triangle counts, colliders, materials, real-world size) is missed. They are not API examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 Browse both, with filters, full-size renders and each script's README, in the **[gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**.
 
@@ -176,10 +176,10 @@ Browse both, with filters, full-size renders and each script's README, in the **
 
 ```
 skills/<name>/SKILL.md   - 19 skill files, YAML frontmatter, one canonical pattern each
-rules/<name>.mdc         - 10 rule files, anti-pattern + correction
+rules/<name>.mdc         - 11 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
 snippets/<name>.py       - 29 standalone Python snippets, 5 to 75 lines each
-examples/<name>/         - 67 example directories: script, README with exit codes and falsifier
+examples/<name>/         - 68 example directories: script, README with exit codes and falsifier
 showcase/<name>/         - 80 showcase pieces: budget-gated game props, script and README
 claude/                  - generated Claude Code copies of the rules (blender-rules skill + import file)
 ```

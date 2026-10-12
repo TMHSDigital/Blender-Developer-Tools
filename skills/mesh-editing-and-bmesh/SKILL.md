@@ -243,6 +243,36 @@ finally:
 
 After mutating selection, call `bm.select_flush_mode()` if you've changed individual element selection and want it to propagate (e.g. selecting verts should select connected edges).
 
+## Normals after 4.1
+
+Auto smooth stopped being a mesh setting in 4.1. On 4.5 LTS and 5.x,
+`mesh.use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()`,
+`free_normals_split()` and `create_normals_split()` do not exist, and
+setting or calling them raises `AttributeError`. Normals are always current.
+
+```python
+import math
+
+me.set_sharp_from_angle(angle=math.radians(30))  # sharp edges + ALL faces smooth
+for i, n in enumerate(me.corner_normals):         # was loop.normal after calc_normals_split()
+    ...
+print(me.normals_domain)                          # 'POINT', 'FACE' or 'CORNER'
+```
+
+- `set_sharp_from_angle` also turns every face smooth. On a flat 16-sided
+  cylinder at 30° it marked the 32 cap-rim edges sharp and smoothed all 18
+  faces (4.5.14 and 5.2.1). Code ported from auto smooth does not expect
+  flat-shaded input to come back smooth.
+- `bpy.ops.object.shade_auto_smooth(angle=...)` is the non-destructive
+  version: it adds a "Smooth by Angle" geometry-nodes modifier on 5.2.1. On
+  4.5.14 under `--background --factory-startup` it returned `{'CANCELLED'}`
+  and added nothing, so headless scripts that also target 4.5 should use
+  `set_sharp_from_angle`.
+- Custom normals: `me.normals_split_custom_set(...)` and
+  `normals_split_custom_set_from_vertices(...)` still exist on both.
+
+The `no-removed-normals-api` rule flags the old calls. Witness: [`examples/mesh-normals-after-41/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-normals-after-41).
+
 ## Common AI mistakes
 
 1. **`bpy.ops.mesh.*` in a loop**. See the canonical example above. Move to `bpy.data` plus `bmesh`.
@@ -269,6 +299,8 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 8. **Trusting glTF as an n-gon witness.** The exporter always triangulates. A cube and a hexagon-from-dissolved-edge both ship 12 tris. Hygiene (`len(poly.vertices) <= 4`) and `Mesh.calc_tangents` (aborts on n-gons) must run on the Blender mesh. Witness: [`examples/ngon-triangulate/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate).
 
 9. **Treating coincident duplicate shells as non-manifold.** Two cubes occupying the same space are still valence-2. They ship as extra glTF triangles until `bmesh.ops.remove_doubles`. Witness: [`examples/coincident-vert-weld/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/coincident-vert-weld).
+
+10. **`mesh.use_auto_smooth = True` / `mesh.calc_normals_split()`.** Removed in 4.1; `AttributeError` on 4.5 and 5.x. See Normals after 4.1 above.
 
 ## Related
 
@@ -297,6 +329,7 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`lightmap-uv-channel`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel): A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin. Falsify: `--overlap-islands` (exit 7).
 - [`lod-decimate-chain`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain): A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. Falsify: `--no-decimate` (exit 6).
 - [`mesh-hygiene-audit`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit): Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. Falsify: `--inject ngon` (exit 3).
+- [`mesh-normals-after-41`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-normals-after-41): Check-only witness for the normals API that replaced auto smooth in Blender 4.1, on 4.5 LTS and 5.x alike. Falsify: `--legacy-api` (exit 3).
 - [`modular-kit-snap`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap): A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap. Falsify: `--seam-gap` (exit 5).
 - [`ngon-triangulate`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/ngon-triangulate): Synthesizes one hexagon by dissolving a cube edge, then asserts the hygiene / tangent contracts on that defective mesh. Falsify: `--no-dissolve` (exit 3).
 - [`shape-key-blend`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shape-key-blend): A relative Tall shape key that turns a squat ceramic jar into a trumpet vase. Falsify: `--zero-blend` (exit 5).

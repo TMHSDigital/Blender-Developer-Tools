@@ -1492,6 +1492,54 @@
     }
   },
   {
+    "name": "mesh-normals-after-41",
+    "path": "examples/mesh-normals-after-41/",
+    "script": "examples/mesh-normals-after-41/mesh_normals_after_41.py",
+    "skills": [
+      "mesh-editing-and-bmesh"
+    ],
+    "render": false,
+    "min_version": "4.5",
+    "run": "blender --background --python examples/mesh-normals-after-41/mesh_normals_after_41.py",
+    "summary": "Check-only witness for the normals API that replaced auto smooth in Blender 4.1, on 4.5 LTS and 5.x alike.",
+    "falsifiers": [
+      {
+        "args": [
+          "--legacy-api"
+        ],
+        "expect_exit": 3
+      },
+      {
+        "args": [
+          "--sharp-angle",
+          "10"
+        ],
+        "expect_exit": 4
+      },
+      {
+        "args": [
+          "--flatten-after"
+        ],
+        "expect_exit": 5
+      },
+      {
+        "args": [
+          "--skip-set-sharp"
+        ],
+        "expect_exit": 6
+      }
+    ],
+    "exit_codes": {
+      "0": "Success",
+      "1": "Uncaught exception (FATAL wrapper)",
+      "2": "argparse / usage",
+      "3": "A removed normals attribute exists, or the pre-4.1 code raised (`--legacy-api`)",
+      "4": "`set_sharp_from_angle` marked the wrong number of edges (`--sharp-angle 10`)",
+      "5": "Rim vertex corner normals are not exactly two (`--flatten-after`)",
+      "6": "`set_sharp_from_angle` did not smooth the flat faces (`--skip-set-sharp`)"
+    }
+  },
+  {
     "name": "modular-kit-snap",
     "path": "examples/modular-kit-snap/",
     "script": "examples/modular-kit-snap/modular_kit_snap.py",
