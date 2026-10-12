@@ -29,6 +29,12 @@ updates:
     target-branch: "main"
     commit-message:
       prefix: "chore(deps)"
+    # requirements-dev.txt pulls in scripts/site/requirements.txt with -r, so
+    # without this the site pins get two identical PRs (site-build and
+    # dev-tools) on every bump. The /scripts/site entry owns them.
+    ignore:
+      - dependency-name: "jinja2"
+      - dependency-name: "markupsafe"
     groups:
       dev-tools:
         patterns:
