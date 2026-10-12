@@ -46,7 +46,7 @@
 
 This repository ships **18 skills, 9 rules, 3 templates, 29 snippets, 66 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents, installed as a plugin or read from a checkout — **there is no MCP server in this repository, and none is required**. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
+The content is consumed by AI coding agents, installed as a plugin or read from a checkout. The plugin also registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); it is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
@@ -78,6 +78,16 @@ Neither agent needs a clone of `main`: both install the slim `plugin-dist` build
   `@plugin-dist` is a generated branch holding only what the plugin loads (about 0.3 MB, rebuilt on every release), so the add does not clone the gallery renders, showcase props and history on `main`. Adding the repo without `@plugin-dist` still works; the plugin itself installs from `plugin-dist` either way.
 
   Claude Code does not read Cursor `.mdc` rules, so the plugin ships them as the `blender-rules` skill (generated from `rules/`), which Claude loads when it writes or reviews bpy code. No second clone is needed. To keep the rules in context all the time instead, add `@/path/to/Blender-Developer-Tools/claude/blender-rules.md` to your project's `CLAUDE.md` from a checkout. Without the plugin, copy `skills/*` and `claude/skills/*` into your project's `.claude/skills/`.
+
+### Live Blender session (MCP)
+
+Both plugin manifests point at [`mcp.json`](mcp.json), which registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) as `blender`, so the agent can inspect and drive a running Blender: scene and object summaries, screenshots, viewport renders, `bpy` execution and bundled API docs. The plugin launches it with `uvx` from [projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp), pinned to a reviewed commit. The server is GPL-licensed and is not copied into this repository. To use it:
+
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) so `uvx` is on `PATH`. The first launch fetches and builds the server.
+2. In **Blender 5.1 or newer** (the add-on's minimum, so 4.5 LTS has no live session), install the MCP add-on: zip `addon/blender_mcp_addon/` from the upstream repository and use **Edit → Preferences → Get Extensions → Install from Disk**. Start its server from the add-on preferences, or turn on auto-start. It listens on `localhost:9876`.
+3. Optional: set `BLENDER_PATH` if `blender` is not on `PATH` (the `*_for_cli` tools use it to run background Blender), and `BLENDER_MCP_HOST`/`BLENDER_MCP_PORT` to move the socket.
+
+The server runs whatever code the agent sends inside your Blender session, without guards, so attach it only to scenes you can afford to lose. Without the add-on running, the `blender` tools just report that they cannot connect; the skills and rules work the same either way. If you already registered the server yourself, remove one of the two entries so the tools are not listed twice.
 
 ### Run the examples or contribute
 

@@ -9,6 +9,7 @@
   "homepage": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
   "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
   "license": "CC-BY-NC-ND-4.0 AND MIT",
+  "mcpServers": "./mcp.json",
   "skills": [
     "./claude/skills/"
   ],

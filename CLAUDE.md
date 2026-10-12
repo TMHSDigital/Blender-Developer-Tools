@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Blender Developer Tools** repository is at **v0.152.1**. It packages skills, rules, snippets, starter templates, and runnable smoke-gated examples for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.2 LTS** (current stable) with **Blender 4.5 LTS** fallback. **Blender 5.1** is prior stable. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
+The **Blender Developer Tools** repository is at **v0.152.1**. It packages skills, rules, snippets, starter templates, and runnable smoke-gated examples for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.2 LTS** (current stable) with **Blender 4.5 LTS** fallback. **Blender 5.1** is prior stable. The repo ships no MCP server of its own: the plugin registers the official Blender Lab server through `mcp.json` (see Live MCP vs Headless Harness). Content is consumed directly by the AI when working in Blender add-on or scripting projects.
 
 **Version:** 0.152.1
 **License:** CC-BY-NC-ND-4.0
@@ -148,7 +148,7 @@ cross-example import mechanism (see its docstring).
 
 ## Live MCP vs Headless Harness
 
-Two execution paths exist for Blender work. The headless harness (`.scratch/` or system binaries, check-only scripts, CI smoke) is the **only source of truth for correctness** — every witness, check, and CI gate runs headless. The official Blender Lab MCP server ([lab/blender_mcp](https://projects.blender.org/lab/blender_mcp)), when registered on the local machine, provides a live interactive session for exploration.
+Two execution paths exist for Blender work. The headless harness (`.scratch/` or system binaries, check-only scripts, CI smoke) is the **only source of truth for correctness** — every witness, check, and CI gate runs headless. The official Blender Lab MCP server ([lab/blender_mcp](https://projects.blender.org/lab/blender_mcp)), when registered on the local machine, provides a live interactive session for exploration. The plugin ships it: both manifests set `"mcpServers": "./mcp.json"`, which runs `uvx --from git+https://projects.blender.org/lab/blender_mcp.git@<sha>#subdirectory=mcp blender-mcp`. `tests/check_manifest_meta.py` requires a full 40-hex commit pin, and `build_plugin_dist.py` ships `mcp.json` and fails if a manifest's path is missing. To bump it, review the upstream diff, replace the SHA, and confirm `initialize` + `tools/list` over stdio. The server is GPL-3.0: reference it, never vendor it. The add-on needs Blender 5.1+.
 
 - **Use the live MCP for:** interactively inspecting a scene while designing a render, querying data relations, diagnosing why staged geometry or lighting looks wrong, and prototyping API calls before committing them to a script.
 - **Never use the live MCP for:** anything a check depends on, anything reported as verification evidence, or anything CI must reproduce. A behavior observed in the live session must be re-proven in the headless script before it counts. Examples must never import from, depend on, or assume the MCP server.

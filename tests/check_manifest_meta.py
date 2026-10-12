@@ -12,6 +12,9 @@ drift apart again. Checks, with .cursor-plugin/plugin.json as the reference:
 - keywords: the same set, apart from the agent-specific "cursor-plugin"
 - logo: the Cursor manifest names one, it exists, and the plugin-dist build
   ships it (scripts/build_plugin_dist.py FILES)
+- mcpServers: the same path in both plugin.json files, and every server in
+  that file runs the Blender Lab MCP from a full 40-hex commit pin, so a plugin
+  install never floats to an unreviewed upstream head
 
 Run: python tests/check_manifest_meta.py      (exit 0 ok, 1 on mismatch)
 """
@@ -19,10 +22,12 @@ from __future__ import annotations
 
 import html
 import json
+import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+PINNED_MCP = re.compile(r"^git\+https://projects\.blender\.org/lab/blender_mcp\.git@[0-9a-f]{40}#subdirectory=mcp$")
 
 
 def load(rel: str) -> dict:
@@ -80,6 +85,22 @@ def check() -> list[str]:
         if logo not in FILES:
             errors.append(f"logo {logo!r} is not shipped in the plugin-dist build "
                           "(scripts/build_plugin_dist.py FILES)")
+
+    mcp = cursor.get("mcpServers")
+    if claude.get("mcpServers") != mcp:
+        errors.append(f".claude-plugin/plugin.json mcpServers {claude.get('mcpServers')!r} != {mcp!r}")
+    if not isinstance(mcp, str) or not (root / mcp).is_file():
+        errors.append(f".cursor-plugin/plugin.json mcpServers {mcp!r} is not a file in the repo")
+    else:
+        servers = load(mcp).get("mcpServers") or {}
+        if not servers:
+            errors.append(f"{mcp} declares no mcpServers")
+        for name, server in servers.items():
+            args = server.get("args", [])
+            src = args[args.index("--from") + 1] if "--from" in args[:-1] else ""
+            if server.get("command") != "uvx" or not PINNED_MCP.match(src):
+                errors.append(f"{mcp} server {name!r} must run uvx --from the Blender Lab repo "
+                              "pinned to a full commit SHA")
     return errors
 
 
@@ -89,7 +110,7 @@ def main() -> int:
         print(f"::error::{e}", file=sys.stderr)
     if errors:
         return 1
-    print("Manifest metadata consistent: description, homepage, license, keywords, logo")
+    print("Manifest metadata consistent: description, homepage, license, keywords, logo, mcpServers")
     return 0
 
 

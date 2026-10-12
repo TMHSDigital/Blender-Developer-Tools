@@ -6,7 +6,8 @@ plugin needs ~1 MB of it. This copies only what the plugin uses into --out,
 as a self-contained marketplace (its marketplace.json points at "./"):
 
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
-    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo, and a short README
+    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo, mcp.json,
+    and a short README
 
     python scripts/build_plugin_dist.py --out DIR     # build (DIR must be absent or empty)
     python scripts/build_plugin_dist.py --out DIR --force  # replace a previous build in DIR
@@ -32,10 +33,12 @@ ROOT = Path(__file__).resolve().parent.parent
 DIRS = ("skills", "claude", "rules", "snippets", "templates")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
-# assets/favicon.svg is the Cursor manifest's "logo".
+# assets/favicon.svg is the Cursor manifest's "logo". mcp.json is both
+# manifests' "mcpServers": the Blender Lab MCP server, launched with uvx from
+# a pinned upstream commit (GPL, so it is referenced, never vendored).
 FILES = ("LICENSE", ".claude-plugin/plugin.json",
          ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json",
-         "assets/favicon.svg")
+         "assets/favicon.svg", "mcp.json")
 MAX_BYTES = 2_000_000
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc")
 
@@ -44,7 +47,9 @@ DIST_README = """# Blender Developer Tools (Claude Code plugin build)
 Generated from https://github.com/TMHSDigital/Blender-Developer-Tools by
 `scripts/build_plugin_dist.py` on every release. Do not edit this branch; it
 is force-pushed. It carries only what the plugin loads: skills, the
-`blender-rules` skill generated from `rules/`, snippets, templates and licenses.
+`blender-rules` skill generated from `rules/`, snippets, templates, licenses,
+and `mcp.json`, which registers the official Blender Lab MCP server (needs `uv`,
+and the MCP add-on enabled in a running Blender 5.1+).
 Examples, the showcase and the gallery live on `main`.
 
 ```text
@@ -153,6 +158,10 @@ def verify(out: Path, size: int) -> list[str]:
     if not (out / "claude" / "skills" / "blender-rules" / "SKILL.md").is_file():
         errors.append("blender-rules skill missing")
     cursor = json.loads((out / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    for name, manifest in (("Claude", plugin), ("Cursor", cursor)):
+        mcp = manifest.get("mcpServers")
+        if isinstance(mcp, str) and not (out / mcp).is_file():
+            errors.append(f"{name} manifest mcpServers path {mcp} missing from the dist")
     for key in ("skills", "rules"):
         for rel in cursor.get(key, []):
             if not (out / rel).is_file():

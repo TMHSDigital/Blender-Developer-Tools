@@ -15,7 +15,7 @@ repeats the other.
 
 Skills, rules, snippets, starter templates, and runnable smoke-gated examples
 for Blender Python development. The repo targets **Blender 5.2 LTS** (current
-stable) with a **Blender 4.5 LTS** fallback. **Blender 5.1** is prior stable. There is no MCP server. It ships
+stable) with a **Blender 4.5 LTS** fallback. **Blender 5.1** is prior stable. The repo ships no MCP server of its own; the plugin's `mcp.json` registers the upstream Blender Lab server (pinned commit, launched with `uvx`) for optional live sessions. It ships
 a `.cursor-plugin/plugin.json` manifest so the ecosystem drift checker
 classifies it as a `cursor-plugin`. This is content the AI loads when the user
 asks Blender questions or works on Blender add-ons in Cursor or Claude Code.

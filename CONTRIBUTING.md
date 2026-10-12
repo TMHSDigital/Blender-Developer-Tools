@@ -49,7 +49,7 @@ see the end of this file). Examples and showcase pieces have more gates
 
 ## Repository Structure
 
-This repo is a content collection (skills, rules, snippets, templates, examples, and showcase pieces) for Blender Python development. There is no runtime and no MCP server. Headless checks run through `tests/smoke/run_example.py`; CI validates frontmatter, syntax, and aggregate counts.
+This repo is a content collection (skills, rules, snippets, templates, examples, and showcase pieces) for Blender Python development. There is no runtime and no MCP server of its own; `mcp.json` only registers the upstream Blender Lab MCP server for the plugin, pinned to a commit that `tests/check_manifest_meta.py` requires. Headless checks run through `tests/smoke/run_example.py`; CI validates frontmatter, syntax, and aggregate counts.
 
 ```text
 skills/
