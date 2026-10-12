@@ -219,7 +219,8 @@ def make_wire(name, nodes, bevel, mat, parent, loc, rot_z):
 
 def principled(name, color, rough, metal=0.0, spec=None):
     m = bpy.data.materials.new(name)
-    m.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        m.use_nodes = True
     b = m.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*color, 1.0)
     b.inputs["Roughness"].default_value = rough
@@ -236,7 +237,8 @@ def magnet_material():
     The bar ends sit at object y=0 with the tube running along +y there, so
     a y threshold cuts a clean band square to the bar near each pole."""
     m = bpy.data.materials.new("MagnetEnamelAndPoles")
-    m.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        m.use_nodes = True
     nt = m.node_tree
     nodes, links = nt.nodes, nt.links
     paint = nodes["Principled BSDF"]
@@ -426,7 +428,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

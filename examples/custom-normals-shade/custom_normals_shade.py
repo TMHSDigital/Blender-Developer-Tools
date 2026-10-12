@@ -685,7 +685,8 @@ def eevee_engine_id():
 
 def make_material(name, color, metallic, roughness, coat=0.0):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Metallic"].default_value = metallic
@@ -702,7 +703,8 @@ def make_painted_steel(name, paint, steel):
     normal discontinuity — matte paint would hide the very differences this
     render exists to show."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nodes, links = nt.nodes, nt.links
     out = nodes["Material Output"]
@@ -828,7 +830,8 @@ def render_still(can, path, engine):
     # a drafting line, not a glow: warm amber ink with just enough emission
     # to stay legible on the shadow side of the can, no bloom halo
     glow = bpy.data.materials.new("SharpEdgeInk")
-    glow.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        glow.use_nodes = True
     gb = glow.node_tree.nodes["Principled BSDF"]
     gb.inputs["Base Color"].default_value = (0.85, 0.40, 0.06, 1.0)
     gb.inputs["Roughness"].default_value = 0.6
@@ -854,7 +857,8 @@ def render_still(can, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

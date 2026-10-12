@@ -209,7 +209,8 @@ def eevee_engine_id():
 
 def principled(name, color, metallic, roughness, emission=None, strength=4.5):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
@@ -360,7 +361,8 @@ def render_still(keep, clear, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

@@ -55,7 +55,9 @@ def build():
     if obj is None:
         raise RuntimeError("the add operator left no active object")
     obj.data.polygons.foreach_set("use_smooth", [True] * len(obj.data.polygons))
-    mat = bpy.data.materials.new("Ceramic"); mat.use_nodes = True
+    mat = bpy.data.materials.new("Ceramic")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
     b.inputs['Base Color'].default_value = (0.45, 0.025, 0.05, 1)  # crimson ceramic
     b.inputs['Roughness'].default_value = 0.16  # glossy: the SDF facets read by their glints
@@ -74,7 +76,9 @@ def build_vase_kit(name):
              ("Clay.Handle", (0.45, 0.20, 0.10))]
     mats = []
     for mname, rgb in tones:
-        m = bpy.data.materials.new(mname); m.use_nodes = True
+        m = bpy.data.materials.new(mname)
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            m.use_nodes = True
         mb = m.node_tree.nodes.get('Principled BSDF')
         mb.inputs['Base Color'].default_value = (*rgb, 1)
         mb.inputs['Roughness'].default_value = 0.85   # unfired clay: matte
@@ -120,7 +124,9 @@ def render_still(obj, path, engine):
     bpy.context.collection.objects.unlink(obj)
 
     kit = build_vase_kit("VaseKit")
-    glaze = bpy.data.materials.new("Glaze"); glaze.use_nodes = True
+    glaze = bpy.data.materials.new("Glaze")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        glaze.use_nodes = True
     g = glaze.node_tree.nodes.get('Principled BSDF')
     g.inputs['Base Color'].default_value = (0.03, 0.16, 0.30, 1)   # cobalt glaze
     g.inputs['Roughness'].default_value = 0.12
@@ -142,7 +148,9 @@ def render_still(obj, path, engine):
     kit.location.z = -min(v.co.z for v in kit.data.vertices) + 0.12
     # the kit's own edges as a thin dark cage: UV rings and torus loops
     # running straight through each other, the topology the remesh replaces
-    cage_mat = bpy.data.materials.new("Cage"); cage_mat.use_nodes = True
+    cage_mat = bpy.data.materials.new("Cage")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        cage_mat.use_nodes = True
     cm = cage_mat.node_tree.nodes.get('Principled BSDF')
     cm.inputs['Base Color'].default_value = (0.05, 0.03, 0.02, 1)
     cm.inputs['Roughness'].default_value = 0.6
@@ -157,7 +165,9 @@ def render_still(obj, path, engine):
           f"kit_mats={len(kit.data.materials)}")
 
     # walnut potter's bats under each piece
-    wood = bpy.data.materials.new("Walnut"); wood.use_nodes = True
+    wood = bpy.data.materials.new("Walnut")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        wood.use_nodes = True
     wn = wood.node_tree
     wb = wn.nodes.get('Principled BSDF')
     wave = wn.nodes.new('ShaderNodeTexWave'); wave.inputs['Scale'].default_value = 1.2
@@ -185,7 +195,9 @@ def render_still(obj, path, engine):
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme)
     finally:
         bm.free()
-    fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
+    fmat = bpy.data.materials.new("Studio")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes.get('Principled BSDF')
     fb.inputs['Base Color'].default_value = (0.03, 0.032, 0.037, 1)  # dark staged studio
     fb.inputs['Roughness'].default_value = 0.7
@@ -193,7 +205,9 @@ def render_still(obj, path, engine):
     floor = bpy.data.objects.new("Floor", fme); bpy.context.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", fme.copy()); wall.location = (0, 9.0, 0)
     wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
-    w = bpy.data.worlds.new("W"); w.use_nodes = True
+    w = bpy.data.worlds.new("W")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
 
     aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.05)

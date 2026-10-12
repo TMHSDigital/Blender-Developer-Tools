@@ -104,7 +104,8 @@ def toon_material(name, color):
     base colour, emitted. Three tones (shadow / mid / lit) so the key light
     still shapes the form while the Line Art ink carries the drawing."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     diff = nt.nodes.new("ShaderNodeBsdfDiffuse")
@@ -137,7 +138,8 @@ def toon_material(name, color):
 
 def glow_material(name, color, strength):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     emit = nt.nodes.new("ShaderNodeEmission")
@@ -598,7 +600,8 @@ def build_studio(sc):
         finally:
             bm.free()
         mat = bpy.data.materials.new(name + "M")
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         b = mat.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
         b.inputs["Roughness"].default_value = 0.7
@@ -613,7 +616,8 @@ def build_studio(sc):
     plane("Wall", 30.0, (0, 8, 0), (math.radians(90), 0, 0))
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
         0.02, 0.021, 0.025, 1.0,
     )

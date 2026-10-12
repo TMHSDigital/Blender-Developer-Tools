@@ -191,7 +191,8 @@ def principled(name, base, rough, metal=0.0, coat=0.0, coat_rough=0.1, rough_var
     """A designed Principled material. *rough_var* adds a low-frequency
     roughness drift (no fine noise: on metal that reads as glitter)."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*base, 1.0)
@@ -215,7 +216,8 @@ def principled(name, base, rough, metal=0.0, coat=0.0, coat_rough=0.1, rough_var
 def ghost_glass(name, tint):
     """Frosted, faintly tinted glass for an operand volume the result lost."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*tint, 1.0)
     b.inputs["Roughness"].default_value = 0.22
@@ -229,7 +231,8 @@ def walnut_material():
     bands mixed between two walnut tones, a soft blotch layer, a light bump,
     and a satin coat that does not mirror the scene."""
     mat = bpy.data.materials.new("Walnut")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -420,7 +423,8 @@ def render_still(results, cutters, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -434,7 +438,8 @@ def render_still(results, cutters, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

@@ -797,7 +797,8 @@ def eevee_engine_id():
 def make_materials():
     def pbr(name, base, metallic, roughness, emission=None, strength=0.0):
         mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         b = mat.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
         b.inputs["Metallic"].default_value = metallic
@@ -829,7 +830,8 @@ def render_still(sc, heroes, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -842,7 +844,8 @@ def render_still(sc, heroes, path, engine):
     sc.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     sc.world = world
 

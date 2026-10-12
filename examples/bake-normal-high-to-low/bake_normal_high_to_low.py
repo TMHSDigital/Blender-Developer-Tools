@@ -157,7 +157,8 @@ def setup_bake_target(obj, name, size=BAKE_RES):
     img = bpy.data.images.new(name, size, size, alpha=True, float_buffer=False)
     img.colorspace_settings.name = "Non-Color"
     mat = bpy.data.materials.new(name + "Mat")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nodes = mat.node_tree.nodes
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = img
@@ -388,7 +389,8 @@ def make_map_card(image, name="BakeCard"):
     finally:
         bm.free()
     mat = bpy.data.materials.new(name + "Mat")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
     nodes.clear()
@@ -446,7 +448,8 @@ def seat_on_plinth(ob, name):
     finally:
         bm.free()
     pmat = bpy.data.materials.new(name + "Mat")
-    pmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        pmat.use_nodes = True
     paint_principled(pmat, (0.045, 0.042, 0.04, 1.0), 0.0, 0.55)
     slab.materials.append(pmat)
     plinth = bpy.data.objects.new(name, slab)
@@ -462,7 +465,8 @@ def make_label(text, loc, name):
     cu.align_x, cu.align_y = "CENTER", "CENTER"
     cu.extrude = 0.004
     lm = bpy.data.materials.new(name + "Mat")
-    lm.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        lm.use_nodes = True
     b = paint_principled(lm, (0.62, 0.60, 0.56, 1.0), 0.0, 0.5)
     b.inputs["Emission Color"].default_value = (0.9, 0.86, 0.78, 1.0)
     b.inputs["Emission Strength"].default_value = 0.35
@@ -490,11 +494,13 @@ def render_still(high, low, mat, tex, path, engine):
     # The solidify rim is the plate's edge, not baked surface: give it plain
     # bronze. Wearing the map, it sampled the UV border and rendered ragged.
     rim = bpy.data.materials.new("BronzeRim")
-    rim.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        rim.use_nodes = True
     bronze(rim)
     low.data.materials.append(rim)
     src = bpy.data.materials.new("BronzeSource")
-    src.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        src.use_nodes = True
     bronze(src)
     high.data.materials.clear()
     high.data.materials.append(src)
@@ -522,7 +528,8 @@ def render_still(high, low, mat, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -535,7 +542,8 @@ def render_still(high, low, mat, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
         0.02,
         0.021,

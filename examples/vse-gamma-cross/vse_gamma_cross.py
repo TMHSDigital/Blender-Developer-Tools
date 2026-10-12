@@ -289,7 +289,8 @@ def build_console(sc, screen_img, aspect):
 
     def pbr(name, color, metallic, rough, spec=None):
         mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         b = mat.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*color, 1.0)
         b.inputs["Metallic"].default_value = metallic
@@ -301,7 +302,8 @@ def build_console(sc, screen_img, aspect):
 
     def glow(name, rgb, strength):
         mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         nt = mat.node_tree
         nt.nodes.clear()
         out = nt.nodes.new("ShaderNodeOutputMaterial")
@@ -410,7 +412,8 @@ def build_console(sc, screen_img, aspect):
     finally:
         bm.free()
     smat = bpy.data.materials.new("ScreenPixels")
-    smat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        smat.use_nodes = True
     nt = smat.node_tree
     nt.nodes.clear()
     out = nt.nodes.new("ShaderNodeOutputMaterial")
@@ -492,7 +495,8 @@ def build_stage(sc):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -506,7 +510,8 @@ def build_stage(sc):
 
     world = bpy.data.worlds.new("World")
     if world.node_tree is None:  # 5.x worlds ship with nodes; 4.x needs this
-        world.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     sc.world = world
 

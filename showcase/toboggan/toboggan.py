@@ -350,7 +350,8 @@ def _sock(sockets, identifier):
 def wood_material(name, dark, light, rough=(0.72, 0.52)):
     """Timber whose grain runs along ``GrainDir`` and whose tone varies by piece."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -414,7 +415,8 @@ def wood_material(name, dark, light, rough=(0.72, 0.52)):
 def iron_material(name):
     """Forged iron: near-black, rough, rusted in patches. Not chrome."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -900,7 +902,8 @@ def build_sled_mesh(
 def steel_material(name):
     """Bright worn strap steel, dulled and speckled with rust. Not chrome."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -927,7 +930,8 @@ def steel_material(name):
 def paint_material(name):
     """Enamel red, worn to a darker undercoat in patches."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -953,7 +957,8 @@ def paint_material(name):
 def rope_material(name):
     """Hemp: diagonal lay lines from the rope's own UVs, so the twist follows the strand."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -1491,7 +1496,8 @@ def render_still(low, mats, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -1504,7 +1510,8 @@ def render_still(low, mats, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

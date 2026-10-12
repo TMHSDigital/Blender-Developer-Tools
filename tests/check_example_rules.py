@@ -16,6 +16,11 @@ rules are checked statically over examples/, showcase/ and templates/
 - type-annotate-props-and-defend-context: `name = bpy.context.active_object`
   (or `context.active_object`) not followed directly by `if name is None`.
 
+- use_nodes gate (#471): `<x>.use_nodes = True` must sit inside an `if` that
+  tests `bpy.app.version`. 5.x deprecates `use_nodes` on materials, worlds,
+  lights and scenes (removal in 6.0) and creates their node trees anyway, so
+  only 4.5 needs the call. Checked in snippets/ too.
+
 A deliberate exception carries a marker comment on the `for` line, or the
 line just above it, that says why:
 
@@ -231,11 +236,39 @@ def check_widened_bulk_writes(path: Path, root: Path) -> list[str]:
     return errors
 
 
+def check_use_nodes_gated(path: Path, root: Path) -> list[str]:
+    """`x.use_nodes = True` outside an `if` on bpy.app.version (#471)."""
+    rel = path.relative_to(root).as_posix()
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=rel)
+    parents: dict[ast.AST, ast.AST] = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parents[child] = node
+    errors = []
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+                and node.value.value is True
+                and any(isinstance(t, ast.Attribute) and t.attr == "use_nodes"
+                        for t in node.targets)):
+            continue
+        up, gated = parents.get(node), False
+        while up is not None and not gated:
+            gated = isinstance(up, ast.If) and "bpy.app.version" in ast.unparse(up.test)
+            up = parents.get(up)
+        if not gated:
+            errors.append(f"{rel}:{node.lineno}: {ast.unparse(node)} is not gated on "
+                          "bpy.app.version (deprecated on 5.x, removed in 6.0); wrap it in "
+                          "`if bpy.app.version < (5, 0, 0):`")
+    return errors
+
+
 def check(root: Path = ROOT) -> list[str]:
     errors = []
     for path in scripts(root):
         errors += check_file(path, root)
         errors += check_widened_bulk_writes(path, root)
+    for path in [*scripts(root), *sorted(root.glob("snippets/*.py"))]:
+        errors += check_use_nodes_gated(path, root)
     for path in template_scripts(root):
         errors += check_ops_in_loops(path, root)
     return errors
@@ -248,7 +281,7 @@ def main() -> int:
     if not errors:
         print(f"example rules: {len(scripts(ROOT))} scripts follow use-foreach-set and "
               f"active_object guards; {len(template_scripts(ROOT))} templates have no "
-              "object operator in a loop")
+              "object operator in a loop; every use_nodes = True is version-gated")
     return 1 if errors else 0
 
 

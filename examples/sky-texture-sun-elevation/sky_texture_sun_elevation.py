@@ -63,7 +63,8 @@ def sky_type_for_version():
 def build_sky_world(elevation):
     """Create a World whose Background Color is driven by ShaderNodeTexSky."""
     world = bpy.data.worlds.new("SkyWorld")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     nt = world.node_tree
     for n in list(nt.nodes):
         nt.nodes.remove(n)
@@ -100,7 +101,8 @@ def build_sky_world(elevation):
 
 def _principled(name, rgb, rough, metallic=0.0, specular=0.5):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1.0)
     b.inputs["Roughness"].default_value = rough
@@ -173,7 +175,8 @@ def _bevel(ob, width, segments=2):
 def _stone_material(name, dark, light, rough, scale):
     """Principled stone with a noise-mixed two-tone base, so it is not a flat fill."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Roughness"].default_value = rough
@@ -198,7 +201,8 @@ def _stone_material(name, dark, light, rough, scale):
 def _paving_material():
     """Limestone pavers: a Brick texture with a soft mortar, object-space."""
     mat = bpy.data.materials.new("Paving")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Roughness"].default_value = 0.82

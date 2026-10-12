@@ -229,7 +229,8 @@ def _cross(arm, w):
 
 def principled(name, color, metallic, roughness, emission=0.0):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
@@ -425,7 +426,8 @@ def ghost(name, color, alpha):
     """Tinted see-through shell for the cage: transparent mixed with a glossy
     tint, so the sparse facets read as a volume and the wires stay dominant."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
@@ -554,7 +556,8 @@ def render_still(shell, path, engine):
     coll.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = \
         (0.02, 0.021, 0.025, 1.0)
     scene.world = world

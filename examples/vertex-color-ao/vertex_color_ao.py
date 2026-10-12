@@ -805,7 +805,8 @@ def make_ao_material(name, rgb, rough, metallic=0.0, ao_strength=1.0,
     its own pattern regardless of where the asset is placed.
     """
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Roughness"].default_value = rough
@@ -918,7 +919,8 @@ def build_studio(sc):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.030, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -931,7 +933,8 @@ def build_studio(sc):
     sc.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
         0.020, 0.021, 0.025, 1.0)
     sc.world = world

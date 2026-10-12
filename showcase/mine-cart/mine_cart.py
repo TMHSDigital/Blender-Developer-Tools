@@ -839,7 +839,8 @@ def steel_material(name):
     """Red-oxide paint gone to rust: run-off streaks, a rusted foot and rim,
     and an inside caked with ore dust (the ``Grime`` face attribute)."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     co = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
@@ -893,7 +894,8 @@ def iron_material(name):
     the ground; the railheads' running band and the wheels' treads and
     flange tips worn bright where they run."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     co = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
@@ -954,7 +956,8 @@ def timber_material(name):
     with it; a slow noise shifts each member's tone.
     """
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     tone = nt.nodes.new("ShaderNodeAttribute")
@@ -1007,7 +1010,8 @@ def ballast_material(name):
     """Crushed stone: two sizes of voronoi chips in mixed greys, each chip
     domed by its distance to the cell edge, dark voids between them."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     co = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
@@ -1548,7 +1552,8 @@ def render_still(low, mats, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -1561,7 +1566,8 @@ def render_still(low, mats, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

@@ -246,7 +246,8 @@ def eevee_engine_id():
 
 def _principled(name, color, rough, metal=0.0):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*color, 1.0)
     b.inputs["Roughness"].default_value = rough
@@ -339,7 +340,8 @@ def render_still(obj, path, engine):
     # jar it was blended from, so the lift, flare and slimmed belly read on
     # the one object.
     ghost_mat = bpy.data.materials.new("BasisGhost")
-    ghost_mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        ghost_mat.use_nodes = True
     gnt = ghost_mat.node_tree
     for n in list(gnt.nodes):
         if n.type != 'OUTPUT_MATERIAL':
@@ -359,7 +361,8 @@ def render_still(obj, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -372,7 +375,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

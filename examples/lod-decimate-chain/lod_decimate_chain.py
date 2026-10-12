@@ -421,7 +421,8 @@ def check(rocket, lod1, lod2, no_decimate=False):
 def make_materials():
     def pbr(name, base, metallic, roughness, emission=None, strength=0.0):
         mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         b = mat.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
         b.inputs["Metallic"].default_value = metallic
@@ -481,7 +482,8 @@ def render_still(rockets, tris, path, engine):
         ob.rotation_euler.z = math.radians(270.0 - PORT_AZ)
 
     wm = bpy.data.materials.new("WireInk")
-    wm.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        wm.use_nodes = True
     wb = wm.node_tree.nodes["Principled BSDF"]
     wb.inputs["Base Color"].default_value = (0.015, 0.016, 0.02, 1.0)
     wb.inputs["Roughness"].default_value = 0.6
@@ -489,7 +491,8 @@ def render_still(rockets, tris, path, engine):
 
     # one label per LOD: the evaluated triangle count the check just measured
     lm = bpy.data.materials.new("LabelInk")
-    lm.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        lm.use_nodes = True
     lb = lm.node_tree.nodes["Principled BSDF"]
     lb.inputs["Base Color"].default_value = (0.62, 0.60, 0.56, 1.0)
     lb.inputs["Roughness"].default_value = 0.8
@@ -517,7 +520,8 @@ def render_still(rockets, tris, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -530,7 +534,8 @@ def render_still(rockets, tris, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

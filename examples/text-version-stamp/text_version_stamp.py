@@ -183,7 +183,8 @@ def render_still(obj, path, engine):
     # polished gold stamp: warm base, low roughness with a faint brushed
     # variation so the long faces carry a gradient instead of a flat slab
     mat = bpy.data.materials.new("Gold")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (0.95, 0.66, 0.26, 1.0)
@@ -242,7 +243,8 @@ def render_still(obj, path, engine):
         return ob
 
     pmat = bpy.data.materials.new("Stone")
-    pmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        pmat.use_nodes = True
     pnt = pmat.node_tree
     pb = pnt.nodes["Principled BSDF"]
     pb.inputs["Roughness"].default_value = 0.62
@@ -257,7 +259,8 @@ def render_still(obj, path, engine):
     pnt.links.new(pr.outputs["Color"], pb.inputs["Base Color"])
 
     smat = bpy.data.materials.new("Steel")
-    smat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        smat.use_nodes = True
     snt = smat.node_tree
     sb = snt.nodes["Principled BSDF"]
     sb.inputs["Base Color"].default_value = (0.70, 0.72, 0.76, 1.0)
@@ -290,7 +293,8 @@ def render_still(obj, path, engine):
     cap.size = 0.15; cap.extrude = 0.008; cap.bevel_depth = 0.003
     cap.font = inter
     cmat = bpy.data.materials.new("CaptionInk")
-    cmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        cmat.use_nodes = True
     cb = cmat.node_tree.nodes["Principled BSDF"]
     cb.inputs["Base Color"].default_value = (0.03, 0.03, 0.035, 1.0)
     cb.inputs["Metallic"].default_value = 0.2
@@ -311,7 +315,8 @@ def render_still(obj, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -324,7 +329,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.03, 0.035, 0.045, 1.0)
     scene.world = world
 

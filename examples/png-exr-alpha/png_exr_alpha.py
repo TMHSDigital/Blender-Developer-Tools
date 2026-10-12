@@ -385,7 +385,8 @@ def fixture_mats():
     a walnut-topped console, brass desk plates — no Principled defaults."""
     def mat_principled(name, color, metallic, rough, noise=None):
         mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            mat.use_nodes = True
         nt = mat.node_tree
         bsdf = nt.nodes["Principled BSDF"]
         bsdf.inputs["Base Color"].default_value = (*color, 1.0)
@@ -446,7 +447,8 @@ def face_mat(name, image):
     """Data faces stay pure emission: exact card values, no specular, no
     shading — the panel is a backlit data display."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     out = nt.nodes.new("ShaderNodeOutputMaterial")
@@ -463,7 +465,8 @@ def face_mat(name, image):
 def caption_mat():
     # engraved-ink lettering on the brass desk plates
     mat = bpy.data.materials.new("CaptionInk")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     cb = mat.node_tree.nodes["Principled BSDF"]
     cb.inputs["Base Color"].default_value = (0.012, 0.011, 0.010, 1.0)
     cb.inputs["Roughness"].default_value = 0.5
@@ -585,7 +588,8 @@ def render_still(path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -598,7 +602,8 @@ def render_still(path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
         0.02, 0.021, 0.025, 1.0,
     )

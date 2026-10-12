@@ -1196,7 +1196,8 @@ def pack_uvs(bm, margin=0.08):
 def principled(name, color, metallic, roughness, roughness_var=0.0, mottle=0.0,
                noise_scale=14.0, coat=0.0, stretch=None):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
@@ -1303,7 +1304,8 @@ def stone_material():
     dark fossil speckle, and the speckle again in the roughness and a faint
     bump (the stand mixer's counter, warmer and a shade darker)."""
     mat = bpy.data.materials.new("CounterStone")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Metallic"].default_value = 0.0
@@ -2082,7 +2084,8 @@ def render_still(low, target, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -2095,7 +2098,8 @@ def render_still(low, target, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

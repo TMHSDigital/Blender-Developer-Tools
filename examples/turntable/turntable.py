@@ -47,7 +47,9 @@ def build(no_keys=False):
     if obj is None:
         raise RuntimeError("the add operator left no active object")
     obj.data.shade_smooth()
-    mat = bpy.data.materials.new("M"); mat.use_nodes = True
+    mat = bpy.data.materials.new("M")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
     b.inputs['Base Color'].default_value = (0.85, 0.35, 0.10, 1)
     b.inputs['Metallic'].default_value = 0.7
@@ -113,7 +115,9 @@ def _lathe(bm, profile, segs=96):
 
 
 def _material(name, base, rough, metal=0.0, emit=None, strength=0.0, noise=None):
-    mat = bpy.data.materials.new(name); mat.use_nodes = True
+    mat = bpy.data.materials.new(name)
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     pb = nt.nodes['Principled BSDF']
     pb.inputs['Base Color'].default_value = (*base, 1.0)
@@ -277,7 +281,9 @@ def render_still(obj, path, engine):
         bm.free()
     # dark staged studio: shared floor/wall material, warm shaped key, faint
     # cool fill, cool rim, warm wedge on the back wall (docs/VISUAL-STYLE.md)
-    fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
+    fmat = bpy.data.materials.new("Studio")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -285,7 +291,9 @@ def render_still(obj, path, engine):
     floor = bpy.data.objects.new("Floor", fme); bpy.context.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", fme.copy()); wall.location = (0, 9.0, 0)
     wall.rotation_euler = (math.radians(90), 0, 0); bpy.context.collection.objects.link(wall)
-    w = bpy.data.worlds.new("W"); w.use_nodes = True
+    w = bpy.data.worlds.new("W")
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
     aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.05); bpy.context.collection.objects.link(aim)
     cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0.6, -8.2, 3.2)

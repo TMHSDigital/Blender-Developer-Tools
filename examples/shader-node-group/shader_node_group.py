@@ -142,7 +142,8 @@ def build_group():
 def material_from_group(name, tree, tint):
     """Instance the group in a fresh material; parameters set on the instance."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     group = nt.nodes.new('ShaderNodeGroup')
@@ -287,7 +288,8 @@ MIN_TINT_SEP = 0.04       # min pairwise max-channel distance between mugs
 def check_rendered_tints(objs):
     probe = bpy.data.scenes.new("TintProbe")
     world = bpy.data.worlds.new("TintProbeWorld")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
     probe.world = world
     for obj in objs:
@@ -371,7 +373,8 @@ def render_still(objs, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.018, 0.019, 0.022, 1.0)
     fb.inputs["Roughness"].default_value = 0.8
@@ -397,7 +400,8 @@ def render_still(objs, path, engine):
         bm.free()
     riser_me.polygons.foreach_set("use_smooth", [True] * len(riser_me.polygons))
     rmat = bpy.data.materials.new("Walnut")
-    rmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        rmat.use_nodes = True
     rb = rmat.node_tree.nodes["Principled BSDF"]
     rb.inputs["Base Color"].default_value = (0.045, 0.026, 0.016, 1.0)
     rb.inputs["Roughness"].default_value = 0.45
@@ -406,7 +410,8 @@ def render_still(objs, path, engine):
     scene.collection.objects.link(riser)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

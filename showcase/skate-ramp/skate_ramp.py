@@ -1098,7 +1098,8 @@ def _math(nt, op, a, b=None):
 def principled(name, color, metallic, roughness, roughness_var=0.0, mottle=0.0,
                noise_scale=14.0, coat=0.0, stretch=None):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
@@ -1192,7 +1193,8 @@ def wood(name, dark, light, grain_scale, rough=(0.74, 0.56), ride=False):
     (``PlankTone``); on the riding sheets (``Ride``) a worn stencilled roundel
     and wheel marks running up the transition."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -1296,7 +1298,8 @@ def maple_material():
     attribute, 0 at the bottom face and 1 under the grip), glue lines between
     them, and a painted bottom."""
     mat = bpy.data.materials.new("BoardMaple")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     attr = nt.nodes.new("ShaderNodeAttribute")
@@ -2163,7 +2166,8 @@ def render_still(low, target, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -2177,7 +2181,8 @@ def render_still(low, target, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

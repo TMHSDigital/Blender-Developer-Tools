@@ -243,7 +243,8 @@ def eevee_engine_id():
 
 def principled(name, color, metallic, roughness, emission=0.0):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
@@ -365,7 +366,8 @@ def render_still(rig, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     # brass lives on reflections: faint warm ambient so flanks never go black
     world.node_tree.nodes["Background"].inputs["Color"].default_value = \
         (0.030, 0.026, 0.022, 1.0)

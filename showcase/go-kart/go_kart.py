@@ -2499,7 +2499,8 @@ def weathered(name, col_a, col_b, rough, dirt_col, dirt_top, dirt_amt, scuff_col
     colours (the PartTone face attribute), grime rising from the asphalt to
     ``dirt_top``, sparse scuffs, roughness breakup and an optional fine bump."""
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Metallic"].default_value = metallic
@@ -2657,7 +2658,8 @@ def asphalt_material():
     """Kart-track asphalt: a dark binder with fine light aggregate, darker
     rubbered-in streaks along the racing line, and the aggregate as a bump."""
     mat = bpy.data.materials.new("TrackAsphalt")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -2718,7 +2720,8 @@ def kerb_material():
     """Kerb paint: the stripe tone picks red or white, worn through to the
     concrete on the crest and streaked with tyre rubber."""
     mat = bpy.data.materials.new("KerbPaint")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -2749,7 +2752,8 @@ def kerb_material():
 
 def principled(name, color, metallic, roughness):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
@@ -3687,7 +3691,8 @@ def render_still(low, target, tex, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Floor")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -3701,7 +3706,8 @@ def render_still(low, target, tex, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

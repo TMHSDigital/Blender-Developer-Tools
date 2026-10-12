@@ -227,7 +227,8 @@ def _box(name, dims, loc, mat, bevel=0.0, segments=3):
 
 def _mat(name, rgb, rough, metal=0.0, coat=0.0):
     m = bpy.data.materials.new(name)
-    m.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        m.use_nodes = True
     b = m.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1.0)
     b.inputs["Roughness"].default_value = rough
@@ -267,7 +268,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.012, 0.012, 0.016, 1.0)
     scene.world = world
 

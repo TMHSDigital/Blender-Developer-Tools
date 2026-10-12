@@ -71,7 +71,8 @@ def naive_set_specular(bsdf, value):
 def make_principled(name, base_color, metallic, roughness, specular=None,
                     setter=set_specular):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     bsdf = nt.nodes.new('ShaderNodeBsdfPrincipled')
@@ -86,7 +87,8 @@ def make_principled(name, base_color, metallic, roughness, specular=None,
 
 def make_emissive(name, color, strength, shell_color=None):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     emis = nt.nodes.new('ShaderNodeEmission')
@@ -209,7 +211,8 @@ def make_block(name, sx, sy, sz, bevel):
 def make_walnut():
     """Oiled walnut: a stretched wave-texture grain over a noise-warped base."""
     mat = bpy.data.materials.new("Walnut")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Roughness"].default_value = 0.42
@@ -378,7 +381,8 @@ def build_scene(mats):
             coll.objects.link(glow)
 
     world = bpy.data.worlds.new("W")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     nt = world.node_tree
     bg = nt.nodes["Background"]
     bg.inputs[0].default_value = (0.02, 0.021, 0.025, 1)

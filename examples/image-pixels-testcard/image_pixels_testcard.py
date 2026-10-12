@@ -304,7 +304,8 @@ def render_still(path, engine):
 
     def principled(name, base, rough, metallic=0.0, emit=None, estr=0.0):
         m = bpy.data.materials.new(name)
-        m.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            m.use_nodes = True
         b = m.node_tree.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
         b.inputs["Roughness"].default_value = rough
@@ -357,7 +358,8 @@ def render_still(path, engine):
     finally:
         bm.free()
     smat = bpy.data.materials.new("CardEmit")
-    smat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        smat.use_nodes = True
     nodes, links = smat.node_tree.nodes, smat.node_tree.links
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = card
@@ -444,7 +446,8 @@ def render_still(path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

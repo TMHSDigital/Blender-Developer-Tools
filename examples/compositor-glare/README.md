@@ -4,7 +4,7 @@ A runnable example that puts bloom where it actually lives: the compositor. Thre
 emissive rings are rendered, then a `Glare` (Fog Glow) node fed by `Render Layers`
 grows the halo — wired through `scene.compositing_node_group` on Blender 5.x and
 through `scene.node_tree` on 4.x, because the 5.0 compositor rewrite removed the
-scene-level tree entirely (`scene.use_nodes = True` now raises `AttributeError`).
+scene-level tree entirely (`scene.node_tree` now raises `AttributeError`; `scene.use_nodes` survives only as a deprecated flag, removal in 6.0).
 
 The Glare node changed shape with it: on 4.x it takes legacy enum properties
 (`glare_type='FOG_GLOW'`, `quality='HIGH'`, `size=6`), while on 5.x the same

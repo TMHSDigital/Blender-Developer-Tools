@@ -87,7 +87,8 @@ def bronze_material():
     height the check asserts — so the colouring is a readout of the wave.
     """
     mat = bpy.data.materials.new("CastBronze")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     out = nt.nodes["Material Output"]
     metal = nt.nodes["Principled BSDF"]
@@ -134,7 +135,8 @@ def bronze_material():
 
 def walnut_material():
     mat = bpy.data.materials.new("Walnut")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     base = (0.15, 0.065, 0.026)
@@ -162,7 +164,8 @@ def render_still(obj, path, engine):
     scene = bpy.context.scene
     bronze = bronze_material()
     cast = bpy.data.materials.new("CastSide")      # sand-cast flanks, no polish
-    cast.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        cast.use_nodes = True
     cb = cast.node_tree.nodes["Principled BSDF"]
     cb.inputs["Base Color"].default_value = (0.30, 0.17, 0.08, 1.0)
     cb.inputs["Metallic"].default_value = 1.0
@@ -239,7 +242,8 @@ def render_still(obj, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -252,7 +256,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

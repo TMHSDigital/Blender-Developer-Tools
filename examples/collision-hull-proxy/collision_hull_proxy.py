@@ -197,7 +197,8 @@ def lathe_object(name, profile, segments, inflate=1.0):
 
 def make_material(name, color, metallic, roughness):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Metallic"].default_value = metallic
@@ -393,7 +394,8 @@ def render_still(groups, pieces, path, engine):
     # translucent shell: Transparent mixed over Principled works identically
     # in EEVEE and Cycles without touching blend-method RNA (renamed in 4.2)
     shell = bpy.data.materials.new("HullShell")
-    shell.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        shell.use_nodes = True
     nt = shell.node_tree
     nt.nodes.clear()
     out = nt.nodes.new("ShaderNodeOutputMaterial")
@@ -440,7 +442,8 @@ def render_still(groups, pieces, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

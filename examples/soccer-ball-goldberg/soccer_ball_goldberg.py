@@ -292,7 +292,8 @@ def eevee_engine_id():
 def _leather(mat, base, rough):
     """Synthetic match leather: a fine pebble grain in the bump and a thin
     clear coat, so each panel carries a soft sheen instead of flat paint."""
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     b = nt.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*base, 1.0)
@@ -337,7 +338,8 @@ def _turf_patch(scene):
         bm.free()
 
     grass = bpy.data.materials.new("MownGrass")
-    grass.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        grass.use_nodes = True
     nt = grass.node_tree
     g = nt.nodes["Principled BSDF"]
     g.inputs["Roughness"].default_value = 0.85
@@ -420,7 +422,8 @@ def _turf_patch(scene):
     nt.links.new(bump.outputs["Normal"], g.inputs["Normal"])
 
     soil = bpy.data.materials.new("Soil")
-    soil.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        soil.use_nodes = True
     s = soil.node_tree.nodes["Principled BSDF"]
     s.inputs["Base Color"].default_value = (0.055, 0.035, 0.02, 1.0)
     s.inputs["Roughness"].default_value = 0.95
@@ -505,7 +508,8 @@ def render_still(obj, path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -518,7 +522,8 @@ def render_still(obj, path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 

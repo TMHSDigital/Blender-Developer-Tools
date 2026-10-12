@@ -226,7 +226,8 @@ def textured_plane(name, image, with_uvs):
         bm.free()
 
     mat = bpy.data.materials.new(name + "Mat")
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = image
@@ -252,7 +253,8 @@ def render_still(path, engine):
     # --- Staging materials: wood easels, walnut frames, brass placards -----
     def pbr(name, base, rough, metal=0.0, noise=None):
         m = bpy.data.materials.new(name)
-        m.use_nodes = True
+        if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+            m.use_nodes = True
         nt = m.node_tree
         b = nt.nodes["Principled BSDF"]
         b.inputs["Base Color"].default_value = (*base, 1.0)
@@ -402,7 +404,8 @@ def render_still(path, engine):
     finally:
         bm.free()
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
     fb.inputs["Roughness"].default_value = 0.7
@@ -415,7 +418,8 @@ def render_still(path, engine):
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
         0.02, 0.021, 0.025, 1.0,
     )

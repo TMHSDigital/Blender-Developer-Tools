@@ -3,10 +3,10 @@
 Witnesses the compositor-plumbing contract that AI-generated Blender code breaks
 constantly:
 
-- Blender 5.x removed `scene.node_tree` / `scene.use_nodes`: the scene compositor
+- Blender 5.x removed `scene.node_tree` (`scene.use_nodes` only remains, deprecated): the scene compositor
   is now a node GROUP assigned to `scene.compositing_node_group`, with an
-  `Image` output declared via `tree.interface.new_socket`. The old one-liner
-  `scene.use_nodes = True` raises AttributeError on 5.x.
+  `Image` output declared via `tree.interface.new_socket`. The old
+  `scene.node_tree` access raises AttributeError on 5.x; `scene.use_nodes = True` only warns.
 - The Glare node itself changed shape: on 4.x it is configured with legacy enum
   properties (`glare_type='FOG_GLOW'`, `quality='HIGH'`, `size=6`); on 5.x the
   same choices are menu/float INPUT sockets (`inputs['Type'].default_value =
@@ -62,7 +62,8 @@ def eevee_engine_id():
 
 def make_emissive(name, color, strength):
     mat = bpy.data.materials.new(name)
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        mat.use_nodes = True
     nt = mat.node_tree
     nt.nodes.clear()
     emis = nt.nodes.new('ShaderNodeEmission')
@@ -135,7 +136,8 @@ def build_scene():
         ring.data.polygons.foreach_set("use_smooth", [True] * len(ring.data.polygons))
 
     world = bpy.data.worlds.new("World")
-    world.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
     scene.world = world
 
@@ -296,7 +298,8 @@ def render_still(scene, path, engine, samples, width):
     mesh.from_pydata([(-half, -half, 0.0), (half, -half, 0.0),
                       (half, half, 0.0), (-half, half, 0.0)], [], [(0, 1, 2, 3)])
     fmat = bpy.data.materials.new("Studio")
-    fmat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):  # use_nodes is deprecated on 5.x (removed in 6.0)
+        fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
     fb.inputs["Base Color"].default_value = (0.04, 0.045, 0.055, 1.0)
     fb.inputs["Roughness"].default_value = 0.25
