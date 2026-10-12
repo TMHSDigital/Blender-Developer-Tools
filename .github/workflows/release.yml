@@ -146,13 +146,13 @@ jobs:
 
       - name: Sync release docs
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
-        uses: TMHSDigital/Developer-Tools-Directory/.github/actions/release-doc-sync@7886cbe6ef93d57cc73c020b98268fa0dc0bdc98 # v1
+        uses: TMHSDigital/Developer-Tools-Directory/.github/actions/release-doc-sync@f10dd5e060ffcd30e44b950c09af970f96579ff8 # v1
         with:
           plugin-version: ${{ steps.new.outputs.version }}
           previous-version: ${{ steps.current.outputs.version }}
           # A SHA, not a tag: this job holds contents:write and runs the
-          # meta-repo's Python at this ref. 9be79799 is tag v1.15.1.
-          meta-repo-ref: 9be79799df00ed42a0c4cff39e74a383a493296c
+          # meta-repo's Python at this ref. f10dd5e0 is tag v1.20.0.
+          meta-repo-ref: f10dd5e060ffcd30e44b950c09af970f96579ff8
 
       - name: Write release notes (CHANGELOG entry and release body)
         # release-doc-sync prepends a "See release notes ... for details." stub;
