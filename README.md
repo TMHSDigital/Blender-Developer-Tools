@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <strong>19 skills</strong> &nbsp;&bull;&nbsp; <strong>11 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>29 snippets</strong> &nbsp;&bull;&nbsp; <strong>69 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
+  <strong>20 skills</strong> &nbsp;&bull;&nbsp; <strong>11 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>29 snippets</strong> &nbsp;&bull;&nbsp; <strong>69 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -44,13 +44,13 @@
 
 ## Overview
 
-This repository ships **19 skills, 11 rules, 3 templates, 29 snippets, 69 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **20 skills, 11 rules, 3 templates, 29 snippets, 69 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents, installed as a plugin or read from a checkout. An optional second plugin registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); the server is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading, GPU drawing and viewport overlays |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading, GPU drawing and viewport overlays, porting add-ons to Blender 5 |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 29 small standalone Python files demonstrating canonical patterns, 5 to 75 lines each |
@@ -61,14 +61,14 @@ The content is consumed by AI coding agents, installed as a plugin or read from 
 
 Neither agent needs a clone of `main`: both install the slim `plugin-dist` build. Clone the full repository only to [run the examples or contribute](#run-the-examples-or-contribute).
 
-- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 19 skills and 11 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
+- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 20 skills and 11 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
 
   ```bash
   git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
   ```
 
   (On Windows the folder is `%USERPROFILE%\.cursor\plugins\local\`. Cursor skips symlinks that point outside that folder, so clone or copy rather than link.) Teams can import the repository as a team marketplace instead; it carries `.cursor-plugin/marketplace.json`. The plugin already applies the rules, so there is nothing to copy. Only to scope the pack to one project without the plugin, copy `skills/*` into that project's `.cursor/skills/` and `rules/*.mdc` into `.cursor/rules/` from a checkout; copying only the rules gives you no skills.
-- **Claude Code** — install as a plugin, then run `/skills` to see all 19 skills plus `blender-rules`:
+- **Claude Code** — install as a plugin, then run `/skills` to see all 20 skills plus `blender-rules`:
 
   ```text
   /plugin marketplace add TMHSDigital/Blender-Developer-Tools@plugin-dist
@@ -175,7 +175,7 @@ Browse both, with filters, full-size renders and each script's README, in the **
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 19 skill files, YAML frontmatter, one canonical pattern each
+skills/<name>/SKILL.md   - 20 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 11 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
 snippets/<name>.py       - 29 standalone Python snippets, 5 to 75 lines each

@@ -9,7 +9,7 @@
 The skill, rule and example work planned for what the plugin teaches, separate from the
 showcase pool further down. Each item is an open issue; nothing here is pinned to a version.
 
-- **New skills:** `porting-to-blender-5`, one index of every 4.x to 5.x break the pack covers ([#466](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/466)); teach the API contracts that shipped examples prove but no skill covers yet, such as Grease Pencil v3, the 5.x compositor, constraints and image pixels ([#456](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/456))
+- **New skills:** teach the API contracts that shipped examples prove but no skill covers yet, such as Grease Pencil v3, the 5.x compositor, constraints and image pixels ([#456](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/456))
 - **Skill corrections:** the full Principled BSDF v2 socket rename table in `procedural-materials-and-shaders` ([#382](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/382))
 - **Verification:** run the shipped snippets and SKILL.md code blocks in CI instead of frozen copies ([#447](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/447)); a weekly, non-gating smoke run against Blender daily builds to catch API breaks before a release ([#457](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/457))
 - **More agents:** first-class support for Codex, Copilot, Windsurf and Gemini through `.agents/skills` and an AGENTS.md rules export ([#376](https://github.com/TMHSDigital/Blender-Developer-Tools/issues/376))
@@ -38,6 +38,7 @@ derives the actual version from conventional-commit types.
 | Timers, modal operators and threading | 18 | 9 | 3 | 29 | Shipped (v0.147.0) |
 | GPU drawing without `bgl` | 19 | 10 | 3 | 29 | Shipped |
 | Removed normals API rule (pre-4.1 auto smooth) | 19 | 11 | 3 | 29 | Shipped |
+| Porting index skill (`porting-to-blender-5`) | 20 | 11 | 3 | 29 | Shipped |
 | Live-session bridge (opt-in `blender-live-session` plugin, upstream Blender Lab MCP) | - | - | - | - | Shipped |
 | Stable (1.0) | — | — | — | — | Upcoming; criteria below |
 

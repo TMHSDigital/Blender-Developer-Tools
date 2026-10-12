@@ -17,7 +17,7 @@ The **Blender Developer Tools** repository is at **v0.154.0**. It packages skill
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 19 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 20 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 11 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 29 total
@@ -30,7 +30,7 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (19)
+## Skills (20)
 
 | Skill | Purpose |
 | --- | --- |
@@ -52,6 +52,7 @@ VERSION                        - Source of truth for the repo version
 | vse-python | VSE timeline from Python: `.strips` vs `.sequences`, `new_effect` kwargs, 5.2 COLOR `width`/`height` bake |
 | extension-runtime-and-packaging | Bundled wheels, `extension_path_user` data that survives upgrades, `online_access`, `bl_ext` names, `--command extension` build in CI |
 | timers-modal-and-threading | `bpy.app.timers` return values and `persistent`, modal operators on `event_timer_add`, worker thread + queue + main-thread drain, no timers in `--background` |
+| porting-to-blender-5 | Index of every 4.x → 5.x break the pack covers (bgl, `action.fcurves`, `use_auto_smooth`, Principled sockets, `.sequences`, ID properties, compositor, NodesModifier inputs, ...), each linked to the skill, rule or example that owns the fix; headless triage recipe |
 | gpu-drawing-and-overlays | `gpu` instead of the removed `bgl`: `draw_handler_add`/`remove`, builtin shader names, `gpu.state` blending and depth, `POLYLINE_*` line width, `blf` text, `GPUOffScreen` with 5.2's `gpu.init()` headless |
 
 ## Rules (11)

@@ -363,7 +363,9 @@
     "name": "compositor-glare",
     "path": "examples/compositor-glare/",
     "script": "examples/compositor-glare/compositor_glare.py",
-    "skills": [],
+    "skills": [
+      "porting-to-blender-5"
+    ],
     "render": true,
     "min_version": "4.5",
     "run": "blender --background --python examples/compositor-glare/compositor_glare.py",
@@ -392,7 +394,8 @@
     "path": "examples/cross-version-property-delete/",
     "script": "examples/cross-version-property-delete/cross_version_property_delete.py",
     "skills": [
-      "custom-properties"
+      "custom-properties",
+      "porting-to-blender-5"
     ],
     "render": true,
     "min_version": "4.5",
@@ -648,7 +651,8 @@
     "path": "examples/eval-mesh-datablock-name/",
     "script": "examples/eval-mesh-datablock-name/eval_mesh_datablock_name.py",
     "skills": [
-      "depsgraph-and-evaluated-data"
+      "depsgraph-and-evaluated-data",
+      "porting-to-blender-5"
     ],
     "render": false,
     "min_version": "4.5",
@@ -1238,7 +1242,8 @@
     "path": "examples/gpu-offscreen-draw/",
     "script": "examples/gpu-offscreen-draw/gpu_offscreen_draw.py",
     "skills": [
-      "gpu-drawing-and-overlays"
+      "gpu-drawing-and-overlays",
+      "porting-to-blender-5"
     ],
     "render": false,
     "min_version": "5.2",
@@ -1283,7 +1288,9 @@
     "name": "grease-pencil-rosette",
     "path": "examples/grease-pencil-rosette/",
     "script": "examples/grease-pencil-rosette/grease_pencil_rosette.py",
-    "skills": [],
+    "skills": [
+      "porting-to-blender-5"
+    ],
     "render": true,
     "min_version": "4.5",
     "run": "blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py",
@@ -1546,7 +1553,8 @@
     "path": "examples/mesh-normals-after-41/",
     "script": "examples/mesh-normals-after-41/mesh_normals_after_41.py",
     "skills": [
-      "mesh-editing-and-bmesh"
+      "mesh-editing-and-bmesh",
+      "porting-to-blender-5"
     ],
     "render": false,
     "min_version": "4.5",

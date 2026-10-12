@@ -38,7 +38,8 @@
     "skills/drivers-and-app-handlers/SKILL.md",
     "skills/bl-info-migration/SKILL.md",
     "skills/vse-python/SKILL.md",
-    "skills/gpu-drawing-and-overlays/SKILL.md"
+    "skills/gpu-drawing-and-overlays/SKILL.md",
+    "skills/porting-to-blender-5/SKILL.md"
   ],
   "rules": [
     "rules/prefer-data-over-ops-in-loops.mdc",

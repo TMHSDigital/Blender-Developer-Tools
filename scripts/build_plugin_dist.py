@@ -69,7 +69,7 @@ Examples, the showcase and the gallery live on `main`.
 ```
 
 Cursor: clone this branch into `~/.cursor/plugins/local/blender-developer-tools`
-and reload the window (Customize then lists the 19 skills and 11 rules).
+and reload the window (Customize then lists the 20 skills and 11 rules).
 
 Skills reference bundled files as `${CLAUDE_PLUGIN_ROOT}/snippets/...`, which
 Claude Code expands to this plugin's install directory. In Cursor, read it as
