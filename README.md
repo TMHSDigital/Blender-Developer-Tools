@@ -125,6 +125,8 @@ Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 | Blender 5.1 | Prior stable (weekly cron; PR via `needs-5.1` or manual dispatch) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
 
+**Support policy.** The current LTS and the previous LTS are smoke-tested on every pull request and every push to `main`; the newest non-LTS stable runs on the weekly cron. When a new LTS ships, it becomes the primary target and the older of the two supported LTS lines leaves support in a release whose notes say so. Its code paths stay in the skills for that release, then go. CI follows the highest point release of each series, so a fix in a point release reaches the checks without a change here.
+
 ## Falsifiers
 
 Every one of the 66 examples carries a **falsifier**: a flag that changes the
