@@ -4,5 +4,5 @@
 # "Blender Runtime Discovery" for the smoke tests.
 -r scripts/site/requirements.txt
 PyYAML==6.0.3
-numpy==2.5.3
+numpy==2.5.4
 Pillow==12.3.0
