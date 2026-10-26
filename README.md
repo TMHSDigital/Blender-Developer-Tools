@@ -1,7 +1,5 @@
 <h1 align="center">Blender Developer Tools</h1>
 
-[![HOL Guard](https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3Dtmhsdigital%252Fblender-developer-tools%26metric%3Drelease)](https://hol.org/registry/plugins/tmhsdigital%2Fblender-developer-tools)
-
 ---
 
 <p align="center">
@@ -24,6 +22,7 @@
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/validate.yml?branch=main&style=flat-square&label=validate" alt="Validate" /></a>
   <a href="#license"><img src="https://img.shields.io/badge/license-CC%20BY--NC--ND%204.0%20%2B%20MIT%20code-384d54?style=flat-square" alt="License: CC BY-NC-ND 4.0, with snippets and templates under MIT" /></a>
   <a href="https://github.com/sponsors/TMHSDigital"><img src="https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa?style=flat-square&logo=githubsponsors&logoColor=white" alt="Sponsor TMHSDigital on GitHub Sponsors" /></a>
+  <a href="https://hol.org/registry/plugins/tmhsdigital%2Fblender-developer-tools"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3Dtmhsdigital%252Fblender-developer-tools%26metric%3Drelease&style=flat-square" alt="HOL Guard" /></a>
 </p>
 
 <p align="center">
