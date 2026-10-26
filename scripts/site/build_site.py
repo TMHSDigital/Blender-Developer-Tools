@@ -22,6 +22,9 @@ from markupsafe import Markup, escape
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import chrome  # noqa: E402
 
+# Pages rendered from scripts/site/<slug>.html.j2 to docs/<slug>/index.html.
+LEGAL_PAGES = ("privacy", "terms")
+
 
 def load_json(path: Path) -> dict | list:
     with open(path, encoding="utf-8") as f:
@@ -540,7 +543,7 @@ def write_sitemap(repo_root: Path, out_dir: Path, canonical: str) -> None:
     if not canonical:
         return
     root = canonical.rstrip("/") + "/"
-    urls = [root, root + "gallery/"]
+    urls = [root, root + "gallery/"] + [f"{root}{slug}/" for slug in LEGAL_PAGES]
     for rel, key in (("examples/gallery.json", "examples"), ("showcase/gallery.json", "pieces")):
         path = repo_root / rel
         if not path.is_file():
@@ -756,6 +759,19 @@ def main():
     not_found = env.get_template("404.html.j2").render(site=site, plugin=plugin, base=base)
     (out_dir / "404.html").write_text(not_found, encoding="utf-8")
     print(f"Wrote {out_dir / '404.html'}")
+
+    # Privacy and terms: the plugin manifests link these URLs (#511).
+    for slug in LEGAL_PAGES:
+        page = env.get_template(f"{slug}.html.j2").render(
+            site=site, plugin=plugin, repo=repo, slug=slug,
+            chrome_css=chrome.CSS, chrome_js=chrome.JS,
+            chrome_header=chrome.header(root="../", repo=repo, title=plugin["displayName"],
+                                        home_anchors=False),
+            chrome_footer=chrome.footer(root="../", repo=repo, title=plugin["displayName"],
+                                        license_=plugin.get("license", "")))
+        (out_dir / slug).mkdir(parents=True, exist_ok=True)
+        (out_dir / slug / "index.html").write_text(page, encoding="utf-8")
+        print(f"Wrote {out_dir / slug / 'index.html'}")
 
     write_sitemap(repo_root, out_dir, site.get("canonical", ""))
     write_llms_txt(repo_root, out_dir, site)

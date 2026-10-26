@@ -1,0 +1,49 @@
+{% extends "legal.html.j2" %}
+{% set updated = "2026-10-26" %}
+{% block title %}Terms{% endblock %}
+{% block description %}Terms of use for {{ plugin.displayName }}: the licenses that apply, no warranty, and your responsibility for code your agent writes.{% endblock %}
+{% block body %}
+    <h1>Terms</h1>
+    <p class="lede">{{ plugin.displayName }} is free to use. The licenses below are the
+      terms; this page summarizes them and adds the few things a license doesn't cover.
+      Where this page and a license differ, the license wins.</p>
+
+    <h2>Licenses</h2>
+    <ul>
+      <li><strong>Snippets and templates are MIT.</strong> Copy and adapt them into your own
+        projects, including commercial ones; keep the copyright notice with substantial
+        copies (<a href="{{ repo }}/blob/main/snippets/LICENSE">snippets</a>,
+        <a href="{{ repo }}/blob/main/templates/LICENSE">templates</a>).</li>
+      <li><strong>Everything else is CC BY-NC-ND 4.0:</strong> skills, rules, examples,
+        showcase pieces, docs and this site
+        (<a href="{{ repo }}/blob/main/LICENSE">LICENSE</a>). Don't redistribute modified
+        copies of that material, and don't sell or commercially republish it.</li>
+      <li><strong>What you build is yours.</strong> Using the skills and rules while you or
+        your agent write your own add-on, script or pipeline, including paid and client
+        work, is the intended use. See the
+        <a href="{{ repo }}#license">README's license section</a> for the details.</li>
+    </ul>
+
+    <h2>No warranty</h2>
+    <p>The pack is provided as is, without warranty of any kind, as both licenses state.
+      Skills and rules describe Blender's API as the maintainers verified it on the Blender
+      versions named in the README; Blender changes, and so does what agents produce from
+      the same instructions.</p>
+
+    <h2>Code your agent writes</h2>
+    <p>You are responsible for reviewing and testing code before you run or ship it. Run
+      batch jobs on copies of files you can afford to lose. The optional
+      <code>blender-live-session</code> plugin lets an agent run Python inside your open
+      Blender with no guard, so attach it only to scratch scenes.</p>
+
+    <h2>Third-party software</h2>
+    <p>Blender, the Blender Lab MCP server and your AI agent are separate products under
+      their own licenses and terms. The MCP server is GPL-3.0 and is referenced, not
+      bundled. Blender is a registered trademark of the Blender Foundation; this project is
+      not affiliated with or endorsed by it.</p>
+
+    <h2>Contact</h2>
+    <p>Questions go to <a href="{{ repo }}/discussions">GitHub Discussions</a>. Changes to
+      these terms are tracked in the repository's history. See also the
+      <a href="../privacy/">privacy page</a>.</p>
+{% endblock %}

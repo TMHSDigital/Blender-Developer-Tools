@@ -20,11 +20,17 @@ drift apart again. Checks, with .cursor-plugin/plugin.json as the reference:
 - live-session manifests: same name, description, version, homepage and
   license as each other, the marketplace entries, and (homepage, license) the
   core plugin
+- .codex-plugin/plugin.json: same name, description, version, homepage,
+  license and keywords as the others; its interface websiteURL, privacyPolicyURL
+  and termsOfServiceURL are the site, its privacy/ and its terms/ pages, and
+  build_site.py renders both pages (HOL's registry scan reads them, #511); its
+  skills path and icon files exist
 
 Run: python tests/check_manifest_meta.py      (exit 0 ok, 1 on mismatch)
 """
 from __future__ import annotations
 
+import ast
 import html
 import json
 import re
@@ -119,6 +125,40 @@ def check() -> list[str]:
         if live_cursor.get(key) != cursor.get(key):
             errors.append(f"live-session {key} {live_cursor.get(key)!r} != core {cursor.get(key)!r}")
 
+    codex = load(".codex-plugin/plugin.json")
+    for key in ("name", "description", "version", "homepage", "license"):
+        if codex.get(key) != cursor.get(key):
+            errors.append(f".codex-plugin/plugin.json {key} {codex.get(key)!r} != "
+                          f".cursor-plugin/plugin.json {cursor.get(key)!r}")
+    if set(codex.get("keywords", [])) != kw_claude:
+        errors.append(".codex-plugin/plugin.json keywords differ from .claude-plugin/plugin.json")
+    if "mcpServers" in codex:
+        errors.append(".codex-plugin/plugin.json declares mcpServers; the MCP server belongs to "
+                      "the opt-in live-session/ plugin (#483)")
+    skills = codex.get("skills", "")
+    if not isinstance(skills, str) or not (root / skills).is_dir():
+        errors.append(f".codex-plugin/plugin.json skills {skills!r} is not a directory")
+    # Read LEGAL_PAGES without importing build_site.py (it needs Jinja2).
+    tree = ast.parse((root / "scripts" / "site" / "build_site.py").read_text(encoding="utf-8"))
+    LEGAL_PAGES = next((ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+                        and any(getattr(t, "id", "") == "LEGAL_PAGES" for t in n.targets)), ())
+    iface = codex.get("interface") or {}
+    site_root = home.rstrip("/") + "/"
+    want = {"websiteURL": site_root,
+            "privacyPolicyURL": f"{site_root}privacy/",
+            "termsOfServiceURL": f"{site_root}terms/"}
+    for key, url in want.items():
+        if iface.get(key) != url:
+            errors.append(f".codex-plugin/plugin.json interface.{key} {iface.get(key)!r} != {url!r}")
+    for slug in ("privacy", "terms"):
+        if slug not in LEGAL_PAGES:
+            errors.append(f"scripts/site/build_site.py LEGAL_PAGES does not render {slug}/, "
+                          "which the Codex manifest links")
+    for key in ("composerIcon", "logo"):
+        path = iface.get(key)
+        if path and not (root / path).is_file():
+            errors.append(f".codex-plugin/plugin.json interface.{key} {path!r} does not exist")
+
     mcp = live_cursor.get("mcpServers")
     if not isinstance(mcp, str) or not (root / "live-session" / mcp).is_file():
         errors.append(f"live-session mcpServers {mcp!r} is not a file in live-session/")
@@ -147,7 +187,8 @@ def main() -> int:
     if errors:
         return 1
     print("Manifest metadata consistent: description, homepage, license, keywords, logo, "
-          "live-session plugin and its pinned MCP server")
+          "Codex manifest and its site/privacy/terms URLs, live-session plugin and its "
+          "pinned MCP server")
     return 0
 
 

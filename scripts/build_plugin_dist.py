@@ -6,7 +6,7 @@ plugin needs ~1 MB of it. This copies only what the plugin uses into --out,
 as a self-contained marketplace (its marketplace.json points at "./"):
 
     skills/  claude/  rules/  snippets/  templates/  LICENSE files
-    .claude-plugin/ and .cursor-plugin/ manifests, the Cursor logo,
+    .claude-plugin/, .cursor-plugin/ and .codex-plugin/ manifests, the logo,
     live-session/ (the opt-in blender-live-session plugin: its manifests,
     mcp.json and skill), and a short README
 
@@ -38,10 +38,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DIRS = ("skills", "claude", "exports", "rules", "snippets", "templates", "live-session")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
-# assets/favicon.svg is the Cursor manifest's "logo".
+# assets/favicon.svg is the Cursor manifest's "logo" and the Codex manifest's
+# icon; the Codex manifest ships so Codex can install the same tree (#511).
 FILES = ("LICENSE", ".claude-plugin/plugin.json",
          ".cursor-plugin/plugin.json", ".cursor-plugin/marketplace.json",
-         "assets/favicon.svg")
+         ".codex-plugin/plugin.json", "assets/favicon.svg")
 # marketplace.json entry -> source inside the dist tree.
 DIST_SOURCES = {"blender-developer-tools": "./", "blender-live-session": "./live-session"}
 # Every repo path the plugin ships. release.yml's plugin-content-changed.sh and

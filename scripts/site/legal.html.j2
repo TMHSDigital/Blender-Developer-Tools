@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{% endblock %} — {{ plugin.displayName }}</title>
+  <meta name="description" content="{% block description %}{% endblock %}" />
+  {% if site.canonical %}<link rel="canonical" href="{{ site.canonical }}{{ slug }}/" />{% endif %}
+  {% if site.favicon %}<link rel="icon" href="../{{ site.favicon }}" />{% endif %}
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <style>
+    /* Privacy and terms pages: one level below the site root, so every
+       site-relative URL carries "../". Dense reading, so left-aligned. */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+    {% include "tokens.css" %}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body);
+      line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; }
+    a { color: var(--text); }
+    a:hover { color: var(--select); }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 2px; }
+{{ chrome_css | safe }}
+    main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+    .hud { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.04em;
+      color: var(--dim); text-transform: uppercase; }
+    h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 2.6rem; line-height: 1; margin: 0.5rem 0 1rem; }
+    h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.35rem; letter-spacing: 0.01em; margin: 2.25rem 0 0.6rem; }
+    p, ul { color: var(--dim); margin-bottom: 0.85rem; }
+    ul { padding-left: 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+    strong { color: var(--text); font-weight: 500; }
+    code { font-family: var(--font-mono); font-size: 0.9em; color: var(--text); }
+    .lede { font-size: 1.05rem; color: var(--text); }
+  </style>
+</head>
+<body>
+{{ chrome_header | safe }}
+  <main>
+    <p class="hud">{{ plugin.displayName }} &middot; updated {{ updated }}</p>
+    {% block body %}{% endblock %}
+  </main>
+{{ chrome_footer | safe }}
+  <script>
+{{ chrome_js | safe }}
+  </script>
+</body>
+</html>

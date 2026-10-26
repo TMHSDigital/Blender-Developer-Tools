@@ -205,7 +205,10 @@ jobs:
           # Claude Code manifests: same version, rewritten via JSON.
           import json
           # live-session/ is the opt-in blender-live-session plugin (#483).
+          # .codex-plugin/ is the Codex manifest, which carries the site,
+          # privacy and terms URLs that HOL's registry scan asks for (#511).
           for path in ('.claude-plugin/plugin.json', '.claude-plugin/marketplace.json',
+                       '.codex-plugin/plugin.json',
                        'live-session/.claude-plugin/plugin.json',
                        'live-session/.cursor-plugin/plugin.json'):
               data = json.load(open(path, encoding='utf-8'))
@@ -238,6 +241,7 @@ jobs:
           # Explicit paths only: the files this workflow owns, never `git add -A`.
           git add -- VERSION CHANGELOG.md CLAUDE.md ROADMAP.md \
             .cursor-plugin/plugin.json .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+            .codex-plugin/plugin.json \
             live-session/.claude-plugin/plugin.json live-session/.cursor-plugin/plugin.json
           if [ -n "$(git status --porcelain)" ]; then
             echo "::warning::files changed that the release commit does not own:"
