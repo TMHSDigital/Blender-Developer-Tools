@@ -29,10 +29,10 @@ GPU-less runners without EGL, which is why every render in
 Method
 ------
 
-AST, not regex. Every function that returns an EEVEE id is compiled and
-*called* twice, against a stubbed ``bpy.app.version`` of (4, 5, 11) and
-(5, 2, 1); every conditional expression that yields one is evaluated the
-same way. Both forms — ternary and ``if``/``return`` — are handled by the
+AST, not regex. Every function that returns an EEVEE id is interpreted
+twice, against a stubbed ``bpy.app.version`` of (4, 5, 11) and (5, 2, 1);
+every conditional expression that yields one is evaluated the same way. The
+interpreter walks the AST and never runs the repo's code (no eval or exec). Both forms — ternary and ``if``/``return`` — are handled by the
 same code path, because a regex over either one misreads the other.
 
 A deliberately inverted mapping (``examples/swatch-grid`` witnesses the
@@ -61,16 +61,6 @@ EXEMPT = "engine-id-exempt:"
 
 def canonical(version):
     return "BLENDER_EEVEE" if version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
-
-
-class _App:
-    def __init__(self, version):
-        self.version = version
-
-
-class _Bpy:
-    def __init__(self, version):
-        self.app = _App(version)
 
 
 def _mentions_id(node):
@@ -119,26 +109,85 @@ def _is_resolver(fn):
     return walk(fn.body) and bool(returns) and not fn.args.args
 
 
-def _namespace(version):
-    return {
-        "bpy": _Bpy(version),
-        "IS_5X": version >= (5, 0, 0),
-        "IS_5_X": version >= (5, 0, 0),
-        "__builtins__": __builtins__,
-    }
+# Names a resolver may branch on, as functions of the stubbed version.
+_NAMES = {
+    "IS_5X": lambda version: version >= (5, 0, 0),
+    "IS_5_X": lambda version: version >= (5, 0, 0),
+}
+_COMPARE = {
+    ast.Lt: lambda a, b: a < b, ast.LtE: lambda a, b: a <= b,
+    ast.Gt: lambda a, b: a > b, ast.GtE: lambda a, b: a >= b,
+    ast.Eq: lambda a, b: a == b, ast.NotEq: lambda a, b: a != b,
+}
+
+
+def _value(node, version):
+    """Interpret the small expression language resolvers use.
+
+    Constants, tuples, ``bpy.app.version`` (indexed or sliced), the IS_5X
+    flags, comparisons, and/or/not, and conditional expressions. Anything
+    else raises ValueError, which the caller reports as "not resolvable".
+    The repo's own code is walked, never executed, so the check needs no
+    eval/exec (HOL's plugin scanner rejects dynamic execution, #510).
+    """
+    if isinstance(node, ast.Constant):
+        return node.value
+    if isinstance(node, ast.Tuple):
+        return tuple(_value(e, version) for e in node.elts)
+    if isinstance(node, ast.Name) and node.id in _NAMES:
+        return _NAMES[node.id](version)
+    if (isinstance(node, ast.Attribute) and node.attr == "version"
+            and isinstance(node.value, ast.Attribute) and node.value.attr == "app"
+            and isinstance(node.value.value, ast.Name) and node.value.value.id == "bpy"):
+        return version
+    if isinstance(node, ast.Subscript):
+        seq = _value(node.value, version)
+        if isinstance(node.slice, ast.Slice):
+            lo, hi, step = (None if p is None else _value(p, version)
+                            for p in (node.slice.lower, node.slice.upper, node.slice.step))
+            return seq[lo:hi:step]
+        return seq[_value(node.slice, version)]
+    if isinstance(node, ast.Compare):
+        left = _value(node.left, version)
+        for op, comp in zip(node.ops, node.comparators):
+            right = _value(comp, version)
+            if type(op) not in _COMPARE:
+                raise ValueError(f"unsupported comparison {type(op).__name__}")
+            if not _COMPARE[type(op)](left, right):
+                return False
+            left = right
+        return True
+    if isinstance(node, ast.BoolOp):
+        vals = (_value(v, version) for v in node.values)
+        return all(vals) if isinstance(node.op, ast.And) else any(vals)
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return not _value(node.operand, version)
+    if isinstance(node, ast.IfExp):
+        branch = node.body if _value(node.test, version) else node.orelse
+        return _value(branch, version)
+    raise ValueError(f"unsupported expression {ast.unparse(node)!r}")
+
+
+def _run(stmts, version):
+    """Interpret a resolver body (returns, version branches, docstrings)."""
+    for st in stmts:
+        if isinstance(st, ast.Return):
+            return True, _value(st.value, version)
+        if isinstance(st, ast.If):
+            done, val = _run(st.body if _value(st.test, version) else st.orelse, version)
+            if done:
+                return True, val
+    return False, None
 
 
 def _evaluate(node, version):
     """Return the id this node yields on *version*."""
-    ns = _namespace(version)
     if isinstance(node, ast.FunctionDef):
-        mod = ast.Module(body=[node], type_ignores=[])
-        ast.fix_missing_locations(mod)
-        exec(compile(mod, "<engine-id>", "exec"), ns)
-        return ns[node.name]()
-    expr = ast.Expression(body=node)
-    ast.fix_missing_locations(expr)
-    return eval(compile(expr, "<engine-id>", "eval"), ns)
+        done, val = _run(node.body, version)
+        if not done:
+            raise ValueError(f"{node.name}() falls off the end without returning")
+        return val
+    return _value(node, version)
 
 
 def _exempt_reason(lines, lineno):
