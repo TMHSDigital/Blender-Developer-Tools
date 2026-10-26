@@ -59,9 +59,34 @@ jobs:
           cisco_skill_scan: ${{ inputs.cisco && 'on' || 'auto' }}
           install_cisco: ${{ inputs.cisco || false }}
 
-      - name: Record the score
-        if: always() && steps.scan.outputs.score != ''
+      # The action publishes its summary and SARIF only when the scan passes,
+      # so list the findings from the report here, pass or fail.
+      - name: List the findings
+        if: always() && hashFiles('plugin-scan.sarif') != ''
+        env:
+          SCORE: ${{ steps.scan.outputs.score }}
+          GRADE: ${{ steps.scan.outputs.grade }}
         run: |
-          echo "score=${{ steps.scan.outputs.score }} grade=${{ steps.scan.outputs.grade }}" \
-               "max_severity=${{ steps.scan.outputs.max_severity }}" \
-               "findings=${{ steps.scan.outputs.findings_total }}"
+          python3 - << 'PYEOF'
+          import json, os
+          sarif = json.load(open("plugin-scan.sarif", encoding="utf-8"))
+          rules = {r["id"]: r for run in sarif.get("runs", [])
+                   for r in run.get("tool", {}).get("driver", {}).get("rules", [])}
+          lines = [f"### HOL plugin scan: score {os.environ['SCORE']} ({os.environ['GRADE']})", "",
+                   "| Level | Rule | Where | Finding |", "| --- | --- | --- | --- |"]
+          for run in sarif.get("runs", []):
+              for res in run.get("results", []):
+                  loc = res.get("locations") or [{}]
+                  phys = loc[0].get("physicalLocation", {})
+                  where = phys.get("artifactLocation", {}).get("uri", "")
+                  line = phys.get("region", {}).get("startLine")
+                  where += f":{line}" if line else ""
+                  rule = res.get("ruleId", "")
+                  sev = (res.get("properties") or {}).get("severity") or res.get("level", "")
+                  msg = res.get("message", {}).get("text", "").replace("|", "/").replace("\n", " ")
+                  lines.append(f"| {sev} | `{rule}` | `{where}` | {msg} |")
+          text = "\n".join(lines) + "\n"
+          print(text)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fh:
+              fh.write(text)
+          PYEOF
