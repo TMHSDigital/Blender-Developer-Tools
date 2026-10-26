@@ -14,8 +14,8 @@ The fastest useful contributions are small and need no Blender run:
 - **Pick up a starter issue:** issues labelled
   [`good first issue`](https://github.com/TMHSDigital/Blender-Developer-Tools/labels/good%20first%20issue).
 
-Then: fork, branch, `pip install -r requirements-dev.txt`,
-`python tests/run_all.py`, and open a PR with a DCO sign-off (`git commit -s`;
+Then: fork, branch, `uv sync`,
+`uv run python tests/run_all.py`, and open a PR with a DCO sign-off (`git commit -s`;
 see the end of this file). Examples and showcase pieces have more gates
 (falsifiers, exit-code tables, renders); read their sections first.
 
@@ -40,9 +40,13 @@ see the end of this file). Examples and showcase pieces have more gates
    exit-code, gallery, link and packaging gates, plus the tooling tests):
 
    ```bash
-   pip install -r requirements-dev.txt
-   python tests/run_all.py            # or: python tests/run_all.py -k catalog
+   uv sync                                   # pins: pyproject.toml + uv.lock
+   uv run python tests/run_all.py            # or: ... tests/run_all.py -k catalog
    ```
+
+   No uv yet? `pip install uv` first. If you change a pin in
+   `pyproject.toml`, run `uv lock` and commit `uv.lock` with it; CI fails on a
+   stale lock.
 
    Blender smoke runs in CI on 5.2 LTS and 4.5 LTS; to run an example locally,
    see `tests/smoke/run_example.py`.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Run every Validate check locally in one command (#364). No Blender needed.
 
-    pip install -r requirements-dev.txt
-    python tests/run_all.py            # all checks, summary at the end
+    uv sync                            # pins from pyproject.toml + uv.lock
+    uv run python tests/run_all.py     # all checks, summary at the end
     python tests/run_all.py -k gallery # only checks whose name contains "gallery"
 
 It runs every tests/check_*.py and tests/test_*.py, the smoke-harness tests,

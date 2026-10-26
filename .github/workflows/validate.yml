@@ -40,10 +40,15 @@ jobs:
           fi
           echo "VERSION valid: $version"
 
-      - name: Validate skill and rule frontmatter (parsed YAML, first block only)
+      # --locked fails the build when pyproject.toml changed without `uv lock`.
+      - name: Install locked dev dependencies (pyproject.toml + uv.lock)
         run: |
-          pip install -r requirements-dev.txt
-          python3 tests/check_frontmatter.py
+          pip install uv==0.8.5
+          uv export --locked --only-group dev --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
+          pip install -r "$RUNNER_TEMP/requirements.txt"
+
+      - name: Validate skill and rule frontmatter (parsed YAML, first block only)
+        run: python3 tests/check_frontmatter.py
 
       - name: Validate snippet Python syntax
         run: |
@@ -152,9 +157,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: scripts/site/requirements.txt
+          cache-dependency-path: uv.lock
 
-      - run: pip install -r scripts/site/requirements.txt
+      - name: Install locked site dependencies (pyproject.toml + uv.lock)
+        run: |
+          pip install uv==0.8.5
+          uv export --locked --only-group site --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
+          pip install -r "$RUNNER_TEMP/requirements.txt"
 
       - name: Build landing page into docs/
         run: python scripts/site/build_site.py --repo-root . --out docs
@@ -463,8 +472,11 @@ jobs:
         with:
           python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
-      - name: Install pinned dev requirements (the release-gate mirror test reads YAML)
-        run: pip install -r requirements-dev.txt
+      - name: Install locked dev dependencies (the release-gate mirror test reads YAML)
+        run: |
+          pip install uv==0.8.5
+          uv export --locked --only-group dev --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
+          pip install -r "$RUNNER_TEMP/requirements.txt"
 
       - name: Harness unit tests
         run: python3 tests/smoke/test_harness.py -v

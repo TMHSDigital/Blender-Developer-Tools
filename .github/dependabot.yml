@@ -11,30 +11,15 @@ updates:
       github-actions:
         patterns:
           - "*"
-  - package-ecosystem: "pip"
-    directory: "/scripts/site"
-    schedule:
-      interval: "weekly"
-    target-branch: "main"
-    commit-message:
-      prefix: "chore(deps)"
-    groups:
-      site-build:
-        patterns:
-          - "*"
-  - package-ecosystem: "pip"
+  # pyproject.toml + uv.lock hold every Python pin (the site and dev groups),
+  # so one entry bumps both files together (#512).
+  - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
     target-branch: "main"
     commit-message:
       prefix: "chore(deps)"
-    # requirements-dev.txt pulls in scripts/site/requirements.txt with -r, so
-    # without this the site pins get two identical PRs (site-build and
-    # dev-tools) on every bump. The /scripts/site entry owns them.
-    ignore:
-      - dependency-name: "jinja2"
-      - dependency-name: "markupsafe"
     groups:
       dev-tools:
         patterns:

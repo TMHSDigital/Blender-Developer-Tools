@@ -1,8 +1,0 @@
-# Everything the Validate workflow's Python checks need, pinned. One file so a
-# fresh clone can run them all (`python tests/run_all.py`) and Dependabot can
-# propose bumps (#364). Blender itself is not a pip package; see CLAUDE.md
-# "Blender Runtime Discovery" for the smoke tests.
--r scripts/site/requirements.txt
-PyYAML==6.0.3
-numpy==2.5.4
-Pillow==13.0.0

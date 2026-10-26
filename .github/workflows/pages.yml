@@ -101,9 +101,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: scripts/site/requirements.txt
+          cache-dependency-path: uv.lock
 
-      - run: pip install -r scripts/site/requirements.txt
+      - name: Install locked site dependencies (pyproject.toml + uv.lock)
+        run: |
+          pip install uv==0.8.5
+          uv export --locked --only-group site --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
+          pip install -r "$RUNNER_TEMP/requirements.txt"
 
       - name: Build landing page (vendored template)
         run: python scripts/site/build_site.py --repo-root . --out docs

@@ -1,0 +1,33 @@
+# The repo's Python tooling pins, locked in uv.lock (#512). Nothing here is a
+# published package: the content ships as a plugin, and VERSION is the release
+# source of truth. Blender itself is not a pip package; see CLAUDE.md
+# "Blender Runtime Discovery" for the smoke tests.
+#
+#   uv sync                     # dev group: everything tests/run_all.py needs
+#   uv run python tests/run_all.py
+#
+# CI installs from the lock with `uv export --locked`, so a pyproject edit
+# without a matching `uv lock` fails the build.
+[project]
+name = "blender-developer-tools"
+version = "0.0.0"  # placeholder required by the [project] table; VERSION is real
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+# The landing and 404 build (scripts/site/build_site.py).
+site = [
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.4",
+]
+# Every Validate check that does not need Blender.
+dev = [
+    { include-group = "site" },
+    "PyYAML==6.0.3",
+    "numpy==2.5.4",
+    "Pillow==13.0.0",
+]
+
+[tool.uv]
+package = false
+default-groups = ["dev"]
