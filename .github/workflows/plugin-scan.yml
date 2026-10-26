@@ -1,0 +1,67 @@
+name: HOL plugin scan
+
+# Runs HOL's AI plugin scanner (hashgraph-online/ai-plugin-scanner-action) over
+# the repo: manifests, skills, the opt-in MCP server, workflow permissions and
+# dependency pinning. The HOL registry lists this pack and takes 10% off its
+# Trust Score while no security scan runs in the source repo's CI (#510).
+#
+# Static and offline: `online` stays false, so the scanner reads the checkout
+# and nothing else, and submission automation stays off. The run fails only
+# on a high or critical finding; lower findings show in the job summary and,
+# on main, in the Security tab via SARIF.
+#
+# The `cisco` dispatch input also installs and runs the Cisco skill scanner,
+# the one HOL times out on for every skill (#513).
+
+on:
+  workflow_dispatch:
+    inputs:
+      cisco:
+        description: "Also run the Cisco skill scanner (slower; #513)"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 9 * * 3"   # weekly, Wednesday 09:00 UTC
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plugin-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Scan the plugin with the HOL AI plugin scanner
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write   # SARIF upload; used on main only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Scan
+        id: scan
+        uses: hashgraph-online/ai-plugin-scanner-action@5065ff849b5255dc24a8092c084a1c5060d8633e # v1.2.807
+        with:
+          plugin_dir: "."
+          mode: scan
+          format: sarif
+          output: plugin-scan.sarif
+          fail_on_severity: high
+          upload_sarif: ${{ github.event_name != 'pull_request' }}
+          publish_hint: false
+          cisco_skill_scan: ${{ inputs.cisco && 'on' || 'auto' }}
+          install_cisco: ${{ inputs.cisco || false }}
+
+      - name: Record the score
+        if: always() && steps.scan.outputs.score != ''
+        run: |
+          echo "score=${{ steps.scan.outputs.score }} grade=${{ steps.scan.outputs.grade }}" \
+               "max_severity=${{ steps.scan.outputs.max_severity }}" \
+               "findings=${{ steps.scan.outputs.findings_total }}"
