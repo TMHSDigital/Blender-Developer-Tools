@@ -1,0 +1,37 @@
+{
+  "name": "blender-developer-tools",
+  "version": "0.158.0",
+  "description": "Blender Python skills and rules for AI agents: correct bpy for Blender 5.2 LTS and 4.5 LTS (Slotted Actions, temp_override, Extensions, bmesh, Geometry Nodes, glTF/FBX export), backed by smoke-tested examples",
+  "author": {
+    "name": "TMHSDigital",
+    "url": "https://github.com/TMHSDigital"
+  },
+  "homepage": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
+  "repository": "https://github.com/TMHSDigital/Blender-Developer-Tools",
+  "license": "CC-BY-NC-ND-4.0 AND MIT",
+  "keywords": [
+    "claude-code",
+    "developer-tools",
+    "blender",
+    "bpy",
+    "blender-addon",
+    "blender-python"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Blender Developer Tools",
+    "shortDescription": "Correct Blender Python for 5.2 LTS and 4.5 LTS",
+    "longDescription": "Skills, rules, snippets and templates that keep AI coding agents writing correct Blender Python for 5.2 LTS and 4.5 LTS, backed by runnable examples that are smoke-tested on both versions.",
+    "developerName": "TMHSDigital",
+    "category": "Developer Tools",
+    "websiteURL": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
+    "privacyPolicyURL": "https://tmhsdigital.github.io/Blender-Developer-Tools/privacy/",
+    "termsOfServiceURL": "https://tmhsdigital.github.io/Blender-Developer-Tools/terms/",
+    "defaultPrompt": [
+      "Use Blender Developer Tools to write a Blender 5.2 add-on operator that also runs on 4.5 LTS."
+    ],
+    "brandColor": "#E87D0D",
+    "composerIcon": "./assets/favicon.svg",
+    "logo": "./assets/favicon.svg"
+  }
+}

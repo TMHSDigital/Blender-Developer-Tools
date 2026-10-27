@@ -1,0 +1,69 @@
+---
+description: Flag `sequence_editor.sequences` and `.sequences_all`. Both are gone in Blender 5.x (AttributeError on 5.0, 5.1 and 5.2), while `.strips` and `.strips_all` already exist on 4.5 LTS, so use those everywhere with no version branch. See the vse-python skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No legacy VSE `.sequences`: use `.strips`
+
+Blender 5.0 renamed the sequencer's strip collections. `SequenceEditor.sequences`
+and `SequenceEditor.sequences_all` were removed; `.strips` and `.strips_all`
+replace them. 4.5 LTS already has both names pointing at the same strips, so
+`.strips` is correct on every supported version and needs no `hasattr` or
+version check.
+
+Measured with `hasattr(scene.sequence_editor_create(), name)`:
+
+| Attribute | 4.5.14 LTS | 5.2.1 LTS |
+| --- | --- | --- |
+| `sequences` | `True` | `False` |
+| `sequences_all` | `True` | `False` |
+| `strips` | `True` | `True` |
+| `strips_all` | `True` | `True` |
+
+## What this rule flags
+
+- `sequence_editor.sequences` or `se.sequences` on any `SequenceEditor`,
+  including `.sequences.new_effect(...)`, `.sequences.new_movie(...)` and
+  iteration
+- `sequence_editor.sequences_all`
+- An `se.strips or se.sequences` fallback: an empty collection is falsy, so
+  on an empty 5.x timeline it reaches `.sequences` and raises
+
+## Wrong
+
+```python
+import bpy
+
+se = bpy.context.scene.sequence_editor_create()
+strip = se.sequences.new_effect(
+    name="Title", type="COLOR", channel=1, frame_start=1, frame_end=48,
+)
+for s in se.sequences_all:
+    print(s.name)
+```
+
+On 5.x the second line raises
+`AttributeError: 'SequenceEditor' object has no attribute 'sequences'`.
+
+## Right
+
+```python
+import bpy
+
+se = bpy.context.scene.sequence_editor_create()
+coll = se.strips  # present on 4.5 LTS and 5.x
+for s in se.strips_all:
+    print(s.name)
+```
+
+`new_effect` itself also changed its end keyword between 4.5 and 5.x
+(`frame_end` vs `length`); that split does need a version branch, shown in
+the vse-python skill.
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.SequenceEditor.html
+- https://docs.blender.org/api/4.5/bpy.types.SequenceEditor.html
