@@ -10,7 +10,10 @@ returns a Curve subclass, the built-in font ("Bfont Regular") is always loaded e
 headless, `body` is plain assignable text that regenerates geometry on edit (more
 characters → strictly wider evaluated mesh), and `extrude` / `bevel_depth` produce
 exactly predictable solids: the evaluated mesh z-extent equals 2 × (extrude +
-bevel_depth) and the round bevel widens the outline in-plane by 2 × bevel_depth.
+bevel_depth) and the round bevel pushes the upright leading digit out by exactly
+bevel_depth. The trailing edge only gets a band (bevel_depth to 1.1 × bevel_depth):
+it is the release-cycle suffix, and a curved last glyph overshoots ("5.2.3 Release
+Candidate" ends in "e" and grows 0.0208 for a 0.02 bevel, #505).
 Flat text (no extrude, no bevel) is already *filled* — faces exist — but strictly
 planar. The check also witnesses the depsgraph lifetime hazard: after
 `to_mesh_clear()` the returned Mesh reference is dead and any access raises

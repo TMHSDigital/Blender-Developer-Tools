@@ -4,8 +4,8 @@ Witnesses the TextCurve data-API contract: `bpy.data.curves.new(type='FONT')`
 returns a Curve subclass whose `body` is plain assignable text, whose default
 font ("Bfont Regular") is always loaded even headless, and whose `extrude` /
 `bevel_depth` produce exactly predictable solid geometry — the evaluated mesh
-z-extent equals 2 x (extrude + bevel_depth) and the round bevel widens the
-glyph outline in-plane by 2 x bevel_depth. Because the body is the live
+z-extent equals 2 x (extrude + bevel_depth) and the round bevel pushes the
+leading digit's outline out by bevel_depth. Because the body is the live
 `bpy.app.version_string`, every render self-documents which Blender made it.
 
 Version note: the string format itself diverges — plain "5.1.2" on 5.x but
@@ -64,6 +64,15 @@ def eval_extents(obj, deps):
     return out, me  # me is now DEAD — returned only to witness that
 
 
+def eval_x_bounds(obj, deps):
+    """(min x, max x) of the evaluated mesh."""
+    deps.update()
+    ev = obj.evaluated_get(deps)
+    xs = [v.co.x for v in ev.to_mesh().vertices]
+    ev.to_mesh_clear()
+    return min(xs), max(xs)
+
+
 def check(obj):
     txt = obj.data
 
@@ -114,16 +123,26 @@ def check(obj):
               file=sys.stderr)
         return 4
 
-    # solidify: z-extent is exactly 2*(extrude+bevel), bevel widens x by 2*bevel
+    # solidify: z-extent is exactly 2*(extrude+bevel), and the bevel pushes the
+    # outline out by bevel_depth. That is exact on the left edge, which is
+    # always a digit (check 14). The right edge is the release-cycle suffix: a
+    # curved last glyph overshoots ("5.2.3 Release Candidate" ends in "e" and
+    # grows 0.02080 for a 0.02 bevel, #505), so it only gets a band.
+    x_min_flat, x_max_flat = eval_x_bounds(obj, deps)
     txt.extrude = EXTRUDE
     txt.bevel_depth = BEVEL
     txt.bevel_resolution = 3
     (nv, nf, x_solid, z_solid), dead = eval_extents(obj, deps)
+    x_min_solid, x_max_solid = eval_x_bounds(obj, deps)
     want_z = 2.0 * (EXTRUDE + BEVEL)
-    want_x = x_flat + 2.0 * BEVEL
-    if abs(z_solid - want_z) > TOL or abs(x_solid - want_x) > TOL:
+    grow_left = x_min_flat - x_min_solid
+    grow_right = x_max_solid - x_max_flat
+    if (abs(z_solid - want_z) > TOL or abs(grow_left - BEVEL) > TOL
+            or not BEVEL - TOL <= grow_right <= 1.1 * BEVEL):
         print(f"ERROR: extrude/bevel closed form failed: z {z_solid:.5f} != "
-              f"{want_z:.5f} or x {x_solid:.5f} != {want_x:.5f}", file=sys.stderr)
+              f"{want_z:.5f}, left growth {grow_left:.5f} != {BEVEL}, or right "
+              f"growth {grow_right:.5f} outside [{BEVEL}, {1.1 * BEVEL:.3f}]",
+              file=sys.stderr)
         return 6
 
     # editing body regenerates geometry: more characters -> strictly wider
