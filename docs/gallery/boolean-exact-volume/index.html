@@ -55,9 +55,15 @@
     <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
     <div class="callout"><span class="tag">witnesses</span> EXACT booleans are closed-form even on coplanar faces: through translated, 18°-turned operands the union, difference and intersection measure 9, 7 and 1 m³ (8.999999 / 6.999999 / 1.000000, float32) and are closed 2-manifolds with no loose geometry; the floating-point solver (&#x27;FAST&#x27; on 4.5, &#x27;FLOAT&#x27; on 5.x) gives a 7.708 m³ union and --float-solver exits 3.</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=mesh">mesh</a> <a href="../#tag=modifiers">modifiers</a> <a href="../#tag=depsgraph">depsgraph</a></p>
+    <p class="taglist"><span class="tag">runs on</span> 4.5 LTS &middot; 5.1 &middot; 5.2 LTS</p>
     <div class="runline">
       <pre id="runCmd" tabindex="0">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <p class="taglist"><span class="tag">falsify it</span> Breaks the contract on purpose and must exit 3</p>
+    <div class="runline falsify">
+      <pre id="falsifyCmd" tabindex="0">blender --background --python examples/boolean-exact-volume/boolean_exact_volume.py -- --float-solver</pre>
+      <button class="copy-btn" id="copyFalsify" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
@@ -251,10 +257,12 @@ blender --background --python boolean_exact_volume.py -- --output boolean.png --
           });
         });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
-      }
+      [['copyRun', 'runCmd'], ['copyFalsify', 'falsifyCmd']].forEach(function (ids) {
+        var copy = document.getElementById(ids[0]);
+        if (copy) {
+          wireCopy(copy, function () { return document.getElementById(ids[1]).textContent; });
+        }
+      });
       Array.prototype.forEach.call(document.querySelectorAll('.md pre'), function (block) {
         var wrap = block;
         if (block.tagName === 'PRE') {

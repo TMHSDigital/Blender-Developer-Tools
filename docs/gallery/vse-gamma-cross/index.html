@@ -55,9 +55,15 @@
     <p class="zoom-hint">Rendered headless by the example itself. Select it to enlarge.</p>
     <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.250; AgX-default sampling poisons the fit (Standard is mandatory).</div>
     <p class="taglist"><span class="tag">tags</span> <a href="../#tag=sequencer">sequencer</a> <a href="../#tag=rendering">rendering</a></p>
+    <p class="taglist"><span class="tag">runs on</span> 4.5 LTS &middot; 5.1 &middot; 5.2 LTS</p>
     <div class="runline">
       <pre id="runCmd" tabindex="0">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <p class="taglist"><span class="tag">falsify it</span> Breaks the contract on purpose and must exit 4</p>
+    <div class="runline falsify">
+      <pre id="falsifyCmd" tabindex="0">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py -- --swap-inputs</pre>
+      <button class="copy-btn" id="copyFalsify" type="button">Copy</button>
     </div>
     <nav class="jumpnav" aria-label="On this page"><span class="tag">jump to</span> <a href="#run">Run</a> <a href="#exit-codes">Exit codes</a> <a href="#source">Source</a> <a href="#related">Related</a></nav>
     <section class="detail-section md">
@@ -252,10 +258,12 @@ blender --background --python vse_gamma_cross.py -- --output bench.png --engine 
           });
         });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
-      }
+      [['copyRun', 'runCmd'], ['copyFalsify', 'falsifyCmd']].forEach(function (ids) {
+        var copy = document.getElementById(ids[0]);
+        if (copy) {
+          wireCopy(copy, function () { return document.getElementById(ids[1]).textContent; });
+        }
+      });
       Array.prototype.forEach.call(document.querySelectorAll('.md pre'), function (block) {
         var wrap = block;
         if (block.tagName === 'PRE') {

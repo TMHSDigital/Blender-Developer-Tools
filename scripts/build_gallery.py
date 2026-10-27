@@ -34,6 +34,7 @@ import html
 import json
 import posixpath
 import re
+import shlex
 import sys
 import urllib.parse
 from pathlib import Path
@@ -1089,10 +1090,12 @@ DETAIL_JS = """
           });
         });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
-      }
+      [['copyRun', 'runCmd'], ['copyFalsify', 'falsifyCmd']].forEach(function (ids) {
+        var copy = document.getElementById(ids[0]);
+        if (copy) {
+          wireCopy(copy, function () { return document.getElementById(ids[1]).textContent; });
+        }
+      });
       Array.prototype.forEach.call(document.querySelectorAll('.md pre'), function (block) {
         var wrap = block;
         if (block.tagName === 'PRE') {
@@ -1233,7 +1236,8 @@ def _starts_block(lines: list[str], i: int) -> bool:
 
 
 # Ids the detail page itself uses; a README heading must never collide with them.
-RESERVED_IDS = frozenset({"main", "heroZoom", "lightbox", "runCmd", "copyRun", "related", "related-h", "source"})
+RESERVED_IDS = frozenset({"main", "heroZoom", "lightbox", "runCmd", "copyRun", "falsifyCmd", "copyFalsify",
+                          "related", "related-h", "source"})
 
 
 def slugify(text: str, seen: set[str]) -> str:
@@ -1516,12 +1520,29 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
             for t in tags)
         parts.append(f'    <p class="taglist"><span class="tag">tags</span> {links}</p>')
 
+    idx_row = example_index().get(name)
+    if idx_row:
+        since = idx_row.get("min_version", "4.5")
+        runs = [label for ver, label in SMOKED_SERIES if version_key(ver) >= version_key(since)]
+        skip = f" (skips below {since})" if since != SMOKED_SERIES[0][0] else ""
+        parts.append(f'    <p class="taglist"><span class="tag">runs on</span> '
+                     f'{" &middot; ".join(html.escape(r) for r in runs)}{html.escape(skip)}</p>')
+
     if script is not None:
         cmd = f"blender --background --python {ex['dir']}/{script.name} --"
         parts.append('    <div class="runline">')
         parts.append(f'      <pre id="runCmd" tabindex="0">{html.escape(cmd)}</pre>')
         parts.append('      <button class="copy-btn" id="copyRun" type="button">Copy</button>')
         parts.append("    </div>")
+        fals = next((f for f in (idx_row or {}).get("falsifiers", []) if "expect_exit" in f), None)
+        if fals:
+            only = f", on {fals['min_version']}+" if fals.get("min_version") else ""
+            parts.append(f'    <p class="taglist"><span class="tag">falsify it</span> '
+                         f'Breaks the contract on purpose and must exit {int(fals["expect_exit"])}{html.escape(only)}</p>')
+            parts.append('    <div class="runline falsify">')
+            parts.append(f'      <pre id="falsifyCmd" tabindex="0">{html.escape(cmd + " " + shlex.join(fals["args"]))}</pre>')
+            parts.append('      <button class="copy-btn" id="copyFalsify" type="button">Copy</button>')
+            parts.append("    </div>")
 
     readme = ex_dir / "README.md"
     readme_html = ""
@@ -1614,6 +1635,27 @@ _SENTENCE_END = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)[.!?](?=\s+[A-Z`(])"
 def first_sentence(text: str) -> str:
     m = _SENTENCE_END.search(text)
     return text[:m.end()] if m else text
+
+
+# The series blender-smoke.yml runs every example on (5.1 on the weekly cron).
+SMOKED_SERIES = (("4.5", "4.5 LTS"), ("5.1", "5.1"), ("5.2", "5.2 LTS"))
+
+
+def version_key(v: str) -> tuple[int, ...]:
+    return tuple(int(p) for p in v.split("."))
+
+
+_EXAMPLE_INDEX: dict | None = None
+
+
+def example_index() -> dict[str, dict]:
+    """examples/index.json rows by name; showcase pieces have none."""
+    global _EXAMPLE_INDEX
+    if _EXAMPLE_INDEX is None:
+        path = REPO / "examples" / "index.json"
+        rows = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else []
+        _EXAMPLE_INDEX = {r["name"]: r for r in rows}
+    return _EXAMPLE_INDEX
 
 
 def check_only_examples() -> list[dict]:

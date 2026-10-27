@@ -281,10 +281,12 @@ blender --background --python caldera_island_tile.py -- --output caldera.png</co
           });
         });
       }
-      var copy = document.getElementById('copyRun');
-      if (copy) {
-        wireCopy(copy, function () { return document.getElementById('runCmd').textContent; });
-      }
+      [['copyRun', 'runCmd'], ['copyFalsify', 'falsifyCmd']].forEach(function (ids) {
+        var copy = document.getElementById(ids[0]);
+        if (copy) {
+          wireCopy(copy, function () { return document.getElementById(ids[1]).textContent; });
+        }
+      });
       Array.prototype.forEach.call(document.querySelectorAll('.md pre'), function (block) {
         var wrap = block;
         if (block.tagName === 'PRE') {
