@@ -16,7 +16,7 @@
         "repo": "TMHSDigital/Blender-Developer-Tools",
         "ref": "plugin-dist"
       },
-      "version": "0.157.0"
+      "version": "0.158.0"
     },
     {
       "name": "blender-live-session",
@@ -27,7 +27,7 @@
         "path": "live-session",
         "ref": "plugin-dist"
       },
-      "version": "0.157.0"
+      "version": "0.158.0"
     }
   ]
 }

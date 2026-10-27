@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.158.0] - 2026-10-27
+
+### For agents and users
+
+**Features**
+
+- feat: five skills for stranded examples, and CI that runs snippets and skill blocks in place ([`077cdd9`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/077cdd9aa49163535d9a26825f13da65fd925ea7))
+
+[Release v0.158.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.158.0)
+
 ## [0.157.0] - 2026-10-27
 
 ### For agents and users
