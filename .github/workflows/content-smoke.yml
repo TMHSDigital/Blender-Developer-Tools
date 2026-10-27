@@ -1,0 +1,119 @@
+name: Content Smoke
+
+# Runs the shipped snippets and the `<!-- smoke: run -->` blocks in
+# skills/*/SKILL.md in place, on 5.2 LTS and 4.5 LTS (#447). A positive
+# `paths` filter, not blender-smoke.yml's paths-ignore: that one ignores
+# "**.md", so a SKILL.md-only change would never reach Blender.
+# release-gate.sh waits for this run on a direct push that touches these paths.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 7 * * 1"   # weekly, after blender-smoke: catches upstream API drift
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "snippets/**"
+      - "tests/smoke/run_content.py"
+      - "tests/smoke/snippet_checks.py"
+      - ".github/workflows/content-smoke.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "snippets/**"
+      - "tests/smoke/run_content.py"
+      - "tests/smoke/snippet_checks.py"
+      - ".github/workflows/content-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-smoke-${{ github.event.pull_request.number || (github.event_name == 'push' && github.sha) || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content:
+    name: Blender ${{ matrix.series }} content smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        series: ["5.2", "4.5"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Blender runtime libraries
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
+            libxkbcommon0 libsm6 libice6
+
+      - name: Resolve Blender ${{ matrix.series }}
+        id: resolve
+        run: |
+          set -euo pipefail
+          series="${{ matrix.series }}"
+          base="https://download.blender.org/release/Blender${series}/"
+          file=$(curl -fsSL "$base" \
+            | grep -oE "blender-${series}\.[0-9]+-linux-x64\.tar\.xz" \
+            | sort -V | uniq | tail -1)
+          if [ -z "$file" ]; then
+            echo "::error::Could not resolve a linux-x64 build for Blender ${series} at $base"
+            exit 1
+          fi
+          version="${file#blender-}"
+          version="${version%-linux-x64.tar.xz}"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Resolved Blender $version"
+
+      - name: Restore Blender ${{ steps.resolve.outputs.version }} from cache
+        id: bl-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bl
+          key: blender-${{ steps.resolve.outputs.version }}-linux-x64
+
+      - name: Download Blender and verify its published sha256
+        if: steps.bl-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          base="${{ steps.resolve.outputs.base }}"
+          file="${{ steps.resolve.outputs.file }}"
+          version="${{ steps.resolve.outputs.version }}"
+          mkdir -p "$RUNNER_TEMP/bl"
+          curl -fSL --retry 3 -o "$RUNNER_TEMP/bl.tar.xz" "${base}${file}"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/bl.sha256" "${base}blender-${version}.sha256"
+          expected=$(grep -E "  ${file}$" "$RUNNER_TEMP/bl.sha256" | awk '{print $1}')
+          if [ -z "$expected" ]; then
+            echo "::error::no published sha256 for ${file}"
+            exit 1
+          fi
+          echo "${expected}  $RUNNER_TEMP/bl.tar.xz" | sha256sum -c - \
+            || { echo "::error::sha256 mismatch for ${file}; refusing to extract"; exit 1; }
+          tar -xf "$RUNNER_TEMP/bl.tar.xz" -C "$RUNNER_TEMP/bl"
+
+      - name: Locate Blender binary
+        run: |
+          set -euo pipefail
+          bl=$(find "$RUNNER_TEMP/bl" -maxdepth 2 -type f -name blender | head -1)
+          if [ -z "$bl" ]; then
+            echo "::error::blender binary not found"
+            exit 1
+          fi
+          echo "BLENDER=$bl" >> "$GITHUB_ENV"
+          "$bl" --version | head -1 | grep -q "Blender ${{ matrix.series }}\." \
+            || { echo "::error::version does not match series ${{ matrix.series }}"; exit 1; }
+
+      - name: Run every snippet (and its falsifier) and every tagged SKILL.md block
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$BLENDER" --background --factory-startup --python-exit-code 1 \
+            --python tests/smoke/run_content.py

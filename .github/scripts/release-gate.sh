@@ -70,6 +70,26 @@ smoke_applies() {
   return 1
 }
 
+# content_smoke_applies: 0 when some changed file matches content-smoke.yml's
+# positive `paths` filter (skills, snippets, the content runner). Same
+# fail-toward-waiting rules as smoke_applies.
+content_smoke_applies() {
+  local files
+  if [ -n "${BEFORE:-}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+    files=$(gh api "repos/$repo/compare/$BEFORE...$sha" --jq '.files[].filename' 2>/dev/null) || return 0
+  else
+    files=$(gh api "repos/$repo/commits/$sha" --jq '.files[].filename' 2>/dev/null) || return 0
+  fi
+  [ -n "$files" ] || return 0
+  [ "$(printf '%s\n' "$files" | wc -l)" -lt 300 ] || return 0
+  while IFS= read -r f; do
+    case "$f" in
+      skills/*|snippets/*|tests/smoke/run_content.py|tests/smoke/snippet_checks.py|.github/workflows/content-smoke.yml) return 0 ;;
+    esac
+  done <<< "$files"
+  return 1
+}
+
 wait_green validate.yml Validate "${GATE_TIMEOUT:-1500}"
 
 pr=$(gh api "repos/$repo/commits/$sha/pulls" --jq '.[0].number // empty')
@@ -78,6 +98,9 @@ if [ -z "$pr" ]; then
     wait_green blender-smoke.yml "Blender Smoke" "${SMOKE_TIMEOUT:-5400}"
   else
     echo "Direct push changed only smoke-ignored paths; Validate alone gates this release"
+  fi
+  if content_smoke_applies; then
+    wait_green content-smoke.yml "Content Smoke" "${CONTENT_TIMEOUT:-2700}"
   fi
   exit 0
 fi

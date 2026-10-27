@@ -385,6 +385,9 @@ jobs:
       - name: Check skill file references resolve outside a checkout
         run: python3 tests/check_skill_refs.py
 
+      - name: Check every snippet has a smoke check and falsifier, and every skill python block compiles
+        run: python3 tests/check_content_catalog.py
+
   validate-counts:
     name: Validate content counts
     runs-on: ubuntu-latest

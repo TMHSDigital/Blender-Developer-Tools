@@ -20,6 +20,7 @@ BASH = shutil.which("bash")
 # Fake gh: behaviour comes from env vars so each test sets one scenario.
 #   FAKE_RUN     "<status> <conclusion>" for `gh run list --workflow validate.yml`
 #   FAKE_SMOKE   the same for `--workflow blender-smoke.yml`
+#   FAKE_CONTENT the same for `--workflow content-smoke.yml`
 #   FAKE_PR      PR number for `gh api .../pulls` (empty = direct push)
 #   FAKE_FILES   changed files for `gh api .../commits/SHA` or `.../compare/...`
 #   FAKE_CHECKS  stdout for `gh pr checks`; FAKE_CHECKS_RC its exit code
@@ -28,6 +29,7 @@ case "$1 $2" in
   "run list")
     case " $* " in
       *" blender-smoke.yml "*) echo "${FAKE_SMOKE:-completed success}" ;;
+      *" content-smoke.yml "*) echo "${FAKE_CONTENT:-completed success}" ;;
       *) echo "${FAKE_RUN:-completed success}" ;;
     esac ;;
   "api "*/pulls) echo "${FAKE_PR:-}" ;;
@@ -78,6 +80,23 @@ class ReleaseGate(unittest.TestCase):
         code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", SMOKE_TIMEOUT="0")
         self.assertEqual(code, 1)
         self.assertIn("Blender Smoke did not finish", out)
+
+    def test_skill_only_direct_push_waits_for_content_smoke(self):
+        # #447: SKILL.md is smoke-ignored ("**.md") but its tagged blocks run
+        # in content-smoke.yml, which the gate must wait for.
+        files = r"skills/vse-python/SKILL.md"
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", FAKE_FILES=files)
+        self.assertEqual(code, 0, out)
+        self.assertIn("Content Smoke: success", out)
+        code, out = self.gate(FAKE_PR="", FAKE_SMOKE="none none", FAKE_FILES=files,
+                              FAKE_CONTENT="completed failure")
+        self.assertEqual(code, 1)
+        self.assertIn("Content Smoke concluded 'failure'", out)
+
+    def test_example_only_direct_push_skips_content_smoke(self):
+        code, out = self.gate(FAKE_PR="", FAKE_CONTENT="none none", CONTENT_TIMEOUT="0")
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("Content Smoke", out)
 
     def test_docs_only_direct_push_skips_smoke(self):
         code, out = self.gate(

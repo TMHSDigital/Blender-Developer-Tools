@@ -39,7 +39,12 @@
     "skills/bl-info-migration/SKILL.md",
     "skills/vse-python/SKILL.md",
     "skills/gpu-drawing-and-overlays/SKILL.md",
-    "skills/porting-to-blender-5/SKILL.md"
+    "skills/porting-to-blender-5/SKILL.md",
+    "skills/grease-pencil-v3/SKILL.md",
+    "skills/constraints-and-parenting/SKILL.md",
+    "skills/images-and-pixels/SKILL.md",
+    "skills/curves-and-text/SKILL.md",
+    "skills/compositor-nodes/SKILL.md"
   ],
   "rules": [
     "rules/prefer-data-over-ops-in-loops.mdc",

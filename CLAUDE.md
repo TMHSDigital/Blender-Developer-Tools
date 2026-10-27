@@ -17,7 +17,7 @@ The **Blender Developer Tools** repository is at **v0.157.0**. It packages skill
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 20 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 25 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 12 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 31 total
@@ -30,7 +30,7 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (20)
+## Skills (25)
 
 | Skill | Purpose |
 | --- | --- |
@@ -54,6 +54,11 @@ VERSION                        - Source of truth for the repo version
 | timers-modal-and-threading | `bpy.app.timers` return values and `persistent`, modal operators on `event_timer_add`, worker thread + queue + main-thread drain, no timers in `--background` |
 | porting-to-blender-5 | Index of every 4.x → 5.x break the pack covers (bgl, `action.fcurves`, `use_auto_smooth`, Principled sockets, `.sequences`, ID properties, compositor, NodesModifier inputs, ...), each linked to the skill, rule or example that owns the fix; headless triage recipe |
 | gpu-drawing-and-overlays | `gpu` instead of the removed `bgl`: `draw_handler_add`/`remove`, builtin shader names, `gpu.state` blending and depth, `POLYLINE_*` line width, `blf` text, `GPUOffScreen` with 5.2's `gpu.init()` headless |
+| grease-pencil-v3 | Grease Pencil v3: `grease_pencils_v3` (4.5) vs `grease_pencils` (5.x), layers/frames/drawings, point attributes, Line Art modifier |
+| constraints-and-parenting | `.parent` vs `matrix_parent_inverse`, stale `matrix_world`, constraints via `constraints.new` checked on the evaluated pose, `SKT_*` socket empties |
+| images-and-pixels | `Image.pixels` layout and bulk `foreach_*`, byte vs float buffers, colorspace, `save()` vs `save_render()`, PNG vs EXR alpha |
+| curves-and-text | Curve and TextCurve datablocks: splines, bevel/extrude closed forms, `body`, Bfont, evaluated mesh read-back |
+| compositor-nodes | 4.5 `scene.node_tree` vs 5.x `scene.compositing_node_group`, Glare node enum-to-menu-socket change, `use_compositing` |
 
 ## Rules (12)
 
@@ -197,6 +202,13 @@ The host runner is `tests/smoke/run_example.py`. Shipped examples are listed in
   (`tests/check_falsifier_targets.py --run --shard K/4`, four jobs; dispatch
   with `sweep: true` to run it by hand), and a red or cancelled weekly run
   opens or comments on a "Weekly Blender smoke run failed" issue.
+- **Content smoke (#447):** `content-smoke.yml` runs every `snippets/*.py` in place
+  (its check and falsifier live in `tests/smoke/snippet_checks.py`) and every
+  SKILL.md ```python block tagged `<!-- smoke: run -->`, via
+  `tests/smoke/run_content.py`, on 5.2 and 4.5. It has a positive `paths` filter
+  because blender-smoke ignores `**.md`; `release-gate.sh` waits for it on pushes
+  touching skills or snippets. Validate's `tests/check_content_catalog.py`
+  compiles every SKILL.md block and requires a catalog entry per snippet.
 - **Summary:** `tests/smoke/summarize.py` prints passed/skipped/failed. Zero
   PASSes makes the job red even if every example skipped cleanly. Falsifier
   runs are tabled separately and never count toward that PASS.

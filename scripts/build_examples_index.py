@@ -92,6 +92,10 @@ def build_index() -> tuple[list[dict], list[str]]:
     for name in sorted(set(mapping) - set(dirs)):
         errors.append(f"examples/skills.json lists {name}, which is not an example directory")
     for name, listed in mapping.items():
+        if not listed:
+            # #456: an example no skill teaches never reaches plugin users,
+            # who get skills/ but not examples/.
+            errors.append(f"examples/skills.json: {name} maps to no skill; teach it in one")
         for s in listed:
             if s not in skills:
                 errors.append(f"examples/skills.json: {name} names unknown skill {s!r}")

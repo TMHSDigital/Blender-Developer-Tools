@@ -20,7 +20,7 @@ a `.cursor-plugin/plugin.json` manifest so the ecosystem drift checker
 classifies it as a `cursor-plugin`. This is content the AI loads when the user
 asks Blender questions or works on Blender add-ons in Cursor or Claude Code.
 
-The content base is 20 skills, 12 rules, 3 templates, 31 snippets, 66
+The content base is 25 skills, 12 rules, 3 templates, 31 snippets, 66
 examples, and 80 showcase pieces (counts are CI-enforced across README.md, the agent docs, ROADMAP.md,
 `site.json` and the site templates). The full inventory tables and per-item purposes live in
 `CLAUDE.md`. Example anatomy and authoring rules: copy `examples/bmesh-gear/`;
@@ -32,7 +32,7 @@ in `docs/VISUAL-STYLE.md`; the canonical run prompt is
 
 ```
 Blender-Developer-Tools/
-  skills/<skill-name>/SKILL.md   # 20 skill files
+  skills/<skill-name>/SKILL.md   # 25 skill files
   rules/<rule-name>.mdc          # 12 rule files
   templates/<template-name>/     # 3 starter templates
   snippets/<snippet-name>.py     # 31 standalone Python snippets

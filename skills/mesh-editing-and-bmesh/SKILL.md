@@ -1,6 +1,6 @@
 ---
 name: mesh-editing-and-bmesh
-description: "Create, edit and read meshes efficiently: when to use bpy.data, bpy.ops or bmesh, the bmesh.new / try / finally / free pattern, foreach_get and foreach_set for bulk data, and evaluated meshes for modifier results. Use when the user writes mesh-generating or mesh-editing Python, mentions bmesh, from_pydata, foreach_set or mesh.vertices, has a slow script looping over bpy.ops.mesh or per-vertex assignments, or a bmesh script that misbehaves on its second run. Targets 5.2 LTS."
+description: "Create, edit and read meshes efficiently: when to use bpy.data, bpy.ops or bmesh, the bmesh.new / try / finally / free pattern, foreach_get and foreach_set for bulk data, and evaluated meshes for modifier results. Use when the user writes mesh-generating or mesh-editing Python, mentions bmesh, from_pydata, foreach_set or mesh.vertices, has a slow script looping over bpy.ops.mesh or per-vertex assignments, a bmesh script that misbehaves on its second run, or sculpt automasking code that raises AttributeError on Brush.use_automasking_* in 5.2 (MeshAutomaskingSettings). Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 
@@ -15,6 +15,7 @@ Use this skill when the user:
 - Has a script that's slow and uses `bpy.ops.mesh.*` in a loop
 - Needs the mesh after modifiers (subdivision surface, mirror, geometry nodes) have been applied
 - Asks why their bmesh script crashes on the second run
+- Reads or writes sculpt automasking (`use_automasking_*`, `mesh_automasking_settings`) and hits `AttributeError` on 5.2
 
 ## Three layers, three use cases
 
@@ -273,6 +274,38 @@ print(me.normals_domain)                          # 'POINT', 'FACE' or 'CORNER'
 
 The `no-removed-normals-api` rule flags the old calls. Witness: [`examples/mesh-normals-after-41/`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-normals-after-41).
 
+## Sculpt tool settings and automasking
+
+Sculpt automasking moved in 5.2. On 4.5 LTS and 5.1 the 18 settings are `Brush` attributes (`brush.use_automasking_topology`, `brush.automasking_cavity_factor`). On 5.2 they live on `brush.mesh_automasking_settings`, a `MeshAutomaskingSettings`, and the old `Brush` names raise `AttributeError`. Two traps come with the move:
+
+- **Only the booleans keep their names.** The ten `use_automasking_*` flags are spelled the same on the new struct. The eight values drop the prefix: `automasking_cavity_factor` becomes `cavity_factor`, `automasking_view_normal_limit` becomes `view_normal_limit`, and so on. A blanket `getattr(mas, old_name)` port breaks on exactly those eight.
+- **A brush needs `mode="SCULPT"`.** `bpy.data.brushes.new(name)` with no mode leaves `mesh_automasking_settings` as `None` on 5.2. A factory-empty file has no brushes at all, so headless code creates its own.
+
+Pick the struct by presence, not version, and spell the value names per struct:
+
+<!-- smoke: run -->
+```python
+import bpy
+
+brush = bpy.data.brushes.new("ProbeBrush", mode="SCULPT")
+mas = getattr(brush, "mesh_automasking_settings", None)
+
+if mas is not None:                      # 5.2+
+    mas.use_automasking_topology = True
+    mas.cavity_factor = 0.75
+    topo, factor = mas.use_automasking_topology, mas.cavity_factor
+else:                                    # 4.5 LTS, 5.1
+    brush.use_automasking_topology = True
+    brush.automasking_cavity_factor = 0.75
+    topo, factor = brush.use_automasking_topology, brush.automasking_cavity_factor
+
+assert topo is True and abs(factor - 0.75) < 1e-6
+assert (mas is not None) == hasattr(bpy.types, "MeshAutomaskingSettings")
+assert hasattr(brush, "automasking_cavity_factor") == (mas is None)
+```
+
+The full old-to-new name map is in the witness example, [`mesh-automasking-settings`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-automasking-settings) (measured on 4.5.11, 5.1.2 and 5.2.1).
+
 ## Common AI mistakes
 
 1. **`bpy.ops.mesh.*` in a loop**. See the canonical example above. Move to `bpy.data` plus `bmesh`.
@@ -302,6 +335,8 @@ The `no-removed-normals-api` rule flags the old calls. Witness: [`examples/mesh-
 
 10. **`mesh.use_auto_smooth = True` / `mesh.calc_normals_split()`.** Removed in 4.1; `AttributeError` on 4.5 and 5.x. See Normals after 4.1 above.
 
+11. **`brush.use_automasking_*` / `brush.automasking_*` on 5.2.** `AttributeError`; the settings moved to `brush.mesh_automasking_settings`, and the eight non-boolean values lost their `automasking_` prefix. See Sculpt tool settings and automasking above.
+
 ## Related
 
 - `headless-batch-scripting` for using these patterns in CLI scripts
@@ -328,6 +363,7 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`lattice-deform`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lattice-deform): A 2x2x2 Lattice modifier set to KEY_LINEAR on all three axes, with two top control points moved through LatticePoint.co_deform, read back through the depsgraph (evaluated_get, to_mesh, to_mesh_clear). Falsify: `--bspline` (exit 4).
 - [`lightmap-uv-channel`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel): A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin. Falsify: `--overlap-islands` (exit 7).
 - [`lod-decimate-chain`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain): A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. Falsify: `--no-decimate` (exit 6).
+- [`mesh-automasking-settings`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-automasking-settings): Pathology witness for the 5.2 move of sculpt automasking RNA off `Brush` into `MeshAutomaskingSettings`. Falsify: `--assume-brush-attrs` (exit 5).
 - [`mesh-hygiene-audit`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit): Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. Falsify: `--inject ngon` (exit 3).
 - [`mesh-normals-after-41`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-normals-after-41): Check-only witness for the normals API that replaced auto smooth in Blender 4.1, on 4.5 LTS and 5.x alike. Falsify: `--legacy-api` (exit 3).
 - [`modular-kit-snap`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap): A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap. Falsify: `--seam-gap` (exit 5).
@@ -349,3 +385,4 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - `bmesh` module: https://docs.blender.org/api/current/bmesh.html
 - `bmesh.ops`: https://docs.blender.org/api/current/bmesh.ops.html
 - Depsgraph: https://docs.blender.org/api/current/bpy.types.Depsgraph.html
+- `bpy.types.MeshAutomaskingSettings` (5.2+): https://docs.blender.org/api/current/bpy.types.MeshAutomaskingSettings.html; 4.5 LTS `Brush`: https://docs.blender.org/api/4.5/bpy.types.Brush.html

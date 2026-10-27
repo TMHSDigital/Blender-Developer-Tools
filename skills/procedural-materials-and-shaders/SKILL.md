@@ -1,6 +1,6 @@
 ---
 name: procedural-materials-and-shaders
-description: "Build materials and shader node graphs from Python: bpy.data.materials, node_tree, Principled BSDF and its 4.0+ socket names, default values, links and shader node groups, for EEVEE and Cycles. Use when the user creates or edits materials in a script, generates many material variations, hits a KeyError on a Principled BSDF input such as Specular or Emission, or asks about EEVEE vs Cycles differences or the deferred Layered Textures system. Targets 5.2 LTS."
+description: "Build materials and shader node graphs from Python: bpy.data.materials, node_tree, Principled BSDF and its 4.0+ socket names, default values, links and shader node groups, for EEVEE and Cycles. Use when the user creates or edits materials in a script, generates many material variations, hits a KeyError on a Principled BSDF input such as Specular or Emission, restricts a light to some objects with light linking (object.light_linking receiver_collection / blocker_collection, AttributeError on Light.light_linking), or asks about EEVEE vs Cycles differences or the deferred Layered Textures system. Targets 5.2 LTS."
 standards-version: 1.10.0
 ---
 
@@ -14,6 +14,7 @@ Use this skill when the user:
 - Mentions `bpy.data.materials`, `node_tree`, `ShaderNodeBsdfPrincipled`, `inputs[...].default_value`
 - Needs to generate many materials parametrically (asset libraries, batch import, color variations)
 - Asks about EEVEE Next vs Cycles material differences
+- Restricts which objects a light illuminates (light linking, `receiver_collection`, `blocker_collection`)
 - Asks about "Layered Textures" or "the new shader system" (see version-correctness section)
 
 ## Required inputs
@@ -149,6 +150,34 @@ def make_emissive(name, color=(1.0, 0.4, 0.1, 1.0), strength=5.0):
 
 When the same subgraph appears across multiple materials, factor it into a `ShaderNodeTree` group. Create the group once with `bpy.data.node_groups.new(name='MyGroup', type='ShaderNodeTree')`, build its internal nodes and its sockets with `group.interface.new_socket(...)` (the same API on 4.5 LTS and 5.x; `group.inputs.new` was removed in 4.0), then instantiate it inside any material's tree as a `ShaderNodeGroup` with `node.node_tree = my_group`. See snippet `shader-node-group.py`.
 
+## Light linking
+
+Light linking restricts a light to a set of receiver objects, or stops a set of blocker objects from casting its shadows. It is the look-dev tool for "this key lights the hero, not the set". Python reaches it in one place, and that place is the trap: the settings live on the light **object**, not on the `Light` datablock.
+
+<!-- smoke: run -->
+```python
+import bpy
+
+hero = bpy.data.collections.new("Hero")
+bpy.context.scene.collection.children.link(hero)
+hero.objects.link(bpy.data.objects["Cube"])
+
+light_data = bpy.data.lights.new("Key", type="AREA")
+key = bpy.data.objects.new("Key", light_data)
+bpy.context.scene.collection.objects.link(key)
+
+key.light_linking.receiver_collection = hero   # lights only objects in Hero
+key.light_linking.blocker_collection = None    # shadow linking: casters, same shape
+
+assert key.light_linking.receiver_collection == hero
+assert not hasattr(light_data, "light_linking")  # not on the datablock
+```
+
+- **Object, not datablock.** `obj.light_linking` is an `ObjectLightLinking` with `receiver_collection` and `blocker_collection`. `light_data.light_linking` raises `AttributeError` on 4.5 LTS and 5.x alike, so no version branch is needed.
+- **Linking to a collection, not to objects.** Put the receivers in a collection and assign the collection. `None` removes the restriction.
+- **Cycles and EEVEE both honour it.** [`light-link-studio`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/light-link-studio) measures the linked hero at 3.6x the luminance of an identical unlinked decoy in Cycles, and 3.8x with EEVEE on 4.5 (`BLENDER_EEVEE_NEXT`) and 5.1 (`BLENDER_EEVEE`). Unlinking raises the decoy by over 200% while the hero moves under 0.5%, so the restriction is surgical.
+- **Measure under `view_transform = 'Standard'`.** AgX compresses the luminance ratios a pixel check depends on.
+
 ## Common AI mistakes
 
 - **Forgetting `mat.use_nodes = True` on 4.5 LTS**. There, a new material's `mat.node_tree` is `None` until nodes are enabled, and any node access raises `AttributeError`. On 5.x the tree exists from `materials.new()` and setting `use_nodes` only emits a `DeprecationWarning`, so gate the line on `bpy.app.version < (5, 0, 0)`.
@@ -159,6 +188,7 @@ When the same subgraph appears across multiple materials, factor it into a `Shad
 - **Calling `bpy.ops.material.new()`** to create a material when `bpy.data.materials.new()` works headlessly and is faster.
 - **Trying to wire sockets across material boundaries**. Each material has its own `node_tree`. To share logic, use a shader node group.
 - **Forgetting to clear default nodes**. A new material's tree (5.x, or 4.5 after `use_nodes = True`) holds a Principled BSDF and an Output. If you add your own BSDF and link it to `Surface`, the new link replaces the old one (an input socket takes one link), so the default Principled BSDF is left orphaned in the tree, confusing anyone who reads it and anything that later looks it up by type or name. Either reuse the defaults or `nodes.clear()` first.
+- **Setting light linking on the `Light` datablock.** `bpy.data.lights["Key"].light_linking` raises `AttributeError`; use the light object: `bpy.data.objects["Key"].light_linking.receiver_collection = collection`.
 
 ## Version correctness
 
@@ -231,6 +261,7 @@ Almost everything you want to do with materials has a `bpy.data` path. The two n
 
 Each example runs headless, asserts the contract, and exits non-zero when it breaks. Run one with `blender --background --python <script> --`; pass a falsifier flag to watch the check fail.
 
+- [`light-link-studio`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/light-link-studio): One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Falsify: `--skip-link` (exit 6).
 - [`shader-node-group`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shader-node-group): One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors. Falsify: `--same-tint` (exit 8).
 - [`sky-texture-sun-elevation`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation): World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. Falsify: `--unlink-sky` (exit 7).
 - [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--same-base` (exit 6).
@@ -242,5 +273,6 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - `bpy.types.Material`: https://docs.blender.org/api/current/bpy.types.Material.html
 - `bpy.types.ShaderNodeBsdfPrincipled`: https://docs.blender.org/api/current/bpy.types.ShaderNodeBsdfPrincipled.html
 - `bpy.types.ShaderNodeTree`: https://docs.blender.org/api/current/bpy.types.ShaderNodeTree.html
+- `bpy.types.ObjectLightLinking`: https://docs.blender.org/api/current/bpy.types.ObjectLightLinking.html ([4.5 LTS](https://docs.blender.org/api/4.5/bpy.types.ObjectLightLinking.html))
 - Blender 4.0 release notes (Principled v2, Specular rename): https://developer.blender.org/docs/release_notes/4.0/
 - Blender 5.1 EEVEE Next: https://developer.blender.org/docs/release_notes/5.1/eevee/

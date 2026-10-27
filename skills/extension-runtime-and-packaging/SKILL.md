@@ -85,8 +85,10 @@ network = "Downloads material presets from the project server"
 ```
 
 ```python
-if not bpy.app.online_access:
-    return None  # the user has not allowed online access; do nothing online
+def fetch_presets(url):
+    if not bpy.app.online_access:
+        return None  # the user has not allowed online access; do nothing online
+    ...
 ```
 
 - `bpy.app.online_access` is `False` in a fresh factory-startup Blender and `True` under `blender --online-mode` (measured on all three versions). Users turn it on with **Preferences → System → Network → Allow Online Access**.

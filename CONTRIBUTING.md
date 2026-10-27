@@ -101,6 +101,8 @@ showcase/
 
 3. Aim for 150 to 350 lines covering the canonical pattern, common AI mistakes, version-correctness notes, and one or two worked code examples. Cite Blender API doc URLs where relevant. Avoid encyclopedic API tours.
 4. The skill `name` in frontmatter must match the directory name exactly (CI enforces this).
+5. Every ```python block must compile (`tests/check_content_catalog.py`). Put `<!-- smoke: run -->` on the line directly above a block that is self-contained, so Content Smoke executes it on 4.5 and 5.2 in a factory-startup scene: no input files, no render, and it ends with `assert`s on what it built. Tag at least one block per skill where the API allows it.
+6. Map at least one example to the skill in `examples/skills.json`; an example mapped to no skill fails Validate.
 
 ## Adding a Rule
 
@@ -131,7 +133,7 @@ showcase/
 
 1. Add a `.py` file under `snippets/`, e.g. `snippets/depsgraph-evaluated-mesh.py`.
 2. Keep it 5 to 75 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
-3. Snippets are validated for Python syntax in CI.
+3. Add an entry to `tests/smoke/snippet_checks.py`: a `check` that calls the snippet's functions and asserts one observable fact, and a `falsify` (old, new) source edit that must make the check fail. Content Smoke (`.github/workflows/content-smoke.yml`) runs the snippet in place on 4.5 and 5.2; Validate fails a snippet without an entry. Run it locally with `blender --background --factory-startup --python tests/smoke/run_content.py -- --only <name>`.
 
 ## Adding a Template
 
@@ -292,7 +294,7 @@ The drift-check workflow enforces these on every push and PR.
 
 ## Aggregate Counts
 
-`README.md` declares aggregate counts (e.g. "20 skills, 12 rules, 3 templates, 31 snippets, 69 examples, and 80 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
+`README.md` declares aggregate counts (e.g. "25 skills, 12 rules, 3 templates, 31 snippets, 69 examples, and 80 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
 
 ## Pull Request Process
 
