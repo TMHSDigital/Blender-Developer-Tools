@@ -2,7 +2,7 @@
   "name": "blender-live-session",
   "displayName": "Blender Live Session (MCP)",
   "description": "Opt-in companion to blender-developer-tools: registers the official Blender Lab MCP server so the agent can inspect and drive a running Blender 5.1+ (needs uv and the MCP add-on), plus a skill for reading the scene before mutating it and proving changes headless",
-  "version": "0.156.0",
+  "version": "0.157.0",
   "author": {
     "name": "TMHSDigital"
   },

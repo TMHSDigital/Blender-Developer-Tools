@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.157.0] - 2026-10-27
+
+### For agents and users
+
+**Features**
+
+- feat: gpu-draw-handler and set-sharp-from-angle snippets, no-legacy-vse-sequences rule ([`4a891d1`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4a891d12bd1346c55a4a87d5c6f58038c9d0c09d))
+
+<details>
+<summary>Maintenance (4 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- feat(gallery): supported-version line and a copyable falsifier on example detail pages ([`a060425`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a060425a25bfe318fc3c14192bf86c6ad07443c1))
+- fix(examples): text-version-stamp bevel check no longer depends on the release-cycle suffix ([`0066093`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0066093c27cf4ee1bbf86b17c50620841346bff1))
+- fix(site): ship the SIL OFL 1.1 text with each webfont family ([`0c8db00`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0c8db00edb80209a888dc211cdefe0dc67a41a32))
+- chore: remove the HOL Guard badge and the HOL plugin scan workflow ([`5e73719`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/5e73719d6c8742d896c7d79fea2c04d231ea858b))
+
+</details>
+
+[Release v0.157.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.157.0)
+
 ## [0.156.0] - 2026-10-27
 
 ### For agents and users
