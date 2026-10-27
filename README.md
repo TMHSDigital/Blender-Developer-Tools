@@ -259,6 +259,8 @@ Copyright (c) 2026 TM Hospitality Strategies.
 
 A `LICENSE` file inside a directory governs that directory.
 
+The site's webfonts are third-party and not covered by either license: Inter, Barlow Condensed and JetBrains Mono ship under the SIL Open Font License 1.1, with each family's text beside the font files in [`scripts/site/fonts/`](scripts/site/fonts/) and on the published site.
+
 ### Can I use this to build a commercial or GPL add-on?
 
 **Yes.** Using the skills and rules while you (or your AI agent) write your own add-on, script or pipeline, including paid and client work, is the intended use. The code you write with their guidance is yours, under whatever license you choose. Blender extensions must be GPL-compatible, and that is fine too: the add-on template ships with `license = ["SPDX:GPL-3.0-or-later"]` in its manifest, and its MIT license lets you relicense your copy under the GPL.
