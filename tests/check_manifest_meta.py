@@ -23,7 +23,7 @@ drift apart again. Checks, with .cursor-plugin/plugin.json as the reference:
 - .codex-plugin/plugin.json: same name, description, version, homepage,
   license and keywords as the others; its interface websiteURL, privacyPolicyURL
   and termsOfServiceURL are the site, its privacy/ and its terms/ pages, and
-  build_site.py renders both pages (HOL's registry scan reads them, #511); its
+  build_site.py renders both pages (plugin directories read them, #511); its
   skills path and icon files exist
 
 Run: python tests/check_manifest_meta.py      (exit 0 ok, 1 on mismatch)

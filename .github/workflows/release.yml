@@ -206,7 +206,7 @@ jobs:
           import json
           # live-session/ is the opt-in blender-live-session plugin (#483).
           # .codex-plugin/ is the Codex manifest, which carries the site,
-          # privacy and terms URLs that HOL's registry scan asks for (#511).
+          # privacy and terms URLs that plugin directories ask for (#511).
           for path in ('.claude-plugin/plugin.json', '.claude-plugin/marketplace.json',
                        '.codex-plugin/plugin.json',
                        'live-session/.claude-plugin/plugin.json',

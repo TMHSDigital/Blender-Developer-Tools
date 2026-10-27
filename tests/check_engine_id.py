@@ -128,7 +128,7 @@ def _value(node, version):
     flags, comparisons, and/or/not, and conditional expressions. Anything
     else raises ValueError, which the caller reports as "not resolvable".
     The repo's own code is walked, never executed, so the check needs no
-    eval/exec (HOL's plugin scanner rejects dynamic execution, #510).
+    eval/exec, so a check cannot run arbitrary code from the tree.
     """
     if isinstance(node, ast.Constant):
         return node.value
