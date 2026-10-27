@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.156.0] - 2026-10-27
+
+### For agents and users
+
+**Features**
+
+- feat(distribution): Codex plugin manifest with site, privacy and terms pages ([`31956d8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/31956d8aae55e892fef7b33870558bdbccd09843))
+
+**Other**
+
+- ci: clear the HOL plugin scanner's findings ([`8884a1c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/8884a1c63857c8edae2b05aa982bbcace4de16f4))
+
+<details>
+<summary>Maintenance (7 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- ci: list HOL plugin scan findings even when the gate fails ([`a663e28`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a663e28bb734f457c4e3a75464d2ed294c8b430f))
+- ci: run the HOL AI plugin scanner on every push, PR and weekly ([`4ce4ff8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/4ce4ff8c3819dfeb636293ed171b6389f62c5da3))
+- chore(deps): move Python pins to pyproject.toml and uv.lock ([`2e10eb1`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2e10eb183824867457da989e312b2c3e89da562e))
+- chore(deps): Bump the dev-tools group across 1 directory with 2 updates (#508) ([`edeccf6`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/edeccf6a354b55e16556d94133a7acc136bdd1ad))
+- chore(deps): Bump actions/setup-python (#507) ([`b6ae845`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/b6ae845d25e63e42e0c73411a38385af3a971a82))
+- docs(readme): move the HOL Guard badge into the centered badge row ([`d228326`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d2283267ac262958cd4d82a94f3d16ef7d007d88))
+- docs(readme): add HOL Guard verified badge (#509) ([`99a5710`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/99a57102e2fc1e3a966bd442f42675abfdb7b753))
+
+</details>
+
+[Release v0.156.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.156.0)
+
 ## [0.155.0] - 2026-10-12
 
 ### For agents and users
