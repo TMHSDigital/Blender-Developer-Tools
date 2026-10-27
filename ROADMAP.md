@@ -39,6 +39,7 @@ derives the actual version from conventional-commit types.
 | GPU drawing without `bgl` | 19 | 10 | 3 | 29 | Shipped |
 | Removed normals API rule (pre-4.1 auto smooth) | 19 | 11 | 3 | 29 | Shipped |
 | Porting index skill (`porting-to-blender-5`) | 20 | 11 | 3 | 29 | Shipped |
+| Porting snippets and the legacy VSE `.sequences` rule | 20 | 12 | 3 | 31 | Shipped |
 | Live-session bridge (opt-in `blender-live-session` plugin, upstream Blender Lab MCP) | - | - | - | - | Shipped |
 | Stable (1.0) | — | — | — | — | Upcoming; criteria below |
 

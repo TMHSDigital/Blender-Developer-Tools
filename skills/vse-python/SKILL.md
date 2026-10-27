@@ -52,7 +52,7 @@ def strips_coll(se):
     return se.strips if hasattr(se, "strips") else se.sequences
 ```
 
-Do not write `se.sequences` in new code. On 5.x it is gone; on 4.5 `.strips` already exists.
+Do not write `se.sequences` in new code. On 5.x it is gone; on 4.5 `.strips` already exists. The same split applies to `.sequences_all` / `.strips_all` (measured on 4.5.14 and 5.2.1). The [`no-legacy-vse-sequences`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-legacy-vse-sequences.mdc) rule flags both.
 
 ## `new_effect` end kwarg
 

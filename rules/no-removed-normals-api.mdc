@@ -86,6 +86,8 @@ flag.
 - A rim vertex has two corner normals, and three once the faces are
   flattened again, with no recompute call.
 
+Copy-paste replacement: [`snippets/set-sharp-from-angle.py`](../snippets/set-sharp-from-angle.py).
+
 ## Reference
 
 - https://docs.blender.org/api/current/bpy.types.Mesh.html

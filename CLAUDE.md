@@ -18,9 +18,9 @@ The **Blender Developer Tools** repository is at **v0.156.0**. It packages skill
 
 ```
 skills/<skill-name>/SKILL.md   - AI workflow definitions, 20 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 11 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 12 total
 templates/<template-name>/     - Starter projects, 3 total
-snippets/<snippet-name>.py     - Standalone code patterns, 29 total
+snippets/<snippet-name>.py     - Standalone code patterns, 31 total
 examples/<name>/               - Runnable smoke-gated examples, 69 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 80 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
@@ -55,7 +55,7 @@ VERSION                        - Source of truth for the repo version
 | porting-to-blender-5 | Index of every 4.x → 5.x break the pack covers (bgl, `action.fcurves`, `use_auto_smooth`, Principled sockets, `.sequences`, ID properties, compositor, NodesModifier inputs, ...), each linked to the skill, rule or example that owns the fix; headless triage recipe |
 | gpu-drawing-and-overlays | `gpu` instead of the removed `bgl`: `draw_handler_add`/`remove`, builtin shader names, `gpu.state` blending and depth, `POLYLINE_*` line width, `blf` text, `GPUOffScreen` with 5.2's `gpu.init()` headless |
 
-## Rules (11)
+## Rules (12)
 
 Every rule sets `alwaysApply: false`, so the Scope column below is the rule's
 actual load condition, not a description: a rule enters context only when a file
@@ -74,6 +74,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 | use-correct-axis-rna-per-exporter | `*.py` | `export_scene.gltf` with FBX `axis_forward`/`axis_up`, or `export_scene.fbx` with glTF `export_yup` |
 | no-bgl | `*.py` | `import bgl` or any `bgl.` call (removed in 5.x; the add-on fails to register) |
 | no-removed-normals-api | `*.py` | `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()` and the other normals calls removed in 4.1 |
+| no-legacy-vse-sequences | `*.py` | `sequence_editor.sequences` / `.sequences_all` (removed in 5.x; `.strips` / `.strips_all` exist on 4.5 too) |
 
 ## Templates (3)
 
@@ -101,7 +102,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 - Unity / Godot / Unreal glTF export via the engine-export-presets contract
 - Explicit exit codes matching `headless-batch-script-template` (0, then 2+)
 
-## Snippets (29)
+## Snippets (31)
 
 Small standalone `.py` files at `snippets/<name>.py`, each 5 to 75 lines.
 
@@ -111,7 +112,7 @@ v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namesp
 
 AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`, `setup_bake_target_image.py`, `bake_normal_high_to_low.py`, `save_baked_image.py`.
 
-Extensions runtime: `extension-user-data.py` (`extension_path_user` settings file and an `online_access` guard). Long-running work: `thread-queue-timer.py` (worker thread, `queue.Queue`, main-thread drain timer).
+Extensions runtime: `extension-user-data.py` (`extension_path_user` settings file and an `online_access` guard). Long-running work: `thread-queue-timer.py` (worker thread, `queue.Queue`, main-thread drain timer). Porting to 5.x: `gpu-draw-handler.py` (viewport overlay with a stored, removable draw handler) and `set-sharp-from-angle.py` (the 4.1+ replacement for `use_auto_smooth`).
 
 ## Examples (69)
 

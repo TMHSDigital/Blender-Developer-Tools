@@ -66,6 +66,7 @@ def unregister():
 - **Draw types.** `POST_VIEW` draws in 3D world space under the view matrices (positions are world coordinates). `POST_PIXEL` draws in region pixels with an orthographic matrix (positions are `(x, y)` in pixels, origin bottom-left), which is where text and HUD panels go. `PRE_VIEW` draws under the scene.
 - **The callback runs on every redraw** of every 3D viewport. Keep it cheap: build batches from cached data, not by walking `bpy.data`. Guard `context.active_object` against `None` (see `type-annotate-props-and-defend-context`).
 - **Nothing redraws by itself.** After your data changes, call `area.tag_redraw()` for the areas that show it, for example from a timer or a depsgraph handler (see `drivers-and-app-handlers`, `timers-modal-and-threading`).
+- **Copy-paste version:** [`snippets/gpu-draw-handler.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gpu-draw-handler.py) is this pattern reduced to one fixed line.
 
 ## Builtin shaders
 

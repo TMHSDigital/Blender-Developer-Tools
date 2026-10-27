@@ -21,6 +21,12 @@ Flag `import bgl` and any `bgl.` call. The `bgl` OpenGL wrapper was deprecated i
 
 Applies to: `**/*.py`. Full rule: [`rules/no-bgl.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-bgl.mdc).
 
+## no-legacy-vse-sequences
+
+Flag `sequence_editor.sequences` and `.sequences_all`. Both are gone in Blender 5.x (AttributeError on 5.0, 5.1 and 5.2), while `.strips` and `.strips_all` already exist on 4.5 LTS, so use those everywhere with no version branch. See the vse-python skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/no-legacy-vse-sequences.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-legacy-vse-sequences.mdc).
+
 ## no-removed-normals-api
 
 Flag the mesh normals API removed in Blender 4.1 — `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()`, `free_normals_split()`, `create_normals_split()`. Each raises AttributeError on 4.5 LTS and 5.x. Use `Mesh.set_sharp_from_angle`, `object.shade_auto_smooth`, and `Mesh.corner_normals` (always current) instead.

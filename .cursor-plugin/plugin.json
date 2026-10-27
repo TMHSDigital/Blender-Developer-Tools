@@ -52,6 +52,7 @@
     "rules/no-unapplied-modifiers-on-export.mdc",
     "rules/use-correct-axis-rna-per-exporter.mdc",
     "rules/no-bgl.mdc",
-    "rules/no-removed-normals-api.mdc"
+    "rules/no-removed-normals-api.mdc",
+    "rules/no-legacy-vse-sequences.mdc"
   ]
 }
