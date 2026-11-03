@@ -45,10 +45,16 @@ FILES = ("LICENSE", ".claude-plugin/plugin.json",
          ".codex-plugin/plugin.json", "assets/favicon.svg")
 # marketplace.json entry -> source inside the dist tree.
 DIST_SOURCES = {"blender-developer-tools": "./", "blender-live-session": "./live-session"}
+# Repo files the dist ships after rewriting rather than copying: build() writes
+# the Claude marketplace with dist-relative sources. They are not in FILES (a
+# plain copy would ship the repo's sources) but they are still shipped (#535).
+REWRITTEN = (".claude-plugin/marketplace.json",)
 # Every repo path the plugin ships. release.yml's plugin-content-changed.sh and
 # release_notes.py read this (--list-paths), so a change to any shipped file,
 # manifests and mcp.json included, counts as a plugin change (#494).
-SHIPPED = DIRS + FILES
+SHIPPED = DIRS + FILES + REWRITTEN
+# Files build() generates with no repo source (the dist README).
+GENERATED = ("README.md",)
 MAX_BYTES = 2_000_000
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc")
 

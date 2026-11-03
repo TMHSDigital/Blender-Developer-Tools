@@ -76,6 +76,20 @@ jobs:
           # .github/scripts/bump-kind.sh owns the patterns (pages.yml shares it).
           # [skip ci] (guarded on the job) remains an optional belt-and-suspenders override.
           kind=$(git log "$range" --format='%B%x00' | bash .github/scripts/bump-kind.sh)
+          # 0 = plugin content changed, 1 = it did not, anything else = the
+          # script could not read the shipped-path list. Inside an `elif` the
+          # error would read as "no change" and skip the release silently (#535).
+          plugin_changed=1
+          if [ -n "$last_tag" ]; then
+            set +e
+            bash .github/scripts/plugin-content-changed.sh "$last_tag"
+            plugin_changed=$?
+            set -e
+            if [ "$plugin_changed" -gt 1 ]; then
+              echo "::error::plugin-content-changed.sh failed (exit $plugin_changed); cannot decide whether to release"
+              exit 1
+            fi
+          fi
           bump="patch"
           release="false"
           if [ -z "$last_tag" ]; then
@@ -83,7 +97,7 @@ jobs:
             release="true"
           elif [ "$kind" != "none" ]; then
             bump="$kind"; release="true"
-          elif bash .github/scripts/plugin-content-changed.sh "$last_tag"; then
+          elif [ "$plugin_changed" -eq 0 ]; then
             # No feat/fix subject, but skills/rules/snippets/templates/claude
             # changed: ship a patch so a docs: correction still reaches plugin
             # users instead of waiting for the next feat/fix (#350).

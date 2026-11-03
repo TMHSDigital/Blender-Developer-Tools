@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))
-from build_plugin_dist import DIRS, FILES  # noqa: E402  (the one list of shipped paths)
+from build_plugin_dist import DIRS, FILES, REWRITTEN  # noqa: E402  (the one list of shipped paths)
 
 REPO_URL = "https://github.com/TMHSDigital/Blender-Developer-Tools"
 GROUPS = (
@@ -40,7 +40,7 @@ SKIP = re.compile(r"^chore: bump version to ", re.I)
 # change here is a change a plugin user receives, including the manifests and
 # the opt-in live-session plugin.
 USER_DIRS = tuple(d + "/" for d in DIRS)
-USER_FILES = frozenset(FILES)
+USER_FILES = frozenset(FILES + REWRITTEN)
 NO_USER_CHANGES = ("No changes to the plugin content (skills, rules, snippets, templates, "
                    "manifests, MCP config) in this release.")
 

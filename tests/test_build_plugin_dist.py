@@ -53,6 +53,23 @@ class OutGuard(unittest.TestCase):
             self.assertIn(".git", err)
             self.assertTrue((Path(td) / ".git").is_dir())
 
+    def test_every_built_file_is_listed_as_shipped(self):
+        # --list-paths decides whether a release ships plugin changes; a file
+        # the dist carries but SHIPPED omits never triggers one (#535).
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "dist"
+            code, _ = run(["--out", str(out)])
+            self.assertEqual(code, 0)
+            dirs = tuple(d + "/" for d in b.DIRS)
+            unlisted = [
+                rel for rel in (p.relative_to(out).as_posix()
+                                for p in out.rglob("*") if p.is_file())
+                if not rel.startswith(dirs) and rel not in b.SHIPPED
+                and rel not in b.GENERATED
+            ]
+            self.assertEqual(unlisted, [])
+            self.assertIn(".claude-plugin/marketplace.json", b.SHIPPED)
+
     def test_builds_into_missing_dir(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "dist"
