@@ -1,0 +1,172 @@
+---
+description: Flag bmesh.new() calls without a paired bm.free() in a try/finally block. Blender frees an unreferenced BMesh only when its Python wrapper dies, which a traceback, global, closure or modal operator can delay for the whole session; an explicit free() in finally releases it deterministically.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# Always free bmesh
+
+`bmesh.new()` returns a Python wrapper around a C-side BMesh structure.
+The structure holds the vertex, edge, face, loop, and attribute layer
+storage that the bmesh module operates on. Blender frees it when the
+wrapper is garbage-collected ("typically when the script finishes
+executing", per the `BMesh.free()` docs), so the problem is not that the
+memory can never be reclaimed. It is **when**:
+
+- An exception's traceback holds the frame, and with it `bm`, alive
+  (`sys.last_traceback` keeps the last one for the whole session).
+- A global, a closure, a class attribute or a modal operator's `self`
+  keeps the wrapper reachable for as long as the add-on runs.
+- A loop that builds a BMesh per iteration without freeing can hold many
+  full mesh copies at once before collection catches up.
+
+`bm.free()` in a `finally` releases the storage at a point you choose,
+on every path, and makes any later use of `bm` fail fast with
+`ReferenceError` instead of quietly reading stale data.
+
+## What this rule flags
+
+Any `bmesh.new()` call whose return value is not paired with a `.free()`
+in a `try`/`finally` block in the same scope.
+
+```python
+# WRONG: leaks on any exception in to_mesh()
+import bmesh
+
+bm = bmesh.new()
+bm.from_mesh(mesh)
+for v in bm.verts:
+    v.co.z += 0.1
+bm.to_mesh(mesh)
+bm.free()
+```
+
+```python
+# WRONG: leaks if to_mesh() raises
+def edit_mesh(mesh):
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    do_work(bm)
+    bm.to_mesh(mesh)
+    bm.free()
+    return bm
+```
+
+```python
+# WRONG: held in a long-lived variable, never freed
+class MyOperator(bpy.types.Operator):
+    def __init__(self):
+        self.bm = bmesh.new()  # leaks on operator unregister
+```
+
+## Ownership transfer is allowed, if exactly one owner frees
+
+A function whose job is to build a BMesh may return it, and a builder may
+hand it to a finisher, as long as every path has exactly one owner that frees
+it:
+
+```python
+# OK: a factory returns a new BMesh; the CALLER owns it and frees in finally
+cb = cone_bm(tone)
+try:
+    merge_bm(scene_bm, cb, matrix)
+finally:
+    cb.free()
+
+# OK: build, then hand off to a finisher that frees in its own finally;
+# free here only if the build itself fails
+bm = bmesh.new()
+try:
+    build_geometry(bm)
+except BaseException:
+    bm.free()
+    raise
+return finish_mesh(name, bm)   # finish_mesh(): try: bm.to_mesh(me) finally: bm.free()
+```
+
+What stays wrong is a path with **no** owner: a caller that frees a returned
+BMesh outside `finally`, a build step that can raise before the hand-off,
+or an object attribute (`self.bm`) that nothing frees.
+
+## The required pattern
+
+```python
+import bmesh
+
+bm = bmesh.new()
+try:
+    bm.from_mesh(mesh)
+
+    for v in bm.verts:
+        v.co.z += 0.1
+
+    bm.to_mesh(mesh)
+    mesh.update()
+finally:
+    bm.free()
+```
+
+The `try`/`finally` covers the case where any operation between `bmesh.new()`
+and `bm.free()` raises. Without it, a `KeyError` reading
+`mesh.attributes["missing"]` skips the `free()`, and the BMesh leaks for the
+remaining session.
+
+For the edit-mode case where the bmesh comes from `bmesh.from_edit_mesh()`,
+**do not call `bm.free()`**. Blender owns the edit-mode BMesh for as long
+as the mesh is in Edit Mode; your wrapper only borrows it:
+
+```python
+# Edit-mode: Blender owns the bmesh, do not free it
+bm = bmesh.from_edit_mesh(mesh)
+for v in bm.verts:
+    v.co.z += 0.1
+bmesh.update_edit_mesh(mesh)
+# No bm.free() here, on purpose
+```
+
+This rule applies only to bmeshes created with `bmesh.new()`.
+
+## A reusable context manager
+
+If you find yourself writing the `try`/`finally` repeatedly, wrap it:
+
+```python
+import contextlib
+import bmesh
+
+@contextlib.contextmanager
+def bmesh_from(mesh):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(mesh)
+        yield bm
+        bm.to_mesh(mesh)
+        mesh.update()
+    finally:
+        bm.free()
+
+
+with bmesh_from(obj.data) as bm:
+    for v in bm.verts:
+        v.co.z += 0.1
+```
+
+## Why it matters
+
+Blender's process is the user's process. A leak in your add-on doesn't
+just consume memory in a separate worker; it consumes the user's working
+RAM and survives until they restart Blender. For users on machines with
+16GB or less, even modest leaks (a few hundred MB per modal session)
+make Blender unusable after an hour.
+
+The symptom is hard to diagnose: memory pressure may not surface during
+your code's execution at all, but during a later modifier evaluation
+that needs the RAM a lingering BMesh still holds.
+
+## Related
+
+- Skill `mesh-editing-and-bmesh`
+- Snippet `bmesh-load-edit-free.py`
+- bmesh API: https://docs.blender.org/api/current/bmesh.html

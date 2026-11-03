@@ -1,0 +1,93 @@
+---
+description: Flag `import bgl` and any `bgl.` call. The `bgl` OpenGL wrapper was deprecated in 3.x and is gone in Blender 5.x (`importlib.util.find_spec('bgl')` is `None` on 5.0, 5.1 and 5.2), so an add-on that imports it fails to register. Draw with the `gpu` module, `gpu.state` and `gpu_extras.batch` instead; see the gpu-drawing-and-overlays skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No `bgl`: draw with the `gpu` module
+
+`bgl` was Blender's thin wrapper over raw OpenGL calls. It was deprecated
+when Blender moved to its own GPU abstraction (Metal and Vulkan backends
+cannot honour raw GL state), and it is removed in 5.x. Measured:
+`importlib.util.find_spec('bgl')` returns `None` on 5.0.1, 5.1.2 and 5.2.1.
+4.5 LTS still ships it, deprecated, which is why so much example code and
+training data still uses it.
+
+Code that imports `bgl` at module level fails at import on 5.x. The add-on
+never registers, so the user sees an import error, not a missing overlay.
+
+## What this rule flags
+
+- `import bgl` or `from bgl import ...`
+- Any `bgl.` attribute use: `bgl.glEnable`, `bgl.glLineWidth`,
+  `bgl.glBlendFunc`, `bgl.glDepthFunc`, `bgl.Buffer`, `bgl.GL_*`
+- A `try: import bgl` fallback that still calls `bgl.` on 4.5, when the
+  `gpu` path below works on 4.5 too
+
+## Wrong
+
+```python
+import bgl
+import blf
+import gpu
+from gpu_extras.batch import batch_for_shader
+
+def draw():
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glLineWidth(3)
+    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+    batch = batch_for_shader(shader, "LINES", {"pos": [(0, 0, 0), (1, 1, 1)]})
+    shader.uniform_float("color", (1, 0.5, 0, 0.8))
+    batch.draw(shader)
+    bgl.glDisable(bgl.GL_BLEND)
+    bgl.glLineWidth(1)
+```
+
+On 5.x the first line raises `ModuleNotFoundError: No module named 'bgl'`.
+
+## Right
+
+```python
+import bpy
+import gpu
+from gpu_extras.batch import batch_for_shader
+
+def draw():
+    shader = gpu.shader.from_builtin("POLYLINE_UNIFORM_COLOR")
+    batch = batch_for_shader(shader, "LINES", {"pos": [(0, 0, 0), (1, 1, 1)]})
+    region = bpy.context.region
+    shader.uniform_float("viewportSize", (region.width, region.height))
+    shader.uniform_float("lineWidth", 3.0)
+    shader.uniform_float("color", (1, 0.5, 0, 0.8))
+    gpu.state.blend_set("ALPHA")
+    batch.draw(shader)
+    gpu.state.blend_set("NONE")
+```
+
+| `bgl` | `gpu` replacement |
+| --- | --- |
+| `glEnable(GL_BLEND)` / `glDisable` | `gpu.state.blend_set('ALPHA')` / `blend_set('NONE')` |
+| `glLineWidth(w)` | a `POLYLINE_*` builtin shader with the `lineWidth` and `viewportSize` uniforms |
+| `glPointSize(s)` | `gpu.state.point_size_set(s)` |
+| `glEnable(GL_DEPTH_TEST)` / `glDepthFunc` | `gpu.state.depth_test_set('LESS_EQUAL')` |
+| `glDepthMask` | `gpu.state.depth_mask_set(True)` |
+| `glReadPixels` into `bgl.Buffer` | `gpu.state.active_framebuffer_get().read_color(...)` |
+| `bgl.Buffer` | `gpu.types.Buffer` |
+
+Restore any state you set (`blend_set('NONE')`). Draw callbacks share GPU
+state with the rest of the editor.
+
+## Verified
+
+`examples/gpu-offscreen-draw/` (5.2+, skips below) draws through these
+calls into a `GPUOffScreen` and reads the pixels back. Half-alpha red over
+blue mixes to (0.498, 0, 0.502) only with `blend_set('ALPHA')`, and a
+`POLYLINE_UNIFORM_COLOR` line with `lineWidth` 6 is 7 px thick.
+
+## Reference
+
+- https://docs.blender.org/api/current/gpu.html
+- https://docs.blender.org/api/current/gpu.state.html
+- https://docs.blender.org/api/4.5/bgl.html

@@ -1,0 +1,101 @@
+{
+  "_comment": "Which skills each snippet serves. Hand-edited; scripts/build_examples_index.py lists each snippet in its skills' generated section and fails on a snippet that maps to no skill (#524).",
+  "action-ensure-channelbag-for-slot.py": [
+    "slotted-actions-animation"
+  ],
+  "app-handler-registration.py": [
+    "drivers-and-app-handlers"
+  ],
+  "bake_normal_high_to_low.py": [
+    "bake-high-to-low"
+  ],
+  "bmesh-load-edit-free.py": [
+    "mesh-editing-and-bmesh"
+  ],
+  "canonical-object-creation.py": [
+    "mesh-editing-and-bmesh"
+  ],
+  "canonical-object-deletion.py": [
+    "mesh-editing-and-bmesh"
+  ],
+  "convex_hull_collider.py": [
+    "ai-mesh-cleanup"
+  ],
+  "cross-version-property-delete.py": [
+    "custom-properties"
+  ],
+  "decimate_to_budget.py": [
+    "ai-mesh-cleanup",
+    "bake-high-to-low"
+  ],
+  "depsgraph-evaluated-mesh.py": [
+    "depsgraph-and-evaluated-data",
+    "mesh-editing-and-bmesh"
+  ],
+  "driver-with-custom-function.py": [
+    "drivers-and-app-handlers"
+  ],
+  "export_preset_godot.py": [
+    "engine-export-presets"
+  ],
+  "export_preset_unity.py": [
+    "engine-export-presets"
+  ],
+  "export_preset_unreal.py": [
+    "engine-export-presets"
+  ],
+  "extension-user-data.py": [
+    "extension-runtime-and-packaging"
+  ],
+  "foreach-get-vertices.py": [
+    "mesh-editing-and-bmesh"
+  ],
+  "foreach-set-vertices.py": [
+    "mesh-editing-and-bmesh"
+  ],
+  "gltf_draco_export.py": [
+    "ai-mesh-cleanup",
+    "engine-export-presets"
+  ],
+  "gpu-draw-handler.py": [
+    "gpu-drawing-and-overlays"
+  ],
+  "lod_chain.py": [
+    "ai-mesh-cleanup"
+  ],
+  "pointerproperty-binding.py": [
+    "custom-properties"
+  ],
+  "principled-bsdf-material.py": [
+    "procedural-materials-and-shaders"
+  ],
+  "register-classes-factory.py": [
+    "addon-scaffolding"
+  ],
+  "save_baked_image.py": [
+    "bake-high-to-low",
+    "images-and-pixels"
+  ],
+  "set-sharp-from-angle.py": [
+    "porting-to-blender-5"
+  ],
+  "setup_bake_target_image.py": [
+    "bake-high-to-low"
+  ],
+  "shader-node-group.py": [
+    "compositor-nodes",
+    "procedural-materials-and-shaders"
+  ],
+  "temp-override-context.py": [
+    "headless-batch-scripting"
+  ],
+  "thread-queue-timer.py": [
+    "timers-modal-and-threading"
+  ],
+  "usd-export-evaluation-mode.py": [
+    "depsgraph-and-evaluated-data"
+  ],
+  "version-branch-skeleton.py": [
+    "porting-to-blender-5"
+  ]
+}

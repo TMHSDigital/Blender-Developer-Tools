@@ -1,0 +1,69 @@
+---
+description: Flag writing a Geometry Nodes modifier input as an ID property (`mod["Socket_2"] = value`, `mod[identifier] = value`) without a version branch. Blender 5.2 removed that form (it raises TypeError, id properties not supported for this type); 5.2+ writes `getattr(mod.properties.inputs, identifier).value`, which does not exist on 4.5 LTS or 5.1. Branch on bpy.app.version >= (5, 2, 0). See the geometry-nodes-python skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# NodesModifier inputs: branch the dict write at 5.2
+
+A Geometry Nodes modifier keeps its own copy of every input the node tree
+exposes. Until 5.2 those values were ID properties on the modifier, keyed by
+the socket identifier. Blender 5.2 replaced them with RNA properties:
+
+| | 4.5 LTS | 5.1 | 5.2 LTS |
+| --- | --- | --- | --- |
+| `mod[ident] = value` | works | works | `TypeError: bpy_struct[key] = val: id properties not supported for this type` |
+| `getattr(mod.properties.inputs, ident).value = value` | `AttributeError: 'NodesModifier' object has no attribute 'properties'` | `AttributeError` | works |
+
+No single form works everywhere, so this is one of the few writes that needs
+a version branch. Branch at **5.2**, not 5.0: 5.1 still takes the dict form.
+
+## What this rule flags
+
+- `mod["Socket_<n>"] = ...`, `mod["Input_<n>"] = ...` or `mod[ident] = ...`
+  on a `NODES` modifier with no `bpy.app.version` test around it
+- A hard-coded identifier (`"Input_2"`, `"Socket_2"`): look it up from
+  `tree.interface.items_tree` by name
+- A branch at `(5, 0, 0)` for this write: it breaks 5.1
+
+## Wrong
+
+```python
+mod = obj.modifiers.new(name="Displace", type='NODES')
+mod.node_group = tree
+mod["Socket_2"] = 2.5
+```
+
+On 5.2 the last line raises `TypeError`.
+
+## Right
+
+```python
+import bpy
+
+mod = obj.modifiers.new(name="Displace", type='NODES')
+mod.node_group = tree
+ident = next(item.identifier for item in tree.interface.items_tree
+             if item.item_type == 'SOCKET' and item.in_out == 'INPUT'
+             and item.name == "Strength")
+if bpy.app.version >= (5, 2, 0):
+    getattr(mod.properties.inputs, ident).value = 2.5
+else:
+    mod[ident] = 2.5
+obj.update_tag()
+bpy.context.view_layer.update()  # before evaluated_get reads the new value
+```
+
+## Verified
+
+`examples/gn-modifier-inputs/` writes its inputs through this branch and
+measures the evaluated extents on 4.5, 5.1 and 5.2. Its `--api dict`
+falsifier exits 5 on 5.2 (the dict write raises) and `--api rna` exits 5 on
+4.5 (no `properties`).
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.NodesModifier.html
+- https://docs.blender.org/api/5.1/bpy.types.NodesModifier.html

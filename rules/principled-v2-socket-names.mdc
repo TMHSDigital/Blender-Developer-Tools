@@ -1,0 +1,79 @@
+---
+description: Flag Principled BSDF inputs looked up by their 3.x names (`inputs["Emission"]`, `["Specular"]`, `["Clearcoat"]`, `["Subsurface"]`, `["Transmission"]`, `["Sheen"]`) or by index. Principled v2 (Blender 4.0) renamed them, so they raise KeyError on 4.5 LTS and 5.x. Use the 4.0+ names (`Emission Color`, `Specular IOR Level`, `Coat Weight`, ...), which need no version branch. See the procedural-materials-and-shaders skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# Principled BSDF: use the v2 socket names
+
+Blender 4.0 rewrote the Principled BSDF ("Principled v2") and renamed most of
+its inputs. Every version this pack supports (4.5 LTS, 5.1, 5.2) uses the new
+names, so code from 3.x tutorials and models fails at the first lookup:
+
+```text
+KeyError: 'bpy_prop_collection[key]: key "Emission" not found'
+```
+
+Measured on 4.5.14 and 5.2.1:
+
+| 3.x input | 4.0+ input |
+| --- | --- |
+| `Emission` | `Emission Color` (with `Emission Strength`) |
+| `Specular` | `Specular IOR Level` |
+| `Clearcoat`, `Clearcoat Roughness`, `Clearcoat Normal` | `Coat Weight`, `Coat Roughness`, `Coat Normal` |
+| `Subsurface` | `Subsurface Weight` |
+| `Subsurface Color` | removed: subsurface takes `Base Color` |
+| `Transmission` | `Transmission Weight` |
+| `Transmission Roughness` | removed: transmission uses `Roughness` |
+| `Sheen` | `Sheen Weight` |
+| `Specular Tint`, `Sheen Tint` | same names, now colors (`RGBA`), not floats |
+
+## What this rule flags
+
+- `bsdf.inputs["<3.x name>"]` for any left-column name above, on a
+  `ShaderNodeBsdfPrincipled` node
+- `bsdf.inputs[<int>]`: the input order moved with v2 and moves again as
+  inputs are added (5.2 adds `Thin Wall`), so an index silently names a
+  different socket
+- A float written to `Specular Tint` or `Sheen Tint`
+- A `try`/`except KeyError` fallback to the old name: on supported versions
+  the old branch never runs
+
+## Wrong
+
+```python
+bsdf = mat.node_tree.nodes["Principled BSDF"]
+bsdf.inputs["Emission"].default_value = (1.0, 0.5, 0.1, 1.0)
+bsdf.inputs["Specular"].default_value = 0.0
+bsdf.inputs["Clearcoat"].default_value = 1.0
+bsdf.inputs[17].default_value = 3.0  # meant Emission Strength
+```
+
+## Right
+
+```python
+bsdf = mat.node_tree.nodes["Principled BSDF"]
+bsdf.inputs["Emission Color"].default_value = (1.0, 0.5, 0.1, 1.0)
+bsdf.inputs["Emission Strength"].default_value = 3.0
+bsdf.inputs["Specular IOR Level"].default_value = 0.0
+bsdf.inputs["Coat Weight"].default_value = 1.0
+if "Thin Wall" in bsdf.inputs:  # 5.2+ only
+    bsdf.inputs["Thin Wall"].default_value = True
+```
+
+Look a socket up by name, and guard with `in bsdf.inputs` only for a socket
+that is missing on a version you target.
+
+## Verified
+
+`examples/swatch-grid/` sets `Specular IOR Level` on 4.5 and 5.x, and its
+`--no-specular-shim` falsifier exits 7 when the name does not resolve. The
+3.x-to-4.0 table above was measured on 4.5.14 and 5.2.1 (procedural-materials-
+and-shaders skill).
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.ShaderNodeBsdfPrincipled.html
+- https://developer.blender.org/docs/release_notes/4.0/
