@@ -325,16 +325,21 @@ jobs:
             --output "$RUNNER_TEMP/out/render.png" --engine CYCLES
           test -s "$RUNNER_TEMP/out/render.png" || { echo "::error::render PNG missing/empty"; exit 1; }
 
+      # Canaries never write to $BDT_SMOKE_STATUS: a canary PASS in the status
+      # file would make summarize.py's "zero PASS is red" guard unreachable
+      # (#536). Each one asserts its own verdict inline instead.
       - name: Canary - expected skip is SKIP not PASS
         run: |
           set -euo pipefail
-          python3 tests/smoke/run_example.py \
+          python3 tests/smoke/run_example.py --no-record \
             --name canary-skip \
             --blender "$BLENDER" \
             --script tests/smoke/canary_skip.py \
             --series "${{ matrix.series }}" \
             --min-version 99.0 \
-            --xvfb
+            --xvfb | tee "$RUNNER_TEMP/canary-skip.log"
+          grep -q '^\[SKIP\] canary-skip:' "$RUNNER_TEMP/canary-skip.log" \
+            || { echo "::error::expected skip was not classified SKIP"; exit 1; }
 
       - name: Canary - unexpected skip is red
         run: |
@@ -368,14 +373,16 @@ jobs:
       - name: Canary - post-exit sidecar
         run: |
           set -euo pipefail
-          python3 tests/smoke/run_example.py \
+          python3 tests/smoke/run_example.py --no-record \
             --name canary-sidecar \
             --blender "$BLENDER" \
             --script tests/smoke/canary_sidecar.py \
             --series "${{ matrix.series }}" \
             --expect-sidecar "$RUNNER_TEMP/out/canary.sidecar" \
             --sidecar-contains sidecar-ok \
-            --xvfb
+            --xvfb | tee "$RUNNER_TEMP/canary-sidecar.log"
+          grep -q '^\[PASS\] canary-sidecar$' "$RUNNER_TEMP/canary-sidecar.log" \
+            || { echo "::error::post-exit sidecar canary did not PASS"; exit 1; }
 
       - name: Canary - missing sidecar is red
         run: |
