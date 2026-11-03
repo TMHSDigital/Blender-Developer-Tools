@@ -12,9 +12,11 @@
 #     because the unregister_class call invalidates the type the binding
 #     points at.
 #
-# bl_info is kept alongside the manifest for backward compatibility with
-# Blender versions before manifests were honored. The manifest is the
-# source of truth.
+# bl_info is read only when the package is installed as a legacy add-on
+# (no manifest, for example dropped into scripts/addons) and is ignored when
+# it installs as an extension. Its "blender" floor is 4.5, so it does not make
+# the add-on load on Blender older than the manifest era either. The manifest
+# is the source of truth.
 
 bl_info = {
     "name": "Example Addon",

@@ -105,7 +105,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 - Import, unit-scale check, transform apply, origin, normals, evaluated tris
 - LOD chain and optional convex/box collider
 - Unity / Godot / Unreal glTF export via the engine-export-presets contract
-- Explicit exit codes matching `headless-batch-script-template` (0, then 2+)
+- Explicit exit codes matching `headless-batch-script-template` (0, then 3+; 2 is argparse usage only)
 
 ## Snippets (31)
 

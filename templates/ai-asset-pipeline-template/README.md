@@ -73,8 +73,8 @@ header; templates are not a package.
 ## Exit codes
 
 Same convention as `templates/headless-batch-script-template/`
-(`script.py` / its README: 0 success, 2+ distinct failure modes;
-argparse usage errors also exit 2). Not a repo-wide table; examples such
+(`script.py` / its README: 0 success, 3 and up for distinct failure
+modes; 2 is argparse usage only). Not a repo-wide table; examples such
 as `export-preset-axis` number their own checks independently.
 
 | Code | Meaning |

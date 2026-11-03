@@ -37,8 +37,8 @@ it is forwarded to `script.py` as `sys.argv`.
    operator per object. The new modifier runs after any existing ones.
    Every modifier on the object is applied, not only the new one.
 4. Exports the scene to a `.glb` at the given output path.
-5. Returns explicit exit codes (0 success, 2-4 different failure modes)
-   so a CI pipeline can detect failures.
+5. Returns explicit exit codes (0 success, 3 and up for distinct failure
+   modes; 2 is argparse usage only) so a CI pipeline can detect failures.
 
 ## Exit codes
 

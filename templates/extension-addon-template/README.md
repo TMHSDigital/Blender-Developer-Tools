@@ -18,7 +18,10 @@ Targets Blender 4.5 LTS and 5.x.
    `id` (Python identifier, no hyphens) that is unique in your namespace.
 2. Edit `blender_manifest.toml`:
    - Change `id`, `name`, `tagline` (max 64 characters, no trailing
-     period), `maintainer`, `version`, and `website`.
+     period), `maintainer`, `version`, `website`, and `copyright` (it
+     ships as the template author's; put your own name and year).
+   - Review `license`: the template ships `SPDX:GPL-3.0-or-later`; the
+     Extensions Platform hosts add-ons only under GPL-compatible licenses.
    - Adjust `tags` to match your add-on's category. Allowed values come
      from the Extensions Platform tag list.
    - Set `blender_version_min` to the lowest Blender you actually
@@ -32,12 +35,10 @@ Targets Blender 4.5 LTS and 5.x.
 
 ## Install for development
 
-From inside Blender:
-
-1. Build a package from the template directory (it holds
+1. From a shell, build a package from the template directory (it holds
    `blender_manifest.toml`):
    `blender --command extension build --source-dir . --output-dir dist`
-2. Edit > Preferences > Get Extensions > the drop-down menu > Install from
+2. In Blender: Edit > Preferences > Get Extensions > the drop-down menu > Install from
    Disk, and pick the `.zip` in `dist/`. "Install from Disk" takes a `.zip`
    (or a `.py`), not a directory.
 3. Enable the add-on.
