@@ -1,6 +1,6 @@
 {
   "_comment": "Ratchet for SKILL.md python blocks that Content Smoke executes (<!-- smoke: run -->, #525). tests/check_content_catalog.py fails when fewer blocks are tagged than `floor` (raise the floor when you tag more), and when a skill has no tagged block and no entry in `compile_only`. A compile_only entry says why the skill's blocks cannot run standalone in a fresh factory scene and which runnable example proves the skill instead; tag a block and drop the entry when one can.",
-  "floor": 14,
+  "floor": 15,
   "compile_only": {
     "addon-scaffolding": "Blocks are files of an add-on package (relative imports, register()); proven by examples/addon-register-lifecycle.",
     "ai-mesh-cleanup": "Blocks are steps over an imported GLB and helpers defined in the first block; proven by examples/coincident-vert-weld, collision-hull-proxy, degenerate-bevel-weld, lod-decimate-chain.",

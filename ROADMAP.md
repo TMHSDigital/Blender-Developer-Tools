@@ -40,6 +40,7 @@ derives the actual version from conventional-commit types.
 | Skills for stranded examples: Grease Pencil v3, constraints and parenting, images and pixels, curves and text, compositor nodes | 25 | 12 | 3 | 31 | Shipped |
 | Live-session bridge (opt-in `blender-live-session` plugin, upstream Blender Lab MCP) | - | - | - | - | Shipped |
 | Rules for the headline 5.x breaks: `action.fcurves`, Principled v2 socket names, NodesModifier ID-property inputs, the EEVEE engine id | 25 | 16 | 3 | 31 | Shipped |
+| UV layers and mesh attributes skill (lightmap channel, tangents, color attributes, shape keys, skin weights) | 26 | 16 | 3 | 31 | Shipped |
 | Stable (1.0) | — | — | — | — | Upcoming; criteria below |
 
 ## What "Stable (1.0)" means

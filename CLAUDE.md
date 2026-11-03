@@ -17,7 +17,7 @@ The **Blender Developer Tools** repository is at **v0.158.0**. It packages skill
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 25 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 26 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 16 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 31 total
@@ -30,7 +30,7 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (25)
+## Skills (26)
 
 | Skill | Purpose |
 | --- | --- |
@@ -59,6 +59,7 @@ VERSION                        - Source of truth for the repo version
 | images-and-pixels | `Image.pixels` layout and bulk `foreach_*`, byte vs float buffers, colorspace, `save()` vs `save_render()`, PNG vs EXR alpha |
 | curves-and-text | Curve and TextCurve datablocks: splines, bevel/extrude closed forms, `body`, Bfont, evaluated mesh read-back |
 | compositor-nodes | 4.5 `scene.node_tree` vs 5.x `scene.compositing_node_group`, Glare node enum-to-menu-socket change, `use_compositing` |
+| uv-and-mesh-attributes | UV layers (`calc_uvs=True` no-op without a layer), lightmap channel `active` / `active_render`, re-fetch layers by name after `calc_tangents`, color-attribute domains, shape keys, four-influence skin weights |
 
 ## Rules (16)
 

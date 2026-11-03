@@ -44,7 +44,8 @@
     "skills/constraints-and-parenting/SKILL.md",
     "skills/images-and-pixels/SKILL.md",
     "skills/curves-and-text/SKILL.md",
-    "skills/compositor-nodes/SKILL.md"
+    "skills/compositor-nodes/SKILL.md",
+    "skills/uv-and-mesh-attributes/SKILL.md"
   ],
   "rules": [
     "rules/prefer-data-over-ops-in-loops.mdc",

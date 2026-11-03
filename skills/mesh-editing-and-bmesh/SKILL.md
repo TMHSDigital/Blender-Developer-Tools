@@ -341,6 +341,7 @@ The full old-to-new name map is in the witness example, [`mesh-automasking-setti
 
 - `headless-batch-scripting` for using these patterns in CLI scripts
 - `geometry-nodes-python` for programmatic GN tree construction
+- `uv-and-mesh-attributes` for UV layers, the lightmap channel, tangents, color attributes, shape keys and skin weights
 - Rule `prefer-data-over-ops-in-loops`
 - Rule `always-free-bmesh`
 - Snippet `canonical-object-creation.py`, `canonical-object-deletion.py`, `bmesh-load-edit-free.py`, `depsgraph-evaluated-mesh.py`, `foreach-set-vertices.py`

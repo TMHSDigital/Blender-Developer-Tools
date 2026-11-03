@@ -331,6 +331,7 @@
     "path": "examples/color-attribute-wheel/",
     "script": "examples/color-attribute-wheel/color_attribute_wheel.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
@@ -1428,6 +1429,7 @@
     "path": "examples/lightmap-uv-channel/",
     "script": "examples/lightmap-uv-channel/lightmap_uv_channel.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
@@ -1853,6 +1855,7 @@
     "path": "examples/shape-key-blend/",
     "script": "examples/shape-key-blend/shape_key_blend.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
@@ -2241,6 +2244,7 @@
     "path": "examples/triangulate-tangents/",
     "script": "examples/triangulate-tangents/triangulate_tangents.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
@@ -2380,6 +2384,7 @@
     "path": "examples/uv-layer-grid/",
     "script": "examples/uv-layer-grid/uv_layer_grid.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
@@ -2452,6 +2457,7 @@
     "path": "examples/vertex-weight-limit/",
     "script": "examples/vertex-weight-limit/vertex_weight_limit.py",
     "skills": [
+      "uv-and-mesh-attributes",
       "mesh-editing-and-bmesh"
     ],
     "render": true,
