@@ -117,3 +117,37 @@ jobs:
           set -euo pipefail
           xvfb-run -a "$BLENDER" --background --factory-startup --python-exit-code 1 \
             --python tests/smoke/run_content.py
+
+  report-scheduled-failure:
+    # A red weekly cron otherwise goes unnoticed (#482, #538): open an issue,
+    # or comment on the one already open.
+    name: Report a failed weekly run
+    needs: [content]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Weekly content smoke run failed"
+          body="Scheduled run: $RUN_URL
+
+          A snippet, its falsifier, or a tagged SKILL.md block failed on a floating Blender point release: likely upstream API drift. Reproduce with tests/smoke/run_content.py --only NAME.
+
+          Opened by content-smoke.yml (report-scheduled-failure). Close it once a weekly run is green."
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+            echo "commented on #$num"
+          else
+            gh issue create --title "$title" --body "$body" --label "bug,ci,priority: high"
+          fi

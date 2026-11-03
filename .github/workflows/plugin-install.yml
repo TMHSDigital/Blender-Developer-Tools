@@ -83,3 +83,37 @@ jobs:
           claude plugin install blender-developer-tools@blender-developer-tools
           claude plugin install blender-live-session@blender-developer-tools
           claude plugin list
+
+  report-scheduled-failure:
+    # A red weekly cron otherwise goes unnoticed (#482, #538): open an issue,
+    # or comment on the one already open.
+    name: Report a failed weekly run
+    needs: [install]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Weekly plugin install check failed"
+          body="Scheduled run: $RUN_URL
+
+          Building, validating or installing the plugin failed; on the weekly run this includes installing from the published plugin-dist branch, which is what users add.
+
+          Opened by plugin-install.yml (report-scheduled-failure). Close it once a weekly run is green."
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+            echo "commented on #$num"
+          else
+            gh issue create --title "$title" --body "$body" --label "bug,ci,priority: high"
+          fi
