@@ -442,3 +442,6 @@ jobs:
 
       - name: Hero-drift tool exit-code tests
         run: python3 tests/test_measure_hero_drift.py -v
+
+      - name: Validate gate self-tests (a gate that regresses fails here, #527)
+        run: python3 tests/test_gates.py -v

@@ -103,7 +103,12 @@ def check(root: Path) -> list[str]:
     errors: list[str] = []
     for row in catalog:
         errors += check_schema(row)
+        if not isinstance(row.get("script"), str):
+            continue
         errors += check_readme_claims(root, row)
+        if not (root / row["script"]).is_file():
+            # otherwise only Blender, at runtime, notices a renamed script (#527)
+            errors.append(f"catalog row {row.get('name')!r}: script {row['script']} does not exist")
         parts = Path(row["script"]).parts
         if len(parts) >= 2 and parts[0] in ("examples", "showcase"):
             key = f"{parts[0]}/{parts[1]}"

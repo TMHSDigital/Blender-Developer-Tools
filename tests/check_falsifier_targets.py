@@ -108,7 +108,8 @@ def _column(headers, *patterns):
 
 def parse_readme(path):
     """(falsifiers {flag: (exit, target)}, exit_table {code: meaning})."""
-    text = io.open(path, encoding="utf-8").read()
+    with io.open(path, encoding="utf-8") as fh:
+        text = fh.read()
     falsifiers, exits = {}, {}
     for headers, rows in _tables(text):
         code_col = _column(headers, r"^exit$", r"exit code", r"^code$")
@@ -152,7 +153,8 @@ def parse_readme(path):
 
 def script_flags(path):
     """store_true argparse flags declared in the script."""
-    src = io.open(path, encoding="utf-8").read()
+    with io.open(path, encoding="utf-8") as fh:
+        src = fh.read()
     flags = set()
     try:
         tree = ast.parse(src)

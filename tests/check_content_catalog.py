@@ -23,15 +23,17 @@ FENCE = re.compile(r"^```python[ \t]*\r?\n(.*?)\r?\n```", re.M | re.S)
 TAG = re.compile(r"^<!-- smoke: run -->[ \t]*\r?\n```python", re.M)
 
 
-def main():
+def check(root=ROOT, cases=None):
+    """(errors, skill python blocks, tagged blocks) for a repo root."""
+    cases = CASES if cases is None else cases
     errors = []
-    snippets = {os.path.basename(p) for p in glob.glob(os.path.join(ROOT, "snippets", "*.py"))}
-    for name in sorted(snippets - set(CASES)):
+    snippets = {os.path.basename(p) for p in glob.glob(os.path.join(root, "snippets", "*.py"))}
+    for name in sorted(snippets - set(cases)):
         errors.append(f"snippets/{name} has no entry in tests/smoke/snippet_checks.py")
-    for name in sorted(set(CASES) - snippets):
+    for name in sorted(set(cases) - snippets):
         errors.append(f"tests/smoke/snippet_checks.py names snippets/{name}, which does not exist")
-    for name in sorted(set(CASES) & snippets):
-        case = CASES[name]
+    for name in sorted(set(cases) & snippets):
+        case = cases[name]
         unknown = set(case) - {"setup", "check", "falsify"}
         if unknown:
             errors.append(f"{name}: unknown keys {sorted(unknown)}")
@@ -41,13 +43,13 @@ def main():
         if not (isinstance(fals, tuple) and len(fals) == 2 and fals[0] != fals[1]):
             errors.append(f"{name}: falsify must be an (old, new) pair that changes something")
             continue
-        with open(os.path.join(ROOT, "snippets", name), encoding="utf-8") as fh:
+        with open(os.path.join(root, "snippets", name), encoding="utf-8") as fh:
             if fals[0] not in fh.read():
                 errors.append(f"{name}: falsify string {fals[0]!r} is not in the snippet")
 
     blocks = tagged = 0
-    for path in sorted(glob.glob(os.path.join(ROOT, "skills", "*", "SKILL.md"))):
-        rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+    for path in sorted(glob.glob(os.path.join(root, "skills", "*", "SKILL.md"))):
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
         with open(path, encoding="utf-8") as fh:
             text = fh.read()
         tagged += len(TAG.findall(text))
@@ -58,7 +60,11 @@ def main():
                 compile(m.group(1), rel, "exec")
             except SyntaxError as e:
                 errors.append(f"{rel}:{start + (e.lineno or 1) - 1}: python block does not compile: {e.msg}")
+    return errors, blocks, tagged
 
+
+def main():
+    errors, blocks, tagged = check()
     for e in errors:
         print(f"::error::{e}")
     if errors:
