@@ -154,6 +154,21 @@ class ContentCatalog(unittest.TestCase):
         e = self.run_check({"s.py": {"check": "pass", "falsify": ("x = 1", "x = 1")}})
         self.assertTrue(any("changes something" in m for m in e), e)
 
+    def test_ratchet_needs_a_run_block_or_a_reason(self):
+        # #525: a skill with no executed block must say why, and the tagged count cannot drop
+        case = {"s.py": {"check": "pass", "falsify": ("x = 1", "x = 2")}}
+        tagged = "# K\n\n<!-- smoke: run -->\n```python\nx = 1\n```\n"
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            write(root, "snippets/s.py", "x = 1\n")
+            write(root, "skills/k/SKILL.md", "# K\n\n```python\nx = 1\n```\n")
+            write(root, "tests/smoke/skill_blocks.json", json.dumps({"floor": 1, "compile_only": {}}))
+            errs = ccc.check(str(root), case)[0]
+            self.assertTrue(any("below the floor" in e for e in errs), errs)
+            self.assertTrue(any("no compile_only reason" in e for e in errs), errs)
+            write(root, "skills/k/SKILL.md", tagged)
+            self.assertEqual(ccc.check(str(root), case)[0], [])
+
     def test_skill_block_that_does_not_compile_reports_its_line(self):
         skill = "# K\n\ntext\n\n```python\nok = 1\nif True\n    pass\n```\n"
         e = self.run_check({"s.py": {"check": "pass", "falsify": ("x = 1", "x = 2")}}, skill=skill)

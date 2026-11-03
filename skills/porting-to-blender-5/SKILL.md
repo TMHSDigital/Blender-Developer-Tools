@@ -60,6 +60,7 @@ This skill is an index. Each row points at the skill, rule or runnable example t
 
 Keep one code path and branch only where the table says *branch*:
 
+<!-- smoke: run -->
 ```python
 import bpy
 

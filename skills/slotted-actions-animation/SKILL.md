@@ -45,6 +45,7 @@ On 4.4 / 4.5 LTS, ensure the channelbag yourself with `strip.channelbag(slot, en
 
 Import path (5.0+) verified against the Blender 5.1 API reference: `bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)`. See [`bpy_extras.anim_utils`](https://docs.blender.org/api/current/bpy_extras.anim_utils.html).
 
+<!-- smoke: run -->
 ```python
 import bpy
 
@@ -80,6 +81,12 @@ def get_channelbag_for_object(obj):
         obj.animation_data.action_slot = slot
 
     return get_channelbag_for_slot(action, slot)
+
+# Usage: every F-curve write goes through the slot's channelbag, on 4.5 and 5.x.
+cbag = get_channelbag_for_object(bpy.context.active_object)
+fc = cbag.fcurves.new(data_path="location", index=2)
+fc.keyframe_points.insert(1, 0.0)
+assert bpy.context.active_object.animation_data.action_slot is not None
 ```
 
 The version boundary that matters is `bpy.app.version >= (5, 0, 0)` (legacy removed / ensure-helper added), **not** `hasattr(action, "slots")` — `action.slots` is present on 4.4 and 4.5 too, so that check does not distinguish 4.5 from 5.x.

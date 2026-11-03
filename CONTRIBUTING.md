@@ -105,7 +105,7 @@ showcase/
 
 3. Aim for 150 to 350 lines covering the canonical pattern, common AI mistakes, version-correctness notes, and one or two worked code examples. Cite Blender API doc URLs where relevant. Avoid encyclopedic API tours.
 4. The skill `name` in frontmatter must match the directory name exactly (CI enforces this).
-5. Every ```python block must compile (`tests/check_content_catalog.py`). Put `<!-- smoke: run -->` on the line directly above a block that is self-contained, so Content Smoke executes it on 4.5 and 5.2 in a factory-startup scene: no input files, no render, and it ends with `assert`s on what it built. Tag at least one block per skill where the API allows it.
+5. Every ```python block must compile (`tests/check_content_catalog.py`). Put `<!-- smoke: run -->` on the line directly above a block that is self-contained, so Content Smoke executes it on 4.5 and 5.2 in a factory-startup scene: no input files, no render, and it ends with `assert`s on what it built. Tag at least one block per skill where the API allows it; Validate requires it unless `tests/smoke/skill_blocks.json` gives the skill a `compile_only` reason naming the example that proves it, and the total tagged count may not drop below that file's `floor` (raise the floor when you tag more).
 6. Map at least one example to the skill in `examples/skills.json`; an example mapped to no skill fails Validate.
 
 ## Adding a Rule

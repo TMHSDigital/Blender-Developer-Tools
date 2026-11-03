@@ -24,6 +24,7 @@ The Python pattern for building a Geometry Nodes tree has four phases:
 3. Wire nodes with `tree.links.new`.
 4. Add a NODES modifier on the target object that points at the group.
 
+<!-- smoke: run -->
 ```python
 import bpy
 

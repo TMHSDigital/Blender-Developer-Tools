@@ -211,6 +211,7 @@ Notes:
 
 ## Detecting Blender version in scripts
 
+<!-- smoke: run -->
 ```python
 import bpy
 

@@ -1,0 +1,19 @@
+{
+  "_comment": "Ratchet for SKILL.md python blocks that Content Smoke executes (<!-- smoke: run -->, #525). tests/check_content_catalog.py fails when fewer blocks are tagged than `floor` (raise the floor when you tag more), and when a skill has no tagged block and no entry in `compile_only`. A compile_only entry says why the skill's blocks cannot run standalone in a fresh factory scene and which runnable example proves the skill instead; tag a block and drop the entry when one can.",
+  "floor": 14,
+  "compile_only": {
+    "addon-scaffolding": "Blocks are files of an add-on package (relative imports, register()); proven by examples/addon-register-lifecycle.",
+    "ai-mesh-cleanup": "Blocks are steps over an imported GLB and helpers defined in the first block; proven by examples/coincident-vert-weld, collision-hull-proxy, degenerate-bevel-weld, lod-decimate-chain.",
+    "bake-high-to-low": "Blocks are steps of one Cycles bake that need a high/low pair and UVs; proven by examples/bake-normal-high-to-low.",
+    "bl-info-migration": "Blocks are package layouts and import forms, not runnable scripts; proven by examples/addon-register-lifecycle.",
+    "custom-properties": "Blocks are add-on class and register() fragments; proven by examples/addon-register-lifecycle and cross-version-property-delete.",
+    "depsgraph-and-evaluated-data": "Blocks define helpers called on caller-supplied objects; proven by examples/armature-bend, boolean-exact-volume, depsgraph-export.",
+    "drivers-and-app-handlers": "Blocks are register()/handler fragments and steps on a caller-supplied object; proven by examples/driver-wave and exit-pre-sidecar.",
+    "engine-export-presets": "Blocks are export calls on a prepared selection; proven by examples/export-preset-axis, gltf-export-roundtrip, unapplied-scale-gltf.",
+    "extension-runtime-and-packaging": "Blocks read __package__ and extension_path_user, which exist only inside an installed extension; proven by examples/extension-package-lifecycle.",
+    "gpu-drawing-and-overlays": "Blocks need a GPU context (draw handlers, or gpu.init() which exists only on 5.2+); proven by examples/gpu-offscreen-draw.",
+    "operators": "Blocks are Operator classes and execute() bodies that need registration and an operator context; proven by examples/prop-origin-transform and temp-override-join.",
+    "timers-modal-and-threading": "Timers never fire under --background, and the blocks call caller-supplied done()/download(); proven by examples/timers-modal-threading in a windowed child Blender.",
+    "ui-panels": "Blocks are Panel draw() bodies that run only inside a UI redraw; proven by examples/addon-register-lifecycle."
+  }
+}

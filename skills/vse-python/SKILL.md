@@ -18,6 +18,7 @@ Use this skill when the user:
 
 ## High-level shape
 
+<!-- smoke: run -->
 ```python
 import bpy
 
