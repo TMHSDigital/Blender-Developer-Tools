@@ -445,3 +445,6 @@ jobs:
 
       - name: Validate gate self-tests (a gate that regresses fails here, #527)
         run: python3 tests/test_gates.py -v
+
+      - name: Gallery generator unit tests (#528)
+        run: python3 tests/test_build_gallery.py -v
