@@ -7,16 +7,16 @@ staging, no labels — beside the pinned asset-quality reference set rendered
 the same way, and asks one question: is the candidate identifiable as the
 least-designed object in the lineup?
 
-The reference set is read from CLAUDE.md, its canonical home, so this script
-never disagrees with the gate it serves. Panel layout is 3x2 at 640x360:
-candidate top-left, then the references in CLAUDE.md order.
+The reference set is ASSET_SET in scripts/gallery_refs.py (CLAUDE.md names it,
+and tests/check_reference_sets.py keeps the two equal). Panel layout is 3x2 at
+640x360: candidate top-left, then the references in that order.
 
 For each name the Blender side (``scripts/asset_sheet_panel.py``) stages the
 entry through the README's documented ``--output`` command, keeps only the
-mesh (or curve) objects matched by ``SELECT`` below, and re-renders them on a grey
-sweep. Before this file the panel renderer lived in uncommitted scratch
-scripts, so a sheet could not be reproduced (the same gap #200 closed for
-heroes).
+mesh (or curve) objects matched by the entry's ``assetSelect`` regexes, and
+re-renders them on a grey sweep. Before this file the panel renderer lived in
+uncommitted scratch scripts, so a sheet could not be reproduced (the same gap
+#200 closed for heroes).
 
 Authoring tool, not CI: host Python with Pillow; one full staging render
 per panel.
@@ -47,117 +47,19 @@ PANEL = (640, 360)
 GUTTER = 8
 QUALITY = 88
 
-# Mesh objects that make up each entry's hero asset: (include, exclude)
-# regexes on object names. Comparison props, placards and stage are left out
-# by construction. A new asset-type entry adds its row here.
-SELECT = {
-    "collision-hull-proxy": (r"^(Body|Nut|PumperCap|Lug\d|SideCap\d)$", None),
-    "custom-normals-shade": (r"_byangle$", None),
-    "vertex-weight-limit": (r"^MechArm$", None),
-    "lod-decimate-chain": (r"^Rocket$", None),
-    "modular-kit-snap": (r"^Kit\.CorridorSeg\.", r"\.0\d\d$"),
-    "lightmap-uv-channel": (r"^Cart\.", None),
-    "socket-attach-points": (r"^Drone\.Survey\.", None),
-    "vertex-color-ao": (r"^Well\.Stone\.", None),
-    "wooden-yoke": (r"^YokeLow$", None),
-    "apothecary-shelf": (r"^ShelfLow$", None),
-    "bookshelf": (r"^BookshelfLow$", None),
-    "book-trolley": (r"^TrolleyLow$", None),
-    "brazier": (r"^BrazierLow$", None),
-    "butter-churn": (r"^ChurnLow$", None),
-    "grain-sacks": (r"^SacksLow$", None),
-    "rope-bridge": (r"^BridgeLow$", None),
-    "wheelbarrow": (r"^BarrowLow$", None),
-    "street-lantern": (r"^LanternLow$", None),
-    "hand-pump": (r"^HandPumpLow$", None),
-    "basketball-hoop": (r"^HoopLow$", None),
-    "pine-tree": (r"^PineLow$", None),
-    "desk-lamp": (r"^LampLow$", None),
-    "quad-drone": (r"^DroneLow$", None),
-    "soccer-goal": (r"^GoalLow$", None),
-    "fallen-log": (r"^LogLow$", None),
-    "office-chair": (r"^ChairLow$", None),
-    "hover-bike": (r"^HoverBikeLow$", None),
-    "weight-rack": (r"^RackLow$", None),
-    "boulder-cluster": (r"^ClusterLow$", None),
-    "floor-fan": (r"^FanLow$", None),
-    "motor-scooter": (r"^ScooterLow$", None),
-    "bowling-pins": (r"^PinDeckLow$", None),
-    "pond-edge": (r"^PondLow$", None),
-    "stand-mixer": (r"^MixerLow$", None),
-    "cargo-loader": (r"^LoaderLow$", None),
-    "archery-target": (r"^TargetLow$", None),
-    "cactus-garden": (r"^CactusLow$", None),
-    "espresso-machine": (r"^EspressoLow$", None),
-    "road-bicycle": (r"^BicycleLow$", None),
-    "skate-ramp": (r"^RampLow$", None),
-    "palm-tree": (r"^PalmLow$", None),
-    "wingback-armchair": (r"^ArmchairLow$", None),
-    "planet-rover": (r"^RoverLow$", None),
-    "traffic-cones": (r"^ConesLow$", None),
-    "go-kart": (r"^KartLow$", None),
-    "broadleaf-oak": (r"^OakLow$", None),
-    "farm-tractor": (r"^TractorLow$", None),
-    "fern-mossy-rock": (r"^FernRockLow$", None),
-    "sea-stack-arch": (r"^SeaStackLow$", None),
-    "hex-island-tile": (r"^HexIslandLow$", None),
-    "canyon-mesa-tile": (r"^CanyonMesaLow$", None),
-    "caldera-island-tile": (r"^CalderaIslandLow$", None),
-    "river-delta-tile": (r"^RiverDeltaLow$", None),
-    "mushroom-stump": (r"^StumpLow$", None),
-    "anvil": (r"^AnvilLow$", None),
-    "tavern-stool": (r"^StoolLow$", None),
-    "grindstone": (r"^GrindstoneLow$", None),
-    "chopping-block": (r"^ChopBlockLow$", None),
-    # the hero shows a three-section run; the sheet judges the one asset
-    "fence-kit": (r"^FenceLow$", None),
-    "wooden-ladder": (r"^LadderLow$", None),
-    "terrain-scatter": (r"^TerrainLow$", None),
-    "shipping-crate": (r"^CrateLow$", None),
-    "signpost": (r"^SignpostLow$", None),
-    "hitching-post": (r"^HitchPostLow$", None),
-    "campfire": (r"^CampfireLow$", None),
-    "water-trough": (r"^TroughLow$", None),
-    "watchtower": (r"^TowerLow$", None),
-    "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
-    "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
-                            r"|DoorMirror|DoorHandle(Front|Rear))$", None),
-    "export-preset-axis": (r"^RadioMast\.Unity$", None),
-    "prop-origin-transform": (r"^(Pedestal|Conduit)\.Keep$", None),
-    "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
-    "degenerate-bevel-weld": (r"^CaseSafe\.", None),
-    "mesh-hygiene-audit": (r"^Valve\.", None),
-    "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
-    "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
-    # KeycapSource never renders; it is kept so the key field's Object Info
-    # still resolves once the staging is stripped
-    "gn-instance-grid": (r"^Macropad\.", None),
-    "curve-bevel-arc": (r"^(Magnet|Clip\w+|PoleBearings)$", None),
-    "shape-key-blend": (r"^Vase$", None),
-    "temp-override-join": (r"^Lantern$", None),
-    "depsgraph-export": (r"^Gamepad\.", None),
-    "mine-cart": (r"^MineCartLow$", None),
-    "garden-gate": (r"^GateLow$", None),
-    "ships-wheel": (r"^WheelLow$", None),
-    "sawhorse-plank": (r"^SawhorseLow$", None),
-    "bamboo-clump": (r"^BambooLow$", None),
-    "cart": (r"^CartLow$", None),
-    "crate-stack": (r"^StackLow$", None),
-    "cricket-wicket": (r"^WicketLow$", None),
-    "hay-bale": (r"^BaleLow$", None),
-    "iron-cauldron": (r"^CauldronLow$", None),
-    "market-stall": (r"^StallLow$", None),
-    "moka-pot": (r"^PotLow$", None),
-    "park-bench": (r"^BenchLow$", None),
-    "stone-archway": (r"^ArchLow$", None),
-    "stone-well": (r"^WellLow$", None),
-    "sundial": (r"^SundialLow$", None),
-    "toboggan": (r"^SledLow$", None),
-    "treasure-chest": (r"^ChestLow$", None),
-    "wall-torch": (r"^TorchLow$", None),
-    "wooden-barrel": (r"^BarrelLow$", None),
-    "wooden-bucket": (r"^BucketLow$", None),
-}
+
+def asset_select(entry: dict) -> tuple[str, str | None] | None:
+    """(include, exclude) regexes on object names for the entry's hero asset.
+
+    They live on the entry itself, as ``assetSelect`` in examples/ or
+    showcase/gallery.json (#530), so a new piece edits only its own entry.
+    Comparison props, placards and stage are left out by construction.
+    """
+    sel = entry.get("assetSelect")
+    if not sel:
+        return None
+    return sel["include"], sel.get("exclude")
+
 
 def reference_set() -> list[str]:
     """The pinned reference set (scripts/gallery_refs.py; CLAUDE.md mirrors it, #523)."""
@@ -165,7 +67,7 @@ def reference_set() -> list[str]:
 
 
 def render_panel(blender: str, entry: dict, png: Path) -> bool:
-    inc, exc = SELECT[entry["name"]]
+    inc, exc = asset_select(entry)
     with tempfile.TemporaryDirectory() as tmp:
         cmd = render_args(entry, Path(tmp) / "stage.png")
         if cmd is None:
@@ -202,9 +104,9 @@ def main(argv=None) -> int:
     by_name = {e["name"]: e for e in entries()}
     refs = reference_set()
     lineup = [args.name] + [r for r in refs if r != args.name]
-    missing = [n for n in lineup if n not in by_name or n not in SELECT]
+    missing = [n for n in lineup if n not in by_name or asset_select(by_name[n]) is None]
     if missing:
-        print(f"no gallery entry or SELECT row for: {', '.join(missing)}", file=sys.stderr)
+        print(f"no gallery entry or assetSelect for: {', '.join(missing)}", file=sys.stderr)
         return 2
 
     blender = str(Path(args.blender).resolve())

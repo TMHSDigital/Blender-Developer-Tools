@@ -1,5 +1,5 @@
 {
-  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, category, teaches, witnessesFix, hero, preview, tags?}; category is one of village|sports|nature|household|vehicles (CATEGORIES in scripts/build_gallery.py). dir/hero/preview are repo-root-relative.",
+  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, category, teaches, witnessesFix, hero, preview, tags?, assetSelect?}; category is one of village|sports|nature|household|vehicles (CATEGORIES in scripts/build_gallery.py). dir/hero/preview are repo-root-relative. assetSelect is {include, exclude?}: regexes on object names that scripts/asset_sheet.py keeps as the hero asset.",
   "title": "Showcase",
   "description": "Budget-conformance props that compose shipped Blender Developer Tools skills. Not API-contract examples.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
@@ -17,7 +17,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CrateLow$"
+      }
     },
     {
       "name": "stone-well",
@@ -32,7 +35,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 1
+      "featured_rank": 1,
+      "assetSelect": {
+        "include": "^WellLow$"
+      }
     },
     {
       "name": "wooden-barrel",
@@ -46,7 +52,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BarrelLow$"
+      }
     },
     {
       "name": "campfire",
@@ -60,7 +69,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CampfireLow$"
+      }
     },
     {
       "name": "market-stall",
@@ -75,7 +87,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 2
+      "featured_rank": 2,
+      "assetSelect": {
+        "include": "^StallLow$"
+      }
     },
     {
       "name": "street-lantern",
@@ -89,7 +104,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^LanternLow$"
+      }
     },
     {
       "name": "treasure-chest",
@@ -103,7 +121,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ChestLow$"
+      }
     },
     {
       "name": "terrain-scatter",
@@ -117,7 +138,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TerrainLow$"
+      }
     },
     {
       "name": "fence-kit",
@@ -131,7 +155,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^FenceLow$"
+      }
     },
     {
       "name": "watchtower",
@@ -145,7 +172,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TowerLow$"
+      }
     },
     {
       "name": "cart",
@@ -160,7 +190,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 4
+      "featured_rank": 4,
+      "assetSelect": {
+        "include": "^CartLow$"
+      }
     },
     {
       "name": "park-bench",
@@ -175,7 +208,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 5
+      "featured_rank": 5,
+      "assetSelect": {
+        "include": "^BenchLow$"
+      }
     },
     {
       "name": "wheelbarrow",
@@ -189,7 +225,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BarrowLow$"
+      }
     },
     {
       "name": "anvil",
@@ -203,7 +242,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^AnvilLow$"
+      }
     },
     {
       "name": "water-trough",
@@ -217,7 +259,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TroughLow$"
+      }
     },
     {
       "name": "hitching-post",
@@ -231,7 +276,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^HitchPostLow$"
+      }
     },
     {
       "name": "grindstone",
@@ -245,7 +293,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^GrindstoneLow$"
+      }
     },
     {
       "name": "hand-pump",
@@ -259,7 +310,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^HandPumpLow$"
+      }
     },
     {
       "name": "signpost",
@@ -273,7 +327,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SignpostLow$"
+      }
     },
     {
       "name": "chopping-block",
@@ -287,7 +344,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ChopBlockLow$"
+      }
     },
     {
       "name": "wooden-bucket",
@@ -301,7 +361,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BucketLow$"
+      }
     },
     {
       "name": "wall-torch",
@@ -316,7 +379,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 3
+      "featured_rank": 3,
+      "assetSelect": {
+        "include": "^TorchLow$"
+      }
     },
     {
       "name": "tavern-stool",
@@ -330,7 +396,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^StoolLow$"
+      }
     },
     {
       "name": "iron-cauldron",
@@ -344,7 +413,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CauldronLow$"
+      }
     },
     {
       "name": "wooden-ladder",
@@ -358,7 +430,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^LadderLow$"
+      }
     },
     {
       "name": "hay-bale",
@@ -372,7 +447,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BaleLow$"
+      }
     },
     {
       "name": "crate-stack",
@@ -386,7 +464,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^StackLow$"
+      }
     },
     {
       "name": "stone-archway",
@@ -401,7 +482,10 @@
         "mesh",
         "export"
       ],
-      "featured_rank": 6
+      "featured_rank": 6,
+      "assetSelect": {
+        "include": "^ArchLow$"
+      }
     },
     {
       "name": "rope-bridge",
@@ -415,7 +499,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BridgeLow$"
+      }
     },
     {
       "name": "grain-sacks",
@@ -429,7 +516,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SacksLow$"
+      }
     },
     {
       "name": "brazier",
@@ -443,7 +533,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BrazierLow$"
+      }
     },
     {
       "name": "apothecary-shelf",
@@ -457,7 +550,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ShelfLow$"
+      }
     },
     {
       "name": "wooden-yoke",
@@ -471,7 +567,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^YokeLow$"
+      }
     },
     {
       "name": "butter-churn",
@@ -485,7 +584,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ChurnLow$"
+      }
     },
     {
       "name": "bookshelf",
@@ -499,7 +601,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BookshelfLow$"
+      }
     },
     {
       "name": "book-trolley",
@@ -513,7 +618,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TrolleyLow$"
+      }
     },
     {
       "name": "basketball-hoop",
@@ -527,7 +635,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^HoopLow$"
+      }
     },
     {
       "name": "pine-tree",
@@ -541,7 +652,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^PineLow$"
+      }
     },
     {
       "name": "desk-lamp",
@@ -555,7 +669,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^LampLow$"
+      }
     },
     {
       "name": "quad-drone",
@@ -569,7 +686,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^DroneLow$"
+      }
     },
     {
       "name": "soccer-goal",
@@ -583,7 +703,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^GoalLow$"
+      }
     },
     {
       "name": "fallen-log",
@@ -597,7 +720,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^LogLow$"
+      }
     },
     {
       "name": "office-chair",
@@ -611,7 +737,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ChairLow$"
+      }
     },
     {
       "name": "hover-bike",
@@ -625,7 +754,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^HoverBikeLow$"
+      }
     },
     {
       "name": "weight-rack",
@@ -639,7 +771,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^RackLow$"
+      }
     },
     {
       "name": "boulder-cluster",
@@ -653,7 +788,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ClusterLow$"
+      }
     },
     {
       "name": "floor-fan",
@@ -667,7 +805,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^FanLow$"
+      }
     },
     {
       "name": "motor-scooter",
@@ -681,7 +822,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ScooterLow$"
+      }
     },
     {
       "name": "bowling-pins",
@@ -695,7 +839,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^PinDeckLow$"
+      }
     },
     {
       "name": "pond-edge",
@@ -709,7 +856,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^PondLow$"
+      }
     },
     {
       "name": "stand-mixer",
@@ -723,7 +873,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^MixerLow$"
+      }
     },
     {
       "name": "cargo-loader",
@@ -737,7 +890,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^LoaderLow$"
+      }
     },
     {
       "name": "archery-target",
@@ -751,7 +907,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TargetLow$"
+      }
     },
     {
       "name": "cactus-garden",
@@ -765,7 +924,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CactusLow$"
+      }
     },
     {
       "name": "espresso-machine",
@@ -779,7 +941,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^EspressoLow$"
+      }
     },
     {
       "name": "road-bicycle",
@@ -793,7 +958,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BicycleLow$"
+      }
     },
     {
       "name": "skate-ramp",
@@ -807,7 +975,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^RampLow$"
+      }
     },
     {
       "name": "palm-tree",
@@ -821,7 +992,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^PalmLow$"
+      }
     },
     {
       "name": "wingback-armchair",
@@ -835,7 +1009,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ArmchairLow$"
+      }
     },
     {
       "name": "planet-rover",
@@ -849,7 +1026,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^RoverLow$"
+      }
     },
     {
       "name": "traffic-cones",
@@ -863,7 +1043,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^ConesLow$"
+      }
     },
     {
       "name": "mushroom-stump",
@@ -877,7 +1060,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^StumpLow$"
+      }
     },
     {
       "name": "go-kart",
@@ -891,7 +1077,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^KartLow$"
+      }
     },
     {
       "name": "broadleaf-oak",
@@ -905,7 +1094,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^OakLow$"
+      }
     },
     {
       "name": "farm-tractor",
@@ -919,7 +1111,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^TractorLow$"
+      }
     },
     {
       "name": "fern-mossy-rock",
@@ -933,7 +1128,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^FernRockLow$"
+      }
     },
     {
       "name": "sea-stack-arch",
@@ -947,7 +1145,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SeaStackLow$"
+      }
     },
     {
       "name": "moka-pot",
@@ -961,7 +1162,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^PotLow$"
+      }
     },
     {
       "name": "cricket-wicket",
@@ -975,7 +1179,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^WicketLow$"
+      }
     },
     {
       "name": "bamboo-clump",
@@ -989,7 +1196,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^BambooLow$"
+      }
     },
     {
       "name": "toboggan",
@@ -1003,7 +1213,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SledLow$"
+      }
     },
     {
       "name": "sundial",
@@ -1017,7 +1230,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SundialLow$"
+      }
     },
     {
       "name": "mine-cart",
@@ -1031,7 +1247,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^MineCartLow$"
+      }
     },
     {
       "name": "garden-gate",
@@ -1045,7 +1264,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^GateLow$"
+      }
     },
     {
       "name": "ships-wheel",
@@ -1060,7 +1282,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^WheelLow$"
+      }
     },
     {
       "name": "sawhorse-plank",
@@ -1075,7 +1300,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^SawhorseLow$"
+      }
     },
     {
       "name": "hex-island-tile",
@@ -1089,7 +1317,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^HexIslandLow$"
+      }
     },
     {
       "name": "canyon-mesa-tile",
@@ -1103,7 +1334,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CanyonMesaLow$"
+      }
     },
     {
       "name": "caldera-island-tile",
@@ -1117,7 +1351,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^CalderaIslandLow$"
+      }
     },
     {
       "name": "river-delta-tile",
@@ -1131,7 +1368,10 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "assetSelect": {
+        "include": "^RiverDeltaLow$"
+      }
     }
   ]
 }

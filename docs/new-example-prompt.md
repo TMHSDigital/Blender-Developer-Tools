@@ -159,11 +159,12 @@ proof that the image is good, and neither is the second.
 Asset-sheet gate (required when the subject is a game asset: a prop, kit piece or
 vehicle the example ships as a model): render the hero asset alone (neutral
 three-quarter view, plain studio light, no staging, labels or comparison props)
-beside the pinned asset-quality reference set, whose canonical membership is also in
-`CLAUDE.md` § Quality Gates for Example Runs, with
-`python scripts/asset_sheet.py --blender PATH NAME`. Add the entry's row to that
-script's `SELECT` table first (`tests/check_asset_sheet_select.py` enforces it for
-showcase pieces). Commit the composite under `docs/gallery/asset-sheets/`, link it in
+beside the pinned asset-quality reference set (`scripts/gallery_refs.py`, named in
+`CLAUDE.md` § Quality Gates for Example Runs), with
+`python scripts/asset_sheet.py --blender PATH NAME`. Give the gallery entry an
+`assetSelect` first: `{"include": "<regex>"}` (plus `"exclude"` if needed) on the
+object names that make up the hero asset (`tests/check_asset_sheet_select.py`
+enforces it for showcase pieces). Commit the composite under `docs/gallery/asset-sheets/`, link it in
 the PR body, and report a verdict. The asset ships only if it is not identifiable as
 the least-designed object in the lineup: a strong scene can carry a weak model, and
 this gate removes the scene. Its measurable floors (naming, material variation, edge
