@@ -264,7 +264,7 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`light-link-studio`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/light-link-studio): One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Falsify: `--skip-link` (exit 6).
 - [`shader-node-group`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shader-node-group): One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors. Falsify: `--same-tint` (exit 8).
 - [`sky-texture-sun-elevation`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation): World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. Falsify: `--unlink-sky` (exit 7).
-- [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--same-base` (exit 6).
+- [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--output swatch.png --engine cycles --samples 8 --width 640 --same-base` (exit 6).
 
 <!-- examples:end -->
 

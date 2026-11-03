@@ -111,8 +111,13 @@ def build_index() -> tuple[list[dict], list[str]]:
         readme = readme_path.read_text(encoding="utf-8") if readme_path.is_file() else ""
         falsifiers = []
         for r in rows:
+            # run_catalog.py runs a falsifier as the row's args + its own, and
+            # some checks only exist on that path (swatch-grid's --same-base
+            # needs --output): publish the full command or it exits a different
+            # code than documented (#517). $OUT is the runner's scratch dir.
+            base = [a.replace("$OUT/", "") for a in r.get("args") or []]
             for f in r.get("falsifiers", []):
-                entry = {"args": f["args"]}
+                entry = {"args": base + f["args"]}
                 if "expect_exit" in f:
                     entry["expect_exit"] = f["expect_exit"]
                 if f.get("expect_sidecar_fail"):
