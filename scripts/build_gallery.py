@@ -1540,7 +1540,7 @@ def build_detail(ex: dict, entries: list, *, base: str, repo_root_url: str, site
             parts.append(f'    <p class="taglist"><span class="tag">falsify it</span> '
                          f'Breaks the contract on purpose and must exit {int(fals["expect_exit"])}{html.escape(only)}</p>')
             parts.append('    <div class="runline falsify">')
-            parts.append(f'      <pre id="falsifyCmd" tabindex="0">{html.escape(cmd + " " + shlex.join(fals["args"]))}</pre>')
+            parts.append(f'      <pre id="falsifyCmd" tabindex="0">{html.escape(cmd + " " + shlex.join(arg.replace("$OUT/", "") for arg in fals["args"]))}</pre>')
             parts.append('      <button class="copy-btn" id="copyFalsify" type="button">Copy</button>')
             parts.append("    </div>")
 
