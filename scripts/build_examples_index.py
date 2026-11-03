@@ -112,7 +112,8 @@ def build_index() -> tuple[list[dict], list[str]]:
         falsifiers = []
         for r in rows:
             for f in r.get("falsifiers", []):
-                entry = {"args": f["args"]}
+                # Publish the same command that smoke runs: base row args first.
+                entry = {"args": [*r.get("args", []), *f["args"]]}
                 if "expect_exit" in f:
                     entry["expect_exit"] = f["expect_exit"]
                 if f.get("expect_sidecar_fail"):
