@@ -266,9 +266,17 @@ jobs:
           else
             git commit -s -m "chore: bump version to ${{ steps.new.outputs.version }} [skip ci]"
             if ! git push origin main; then
-              echo "::notice::push rejected (main moved); the newer release run will publish this range"
-              echo "stale=true" >> "$GITHUB_OUTPUT"
-              exit 0
+              # Stand down only when main really moved. Any other rejection
+              # (ruleset, token, permissions, network) must fail loudly, or
+              # every release stalls behind a green run (#516).
+              git fetch -q origin main || true
+              if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD~1)" ]; then
+                echo "::notice::push rejected (main moved); the newer release run will publish this range"
+                echo "stale=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              echo "::error::git push of the version bump failed and origin/main has not moved; check the token, rulesets and branch protection"
+              exit 1
             fi
           fi
 
