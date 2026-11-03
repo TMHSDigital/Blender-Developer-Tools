@@ -54,7 +54,7 @@ import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tests", "smoke"))
-from protocol import FORBIDDEN_FALSIFIER_EXITS  # noqa: E402
+from protocol import FORBIDDEN_FALSIFIER_EXITS, in_shard, parse_shard  # noqa: E402,F401
 
 SHOWCASE = os.path.join(ROOT, "showcase")
 
@@ -234,21 +234,6 @@ def check_static():
 
 
 RUN_TIMEOUT = 900  # seconds per Blender run, matching tests/smoke/run_example.py
-
-
-def parse_shard(text):
-    """'K/N' -> (K, N) with 0 <= K < N; argparse-friendly."""
-    try:
-        k, n = (int(x) for x in text.split("/"))
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"--shard wants K/N, got {text!r}")
-    if n < 1 or not 0 <= k < n:
-        raise argparse.ArgumentTypeError(f"--shard {text!r}: need 0 <= K < N")
-    return k, n
-
-
-def in_shard(index, shard):
-    return shard is None or index % shard[1] == shard[0]
 
 
 def check_runtime(blender, only=None, shard=None):

@@ -346,6 +346,23 @@ class RunCatalog(unittest.TestCase):
         self.assertIn("b (exit 1)", err)
         self.assertIn("d (exit 3)", err)
 
+    def test_shards_partition_the_catalog(self):
+        # #529: CI splits the catalog across jobs; every row runs exactly once
+        rows = [{"name": n, "script": f"{n}.py"} for n in "abcdefg"]
+        seen_all = []
+        for k in range(3):
+            code, seen, _ = self._run(rows, {}, ("--shard", f"{k}/3", "--no-falsifiers"))
+            self.assertEqual(code, 0)
+            seen_all += seen
+        self.assertEqual(sorted(seen_all), list("abcdefg"))
+
+    def test_empty_shard_is_red(self):
+        rows = [{"name": "a", "script": "a.py"}]
+        code, seen, err = self._run(rows, {}, ("--shard", "1/2"))
+        self.assertEqual(code, 1)
+        self.assertEqual(seen, [])
+        self.assertIn("selects no row", err)
+
     def test_fail_fast_is_opt_in(self):
         rows = [{"name": n, "script": f"{n}.py"} for n in ("a", "b", "c")]
         code, seen, _ = self._run(rows, {"a": 1}, extra=("--fail-fast",))

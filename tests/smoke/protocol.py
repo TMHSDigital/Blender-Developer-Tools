@@ -10,6 +10,7 @@ marker and exiting 0, or exiting 77 on a version that should run.
 """
 from __future__ import annotations
 
+import argparse
 import os
 from typing import Optional, Tuple
 
@@ -215,3 +216,20 @@ def classify_content_falsifier(phase, error_type):
     if error_type in BROKEN_CODE_ERRORS:
         return FAIL, f"check raised {error_type}: the edit broke the code, not the contract"
     return FALSIFIED, ""
+
+
+# Sharding: run_catalog.py (PR smoke, #529) and check_falsifier_targets.py (the
+# weekly showcase sweep, #482) split their rows across parallel jobs the same way.
+def parse_shard(text):
+    """'K/N' -> (K, N) with 0 <= K < N; argparse-friendly."""
+    try:
+        k, n = (int(x) for x in text.split("/"))
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"--shard wants K/N, got {text!r}")
+    if n < 1 or not 0 <= k < n:
+        raise argparse.ArgumentTypeError(f"--shard {text!r}: need 0 <= K < N")
+    return k, n
+
+
+def in_shard(index, shard):
+    return shard is None or index % shard[1] == shard[0]

@@ -13,6 +13,9 @@ job red here instead of passing silently. ``--no-falsifiers`` skips them.
 A row may set ``timeout`` (seconds) for an example that legitimately needs
 longer than run_example.py's default; a hung run is killed and reported as a
 failure, and the catalog moves on to the next row.
+
+``--shard K/N`` runs only rows whose catalog index is K mod N, so CI can split
+the catalog across parallel jobs (#529); the shards partition every row.
 """
 from __future__ import annotations
 
@@ -24,8 +27,13 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from protocol import parse_version  # noqa: E402
+from protocol import in_shard, parse_shard, parse_version  # noqa: E402
 from run_example import append_status  # noqa: E402
+
+
+def select_rows(catalog, shard):
+    """The rows this shard runs; every row lands in exactly one shard."""
+    return [row for i, row in enumerate(catalog) if in_shard(i, shard)]
 
 
 def main(argv=None):
@@ -39,12 +47,19 @@ def main(argv=None):
     p.add_argument("--fail-fast", action="store_true", help="stop at the first failure")
     p.add_argument("--no-falsifiers", action="store_true",
                    help="run only the happy paths (local iteration; CI runs falsifiers)")
+    p.add_argument("--shard", type=parse_shard, default=None, metavar="K/N",
+                   help="run only rows with index %% N == K (parallel CI jobs)")
     args = p.parse_args(argv)
 
     with open(args.catalog, encoding="utf-8") as fh:
         catalog = json.load(fh)
     if not catalog:
         print("ERROR: catalog is empty; nothing would be smoke-tested", file=sys.stderr)
+        return 1
+    total = len(catalog)
+    catalog = select_rows(catalog, args.shard)
+    if not catalog:
+        print(f"ERROR: shard {args.shard} selects no row of {total}", file=sys.stderr)
         return 1
 
     os.makedirs(args.out, exist_ok=True)
@@ -133,7 +148,8 @@ def main(argv=None):
                     break
         if failures and args.fail_fast:
             break
-    print(f"catalog finished {n} of {len(catalog)} entries, {n_falsifiers} falsifier run(s)",
+    shard = f" (shard {args.shard[0]}/{args.shard[1]} of {total} rows)" if args.shard else ""
+    print(f"catalog finished {n} of {len(catalog)} entries{shard}, {n_falsifiers} falsifier run(s)",
           flush=True)
     if failures:
         print(f"{len(failures)} catalog failure(s):", file=sys.stderr)

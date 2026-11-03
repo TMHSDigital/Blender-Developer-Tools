@@ -292,8 +292,8 @@ Should the repository move to an organization, or `release.yml` stop pushing
 to `main`, these are the checks that run unconditionally on every PR and are
 therefore the required-check set:
 
-- `Blender 4.5 smoke`
-- `Blender 5.2 smoke`
+- `Blender 4.5 smoke (0/3)`, `(1/3)`, `(2/3)` (the catalog is sharded three ways, #529)
+- `Blender 5.2 smoke (0/3)`, `(1/3)`, `(2/3)`
 - `Ecosystem drift check`
 - `Validate content counts`
 - `Validate plugin manifest`
@@ -302,14 +302,14 @@ therefore the required-check set:
 
 Three checks that appear on PRs are deliberately **excluded**:
 
-- **`Blender 5.1 smoke` is label-gated.** It only runs when `needs-5.1` is
+- **`Blender 5.1 smoke (K/3)` is label-gated.** It only runs when `needs-5.1` is
   applied. As a required check it would block every unlabeled PR forever on
   a job that never reports.
 - **`Auto-label by path`** — `label-sync.yml` triggers on `opened` and
   `synchronize` only. A reopened PR with no new push never reports it.
 - **`Resolve smoke matrix`** — skipped on label events other than
   `needs-5.1`, and it is plumbing rather than a gate; its failure already
-  blocks the two smoke jobs that depend on it.
+  blocks the smoke jobs that depend on it.
 
 The two `Socket Security` checks come from a third-party GitHub App. An
 outage or an uninstall would deadlock merges, so they are advisory.
