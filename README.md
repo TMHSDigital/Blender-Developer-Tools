@@ -50,8 +50,8 @@ The content is consumed by AI coding agents, installed as a plugin or read from 
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading, GPU drawing and viewport overlays, porting add-ons to Blender 5 |
-| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading, GPU drawing and viewport overlays, porting add-ons to Blender 5, Grease Pencil v3, constraints and parenting, images and pixels, curves and text, compositor nodes |
+| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA, and the 5.x removals: `bgl`, the pre-4.1 normals API, `sequence_editor.sequences` |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 31 small standalone Python files demonstrating canonical patterns, 5 to 75 lines each |
 | **Examples** | Runnable headless scripts under [`examples/`](examples/). Each asserts an API contract and exits non-zero on failure. |
@@ -170,8 +170,10 @@ Proving each one fails once, on demand, is the difference between a test
 suite and a set of scripts that print "OK". Shipping an example requires
 demonstrating the falsifier's non-zero exit and reporting the measured error.
 
-`--api`, `--check-pixels`, and `--output` are not falsifiers; they select a
-code path rather than break a contract. Full conventions, including the
+`--check-pixels` and `--output` are not falsifiers; they select a code path
+rather than break a contract. `--api` usually selects a path too, but forcing
+the wrong era's path can be a version-gated falsifier: `gn-modifier-inputs`
+registers `--api dict` (exit 5 on 5.2+) in its catalog row. Full conventions, including the
 per-script exit-code model, are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md#exit-codes).
 
@@ -206,7 +208,7 @@ claude/                  - generated Claude Code copies of the rules (blender-ru
 
 ## Using rules in Cursor
 
-With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The nine rules are:
+With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The 12 rules are:
 
 - `prefer-data-over-ops-in-loops`: flags `bpy.ops.*` calls inside object iteration
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
@@ -217,6 +219,9 @@ With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatical
 - `validate-imported-mesh-scale`: flags glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 - `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
+- `no-bgl`: flags `import bgl` or any `bgl.` call (removed in 5.x; the add-on fails to register)
+- `no-removed-normals-api`: flags `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()` and the other normals calls removed in 4.1
+- `no-legacy-vse-sequences`: flags `sequence_editor.sequences` / `.sequences_all` (removed in 5.x; `.strips` / `.strips_all` exist on 4.5 too)
 
 Cursor: the plugin covers the rules (see [Quick start](#quick-start)); copying `rules/*.mdc` into a project's `.cursor/rules/` is only the per-project alternative without the plugin. Claude Code: the plugin ships the rules as the `blender-rules` skill.
 

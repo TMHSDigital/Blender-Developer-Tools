@@ -185,6 +185,12 @@ def check(root: Path) -> list[str]:
         if not re.search(rf"\b{n} {word}\b", readme):
             errors.append(f'README.md never states "{n} {word}"')
 
+    # The README rule list names each rule; the count check above cannot see a
+    # list that says "12" but names nine (#521).
+    for f in sorted((root / "rules").glob("*.mdc")):
+        if f"`{f.stem}`" not in readme:
+            errors.append(f"README.md never names rule `{f.stem}` (Using rules in Cursor)")
+
     for f in sorted((root / "snippets").glob("*.py")):
         n = len(f.read_text(encoding="utf-8").splitlines())
         if not SNIPPET_RANGE[0] <= n <= SNIPPET_RANGE[1]:
