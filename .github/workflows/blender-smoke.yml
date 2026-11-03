@@ -261,6 +261,39 @@ jobs:
           set -euo pipefail
           "$BLENDER" --command extension validate templates/extension-addon-template
 
+      # The template ships its own CI (.github/workflows/blender.yml), which
+      # GitHub never runs from inside templates/. Run its two steps here (#531).
+      - name: Extension template CI - build excludes tests/ and .github/
+        if: matrix.shard == 0
+        run: |
+          set -euo pipefail
+          "$BLENDER" --command extension build \
+            --source-dir templates/extension-addon-template --output-dir "$RUNNER_TEMP/extbuild"
+          zip=$(ls "$RUNNER_TEMP"/extbuild/*.zip | head -1)
+          names=$(python3 -c "import sys, zipfile; print('\n'.join(zipfile.ZipFile(sys.argv[1]).namelist()))" "$zip")
+          echo "$names"
+          echo "$names" | grep -qx "__init__.py" || { echo "::error::__init__.py missing from the package"; exit 1; }
+          if echo "$names" | grep -qE "^(tests|\.github)/"; then
+            echo "::error::CI-only files were packed into the extension"; exit 1
+          fi
+
+      - name: Extension template CI - register round-trip
+        if: matrix.shard == 0
+        run: |
+          set -euo pipefail
+          "$BLENDER" --background --factory-startup --python-exit-code 1 \
+            --python templates/extension-addon-template/tests/check_register.py
+
+      - name: Falsifier - template register check catches a skipped unregister (exit 4)
+        if: matrix.shard == 0
+        run: |
+          set +e
+          "$BLENDER" --background --factory-startup --python-exit-code 1 \
+            --python templates/extension-addon-template/tests/check_register.py -- --skip-unregister
+          code=$?
+          set -e
+          [ "$code" -eq 4 ] || { echo "::error::skipped unregister exited $code, expected 4"; exit 1; }
+
       - name: Build pipeline template fixture GLB
         if: matrix.shard == 0
         run: |

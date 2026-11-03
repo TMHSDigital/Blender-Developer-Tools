@@ -1,0 +1,102 @@
+# Two-LTS CI for this add-on: on Blender 4.5 LTS and 5.2 LTS, build the
+# extension package with Blender's own builder and run the register/unregister
+# round-trip in tests/check_register.py. It resolves the newest point release
+# of each series at run time, verifies the download against the sha256
+# blender.org publishes, and caches the binary per version.
+#
+# Copied from Blender Developer Tools (templates/extension-addon-template);
+# that repo smoke-tests the same build and register check on every change.
+# Keep blender_version_min in blender_manifest.toml at or below the oldest
+# series in the matrix.
+
+name: Blender
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  blender:
+    name: Blender ${{ matrix.series }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        series: ["4.5", "5.2"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Blender runtime libraries
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
+            libxkbcommon0 libsm6 libice6
+
+      - name: Resolve the newest Blender ${{ matrix.series }}
+        id: resolve
+        env:
+          SERIES: ${{ matrix.series }}
+        run: |
+          set -euo pipefail
+          base="https://download.blender.org/release/Blender${SERIES}/"
+          file=$(curl -fsSL "$base" \
+            | grep -oE "blender-${SERIES}\.[0-9]+-linux-x64\.tar\.xz" \
+            | sort -V | uniq | tail -1)
+          [ -n "$file" ] || { echo "::error::no linux-x64 build for Blender ${SERIES}"; exit 1; }
+          version="${file#blender-}"
+          version="${version%-linux-x64.tar.xz}"
+          {
+            echo "base=$base"
+            echo "file=$file"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Restore Blender from cache
+        id: cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bl
+          key: blender-${{ steps.resolve.outputs.version }}-linux-x64
+
+      - name: Download Blender and verify its sha256
+        if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          BASE: ${{ steps.resolve.outputs.base }}
+          FILE: ${{ steps.resolve.outputs.file }}
+          VERSION: ${{ steps.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bl"
+          curl -fSL --retry 3 -o "$RUNNER_TEMP/bl.tar.xz" "${BASE}${FILE}"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/bl.sha256" "${BASE}blender-${VERSION}.sha256"
+          expected=$(grep -E "  ${FILE}$" "$RUNNER_TEMP/bl.sha256" | awk '{print $1}')
+          [ -n "$expected" ] || { echo "::error::no published sha256 for ${FILE}"; exit 1; }
+          echo "${expected}  $RUNNER_TEMP/bl.tar.xz" | sha256sum -c -
+          tar -xf "$RUNNER_TEMP/bl.tar.xz" -C "$RUNNER_TEMP/bl"
+
+      - name: Locate Blender
+        run: |
+          set -euo pipefail
+          bl=$(find "$RUNNER_TEMP/bl" -maxdepth 2 -type f -name blender | head -1)
+          [ -n "$bl" ] || { echo "::error::blender binary not found"; exit 1; }
+          "$bl" --version | head -1
+          echo "BLENDER=$bl" >> "$GITHUB_ENV"
+
+      - name: Build the extension package
+        # `build`, not `validate`: build also checks the files it packs.
+        run: |
+          set -euo pipefail
+          "$BLENDER" --command extension build --source-dir . --output-dir "$RUNNER_TEMP/dist"
+          ls -l "$RUNNER_TEMP/dist"
+
+      - name: Register / unregister round-trip
+        run: |
+          "$BLENDER" --background --factory-startup --python-exit-code 1 \
+            --python tests/check_register.py

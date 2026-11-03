@@ -115,6 +115,8 @@ blender --factory-startup --command extension server-generate --repo-dir ./dist 
 
 `server-generate` writes the `index.json` listing a static extension repository needs. Each entry carries the package `id` and an `archive_url` relative to the listing (`./my_addon-0.1.0.zip`). Host `dist/` anywhere that serves files and add it as a remote repository in Blender.
 
+The extension template ships this as a ready workflow: [`templates/extension-addon-template/.github/workflows/blender.yml`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/templates/extension-addon-template/.github/workflows/blender.yml) builds the package on 4.5 LTS and 5.2 LTS and runs a register/unregister round-trip ([`tests/check_register.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/templates/extension-addon-template/tests/check_register.py)).
+
 To smoke-test an installed build without touching a real profile, point `BLENDER_USER_RESOURCES` at a temporary directory, then run `extension install-file -r user_default -e dist/<zip>` and a `--background --python-expr` import of `bl_ext.user_default.<id>`.
 
 ## Common AI mistakes

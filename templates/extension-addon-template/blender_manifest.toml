@@ -17,3 +17,15 @@ copyright = ["2026 TMHSDigital"]
 website = "https://github.com/TMHSDigital/Blender-Developer-Tools"
 
 tags = ["Object"]
+
+# Keep CI-only files out of the package `blender --command extension build`
+# writes: the GitHub workflow, the register test and earlier build output.
+[build]
+paths_exclude_pattern = [
+  "__pycache__/",
+  "/.git/",
+  "/.github/",
+  "/tests/",
+  "/dist/",
+  "/*.zip",
+]

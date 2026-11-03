@@ -95,6 +95,7 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 - One Operator, one Panel, one PropertyGroup
 - A `PointerProperty` bound to `bpy.types.Scene`
 - Symmetric `register()` / `unregister()` with property cleanup before class unregister
+- Shipped CI (`.github/workflows/blender.yml`, 4.5 LTS + 5.2 LTS): `extension build` plus `tests/check_register.py`, a generic register/unregister round-trip; blender-smoke runs both against the template, since GitHub never runs a workflow under `templates/`
 
 `templates/headless-batch-script-template/` is a working starter for unattended Blender batch jobs:
 

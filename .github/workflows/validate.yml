@@ -448,3 +448,6 @@ jobs:
 
       - name: Gallery generator unit tests (#528)
         run: python3 tests/test_build_gallery.py -v
+
+      - name: Extension template CI workflow contract (#531)
+        run: python3 tests/test_template_ci.py -v

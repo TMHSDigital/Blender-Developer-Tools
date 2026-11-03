@@ -11,6 +11,11 @@ Targets Blender 4.5 LTS and 5.x.
 - `__init__.py` -- a working add-on with one PropertyGroup, one Operator,
   one Panel, a Scene-bound PointerProperty, and symmetric register and
   unregister.
+- `tests/check_register.py` -- a headless register/unregister round-trip
+  that finds your classes and ID properties itself, so it keeps working as
+  the add-on grows.
+- `.github/workflows/blender.yml` -- CI on Blender 4.5 LTS and 5.2 LTS:
+  builds the package and runs the round-trip (see Continuous integration).
 
 ## Use the template
 
@@ -60,7 +65,32 @@ blender --command extension build --source-dir .\my_addon --output-dir .\dist
 ```
 
 The resulting zip is the artifact to upload to the Extensions Platform
-or distribute directly.
+or distribute directly. The manifest's `[build] paths_exclude_pattern` keeps
+`tests/`, `.github/` and earlier builds out of it.
+
+## Continuous integration
+
+Put this directory at the root of your add-on's repository and
+`.github/workflows/blender.yml` runs on every push and pull request. For each
+of Blender 4.5 LTS and 5.2 LTS it resolves the newest point release, checks
+the download against blender.org's published sha256, caches it, then:
+
+1. `blender --command extension build`: build, not just validate, because
+   build also checks the files it packs;
+2. `tests/check_register.py`: register, check every class and ID property
+   landed, unregister, check every one is gone, then register and unregister
+   again. Exit 3 means register failed or is not repeatable; exit 4 names what
+   survived unregister.
+
+Run the round-trip locally the same way:
+
+```bash
+blender --background --factory-startup --python-exit-code 1 --python tests/check_register.py
+# Falsifier: skip unregister; must exit 4
+blender --background --factory-startup --python-exit-code 1 --python tests/check_register.py -- --skip-unregister
+```
+
+If you raise `blender_version_min`, drop the matrix series below it.
 
 ## Conventions to keep
 
