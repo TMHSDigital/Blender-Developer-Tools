@@ -93,6 +93,7 @@ jobs:
         # `build`, not `validate`: build also checks the files it packs.
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/dist"  # build does not create --output-dir
           "$BLENDER" --command extension build --source-dir . --output-dir "$RUNNER_TEMP/dist"
           ls -l "$RUNNER_TEMP/dist"
 

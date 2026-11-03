@@ -96,8 +96,15 @@ def check_wheel_trap(work, ship_wheel):
     """validate parses the manifest; only build opens the files it names."""
     src = copy_template(os.path.join(work, "wheel_src"))
     manifest = os.path.join(src, "blender_manifest.toml")
-    with open(manifest, "a", encoding="utf-8") as fh:
-        fh.write(f'\nwheels = ["{MISSING_WHEEL}"]\n')
+    # A top-level key must come before the manifest's first [table] (the
+    # template ends with [build]); appended after it, `wheels` would belong to
+    # that table and build would never look for the file.
+    with open(manifest, encoding="utf-8") as fh:
+        lines = fh.read().split("\n")
+    at = next((i for i, line in enumerate(lines) if line.startswith("[")), len(lines))
+    lines.insert(at, f'wheels = ["{MISSING_WHEEL}"]\n')
+    with open(manifest, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines))
     if ship_wheel:  # falsification: the named wheel exists, so build has nothing to reject
         wheel = os.path.normpath(os.path.join(src, MISSING_WHEEL))
         os.makedirs(os.path.dirname(wheel))

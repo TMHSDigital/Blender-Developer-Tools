@@ -267,6 +267,7 @@ jobs:
         if: matrix.shard == 0
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/extbuild"  # build does not create --output-dir
           "$BLENDER" --command extension build \
             --source-dir templates/extension-addon-template --output-dir "$RUNNER_TEMP/extbuild"
           zip=$(ls "$RUNNER_TEMP"/extbuild/*.zip | head -1)
