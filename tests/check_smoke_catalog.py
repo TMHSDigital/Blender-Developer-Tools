@@ -25,15 +25,17 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "smoke"))
+from protocol import FORBIDDEN_FALSIFIER_EXITS  # noqa: E402
+
 # Directories that intentionally have no smoke row. Keep empty unless justified.
 EXCLUDED: set[str] = set()
 
 ROW_KEYS = {"name", "script", "args", "min_version", "expect_file",
             "expect_sidecar", "sidecar_contains", "falsifiers", "timeout"}
 FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "min_version"}
-# 2 is argparse's usage-error exit: an unknown or deleted flag also exits 2,
-# so a falsifier expecting 2 passes even when its flag no longer exists.
-FORBIDDEN_EXITS = {0, 1, 2, 77}
+# Defined once in tests/smoke/protocol.py, which explains each code.
+FORBIDDEN_EXITS = set(FORBIDDEN_FALSIFIER_EXITS)
 
 
 def check_schema(row: dict) -> list[str]:

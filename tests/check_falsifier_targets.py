@@ -53,6 +53,9 @@ import sys
 import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tests", "smoke"))
+from protocol import FORBIDDEN_FALSIFIER_EXITS  # noqa: E402
+
 SHOWCASE = os.path.join(ROOT, "showcase")
 
 # Pieces that predate the falsifier-table convention. Tracked for backfill;
@@ -207,6 +210,12 @@ def check_static():
             if flag not in flags:
                 failures.append(
                     (name, f"{flag} documented but not an argparse flag")
+                )
+                continue
+            if code in FORBIDDEN_FALSIFIER_EXITS:
+                failures.append(
+                    (name, f"{flag} declares exit {code}, which names no check "
+                           f"(forbidden: {sorted(FORBIDDEN_FALSIFIER_EXITS)})")
                 )
                 continue
             if code not in exits:

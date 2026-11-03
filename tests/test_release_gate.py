@@ -129,6 +129,22 @@ class ReleaseGate(unittest.TestCase):
             self.assertIsNotNone(case, "release-gate.sh smoke-ignored case line not found")
             self.assertEqual(set(case.group(1).split("|")), want, event)
 
+    def test_gate_mirrors_content_smoke_paths(self):
+        # content_smoke_applies is release-gate.sh's copy of content-smoke.yml's
+        # positive `paths` filter; a path added to one must reach the other (#537).
+        import re
+        import yaml
+        wf = yaml.safe_load((REPO / ".github" / "workflows" / "content-smoke.yml")
+                            .read_text(encoding="utf-8"))
+        on = wf.get("on", wf.get(True))
+        body = GATE.read_text(encoding="utf-8").split("content_smoke_applies() {", 1)[1]
+        case = re.search(r"^\s*([^\n]*\|[^\n]*)\) return 0 ;;", body, re.M)
+        self.assertIsNotNone(case, "content_smoke_applies case line not found")
+        have = set(case.group(1).split("|"))
+        for event in ("push", "pull_request"):
+            want = {g.replace("/**", "/*") for g in on[event]["paths"]}
+            self.assertEqual(have, want, event)
+
     def test_truncated_file_list_waits_for_smoke(self):
         # 300 docs paths is the API's cap: a code change may sort after them.
         many = r"\n".join(f"docs/gallery/p{i:03d}.html" for i in range(300))

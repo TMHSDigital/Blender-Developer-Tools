@@ -191,9 +191,16 @@ class Falsifier(unittest.TestCase):
     def test_crash_is_fail(self):
         self.assertEqual(self.c(1, expect_exit=7), FAIL)
 
-    def test_cannot_expect_0_1_or_77(self):
-        for bad in (0, 1, SKIP_EXIT):
+    def test_cannot_expect_0_1_2_or_77(self):
+        # 2 is argparse usage: a deleted flag exits 2 too (#537)
+        for bad in (0, 1, 2, SKIP_EXIT):
             self.assertEqual(self.c(bad, expect_exit=bad), FAIL)
+
+    def test_catalog_linter_shares_the_forbidden_set(self):
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import check_smoke_catalog
+        from protocol import FORBIDDEN_FALSIFIER_EXITS
+        self.assertEqual(check_smoke_catalog.FORBIDDEN_EXITS, set(FORBIDDEN_FALSIFIER_EXITS))
 
     def test_legal_skip_stays_skip(self):
         out = "SMOKE_SKIP: needs 5.1\n"

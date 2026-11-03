@@ -59,9 +59,14 @@ def sidecar_ok(path: Optional[str], contains: Optional[str]) -> Tuple[bool, str]
     return True, ""
 
 
+# argparse exits 2 on a usage error, so an unknown or deleted flag also exits
+# 2: a falsifier expecting 2 passes even when its flag no longer exists.
+USAGE_EXIT = 2
+
 # Exits a falsifier may never "expect": 0 is a pass, 1 is the FATAL wrapper
-# (an uncaught exception, not a named check), 77 is a skip.
-FORBIDDEN_FALSIFIER_EXITS = (0, 1, SKIP_EXIT)
+# (an uncaught exception, not a named check), 2 is argparse usage, 77 is a
+# skip. The single source for every runner and linter (#537).
+FORBIDDEN_FALSIFIER_EXITS = (0, 1, USAGE_EXIT, SKIP_EXIT)
 
 
 def classify(
