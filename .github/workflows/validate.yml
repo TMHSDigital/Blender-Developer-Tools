@@ -451,3 +451,9 @@ jobs:
 
       - name: Extension template CI workflow contract (#531)
         run: python3 tests/test_template_ci.py -v
+
+      - name: bpy_lint detectors match the rules (#534)
+        run: python3 tests/test_bpy_lint.py -v
+
+      - name: Shipped snippets and templates pass bpy_lint
+        run: python3 tools/bpy_lint.py snippets templates

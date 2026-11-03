@@ -28,7 +28,7 @@ This skill is an index. Each row points at the skill, rule or runnable example t
 2. **Read the first traceback, fix it, run again.** Breaks hide behind each other: an add-on that dies importing `bgl` has not reached its `action.fcurves` call yet.
 3. **Map the error to the table below** by the attribute or key it names.
 4. **Re-run on 4.5 LTS** if you still support it. Several fixes need a version branch (rows marked *branch*). Branch on the `bpy.app.version` tuple, never on `version_string` (see the `version-branch-skeleton.py` snippet).
-5. **Grep for the silent ones.** Some breaks raise nothing: they quietly do the wrong thing (rows marked *silent*). Search the codebase for those patterns even if every run is green.
+5. **Grep for the silent ones.** Some breaks raise nothing: they quietly do the wrong thing (rows marked *silent*). Search the codebase for those patterns even if every run is green. [`tools/bpy_lint.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/tools/bpy_lint.py) (stdlib, `python tools/bpy_lint.py <add-on dir>`) flags every pattern the rules name, with the owning skill.
 
 ## The breaks the pack covers
 

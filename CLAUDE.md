@@ -24,6 +24,7 @@ snippets/<snippet-name>.py     - Standalone code patterns, 31 total
 examples/<name>/               - Runnable smoke-gated examples, 69 total (+ gallery.json)
 showcase/<name>/               - Budget-conformance props, 80 pieces, each with a gallery `category` (sibling of examples/; see showcase/README.md § Categories)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
+tools/bpy_lint.py              - Stdlib scanner, one detector per rule; ships in plugin-dist (tests/test_bpy_lint.py keeps rules and detectors in step)
 scripts/site/                  - Vendored landing-page build (Jinja2); tokens.css is the shared palette
 tests/check_site_links.py      - Internal link/anchor/alt gate over the built site (docs/)
 docs/gallery/                  - Committed generated gallery pages + hero renders

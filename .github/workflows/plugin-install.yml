@@ -20,6 +20,7 @@ on:
       - "skills/**"
       - "claude/**"
       - "exports/**"
+      - "tools/**"
       - "scripts/build_plugin_dist.py"
       - ".github/workflows/plugin-install.yml"
   pull_request:
@@ -31,6 +32,7 @@ on:
       - "skills/**"
       - "claude/**"
       - "exports/**"
+      - "tools/**"
       - "scripts/build_plugin_dist.py"
       - ".github/workflows/plugin-install.yml"
 

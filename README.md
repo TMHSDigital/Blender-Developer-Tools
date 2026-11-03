@@ -229,6 +229,17 @@ With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatical
 
 Cursor: the plugin covers the rules (see [Quick start](#quick-start)); copying `rules/*.mdc` into a project's `.cursor/rules/` is only the per-project alternative without the plugin. Claude Code: the plugin ships the rules as the `blender-rules` skill.
 
+## Checking code against the rules
+
+`tools/bpy_lint.py` (stdlib only, shipped in the plugin) flags the pattern each rule names, with the owning skill:
+
+```bash
+python tools/bpy_lint.py my_addon/            # path:line: rule: message [skill: ...]
+python tools/bpy_lint.py my_addon/ --json     # for agents and CI
+```
+
+Exit 0 means no findings, 1 findings, 2 usage. Silence a reviewed hit with `# bpy-lint: ignore[rule-name] <why>` on the line or the line above. The detectors are deliberately narrow: a clean run is not proof the code is right, so still run it on 4.5 LTS and 5.2 LTS.
+
 ## Using the templates
 
 `templates/extension-addon-template/` is a working Blender extension. Copy the directory, edit `blender_manifest.toml` (id, version, name, maintainer, and `copyright`, which ships as the template author's), and install via Edit > Preferences > Get Extensions > Install From Disk. The template registers an Operator, a Panel, and a PropertyGroup, and demonstrates the `register_classes_factory` pattern with symmetric `register()` and `unregister()`.

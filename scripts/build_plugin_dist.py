@@ -35,7 +35,8 @@ ROOT = Path(__file__).resolve().parent.parent
 # the Blender Lab MCP server (launched with uvx from a pinned upstream commit;
 # GPL, so referenced, never vendored) and its skill. It is opt-in, so the core
 # plugin starts no server (#483).
-DIRS = ("skills", "claude", "exports", "rules", "snippets", "templates", "live-session")
+# tools/ carries bpy_lint.py, the stdlib scanner for the rules (#534).
+DIRS = ("skills", "claude", "exports", "rules", "snippets", "templates", "tools", "live-session")
 # The Cursor manifest ships too, so Cursor users can install the same slim
 # tree as a local plugin (~/.cursor/plugins/local/) instead of the full repo.
 # assets/favicon.svg is the Cursor manifest's "logo" and the Codex manifest's
