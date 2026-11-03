@@ -138,6 +138,7 @@ showcase/
 1. Add a `.py` file under `snippets/`, e.g. `snippets/depsgraph-evaluated-mesh.py`.
 2. Keep it 5 to 75 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
 3. Add an entry to `tests/smoke/snippet_checks.py`: a `check` that calls the snippet's functions and asserts one observable fact, and a `falsify` (old, new) source edit that must make the check fail. Content Smoke (`.github/workflows/content-smoke.yml`) runs the snippet in place on 4.5 and 5.2; Validate fails a snippet without an entry. Run it locally with `blender --background --factory-startup --python tests/smoke/run_content.py -- --only <name>`.
+4. Map it to the skills it serves in `snippets/skills.json`, then run `python scripts/build_examples_index.py`: each skill's generated section lists its snippets, and Validate fails a snippet that maps to no skill.
 
 ## Adding a Template
 

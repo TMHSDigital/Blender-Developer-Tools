@@ -195,6 +195,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`image-pixels-testcard`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard): The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats). Falsify: `--wrong-origin` (exit 13).
 - [`png-exr-alpha`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/png-exr-alpha): Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha. Falsify: `--opaque-alpha` (exit 5).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/save_baked_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/save_baked_image.py)
+
 <!-- examples:end -->
 
 ## References

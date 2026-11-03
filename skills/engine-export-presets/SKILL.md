@@ -149,6 +149,15 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`gltf-skin-roundtrip`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-skin-roundtrip): A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Falsify: `--no-skins` (exit 5).
 - [`unapplied-scale-gltf`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf): Synthesizes unapplied non-uniform object scale on a unit cube, then asserts the glTF exporter contract. Falsify: `--identity` (exit 3).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/export_preset_godot.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_godot.py)
+- [`snippets/export_preset_unity.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unity.py)
+- [`snippets/export_preset_unreal.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/export_preset_unreal.py)
+- [`snippets/gltf_draco_export.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gltf_draco_export.py)
+
 <!-- examples:end -->
 
 ## References

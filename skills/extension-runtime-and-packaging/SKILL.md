@@ -145,6 +145,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`extension-package-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/extension-package-lifecycle): Takes templates/extension-addon-template through what an extension meets after its first run. Falsify: `--ship-wheel` (exit 4).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/extension-user-data.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/extension-user-data.py)
+
 <!-- examples:end -->
 
 ## References

@@ -377,6 +377,17 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`vertex-weight-limit`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit): A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. Falsify: `--skip-limit` (exit 4).
 - [`wave-displace`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/wave-displace): Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access. Falsify: `--flat` (exit 4).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/bmesh-load-edit-free.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/bmesh-load-edit-free.py)
+- [`snippets/canonical-object-creation.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/canonical-object-creation.py)
+- [`snippets/canonical-object-deletion.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/canonical-object-deletion.py)
+- [`snippets/depsgraph-evaluated-mesh.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/depsgraph-evaluated-mesh.py)
+- [`snippets/foreach-get-vertices.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/foreach-get-vertices.py)
+- [`snippets/foreach-set-vertices.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/foreach-set-vertices.py)
+
 <!-- examples:end -->
 
 ## References

@@ -330,6 +330,13 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`driver-wave`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/driver-wave): A driver_namespace function driving sixteen organ-pipe heights through SCRIPTED drivers — the sine skyline of the pipe tops is entirely driver-evaluated. Falsify: `--flat-expr` (exit 3).
 - [`exit-pre-sidecar`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/exit-pre-sidecar): `bpy.app.handlers.exit_pre` writes `$BDT_SMOKE_SIDECAR` as Blender dies. Blender 5.1+. Falsify: `--atexit-instead` (harness fails the sidecar).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/app-handler-registration.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/app-handler-registration.py)
+- [`snippets/driver-with-custom-function.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/driver-with-custom-function.py)
+
 <!-- examples:end -->
 
 ## References

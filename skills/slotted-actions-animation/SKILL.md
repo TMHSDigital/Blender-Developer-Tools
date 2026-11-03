@@ -241,6 +241,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`turntable`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable): A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot). Falsify: `--no-keys` (exit 3).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/action-ensure-channelbag-for-slot.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/action-ensure-channelbag-for-slot.py)
+
 <!-- examples:end -->
 
 ## References

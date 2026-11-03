@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Generate examples/index.json and each skill's "Runnable examples" section.
 
+The same generated section also lists the snippets that serve the skill
+(snippets/skills.json, #524), so a smoke-tested snippet is never shipped
+without a skill that points an agent at it.
+
 One file describes every example (#377): its script, the skills it proves,
 whether it ships a gallery render, the oldest Blender it runs on, the command
 to run it, every smoke falsifier with its expected exit, and the README's
 exit-code table. Inputs, all hand-edited elsewhere:
 
     examples/skills.json         example -> skills it proves (edit this one)
+    snippets/skills.json         snippet -> skills it serves (and this one)
     tests/smoke/catalog.json     scripts, min_version, falsifiers
     examples/gallery.json        which examples render
     examples/<name>/README.md    one-line summary and exit-code table
@@ -149,6 +154,27 @@ def build_index() -> tuple[list[dict], list[str]]:
     return index, errors
 
 
+def load_snippets(skills: list[str]) -> tuple[dict[str, list[str]], list[str]]:
+    """skill -> snippet files, and the mapping's errors."""
+    errors: list[str] = []
+    mapping = json.loads((ROOT / "snippets" / "skills.json").read_text(encoding="utf-8"))
+    mapping.pop("_comment", None)
+    files = sorted(p.name for p in (ROOT / "snippets").glob("*.py"))
+    for name in sorted(set(files) - set(mapping)):
+        errors.append(f"snippets/{name} is missing from snippets/skills.json")
+    for name in sorted(set(mapping) - set(files)):
+        errors.append(f"snippets/skills.json lists {name}, which is not a snippet")
+    by_skill: dict[str, list[str]] = {}
+    for name, listed in sorted(mapping.items()):
+        if not listed:
+            errors.append(f"snippets/skills.json: {name} maps to no skill; point one at it")
+        for s in listed:
+            if s not in skills:
+                errors.append(f"snippets/skills.json: {name} names unknown skill {s!r}")
+            by_skill.setdefault(s, []).append(name)
+    return by_skill, errors
+
+
 def _flag(f: dict) -> str:
     args = " ".join(f["args"])
     if f.get("expect_sidecar_fail"):
@@ -156,7 +182,7 @@ def _flag(f: dict) -> str:
     return f"`{args}` (exit {f['expect_exit']})"
 
 
-def skill_section(skill: str, index: list[dict]) -> str:
+def skill_section(skill: str, index: list[dict], snippets: dict[str, list[str]] | None = None) -> str:
     lines = [BEGIN, "## Runnable examples", ""]
     mine = [e for e in index if skill in e["skills"]]
     if not mine:
@@ -172,6 +198,12 @@ def skill_section(skill: str, index: list[dict]) -> str:
             since = f" Blender {e['min_version']}+." if e["min_version"] != "4.5" else ""
             lines.append(f"- [`{e['name']}`]({REPO_URL}/tree/main/examples/{e['name']}): {e['summary']}"
                          f"{since} Falsify: {first}.")
+    mine_snippets = (snippets or {}).get(skill, [])
+    if mine_snippets:
+        lines += ["", "### Snippets", "",
+                  "Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 "
+                  "with a check and a falsifier.", ""]
+        lines += [f"- [`snippets/{n}`]({REPO_URL}/blob/main/snippets/{n})" for n in mine_snippets]
     lines += ["", END]
     return "\n".join(lines)
 
@@ -193,13 +225,17 @@ def main(argv=None) -> int:
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args(argv)
     index, errors = build_index()
+    snippets, snippet_errors = load_snippets(
+        sorted(p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")))
+    errors += snippet_errors
     if errors:  # a broken mapping cannot render the skill sections
         for e in errors:
             print(f"::error::{e}", file=sys.stderr)
         return 1
     want ={ROOT / "examples" / "index.json": json.dumps(index, indent=2, ensure_ascii=False) + "\n"}
     for p in sorted((ROOT / "skills").glob("*/SKILL.md")):
-        want[p] = render_skill(p.read_text(encoding="utf-8"), skill_section(p.parent.name, index))
+        want[p] = render_skill(p.read_text(encoding="utf-8"),
+                               skill_section(p.parent.name, index, snippets))
     stale = [p for p, text in want.items()
              if not p.is_file() or p.read_text(encoding="utf-8") != text]
     if a.check:

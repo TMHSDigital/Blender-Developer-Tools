@@ -275,6 +275,13 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`addon-register-lifecycle`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/addon-register-lifecycle): Check-only witness for the first things every add-on author writes. Falsify: `--drop-manifest` (exit 3).
 - [`cross-version-property-delete`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete): Custom ID properties are removed with del, not property_unset. Falsify: `--skip-delete` (exit 7).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/cross-version-property-delete.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/cross-version-property-delete.py)
+- [`snippets/pointerproperty-binding.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/pointerproperty-binding.py)
+
 <!-- examples:end -->
 
 ## References

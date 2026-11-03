@@ -168,6 +168,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`gpu-offscreen-draw`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gpu-offscreen-draw): Check-only witness for drawing with the `gpu` module, the replacement for the `bgl` module that 5.x removed. Blender 5.2+. Falsify: `--skip-blend` (exit 5).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/gpu-draw-handler.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/gpu-draw-handler.py)
+
 <!-- examples:end -->
 
 ## References

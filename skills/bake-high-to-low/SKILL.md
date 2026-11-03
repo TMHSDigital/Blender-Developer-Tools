@@ -172,4 +172,13 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`bake-normal-high-to-low`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bake-normal-high-to-low): A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source Falsify: `--flat-source` (exit 5).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/bake_normal_high_to_low.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/bake_normal_high_to_low.py)
+- [`snippets/decimate_to_budget.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/decimate_to_budget.py)
+- [`snippets/save_baked_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/save_baked_image.py)
+- [`snippets/setup_bake_target_image.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/setup_bake_target_image.py)
+
 <!-- examples:end -->

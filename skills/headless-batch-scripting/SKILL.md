@@ -275,6 +275,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`temp-override-join`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join): Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form. Falsify: `--no-override` (exit 3).
 - [`usd-export-evaluation-mode`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/usd-export-evaluation-mode): The USD exporter evaluation_mode chooses viewport versus render modifier quality. Falsify: `--subdivision BEST_MATCH` (exit 4).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/temp-override-context.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/temp-override-context.py)
+
 <!-- examples:end -->
 
 ## References

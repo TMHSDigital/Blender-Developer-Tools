@@ -266,6 +266,13 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`sky-texture-sun-elevation`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation): World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. Falsify: `--unlink-sky` (exit 7).
 - [`swatch-grid`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid): Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim. Falsify: `--output swatch.png --engine cycles --samples 8 --width 640 --same-base` (exit 6).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/principled-bsdf-material.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/principled-bsdf-material.py)
+- [`snippets/shader-node-group.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/shader-node-group.py)
+
 <!-- examples:end -->
 
 ## References

@@ -165,6 +165,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`timers-modal-threading`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/timers-modal-threading): Proves the event-loop contracts behind long-running add-on work. Falsify: `--windowed-background-child` (exit 3).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/thread-queue-timer.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/thread-queue-timer.py)
+
 <!-- examples:end -->
 
 ## References

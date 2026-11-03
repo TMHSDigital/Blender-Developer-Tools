@@ -99,4 +99,11 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`grease-pencil-rosette`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/grease-pencil-rosette): Grease Pencil v3's attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves. Falsify: `--open-strokes` (exit 5).
 - [`mesh-normals-after-41`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-normals-after-41): Check-only witness for the normals API that replaced auto smooth in Blender 4.1, on 4.5 LTS and 5.x alike. Falsify: `--legacy-api` (exit 3).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/set-sharp-from-angle.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/set-sharp-from-angle.py)
+- [`snippets/version-branch-skeleton.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/version-branch-skeleton.py)
+
 <!-- examples:end -->

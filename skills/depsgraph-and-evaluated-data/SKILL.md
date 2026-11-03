@@ -222,6 +222,13 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 - [`solidify-even-thickness`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/solidify-even-thickness): Solidify's use_even_offset on a folded strip. Falsify: `--no-even` (exit 4).
 - [`usd-export-evaluation-mode`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/usd-export-evaluation-mode): The USD exporter evaluation_mode chooses viewport versus render modifier quality. Falsify: `--subdivision BEST_MATCH` (exit 4).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/depsgraph-evaluated-mesh.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/depsgraph-evaluated-mesh.py)
+- [`snippets/usd-export-evaluation-mode.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/usd-export-evaluation-mode.py)
+
 <!-- examples:end -->
 
 ## References

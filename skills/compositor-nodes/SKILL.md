@@ -180,6 +180,12 @@ Each example runs headless, asserts the contract, and exits non-zero when it bre
 
 - [`compositor-glare`](https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/compositor-glare): Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers. Falsify: `--threshold-high` (exit 4).
 
+### Snippets
+
+Short standalone patterns to copy. Each one runs in CI on 5.2 and 4.5 with a check and a falsifier.
+
+- [`snippets/shader-node-group.py`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/snippets/shader-node-group.py)
+
 <!-- examples:end -->
 
 ## References
