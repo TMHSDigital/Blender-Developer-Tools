@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.159.0] - 2026-11-03
+
+### For agents and users
+
+**Features**
+
+- feat: tools/bpy_lint.py checks code against every rule, and ships in the plugin ([`f1d6296`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f1d62963752bc6c9cfc79cd54844941f30059a6a))
+- feat: the extension template ships two-LTS CI and a register round-trip ([`a318b16`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a318b160abf7b9ffd8bb76c64a213567c6e5c7f4))
+- feat: uv-and-mesh-attributes skill for the UV, tangent and attribute examples ([`cb3488e`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/cb3488e4442835816807e8b4e94a1dba3e97ff10))
+- feat: four rules for the headline Blender 5 breaks ([`6be6529`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6be65290fc985894b5adcea55f2d8148b7643975))
+- feat: every skill lists the snippets that serve it, from snippets/skills.json ([`3c21c8c`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/3c21c8ccfbb9e5ab85b6ea56780712c300eed784))
+
+**Fixes**
+
+- fix: extension-package-lifecycle and the template CI build after the [build] table ([`6689f1a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6689f1af5def7fa60809f7a182ad1e4de063fba4))
+- fix: published falsifier commands carry their catalog row's base args ([`3ca08a3`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/3ca08a3ea75c2ef75ef65e4f4b2a5dd1d45146a9))
+
+**Other**
+
+- test: run a SKILL.md block in 12 of 25 skills, and ratchet the rest ([`33f26af`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/33f26af4adf8c631855f213fa288d44a2af5ba20))
+- docs: template exit-code prose, copyright step and bl_info rationale match the code ([`a106916`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a106916ca9b671296249e41cba5fd24b442fa911))
+
+<details>
+<summary>Maintenance (17 commits): CI, tests, site, examples, showcase, docs</summary>
+
+- refactor: gallery CSS/JS move to files, and the generator gets unit tests ([`02323ea`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/02323ea3d9cb1926f5508127438fb23fb9b04c31))
+- test: a falsifier whose exit code several checks share must name its check ([`a4c0eaa`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a4c0eaa8a332642c1204ce29ca5cd87d4be1f29f))
+- test: self-tests for the Validate gates, so a regressed gate turns red ([`a7017a1`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a7017a1839f40900d45de6d4b6fc4f2f28aae1de))
+- ci: shard the Blender smoke catalog three ways per series ([`24608fc`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/24608fc8a93295bd3177af5280d3c638e6acfc50))
+- refactor: asset-sheet object selection lives on each gallery entry, not in SELECT ([`ec43b85`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/ec43b85a38d10dc08784f5ca2cf8e55b1366ec47))
+- refactor: define the gallery reference sets once in scripts/gallery_refs.py ([`6697af7`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/6697af723caa7a1aa6e5519d55ab8212b3b79cdf))
+- docs: SECURITY.md scope covers the live-session plugin, examples and showcase ([`1c9caa0`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/1c9caa041cc219bc564e0390bf0b85f42dbb03c9))
+- docs: add Adding an Example to CONTRIBUTING and sync the PR checklist ([`159586a`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/159586a322c3ad43a6836bfbd7e9bdc624164e85))
+- docs: README names all 12 rules and 25 skills, and corrects the --api note ([`26482a8`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/26482a8cffaad34155f5dbe9eec85148fc20ef43))
+- docs: update plugin-dist clones with fetch and reset, not git pull ([`0b70248`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/0b7024877eede4bd91e75085fb65922089ceee33))
+- test: a content-smoke falsifier counts only when the check is what fails ([`2c88240`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/2c88240a839c7ae5bf469cb0bed9226260eba20e))
+- ci: report failed weekly content-smoke and plugin-install runs as issues ([`e0e109f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/e0e109fac79dba826a41e9f716ad33f34a02a9dd))
+- ci: fail the release when the bump push is rejected and main has not moved ([`f5c1a3f`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/f5c1a3f66820eb844bafe1550cd50ca5176dfbf0))
+- ci: count the Claude marketplace as shipped, and fail when the change probe errors ([`1998aeb`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/1998aeb043cc553ee387d7b569174cf0423bf144))
+- ci: keep smoke canaries out of the status file so zero PASS can turn red ([`d87acd3`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/d87acd31e0caa6b9e906e7ca9c74b9394b9f955b))
+- test: one forbidden-falsifier-exit set, and pin release-gate's content-smoke mirror ([`1cefaa0`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/1cefaa0c603846035757820847c49954ee785363))
+- ci: drop the repo-description count probe and the echo-only count step ([`a1b70f7`](https://github.com/TMHSDigital/Blender-Developer-Tools/commit/a1b70f73ef80b4f1abda08e3c59389628c2fa158))
+
+</details>
+
+[Release v0.159.0](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.159.0)
+
 ## [0.158.0] - 2026-10-27
 
 ### For agents and users
