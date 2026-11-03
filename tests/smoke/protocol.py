@@ -187,3 +187,31 @@ def summarize_records(records):
     if passed == 0:
         return passed, skipped, failed, 2
     return passed, skipped, failed, 0
+
+
+# Content smoke (run_content.py) falsifiers. A falsify edit proves a snippet's
+# check works only when the check itself fails. An exception while running the
+# setup or the edited snippet means the edit broke the code, not the contract,
+# and so do these errors raised during the check: they say the edited code no
+# longer resolves, which any edit can cause (#519). The example catalog draws
+# the same line by refusing exit 1, the uncaught-exception wrapper.
+FALSIFIED = "FALSIFIED"
+BROKEN_CODE_ERRORS = frozenset({
+    "NameError", "UnboundLocalError", "SyntaxError", "IndentationError",
+    "ImportError", "ModuleNotFoundError",
+})
+
+
+def classify_content_falsifier(phase, error_type):
+    """(outcome, reason) for one snippet falsify run.
+
+    phase: None when setup, snippet and check all ran clean, else the phase that
+    raised ("setup", "snippet" or "check"). error_type: the exception's class name.
+    """
+    if phase is None:
+        return FAIL, "check still passed"
+    if phase != "check":
+        return FAIL, f"falsify edit crashed the {phase}, not the check"
+    if error_type in BROKEN_CODE_ERRORS:
+        return FAIL, f"check raised {error_type}: the edit broke the code, not the contract"
+    return FALSIFIED, ""

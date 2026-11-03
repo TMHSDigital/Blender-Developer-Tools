@@ -8,7 +8,9 @@ gets tested.
 
 - Snippets: each entry in tests/smoke/snippet_checks.py runs the snippet, then
   its check, in a fresh factory scene (PASS), then reruns it with the entry's
-  ``falsify`` edit applied, which must make the check fail (FALSIFIED).
+  ``falsify`` edit applied, which must make the check fail (FALSIFIED). The
+  check has to be what fails: the edit crashing the snippet, or the check
+  raising NameError-style errors, is FAIL (#519).
 - Skill blocks: a ```python fence directly under a ``<!-- smoke: run -->``
   line is exec'd as-is in a fresh factory scene; it carries its own asserts.
 
@@ -32,6 +34,7 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 sys.dont_write_bytecode = True
 from snippet_checks import CASES  # noqa: E402
+from protocol import classify_content_falsifier  # noqa: E402
 
 TAG = re.compile(r"^<!-- smoke: run -->[ \t]*\r?\n```python[ \t]*\r?\n(.*?)\r?\n```", re.M | re.S)
 SCRATCH = tempfile.mkdtemp(prefix="bdt-content-")
@@ -58,20 +61,29 @@ def fresh_scene():
 
 
 def run_snippet(name, source, case):
-    """Exec the snippet then its check; return None on pass, else the error line."""
+    """Exec the snippet then its check.
+
+    Returns None on pass, else (phase, error type name, error line), where phase
+    is the step that raised: "setup", "snippet" or "check". A falsifier only
+    counts when the check is what failed (protocol.classify_content_falsifier).
+    """
     fresh_scene()
     path = os.path.join(REPO, "snippets", name)
     ns = {"__name__": "snippet_" + name[:-3].replace("-", "_"), "__file__": path,
           "__package__": "bl_ext.user_default.bdt_content_smoke",
           "bpy": bpy, "np": np, "tmp": tmp, "glb_json": glb_json}
-    try:
-        if case.get("setup"):
-            exec(compile(case["setup"], f"{name}:setup", "exec"), ns)
-        exec(compile(source, path, "exec"), ns)
-        exec(compile(case["check"], f"{name}:check", "exec"), ns)
-    except Exception as e:  # noqa: BLE001 -- any failure is the result
-        tb = traceback.extract_tb(e.__traceback__)[-1]
-        return f"{type(e).__name__}: {e} ({os.path.basename(tb.filename)}:{tb.lineno})"
+    steps = []
+    if case.get("setup"):
+        steps.append(("setup", case["setup"], f"{name}:setup"))
+    steps.append(("snippet", source, path))
+    steps.append(("check", case["check"], f"{name}:check"))
+    for phase, code, label in steps:
+        try:
+            exec(compile(code, label, "exec"), ns)
+        except (Exception, SystemExit) as e:  # noqa: BLE001 -- any failure is the result
+            tb = traceback.extract_tb(e.__traceback__)[-1]
+            line = f"{type(e).__name__}: {e} ({os.path.basename(tb.filename)}:{tb.lineno})"
+            return phase, type(e).__name__, line
     return None
 
 
@@ -79,7 +91,7 @@ def run_block(label, code):
     fresh_scene()
     try:
         exec(compile(code, label, "exec"), {"__name__": "__main__"})
-    except Exception as e:  # noqa: BLE001
+    except (Exception, SystemExit) as e:  # noqa: BLE001
         tb = traceback.extract_tb(e.__traceback__)[-1]
         return f"{type(e).__name__}: {e} (line {tb.lineno})"
     return None
@@ -109,7 +121,8 @@ def main():
         case = CASES[name]
         source = open(os.path.join(REPO, "snippets", name), encoding="utf-8").read()
         err = run_snippet(name, source, case)
-        results.append(("snippet", name, "FAIL" if err else "PASS", err or ""))
+        results.append(("snippet", name, "FAIL" if err else "PASS",
+                        f"[{err[0]}] {err[2]}" if err else ""))
         if args.no_falsify or err:
             continue
         old, new = case["falsify"]
@@ -117,8 +130,14 @@ def main():
             results.append(("falsifier", name, "FAIL", f"{old!r} not in source"))
             continue
         err = run_snippet(name, source.replace(old, new), case)
-        results.append(("falsifier", name, "FALSIFIED" if err else "FAIL",
-                        err or f"check still passed with {old!r} -> {new!r}"))
+        if err is None:
+            outcome, reason = classify_content_falsifier(None, None)
+            detail = f"{reason} with {old!r} -> {new!r}"
+        else:
+            phase, error_type, line = err
+            outcome, reason = classify_content_falsifier(phase, error_type)
+            detail = f"{reason}: {line}" if reason else line
+        results.append(("falsifier", name, outcome, detail))
 
     for label, code in skill_blocks():
         if args.only and args.only not in label:
@@ -129,6 +148,11 @@ def main():
     for kind, name, outcome, detail in results:
         print(f"{outcome:9}  {kind:11}  {name}" + (f"  -- {detail}" if detail else ""))
     failed = [r for r in results if r[2] == "FAIL"]
+    if not results:
+        # an empty run proves nothing: a broken CASES import or a filter that
+        # matched nothing must not report green
+        print("run_content: no snippet or skill block ran")
+        return 1
     count = lambda k: sum(1 for r in results if r[0] == k)  # noqa: E731
     print(f"run_content: {count('snippet')} snippets, {count('falsifier')} falsifiers, "
           f"{count('skill-block')} skill blocks; {len(failed)} failed")

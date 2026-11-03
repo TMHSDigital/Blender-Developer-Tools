@@ -202,6 +202,17 @@ class Falsifier(unittest.TestCase):
         from protocol import FORBIDDEN_FALSIFIER_EXITS
         self.assertEqual(check_smoke_catalog.FORBIDDEN_EXITS, set(FORBIDDEN_FALSIFIER_EXITS))
 
+    def test_content_falsifier_counts_only_a_failing_check(self):
+        # #519: the edit must break the contract the check asserts, not the code
+        from protocol import FALSIFIED, classify_content_falsifier as cf
+        self.assertEqual(cf("check", "AssertionError")[0], FALSIFIED)
+        self.assertEqual(cf("check", "RuntimeError")[0], FALSIFIED)  # e.g. a bake that did not finish
+        self.assertEqual(cf(None, None)[0], FAIL)  # check still passed
+        self.assertEqual(cf("snippet", "AttributeError")[0], FAIL)  # edit crashed the snippet
+        self.assertEqual(cf("setup", "AssertionError")[0], FAIL)
+        for broken in ("NameError", "UnboundLocalError", "SyntaxError", "ImportError"):
+            self.assertEqual(cf("check", broken)[0], FAIL, broken)
+
     def test_legal_skip_stays_skip(self):
         out = "SMOKE_SKIP: needs 5.1\n"
         st, _ = classify(proc_exit=SKIP_EXIT, output=out, min_version="5.1",
