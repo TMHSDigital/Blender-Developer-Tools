@@ -146,7 +146,8 @@ def build_index() -> tuple[list[dict], list[str]]:
 
 
 def _flag(f: dict) -> str:
-    args = " ".join(f["args"])
+    # $OUT is a smoke-harness temporary directory; publish runnable paths.
+    args = " ".join(a.replace("$OUT/", "") for a in f["args"])
     if f.get("expect_sidecar_fail"):
         return f"`{args}` (harness fails the sidecar)"
     return f"`{args}` (exit {f['expect_exit']})"
