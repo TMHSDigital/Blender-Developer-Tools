@@ -33,7 +33,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import re
 import subprocess
 import sys
 import tempfile
@@ -41,6 +40,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from gallery_refs import ASSET_SET
 from measure_hero_drift import REPO, entries, render_args
 
 PANEL = (640, 360)
@@ -159,16 +159,9 @@ SELECT = {
     "wooden-bucket": (r"^BucketLow$", None),
 }
 
-_REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
-
-
 def reference_set() -> list[str]:
-    """The pinned reference set, parsed from its canonical home in CLAUDE.md."""
-    text = (REPO / "CLAUDE.md").read_text(encoding="utf-8")
-    m = _REF_LINE.search(text)
-    if not m:
-        raise SystemExit("could not find the asset-sheet reference set in CLAUDE.md")
-    return re.findall(r"`([a-z0-9-]+)`", m.group(1))
+    """The pinned reference set (scripts/gallery_refs.py; CLAUDE.md mirrors it, #523)."""
+    return list(ASSET_SET)
 
 
 def render_panel(blender: str, entry: dict, png: Path) -> bool:

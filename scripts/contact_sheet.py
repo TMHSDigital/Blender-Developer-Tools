@@ -27,9 +27,9 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw
 
+from gallery_refs import CONTACT_SET as CALIBRATION  # the one pinned set (#523)
 from measure_hero_drift import REPO, entries
 
-CALIBRATION = ("armature-bend", "damped-track-aim", "bmesh-gear")
 TILE = (640, 360)
 GAP, CAPTION = 10, 32
 BG = (22, 23, 26)

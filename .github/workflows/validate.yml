@@ -94,6 +94,9 @@ jobs:
       - name: Check asset_sheet.py can render every showcase piece and reference
         run: python3 tests/check_asset_sheet_select.py
 
+      - name: Check CLAUDE.md names the reference sets in scripts/gallery_refs.py
+        run: python3 tests/check_reference_sets.py
+
       - name: Check falsifiers declare the budget they target
         run: python3 tests/check_falsifier_targets.py
 

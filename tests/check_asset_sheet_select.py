@@ -7,8 +7,8 @@ leaves its committed asset sheet impossible to regenerate. butter-churn shipped
 that way. This reads SELECT with ast (no Pillow needed) and requires a row for:
 
 - every piece in showcase/gallery.json, and
-- every name in the CLAUDE.md asset-quality reference set (read the same way
-  asset_sheet.reference_set() reads it).
+- every name in the asset-quality reference set (scripts/gallery_refs.py, the
+  same tuple asset_sheet.reference_set() returns).
 
     python tests/check_asset_sheet_select.py      (exit 0 ok, 1 on a gap)
 """
@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import ast
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -33,10 +32,9 @@ def select_keys(root: Path) -> set[str]:
 
 
 def reference_set(root: Path) -> list[str]:
-    src = (root / "scripts" / "asset_sheet.py").read_text(encoding="utf-8")
-    pattern = re.search(r'_REF_LINE = re\.compile\(r"(.+?)", re\.S\)', src).group(1)
-    m = re.search(pattern, (root / "CLAUDE.md").read_text(encoding="utf-8"), re.S)
-    return re.findall(r"`([a-z0-9-]+)`", m.group(1)) if m else []
+    sys.path.insert(0, str(root / "scripts"))
+    from gallery_refs import ASSET_SET
+    return list(ASSET_SET)
 
 
 def check(root: Path = ROOT) -> list[str]:
@@ -46,10 +44,10 @@ def check(root: Path = ROOT) -> list[str]:
     refs = reference_set(root)
     errors = [f"showcase piece {n!r} has no SELECT row in scripts/asset_sheet.py"
               for n in pieces if n not in keys]
-    errors += [f"asset-sheet reference {n!r} (CLAUDE.md) has no SELECT row"
+    errors += [f"asset-sheet reference {n!r} (scripts/gallery_refs.py) has no SELECT row"
                for n in refs if n not in keys]
     if not refs:
-        errors.append("could not read the asset-sheet reference set from CLAUDE.md")
+        errors.append("scripts/gallery_refs.py ASSET_SET is empty")
     return errors
 
 

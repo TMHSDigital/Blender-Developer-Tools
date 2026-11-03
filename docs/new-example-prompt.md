@@ -153,7 +153,7 @@ per-criterion verdicts including mean luminance of the candidate versus each
 calibration image. The image ships only if it is not sortable as the odd one out in
 that lineup—not merely "looks fine alone." A claim without the committed composite
 is not acceptable evidence. When a new example outclasses a member, update the
-pinned set in `CLAUDE.md`, its canonical home. One successful render command is not
+pinned set in `scripts/gallery_refs.py` and the `CLAUDE.md` bullet that names it. One successful render command is not
 proof that the image is good, and neither is the second.
 
 Asset-sheet gate (required when the subject is a game asset: a prop, kit piece or
