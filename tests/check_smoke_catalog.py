@@ -10,7 +10,9 @@ Schema: only the known row keys are accepted (a typo such as "falsifer" would
 otherwise be ignored and the falsifier silently never run), and every row
 carries at least one falsifier: {"args": [...], "expect_exit": N} with N not
 0, 1, 2 (argparse usage) or 77, or {"args": [...], "expect_sidecar_fail": true} on a row that
-declares expect_sidecar.
+declares expect_sidecar. An expect_exit falsifier may add "expect_output": a
+substring of the targeted check's message, required when other checks in the
+script exit the same code (#532).
 
     python tests/check_smoke_catalog.py [--root PATH]
 
@@ -20,9 +22,11 @@ No Blender needed; runs in Validate.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "smoke"))
@@ -33,7 +37,8 @@ EXCLUDED: set[str] = set()
 
 ROW_KEYS = {"name", "script", "args", "min_version", "expect_file",
             "expect_sidecar", "sidecar_contains", "falsifiers", "timeout"}
-FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "min_version"}
+FALSIFIER_KEYS = {"args", "expect_exit", "expect_sidecar_fail", "expect_output",
+                  "min_version"}
 # Defined once in tests/smoke/protocol.py, which explains each code.
 FORBIDDEN_EXITS = set(FORBIDDEN_FALSIFIER_EXITS)
 
@@ -70,6 +75,10 @@ def check_schema(row: dict) -> list[str]:
                 errors.append(f"{where}: expect_exit {code!r} must be an int other than 0, 1, 2, 77")
         elif not row.get("expect_sidecar"):
             errors.append(f"{where}: expect_sidecar_fail on a row with no expect_sidecar")
+        eo = f.get("expect_output")
+        if eo is not None and not (isinstance(eo, str) and eo.strip() and has_exit):
+            errors.append(f"{where}: expect_output must be a non-empty string on an "
+                          f"expect_exit falsifier")
         mv = f.get("min_version")
         if mv is not None and not (isinstance(mv, str) and re.fullmatch(r"[0-9]+[.][0-9]+", mv)):
             errors.append(f"{where}: min_version {mv!r} must look like '5.2'")
@@ -94,6 +103,41 @@ def check_readme_claims(root: Path, row: dict) -> list[str]:
             f"but it is this row's catalog falsifier" for flag in sorted(named & ran)]
 
 
+def exit_sites(script: Path) -> Counter:
+    """How many places in the script return or exit with each integer code."""
+    tree = ast.parse(script.read_text(encoding="utf-8"))
+    sites: Counter = Counter()
+    for node in ast.walk(tree):
+        value = None
+        if isinstance(node, ast.Return):
+            value = node.value
+        elif isinstance(node, ast.Call) and node.args and ast.unparse(node.func) in (
+                "sys.exit", "SystemExit", "exit"):
+            value = node.args[0]
+        if isinstance(value, ast.Constant) and type(value.value) is int:
+            sites[value.value] += 1
+    return sites
+
+
+def check_shared_exits(root: Path, row: dict) -> list[str]:
+    """An example falsifier whose code several checks return must name its own (#532).
+
+    The harness passes a falsifier on its exit code; when two checks share it,
+    the falsifier could trip the other one while the check it targets has lost
+    the ability to fail. expect_output pins the targeted check's message.
+    """
+    script = root / row["script"]
+    if Path(row["script"]).parts[0] != "examples" or not script.is_file():
+        return []
+    sites = exit_sites(script)
+    return [f"catalog row {row['name']!r} falsifier {' '.join(f['args'])}: exit "
+            f"{f['expect_exit']} is returned from {sites[f['expect_exit']]} places in "
+            f"{row['script']}; add expect_output naming the targeted check's message"
+            for f in row.get("falsifiers", [])
+            if isinstance(f, dict) and isinstance(f.get("expect_exit"), int)
+            and sites[f["expect_exit"]] > 1 and not f.get("expect_output")]
+
+
 def check(root: Path) -> list[str]:
     catalog = json.loads((root / "tests/smoke/catalog.json").read_text(encoding="utf-8"))
     if not catalog:
@@ -109,6 +153,7 @@ def check(root: Path) -> list[str]:
         if not (root / row["script"]).is_file():
             # otherwise only Blender, at runtime, notices a renamed script (#527)
             errors.append(f"catalog row {row.get('name')!r}: script {row['script']} does not exist")
+        errors += check_shared_exits(root, row)
         parts = Path(row["script"]).parts
         if len(parts) >= 2 and parts[0] in ("examples", "showcase"):
             key = f"{parts[0]}/{parts[1]}"

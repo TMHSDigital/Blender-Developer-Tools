@@ -69,6 +69,15 @@ class SmokeCatalogSchema(unittest.TestCase):
             with self.subTest(fz=fz):
                 self.assertTrue(any("no falsifiers" in m for m in self.errs(falsifiers=fz)))
 
+    def test_expect_output_needs_an_exit_and_text(self):
+        ok = self.errs(falsifiers=[{"args": ["--x"], "expect_exit": 3, "expect_output": "ERROR: a"}])
+        self.assertEqual(ok, [])
+        for bad in ({"args": ["--x"], "expect_exit": 3, "expect_output": ""},
+                    {"args": ["--x"], "expect_sidecar_fail": True, "expect_output": "x"}):
+            with self.subTest(bad=bad):
+                e = self.errs(expect_sidecar="o", falsifiers=[bad])
+                self.assertTrue(any("expect_output" in m for m in e), e)
+
     def test_bad_falsifier_args(self):
         e = self.errs(falsifiers=[{"args": [], "expect_exit": 3}])
         self.assertTrue(any("'args'" in m for m in e), e)
@@ -104,6 +113,18 @@ class SmokeCatalogTree(unittest.TestCase):
     def test_row_for_missing_directory(self):
         e = self.run_check([self.row(), self.row(name="z", script="examples/z/z.py")])
         self.assertTrue(any("missing directory examples/z" in m for m in e), e)
+
+    def test_shared_exit_needs_expect_output(self):
+        # #532: two checks return 4; the falsifier must name which one it breaks
+        src = "def a():\n    return 4\n\ndef b():\n    return 4\n"
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            write(root, "examples/x/x.py", src)
+            bare = csc.check_shared_exits(root, self.row(falsifiers=[{"args": ["--b"], "expect_exit": 4}]))
+            pinned = csc.check_shared_exits(root, self.row(falsifiers=[
+                {"args": ["--b"], "expect_exit": 4, "expect_output": "ERROR: b"}]))
+        self.assertTrue(any("returned from 2 places" in m for m in bare), bare)
+        self.assertEqual(pinned, [])
 
     def test_row_for_missing_script(self):
         e = self.run_check([self.row(script="examples/x/renamed.py")])

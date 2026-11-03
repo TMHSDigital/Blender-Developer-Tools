@@ -202,6 +202,17 @@ class Falsifier(unittest.TestCase):
         from protocol import FORBIDDEN_FALSIFIER_EXITS
         self.assertEqual(check_smoke_catalog.FORBIDDEN_EXITS, set(FORBIDDEN_FALSIFIER_EXITS))
 
+    def test_expect_output_pins_the_targeted_check(self):
+        # #532: two checks share exit 4; only the targeted one's message counts
+        target = "ERROR: halo does not fall off strictly"
+        hit = classify(proc_exit=4, output=f"x\n{target}: [1, 2]\n", expect_exit=4,
+                       expect_output=target)
+        other = classify(proc_exit=4, output="ERROR: ring tube not bright\n", expect_exit=4,
+                         expect_output=target)
+        self.assertEqual(hit[0], PASS)
+        self.assertEqual(other[0], FAIL)
+        self.assertIn("not from the targeted check", other[1])
+
     def test_content_falsifier_counts_only_a_failing_check(self):
         # #519: the edit must break the contract the check asserts, not the code
         from protocol import FALSIFIED, classify_content_falsifier as cf

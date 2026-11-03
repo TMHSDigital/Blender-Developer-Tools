@@ -195,7 +195,10 @@ The host runner is `tests/smoke/run_example.py`. Shipped examples are listed in
   the sidecar check owns, `{"args": [...], "expect_sidecar_fail": true}`.
   A falsifier that targets a version-specific API change takes
   `"min_version": "5.2"` and is recorded as SKIP below it (its README must
-  say it exits 0 there).
+  say it exits 0 there). When other checks in the example return the same
+  code, the falsifier also carries `"expect_output"`: a substring of the
+  targeted check's message, which must appear in the run's output
+  (`check_smoke_catalog.py` requires it, #532).
   `run_catalog.py` runs each after the row's happy path; it passes only on
   exactly that exit. `tests/check_smoke_catalog.py` rejects a row without one
   and any unknown key. The weekly cron also runs the full showcase sweep

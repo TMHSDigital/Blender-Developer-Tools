@@ -158,7 +158,9 @@ example needs:
    `3` up) and a falsifier: a flag that breaks the contract so one named check
    exits with its own code.
 2. A `tests/smoke/catalog.json` row with at least one falsifier
-   (`{"args": ["--your-flag"], "expect_exit": N}`). `tests/check_smoke_catalog.py`
+   (`{"args": ["--your-flag"], "expect_exit": N}`; add `"expect_output": "<the
+   check's error message>"` when other checks return the same code).
+   `tests/check_smoke_catalog.py`
    rejects a row without one.
 3. An `examples/skills.json` entry naming the skills it proves, then
    `python scripts/build_examples_index.py` (Validate fails on a missing entry).

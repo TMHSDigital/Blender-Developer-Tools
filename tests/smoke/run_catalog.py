@@ -94,6 +94,8 @@ def main(argv=None):
                 cmd.append("--expect-sidecar-fail")
             else:
                 cmd.extend(["--expect-exit", str(falsifier["expect_exit"])])
+                if falsifier.get("expect_output"):
+                    cmd.extend(["--expect-output", falsifier["expect_output"]])
         if extra:
             cmd.append("--")
             cmd.extend(extra)

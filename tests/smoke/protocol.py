@@ -82,6 +82,7 @@ def classify(
     sidecar_contains: Optional[str] = None,
     expect_exit: Optional[int] = None,
     expect_sidecar_fail: bool = False,
+    expect_output: Optional[str] = None,
 ) -> Tuple[str, str]:
     """Return (PASS|SKIP|FAIL, detail).
 
@@ -91,7 +92,10 @@ def classify(
 
     Falsifier runs invert the verdict. With ``expect_exit=N`` the run passes
     only when Blender exits exactly N: not 0 (the check did not fire), not
-    another code (an earlier check fired), not 1 (it crashed). With
+    another code (an earlier check fired), not 1 (it crashed). When several
+    checks share N, ``expect_output`` names the targeted check's message, which
+    must appear in the output too, so a different check exiting N cannot stand
+    in for the one the falsifier was written to break (#532). With
     ``expect_sidecar_fail`` the run passes only when the script exits 0 and
     the post-exit sidecar check then fails (falsifiers the harness, not the
     script, is meant to catch). A legal skip stays a skip either way.
@@ -112,6 +116,9 @@ def classify(
         if expect_exit in FORBIDDEN_FALSIFIER_EXITS:
             return FAIL, f"falsifier expects exit {expect_exit}, which names no check"
         if proc_exit == expect_exit:
+            if expect_output and expect_output not in output:
+                return FAIL, (f"falsifier exited {proc_exit} as declared, but not from the "
+                              f"targeted check: output lacks {expect_output!r}")
             return PASS, f"falsifier exited {proc_exit} as declared"
         if proc_exit == 0:
             return FAIL, f"falsifier did not fail (exit 0, expected {expect_exit})"

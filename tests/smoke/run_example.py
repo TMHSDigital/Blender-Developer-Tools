@@ -138,6 +138,7 @@ def run(args):
             sidecar_contains=args.sidecar_contains,
             expect_exit=args.expect_exit,
             expect_sidecar_fail=args.expect_sidecar_fail,
+            expect_output=args.expect_output,
         )
     record = {
         "name": args.name,
@@ -175,6 +176,10 @@ def main(argv=None):
     p.add_argument(
         "--expect-exit", type=int, default=None,
         help="falsifier run: PASS only if Blender exits exactly this code",
+    )
+    p.add_argument(
+        "--expect-output", default=None,
+        help="falsifier run: the targeted check's message must also appear in the output",
     )
     p.add_argument(
         "--expect-sidecar-fail", action="store_true",
