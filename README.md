@@ -127,7 +127,14 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 Releases ship often; [CHANGELOG.md](CHANGELOG.md) lists what each one changed.
 
 - **Claude Code plugin** — `/plugin marketplace update blender-developer-tools` refreshes the marketplace and its plugins (from a shell: `claude plugin update blender-developer-tools@blender-developer-tools`). Remove it with `/plugin uninstall blender-developer-tools`, then `/plugin marketplace remove blender-developer-tools`.
-- **Cursor local plugin** — `git pull` in `~/.cursor/plugins/local/blender-developer-tools`, then reload the window. Remove that folder to uninstall.
+- **Cursor local plugin** and the **other-agents `bdt` clone** — `plugin-dist` is rebuilt as a single new commit and force-pushed on every release, so `git pull` refuses it ("unrelated histories"). Reset to the new build instead, then reload the Cursor window (for the `bdt` clone, re-run the copy commands above):
+
+  ```bash
+  git -C ~/.cursor/plugins/local/blender-developer-tools fetch origin plugin-dist
+  git -C ~/.cursor/plugins/local/blender-developer-tools reset --hard FETCH_HEAD
+  ```
+
+  Deleting the folder and cloning again does the same. Remove the folder to uninstall.
 - **Checkout** (per-project Cursor copies, the optional always-on Claude rules import, examples) — `git pull` in the clone. Copied `.mdc` files do not update themselves: symlink `rules/*.mdc` into `.cursor/rules/` instead of copying, or re-copy after each pull. To uninstall, delete the copied or linked rules and the `@.../blender-rules.md` line from your `CLAUDE.md`.
 
 ## Supported Blender versions

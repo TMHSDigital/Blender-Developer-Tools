@@ -42,7 +42,9 @@ A confirmed fix lands on `main` and ships in the next release cut by
 commit on each release that changes plugin content, and the branch carries no
 tags, so a plugin install cannot be pinned to an older release. The remedy is to
 update the plugin (Claude Code: `/plugin marketplace update
-blender-developer-tools`; Cursor local plugin: `git pull` in its folder). A
+blender-developer-tools`; Cursor local plugin: `git fetch origin plugin-dist`
+then `git reset --hard FETCH_HEAD` in its folder, since a force-pushed orphan
+commit cannot be pulled). A
 checkout of `main` pins by release tag (`vX.Y.Z`) or tracks `main`, and its
 remedy is to move to the current release. Nothing older is patched in place.
 
