@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <strong>25 skills</strong> &nbsp;&bull;&nbsp; <strong>12 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>31 snippets</strong> &nbsp;&bull;&nbsp; <strong>69 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
+  <strong>25 skills</strong> &nbsp;&bull;&nbsp; <strong>16 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>31 snippets</strong> &nbsp;&bull;&nbsp; <strong>69 examples</strong> &nbsp;&bull;&nbsp; <strong>80 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -44,14 +44,14 @@
 
 ## Overview
 
-This repository ships **25 skills, 12 rules, 3 templates, 31 snippets, 69 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **25 skills, 16 rules, 3 templates, 31 snippets, 69 examples, and 80 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents, installed as a plugin or read from a checkout. An optional second plugin registers the official [Blender Lab MCP server](https://www.blender.org/lab/mcp-server/) for live sessions (see [Live Blender session](#live-blender-session-mcp)); the server is referenced from upstream, not part of this repository, and nothing else depends on it. Cursor and Claude Code both install it as a plugin (see [Quick start](#quick-start)): Cursor loads the skills and applies `rules/*.mdc` wherever their scope globs match; Claude Code loads the skills and gets the rules through a generated `blender-rules` skill, since it does not read Cursor `.mdc` files. An agent picks a skill up when its description matches the task. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
 | **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, high-to-low baking, engine export presets, extension runtime and packaging, timers, modal operators and threading, GPU drawing and viewport overlays, porting add-ons to Blender 5, Grease Pencil v3, constraints and parenting, images and pixels, curves and text, compositor nodes |
-| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA, and the 5.x removals: `bgl`, the pre-4.1 normals API, `sequence_editor.sequences` |
+| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA, and the 5.x breaks: `bgl`, the pre-4.1 normals API, `sequence_editor.sequences`, `action.fcurves`, 3.x Principled socket names, NodesModifier ID-property inputs, the EEVEE engine id |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 31 small standalone Python files demonstrating canonical patterns, 5 to 75 lines each |
 | **Examples** | Runnable headless scripts under [`examples/`](examples/). Each asserts an API contract and exits non-zero on failure. |
@@ -61,7 +61,7 @@ The content is consumed by AI coding agents, installed as a plugin or read from 
 
 Neither agent needs a clone of `main`: both install the slim `plugin-dist` build. Clone the full repository only to [run the examples or contribute](#run-the-examples-or-contribute).
 
-- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 25 skills and 12 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
+- **Cursor** — install it as a local plugin from the slim `plugin-dist` branch, then run **Developer: Reload Window**. **Customize** lists the 25 skills and 16 rules; the rules apply by glob scope and the agent loads a skill when its description matches the task.
 
   ```bash
   git clone --branch plugin-dist --single-branch https://github.com/TMHSDigital/Blender-Developer-Tools.git ~/.cursor/plugins/local/blender-developer-tools
@@ -198,7 +198,7 @@ Browse both, with filters, full-size renders and each script's README, in the **
 
 ```
 skills/<name>/SKILL.md   - 25 skill files, YAML frontmatter, one canonical pattern each
-rules/<name>.mdc         - 12 rule files, anti-pattern + correction
+rules/<name>.mdc         - 16 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
 snippets/<name>.py       - 31 standalone Python snippets, 5 to 75 lines each
 examples/<name>/         - 69 example directories: script, README with exit codes and falsifier
@@ -208,7 +208,7 @@ claude/                  - generated Claude Code copies of the rules (blender-ru
 
 ## Using rules in Cursor
 
-With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The 12 rules are:
+With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The 16 rules are:
 
 - `prefer-data-over-ops-in-loops`: flags `bpy.ops.*` calls inside object iteration
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
@@ -222,6 +222,10 @@ With the Cursor plugin installed, the `.mdc` files in `rules/` apply automatical
 - `no-bgl`: flags `import bgl` or any `bgl.` call (removed in 5.x; the add-on fails to register)
 - `no-removed-normals-api`: flags `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()` and the other normals calls removed in 4.1
 - `no-legacy-vse-sequences`: flags `sequence_editor.sequences` / `.sequences_all` (removed in 5.x; `.strips` / `.strips_all` exist on 4.5 too)
+- `no-legacy-action-fcurves`: flags `action.fcurves`, `action.groups` and `action.id_root` (removed in 5.0; reach F-curves through the slot's channelbag)
+- `principled-v2-socket-names`: flags Principled BSDF inputs by 3.x name (`Emission`, `Specular`, `Clearcoat`, ...) or by index (renamed in 4.0)
+- `no-nodes-modifier-idprop-inputs`: flags `mod["Socket_N"] = value` on a Geometry Nodes modifier without a 5.2 version branch (the dict write raises on 5.2)
+- `branch-eevee-engine-id`: flags a literal `'BLENDER_EEVEE_NEXT'` / `'BLENDER_EEVEE'` engine id without a 5.0 version branch
 
 Cursor: the plugin covers the rules (see [Quick start](#quick-start)); copying `rules/*.mdc` into a project's `.cursor/rules/` is only the per-project alternative without the plugin. Claude Code: the plugin ships the rules as the `blender-rules` skill.
 

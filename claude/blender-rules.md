@@ -11,17 +11,35 @@ Flag bmesh.new() calls without a paired bm.free() in a try/finally block. Blende
 
 Applies to: `**/*.py`. Full rule: [`rules/always-free-bmesh.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/always-free-bmesh.mdc).
 
+## branch-eevee-engine-id
+
+Flag `render.engine = 'BLENDER_EEVEE_NEXT'` or `= 'BLENDER_EEVEE'` written without a version branch. EEVEE Next used the id 'BLENDER_EEVEE_NEXT' on 4.2 through 4.5 LTS and took back 'BLENDER_EEVEE' in 5.0; each id raises TypeError (enum not found) on the other side. Branch on bpy.app.version >= (5, 0, 0). See the procedural-materials-and-shaders skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/branch-eevee-engine-id.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/branch-eevee-engine-id.mdc).
+
 ## no-bgl
 
 Flag `import bgl` and any `bgl.` call. The `bgl` OpenGL wrapper was deprecated in 3.x and is gone in Blender 5.x (`importlib.util.find_spec('bgl')` is `None` on 5.0, 5.1 and 5.2), so an add-on that imports it fails to register. Draw with the `gpu` module, `gpu.state` and `gpu_extras.batch` instead; see the gpu-drawing-and-overlays skill.
 
 Applies to: `**/*.py`. Full rule: [`rules/no-bgl.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-bgl.mdc).
 
+## no-legacy-action-fcurves
+
+Flag `action.fcurves`, `action.groups` and `action.id_root` on an Action. Blender 5.0 removed the flat legacy Action API (AttributeError on 5.x); F-curves live in a channelbag per slot. On 4.4/4.5 LTS the legacy path still runs but is a trap on a fresh Action (it creates a slot without binding it). Reach F-curves through the slot's channelbag, or use obj.keyframe_insert. See the slotted-actions-animation skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/no-legacy-action-fcurves.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-legacy-action-fcurves.mdc).
+
 ## no-legacy-vse-sequences
 
 Flag `sequence_editor.sequences` and `.sequences_all`. Both are gone in Blender 5.x (AttributeError on 5.0, 5.1 and 5.2), while `.strips` and `.strips_all` already exist on 4.5 LTS, so use those everywhere with no version branch. See the vse-python skill.
 
 Applies to: `**/*.py`. Full rule: [`rules/no-legacy-vse-sequences.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-legacy-vse-sequences.mdc).
+
+## no-nodes-modifier-idprop-inputs
+
+Flag writing a Geometry Nodes modifier input as an ID property (`mod["Socket_2"] = value`, `mod[identifier] = value`) without a version branch. Blender 5.2 removed that form (it raises TypeError, id properties not supported for this type); 5.2+ writes `getattr(mod.properties.inputs, identifier).value`, which does not exist on 4.5 LTS or 5.1. Branch on bpy.app.version >= (5, 2, 0). See the geometry-nodes-python skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/no-nodes-modifier-idprop-inputs.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/no-nodes-modifier-idprop-inputs.mdc).
 
 ## no-removed-normals-api
 
@@ -46,6 +64,12 @@ Applies to: `**/*.py`. Full rule: [`rules/prefer-data-over-ops-in-loops.mdc`](ht
 Flag uses of `bpy.context.copy()` to override context for an operator call. Passing a context dict to an operator was deprecated in Blender 3.2 and removed in 4.0, so it already fails on the 4.5 LTS fallback. Use `bpy.context.temp_override(**overrides)` as a context manager instead.
 
 Applies to: `**/*.py`. Full rule: [`rules/prefer-temp-override-over-context-copy.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/prefer-temp-override-over-context-copy.mdc).
+
+## principled-v2-socket-names
+
+Flag Principled BSDF inputs looked up by their 3.x names (`inputs["Emission"]`, `["Specular"]`, `["Clearcoat"]`, `["Subsurface"]`, `["Transmission"]`, `["Sheen"]`) or by index. Principled v2 (Blender 4.0) renamed them, so they raise KeyError on 4.5 LTS and 5.x. Use the 4.0+ names (`Emission Color`, `Specular IOR Level`, `Coat Weight`, ...), which need no version branch. See the procedural-materials-and-shaders skill.
+
+Applies to: `**/*.py`. Full rule: [`rules/principled-v2-socket-names.mdc`](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/rules/principled-v2-socket-names.mdc).
 
 ## target-extensions-platform-format
 

@@ -58,6 +58,10 @@
     "rules/use-correct-axis-rna-per-exporter.mdc",
     "rules/no-bgl.mdc",
     "rules/no-removed-normals-api.mdc",
-    "rules/no-legacy-vse-sequences.mdc"
+    "rules/no-legacy-vse-sequences.mdc",
+    "rules/no-legacy-action-fcurves.mdc",
+    "rules/principled-v2-socket-names.mdc",
+    "rules/no-nodes-modifier-idprop-inputs.mdc",
+    "rules/branch-eevee-engine-id.mdc"
   ]
 }

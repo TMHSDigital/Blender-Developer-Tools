@@ -1,0 +1,91 @@
+---
+description: Flag `action.fcurves`, `action.groups` and `action.id_root` on an Action. Blender 5.0 removed the flat legacy Action API (AttributeError on 5.x); F-curves live in a channelbag per slot. On 4.4/4.5 LTS the legacy path still runs but is a trap on a fresh Action (it creates a slot without binding it). Reach F-curves through the slot's channelbag, or use obj.keyframe_insert. See the slotted-actions-animation skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No legacy `action.fcurves`: go through the slot's channelbag
+
+Blender 4.4 introduced Slotted Actions: an Action holds slots, layers and
+strips, and each strip keeps one **channelbag** of F-curves per slot. 4.4 and
+4.5 LTS kept the old flat API (`action.fcurves`, `action.groups`,
+`action.id_root`) as a proxy. Blender 5.0 removed it.
+
+| | 4.5 LTS | 5.0 / 5.1 / 5.2 |
+| --- | --- | --- |
+| `action.fcurves`, `action.groups`, `action.id_root` | proxy, still works | `AttributeError` |
+| `strip.channelbag(slot, ensure=True)` | yes | yes |
+| `bpy_extras.anim_utils.action_ensure_channelbag_for_slot` | **no** | yes |
+| `obj.keyframe_insert(data_path, frame=...)` | yes | yes |
+
+The proxy is not safe on 4.5 either: on a fresh Action, writing through
+`action.fcurves` creates a slot but does not bind it to the object, so the
+keys exist and never play back.
+
+## What this rule flags
+
+- `action.fcurves`, `action.fcurves.new(...)`, `action.fcurves.find(...)`,
+  iteration over `action.fcurves`, on an `Action` (including
+  `obj.animation_data.action.fcurves`)
+- `action.groups` and `action.id_root`
+
+Not flagged: `channelbag.fcurves` (the replacement) and
+`animation_data.drivers` (drivers are not in Actions).
+
+## Wrong
+
+```python
+import bpy
+
+obj = bpy.context.active_object
+obj.animation_data_create()
+action = bpy.data.actions.new("Spin")
+obj.animation_data.action = action
+fc = action.fcurves.new(data_path="rotation_euler", index=2)
+fc.keyframe_points.insert(1, 0.0)
+```
+
+On 5.x the `fcurves.new` line raises
+`AttributeError: 'Action' object has no attribute 'fcurves'`; on 4.5 it
+silently leaves the new slot unbound.
+
+## Right
+
+```python
+import bpy
+
+def channelbag_for(obj):
+    if obj.animation_data is None:
+        obj.animation_data_create()
+    action = obj.animation_data.action or bpy.data.actions.new(f"{obj.name}_Action")
+    obj.animation_data.action = action
+    slot = obj.animation_data.action_slot
+    if slot is None:
+        slot = action.slots.new(id_type='OBJECT', name=obj.name)
+        obj.animation_data.action_slot = slot
+    if bpy.app.version >= (5, 0, 0):
+        from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
+        return action_ensure_channelbag_for_slot(action, slot)
+    layer = action.layers[0] if action.layers else action.layers.new("Layer")
+    strip = layer.strips[0] if layer.strips else layer.strips.new(type='KEYFRAME')
+    return strip.channelbag(slot, ensure=True)
+
+fc = channelbag_for(bpy.context.active_object).fcurves.new(data_path="rotation_euler", index=2)
+fc.keyframe_points.insert(1, 0.0)
+```
+
+For ordinary keys, `obj.keyframe_insert("location", frame=1)` needs no branch:
+Blender builds the slot, layer, strip and channelbag itself.
+
+## Verified
+
+`examples/turntable/` keys through the channelbag on 4.5 and 5.x, and the
+slotted-actions-animation skill's helper block runs in Content Smoke on both.
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.Action.html
+- https://docs.blender.org/api/current/bpy_extras.anim_utils.html
+- https://developer.blender.org/docs/release_notes/4.4/

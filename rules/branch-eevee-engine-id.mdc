@@ -1,0 +1,69 @@
+---
+description: Flag `render.engine = 'BLENDER_EEVEE_NEXT'` or `= 'BLENDER_EEVEE'` written without a version branch. EEVEE Next used the id 'BLENDER_EEVEE_NEXT' on 4.2 through 4.5 LTS and took back 'BLENDER_EEVEE' in 5.0; each id raises TypeError (enum not found) on the other side. Branch on bpy.app.version >= (5, 0, 0). See the procedural-materials-and-shaders skill.
+alwaysApply: false
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# EEVEE's engine id changed at 5.0: branch on the version
+
+Legacy EEVEE was removed in Blender 4.2 and replaced by EEVEE Next, which
+shipped under a new engine id. In 5.0 EEVEE Next took back the plain id:
+
+| | 4.2 – 4.5 LTS | 5.0 / 5.1 / 5.2 |
+| --- | --- | --- |
+| EEVEE engine id | `'BLENDER_EEVEE_NEXT'` | `'BLENDER_EEVEE'` |
+| the other id | `TypeError` (enum not found) | `TypeError` (enum not found) |
+
+On 5.2.1 the enum is `('BLENDER_EEVEE', 'BLENDER_WORKBENCH', 'CYCLES')`, so a
+4.5-era script fails with
+``TypeError: bpy_struct: item.attr = val: enum "BLENDER_EEVEE_NEXT" not found``.
+A 5.x script run on 4.5 fails the same way the other direction. Training data
+is full of both, which is why agents get this wrong in both directions.
+
+## What this rule flags
+
+- `scene.render.engine = 'BLENDER_EEVEE_NEXT'` or `= 'BLENDER_EEVEE'` as a
+  literal, outside an `if` on `bpy.app.version`
+- The same literals passed as `engine=` or compared with `==` to decide what
+  engine is active
+- A branch on `bpy.app.version_string` (it reads `"4.5.11 LTS"`, not semver)
+  or on `hasattr`: branch on the version tuple
+
+`'CYCLES'` and `'BLENDER_WORKBENCH'` are unchanged and need no branch.
+
+## Wrong
+
+```python
+import bpy
+
+bpy.context.scene.render.engine = 'BLENDER_EEVEE_NEXT'
+```
+
+## Right
+
+```python
+import bpy
+
+def eevee_engine_id():
+    return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
+
+bpy.context.scene.render.engine = eevee_engine_id()
+```
+
+Define the helper once and call it everywhere; the snippet
+`version-branch-skeleton.py` ships the same function.
+
+## Verified
+
+Every example and showcase piece here that renders with EEVEE selects it
+through this helper (`tests/check_engine_id.py` keeps the copies identical),
+and `examples/swatch-grid/`'s `--invert-engine-id` falsifier exits 5 when the
+wrong-era id is accepted. The snippet's Content Smoke falsifier swaps the
+branch and fails on both 4.5 and 5.2.
+
+## Reference
+
+- https://docs.blender.org/api/current/bpy.types.RenderSettings.html
+- https://developer.blender.org/docs/release_notes/4.2/

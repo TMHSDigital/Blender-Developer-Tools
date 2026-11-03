@@ -18,7 +18,7 @@ The **Blender Developer Tools** repository is at **v0.158.0**. It packages skill
 
 ```
 skills/<skill-name>/SKILL.md   - AI workflow definitions, 25 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 12 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 16 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 31 total
 examples/<name>/               - Runnable smoke-gated examples, 69 total (+ gallery.json)
@@ -60,7 +60,7 @@ VERSION                        - Source of truth for the repo version
 | curves-and-text | Curve and TextCurve datablocks: splines, bevel/extrude closed forms, `body`, Bfont, evaluated mesh read-back |
 | compositor-nodes | 4.5 `scene.node_tree` vs 5.x `scene.compositing_node_group`, Glare node enum-to-menu-socket change, `use_compositing` |
 
-## Rules (12)
+## Rules (16)
 
 Every rule sets `alwaysApply: false`, so the Scope column below is the rule's
 actual load condition, not a description: a rule enters context only when a file
@@ -80,6 +80,10 @@ matching its `globs` does. Changing a glob changes when the rule fires.
 | no-bgl | `*.py` | `import bgl` or any `bgl.` call (removed in 5.x; the add-on fails to register) |
 | no-removed-normals-api | `*.py` | `use_auto_smooth`, `auto_smooth_angle`, `calc_normals_split()` and the other normals calls removed in 4.1 |
 | no-legacy-vse-sequences | `*.py` | `sequence_editor.sequences` / `.sequences_all` (removed in 5.x; `.strips` / `.strips_all` exist on 4.5 too) |
+| no-legacy-action-fcurves | `*.py` | `action.fcurves`, `action.groups`, `action.id_root` (removed in 5.0; F-curves live in the slot's channelbag) |
+| principled-v2-socket-names | `*.py` | Principled BSDF inputs by 3.x name (`Emission`, `Specular`, `Clearcoat`, ...) or by index (renamed in 4.0) |
+| no-nodes-modifier-idprop-inputs | `*.py` | `mod["Socket_N"] = value` on a NODES modifier without a 5.2 branch (TypeError on 5.2; `mod.properties.inputs` does not exist before it) |
+| branch-eevee-engine-id | `*.py` | literal `'BLENDER_EEVEE_NEXT'` / `'BLENDER_EEVEE'` engine id without a 5.0 version branch |
 
 ## Templates (3)
 
