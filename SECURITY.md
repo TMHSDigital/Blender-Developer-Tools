@@ -15,20 +15,24 @@ Please include:
 
 ## Scope
 
-This repository ships Markdown skill files, MDC rule files, Python snippets, and three starter templates (a Blender extension add-on, a headless batch script, and a GLB-in engine-ready asset pipeline). The primary security concerns are:
+This repository ships Markdown skill files, MDC rule files, Python snippets, three starter templates (a Blender extension add-on, a headless batch script, and a GLB-in engine-ready asset pipeline), runnable headless examples under `examples/`, showcase scripts under `showcase/`, and an opt-in second plugin, `blender-live-session` (`live-session/`), that registers the upstream Blender Lab MCP server. The primary security concerns are:
 
 - **Snippets or templates demonstrating insecure patterns** (executing arbitrary code from `.blend` files, loading remote scripts without validation, leaking filesystem paths into logs).
 - **The extension-addon template declaring over-broad permissions** in `blender_manifest.toml` (e.g. `network`, `files`, `clipboard`, `camera`) without a documented justification.
 - **Skills recommending insecure practices** (running `eval()` on driver expressions from untrusted sources, disabling Blender's auto-execute-script protection in headless workflows, embedding credentials in `.blend` custom properties).
 - **Headless batch scripts** that pass user-controlled input to `subprocess` or `os.system` without sanitization.
+- **Examples and showcase scripts** that do any of the above; they run headless in CI and users run them locally.
+- **The `blender-live-session` plugin**: its pin and launch command in `live-session/mcp.json`, and its skill's guidance. That server executes agent-generated Python in a running Blender without guards. See [`live-session/SECURITY.md`](live-session/SECURITY.md) for what is in scope there; flaws in the upstream server itself belong upstream.
 
 Issues with the Blender Python API itself (`bpy`, `bmesh`, `bpy_extras`) belong upstream at https://projects.blender.org and are out of scope here.
 
 ## Supported Versions
 
 This is a content repository — Markdown, MDC, Python, and TOML files consumed
-directly by an AI agent. There is no installed runtime, no server, and no
-long-lived deployment to patch, so there are no maintenance branches and no
+directly by an AI agent. The core plugin installs no runtime and starts no
+server (the opt-in `blender-live-session` plugin launches the upstream MCP
+server from a pinned commit; this repository does not host or patch it), and
+there is no long-lived deployment to patch, so there are no maintenance branches and no
 backports.
 
 | Version | Supported |
