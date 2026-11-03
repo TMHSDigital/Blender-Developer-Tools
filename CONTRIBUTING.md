@@ -17,7 +17,9 @@ The fastest useful contributions are small and need no Blender run:
 Then: fork, branch, `uv sync`,
 `uv run python tests/run_all.py`, and open a PR with a DCO sign-off (`git commit -s`;
 see the end of this file). Examples and showcase pieces have more gates
-(falsifiers, exit-code tables, renders); read their sections first.
+(falsifiers, exit-code tables, renders); read
+[Adding an Example](#adding-an-example) or
+[Adding a Showcase Piece](#adding-a-showcase-piece) first.
 
 ## Getting Started
 
@@ -64,10 +66,12 @@ rules/
 snippets/
   <snippet-name>.py
 templates/
-  <template-name>/
+  extension-addon-template/        # an add-on: manifest + package
     blender_manifest.toml
     __init__.py
     README.md
+  headless-batch-script-template/  # a script: script.py + README.md
+  ai-asset-pipeline-template/      # a script: pipeline.py + README.md
 examples/
   gallery.json
   <example-name>/
@@ -127,7 +131,7 @@ showcase/
    too narrow means the rule silently stops firing, which is worse than
    over-applying. Record the scope in the `CLAUDE.md` rules table to match.
 
-3. Write 30 to 80 lines: the anti-pattern, a code example showing it wrong, a code example showing it right, and a short "Why it matters" section.
+3. Keep it focused (the shipped rules run about 70 to 170 lines): the anti-pattern, a code example showing it wrong, a code example showing it right, and a short "Why it matters" section.
 
 ## Adding a Snippet
 
@@ -139,6 +143,34 @@ showcase/
 
 1. Add a directory under `templates/`, e.g. `templates/headless-batch-script-template/`.
 2. Include all files needed for an immediate copy-paste starting point. For add-on templates, include `blender_manifest.toml`, `__init__.py`, and a brief `README.md`.
+
+## Adding an Example
+
+An example is a runnable headless script that asserts one API contract and
+exits non-zero when it breaks. The full procedure, render standard and gates
+are in [`docs/new-example-prompt.md`](docs/new-example-prompt.md) and
+`CLAUDE.md` § Examples; copy the anatomy of `examples/bmesh-gear/`. Every
+example needs:
+
+1. `examples/<kebab-name>/` with the script and a README that has an exit-code
+   table (`0` pass, `1` uncaught exception, `2` argparse usage, checks from
+   `3` up) and a falsifier: a flag that breaks the contract so one named check
+   exits with its own code.
+2. A `tests/smoke/catalog.json` row with at least one falsifier
+   (`{"args": ["--your-flag"], "expect_exit": N}`). `tests/check_smoke_catalog.py`
+   rejects a row without one.
+3. An `examples/skills.json` entry naming the skills it proves, then
+   `python scripts/build_examples_index.py` (Validate fails on a missing entry).
+4. **Rendered examples only** (when the contract is visible in pixels): an
+   `examples/gallery.json` entry with an `alt` sentence, a 1280x720 hero
+   webp in `docs/gallery/assets/`, its 640x360 card `<name>-hero-640.webp`
+   (`python scripts/make_thumbs.py`; the gallery build exits 5 without it), a
+   1200x675 preview webp, the framing gate on the `--output` path, a
+   committed contact sheet, then `python scripts/build_gallery.py`.
+   `python scripts/render_hero.py --blender PATH --only NAME` writes all three
+   webps. A **check-only** example skips this step and stays out of
+   `gallery.json`.
+5. Update the README example count (`validate-counts`).
 
 ## Adding a Showcase Piece
 

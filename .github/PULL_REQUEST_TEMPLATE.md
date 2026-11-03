@@ -28,7 +28,7 @@ Merge evidence is the PR-head 5.2 + 4.5 smoke jobs (state the versions from thos
 - [ ] Explicit paths only (`git add` never `-A` / `.`). Leave unstaged Cursor-injected `CLAUDE.md` hunks.
 - [ ] Counts in `README.md` match disk if content was added or removed (`validate-counts`).
 - [ ] Manifest arrays list every new skill / rule / snippet / template / example / showcase piece (`validate-manifest`). Do not touch the `"version"` line.
-- [ ] New example: `gallery.json`, `tests/smoke/catalog.json` row, README row, hero/preview webp, `python scripts/build_gallery.py`, framing / contact-sheet gates as in `CLAUDE.md`.
+- [ ] New example: `tests/smoke/catalog.json` row with a falsifier, `examples/skills.json` entry + `python scripts/build_examples_index.py`, README count. Rendered examples also: `gallery.json` entry with `alt`, hero + `-hero-640.webp` card + preview webp, `python scripts/build_gallery.py`, framing / contact-sheet gates ([CONTRIBUTING.md](../CONTRIBUTING.md#adding-an-example)).
 - [ ] Every new check was falsified once (break it, non-zero exit, restore) — or this PR has no new check.
 - [ ] DCO `Signed-off-by:` on every commit ([CONTRIBUTING.md](../CONTRIBUTING.md)).
 - [ ] No credentials, business emails, or local filesystem paths.
