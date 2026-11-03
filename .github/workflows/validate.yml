@@ -133,17 +133,6 @@ jobs:
           fi
           echo "All template Python files have valid syntax."
 
-      - name: Count components
-        run: |
-          skill_count=$(ls -d skills/*/SKILL.md 2>/dev/null | wc -l)
-          rule_count=$(ls rules/*.mdc 2>/dev/null | wc -l)
-          template_count=$(find templates -mindepth 1 -maxdepth 1 -type d | wc -l)
-          snippet_count=$(ls snippets/*.py 2>/dev/null | wc -l)
-          echo "Skills: $skill_count"
-          echo "Rules: $rule_count"
-          echo "Templates: $template_count"
-          echo "Snippets: $snippet_count"
-
   validate-site:
     name: Build landing page and check site links
     # The landing page is built only at deploy (docs/index.html is untracked),
@@ -399,71 +388,11 @@ jobs:
           python-version: "3.12"  # pinned: the runner image's python3 moves (#495)
 
       - name: Check content counts match the repo
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 << 'PYEOF'
-          import os
-          import sys
-
-          errors = []
-
-          skill_count = len([
-              d for d in os.listdir('skills')
-              if os.path.isdir(os.path.join('skills', d))
-              and os.path.exists(os.path.join('skills', d, 'SKILL.md'))
-          ])
-          rule_count = len([
-              f for f in os.listdir('rules')
-              if f.endswith('.mdc')
-          ])
-          template_count = len([
-              d for d in os.listdir('templates')
-              if os.path.isdir(os.path.join('templates', d))
-          ])
-          snippet_count = len([
-              f for f in os.listdir('snippets')
-              if f.endswith('.py')
-          ])
-          example_count = len([
-              d for d in os.listdir('examples')
-              if os.path.isdir(os.path.join('examples', d))
-              and os.path.exists(os.path.join('examples', d, 'README.md'))
-          ])
-          showcase_count = 0
-          if os.path.isdir('showcase'):
-              showcase_count = len([
-                  d for d in os.listdir('showcase')
-                  if os.path.isdir(os.path.join('showcase', d))
-                  and os.path.exists(os.path.join('showcase', d, 'README.md'))
-              ])
-
-          # Every stated copy of every count, across README, CLAUDE.md, AGENTS.md,
-          # CONTRIBUTING.md and docs/new-example-prompt.md, plus the snippet cap.
-          import subprocess
-          if subprocess.run([sys.executable, 'tests/check_counts.py']).returncode:
-              errors.append('tests/check_counts.py found stale counts (see above)')
-
-          # The GitHub About text drifts silently otherwise. Warn only: it is
-          # repo metadata edited by hand and must not block content PRs.
-          try:
-              about = subprocess.run(
-                  ['gh', 'repo', 'view', '--json', 'description', '--jq', '.description'],
-                  capture_output=True, text=True, timeout=60, check=True,
-              ).stdout
-              for needle in (f'{example_count} examples', f'{showcase_count} showcase'):
-                  if needle not in about:
-                      print(f'::warning::GitHub repo description is stale (missing "{needle}"): {about.strip()}')
-          except (subprocess.SubprocessError, OSError) as exc:
-              print(f'::warning::could not read the GitHub repo description: {exc}')
-
-          if errors:
-              for e in errors:
-                  print(f'::error::{e}', file=sys.stderr)
-              sys.exit(1)
-
-          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} templates, {snippet_count} snippets, {example_count} examples, {showcase_count} showcase pieces')
-          PYEOF
+        # Every stated copy of every count, across README, CLAUDE.md, AGENTS.md,
+        # CONTRIBUTING.md and docs/new-example-prompt.md, plus the snippet cap.
+        # The GitHub repo description deliberately carries no counts (#448,
+        # #486), so nothing here reads it (#520).
+        run: python3 tests/check_counts.py
 
   validate-harness:
     name: Validate smoke harness protocol
