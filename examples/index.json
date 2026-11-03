@@ -646,8 +646,8 @@
       "3": "Evaluated Z scale ≠ `wave_scale` (`--flat-expr` lands here)",
       "4": "Original datablock was not flushed",
       "5": "A driver reports `is_simple_expression=True` (`--simple-expr` lands here)",
-      "7": "Handler argument types wrong: a `_pre` handler got a depsgraph or a `_post` one did not (`--swap-handlers` lands here)",
       "6": "`--output` produced no file",
+      "7": "Handler argument types wrong: a `_pre` handler got a depsgraph or a `_post` one did not (`--swap-handlers` lands here)",
       "10": "Gallery framing violation"
     }
   },
@@ -2035,18 +2035,42 @@
     "falsifiers": [
       {
         "args": [
+          "--output",
+          "$OUT/swatch.png",
+          "--engine",
+          "cycles",
+          "--samples",
+          "8",
+          "--width",
+          "640",
           "--same-base"
         ],
         "expect_exit": 6
       },
       {
         "args": [
+          "--output",
+          "$OUT/swatch.png",
+          "--engine",
+          "cycles",
+          "--samples",
+          "8",
+          "--width",
+          "640",
           "--invert-engine-id"
         ],
         "expect_exit": 5
       },
       {
         "args": [
+          "--output",
+          "$OUT/swatch.png",
+          "--engine",
+          "cycles",
+          "--samples",
+          "8",
+          "--width",
+          "640",
           "--no-specular-shim"
         ],
         "expect_exit": 7
@@ -2472,6 +2496,15 @@
     "falsifiers": [
       {
         "args": [
+          "--swap-inputs"
+        ],
+        "expect_exit": 7
+      },
+      {
+        "args": [
+          "--check-pixels",
+          "--engine",
+          "cycles",
           "--swap-inputs"
         ],
         "expect_exit": 7
