@@ -24,7 +24,7 @@ site = [
 dev = [
     { include-group = "site" },
     "PyYAML==6.0.3",
-    "numpy==2.5.4",
+    "numpy==2.5.5",
     "Pillow==13.0.0",
 ]
 
